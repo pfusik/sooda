@@ -80,14 +80,14 @@
                     HintPath = "F:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Data.dll"
                 />
                 <Reference
-                    Name = "NLog"
-                    AssemblyName = "NLog"
-                    HintPath = "..\NLog\NLog.dll"
-                />
-                <Reference
                     Name = "System.Drawing"
                     AssemblyName = "System.Drawing"
                     HintPath = "C:\WINNT\Microsoft.NET\Framework\v1.1.4322\System.Drawing.dll"
+                />
+                <Reference
+                    Name = "NLog"
+                    Project = "{020354EE-5073-4BB5-9AA2-A7EADA8CAD09}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
             </References>
         </Build>
@@ -537,12 +537,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "QL\SoqlRelationalOperator.cs"
+                    RelPath = "QL\SoqlRawExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "QL\SoqlRawExpression.cs"
+                    RelPath = "QL\SoqlRelationalOperator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

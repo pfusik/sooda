@@ -42,7 +42,7 @@ namespace Sooda.Sql {
         public SqlServerBuilder() { }
 
         public override string GetDDLCommandTerminator() {
-            return "\nGO\n\n";
+            return Environment.NewLine + "GO" + Environment.NewLine + Environment.NewLine;
         }
 
         public override string GetSQLDataType(Sooda.Schema.FieldInfo fi) {
@@ -61,6 +61,9 @@ namespace Sooda.Sql {
 
             case FieldDataType.DateTime:
                 return "datetime";
+
+			case FieldDataType.Image:
+				return "image";
 
             default:
                 throw new NotImplementedException(String.Format("Datatype {0} not supported for this database", fi.DataType.ToString()));

@@ -473,10 +473,15 @@ namespace Sooda {
         }
 
         protected void EnsureDataLoaded(int tableNumber) {
-            if (!IsDataLoaded(tableNumber)) {
-                EnsureFieldsInited();
-                LoadData(tableNumber);
-            };
+			if (!IsDataLoaded(tableNumber)) 
+			{
+				EnsureFieldsInited();
+				LoadData(tableNumber);
+			} 
+			else if (InsertMode) 
+			{
+				EnsureFieldsInited();
+			}
         }
 
         protected void LoadAllData() {

@@ -34,6 +34,7 @@
 using System;
 using System.IO;
 using System.Data;
+using System.Collections;
 
 namespace Sooda.Sql {
     public abstract class SqlBuilderNamedArg : SqlBuilderBase {
@@ -121,26 +122,35 @@ namespace Sooda.Sql {
                             throw new ArgumentException("Direction not specified for parameter " + paramNumber);
 
                         string parName = GetNameForParameter(paramNumber);
-                        p.ParameterName = parName;
-                        if (v is Type) {
-                            SetDbTypeFromClrType(p, (Type)v);
-                        } else {
-                            SetDbTypeFromClrType(p, v.GetType());
+						if (!command.Parameters.Contains(parName)) 
+						{
+							p.ParameterName = parName;
+							if (v is Type) 
+							{
+								SetDbTypeFromClrType(p, (Type)v);
+							} 
+							else 
+							{
+								SetDbTypeFromClrType(p, v.GetType());
 
-                            // HACK
-                            if (v is System.Drawing.Image) {
-                                System.Drawing.Image img = (System.Drawing.Image)v;
+								// HACK
+								if (v is System.Drawing.Image) 
+								{
+									System.Drawing.Image img = (System.Drawing.Image)v;
 
-                                MemoryStream ms = new MemoryStream();
-                                img.Save(ms, img.RawFormat);
+									MemoryStream ms = new MemoryStream();
+									img.Save(ms, img.RawFormat);
 
-                                p.Value = ms.GetBuffer();
-                            } else {
-                                p.Value = v;
-                            }
-                        }
+									p.Value = ms.GetBuffer();
+								} 
+								else 
+								{
+									p.Value = v;
+								}
+							}
+							command.Parameters.Add(p);
+						}
                         sb.Append(parName);
-                        command.Parameters.Add(p);
                     }
                 } else {
                     sb.Append(c);
