@@ -81,7 +81,6 @@
         <csc target="exe" output="${sooda.dir}/StubGen.exe" debug="${sooda.debug}" define="${sooda.define},NO_VB,NO_JSCRIPT">
             <references>                                  
                 <include name="${sooda.dir}/Sooda.dll" />
-                <!-- <includes name="Microsoft.JScript.dll" asis="true"/> -->
             </references>
             <sources basedir="src/Tools/StubGen">
                 <include name="*.cs" />
@@ -166,10 +165,10 @@
         <foreach item="Folder" property="dirname">
             <in>
                 <items>
-                    <includes name="src/**/bin" />
-                    <includes name="src/**/obj" />
-                    <includes name="tests/**/bin" />
-                    <includes name="tests/**/obj" />
+                    <include name="src/**/bin" />
+                    <include name="src/**/obj" />
+                    <include name="tests/**/bin" />
+                    <include name="tests/**/obj" />
                 </items>
             </in>
             <do>
@@ -189,11 +188,11 @@
         <property name="zipfile" value="sooda_${build.date}.zip" />
         <zip zipfile="${zipfile}">
             <fileset>
-                <includes name="**/*" />
-                <excludes name="**/*.swp" />
-                <excludes name="**/.svn" />
-                <excludes name="**/.svn/**" />
-                <excludes name="${zipfile}" />
+                <include name="**/*" />
+                <exclude name="**/*.swp" />
+                <exclude name="**/.svn" />
+                <exclude name="**/.svn/**" />
+                <exclude name="${zipfile}" />
             </fileset>
         </zip>
     </target>
@@ -201,15 +200,15 @@
     <target name="SoodaCore-test" depends="settings">
         <csc target="library" output="${sooda.dir}/SoodaCore.dll" debug="${sooda.debug}" define="${sooda.define}">
             <references>                                  
-                <includes name="System.Data.dll" asis="true" />
-                <includes name="${sooda.dir}/log4net.dll" />
+                <include name="System.Data.dll" asis="true" />
+                <include name="${sooda.dir}/log4net.dll" />
             </references>
             <sources basedir="Library">
-                <includes name="**/*.cs" />
-                <excludes name="Sql/**/*.cs" />
+                <include name="**/*.cs" />
+                <exclude name="Sql/**/*.cs" />
             </sources>
             <resources basedir="Library" prefix="Sooda" dynamicprefix="true">
-                <includes name="Schema/DBSchema.xsd" />
+                <include name="Schema/DBSchema.xsd" />
             </resources>
         </csc>
         <echo message="test" />
@@ -246,15 +245,15 @@
 	<target name="Sooda.UnitTests.Objects" depends="Sooda, stubs">
 		<csc target="library" output="${sooda.dir}/Sooda.UnitTests.Objects.dll" debug="true">
 			<references>                                  
-				<includes name="${sooda.dir}/log4net.dll" />
-				<includes name="${sooda.dir}/Sooda.dll" />
-				<includes name="System.Data.dll" asis="true" />
+				<include name="${sooda.dir}/log4net.dll" />
+				<include name="${sooda.dir}/Sooda.dll" />
+				<include name="System.Data.dll" asis="true" />
 			</references>
             <sources basedir="tests/UnitTestObjects">
-				<includes name="*.cs" />
+				<include name="*.cs" />
 			</sources>
 			<resources basedir="tests/UnitTestObjects" prefix="Sooda.UnitTests.Objects" dynamicprefix="true">
-                <includes name="_DBSchema.*" />
+                <include name="_DBSchema.*" />
             </resources>
 		</csc>
 	</target>
@@ -263,14 +262,14 @@
 		<copy file="${nant.location}/nunit.framework.dll" tofile="${sooda.dir}/nunit.framework.dll" />
 		<csc target="library" output="${sooda.dir}/Sooda.UnitTests.TestCases.dll" debug="true">
 			<references>                                  
-				<includes name="${sooda.dir}/Sooda.dll" />
-    			<includes name="${sooda.dir}/Sooda.UnitTests.Objects.dll" />
-    			<includes name="${sooda.dir}/nunit.framework.dll" />
-    			<includes name="${sooda.dir}/log4net.dll" />
-				<includes name="System.Data.dll" asis="true" />
+				<include name="${sooda.dir}/Sooda.dll" />
+    			<include name="${sooda.dir}/Sooda.UnitTests.Objects.dll" />
+    			<include name="${sooda.dir}/nunit.framework.dll" />
+    			<include name="${sooda.dir}/log4net.dll" />
+				<include name="System.Data.dll" asis="true" />
 			</references>
 			<sources basedir="tests/TestCases">
-				<includes name="**/*.cs" />
+				<include name="**/*.cs" />
 			</sources>
 		</csc>
 	</target>
@@ -278,16 +277,16 @@
 	<target name="ConsoleTest" depends="Sooda, Sooda.UnitTests.TestCases">
 		<csc target="exe" output="${sooda.dir}/ConsoleTest.exe" debug="true">
 			<references>                                  
-				<includes name="${sooda.dir}/Sooda.dll" />
-    			<includes name="${sooda.dir}/Sooda.UnitTests.Objects.dll" />
-    			<includes name="${sooda.dir}/Sooda.UnitTests.Objects.Stubs.dll" />
-				<includes name="${sooda.dir}/Sooda.UnitTests.TestCases.dll" />
-				<includes name="${sooda.dir}/NUnit.Framework.dll" />
-				<includes name="${sooda.dir}/log4net.dll" />
-				<includes name="System.Data.dll" asis="true" />
+				<include name="${sooda.dir}/Sooda.dll" />
+    			<include name="${sooda.dir}/Sooda.UnitTests.Objects.dll" />
+    			<include name="${sooda.dir}/Sooda.UnitTests.Objects.Stubs.dll" />
+				<include name="${sooda.dir}/Sooda.UnitTests.TestCases.dll" />
+				<include name="${sooda.dir}/NUnit.Framework.dll" />
+				<include name="${sooda.dir}/log4net.dll" />
+				<include name="System.Data.dll" asis="true" />
 			</references>
 			<sources basedir="tests/ConsoleTest">
-				<includes name="*.cs" />
+				<include name="*.cs" />
 			</sources>
 		</csc>
         <copy file="tests/ConsoleTest/App.config" tofile="${sooda.dir}/ConsoleTest.exe.config" />
@@ -375,10 +374,10 @@
         <delete file="web.zip" if="${file::exists('web.zip')}" />
         <zip zipfile="web.zip" stampdatetime="${datetime::now()}" includeemptydirs="true">
             <fileset basedir="web">
-                <includes name="**/*" />
-                <excludes name="**/.svn" />
-                <excludes name="**/.svn/**" />
-                <excludes name="**/*.swp" />
+                <include name="**/*" />
+                <exclude name="**/.svn" />
+                <exclude name="**/.svn/**" />
+                <exclude name="**/*.swp" />
             </fileset>
         </zip>
         <echo message="Uploading web.zip to ${ssh.server}..." />
