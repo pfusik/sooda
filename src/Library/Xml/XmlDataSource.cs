@@ -42,7 +42,7 @@ namespace Sooda.Xml {
     public class XmlDataSource : Sooda.SoodaDataSource {
         DataSet ds = new DataSet();
 
-        public XmlDataSource(string name) : base(name) {
+        public XmlDataSource(DataSourceInfo dataSourceInfo) : base(dataSourceInfo) {
             // ds.Relations.Add(new DataRelation(
         }
 

@@ -304,17 +304,18 @@ namespace Sooda {
 
         public SoodaDataSource OpenDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo) 
         {
-            if (_dataSources.Count == 0) 
+            for (int i = 0; i < _dataSources.Count; ++i)
             {
-                SoodaDataSource ds = (SoodaDataSource)dataSourceInfo.CreateDataSource();
-                _dataSources.Add(ds);
-                ds.Open();
-                if (_savingObjects)
-                    ds.BeginSaveChanges();
+                if (_dataSources[i].DataSourceInfo == dataSourceInfo)
+                    return _dataSources[i];
             }
 
-            SoodaDataSource retval = _dataSources[0] as SoodaDataSource;
-            return retval;
+            SoodaDataSource ds = (SoodaDataSource)dataSourceInfo.CreateDataSource();
+            _dataSources.Add(ds);
+            ds.Open();
+            if (_savingObjects)
+                ds.BeginSaveChanges();
+            return ds;
         }
 
         void CallPrecommits() 

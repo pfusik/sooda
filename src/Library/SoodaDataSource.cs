@@ -40,32 +40,37 @@ using Sooda.Schema;
 
 namespace Sooda {
     public abstract class SoodaDataSource : IDisposable {
-        private string dataSourceName;
+        private DataSourceInfo _dataSourceInfo;
 
-        protected SoodaDataSource(string dataSourceName) {
-            this.dataSourceName = dataSourceName;
+        protected SoodaDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo) {
+            _dataSourceInfo = dataSourceInfo;
+        }
+
+        public DataSourceInfo DataSourceInfo
+        {
+            get { return _dataSourceInfo; }
         }
 
         public string Name
         {
-            get {
-                return dataSourceName;
+            get { 
+                return _dataSourceInfo.Name;
             }
         }
 
         protected string GetParameter(string name, bool throwOnFailure) {
-            string val = SoodaConfig.GetString(this.dataSourceName + "." + name);
+            string val = SoodaConfig.GetString(this.Name + "." + name);
             if (val != null)
                 return val;
 
-            if (this.dataSourceName == "default") {
+            if (this.Name == "default") {
                 val = SoodaConfig.GetString(name);
                 if (val != null)
                     return val;
             }
 
             if (throwOnFailure)
-                throw new SoodaException("Parameter " + name + " not defined for data source " + this.dataSourceName);
+                throw new SoodaException("Parameter " + name + " not defined for data source " + this.Name);
             return null;
         }
 

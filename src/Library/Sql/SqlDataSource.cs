@@ -55,7 +55,7 @@ namespace Sooda.Sql {
         private IDbCommand _updateCommand = null;
         public bool SupportsUpdateBatch = false;
 
-        public SqlDataSource(string name) : base(name) {}
+        public SqlDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo) : base(dataSourceInfo) {}
 
         public override void Open() {
             Type connectionType = Type.GetType(GetParameter("connectionType", true));
@@ -439,18 +439,7 @@ namespace Sooda.Sql {
                 txt.AppendFormat(" {0}={1}", par.ParameterName, par.Value);
             }
             txt.Append(" ]");
-
-#if A
-
-            txt.Replace('\n', ' ');
-            txt.Replace('\r', ' ');
-            int lastlen;
-
-            do {
-                lastlen = txt.Length;
-                txt.Replace("  ", " ");
-            } while (txt.Length != lastlen);
-#endif
+            txt.AppendFormat(" DataSource: {0}", this.Name);
 
             sqllogger.Debug(txt.ToString());
         }

@@ -38,10 +38,12 @@ using System.Xml.Serialization;
 
 using Sooda;
 
-namespace Sooda.Schema {
+namespace Sooda.Schema 
+{
     [XmlType(Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd")]
     [Serializable]
-    public class DataSourceInfo {
+    public class DataSourceInfo 
+    {
         [XmlAttribute("name")]
         public string Name;
 
@@ -50,9 +52,10 @@ namespace Sooda.Schema {
 
         public void Resolve() {}
 
-        public SoodaDataSource CreateDataSource() {
-            Type t = Type.GetType(DataSourceType);
-            return (SoodaDataSource)Activator.CreateInstance(t, new object[] { this.Name });
+        public SoodaDataSource CreateDataSource() 
+        {
+            Type t = Type.GetType(DataSourceType, true);
+            return (SoodaDataSource)Activator.CreateInstance(t, new object[] { this });
         }
     }
 }
