@@ -655,6 +655,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Schema\ObjectCount.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Schema\RelationInfo.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

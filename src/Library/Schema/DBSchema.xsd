@@ -37,6 +37,7 @@
 			<xsd:element name="collectionManyToMany" type="sooda:CollectionManyToManyInfo" minOccurs="0" maxOccurs="unbounded" />
 			<xsd:element name="const" type="sooda:ConstInfo" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
+		<xsd:attribute name="objectCount" use="optional" type="sooda:ObjectCount" default="Medium" />
 		<xsd:attribute name="datasource" use="optional" />
 		<xsd:attribute name="extBaseClassName" use="optional" />
 		<xsd:attribute name="name" use="required" />
@@ -108,6 +109,13 @@
 			<xsd:enumeration value="Text" />
 			<xsd:enumeration value="Guid" />
 			<xsd:enumeration value="Image" />
+    	</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="ObjectCount">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="Tiny" />
+			<xsd:enumeration value="Medium" />
+			<xsd:enumeration value="Large" />
     	</xsd:restriction>
 	</xsd:simpleType>
 	<xsd:simpleType name="DeleteAction">

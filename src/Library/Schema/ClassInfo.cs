@@ -84,6 +84,10 @@ namespace Sooda.Schema {
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool Cached = false;
 
+        [System.Xml.Serialization.XmlAttributeAttribute("objectCount")]
+        [System.ComponentModel.DefaultValueAttribute(ObjectCount.Medium)]
+        public ObjectCount ObjectCount = ObjectCount.Medium;
+
         [System.Xml.Serialization.XmlAttributeAttribute("triggers")]
         [System.ComponentModel.DefaultValueAttribute(true)]
         public bool Triggers = true;
