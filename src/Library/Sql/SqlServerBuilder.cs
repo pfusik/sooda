@@ -57,7 +57,12 @@ namespace Sooda.Sql {
                     return "varchar(" + fi.Size + ")";
 
             case FieldDataType.Decimal:
-                return "decimal(" + fi.Size + "," + fi.Precision + ")";
+                if (fi.Size < 0)
+                    return "decimal";
+                else if (fi.Precision < 0)
+                    return "decimal(" + fi.Size + ")";
+                else 
+                    return "decimal(" + fi.Size + "," + fi.Precision + ")";
 
             case FieldDataType.DateTime:
                 return "datetime";

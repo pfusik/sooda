@@ -50,7 +50,7 @@ namespace Sooda.Sql {
 		}
 
 		public void GenerateCreateTableField(TextWriter xtw, Sooda.Schema.FieldInfo fieldInfo) {
-			Console.Write("\t{0} {1}", fieldInfo.DBColumnName, GetSQLDataType(fieldInfo));
+			Console.Write("\t{0} {1} {2}", fieldInfo.DBColumnName, GetSQLDataType(fieldInfo), fieldInfo.IsNullable ? "null" : "not null");
 		}
 
 		public void GenerateCreateTable(TextWriter xtw, Sooda.Schema.TableInfo tableInfo) {
