@@ -47,6 +47,7 @@ namespace Sooda.QL {
         void Visit(SoqlExistsExpression v);
         void Visit(SoqlFunctionCallExpression v);
         void Visit(SoqlContainsExpression v);
+        void Visit(SoqlSoodaClassExpression v);
         void Visit(SoqlCountExpression v);
         void Visit(SoqlAsteriskExpression v);
         void Visit(SoqlLiteralExpression v);

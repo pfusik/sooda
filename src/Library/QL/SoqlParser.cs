@@ -70,6 +70,9 @@ namespace Sooda.QL {
         }
 
         private SoqlExpression ParsePathLikeExpression(string firstKeyword) {
+            if (0 == String.Compare(firstKeyword, "soodaclass", true, System.Globalization.CultureInfo.InvariantCulture))
+                return new SoqlSoodaClassExpression();
+
             SoqlPathExpression prop = new SoqlPathExpression(firstKeyword);
 
             while (tokenizer.TokenType == SoqlTokenType.Dot) {
@@ -91,6 +94,10 @@ namespace Sooda.QL {
                     string collectionName = prop.PropertyName;
                     tokenizer.EatKeyword();
                     return new SoqlCountExpression(prop.Left, collectionName);
+                } else if (tokenizer.IsKeyword("soodaclass")) // lowercase
+                {
+                    tokenizer.EatKeyword();
+                    return new SoqlSoodaClassExpression(prop);
                 } else {
                     string keyword = tokenizer.EatKeyword();
                     prop = new SoqlPathExpression(prop, keyword);

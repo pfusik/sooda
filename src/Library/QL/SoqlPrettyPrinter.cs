@@ -244,6 +244,15 @@ namespace Sooda.QL {
             Output.Write("Count");
         }
 
+        public virtual void Visit(SoqlSoodaClassExpression v) {
+            if (v.Path != null) {
+                v.Path.Accept(this);
+                Output.Write(".");
+            }
+
+            Output.Write("SoodaClass");
+        }
+
         public virtual void Visit(SoqlContainsExpression v) {
             if (v.Path != null) {
                 v.Path.Accept(this);

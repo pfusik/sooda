@@ -169,6 +169,48 @@ namespace Sooda.Sql {
             }
         }
 
+        public override void Visit(SoqlSoodaClassExpression v) {
+            ClassInfo currentClass;
+            string p = "";
+            string firstTableAlias = null;
+
+            if (v.Path != null) {
+                IFieldContainer container = GenerateTableJoins(v.Path, out p, out firstTableAlias);
+                currentClass = container as ClassInfo;
+            } else {
+                if (Query.From.Count == 1) {
+                    p = ExpressionPrefixToTableAlias[Query.From[0]];
+                    currentClass = (ClassInfo)FindContainerByName(Query.From[0]);
+                }
+                else {
+                    throw new Exception("Ambiguous SoodaClass!");
+                }
+            }
+            if (currentClass.Subclasses.Count == 0)
+            {
+                Output.Write("'");
+                Output.Write(currentClass.Name);
+                Output.Write("'");
+            }
+            else
+            {
+                Output.Write("(case ");
+                Output.Write(p);
+                Output.Write(".");
+                Output.Write(currentClass.SubclassSelectorField.DBColumnName);
+                foreach (ClassInfo subci in currentClass.Subclasses)
+                {
+                    Output.Write(" when ");
+                    Output.Write(subci.SubclassSelectorValue);
+                    Output.Write(" then ");
+                    Output.Write("'");
+                    Output.Write(subci.Name);
+                    Output.Write("'");
+                }
+                Output.Write(" else null end)");
+            }
+        }
+        
         public override void Visit(SoqlCountExpression v) {
             ClassInfo currentClass;
             string p = "";
@@ -299,7 +341,7 @@ namespace Sooda.Sql {
                 Output.Write(GetTableAliasForExpressionPrefix(p));
             }
             Output.Write(".");
-            Output.Write(fi.DBColumnName);
+                Output.Write(fi.DBColumnName);
         }
 
         public override void Visit(SoqlQueryExpression v) {
