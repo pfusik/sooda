@@ -925,5 +925,13 @@ namespace Sooda {
                 FromCache = false;
             }
         }
+
+        public string GetLabel(bool throwOnError)
+        {
+            string labelField = GetClassInfo().GetLabel();
+            if (labelField == null)
+                return null;
+            return (string)Evaluate(labelField, throwOnError);
+        }
     } // class SoodaObject
 } // namespace

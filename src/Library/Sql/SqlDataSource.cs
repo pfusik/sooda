@@ -391,7 +391,7 @@ namespace Sooda.Sql {
             builder.Append(" set ");
 
             ArrayList par = new ArrayList();
-            bool first = true;
+            bool anyChange = false;
 
 #warning FIX ME
 
@@ -399,7 +399,7 @@ namespace Sooda.Sql {
                 int fieldNumber = table.Fields[i].ClassUnifiedOrdinal;
 
                 if (obj.IsFieldDirty(fieldNumber)) {
-                    if (!first) {
+                    if (anyChange) {
                         builder.Append(", ");
                     }
                     builder.Append(table.Fields[i].DBColumnName);
@@ -407,7 +407,7 @@ namespace Sooda.Sql {
                     int fieldnum = par.Add(obj.GetFieldValue(fieldNumber));
                     builder.Append(fieldnum);
                     builder.Append("}");
-                    first = false;
+                    anyChange = true;
                 };
             };
             builder.Append(" where ");
@@ -415,9 +415,12 @@ namespace Sooda.Sql {
             builder.Append("={");
             builder.Append(par.Add(obj.GetPrimaryKeyValue()));
             builder.Append('}');
-            SqlBuilder.BuildCommandWithParameters(cmd, builder.ToString(), par.ToArray());
-            LogCommand(cmd);
-            cmd.ExecuteNonQuery();
+            if (anyChange)
+            {
+                SqlBuilder.BuildCommandWithParameters(cmd, builder.ToString(), par.ToArray());
+                LogCommand(cmd);
+                cmd.ExecuteNonQuery();
+            }
         }
 
         private void LogCommand(IDbCommand cmd) {
