@@ -71,7 +71,7 @@ namespace Sooda.QL
             query.From.Add(fromClass);
             query.FromAliases.Add(String.Empty);
             tokenizer.ExpectKeyword("where");
-            query.WhereClause = ParseBooleanOr();
+            query.WhereClause = ParseBooleanExpression();
             return query;
         }
 
@@ -267,7 +267,7 @@ namespace Sooda.QL
             return e;
         }
 
-        private SoqlBooleanExpression ParseInExpression(SoqlExpression lhs)
+        private SoqlExpression ParseInExpression(SoqlExpression lhs)
         {
             SoqlExpressionCollection rhs = new SoqlExpressionCollection();
 
@@ -283,7 +283,7 @@ namespace Sooda.QL
             return new SoqlBooleanInExpression(lhs, rhs);
         }
 
-        private SoqlBooleanExpression ParseBooleanRelation()
+        private SoqlExpression ParseBooleanRelation()
         {
             SoqlExpression e = ParseAdditiveExpression();
 
@@ -349,10 +349,10 @@ namespace Sooda.QL
                 return ParseInExpression(e);
             }
 
-            return (SoqlBooleanExpression)e;
+            return e;
         }
 
-        private SoqlBooleanExpression ParseBooleanPredicate()
+        private SoqlExpression ParseBooleanPredicate()
         {
             if (tokenizer.IsKeyword("not") || tokenizer.IsToken(SoqlTokenType.Not))
             {
@@ -377,7 +377,7 @@ namespace Sooda.QL
                     query.SelectAliases.Add(String.Empty);
                     ParseFrom(query);
                     tokenizer.ExpectKeyword("where");
-                    query.WhereClause = ParseBooleanOr();
+                    query.WhereClause = ParseBooleanExpression();
                 }
 
                 tokenizer.Expect(SoqlTokenType.RightParen);
@@ -387,9 +387,9 @@ namespace Sooda.QL
             return ParseBooleanRelation();
         }
 
-        private SoqlBooleanExpression ParseBooleanAnd()
+        private SoqlExpression ParseBooleanAnd()
         {
-            SoqlBooleanExpression e = ParseBooleanPredicate();
+            SoqlExpression e = ParseBooleanPredicate();
 
             while (tokenizer.IsKeyword("and") || tokenizer.IsToken(SoqlTokenType.And))
             {
@@ -399,9 +399,9 @@ namespace Sooda.QL
             return e;
         }
 
-        private SoqlBooleanExpression ParseBooleanOr()
+        private SoqlExpression ParseBooleanOr()
         {
-            SoqlBooleanExpression e = ParseBooleanAnd();
+            SoqlExpression e = ParseBooleanAnd();
 
             while (tokenizer.IsKeyword("or") || tokenizer.IsToken(SoqlTokenType.Or))
             {
@@ -413,12 +413,16 @@ namespace Sooda.QL
 
         private SoqlBooleanExpression ParseBooleanExpression()
         {
-            return ParseBooleanOr();
+            SoqlExpression expr = ParseBooleanOr();
+            if (!(expr is SoqlBooleanExpression)) {
+                throw new SoqlException("Boolean expected");
+            }
+            return (SoqlBooleanExpression)expr;
         }
 
         private SoqlExpression ParseExpression()
         {
-            return ParseAdditiveExpression();
+            return ParseBooleanOr();
         }
 
         private void ParseSelectExpressions(SoqlQueryExpression query)
@@ -568,7 +572,7 @@ namespace Sooda.QL
             if (tokenizer.IsKeyword("where"))
             {
                 tokenizer.EatKeyword();
-                query.WhereClause = ParseBooleanOr();
+                query.WhereClause = ParseBooleanExpression();
             }
 
             if (tokenizer.IsKeyword("group"))
@@ -579,7 +583,7 @@ namespace Sooda.QL
             if (tokenizer.IsKeyword("having"))
             {
                 tokenizer.EatKeyword();
-                query.Having = ParseBooleanOr();
+                query.Having = ParseBooleanExpression();
             }
 
             if (tokenizer.IsKeyword("order"))
@@ -618,7 +622,7 @@ namespace Sooda.QL
         public static SoqlBooleanExpression ParseBooleanExpression(string expr)
         {
             SoqlParser parser = new SoqlParser(expr);
-            SoqlBooleanExpression e = parser.ParseBooleanOr();
+            SoqlBooleanExpression e = parser.ParseBooleanExpression();
             if (!parser.tokenizer.IsEOF())
                 throw new SoqlException("Unexpected token: " + parser.tokenizer.TokenValue, parser.tokenizer.TokenPosition);
             return e;
