@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://sooda.sourceforge.net/schemas/DBSchema.xsd">
+    <!-- TODO: add <class /> and <relation /> mappings here here -->
+
+    <!-- example of a Customer class based on 'Customer' table-->
+    <class name="Customer">
+        <table name="Customer">
+            <field name="Id" dbcolumn="id" type="Integer" primaryKey="true" nullable="false" />
+            <field name="Name" dbcolumn="name" type="String" size="100" nullable="false" />
+            <field name="Address" dbcolumn="address" type="String" size="100" nullable="false" />
+            <field name="PhoneNumber" dbcolumn="phone_number" type="String" size="100" nullable="true" />
+        </table>
+    </class>
+</schema>

@@ -429,6 +429,26 @@
         <delete file="web.zip" />
     </target>
 
+    <target name="install-wizard-vs2003">
+        <readregistry property="vcsharp.dir" key="Software\Microsoft\VisualStudio\7.1\Setup\VC#\ProductDir" />
+        <echo message="Installing C# wizards to ${vcsharp.dir}" />
+        <copy todir="${vcsharp.dir}\CSharpProjectItems">
+            <fileset basedir="wizard/CSharpProjectItems">
+                <include name="**/*" />
+            </fileset>
+        </copy>
+        <copy todir="${vcsharp.dir}\VC#Wizards">
+            <fileset basedir="wizard/VC#Wizards">
+                <include name="**/*" />
+            </fileset>
+        </copy>
+        <copy todir="${vcsharp.dir}\CSharpProjects">
+            <fileset basedir="wizard/CSharpProjects">
+                <include name="**/*" />
+            </fileset>
+        </copy>
+    </target>
+
     <target name="build-web">
         <property name="web.dir" value="web/build" unless="${property::exists('web.dir')}" />
         <property name="web.sourceforge" value="1" />

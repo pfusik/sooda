@@ -64,6 +64,14 @@ namespace Sooda.Sql {
                 else 
                     return "decimal(" + fi.Size + "," + fi.Precision + ")";
 
+            case FieldDataType.Double:
+                if (fi.Size < 0)
+                    return "float";
+                else if (fi.Precision < 0)
+                    return "float(" + fi.Size + ")";
+                else 
+                    return "float(" + fi.Size + "," + fi.Precision + ")";
+
             case FieldDataType.DateTime:
                 return "datetime";
 

@@ -1,0 +1,5 @@
+VSWIZARD 7.0
+Wizard=VsWizard.VsWizardEngine.7.1
+Param="WIZARD_NAME = CSharpSoodaDLLWiz"
+Param="WIZARD_UI = FALSE"
+Param="PROJECT_TYPE = CSPROJ"

@@ -1,0 +1,7 @@
+VSWIZARD 7.0
+Wizard=VsWizard.VsWizardEngine.7.1
+Param="WIZARD_NAME = CSharpAddSoodaSchemaWiz"
+Param="WIZARD_UI = TRUE"
+Param="PROJECT_TYPE = CSPROJ"
+Param="FALLBACK_LCID = 1033"
+

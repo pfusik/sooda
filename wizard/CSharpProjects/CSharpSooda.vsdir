@@ -1,0 +1,3 @@
+CSharpSoodaConsole.vsz|{FAE04EC1-301F-11d3-BF4B-00C04F79EFBC}|Sooda Console Application|99|A project for creating a console application that uses Sooda library|{FAE04EC1-301F-11d3-BF4B-00C04F79EFBC}|4548| |SoodaConsoleApplication
+CSharpSoodaEXE.vsz|{FAE04EC1-301F-11d3-BF4B-00C04F79EFBC}|Sooda Windows Application|99|A project for creating a Windows application that uses Sooda library|{FAE04EC1-301F-11d3-BF4B-00C04F79EFBC}|4554| |SoodaWindowsApplication
+CSharpSoodaDLL.vsz|{FAE04EC1-301F-11d3-BF4B-00C04F79EFBC}|Sooda Class Library|99|A project for creating a class library that uses Sooda|{FAE04EC1-301F-11d3-BF4B-00C04F79EFBC}|4547| |SoodaClassLibrary
