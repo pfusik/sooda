@@ -50,12 +50,12 @@ namespace Sooda.UnitTests.TestCases.SqlBuilder {
                 String sql = "exec sp_Test({0}, {1:i}, {2:o}, {3:io}, {4:i}, {5}, {6}, {7}, {8}, {9}, {10:i}, {11:io})";
                 Object[] param = new Object[]{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
                 bld.BuildCommandWithParameters(cmd, false, sql, param);
-                Assertion.AssertEquals(((IDataParameter)cmd.Parameters[0]).Direction, ParameterDirection.Input);
-                Assertion.AssertEquals(((IDataParameter)cmd.Parameters[1]).Direction, ParameterDirection.Input);
-                Assertion.AssertEquals(((IDataParameter)cmd.Parameters[2]).Direction, ParameterDirection.Output);
-                Assertion.AssertEquals(((IDataParameter)cmd.Parameters[3]).Direction, ParameterDirection.InputOutput);
-                Assertion.AssertEquals(((IDataParameter)cmd.Parameters[10]).Direction, ParameterDirection.Input);
-                Assertion.AssertEquals(((IDataParameter)cmd.Parameters[11]).Direction, ParameterDirection.InputOutput);
+                Assert.AreEqual(((IDataParameter)cmd.Parameters[0]).Direction, ParameterDirection.Input);
+                Assert.AreEqual(((IDataParameter)cmd.Parameters[1]).Direction, ParameterDirection.Input);
+                Assert.AreEqual(((IDataParameter)cmd.Parameters[2]).Direction, ParameterDirection.Output);
+                Assert.AreEqual(((IDataParameter)cmd.Parameters[3]).Direction, ParameterDirection.InputOutput);
+                Assert.AreEqual(((IDataParameter)cmd.Parameters[10]).Direction, ParameterDirection.Input);
+                Assert.AreEqual(((IDataParameter)cmd.Parameters[11]).Direction, ParameterDirection.InputOutput);
             }
         }
 

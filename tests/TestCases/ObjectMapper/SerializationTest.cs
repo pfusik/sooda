@@ -67,7 +67,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                 ser2 = tran.Serialize(SerializeOptions.Canonical);
                 Console.WriteLine("ser1 {0}", ser1);
                 Console.WriteLine("ser2 {0}", ser2);
-                Assertion.AssertEquals("Serialization is stable", ser1, ser2);
+                Assert.AreEqual("Serialization is stable", ser1, ser2);
             }
         }
 
@@ -87,44 +87,44 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     Contact c1;
                     Group g = Group.Load(10);
 
-                    Assertion.AssertEquals((string)g.Manager.Name, "Mary Manager");
-                    Assertion.AssertEquals(g.Members.Count, 4);
-                    Assertion.Assert(g.Members.Contains(Contact.GetRef(53)));
+                    Assert.AreEqual((string)g.Manager.Name, "Mary Manager");
+                    Assert.AreEqual(g.Members.Count, 4);
+                    Assert.IsTrue(g.Members.Contains(Contact.GetRef(53)));
                     g.Members.Remove(Contact.GetRef(53));
-                    Assertion.AssertEquals(g.Members.Count, 3);
-                    Assertion.Assert(!g.Members.Contains(Contact.GetRef(53)));
+                    Assert.AreEqual(g.Members.Count, 3);
+                    Assert.IsTrue(!g.Members.Contains(Contact.GetRef(53)));
 
                     g.Members.Add(c1 = new Contact());
                     c1.Name = "Nancy Newcomer";
                     c1.Active = 1;
                     c1.Type = ContactType.Employee;
-                    Assertion.AssertEquals(g.Members.Count, 4);
+                    Assert.AreEqual(g.Members.Count, 4);
 
                     //Console.WriteLine(ContactType.Employee.GetPrimaryKeyValue());
                     //Console.WriteLine(ContactType.Employee.Code);
                     //Console.WriteLine(ContactType.Employee.Description);
 
-                    Assertion.Assert(g.Members.Contains(Contact.GetRef(51)));
-                    Assertion.Assert(g.Members.Contains(Contact.GetRef(1)));
-                    Assertion.Assert(g.Members.Contains(Contact.GetRef(2)));
+                    Assert.IsTrue(g.Members.Contains(Contact.GetRef(51)));
+                    Assert.IsTrue(g.Members.Contains(Contact.GetRef(1)));
+                    Assert.IsTrue(g.Members.Contains(Contact.GetRef(2)));
                     int times = 0;
                     foreach (Contact c in g.Members) {
                         if (!quiet)
                             Console.WriteLine("Got {0} [{1}]", c.Name, c.ContactId);
                         times++;
-                        Assertion.Assert(
+                        Assert.IsTrue(
                             c == Contact.GetRef(51) ||
                             c == Contact.GetRef(1) ||
                             c == c1 ||
                             c == Contact.GetRef(2));
                     };
-                    Assertion.AssertEquals("foreach() loop gets called 4 times", times, 4);
-                    Assertion.Assert(!g.Members.Contains(Contact.GetRef(53)));
-                    Assertion.Assert(g.Members.Contains(Contact.GetRef(51)));
-                    Assertion.Assert(g.Members.Contains(Contact.GetRef(1)));
-                    Assertion.Assert(g.Members.Contains(Contact.GetRef(2)));
-                    Assertion.Assert(g.Members.Contains(c1));
-                    Assertion.AssertEquals(g.Members.Count, 4);
+                    Assert.AreEqual(times, 4, "foreach() loop gets called 4 times");
+                    Assert.IsTrue(!g.Members.Contains(Contact.GetRef(53)));
+                    Assert.IsTrue(g.Members.Contains(Contact.GetRef(51)));
+                    Assert.IsTrue(g.Members.Contains(Contact.GetRef(1)));
+                    Assert.IsTrue(g.Members.Contains(Contact.GetRef(2)));
+                    Assert.IsTrue(g.Members.Contains(c1));
+                    Assert.AreEqual(g.Members.Count, 4);
 
                     foreach (Contact c in g.Members) {
                         if (!quiet)
@@ -150,7 +150,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                         if (!quiet)
                             Console.WriteLine("Serialized again as\n{0}", serialized2);
                     }
-                    Assertion.AssertEquals("Serialization preserves state", serialized, serialized2);
+                    Assert.AreEqual("Serialization preserves state", serialized, serialized2);
 
                     Group g = Group.Load(10);
 
@@ -158,28 +158,28 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                         //if (!quiet)
                         Console.WriteLine("after deserialization, member: {0}", c.Name);
                     }
-                    Assertion.AssertEquals("Mary Manager", g.Manager.Name);
-                    Assertion.AssertEquals(4, g.Members.Count);
-                    Assertion.Assert(!g.Members.Contains(Contact.GetRef(53)));
+                    Assert.AreEqual("Mary Manager", g.Manager.Name);
+                    Assert.AreEqual(4, g.Members.Count);
+                    Assert.IsTrue(!g.Members.Contains(Contact.GetRef(53)));
 
-                    Assertion.Assert(g.Members.Contains(Contact.GetRef(51)));
-                    Assertion.Assert(g.Members.Contains(Contact.GetRef(1)));
-                    Assertion.Assert(g.Members.Contains(Contact.GetRef(2)));
+                    Assert.IsTrue(g.Members.Contains(Contact.GetRef(51)));
+                    Assert.IsTrue(g.Members.Contains(Contact.GetRef(1)));
+                    Assert.IsTrue(g.Members.Contains(Contact.GetRef(2)));
                     int times = 0;
                     foreach (Contact c in g.Members) {
                         times++;
-                        Assertion.Assert(
+                        Assert.IsTrue(
                             c == Contact.GetRef(51) ||
                             c == Contact.GetRef(1) ||
                             (string)c.Name == "Nancy Newcomer" ||
                             c == Contact.GetRef(2));
                     };
-                    Assertion.AssertEquals("foreach() loop gets called 4 times", times, 4);
-                    Assertion.Assert(!g.Members.Contains(Contact.GetRef(53)));
-                    Assertion.Assert(g.Members.Contains(Contact.GetRef(51)));
-                    Assertion.Assert(g.Members.Contains(Contact.GetRef(1)));
-                    Assertion.Assert(g.Members.Contains(Contact.GetRef(2)));
-                    Assertion.AssertEquals(g.Members.Count, 4);
+                    Assert.AreEqual(times, 4, "foreach() loop gets called 4 times");
+                    Assert.IsTrue(!g.Members.Contains(Contact.GetRef(53)));
+                    Assert.IsTrue(g.Members.Contains(Contact.GetRef(51)));
+                    Assert.IsTrue(g.Members.Contains(Contact.GetRef(1)));
+                    Assert.IsTrue(g.Members.Contains(Contact.GetRef(2)));
+                    Assert.AreEqual(g.Members.Count, 4);
                     tran.Commit();
                 }
             }

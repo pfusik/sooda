@@ -51,11 +51,11 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                 PKInt32 test = new PKInt32();
                 PKInt32 test2 = PKInt32.Load(7777777);
 
-                Assertion.AssertEquals((string)test2.Data, "test data");
+                Assert.AreEqual((string)test2.Data, "test data");
 
                 ser = tran.Serialize();
                 tran.Deserialize(ser);
-                Assertion.AssertEquals(ser, tran.Serialize());
+                Assert.AreEqual(ser, tran.Serialize());
             }
         }
 
@@ -67,11 +67,11 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                 PKInt64 test = new PKInt64();
                 PKInt64 test2 = PKInt64.Load(77777777777777);
 
-                Assertion.AssertEquals((string)test2.Data, "test data");
+                Assert.AreEqual((string)test2.Data, "test data");
 
                 ser = tran.Serialize();
                 tran.Deserialize(ser);
-                Assertion.AssertEquals(ser, tran.Serialize());
+                Assert.AreEqual(ser, tran.Serialize());
             }
         }
 
@@ -83,11 +83,11 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                 PKString test = new PKString();
                 PKString test2 = PKString.Load("zzzzzzz");
 
-                Assertion.AssertEquals((string)test2.Data, "test data");
+                Assert.AreEqual((string)test2.Data, "test data");
 
                 ser = tran.Serialize();
                 tran.Deserialize(ser);
-                Assertion.AssertEquals(ser, tran.Serialize());
+                Assert.AreEqual(ser, tran.Serialize());
             }
         }
 
@@ -99,11 +99,11 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                 PKDateTime test = new PKDateTime();
                 PKDateTime test2 = PKDateTime.Load(new DateTime(2000, 1, 1, 0, 0, 0, 0));
 
-                Assertion.AssertEquals((string)test2.Data, "test data");
+                Assert.AreEqual((string)test2.Data, "test data");
 
                 ser = tran.Serialize();
                 tran.Deserialize(ser);
-                Assertion.AssertEquals(ser, tran.Serialize());
+                Assert.AreEqual(ser, tran.Serialize());
             }
         }
 
@@ -115,11 +115,11 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                 PKBool test = new PKBool();
                 PKBool test2 = PKBool.Load(true);
 
-                Assertion.AssertEquals((string)test2.Data, "test data");
+                Assert.AreEqual((string)test2.Data, "test data");
 
                 ser = tran.Serialize();
                 tran.Deserialize(ser);
-                Assertion.AssertEquals(ser, tran.Serialize());
+                Assert.AreEqual(ser, tran.Serialize());
             }
         }
     }

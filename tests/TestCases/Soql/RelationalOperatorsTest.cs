@@ -48,15 +48,15 @@ namespace Sooda.UnitTests.TestCases.Soql {
             try {
                 // Console.WriteLine("Checking that {0} ({1}) {2} {3} ({4}) will throw... ", o1, o1.GetType(), op, o2, o2.GetType());
                 SoqlBooleanRelationalExpression.Compare(o1, o2, op);
-                // Assertion.Assert("Failed. Exception was expected!", false);
+                // Assert.IsTrue("Failed. Exception was expected!", false);
             } catch (Exception) {
-                Assertion.Assert(true);
+                Assert.IsTrue(true);
             }
         }
 
         void Assume(object o1, SoqlRelationalOperator op, object o2, bool value) {
             // Console.WriteLine("Checking that {0} ({1}) {2} {3} ({4}) = {5}...", o1, o1.GetType(), op, o2, o2.GetType(), value);
-            Assertion.Assert(value == (bool)SoqlBooleanRelationalExpression.Compare(o1, o2, op));
+            Assert.AreEqual(value, (bool)SoqlBooleanRelationalExpression.Compare(o1, o2, op));
         }
 
         void AssumeSymmetric(object o1, SoqlRelationalOperator op, object o2, bool value) {

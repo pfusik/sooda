@@ -46,17 +46,17 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         [Test]
         public void Test1() {
             using (SoodaTransaction tran = new SoodaTransaction()) {
-                Assertion.AssertEquals("Mary Manager", Contact.Mary.Name);
-                Assertion.AssertEquals("Ed Employee", Contact.Ed.Name);
-                Assertion.AssertEquals("Group1", (string)Contact.Mary.PrimaryGroup.Name);
+                Assert.AreEqual("Mary Manager", Contact.Mary.Name);
+                Assert.AreEqual("Ed Employee", Contact.Ed.Name);
+                Assert.AreEqual("Group1", (string)Contact.Mary.PrimaryGroup.Name);
 
-                Assertion.AssertEquals(ContactType.Manager, Contact.Mary.Type);
-                Assertion.AssertEquals(ContactType.Employee, Contact.Ed.Type);
-                Assertion.AssertEquals(ContactType.Employee, Contact.Eva.Type);
+                Assert.AreEqual(ContactType.Manager, Contact.Mary.Type);
+                Assert.AreEqual(ContactType.Employee, Contact.Ed.Type);
+                Assert.AreEqual(ContactType.Employee, Contact.Eva.Type);
 
-                Assertion.Assert(Contact.Mary.PrimaryGroup.Members.Contains(Contact.Mary));
-                Assertion.Assert(Contact.Ed.PrimaryGroup.Members.Contains(Contact.Ed));
-                Assertion.Assert(Contact.Eva.PrimaryGroup.Members.Contains(Contact.Eva));
+                Assert.IsTrue(Contact.Mary.PrimaryGroup.Members.Contains(Contact.Mary));
+                Assert.IsTrue(Contact.Ed.PrimaryGroup.Members.Contains(Contact.Ed));
+                Assert.IsTrue(Contact.Eva.PrimaryGroup.Members.Contains(Contact.Eva));
             }
         }
     }

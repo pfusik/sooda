@@ -20,10 +20,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTest", "ConsoleTest\
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLog", "..\..\NLog\src\NLog\NLog.csproj", "{020354EE-5073-4BB5-9AA2-A7EADA8CAD09}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -50,10 +46,6 @@ Global
 		{24930E59-3AF2-4F6B-87C2-06CB66EEA190}.Debug.Build.0 = Debug|.NET
 		{24930E59-3AF2-4F6B-87C2-06CB66EEA190}.Release.ActiveCfg = Release|.NET
 		{24930E59-3AF2-4F6B-87C2-06CB66EEA190}.Release.Build.0 = Release|.NET
-		{020354EE-5073-4BB5-9AA2-A7EADA8CAD09}.Debug.ActiveCfg = Debug|.NET
-		{020354EE-5073-4BB5-9AA2-A7EADA8CAD09}.Debug.Build.0 = Debug|.NET
-		{020354EE-5073-4BB5-9AA2-A7EADA8CAD09}.Release.ActiveCfg = Release|.NET
-		{020354EE-5073-4BB5-9AA2-A7EADA8CAD09}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

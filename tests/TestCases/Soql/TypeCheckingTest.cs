@@ -43,7 +43,8 @@ using NUnit.Framework;
 
 namespace Sooda.UnitTests.TestCases.Soql {
     [TestFixture]
-    public class TypeCheckingTest {
+    public class TypeCheckingTest 
+    {
         [Test]
         public void TypeCheckTest() {}
     }

@@ -454,6 +454,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ObjectMapper\KeyGenerators\TableBasedGeneratorBigint.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "QL\Collections.xml"
                     BuildAction = "Content"
                     Generator = "SBCollectionGenerator"

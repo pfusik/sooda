@@ -82,11 +82,11 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                         Console.WriteLine("c: {0}", c.Name);
                     }
 
-                    Assertion.Assert(l.IndexOf(Contact.Mary) == 0);
-                    Assertion.Assert(l.IndexOf(Contact.Ed) == l.Count - 1);
+                    Assert.IsTrue(l.IndexOf(Contact.Mary) == 0);
+                    Assert.IsTrue(l.IndexOf(Contact.Ed) == l.Count - 1);
                     for (int i = 0; i < l.Count - 1; ++i) {
                         if (String.CompareOrdinal((string)l[i].Name, (string)l[i + 1].Name) > 0)
-                            Assertion.Fail("Invalid sort!");
+                            Assert.Fail("Invalid sort!");
                     }
                     tran.Commit();
                 }
@@ -108,11 +108,11 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                         Console.WriteLine("c: {0}", c.Name);
                     }
 
-                    Assertion.Assert(l.IndexOf(Contact.Mary) == -1);
-                    Assertion.Assert(l.IndexOf(Contact.Ed) == -1);
+                    Assert.IsTrue(l.IndexOf(Contact.Mary) == -1);
+                    Assert.IsTrue(l.IndexOf(Contact.Ed) == -1);
                     for (int i = 0; i < l.Count - 1; ++i) {
                         if (String.CompareOrdinal((string)l[i].Name, (string)l[i + 1].Name) > 0)
-                            Assertion.Fail("Invalid sort!");
+                            Assert.Fail("Invalid sort!");
                     }
                     tran.Commit();
                 }

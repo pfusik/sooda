@@ -53,17 +53,17 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
 
                 using (SoodaTransaction tran = new SoodaTransaction()) {
                     tran.RegisterDataSource(testDataSource);
-                    Assertion.Assert(!Contact.Mary.Roles.Contains(Role.Customer));
+                    Assert.IsTrue(!Contact.Mary.Roles.Contains(Role.Customer));
 
                     foreach (SoodaObject r in Contact.Mary.Roles) {
                         Console.WriteLine("00 serialization mary has role: {0}", r.GetObjectKeyString());
                     }
                     Contact.Mary.Roles.Add(Role.Customer);
-                    Assertion.Assert(Contact.Mary.Roles.Contains(Role.Customer));
+                    Assert.IsTrue(Contact.Mary.Roles.Contains(Role.Customer));
                     Contact.Mary.Roles.Remove(Role.Customer);
-                    Assertion.Assert(!Contact.Mary.Roles.Contains(Role.Customer));
+                    Assert.IsTrue(!Contact.Mary.Roles.Contains(Role.Customer));
                     Contact.Mary.Roles.Add(Role.Customer);
-                    Assertion.Assert(Contact.Mary.Roles.Contains(Role.Customer));
+                    Assert.IsTrue(Contact.Mary.Roles.Contains(Role.Customer));
 
                     foreach (SoodaObject r in Contact.Mary.Roles) {
                         Console.WriteLine("Before serialization mary has role: {0}", r.GetObjectKeyString());
@@ -81,11 +81,11 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     } else {
                         Console.WriteLine("Serialized again as\n{0}", serialized2);
                     }
-                    Assertion.AssertEquals("Serialization preserves state", serialized, serialized2);
+                    Assert.AreEqual("Serialization preserves state", serialized, serialized2);
                     foreach (SoodaObject r in Contact.Mary.Roles) {
                         Console.WriteLine("After deserialization mary has role: {0}", r.GetObjectKeyString());
                     }
-                    Assertion.Assert("Deserialization preserves N-N relation membersips", Contact.Mary.Roles.Contains(Role.Customer));
+                    Assert.IsTrue(Contact.Mary.Roles.Contains(Role.Customer), "Deserialization preserves N-N relation membersips");
                     tran.Commit();
                 }
             }
@@ -101,9 +101,9 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                 using (SoodaTransaction tran = new SoodaTransaction()) {
                     tran.RegisterDataSource(testDataSource);
                     Contact.Mary.Roles.Add(Role.Customer);
-                    Assertion.Assert(Role.Customer.Members.Contains(Contact.Mary));
+                    Assert.IsTrue(Role.Customer.Members.Contains(Contact.Mary));
                     Contact.Mary.Roles.Remove(Role.Customer);
-                    Assertion.Assert(!Role.Customer.Members.Contains(Contact.Mary));
+                    Assert.IsTrue(!Role.Customer.Members.Contains(Contact.Mary));
 
                     serialized = tran.Serialize(SerializeOptions.IncludeNonDirtyFields | SerializeOptions.IncludeNonDirtyObjects);
                 }
@@ -118,7 +118,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     } else {
                         Console.WriteLine("Serialized again as\n{0}", serialized2);
                     }
-                    Assertion.AssertEquals("Serialization preserves state", serialized, serialized2);
+                    Assert.AreEqual("Serialization preserves state", serialized, serialized2);
                     tran.Commit();
                 }
             }

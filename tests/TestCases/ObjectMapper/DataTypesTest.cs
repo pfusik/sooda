@@ -51,9 +51,9 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
 
                 using (SoodaTransaction tran = new SoodaTransaction()) {
                     tran.RegisterDataSource(testDataSource);
-                    Assertion.AssertEquals(123.1234567890m, (decimal)Contact.Mary.LastSalary);
-                    Assertion.AssertEquals(234.0000000000m, (decimal)Contact.Ed.LastSalary);
-                    Assertion.AssertEquals(345.0000000000m, (decimal)Contact.Eva.LastSalary);
+                    Assert.AreEqual(123.1234567890m, (decimal)Contact.Mary.LastSalary);
+                    Assert.AreEqual(234.0000000000m, (decimal)Contact.Ed.LastSalary);
+                    Assert.AreEqual(345.0000000000m, (decimal)Contact.Eva.LastSalary);
 
                     Console.WriteLine("Type: {0}", Contact.Eva.Type);
                     Contact.Eva.LastSalary = (Decimal)Contact.Mary.LastSalary * 2;
@@ -96,7 +96,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     Console.WriteLine("ser: {0}", ser);
 
                     tran.Deserialize(ser);
-                    Assertion.AssertEquals(ser, tran.Serialize());
+                    Assert.AreEqual(ser, tran.Serialize());
                     Console.WriteLine("Serialization is stable...");
                     tran.Commit();
                 }
@@ -139,7 +139,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     Console.WriteLine("ser: {0}", ser);
 
                     tran.Deserialize(ser);
-                    Assertion.AssertEquals(ser, tran.Serialize());
+                    Assert.AreEqual(ser, tran.Serialize());
                     Console.WriteLine("Serialization is stable...");
                     tran.Commit();
                 }
@@ -180,7 +180,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     Console.WriteLine("ser: {0}", ser);
 
                     tran.Deserialize(ser);
-                    Assertion.AssertEquals(ser, tran.Serialize());
+                    Assert.AreEqual(ser, tran.Serialize());
                     Console.WriteLine("Serialization is stable...");
                     tran.Commit();
                 }
@@ -196,14 +196,14 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     tran.RegisterDataSource(testDataSource);
                     AllDataTypes adt = new AllDataTypes();
 
-                    Assertion.AssertEquals(adt.NnDateVal, DateTime.MinValue);
-                    Assertion.AssertEquals(adt.NnIntVal, (int)0);
-                    Assertion.AssertEquals(adt.NnInt64Val, (long)0);
-                    Assertion.AssertEquals(adt.NnDecimalVal, (decimal)0);
-                    Assertion.AssertEquals(adt.NnDoubleVal, (double)0);
-                    Assertion.AssertEquals(adt.NnFloatVal, (float)0);
-                    Assertion.AssertEquals(adt.NnStringVal, String.Empty);
-                    Assertion.AssertEquals(adt.NnBoolVal, false);
+                    Assert.AreEqual(adt.NnDateVal, DateTime.MinValue);
+                    Assert.AreEqual(adt.NnIntVal, (int)0);
+                    Assert.AreEqual(adt.NnInt64Val, (long)0);
+                    Assert.AreEqual(adt.NnDecimalVal, (decimal)0);
+                    Assert.AreEqual(adt.NnDoubleVal, (double)0);
+                    Assert.AreEqual(adt.NnFloatVal, (float)0);
+                    Assert.AreEqual(adt.NnStringVal, String.Empty);
+                    Assert.AreEqual(adt.NnBoolVal, false);
                 }
             }
         }

@@ -48,9 +48,9 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
             using (SoodaTransaction tran = new SoodaTransaction()) {
                 PKInt32 test2 = PKInt32.Load(7777778);
 
-                Assertion.AssertEquals(test2.Parent.Id, 7777777);
-                Assertion.AssertEquals((string)test2.Parent.Data, "test data");
-                Assertion.AssertEquals((string)test2.Data, "test data 2");
+                Assert.AreEqual(test2.Parent.Id, 7777777);
+                Assert.AreEqual((string)test2.Parent.Data, "test data");
+                Assert.AreEqual((string)test2.Data, "test data 2");
             }
         }
 
@@ -59,9 +59,9 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
             using (SoodaTransaction tran = new SoodaTransaction()) {
                 PKInt64 test2 = PKInt64.Load(77777777777778);
 
-                Assertion.AssertEquals(test2.Parent.Id, 77777777777777);
-                Assertion.AssertEquals((string)test2.Parent.Data, "test data");
-                Assertion.AssertEquals((string)test2.Data, "test data 2");
+                Assert.AreEqual(test2.Parent.Id, 77777777777777);
+                Assert.AreEqual((string)test2.Parent.Data, "test data");
+                Assert.AreEqual((string)test2.Data, "test data 2");
             }
         }
 
@@ -70,9 +70,9 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
             using (SoodaTransaction tran = new SoodaTransaction()) {
                 PKString test2 = PKString.Load("xxxxxxx");
 
-                Assertion.AssertEquals(test2.Parent.Id, "zzzzzzz");
-                Assertion.AssertEquals((string)test2.Parent.Data, "test data");
-                Assertion.AssertEquals((string)test2.Data, "test data 2");
+                Assert.AreEqual(test2.Parent.Id, "zzzzzzz");
+                Assert.AreEqual((string)test2.Parent.Data, "test data");
+                Assert.AreEqual((string)test2.Data, "test data 2");
             }
         }
 
@@ -81,9 +81,9 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
             using (SoodaTransaction tran = new SoodaTransaction()) {
                 PKDateTime test2 = PKDateTime.Load(new DateTime(2000, 1, 1, 1, 0, 0));
 
-                Assertion.AssertEquals(test2.Parent.Id, new DateTime(2000, 1, 1, 0, 0, 0));
-                Assertion.AssertEquals((string)test2.Parent.Data, "test data");
-                Assertion.AssertEquals((string)test2.Data, "test data 2");
+                Assert.AreEqual(test2.Parent.Id, new DateTime(2000, 1, 1, 0, 0, 0));
+                Assert.AreEqual((string)test2.Parent.Data, "test data");
+                Assert.AreEqual((string)test2.Data, "test data 2");
             }
         }
 
@@ -92,9 +92,9 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
             using (SoodaTransaction tran = new SoodaTransaction()) {
                 PKBool test2 = PKBool.Load(false);
 
-                Assertion.AssertEquals(test2.Parent.Id, true);
-                Assertion.AssertEquals((string)test2.Parent.Data, "test data");
-                Assertion.AssertEquals((string)test2.Data, "test data 2");
+                Assert.AreEqual(test2.Parent.Id, true);
+                Assert.AreEqual((string)test2.Parent.Data, "test data");
+                Assert.AreEqual((string)test2.Data, "test data 2");
             }
         }
     }

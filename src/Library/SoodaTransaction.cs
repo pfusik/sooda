@@ -612,19 +612,34 @@ namespace Sooda {
             if (tables == null)
                 return ;
 
-#if A
-            // TODO - fix me
-
-            foreach (ExtraLoadedData ad in extraData) {
-                ISoodaObjectFactory factory = GetFactory(ad.classInfo.Name);
-                if (factory != null) {
-                    SoodaObject newObj = factory.GetRefFromRecord(this, record, ad.startingColumn);
-                } else {
-                    throw new Exception("Factory not found: " + ad.classInfo.Name);
+            if (transactionLogger.IsDebugEnabled)
+            {
+                transactionLogger.Debug("MaterializeExtraObjects:");
+                transactionLogger.Debug("Fields:");
+                for (int i = 0; i < record.FieldCount; ++i)
+                {
+                    transactionLogger.Debug("Field[{0}] = {1}", i, record.GetValue(i));
                 }
+                transactionLogger.Debug("End of fields.");
+                transactionLogger.Debug("Tables:");
+                for (int i = 0; i < tables.Length; ++i)
+                {
+                    transactionLogger.Debug("Table[{0}] = {1} ({2},{3})", i, tables[i].DBTableName, tables[i].OwnerClass.Name, tables[i].OrdinalInClass);
+                }
+                transactionLogger.Debug("End of tables.");
             }
-#endif
 
+            int startingColumn = 0;
+
+            foreach (TableInfo extraTable in tables) {
+                ISoodaObjectFactory factory = GetFactory(extraTable.OwnerClass);
+                if (factory != null) {
+                    // SoodaObject newObj = factory.GetRefFromRecord(this, record, startingColumn);
+                } else {
+                    throw new Exception("Factory not found: " + extraTable.OwnerClass.Name);
+                }
+                startingColumn += extraTable.Fields.Count;
+            }
         }
 
         internal void AddToDeleteQueue(SoodaObject o) 

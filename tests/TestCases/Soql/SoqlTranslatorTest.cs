@@ -97,7 +97,7 @@ namespace Sooda.UnitTests.TestCases.Soql {
             }
             output = Normalize(output);
 
-            Assertion.AssertEquals(output, o);
+            Assert.AreEqual(output, o);
         }
 
         [Test]

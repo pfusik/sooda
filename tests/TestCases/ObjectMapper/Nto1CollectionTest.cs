@@ -48,7 +48,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
             using (SoodaTransaction tran = new SoodaTransaction()) {
                 ContactList list = Contact.GetList(SoodaWhereClause.Unrestricted);
                 for (int i = 0; i < list.Count; ++i) {
-                    Assertion.AssertEquals("IndexOf", i, list.IndexOf(list[i]));
+                    Assert.AreEqual(i, list.IndexOf(list[i]), "IndexOf");
                 }
             }
         }

@@ -63,19 +63,19 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
             {
                 tran.Deserialize(s);
                 Contact c = Contact.Mary;
-                Assertion.AssertEquals("test123", c.PersistentValue);
+                Assert.AreEqual("test123", c.PersistentValue);
                 s2 = tran.Serialize();
             }
-            Assertion.AssertEquals(s, s2);
+            Assert.AreEqual(s, s2);
 
             using (SoodaTransaction tran = new SoodaTransaction()) 
             {
                 tran.Deserialize(s);
                 Contact c = Contact.Mary;
-                Assertion.AssertEquals("test123", c.PersistentValue);
+                Assert.AreEqual("test123", c.PersistentValue);
                 s2 = tran.Serialize();
             }
-            Assertion.AssertEquals(s, s2);
+            Assert.AreEqual(s, s2);
         }
     }
 }

@@ -57,7 +57,7 @@ namespace Sooda.UnitTests.TestCases.Soql {
             pp1.PrintExpression(Sooda.QL.SoqlParser.ParseExpression(expectedResult));
 
             Console.WriteLine("Test: |{0}| => |{1}| => |{2}|", input, sw0.ToString(), sw1.ToString());
-            Assertion.AssertEquals(input + " simplifies to " + expectedResult, sw1.ToString(), sw0.ToString());
+            Assert.AreEqual(input + " simplifies to " + expectedResult, sw1.ToString(), sw0.ToString());
         }
 
         [Test]

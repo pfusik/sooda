@@ -33,9 +33,11 @@
 
 using System;
 
+using Sooda.UnitTests.Objects;
+
 namespace Sooda.UnitTests.TestCases {
     public class TestSqlDataSource : Sooda.Sql.SqlDataSource, IDisposable {
-        public TestSqlDataSource(string name) : base(name) {}
+        public TestSqlDataSource(string name) : base(_DatabaseSchema.GetSchema().GetDataSourceInfo(name)) {}
 
         public override void Close() {
             Console.WriteLine("TestSqlDataSource.Close()");
