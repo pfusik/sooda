@@ -130,7 +130,7 @@ namespace Sooda.Sql {
 			paramTypes[typeof(System.Drawing.Bitmap)] = DbType.Binary;
 		}
 
-		public string QuoteFieldName(string s) 
+		public virtual string QuoteFieldName(string s) 
 		{
 			return String.Concat("[", s, "]");
 		}

@@ -59,6 +59,11 @@ namespace Sooda.Sql {
             return ":p" + pos.ToString();
         }
 
+        public override string QuoteFieldName(string s)
+        {
+            return String.Concat("\"", s, "\"");
+        }
+
         public override SqlTopSupportMode TopSupport
         {
             get {

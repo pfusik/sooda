@@ -2,7 +2,7 @@
 <config>
     <default>
         <connectionType>Npgsql.NpgsqlConnection, Npgsql, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7</connectionType>
-        <connectionString>server=127.0.0.1;user id=jaak;password=;database=SoodaUnitTests;encoding=unicode</connectionString>
+        <connectionString>server=127.0.0.1;user id=jaak;password=jaak;database=SoodaUnitTests;encoding=unicode</connectionString>
         <sqlDialect>postgres</sqlDialect>
     </default>
 </config>
