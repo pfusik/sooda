@@ -47,8 +47,8 @@ namespace Sooda.Sql
 {
     public class SqlDataSource : Sooda.SoodaDataSource
     {
-        static log4net.ILog logger = log4net.LogManager.GetLogger("Sooda.SqlDataSource");
-        static log4net.ILog sqllogger = log4net.LogManager.GetLogger("Sooda.SQL");
+        static NLog.Logger logger = NLog.LogManager.GetLogger("Sooda.SqlDataSource");
+        static NLog.Logger sqllogger = NLog.LogManager.GetLogger("Sooda.SQL");
 
         public IDbConnection Connection;
         public IDbTransaction Transaction;
@@ -427,7 +427,7 @@ namespace Sooda.Sql
                 txt.Replace("  ", " ");
             } while (txt.Length != lastlen);
 #endif
-            sqllogger.Debug(txt);
+            sqllogger.Debug(txt.ToString());
             // Console.WriteLine("Executing: {0}", cmd.CommandText);
         }
 

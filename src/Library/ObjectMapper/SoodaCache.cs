@@ -44,7 +44,7 @@ namespace Sooda.ObjectMapper
     public class SoodaCache
     {
         private static Hashtable _hashtable = new Hashtable();
-		private static log4net.ILog logger = log4net.LogManager.GetLogger("Sooda.Cache");
+		private static NLog.Logger logger = NLog.LogManager.GetLogger("Sooda.Cache");
 
         public static TimeSpan ExpirationTimeout = TimeSpan.FromMinutes(1);
         public static bool Enabled = false;

@@ -39,7 +39,7 @@ namespace Sooda
     [AttributeUsage(AttributeTargets.Assembly)]
     public sealed class SoodaStubAssemblyAttribute : Attribute
     {
-        static log4net.ILog logger = log4net.LogManager.GetLogger(typeof(SoodaStubAssemblyAttribute));
+        static NLog.Logger logger = NLog.LogManager.GetLogger("SoodaStubAssemblyAttribute");
         private Assembly _assembly;
 
         public SoodaStubAssemblyAttribute()

@@ -48,7 +48,7 @@ namespace Sooda
 {
     public class SoodaObject
     {
-        private static log4net.ILog logger = log4net.LogManager.GetLogger("Sooda.Object");
+        private static NLog.Logger logger = NLog.LogManager.GetLogger("Sooda.Object");
         
         // instance fields - initialized in InitRawObject()
 

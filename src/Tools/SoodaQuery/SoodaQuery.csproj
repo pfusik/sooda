@@ -100,9 +100,9 @@
                     HintPath = "..\..\ExternalLib\ICSharpCode.TextEditor.dll"
                 />
                 <Reference
-                    Name = "log4net"
-                    AssemblyName = "log4net"
-                    HintPath = "..\..\ExternalLib\log4net.dll"
+                    Name = "NLog"
+                    AssemblyName = "NLog"
+                    HintPath = "..\..\ExternalLib\NLog.dll"
                 />
                 <Reference
                     Name = "Sooda"

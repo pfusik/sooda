@@ -26,7 +26,7 @@
 
     <target name="libraries" depends="Sooda" />
 
-    <target name="settings" depends="log4net">
+    <target name="settings" depends="NLog">
         <property name="sooda.define" value="TRACE,DEBUG" />
         <property name="sooda.define" value="TRACE" unless="${sooda.debug}" />
         <property name="sooda.optimize" value="false" />
@@ -60,12 +60,12 @@
         <exec workingdir="${sooda.dir}" program="gacutil.exe" commandline="/silent /u Sooda" />
     </target>
 
-    <target name="Sooda" depends="settings, log4net" description="Sooda">
+    <target name="Sooda" depends="settings, NLog" description="Sooda">
         <csc target="library" output="${sooda.dir}/Sooda.dll" debug="${sooda.debug}" define="${sooda.define}">
             <references>                                  
                 <include name="System.Data.dll" />
                 <include name="System.Drawing.dll" />
-                <include name="${sooda.dir}/log4net.dll" />
+                <include name="${sooda.dir}/NLog.dll" />
             </references>
             <sources basedir="src/Library">
                 <include name="**/*.cs" />
@@ -201,7 +201,7 @@
         <csc target="library" output="${sooda.dir}/SoodaCore.dll" debug="${sooda.debug}" define="${sooda.define}">
             <references>                                  
                 <include name="System.Data.dll" asis="true" />
-                <include name="${sooda.dir}/log4net.dll" />
+                <include name="${sooda.dir}/NLog.dll" />
             </references>
             <sources basedir="Library">
                 <include name="**/*.cs" />
@@ -245,7 +245,7 @@
 	<target name="Sooda.UnitTests.Objects" depends="Sooda, stubs">
 		<csc target="library" output="${sooda.dir}/Sooda.UnitTests.Objects.dll" debug="true">
 			<references>                                  
-				<include name="${sooda.dir}/log4net.dll" />
+				<include name="${sooda.dir}/NLog.dll" />
 				<include name="${sooda.dir}/Sooda.dll" />
 				<include name="System.Data.dll" asis="true" />
 			</references>
@@ -265,7 +265,7 @@
 				<include name="${sooda.dir}/Sooda.dll" />
     			<include name="${sooda.dir}/Sooda.UnitTests.Objects.dll" />
     			<include name="${sooda.dir}/nunit.framework.dll" />
-    			<include name="${sooda.dir}/log4net.dll" />
+    			<include name="${sooda.dir}/NLog.dll" />
 				<include name="System.Data.dll" asis="true" />
 			</references>
 			<sources basedir="tests/TestCases">
@@ -282,7 +282,7 @@
     			<include name="${sooda.dir}/Sooda.UnitTests.Objects.Stubs.dll" />
 				<include name="${sooda.dir}/Sooda.UnitTests.TestCases.dll" />
 				<include name="${sooda.dir}/NUnit.Framework.dll" />
-				<include name="${sooda.dir}/log4net.dll" />
+				<include name="${sooda.dir}/NLog.dll" />
 				<include name="System.Data.dll" asis="true" />
 			</references>
 			<sources basedir="tests/ConsoleTest">
@@ -311,8 +311,8 @@
         </foreach>
     </target>
 
-    <target name="log4net">
-        <copy file="${sooda.external}/log4net.dll" tofile="${sooda.dir}/log4net.dll" />
+    <target name="NLog">
+        <copy file="${sooda.external}/NLog.dll" tofile="${sooda.dir}/NLog.dll" />
     </target>
 
     <target name="disttest">

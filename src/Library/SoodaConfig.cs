@@ -48,7 +48,7 @@ namespace Sooda
         public delegate string ExpandVariable(string variable);
         
         private static ISoodaConfigProvider configProvider = null;
-        private static log4net.ILog logger = log4net.LogManager.GetLogger("Sooda.Config");
+        private static NLog.Logger logger = NLog.LogManager.GetLogger("Sooda.Config");
 
         public static ExpandVariable ExpanderDelegate = null;
         

@@ -39,7 +39,7 @@ namespace Sooda.ObjectMapper
     public class SoodaObjectFactoryCache : ISoodaObjectFactoryCache
     {
         private StringToSoodaObjectFactoryDictionaryDictionary _classes = new StringToSoodaObjectFactoryDictionaryDictionary();
-        private log4net.ILog logger = log4net.LogManager.GetLogger("Sooda.FactoryCache");
+        private NLog.Logger logger = NLog.LogManager.GetLogger("Sooda.FactoryCache");
 
         private ObjectToSoodaObjectFactoryDictionary GetObjectFactoryDictionaryForClass(string className)
         {

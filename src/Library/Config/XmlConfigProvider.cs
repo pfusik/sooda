@@ -42,7 +42,7 @@ namespace Sooda.Config
 {
     public class XmlConfigProvider : ISoodaConfigProvider
     {
-        private static log4net.ILog logger = log4net.LogManager.GetLogger("Sooda.Config");
+        private static NLog.Logger logger = NLog.LogManager.GetLogger("Sooda.Config");
         private NameValueCollection dataDictionary = new NameValueCollection();
         private string fileName;
         private string baseDirectory;

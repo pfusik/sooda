@@ -58,7 +58,7 @@ namespace Sooda
 
 	public class SoodaTransaction : IDisposable
 	{
-		private static log4net.ILog transactionLogger = log4net.LogManager.GetLogger("Sooda.Transaction");
+		private static NLog.Logger transactionLogger = NLog.LogManager.GetLogger("Sooda.Transaction");
 		private static LocalDataStoreSlot g_activeTransactionDataStoreSlot = System.Threading.Thread.AllocateDataSlot();
 
 		private TransactionOptions transactionOptions;
