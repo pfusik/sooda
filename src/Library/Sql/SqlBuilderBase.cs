@@ -111,6 +111,11 @@ namespace Sooda.Sql {
             paramTypes[typeof(System.Drawing.Bitmap)] = DbType.Binary;
         }
 
+		public string QuoteFieldName(string s) 
+		{
+			return String.Concat("[", s, "]");
+		}
+
         public abstract SqlTopSupportMode TopSupport
         {
             get

@@ -164,7 +164,7 @@ namespace Sooda.Sql {
                 Output.Write(".");
                 Output.Write(fi.DBColumnName);
                 Output.Write(" as ");
-                Output.Write(fi.Name);
+                Output.Write(_builder.QuoteFieldName(fi.Name));
                 first = false;
             }
         }
@@ -325,16 +325,16 @@ namespace Sooda.Sql {
                         }
                     }
 
-                    if (v.SelectExpressions.Count == 0) {
-                        // simplified query - emit the primary key here
+					if (v.SelectExpressions.Count == 0) {
+						// simplified query - emit the primary key here
 
-                        Sooda.Schema.ClassInfo ci = Schema.FindClassByName(v.From[0]);
-                        Output.Write(v.FromAliases[0]);
-                        Output.Write(".");
-                        Output.Write(ci.GetPrimaryKeyField().DBColumnName);
-                        Output.Write(" as ");
-                        Output.Write(ci.GetPrimaryKeyField().Name);
-                    } else {
+						Sooda.Schema.ClassInfo ci = Schema.FindClassByName(v.From[0]);
+						Output.Write(v.FromAliases[0]);
+						Output.Write(".");
+						Output.Write(ci.GetPrimaryKeyField().DBColumnName);
+						Output.Write(" as ");
+						Output.Write(_builder.QuoteFieldName(ci.GetPrimaryKeyField().Name));
+					} else {
                         for (int i = 0; i < v.SelectExpressions.Count; ++i) {
                             if (i > 0) {
                                 Output.WriteLine(",");
@@ -342,10 +342,10 @@ namespace Sooda.Sql {
                                 Output.Write("         ");
                             }
                             v.SelectExpressions[i].Accept(this);
-                            if (v.SelectAliases[i].Length > 0) {
-                                Output.Write(" as ");
-                                Output.Write(v.SelectAliases[i]);
-                            } else {
+							if (v.SelectAliases[i].Length > 0) {
+								Output.Write(" as ");
+								Output.Write(_builder.QuoteFieldName(v.SelectAliases[i]));
+							} else {
                                 if (v.SelectExpressions[i] is ISoqlSelectAliasProvider) {
                                     Output.Write(" as ");
 
