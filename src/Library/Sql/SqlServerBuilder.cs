@@ -69,6 +69,9 @@ namespace Sooda.Sql {
 
 			case FieldDataType.Image:
 				return "image";
+            
+            case FieldDataType.Long:
+                return "bigint";
 
             default:
                 throw new NotImplementedException(String.Format("Datatype {0} not supported for this database", fi.DataType.ToString()));
