@@ -125,12 +125,6 @@ namespace Sooda.ObjectMapper
 
         public void InternalAdd(SoodaObject c)
         {
-			if (additionalWhereClause != null)
-			{
-				if (!additionalWhereClause.Matches(c))
-					return;
-			}
-
             if (items == null)
             {
                 if (tempItems == null)
@@ -148,12 +142,6 @@ namespace Sooda.ObjectMapper
 
         public void InternalRemove(SoodaObject c)
         {
-			if (additionalWhereClause != null)
-			{
-				if (!additionalWhereClause.Matches(c))
-					return;
-			}
-
 			if (items == null)
             {
                 if (tempItems == null)

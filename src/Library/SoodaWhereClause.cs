@@ -114,12 +114,6 @@ namespace Sooda
 				this.WhereExpression, other.WhereExpression), newParams);
 		}
 
-		public bool Matches(SoodaObject obj)
-		{
-			//Sooda.QL.Ev
-			return false;
-		}
-
         public static readonly SoodaWhereClause Unrestricted = new SoodaWhereClause(null);
     }
 }
