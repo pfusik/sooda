@@ -22,7 +22,7 @@
     <target name="build-mono-1.0" depends="build-common, minitools" />
 
     <target name="build-common" depends="settings, libraries" />
-    <target name="tools" depends="SoodaStubGen, SoodaQuery, SoodaSchemaTool, SoodaFixKeygen" />
+    <target name="tools" depends="SoodaStubGen-mini, SoodaQuery, SoodaSchemaTool, SoodaFixKeygen" />
     <target name="minitools" depends="SoodaStubGen-mini" />
 
     <target name="libraries" depends="Sooda" />
