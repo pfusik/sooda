@@ -73,6 +73,9 @@ namespace Sooda.Sql {
             case FieldDataType.Long:
                 return "bigint";
 
+            case FieldDataType.BooleanAsInteger:
+                return "int";
+
             default:
                 throw new NotImplementedException(String.Format("Datatype {0} not supported for this database", fi.DataType.ToString()));
             }

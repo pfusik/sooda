@@ -1,6 +1,6 @@
 <schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xmlns="http://sooda.sourceforge.net/schemas/DBSchema.xsd">
+	xmlns="http://sooda.sourceforge.net/schemas/DBSchema.xsd" xml:space="preserve">
 	
     <datasource name="default" type="Sooda.Sql.SqlDataSource" />
 
@@ -68,23 +68,6 @@
         <collectionOneToMany name="Managers" class="Contact" foreignField="PrimaryGroup" where="Type='Employee'" />
     </class>
 
-    <!--
-    <class name="VarContact" inheritable="true" subclassSelectorField="Type" subclassSelectorValue="C">
-        <table name="VarContact">
-            <field name="ContactId" dbcolumn="id" type="Integer" primaryKey="true" />
-            <field name="Type" dbcolumn="type" type="String" size="16" />
-            <field name="Name" dbcolumn="name" type="String" size="64" nullable="false" />
-            <field name="PrimaryGroup" dbcolumn="primary_group" type="Integer" references="VarGroup" />
-        </table>
-    </class>
-
-    <class name="VarGroup" subclassSelectorValue="G" inheritFrom="VarContact">
-        <table name="VarContact">
-            <field name="ContactId" dbcolumn="id" type="Integer" primaryKey="true" />
-            <field name="Manager" dbcolumn="manager" type="Integer" references="VarContact" onDelete="Cascade" />
-        </table>
-    </class>
-    -->
     <class name="Vehicle" subclassSelectorField="Type" subclassSelectorValue="0">
         <table name="Vehicle">
             <field name="Id" dbcolumn="id" type="Integer" primaryKey="true" />

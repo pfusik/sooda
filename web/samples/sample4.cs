@@ -4,7 +4,7 @@ using Sooda;
 class Sample4 {
     static void Main() {
         using (SoodaTransaction transaction = new SoodaTransaction()) {
-            Where where = new Where(
+            SoodaWhereClause where = new SoodaWhereClause(
                               "Name = {0} and " +
                               "Owner.PrimaryGroup.Manager.Name like 'Mary Mana%'",
                               "My Bike");

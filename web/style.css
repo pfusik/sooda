@@ -8,7 +8,6 @@ html, body
     font-family: Verdana;
     font-size: 70%;
     overflow-y: scroll;
-    overflow: -moz-scrollbars-vertical;
 }
 
 h1
@@ -287,3 +286,89 @@ td.hostedby
     background-color: #f8f8ff;
     padding: 4px;
 }
+
+.table table {
+    border: 1px solid #c0c0c0;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.table td {
+    border: 1px solid #c0c0c0;
+    margin: 0px;
+    background-color: white;
+}
+
+.table th {
+    border: 1px solid #c0c0c0;
+    background-color: #efe8e8;
+    margin: 0px;
+}
+
+.xml-example
+{
+    background-color: #ffffff; 
+    border: 1px solid #c0c0c0; 
+    overflow-x: auto; 
+    width: 600px;
+    font-size: 12px;
+}
+
+.csharp-example
+{
+    font-family: Courier New;
+    background-color: #ffffff; 
+    border: 1px solid #c0c0c0; 
+    overflow-x: auto; 
+    overflow-y: auto; 
+    width: 600px;
+    font-size: 12px;
+}
+
+.csharp .k
+{
+    color: #0000ff;
+}
+
+.csharp .c
+{
+    color: #008000;
+    font-style: italic;
+}
+
+.csharp .s
+{
+    color: #400000;
+}
+
+.csharp .r
+{
+    color: #400000;
+}
+
+.jscript .k
+{
+    color: #0000ff;
+}
+
+.jscript .c
+{
+    color: #008000;
+    font-style: italic;
+}
+
+.jscript .s
+{
+    color: #400000;
+}
+
+.jscript .r
+{
+    color: #400000;
+}
+
+code
+{
+    color: #000080;
+}
+

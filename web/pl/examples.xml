@@ -9,6 +9,8 @@
         staj¹ siê w³aœciwoœciami tych obiektów. Dziêki temu dostêp do obiektów jest bardzo prosty, jak w poni¿szym 
         przyk³adzie:
 
+        <cs src="samples/sample1.cs" />
+
         <h3>Proste w u¿yciu relacje</h3>
         Relacje pomiêdzy obiektami w bazie danych (zarówno "<i>jeden do wielu</i>" jak i "<i>wiele do wielu</i>") 
         odwzorowane s¹ jako kolekcje obiektów implementuj¹ce interfejs <span class="type">ICollection</span>.
@@ -18,15 +20,21 @@
         <span class="keyword">Contains</span>, iterowanie po kolekcjach przy 
         u¿yciu <span class="keyword">foreach()</span> oraz indeksatory.
 
+        <cs src="samples/sample2.cs" />
+        
         <h3>Dziedziczenie i polimorfizm</h3>
 
         Mo¿liwe jest odwzorowanie hierarchii klas C#/VB.NET w bazie danych i odwo³ywanie siê do 
         nich w sposób polimorficzny.
 
 
+        <cs src="samples/sample3.cs" />
+        
         <h3>Jêzyk zapytañ</h3>
 
         Mo¿liwe jest wykorzystanie jêzyka Soql (Sooda Object Query Language), do ³adowania obiektów z bazy danych. 
         Jêzyk Soql w pe³ni wspiera wszystkie cechy Soody takie jak dziedziczenie, relacje 1-N oraz M-N i 
         wyra¿enia œcie¿kowe o dowolnej d³ugoœci.
+        
+        <cs src="samples/sample4.cs" />
 </content>

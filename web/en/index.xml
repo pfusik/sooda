@@ -22,12 +22,11 @@
         <li>transparent object materialization</li>
         <li>clean and natural syntax - the amount of boilerplate code is reduced to the absolute minimum, the code is readable and maintainable</li>
         <li>support for any data type supported by the .NET Framework</li>
-        <li>natural mapping of one-to-many relations as referenced objects and collections. <a href="sample_onetomany.html">View Sample</a></li>
+        <li>natural mapping of one-to-many relations as referenced objects and collections.</li>
         <li>natural mapping of many-to-many relations as collections</li>
         <li>various models of object inheritance</li>
-        <li>heterogenous data access (including RDBMS, XML files, Web services, LDAP &amp; AD directories)</li>
+        <li>heterogenous data access (including RDBMS, in the future XML files, Web services, LDAP &amp; AD directories)</li>
         <li>differential XML serialization and deserialization for moving data across layers</li>
-        <li>optimistic locking and object versioning with collision detection</li>
         <li>support for long running transactions</li>
         <li>data caching with copy-on-write support</li>
     </ul>

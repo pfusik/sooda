@@ -414,19 +414,17 @@
     <target name="deploy-web">
         <delete file="web.zip" if="${file::exists('web.zip')}" />
         <zip zipfile="web.zip" stampdatetime="${datetime::now()}" includeemptydirs="true">
-            <fileset basedir="web">
+            <fileset basedir="web/build">
                 <include name="**/*" />
                 <exclude name="**/.svn" />
                 <exclude name="**/.svn/**" />
                 <exclude name="**/*.swp" />
             </fileset>
         </zip>
-        <echo message="Uploading web.zip to ${ssh.server}..." />
-        <exec program="${scp.program}" commandline="${scp.args} web.zip ${ssh.server}:." workingdir="." />
-        <echo message="Uploading web_install.sh to ${ssh.server}..." />
-        <exec program="${scp.program}" commandline="${scp.args} web_install.sh ${ssh.server}:." workingdir="." />
+        <echo message="Uploading web.zip and tools/web_install.sh to ${ssh.server}..." />
+        <exec program="${scp.program}" commandline="${scp.args} web.zip tools/web_install.sh ${ssh.server}:." workingdir="." />
         <echo message="Spawning web_install.sh..." />
-        <exec program="${ssh.program}" commandline="${ssh.args} ${ssh.server} source web_install.sh" workingdir="." />
+        <exec program="${ssh.program}" commandline="${ssh.args} ${ssh.server} dos2unix web_install.sh &amp;&amp; /bin/bash web_install.sh&quot;" workingdir="." />
         <delete file="web.zip" />
     </target>
 
@@ -459,7 +457,7 @@
             <fileset basedir="web">
                 <include name="index.html" />
                 <include name="style.css" />
-                <include name="titlebanner.png" />
+                <include name="titlebanner.jpg" />
                 <include name="lang_pl.gif" />
                 <include name="lang_en.gif" />
                 <include name="screenshots/*" />

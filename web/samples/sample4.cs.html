@@ -1,0 +1,32 @@
+<pre xml:space='preserve'><span class='csharp'><span class='k'>using</span> System;
+<span class='k'>using</span> Sooda;
+
+<span class='k'>class</span> Sample4 {
+    <span class='k'>static</span> <span class='k'>void</span> Main() {
+        <span class='k'>using</span> (SoodaTransaction transaction = <span class='k'>new</span> SoodaTransaction()) {
+            SoodaWhereClause where = <span class='k'>new</span> SoodaWhereClause(
+                              <span class='s'>&quot;Name = {0} and &quot;</span> +
+                              <span class='s'>&quot;Owner.PrimaryGroup.Manager.Name like &apos;Mary Mana%&apos;&quot;</span>,
+                              <span class='s'>&quot;My Bike&quot;</span>);
+
+            <span class='c'>// get a list of matching objects</span>
+            VehicleList lst = Vehicle.GetList(where);
+
+            <span class='c'>// check the number of returned matches</span>
+            <span class='k'>if</span> (lst.Count == 1) {
+                Console.WriteLine(<span class='s'>&quot;Found exactly one matching vehicle&quot;</span>);
+
+                <span class='c'>// try to cast the first vehicle to </span><span class='s'>&quot;Bike&quot;</span> <span class='k'>class</span>
+                Bike b = lst[0] <span class='k'>as</span> Bike;
+
+                <span class='k'>if</span> (b != <span class='k'>null</span>) {
+                    <span class='c'>// cast successful</span>
+                    Console.WriteLine(<span class='s'>&quot;It&apos;s a bike! Wheel diameter is {0}&quot;</span>,
+                                      b.WheelDiameter);
+                }
+            }
+        }
+    }
+}
+</span>
+</pre>

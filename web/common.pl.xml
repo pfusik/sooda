@@ -3,13 +3,13 @@
     <navigation>
         <nav href="index" label="Wprowadzenie" />
         <nav href="quickstart" label="Szybki start" />
-        <nav href="components" label="Komponenty" />
-        <nav href="tools" label="Narzêdzia" />
+        <!-- <nav href="components" label="Komponenty" /> -->
+        <!-- <nav href="tools" label="Narzêdzia" /> -->
         <nav href="examples" label="Przyk³ady" />
         <nav href="screenshots" label="Zrzuty ekranu" />
         <nav href="download" label="Pobierz" />
         <nav href="development" label="Rozwój" />
-        <nav href="users" label="U¿ytkownicy" />
+        <!-- <nav href="users" label="U¿ytkownicy" /> -->
         <nav href="faq" label="FAQ" />
         <nav href="links" label="Linki" />
     </navigation>

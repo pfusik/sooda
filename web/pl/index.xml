@@ -21,9 +21,8 @@
         <li>obs³uga wszystkich prostych typów danych wspieranych przez CLI + mo¿liwoœæ definiowania w³asnych typów i sposobów odwzorowania</li>
         <li>naturalne odwzorowanie relacji 1-N w formie obiektów powi¹zanych i kolekcji</li>
         <li>naturalne odwzorowanie relacji N-N w formie kolekcji obiektów</li>
-        <li>przezroczysty dostêp do heterogenicznych Ÿróde³ danych (RDBMS, pliki XML, katalogi LDAP i ActiveDirectory)</li>
+        <li>przezroczysty dostêp do heterogenicznych Ÿróde³ danych (RDBMS, w przysz³oœci tak¿e pliki XML, katalogi LDAP i ActiveDirectory)</li>
         <li>serializacja i deserializacja do formatu XML</li>
-        <li>optymistyczne blokowanie i wersjonowanie obiektów w pamiêci</li>
         <li>wsparcie dla d³ugo dzia³aj¹cych transakcji (<i>long running transactions</i>)</li>
     </ul>
     <p>Sooda wspiera <a href="http://msdn.microsoft.com/net">Microsoft .NET Framework</a> w wersji 1.x, mo¿liwa jest tak¿e kompilacja 

@@ -17,7 +17,7 @@
             <body width="100%">
                 <table align="center" class="page" cellpadding="0" cellspacing="0">
                     <tr>
-                        <td class="header" colspan="2"><img src="../titlebanner.png" /></td>
+                        <td class="header" colspan="2"><img src="../titlebanner.jpg" /></td>
                     </tr>
                     <tr>
                         <td valign="top" class="controls">
@@ -47,7 +47,7 @@
     </xsl:template>
 
     <xsl:template match="content">
-        <xsl:apply-templates select="*" />
+        <xsl:apply-templates />
     </xsl:template>
 
     <xsl:template name="controls">
@@ -77,4 +77,69 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
+
+    <xsl:template match="cs">
+        <pre class="csharp-example">
+            <xsl:copy-of select="document(concat(@src,'.html'))" />
+        </pre>
+        <!-- <a href="{@src}">Download this sample</a><br/> -->
+    </xsl:template>
+
+    <xsl:template match="js">
+        <pre class="jscript-example">
+            <xsl:copy-of select="document(concat(@src,'.html'))" />
+        </pre>
+        <!-- <a href="{@src}">Download this sample</a><br/> -->
+    </xsl:template>
+
+    <xsl:template match="x">
+        <xsl:apply-templates mode="xml-example" />
+    </xsl:template>
+
+    <xsl:template match="xml-example[@src]">
+        <pre class="xml-example">
+            <xsl:apply-templates mode="xml-example" select="document(@src)" />
+        </pre>
+        <!-- <a href="{@src}">Download this sample</a><br/> -->
+    </xsl:template>
+
+    <xsl:template match="xml-example">
+        <pre class="xml-example">
+            <xsl:apply-templates mode="xml-example" />
+        </pre>
+    </xsl:template>
+
+    <xsl:template match="*" mode="xml-example">
+        <xsl:choose>
+            <xsl:when test="count(descendant::node()) = 0">
+                <span class="xmlbracket">&lt;</span>
+                <span class="xmlelement"><xsl:value-of select="name()" /></span>
+                <xsl:apply-templates select="@*" mode="xml-example" />
+                <span class="xmlbracket"> /&gt;</span>
+            </xsl:when>
+            <xsl:otherwise>
+                <span class="xmlbracket">&lt;</span>
+                <span class="xmlelement"><xsl:value-of select="name()" /></span>
+                <xsl:apply-templates select="@*" mode="xml-example" />
+                <span class="xmlbracket">&gt;</span>
+                <xsl:apply-templates mode="xml-example" />
+                <span class="xmlbracket">&lt;/</span>
+                <span class="xmlelement"><xsl:value-of select="name()" /></span>
+                <span class="xmlbracket">&gt;</span>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
+    <xsl:template match="@*[name()='xml:space']" mode="xml-example"></xsl:template>
+    <xsl:template match="@*" mode="xml-example"><span class="xmlattribute">&#160;<xsl:value-of select="name()"/></span><span class="xmlpunct">=</span><span class="xmlattribtext">"<xsl:value-of select="." />"</span></xsl:template>
+
+    <xsl:template match="comment()" mode="xml-example">
+        <span class="xmlcomment">&lt;!--<xsl:value-of select="." />--&gt;</span>
+    </xsl:template>
+    <xsl:template match="node()" mode="xml-example" priority="-10">
+        <xsl:copy>
+            <xsl:apply-templates mode="xml-example" />
+        </xsl:copy>
+    </xsl:template>
+    
 </xsl:stylesheet>
