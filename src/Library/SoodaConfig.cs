@@ -105,20 +105,6 @@ namespace Sooda {
             configProvider = provider;
         }
 
-        public static string ConfigFileName
-        {
-            get {
-                return configProvider.GetConfigFileName();
-            }
-        }
-
-        public static string BaseDirectory
-        {
-            get {
-                return configProvider.GetBaseDirectory();
-            }
-        }
-
         public static string GetString(string itemName) {
             return GetString(itemName, null);
         }

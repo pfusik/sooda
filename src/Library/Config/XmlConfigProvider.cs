@@ -75,10 +75,10 @@ namespace Sooda.Config {
             if (xpathExpression != null)
                 startingNode = doc.SelectSingleNode(xpathExpression);
 
-            LoadFromNode(startingNode, prefix);
+            LoadFromNode(startingNode, prefix, Path.GetDirectoryName(fileName));
         }
 
-        private void LoadFromNode(XmlNode startingNode, string prefix) {
+        private void LoadFromNode(XmlNode startingNode, string prefix, string baseDir) {
             for (XmlNode node = startingNode.FirstChild;
                     node != null;
                     node = node.NextSibling)
@@ -90,11 +90,13 @@ namespace Sooda.Config {
                             newPrefix = node.Name + ".";
                         else
                             newPrefix = prefix + "." + node.Name + ".";
-                        LoadFromNode(node, newPrefix);
+                        LoadFromNode(node, newPrefix, baseDir);
                     } else {
                         string keyName = prefix + node.Name;
 
-                        dataDictionary[keyName] = node.InnerXml;
+                        string value = ProcessValue(node.InnerXml, baseDir);
+                        logger.Debug("{0}={1}", keyName, value);
+                        dataDictionary[keyName] = value;
                     }
                 }
         }
@@ -132,16 +134,15 @@ namespace Sooda.Config {
             return Environment.MachineName;
         }
 
+        private string ProcessValue(string s, string baseDir)
+        {
+            s = s.Replace("${CONFIGDIR}", baseDir);
+            // Console.WriteLine("After replacement: {0}", s);
+            return s;
+        }
+
         public string GetString(string key) {
             return dataDictionary[key];
-        }
-
-        public string GetBaseDirectory() {
-            return baseDirectory;
-        }
-
-        public string GetConfigFileName() {
-            return fileName;
         }
 
         public static XmlConfigProvider FindConfigFile(string fileName) {

@@ -36,7 +36,5 @@ using System;
 namespace Sooda.Config {
     public interface ISoodaConfigProvider {
         string GetString(string key);
-        string GetConfigFileName();
-        string GetBaseDirectory();
     }
 }

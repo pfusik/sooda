@@ -40,13 +40,5 @@ namespace Sooda.Config {
         public string GetString(string key) {
             return ConfigurationSettings.AppSettings[key];
         }
-
-        public string GetBaseDirectory() {
-            return Path.GetDirectoryName(GetConfigFileName());
-        }
-
-        public string GetConfigFileName() {
-            return AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
-        }
     }
 }
