@@ -210,12 +210,16 @@ namespace Sooda.Sql {
 
                 foreach (ClassInfo subci in currentClass.Subclasses)
                 {
-                    Output.Write(" when ");
-                    Output.Write(subci.SubclassSelectorValue);
-                    Output.Write(" then ");
-                    Output.Write("'");
-                    Output.Write(subci.Name);
-                    Output.Write("'");
+                    if (!subci.IsAbstractClass())
+                    {
+
+                        Output.Write(" when ");
+                        Output.Write(subci.SubclassSelectorValue);
+                        Output.Write(" then ");
+                        Output.Write("'");
+                        Output.Write(subci.Name);
+                        Output.Write("'");
+                    }
                 }
                 Output.Write(" else null end)");
             }
