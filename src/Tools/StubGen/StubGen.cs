@@ -61,6 +61,7 @@ namespace Sooda.StubGen {
 
             if (miniStub) {
                 ctd.Members.Add(gen.Constructor_Mini_Inserting());
+                ctd.Members.Add(gen.Constructor_Raw());
                 return ;
             }
 
@@ -69,6 +70,7 @@ namespace Sooda.StubGen {
             }
             ctd.Members.Add(gen.Constructor_Class());
             ctd.Members.Add(gen.Constructor_Inserting());
+            ctd.Members.Add(gen.Constructor_Raw());
 
             // class constructor
 
@@ -213,6 +215,7 @@ namespace Sooda.StubGen {
 
             CodeDomClassSkeletonGenerator gen = new CodeDomClassSkeletonGenerator(ci);
 
+            ctd.Members.Add(gen.Constructor_Raw());
             ctd.Members.Add(gen.Constructor_Inserting(useChainedConstructorCall));
             ctd.Members.Add(gen.Constructor_Inserting2(useChainedConstructorCall));
 

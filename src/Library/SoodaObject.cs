@@ -153,6 +153,10 @@ namespace Sooda {
             ;
         }
 
+        protected SoodaObject(SoodaConstructor c) {
+            // do nothing - we delay all the initialization
+        }
+
         protected SoodaObject(SoodaTransaction tran) {
             InitRawObject(tran);
             InsertMode = true;
@@ -899,8 +903,15 @@ namespace Sooda {
             _primaryKeyValue = null;
         }
 
+        private static Type[] rawConstructorParameterTypes = new Type[] { typeof(SoodaConstructor) };
+        private static object[] rawConstructorParameterValues = new object[] { SoodaConstructor.Constructor };
+
         public static SoodaObject GetRawObjectHelper(Type type, SoodaTransaction tran) {
-            SoodaObject obj = (SoodaObject)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(type);
+            ConstructorInfo constructorInfo = type.GetConstructor(rawConstructorParameterTypes);
+            if (constructorInfo == null) {
+                throw new Exception("Constructor taking SoodaConstructor parameter not found in class " + type.FullName);
+            }
+            SoodaObject obj = (SoodaObject)constructorInfo.Invoke(rawConstructorParameterValues);
 
             obj.InitRawObject(tran);
             return obj;

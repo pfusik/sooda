@@ -49,6 +49,18 @@ namespace Sooda.StubGen {
             this.classInfo = ci;
         }
 
+        public CodeConstructor Constructor_Raw() {
+            CodeConstructor ctor = new CodeConstructor();
+
+            ctor.Attributes = MemberAttributes.Public;
+            ctor.Parameters.Add(new CodeParameterDeclarationExpression("SoodaConstructor", "c"));
+            ctor.BaseConstructorArgs.Add(Arg("c"));
+
+            ctor.Statements.Add(new CodeCommentStatement("Do not modify this constructor."));
+
+            return ctor;
+        }
+
         public CodeConstructor Constructor_Inserting(bool useChainedCall) {
             CodeConstructor ctor = new CodeConstructor();
             ctor = new CodeConstructor();

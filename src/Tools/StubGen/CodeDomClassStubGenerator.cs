@@ -324,6 +324,15 @@ namespace Sooda.StubGen {
 
             return ctor;
         }
+        public CodeConstructor Constructor_Raw() {
+            CodeConstructor ctor = new CodeConstructor();
+
+            ctor.Attributes = MemberAttributes.Public;
+            ctor.Parameters.Add(new CodeParameterDeclarationExpression("SoodaConstructor", "c"));
+            ctor.BaseConstructorArgs.Add(Arg("c"));
+
+            return ctor;
+        }
         public CodeConstructor Constructor_Mini_Inserting() {
             CodeConstructor ctor = new CodeConstructor();
 
