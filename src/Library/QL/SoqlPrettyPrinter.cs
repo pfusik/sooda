@@ -113,7 +113,7 @@ namespace Sooda.QL {
         }
 
         public virtual void Visit(SoqlBooleanNegationExpression v) {
-            Output.Write("(NOT ");
+            Output.Write("not (");
             v.par.Accept(this);
             Output.Write(")");
         }
