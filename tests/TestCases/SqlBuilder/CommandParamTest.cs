@@ -49,7 +49,7 @@ namespace Sooda.UnitTests.TestCases.SqlBuilder {
                 ISqlBuilder bld = new SqlServerBuilder();
                 String sql = "exec sp_Test({0}, {1:i}, {2:o}, {3:io}, {4:i}, {5}, {6}, {7}, {8}, {9}, {10:i}, {11:io})";
                 Object[] param = new Object[]{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
-                bld.BuildCommandWithParameters(cmd, sql, param);
+                bld.BuildCommandWithParameters(cmd, false, sql, param);
                 Assertion.AssertEquals(((IDataParameter)cmd.Parameters[0]).Direction, ParameterDirection.Input);
                 Assertion.AssertEquals(((IDataParameter)cmd.Parameters[1]).Direction, ParameterDirection.Input);
                 Assertion.AssertEquals(((IDataParameter)cmd.Parameters[2]).Direction, ParameterDirection.Output);
@@ -66,7 +66,7 @@ namespace Sooda.UnitTests.TestCases.SqlBuilder {
                 ISqlBuilder bld = new SqlServerBuilder();
                 String sql = "exec sp_Test({0:})";
                 Object[] param = new Object[]{ 0, 1, 2, 3 };
-                bld.BuildCommandWithParameters(cmd, sql, param);
+                bld.BuildCommandWithParameters(cmd, false, sql, param);
             }
         }
 

@@ -36,18 +36,38 @@ using System.IO;
 using System.Data;
 using System.Collections;
 
-namespace Sooda.Sql {
-    public abstract class SqlBuilderNamedArg : SqlBuilderBase {
-        public override void BuildCommandWithParameters(System.Data.IDbCommand command, string query, object[] par) {
-            command.Parameters.Clear();
-            if (par == null || par.Length == 0) {
-                command.CommandText = query;
+namespace Sooda.Sql 
+{
+    public abstract class SqlBuilderNamedArg : SqlBuilderBase 
+    {
+        public override void BuildCommandWithParameters(System.Data.IDbCommand command, bool append, string query, object[] par) 
+        {
+            if (append)
+            {
+                if (command.CommandText == null)
+                    command.CommandText = "";
+                if (command.CommandText != "")
+                    command.CommandText += ";";
+            }
+            else
+            {
+                command.CommandText = "";
+                command.Parameters.Clear();
+            }
+
+            if (par == null || par.Length == 0) 
+            {
+                command.CommandText += query;
                 return ;
             };
 
-            System.Text.StringBuilder sb = new System.Text.StringBuilder(query.Length * 2);
+            int startingParamNumber = command.Parameters.Count;
 
-            for (int i = 0; i < query.Length; ++i) {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder(query.Length * 2);
+            ArrayList parameterObjects = new ArrayList();
+
+            for (int i = 0; i < query.Length; ++i) 
+            {
                 char c = query[i];
 
                 if (c == '\'')  // we leave strings untouched
@@ -55,12 +75,15 @@ namespace Sooda.Sql {
                     int stringStartPos = i;
                     int stringEndPos = -1;
 
-                    for (int j = i + 1; j < query.Length; ++j) {
-                        if (query[j] == '\'') {
+                    for (int j = i + 1; j < query.Length; ++j) 
+                    {
+                        if (query[j] == '\'') 
+                        {
                             // possible end of string, need to check for double apostrophes,
                             // which don't mean EOS
 
-                            if (j + 1 < query.Length && query[j + 1] == '\'') {
+                            if (j + 1 < query.Length && query[j + 1] == '\'') 
+                            {
                                 j++;
                                 continue;
                             }
@@ -69,7 +92,8 @@ namespace Sooda.Sql {
                         }
                     }
 
-                    if (stringEndPos == -1) {
+                    if (stringEndPos == -1) 
+                    {
                         throw new ArgumentException("Query has unbalanced quotes");
                     }
 
@@ -77,32 +101,43 @@ namespace Sooda.Sql {
 
                     i = stringEndPos;
                     // string starts from i and ends at j INCLUSIVE
-                } else if (c == '{') {
+                } 
+                else if (c == '{') 
+                {
                     char c1 = query[i + 1];
                     char c2 = query[i + 2];
                     int paramNumber;
 
-                    if (c2 == '}' || c2 == ':') {
+                    if (c2 == '}' || c2 == ':') 
+                    {
                         paramNumber = c1 - '0';
                         i += 2;
-                    } else {
+                    } 
+                    else 
+                    {
                         paramNumber = (c1 - '0') * 10 + (c2 - '0');
                         if (query[i + 3] != '}' && query[i + 3] != ':')
                             throw new NotSupportedException("Max 99 positional parameters are supported");
                         i += 3;
                     };
                     bool bIn = true, bOut = false;
-                    if (query[i] == ':') {
+                    if (query[i] == ':') 
+                    {
                         bIn = false;
                         i++;
-                        while (query[i] != '}') {
-                            if (Char.ToUpper(query[i]) == 'I') {
+                        while (query[i] != '}') 
+                        {
+                            if (Char.ToUpper(query[i]) == 'I') 
+                            {
                                 bIn = true;
                                 i++;
-                            } else if (Char.ToUpper(query[i]) == 'O') {
+                            } 
+                            else if (Char.ToUpper(query[i]) == 'O') 
+                            {
                                 bOut = true;
                                 i++;
-                            } else
+                            } 
+                            else
                                 throw new ArgumentException("Unknown modifier for parameter " + paramNumber);
                         }
                     }
@@ -113,32 +148,42 @@ namespace Sooda.Sql {
                     {
                         v = ((SoodaObject)v).GetPrimaryKeyValue();
                     }
+
                     if (v == null)
+                    {
                         sb.Append("null");
-                    else {
-                        IDbDataParameter p = command.CreateParameter();
-                        if (bIn) {
-                            p.Direction = ParameterDirection.Input;
-                            if (bOut)
-                                p.Direction = ParameterDirection.InputOutput;
-                        } else if (bOut)
-                            p.Direction = ParameterDirection.Output;
-                        else
-                            throw new ArgumentException("Direction not specified for parameter " + paramNumber);
+                    }
+                    else 
+                    {
+                        while (parameterObjects.Count <= paramNumber)
+                            parameterObjects.Add(null);
 
-                        string parName = GetNameForParameter(paramNumber);
-						if (!command.Parameters.Contains(parName)) 
-						{
-							p.ParameterName = parName;
-							if (v is Type) 
-							{
-								SetDbTypeFromClrType(p, (Type)v);
-							} 
-							else 
-							{
-								SetDbTypeFromClrType(p, v.GetType());
+                        if (parameterObjects[paramNumber] == null)
+                        {
+                            IDbDataParameter p = command.CreateParameter();
+                            parameterObjects[paramNumber] = p;
+                            if (bIn) 
+                            {
+                                p.Direction = ParameterDirection.Input;
+                                if (bOut)
+                                    p.Direction = ParameterDirection.InputOutput;
+                            } 
+                            else if (bOut)
+                                p.Direction = ParameterDirection.Output;
+                            else
+                                throw new ArgumentException("Direction not specified for parameter " + paramNumber);
 
-								// HACK
+                            string parName = GetNameForParameter(command.Parameters.Count);
+                            p.ParameterName = parName;
+                            if (v is Type) 
+                            {
+                                SetDbTypeFromClrType(p, (Type)v);
+                            } 
+                            else 
+                            {
+                                SetDbTypeFromClrType(p, v.GetType());
+
+                                // HACK
                                 if (v is System.Drawing.Image) 
                                 {
                                     System.Drawing.Image img = (System.Drawing.Image)v;
@@ -153,19 +198,21 @@ namespace Sooda.Sql {
                                     p.Value = (int)(((TimeSpan)v).TotalSeconds);
                                 }
                                 else
-								{
-									p.Value = v;
-								}
-							}
-							command.Parameters.Add(p);
-						}
-                        sb.Append(parName);
+                                {
+                                    p.Value = v;
+                                }
+                            }
+                            command.Parameters.Add(p);
+                        }
+                        sb.Append(((IDbDataParameter)parameterObjects[paramNumber]).ParameterName);
                     }
-                } else {
+                } 
+                else 
+                {
                     sb.Append(c);
                 }
             }
-            command.CommandText = sb.ToString();
+            command.CommandText += sb.ToString();
         }
         protected abstract string GetNameForParameter(int pos);
     }

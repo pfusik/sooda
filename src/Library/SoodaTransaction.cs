@@ -77,6 +77,7 @@ namespace Sooda {
         private TypeToISoodaObjectFactoryAssociation factoryForType = new TypeToISoodaObjectFactoryAssociation();
         private SoodaObjectToNameValueCollectionAssociation _persistentValues = new SoodaObjectToNameValueCollectionAssociation();
         private Assembly _assembly;
+        private bool _savingObjects = false;
 
         public static Assembly DefaultObjectsAssembly = null;
 
@@ -308,9 +309,12 @@ namespace Sooda {
                 SoodaDataSource ds = (SoodaDataSource)dataSourceInfo.CreateDataSource();
                 _dataSources.Add(ds);
                 ds.Open();
+                if (_savingObjects)
+                    ds.BeginSaveChanges();
             }
 
-            return _dataSources[0] as SoodaDataSource;
+            SoodaDataSource retval = _dataSources[0] as SoodaDataSource;
+            return retval;
         }
 
         void CallPrecommits() 
@@ -389,26 +393,44 @@ namespace Sooda {
 
         internal void SaveObjectChanges() 
         {
-            foreach (SoodaObject o in _objectList) 
+            try
             {
-                o.VisitedOnCommit = false;
-            }
-
-            foreach (SoodaObject o in _objectList) 
-            {
-                if (!o.VisitedOnCommit) 
+                foreach (SoodaDataSource source in _dataSources)
                 {
-                    SaveObjectChanges(o);
+                    source.BeginSaveChanges();
                 }
-            }
+
+                _savingObjects = true;
+
+                foreach (SoodaObject o in _objectList) 
+                {
+                    o.VisitedOnCommit = false;
+                }
+
+                foreach (SoodaObject o in _objectList) 
+                {
+                    if (!o.VisitedOnCommit) 
+                    {
+                        SaveObjectChanges(o);
+                    }
+                }
 #warning TODO - restore support for deletion
 
-            if (_relationTables != null) 
-            {
-                foreach (SoodaRelationTable rel in _relationTables.Values) 
+                if (_relationTables != null) 
                 {
-                    rel.SaveTuples(this);
+                    foreach (SoodaRelationTable rel in _relationTables.Values) 
+                    {
+                        rel.SaveTuples(this);
+                    }
                 }
+                foreach (SoodaDataSource source in _dataSources) 
+                {
+                    source.FinishSaveChanges();
+                }
+            }
+            finally
+            {
+                _savingObjects = false;
             }
         }
 
@@ -454,7 +476,9 @@ namespace Sooda {
 
             _postCommitQueue = new SoodaObjectCollection();
             // TODO - prealloc
+
             SaveObjectChanges();
+
 
             // commit all transactions on all data sources
 

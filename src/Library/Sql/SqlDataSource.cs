@@ -52,6 +52,8 @@ namespace Sooda.Sql {
         public IDbTransaction Transaction;
         public ISqlBuilder SqlBuilder = null;
         public bool DisableTransactions = false;
+        private IDbCommand _updateCommand = null;
+        public bool SupportsUpdateBatch = false;
 
         public SqlDataSource(string name) : base(name) {}
 
@@ -67,24 +69,26 @@ namespace Sooda.Sql {
             if (dialect == null)
                 dialect = "microsoft";
 
-            switch (dialect) {
+            switch (dialect) 
+            {
                 default:
-                    case "msde":
-                        case "mssql":
-                        case "microsoft":
-                        this.SqlBuilder = new SqlServerBuilder();
+                case "msde":
+                case "mssql":
+                case "microsoft":
+                    this.SqlBuilder = new SqlServerBuilder();
+                    this.SupportsUpdateBatch = true;
                     break;
 
-                    case "postgres":
-                        case "postgresql":
-                        this.SqlBuilder = new PostgreSqlBuilder();
+                case "postgres":
+                case "postgresql":
+                    this.SqlBuilder = new PostgreSqlBuilder();
                     break;
 
-                    case "mysql":
-                        case "mysql4":
-                        this.SqlBuilder = new MySqlBuilder();
+                case "mysql":
+                case "mysql4":
+                    this.SqlBuilder = new MySqlBuilder();
                     break;
-            };
+            }
 
             Connection.Open();
             if (!DisableTransactions) {
@@ -123,31 +127,61 @@ namespace Sooda.Sql {
             }
         }
 
-        public override void DeleteObject(SoodaObject obj) {
-            using (IDbCommand cmd = Connection.CreateCommand()) {
-                if (!DisableTransactions)
-                    cmd.Transaction = this.Transaction;
-
+        public override void DeleteObject(SoodaObject obj) 
+        {
 #warning FIX ME
 
-                ClassInfo ci = obj.GetClassInfo();
-                SqlBuilder.BuildCommandWithParameters(cmd, "delete from " + ci.UnifiedTables[0].DBTableName + " where " + ci.GetPrimaryKeyField().DBColumnName + " = {0}", obj.GetPrimaryKeyValue());
-                LogCommand(cmd);
-                cmd.ExecuteNonQuery();
+            ClassInfo ci = obj.GetClassInfo();
+            SqlBuilder.BuildCommandWithParameters(_updateCommand, true, "delete from " + ci.UnifiedTables[0].DBTableName + " where " + ci.GetPrimaryKeyField().DBColumnName + " = {0}", obj.GetPrimaryKeyValue());
+            FlushUpdateCommand(false);
+        }
+
+        public override void BeginSaveChanges()
+        {
+            _updateCommand = Connection.CreateCommand();
+            if (!DisableTransactions)
+                _updateCommand.Transaction = this.Transaction;
+            _updateCommand.CommandText = "";
+        }
+
+        public override void FinishSaveChanges()
+        {
+            FlushUpdateCommand(true);
+            _updateCommand = null;
+        }
+
+        private void FlushUpdateCommand(bool final)
+        {
+            bool doExecute = true;
+
+            if (SupportsUpdateBatch)
+            {
+                if (_updateCommand.Parameters.Count < 100)
+                    doExecute = false;
+            }
+
+            if (final || doExecute)
+            {
+                if (_updateCommand.CommandText != "")
+                {
+                    LogCommand(_updateCommand);
+                    _updateCommand.ExecuteNonQuery();
+                    _updateCommand.Parameters.Clear();
+                    _updateCommand.CommandText = "";
+                }
             }
         }
 
-        public override void SaveObjectChanges(SoodaObject obj) {
-            using (IDbCommand cmd = Connection.CreateCommand()) {
-                if (!DisableTransactions)
-                    cmd.Transaction = this.Transaction;
-
-                if (obj.IsInsertMode() && !obj.InsertedIntoDatabase) {
-                    DoInserts(obj, cmd);
-                    obj.InsertedIntoDatabase = true;
-                } else {
-                    DoUpdates(obj, cmd);
-                }
+        public override void SaveObjectChanges(SoodaObject obj) 
+        {
+            if (obj.IsInsertMode() && !obj.InsertedIntoDatabase) 
+            {
+                DoInserts(obj);
+                obj.InsertedIntoDatabase = true;
+            } 
+            else 
+            {
+                DoUpdates(obj);
             }
         }
 
@@ -158,7 +192,7 @@ namespace Sooda.Sql {
             if (!DisableTransactions)
                 cmd.Transaction = this.Transaction;
 
-            SqlBuilder.BuildCommandWithParameters(cmd, GetLoadingSelectStatement(classInfo, classInfo.UnifiedTables[tableNumber], out loadedTables), new object[] { keyVal });
+            SqlBuilder.BuildCommandWithParameters(cmd, false, GetLoadingSelectStatement(classInfo, classInfo.UnifiedTables[tableNumber], out loadedTables), new object[] { keyVal });
             LogCommand(cmd);
             IDataReader reader = cmd.ExecuteReader();
             if (reader.Read())
@@ -174,41 +208,15 @@ namespace Sooda.Sql {
         }
 
         public override void MakeTuple(string tableName, string leftColumnName, string rightColumnName, object leftVal, object rightVal, int mode) {
-            IDbCommand deleteCommand = Connection.CreateCommand();
-            IDbCommand insertCommand = Connection.CreateCommand();
-            if (!DisableTransactions) {
-                deleteCommand.Transaction = this.Transaction;
-                insertCommand.Transaction = this.Transaction;
-            }
-
             object[] parameters = new object[] { leftVal, rightVal };
             string query = "delete from " + tableName + " where " + leftColumnName + "={0} and " + rightColumnName + "={1}";
-            SqlBuilder.BuildCommandWithParameters(deleteCommand, query, parameters);
+            SqlBuilder.BuildCommandWithParameters(_updateCommand, true, query, parameters);
+            FlushUpdateCommand(false);
 
             if (mode == 1) {
                 query = "insert into " + tableName + "(" + leftColumnName + "," + rightColumnName + ") values({0},{1})";
-                SqlBuilder.BuildCommandWithParameters(insertCommand, query, parameters);
-            }
-
-            if (mode == -1) {
-                LogCommand(deleteCommand);
-                deleteCommand.ExecuteNonQuery();
-            } else if (mode == 1) {
-                try {
-                    // try real insert
-
-                    // tran.Log(insertCommand.CommandText, "SQL", this);
-                    LogCommand(insertCommand);
-                    insertCommand.ExecuteNonQuery();
-                } catch (Exception) {
-                    // tran.Log("INSERT failed, deleting and retrying", "SQL", this);
-                    // tran.Log(deleteCommand.CommandText, "SQL", this);
-                    LogCommand(deleteCommand);
-                    deleteCommand.ExecuteNonQuery();
-                    // tran.Log(insertCommand.CommandText, "SQL", this);
-                    LogCommand(insertCommand);
-                    insertCommand.ExecuteNonQuery();
-                }
+                SqlBuilder.BuildCommandWithParameters(_updateCommand, true, query, parameters);
+                FlushUpdateCommand(false);
             }
         }
 
@@ -244,7 +252,7 @@ namespace Sooda.Sql {
                 if (!DisableTransactions)
                     cmd.Transaction = this.Transaction;
 
-                SqlBuilder.BuildCommandWithParameters(cmd, query, whereClause.Parameters);
+                SqlBuilder.BuildCommandWithParameters(cmd, false, query, whereClause.Parameters);
                 LogCommand(cmd);
                 return cmd.ExecuteReader();
             }
@@ -283,7 +291,7 @@ namespace Sooda.Sql {
                 if (!DisableTransactions)
                     cmd.Transaction = this.Transaction;
 
-                SqlBuilder.BuildCommandWithParameters(cmd, queryText, parameters);
+                SqlBuilder.BuildCommandWithParameters(cmd, false, queryText, parameters);
                 LogCommand(cmd);
                 return cmd.ExecuteReader();
             }
@@ -303,7 +311,7 @@ namespace Sooda.Sql {
                 if (!DisableTransactions)
                     cmd.Transaction = this.Transaction;
 
-                SqlBuilder.BuildCommandWithParameters(cmd, queryText, parameters);
+                SqlBuilder.BuildCommandWithParameters(cmd, false, queryText, parameters);
                 LogCommand(cmd);
                 return cmd.ExecuteNonQuery();
             }
@@ -329,7 +337,7 @@ namespace Sooda.Sql {
                 if (!DisableTransactions)
                     cmd.Transaction = this.Transaction;
 
-                SqlBuilder.BuildCommandWithParameters(cmd, query, new object[] { masterValue });
+                SqlBuilder.BuildCommandWithParameters(cmd, false, query, new object[] { masterValue });
                 LogCommand(cmd);
                 return cmd.ExecuteReader();
             }
@@ -340,13 +348,13 @@ namespace Sooda.Sql {
             }
         }
 
-        void DoInserts(SoodaObject obj, IDbCommand cmd) {
+        void DoInserts(SoodaObject obj) {
             foreach (TableInfo table in obj.GetClassInfo().MergedTables) {
-                DoInsertsForTable(obj, table, cmd);
+                DoInsertsForTable(obj, table);
             }
         }
 
-        void DoInsertsForTable(SoodaObject obj, TableInfo table, IDbCommand cmd) {
+        void DoInsertsForTable(SoodaObject obj, TableInfo table) {
             ClassInfo info = obj.GetClassInfo();
             StringBuilder builder = new StringBuilder(500);
             builder.Append("insert into ");
@@ -373,18 +381,18 @@ namespace Sooda.Sql {
                 builder.Append('}');
             };
             builder.Append(")");
-            SqlBuilder.BuildCommandWithParameters(cmd, builder.ToString(), par.ToArray());
-            LogCommand(cmd);
-            cmd.ExecuteNonQuery();
+            SqlBuilder.BuildCommandWithParameters(_updateCommand, true, builder.ToString(), par.ToArray());
+            FlushUpdateCommand(false);
         }
 
-        void DoUpdates(SoodaObject obj, IDbCommand cmd) {
-            foreach (TableInfo table in obj.GetClassInfo().MergedTables) {
-                DoUpdatesForTable(obj, table, cmd);
+        void DoUpdates(SoodaObject obj) {
+            foreach (TableInfo table in obj.GetClassInfo().MergedTables) 
+            {
+                DoUpdatesForTable(obj, table);
             }
         }
 
-        void DoUpdatesForTable(SoodaObject obj, TableInfo table, IDbCommand cmd) {
+        void DoUpdatesForTable(SoodaObject obj, TableInfo table) {
             ClassInfo info = obj.GetClassInfo();
             StringBuilder builder = new StringBuilder(500);
             builder.Append("update ");
@@ -418,9 +426,8 @@ namespace Sooda.Sql {
             builder.Append('}');
             if (anyChange)
             {
-                SqlBuilder.BuildCommandWithParameters(cmd, builder.ToString(), par.ToArray());
-                LogCommand(cmd);
-                cmd.ExecuteNonQuery();
+                SqlBuilder.BuildCommandWithParameters(_updateCommand, true, builder.ToString(), par.ToArray());
+                FlushUpdateCommand(false);
             }
         }
 
@@ -446,12 +453,10 @@ namespace Sooda.Sql {
 #endif
 
             sqllogger.Debug(txt.ToString());
-            // Console.WriteLine("Executing: {0}", cmd.CommandText);
         }
 
         public void ExecuteRaw(string sql) {
             using (IDbCommand cmd = Connection.CreateCommand()) {
-                // Console.WriteLine("state: {0}", Connection.State);
                 if (!DisableTransactions)
                     cmd.Transaction = this.Transaction;
 

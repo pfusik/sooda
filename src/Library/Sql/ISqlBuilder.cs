@@ -47,7 +47,7 @@ namespace Sooda.Sql {
         SqlOuterJoinSyntax OuterJoinSyntax { get ; }
         SqlTopSupportMode TopSupport { get; }
 
-        void BuildCommandWithParameters(IDbCommand command, string query, params object[] par);
+        void BuildCommandWithParameters(IDbCommand command, bool append, string query, params object[] par);
 
         void GenerateCreateTable(TextWriter tw, TableInfo tableInfo);
         void GeneratePrimaryKey(TextWriter tw, TableInfo tableInfo);

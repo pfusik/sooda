@@ -61,8 +61,8 @@ namespace ConsoleTest
     {
         static void Main(string[] args) 
         {
-            Sooda.UnitTests.TestCases.ObjectMapper.PersistenceTest t = new Sooda.UnitTests.TestCases.ObjectMapper.PersistenceTest();
-            t.Test1();
+            Sooda.UnitTests.TestCases.ObjectMapper.SerializationTest t = new Sooda.UnitTests.TestCases.ObjectMapper.SerializationTest();
+            t.Collection1toNTest(false);
         }
     }
 }

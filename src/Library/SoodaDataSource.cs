@@ -83,8 +83,11 @@ namespace Sooda {
         public abstract void Open();
         public abstract void Close();
 
+        public abstract void BeginSaveChanges();
         public abstract void SaveObjectChanges(SoodaObject obj);
         public abstract void DeleteObject(SoodaObject obj);
+        public abstract void FinishSaveChanges();
+
         public abstract IDataReader LoadObject(SoodaObject obj, object keyValue, out TableInfo[] tables);
         public abstract IDataReader LoadObjectTable(SoodaObject obj, object keyValue, int tableNumber, out TableInfo[] tables);
         public abstract void MakeTuple(string tableName, string leftColumn, string rightColumn, object leftVal, object rightVal, int mode);

@@ -78,7 +78,16 @@ namespace Sooda.Xml {
             // TODO:  Add XmlDataSource.MakeTuple implementation
         }
 
-        public override void SaveObjectChanges(Sooda.SoodaObject obj) {
+        public override void BeginSaveChanges()
+        {
+        }
+
+        public override void FinishSaveChanges()
+        {
+        }
+
+        public override void SaveObjectChanges(Sooda.SoodaObject obj) 
+        {
             // TODO:  Add XmlDataSource.SaveObjectChanges implementation
         }
 
