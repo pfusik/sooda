@@ -109,6 +109,7 @@
 			<xsd:enumeration value="Text" />
 			<xsd:enumeration value="Guid" />
 			<xsd:enumeration value="Image" />
+			<xsd:enumeration value="TimeSpan" />
     	</xsd:restriction>
 	</xsd:simpleType>
 	<xsd:simpleType name="ClassCardinality">

@@ -139,16 +139,20 @@ namespace Sooda.Sql {
 								SetDbTypeFromClrType(p, v.GetType());
 
 								// HACK
-								if (v is System.Drawing.Image) 
-								{
-									System.Drawing.Image img = (System.Drawing.Image)v;
+                                if (v is System.Drawing.Image) 
+                                {
+                                    System.Drawing.Image img = (System.Drawing.Image)v;
 
-									MemoryStream ms = new MemoryStream();
-									img.Save(ms, img.RawFormat);
+                                    MemoryStream ms = new MemoryStream();
+                                    img.Save(ms, img.RawFormat);
 
-									p.Value = ms.GetBuffer();
-								} 
-								else 
+                                    p.Value = ms.GetBuffer();
+                                } 
+                                else if (v is TimeSpan)
+                                {
+                                    p.Value = (int)(((TimeSpan)v).TotalSeconds);
+                                }
+                                else
 								{
 									p.Value = v;
 								}

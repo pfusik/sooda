@@ -124,7 +124,8 @@ namespace Sooda.Sql {
 			paramTypes[typeof(Boolean)] = DbType.Boolean;
 			paramTypes[typeof(Decimal)] = DbType.Decimal;
 			paramTypes[typeof(Guid)] = DbType.Guid;
-			paramTypes[typeof(byte[])] = DbType.Binary;
+            paramTypes[typeof(TimeSpan)] = DbType.Int32;
+            paramTypes[typeof(byte[])] = DbType.Binary;
 			paramTypes[typeof(System.Drawing.Image)] = DbType.Binary;
 			paramTypes[typeof(System.Drawing.Bitmap)] = DbType.Binary;
 		}

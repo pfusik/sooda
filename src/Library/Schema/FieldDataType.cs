@@ -49,6 +49,7 @@ namespace Sooda.Schema {
         Blob,
         Guid,
         Image,
+        TimeSpan,
     }
 
     internal class FieldDataLookup {
@@ -83,7 +84,8 @@ namespace Sooda.Schema {
                     new FieldDataLookup(FieldDataType.String, typeof(System.String), typeof(System.Data.SqlTypes.SqlString), true, false, "Sooda.ObjectMapper.FieldHandlers.StringFieldHandler"),
                     new FieldDataLookup(FieldDataType.Guid, typeof(System.Guid), typeof(System.Data.SqlTypes.SqlGuid), true, false, "Sooda.ObjectMapper.FieldHandlers.GuidFieldHandler"),
                     new FieldDataLookup(FieldDataType.Image, typeof(System.Drawing.Image), null, false, false, "Sooda.ObjectMapper.FieldHandlers.ImageFieldHandler"),
-                };
+                    new FieldDataLookup(FieldDataType.TimeSpan, typeof(System.TimeSpan), null, false, false, "Sooda.ObjectMapper.FieldHandlers.TimeSpanFieldHandler"),
+        };
 
         public static Type GetClrType(FieldDataType t) {
             foreach (FieldDataLookup lookup in lookupTable)
