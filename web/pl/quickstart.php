@@ -1,0 +1,25 @@
+<?php
+include "_layout.php";
+write_start_page();
+?>
+<h1>Szybki start</h1>
+<p>Aby rozpocz¹æ pracê z Sood¹ nale¿y zainstalowaæ:</p>
+<ul>
+<li>.NET Framework v1.1 (<a href="http://msdn.microsoft.com/netframework/">http://msdn.microsoft.com/netframework/</a>)</li>
+<li>NAnt (<a href="http://nant.sourceforge.net/">http://nant.sourceforge.net/</a>)</li>
+<li>Pakiet instalacyjny Sooda SDK. <a href="download.html">Pobierz</a></li>
+</ul>
+<h1>Przygotowanie bazy danych</h1>
+<p>
+Sooda udostêpnia mechanizmy odwzorowania relacyjno-obiektowego dla danych przechowywanych w relacyjnych 
+bazach danych (RDBMS). Baza danych powinna byæ utworzona przy pomocy narzêdzi w³aœciwych dla 
+odpowiedniego produktu. Nie jest wspierane tworzenie i zarz¹dzanie schematem na poziomie bazy danych.
+</p>
+<p>
+Aby w pe³ni wykorzystaæ mo¿liwoœci jakie daje Sooda, nale¿y przestrzegaæ nastêpuj¹cych zasad:
+</p>
+<ol>
+<li></li>
+</ol>
+<?php write_end_page() ?>
+

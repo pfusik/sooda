@@ -1,0 +1,32 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaQuery", "src\Tools\SoodaQuery\SoodaQuery.csproj", "{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda", "src\Library\Sooda.csproj", "{FCC9B644-9093-41F6-8F0D-F98F22474CB5}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(DPCodeReviewSolutionGUID) = preSolution
+		DPCodeReviewSolutionGUID = {00000000-0000-0000-0000-000000000000}
+	EndGlobalSection
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}.Debug.ActiveCfg = Debug|.NET
+		{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}.Debug.Build.0 = Debug|.NET
+		{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}.Release.ActiveCfg = Release|.NET
+		{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}.Release.Build.0 = Release|.NET
+		{FCC9B644-9093-41F6-8F0D-F98F22474CB5}.Debug.ActiveCfg = Debug|.NET
+		{FCC9B644-9093-41F6-8F0D-F98F22474CB5}.Debug.Build.0 = Debug|.NET
+		{FCC9B644-9093-41F6-8F0D-F98F22474CB5}.Release.ActiveCfg = Release|.NET
+		{FCC9B644-9093-41F6-8F0D-F98F22474CB5}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

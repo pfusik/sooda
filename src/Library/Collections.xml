@@ -1,0 +1,160 @@
+<typeSafeCollections>
+	<typeSafeCollection>
+		<templateKind>Vector</templateKind>
+		<itemType>Sooda.SoodaObject</itemType>
+		<collectionName>SoodaObjectCollection</collectionName>
+		<collectionNamespace>Sooda</collectionNamespace>
+	</typeSafeCollection>
+	<typeSafeCollection>
+		<templateKind>Vector</templateKind>
+		<itemType>Sooda.SoodaDataSource</itemType>
+		<collectionName>DataSourceCollection</collectionName>
+		<collectionNamespace>Sooda</collectionNamespace>
+	</typeSafeCollection>
+	
+	<typeSafeCollection>
+		<templateKind>HashTable</templateKind>
+		<keyType>System.Type</keyType>
+		<itemType>ISoodaObjectFactory</itemType>
+		<collectionName>TypeToSoodaObjectFactoryMap</collectionName>
+		<collectionNamespace>Sooda</collectionNamespace>
+	</typeSafeCollection>
+	
+	<typeSafeCollection>
+		<templateKind>HashTable</templateKind>
+		<keyType>string</keyType>
+		<itemType>ISoodaObjectFactory</itemType>
+		<collectionName>StringToSoodaObjectFactoryMap</collectionName>
+		<collectionNamespace>Sooda</collectionNamespace>
+	</typeSafeCollection>
+	
+	<typeSafeCollection>
+		<templateKind>HashTable</templateKind>
+		<keyType>string</keyType>
+		<itemType>SoodaObject</itemType>
+		<collectionName>StringToSoodaObjectMap</collectionName>
+		<collectionNamespace>Sooda</collectionNamespace>
+	</typeSafeCollection>
+	
+	<typeSafeCollection>
+		<templateKind>HashTable</templateKind>
+		<keyType>SoodaObject</keyType>
+		<itemType>string</itemType>
+		<collectionName>SoodaObjectToStringMap</collectionName>
+		<collectionNamespace>Sooda</collectionNamespace>
+	</typeSafeCollection>
+	
+	<typeSafeCollection>
+		<templateKind>HashTable</templateKind>
+		<keyType>SoodaObject</keyType>
+		<itemType>object</itemType>
+		<collectionName>SoodaObjectToObjectDictionary</collectionName>
+		<collectionNamespace>Sooda</collectionNamespace>
+	</typeSafeCollection>
+	
+	<typeSafeCollection>
+		<templateKind>HashTable</templateKind>
+		<keyType>string</keyType>
+		<itemType>SoodaObjectCollection</itemType>
+		<collectionName>StringToSoodaObjectCollectionDictionary</collectionName>
+		<collectionNamespace>Sooda</collectionNamespace>
+	</typeSafeCollection>
+	
+	<typeSafeCollection>
+		<templateKind>HashTable</templateKind>
+		<keyType>string</keyType>
+		<itemType>ObjectToSoodaObjectDictionary</itemType>
+		<collectionName>StringToSoodaObjectDictionaryDictionary</collectionName>
+		<collectionNamespace>Sooda</collectionNamespace>
+	</typeSafeCollection>
+	
+	<typeSafeCollection>
+		<templateKind>HashTable</templateKind>
+		<keyType>string</keyType>
+		<itemType>ObjectToSoodaObjectFactoryDictionary</itemType>
+		<collectionName>StringToSoodaObjectFactoryDictionaryDictionary</collectionName>
+		<collectionNamespace>Sooda</collectionNamespace>
+	</typeSafeCollection>
+	
+	<typeSafeCollection>
+		<templateKind>HashTable</templateKind>
+		<keyType>System.Object</keyType>
+		<itemType>SoodaObject</itemType>
+		<collectionName>ObjectToSoodaObjectDictionary</collectionName>
+		<collectionNamespace>Sooda</collectionNamespace>
+	</typeSafeCollection>
+	
+	<typeSafeCollection>
+		<templateKind>HashTable</templateKind>
+		<keyType>System.Object</keyType>
+		<itemType>ISoodaObjectFactory</itemType>
+		<collectionName>ObjectToSoodaObjectFactoryDictionary</collectionName>
+		<collectionNamespace>Sooda</collectionNamespace>
+	</typeSafeCollection>
+	
+	<typeSafeCollection>
+		<templateKind>HashTable</templateKind>
+		<keyType>int</keyType>
+		<itemType>SoodaObject</itemType>
+		<collectionName>IntToSoodaObjectDictionary</collectionName>
+		<collectionNamespace>Sooda</collectionNamespace>
+	</typeSafeCollection>
+	<typeSafeCollection>
+		<templateKind>HashTable</templateKind>
+		<keyType>SoodaObject</keyType>
+		<itemType>int</itemType>
+		<collectionName>SoodaObjectToIntDictionary</collectionName>
+		<collectionNamespace>Sooda</collectionNamespace>
+	</typeSafeCollection>
+	<typeSafeCollection>
+		<templateKind>HashTable</templateKind>
+		<keyType>Type</keyType>
+		<itemType>Sooda.ObjectMapper.SoodaRelationTable</itemType>
+		<collectionName>TypeToSoodaRelationTableDictionary</collectionName>
+		<collectionNamespace>Sooda</collectionNamespace>
+	</typeSafeCollection>
+	
+	//
+	
+<!--
+	<typeSafeCollection>
+		<templateKind>Vector</templateKind>
+		<itemType>SqlTable</itemType>
+		<collectionName>SqlTableCollection</collectionName>
+		<collectionNamespace>Sooda.Collections</collectionNamespace>
+	</typeSafeCollection>
+	<typeSafeCollection>
+		<templateKind>HashTable</templateKind>
+		<keyType>string</keyType>
+		<itemType>SqlTable</itemType>
+		<collectionName>SqlTableDictionary</collectionName>
+		<collectionNamespace>Sooda.Collections</collectionNamespace>
+	</typeSafeCollection>
+	<typeSafeCollection>
+		<templateKind>Vector</templateKind>
+		<itemType>SqlTextObject</itemType>
+		<collectionName>SqlTextObjectCollection</collectionName>
+		<collectionNamespace>Sooda.Collections</collectionNamespace>
+	</typeSafeCollection>
+	<typeSafeCollection>
+		<templateKind>HashTable</templateKind>
+		<keyType>string</keyType>
+		<itemType>SqlTextObject</itemType>
+		<collectionName>SqlTextObjectDictionary</collectionName>
+		<collectionNamespace>Sooda.Collections</collectionNamespace>
+	</typeSafeCollection>
+	<typeSafeCollection>
+		<templateKind>Vector</templateKind>
+		<itemType>SqlView</itemType>
+		<collectionName>SqlViewCollection</collectionName>
+		<collectionNamespace>Sooda.Collections</collectionNamespace>
+	</typeSafeCollection>
+	<typeSafeCollection>
+		<templateKind>HashTable</templateKind>
+		<keyType>string</keyType>
+		<itemType>SqlView</itemType>
+		<collectionName>SqlViewDictionary</collectionName>
+		<collectionNamespace>Sooda.Collections</collectionNamespace>
+	</typeSafeCollection>
+-->
+</typeSafeCollections>

@@ -1,0 +1,57 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.UnitTests.Objects", "UnitTestObjects\Sooda.UnitTests.Objects.csproj", "{3574E1EF-2272-4474-85D9-0718B3D452E3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D1076BB4-3E1B-43D3-B176-DBE89B3C413B} = {D1076BB4-3E1B-43D3-B176-DBE89B3C413B}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda", "..\src\Library\Sooda.csproj", "{FCC9B644-9093-41F6-8F0D-F98F22474CB5}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.UnitTests.TestCases", "TestCases\Sooda.UnitTests.TestCases.csproj", "{2DB9451B-8E35-45C3-94E6-32026E9DE8D1}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StubGen", "..\src\Tools\StubGen\StubGen.csproj", "{D1076BB4-3E1B-43D3-B176-DBE89B3C413B}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTest", "ConsoleTest\ConsoleTest.csproj", "{24930E59-3AF2-4F6B-87C2-06CB66EEA190}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(DPCodeReviewSolutionGUID) = preSolution
+		DPCodeReviewSolutionGUID = {D251C1F4-BAC6-4F4C-AA68-104AF7A434D6}
+	EndGlobalSection
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{3574E1EF-2272-4474-85D9-0718B3D452E3}.Debug.ActiveCfg = Debug|.NET
+		{3574E1EF-2272-4474-85D9-0718B3D452E3}.Debug.Build.0 = Debug|.NET
+		{3574E1EF-2272-4474-85D9-0718B3D452E3}.Release.ActiveCfg = Release|.NET
+		{3574E1EF-2272-4474-85D9-0718B3D452E3}.Release.Build.0 = Release|.NET
+		{FCC9B644-9093-41F6-8F0D-F98F22474CB5}.Debug.ActiveCfg = Debug|.NET
+		{FCC9B644-9093-41F6-8F0D-F98F22474CB5}.Debug.Build.0 = Debug|.NET
+		{FCC9B644-9093-41F6-8F0D-F98F22474CB5}.Release.ActiveCfg = Release|.NET
+		{FCC9B644-9093-41F6-8F0D-F98F22474CB5}.Release.Build.0 = Release|.NET
+		{2DB9451B-8E35-45C3-94E6-32026E9DE8D1}.Debug.ActiveCfg = Debug|.NET
+		{2DB9451B-8E35-45C3-94E6-32026E9DE8D1}.Debug.Build.0 = Debug|.NET
+		{2DB9451B-8E35-45C3-94E6-32026E9DE8D1}.Release.ActiveCfg = Release|.NET
+		{2DB9451B-8E35-45C3-94E6-32026E9DE8D1}.Release.Build.0 = Release|.NET
+		{D1076BB4-3E1B-43D3-B176-DBE89B3C413B}.Debug.ActiveCfg = Debug|.NET
+		{D1076BB4-3E1B-43D3-B176-DBE89B3C413B}.Debug.Build.0 = Debug|.NET
+		{D1076BB4-3E1B-43D3-B176-DBE89B3C413B}.Release.ActiveCfg = Release|.NET
+		{D1076BB4-3E1B-43D3-B176-DBE89B3C413B}.Release.Build.0 = Release|.NET
+		{24930E59-3AF2-4F6B-87C2-06CB66EEA190}.Debug.ActiveCfg = Debug|.NET
+		{24930E59-3AF2-4F6B-87C2-06CB66EEA190}.Debug.Build.0 = Debug|.NET
+		{24930E59-3AF2-4F6B-87C2-06CB66EEA190}.Release.ActiveCfg = Release|.NET
+		{24930E59-3AF2-4F6B-87C2-06CB66EEA190}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,15 @@
+<typeSafeCollections>
+	<typeSafeCollection>
+		<templateKind>Vector</templateKind>
+		<itemType>SoqlExpression</itemType>
+		<collectionName>SoqlExpressionCollection</collectionName>
+		<collectionNamespace>Sooda.QL</collectionNamespace>
+	</typeSafeCollection>
+	<typeSafeCollection>
+		<templateKind>HashTable</templateKind>
+		<keyType>string</keyType>
+		<itemType>SoqlExpressionType</itemType>
+		<collectionName>PrefixToExpressionTypeMap</collectionName>
+		<collectionNamespace>Sooda.QL</collectionNamespace>
+	</typeSafeCollection>
+</typeSafeCollections>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project>
+    <property name="objects.assembly.name" value="Sooda.UnitTests.Objects" />
+    <property name="stubs.assembly.name" value="${objects.assembly.name}.Stubs" />
+    <property name="stubs.debug" value="true" />
+    <property name="stubs.assembly" value="${stubs.assembly.name}.dll" />
+    <property name="objects.assembly" value="${objects.assembly.name}.dll" />
+    <property name="objects.assemblyinfo" value="../UnitTestObjects/AssemblyInfo.cs" />
+
+    <property name="schema.dir" value="../.." />
+    <property name="schema.file" value="DBSchema.xml" />
+    <property name="schema.path" value="${path::combine(schema.dir,schema.file)}" />
+
+    <property name="stubgen.path" value="${sooda.dir}/StubGen.exe" />
+    <property name="stubgen.options" value="--separate-stubs --project vs -s ${schema.file} -n Sooda.UnitTests.Objects -o UnitTestObjects" />
+    <property name="stubgen.workingdir" value="${schema.dir}" />
+
+    <uptodate property="csx.uptodate">
+        <targetfiles>
+            <includes name="*.csx" />
+        </targetfiles>
+        <sourcefiles>
+            <includes name="${schema.path}" />
+            <includes name="${stubgen.path}" />
+        </sourcefiles>
+    </uptodate>
+
+    <call target="stubgen" unless="${csx.uptodate}" />
+
+    <uptodate property="stubs.uptodate">
+        <targetfiles>
+            <includes name="${stubs.assembly}" />
+            <includes name="${objects.assembly}" />
+        </targetfiles>
+        <sourcefiles>
+            <includes name="*.csx" />
+            <includes name="*.cs" />
+            <includes name="_DBSchema.*" />
+            <includes name="${objects.assemblyinfo}" />
+        </sourcefiles>
+    </uptodate>
+
+    <call target="rebuild" unless="${stubs.uptodate}" />
+
+    <target name="stubgen">
+        <echo message="Rewriting stubs..." />
+        <exec program="${stubgen.path}" commandline="${stubgen.options} ${schema.path}" workingdir="${stubgen.workingdir}" useruntimeengine="true" />
+    </target>
+
+    <target name="rebuild">
+        <echo message="Rebuilding stubs..." />
+
+        <delete file="${stubs.assembly}" if="${file::exists(stubs.assembly)}" />
+        <delete file="${objects.assembly}" if="${file::exists(objects.assembly)}" />
+
+        <csc target="library" output="${stubs.assembly}" debug="${stubs.debug}">
+            <references>                                  
+				<includes name="${sooda.dir}/Sooda.dll" asis="true" />
+				<includes name="System.Data.dll" />
+            </references>
+            <sources basedir=".">
+                <includes name="_MiniStubs.csx" asis="true" />
+            </sources>
+        </csc>
+
+        <csc target="library" output="${objects.assembly}">
+            <references>                                  
+                <includes name="${sooda.dir}/Sooda.dll" asis="true" />
+                <includes name="${stubs.assembly}" asis="true" />
+				<includes name="System.Data.dll" />
+            </references>
+            <sources basedir=".">
+                <includes name="_MiniSkeleton.csx" asis="true" />
+                <includes name="${objects.assemblyinfo}" />
+            </sources>
+        </csc>
+
+        <csc target="library" output="${stubs.assembly}" debug="${stubs.debug}" rebuild="true">
+            <references>                                  
+                <includes name="${sooda.dir}/Sooda.dll" />
+                <includes name="${objects.assembly}" />
+                <!-- <includes name="${stubs.assembly}" /> -->
+				<includes name="System.Data.dll" />
+            </references>
+            <sources basedir=".">
+                <includes name="_Stubs*.csx" />
+            </sources>
+            <resources basedir="." prefix="">
+                <includes name="_DBSchema.*" />
+            </resources>
+        </csc>
+    </target>
+</project>

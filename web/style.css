@@ -1,0 +1,261 @@
+body
+{
+	margin-right: 10px;
+	margin-left: 10px;
+	background: white;
+	color: black;
+	font-family: Verdana;
+	font-size: 70%;
+}
+
+h1
+{
+	font-size: 150%;
+}
+
+h2
+{
+	margin-top: 30px;
+	font-size: 120%;
+}
+
+th
+{
+	background-color: #c0c0c0;
+	border: 1px solid #808080;
+	padding: 3px;
+}
+
+td.logo
+{
+	font-family: Verdana;
+	border-bottom: 1px solid #c0d0c0;
+	padding-bottom: 3px;
+	font-size: 10px;
+}
+
+td.copyright
+{
+	font-family: Verdana;
+	font-size: 10px;
+	border-top: 1px solid #c0d0c0;
+	padding-top: 3px;
+}
+
+td.upperinfo
+{
+	font-family: Verdana;
+	font-size: 10px;
+	border-bottom: 1px solid #c0d0c0;
+	padding-bottom: 3px;
+}
+
+td.nav
+{
+	font-family: Verdana;
+	font-size: 12px;
+	padding: 3px;
+}
+
+td.content
+{
+	font-family: Verdana;
+	font-size: 12px;
+	border-left: 1px solid #c0d0c0;
+	padding: 4px;
+}
+
+a:link
+{
+	color: #5b5b0e;
+	background-color: inherit;
+}
+
+a:visited
+{
+	color: #5b5b0e;
+	background-color: inherit;
+}
+
+a:hover
+{
+	color: black;
+	background-color: inherit;
+}
+
+span.path
+{
+	font-family: Courier New;
+	color: #404080;
+	font-size: 100%;
+	font-weight: bold;
+}
+
+span.code
+{
+	font-family: Courier New;
+	color: #404080;
+	font-size: 100%;
+	font-weight: bold;
+}
+
+span.sql
+{
+	font-family: Courier New;
+	color: #0000ff;
+	font-size: 100%;
+	font-weight: bold;
+}
+
+span.class
+{
+	font-family: Courier New;
+	color: #0000c0;
+	font-size: 100%;
+	font-weight: bold;
+}
+
+li
+{
+	/* font-weight: bold; */
+	color: black;
+}
+
+pre.csharp
+{
+	font-family: Courier New;
+	font-size: 11px;
+	padding: 4px;
+	font-color: #606060;
+	background-color: #f0f0f0;
+	border: 1px solid #e0e0e0;
+}
+
+span.keyword
+{
+	color: blue;
+}
+
+span.string
+{
+	color: #c00000;
+}
+
+span.operator
+{
+	color: #404040;
+}
+
+span.number
+{
+	color: #ff00ff;
+}
+
+span.type
+{
+	color: #008000;
+	font-weight: bold;
+}
+
+span.xmlattribute
+{
+	color: #ff0000;
+}
+
+span.xmlstring
+{
+	color: #0000ff;
+}
+
+span.xmlbracket
+{
+	color: #0000ff;
+}
+
+span.xmltag
+{
+	color: #800000;
+}
+
+span.comment
+{
+	color: #008000;
+	font-style: italic;
+}
+
+table.nav
+{
+    font-family: Verdana;
+    font-size: 14px;
+    font-weight: bold;
+    border-left: 1px solid #c0c0e0;
+    border-top: 1px solid #c0c0e0;
+    border-right: 2px solid #808080;
+    border-bottom: 2px solid #808080;
+    border-collapse: collapse;
+}
+
+a.nav_normal
+{
+    color: #004000;
+    cursor: pointer; cursor: hand;
+    text-decoration: none;
+}
+
+a.nav_selected
+{
+    color: #ffffc8;
+    cursor: pointer; cursor: hand;
+    text-decoration: none;
+}
+
+tr.nav_normal
+{
+    background-color: #d0d0c0;
+    color: #004000;
+    cursor: pointer; cursor: hand;
+}
+
+tr.nav_hilite
+{
+    background-color: #f0f0e0;
+    color: #008000;
+    cursor: pointer; cursor: hand;
+}
+
+tr.nav_selected
+{
+    background-color: #3b3b2e;
+    color: #ffffc8;
+    cursor: pointer; cursor: hand;
+}
+
+td
+{
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+a:visited
+{
+    color: black;
+}
+
+a:hover
+{
+    color: yellow;
+}
+
+td.titledesc
+{
+    font-family: Verdana;
+	font-size: 70%;
+    vertical-align: bottom;
+    padding-bottom: 10px;
+    padding-right: 10px;
+}
+
+img.thinborder
+{
+    border: 1px solid black;
+}

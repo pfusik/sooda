@@ -1,0 +1,5 @@
+#!/bin/sh
+MONO_EXE=`which mono`
+echo "#!/bin/sh" > $1
+echo "exec $MONO_EXE $1.exe \$*" >> $1
+chmod 0755 $1

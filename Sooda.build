@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="Sooda" default="build" basedir=".">
+    <property name="sooda.dir" value="${nant.project.basedir}/bin" unless="${property::exists('sooda.dir')}" />
+    <property name="sooda.debug" value="true" unless="${property::exists('sooda.debug')}" />
+    <property name="sooda.optimize" value="false" unless="${property::exists('sooda.optimize')}" />
+
+    <property name="scp.program" value="scp" />
+    <property name="scp.args" value="" />
+    <property name="ssh.program" value="ssh" />
+    <property name="ssh.args" value="" />
+    <property name="ssh.server" value="jkowalski@sooda.sourceforge.net" />
+
+    <property name="sooda.csc.args" value="/nowarn:1591" />
+    <property name="sooda.external" value="${nant.project.basedir}/src/ExternalLib" />
+    
+    <target name="build" depends="build-${nant.settings.currentframework}" />
+    <target name="build-net-1.0" depends="build-common, tools" />
+    <target name="build-net-1.1" depends="build-common, tools" />
+    <target name="build-net-2.0-beta-1" depends="build-common, tools" />
+    <target name="build-netcf-1.0" depends="build-common" />
+    <target name="build-mono-1.0" depends="build-common, minitools" />
+
+    <target name="build-common" depends="settings, libraries" />
+    <target name="tools" depends="StubGen, SoodaQuery, SoodaSchemaTool" />
+    <target name="minitools" depends="StubGen-mini" />
+
+    <target name="libraries" depends="Sooda" />
+
+    <target name="settings" depends="log4net">
+        <property name="sooda.define" value="TRACE,DEBUG" />
+        <property name="sooda.define" value="TRACE" unless="${sooda.debug}" />
+        <property name="sooda.optimize" value="false" />
+        <property name="sooda.optimize" value="true" unless="${sooda.debug}" />
+
+        <call target="settings-${nant.settings.currentframework}" 
+            if="${target::exists('settings-' + nant.settings.currentframework)}" />
+
+        <echo message="basedir:   ${nant.project.basedir}" />
+        <echo message="external:  ${sooda.external}" />
+        <echo message="defines:   ${sooda.define}" />
+        <echo message="optimize:  ${sooda.optimize}" />
+        <echo message="output:    ${sooda.dir}" />
+        <echo message="framework: ${nant.settings.currentframework.description}" />
+	</target>
+	
+    <target name="settings-net-1.0">
+        <property name="sooda.define" value="${sooda.define},SOODA_NO_ODBC" />
+	</target>
+
+    <target name="linuxtoolwrappers">
+        <exec workingdir="${sooda.dir}" program="${nant.project.basedir}/BuildTools/makewrapper ${sooda.dir}/StubGen" />
+        <exec workingdir="${sooda.dir}" program="${nant.project.basedir}/BuildTools/makewrapper ${sooda.dir}/DBTool" />
+    </target>
+
+    <target name="gac" description="Registers Sooda in Global Assembly Cache">
+        <exec workingdir="${sooda.dir}" program="gacutil.exe" commandline="/silent /i Sooda.dll" />
+    </target>
+
+    <target name="ungac" description="Unregisters Sooda from Global Assembly Cache">
+        <exec workingdir="${sooda.dir}" program="gacutil.exe" commandline="/silent /u Sooda" />
+    </target>
+
+    <target name="Sooda" depends="settings, log4net" description="Sooda">
+        <csc target="library" output="${sooda.dir}/Sooda.dll" debug="${sooda.debug}" define="${sooda.define}">
+            <references>                                  
+                <include name="System.Data.dll" />
+                <include name="System.Drawing.dll" />
+                <include name="${sooda.dir}/log4net.dll" />
+            </references>
+            <sources basedir="src/Library">
+                <include name="**/*.cs" />
+            </sources>
+            <resources basedir="src/Library" prefix="Sooda" dynamicprefix="true">
+                <include name="Schema/DBSchema.xsd" />
+            </resources>
+            <arg value="${sooda.csc.args}"/>
+        </csc>
+    </target>
+
+    <target name="StubGen-mini" depends="settings, Sooda">
+        <csc target="exe" output="${sooda.dir}/StubGen.exe" debug="${sooda.debug}" define="${sooda.define},NO_VB,NO_JSCRIPT">
+            <references>                                  
+                <include name="${sooda.dir}/Sooda.dll" />
+                <!-- <includes name="Microsoft.JScript.dll" asis="true"/> -->
+            </references>
+            <sources basedir="src/Tools/StubGen">
+                <include name="*.cs" />
+            </sources>
+            <resources basedir="src/Tools/StubGen" prefix="Sooda.StubGen" dynamicprefix="true">
+                <include name="Template/*.csproj" />
+                <include name="Template/*.vbproj" />
+                <include name="Template/*.build" />
+            </resources>
+        </csc>
+        <copy file="src/Tools/StubGen/App.config" tofile="${sooda.dir}/StubGen.exe.config" />
+    </target>
+
+    <target name="StubGen" depends="settings, Sooda">
+        <csc target="exe" output="${sooda.dir}/StubGen.exe" debug="${sooda.debug}" define="${sooda.define}">
+            <references>                                  
+                <include name="${sooda.dir}/Sooda.dll" />
+                <include name="Microsoft.JScript.dll" asis="true"/>
+            </references>
+            <sources basedir="src/Tools/StubGen">
+                <include name="*.cs" />
+            </sources>
+            <resources basedir="src/Tools/StubGen" prefix="Sooda.StubGen" dynamicprefix="true">
+                <include name="Template/*.csproj" />
+                <include name="Template/*.vbproj" />
+                <include name="Template/*.build" />
+            </resources>
+        </csc>
+        <copy file="src/Tools/StubGen/App.config" tofile="${sooda.dir}/StubGen.exe.config" />
+    </target>
+
+    <target name="SoodaSchemaTool" depends="settings, Sooda">
+        <csc target="exe" output="${sooda.dir}/SoodaSchemaTool.exe" debug="${sooda.debug}" define="${sooda.define}">
+            <references>                                  
+                <include name="System.Data.dll" asis="true" />
+                <include name="${sooda.dir}/Sooda.dll" />
+            </references>
+            <sources basedir="src/Tools/SoodaSchemaTool">
+                <include name="*.cs" />
+            </sources>
+        </csc>
+    </target>
+
+    <target name="SoodaQuery" depends="settings, Sooda">
+        <csc target="winexe" output="${sooda.dir}/SoodaQuery.exe" debug="${sooda.debug}" define="${sooda.define}" win32icon="src/Tools/SoodaQuery/app.ico">
+            <references>                                  
+                <include name="${sooda.dir}/Sooda.dll" />
+                <include name="${sooda.external}/ICSharpCode.TextEditor.dll" />
+            </references>
+            <sources basedir="src/Tools/SoodaQuery">
+                <include name="*.cs" />
+            </sources>
+            <resources basedir="src/Tools/SoodaQuery" prefix="SoodaQuery" dynamicprefix="true">
+                <include name="MainForm.resx" />
+                <include name="*.xshd" />
+                <include name="SyntaxModes.xml" />
+            </resources>
+        </csc>
+        <copy file="src/Tools/SoodaQuery/App.config" tofile="${sooda.dir}/SoodaQuery.exe.config" />
+        <copy file="src/Tools/SoodaQuery/SoodaQuery.exe.manifest" tofile="${sooda.dir}/SoodaQuery.exe.manifest" />
+        <copy file="${sooda.external}/ICSharpCode.TextEditor.dll" tofile="${sooda.dir}/ICSharpCode.TextEditor.dll" />
+    </target>
+
+    <target name="clean" description="Delete *.exe,*.dll,*.pdb and *.exe files from output directory">
+        <delete>
+            <fileset defaultexcludes="false">
+                <include name="SetupSooda.exe" />
+                <include name="*.suo" />
+                <include name="${sooda.dir}/*.dll" />
+                <include name="${sooda.dir}/*.pdb" />
+                <include name="${sooda.dir}/*.xml" />
+                <include name="${sooda.dir}/*.exe" />
+                <include name="${sooda.dir}/*.tlb" />
+                <include name="${sooda.dir}/*.exe.config" />
+                <include name="${sooda.dir}/*.exe.manifest" />
+                <include name="**/*.tmp" />
+                <include name="tests/UnitTestObjects/_Stubs.cs" />
+                <include name="tests/UnitTestObjects/_DBSchema.bin" />
+                <include name="tests/UnitTestObjects/_DBSchema.xml" />
+            </fileset>
+        </delete>
+        <foreach item="Folder" property="dirname">
+            <in>
+                <items>
+                    <includes name="src/**/bin" />
+                    <includes name="src/**/obj" />
+                    <includes name="tests/**/bin" />
+                    <includes name="tests/**/obj" />
+                </items>
+            </in>
+            <do>
+                <delete dir="${dirname}" />
+            </do>
+        </foreach>    
+    </target>
+
+    <target name="tarbz2" description="Creates a .tar.bz2 snapshot of sources" depends="settings, clean">
+        <tstamp property="build.date" pattern="yyyyMMdd_HHmm" verbose="true" />
+        <exec workingdir=".." program="tar" commandline="cvf sooda-${build.date}.tar sooda/" />
+        <exec workingdir=".." program="bzip2" commandline="-9 sooda-${build.date}.tar" />
+    </target>
+
+    <target name="zip" depends="clean">
+        <tstamp property="build.date" pattern="yyyyMMdd" verbose="true" />
+        <property name="zipfile" value="sooda_${build.date}.zip" />
+        <zip zipfile="${zipfile}">
+            <fileset>
+                <includes name="**/*" />
+                <excludes name="**/*.swp" />
+                <excludes name="**/.svn" />
+                <excludes name="**/.svn/**" />
+                <excludes name="${zipfile}" />
+            </fileset>
+        </zip>
+    </target>
+
+    <target name="SoodaCore-test" depends="settings">
+        <csc target="library" output="${sooda.dir}/SoodaCore.dll" debug="${sooda.debug}" define="${sooda.define}">
+            <references>                                  
+                <includes name="System.Data.dll" asis="true" />
+                <includes name="${sooda.dir}/log4net.dll" />
+            </references>
+            <sources basedir="Library">
+                <includes name="**/*.cs" />
+                <excludes name="Sql/**/*.cs" />
+            </sources>
+            <resources basedir="Library" prefix="Sooda" dynamicprefix="true">
+                <includes name="Schema/DBSchema.xsd" />
+            </resources>
+        </csc>
+        <echo message="test" />
+    </target>
+
+    <target name="rebuildstubs" depends="minitools">
+        <nant buildfile="tests/UnitTestObjects/Stubs/_rebuild_stubs.build" target="stubgen" />
+    </target>
+
+    <target name="stubs" depends="minitools">
+        <exec program="${sooda.dir}/StubGen.exe" useruntimeengine="true" workingdir="tests" 
+            commandline="--project vs --rebuild-if-changed --nullable-as sqltype -s DBSchema.xml -n Sooda.UnitTests.Objects -o UnitTestObjects" />
+    </target>
+
+    <target name="contest" depends="ConsoleTest">
+        <exec workingdir="bin" program="${sooda.dir}/ConsoleTest.exe" commandline="" />
+    </target>
+
+    <target name="nunit-gui" depends="Sooda.UnitTests.TestCases">
+        <exec workingdir="${sooda.dir}" program="nunit-gui.exe" commandline="${sooda.dir}/Sooda.UnitTests.TestCases.dll" />
+	</target>
+
+	<target name="nunit-console" depends="Sooda.UnitTests.TestCases">
+		<exec verbose="true" workingdir="${sooda.dir}" program="nunit-console.exe" commandline="${sooda.dir}/Sooda.UnitTests.TestCases.dll" />
+	</target>
+
+	<target name="test" depends="Sooda.UnitTests.TestCases">
+		<nunit2>
+			<formatter type="Plain" />
+			<test assemblyname="${sooda.dir}/Sooda.UnitTests.TestCases.dll" />
+		</nunit2>
+	</target>
+
+	<target name="Sooda.UnitTests.Objects" depends="Sooda, stubs">
+		<csc target="library" output="${sooda.dir}/Sooda.UnitTests.Objects.dll" debug="true">
+			<references>                                  
+				<includes name="${sooda.dir}/log4net.dll" />
+				<includes name="${sooda.dir}/Sooda.dll" />
+				<includes name="System.Data.dll" asis="true" />
+			</references>
+            <sources basedir="tests/UnitTestObjects">
+				<includes name="*.cs" />
+			</sources>
+			<resources basedir="tests/UnitTestObjects" prefix="Sooda.UnitTests.Objects" dynamicprefix="true">
+                <includes name="_DBSchema.*" />
+            </resources>
+		</csc>
+	</target>
+
+	<target name="Sooda.UnitTests.TestCases" depends="Sooda, Sooda.UnitTests.Objects">
+		<copy file="${nant.location}/nunit.framework.dll" tofile="${sooda.dir}/nunit.framework.dll" />
+		<csc target="library" output="${sooda.dir}/Sooda.UnitTests.TestCases.dll" debug="true">
+			<references>                                  
+				<includes name="${sooda.dir}/Sooda.dll" />
+    			<includes name="${sooda.dir}/Sooda.UnitTests.Objects.dll" />
+    			<includes name="${sooda.dir}/nunit.framework.dll" />
+    			<includes name="${sooda.dir}/log4net.dll" />
+				<includes name="System.Data.dll" asis="true" />
+			</references>
+			<sources basedir="tests/TestCases">
+				<includes name="**/*.cs" />
+			</sources>
+		</csc>
+	</target>
+
+	<target name="ConsoleTest" depends="Sooda, Sooda.UnitTests.TestCases">
+		<csc target="exe" output="${sooda.dir}/ConsoleTest.exe" debug="true">
+			<references>                                  
+				<includes name="${sooda.dir}/Sooda.dll" />
+    			<includes name="${sooda.dir}/Sooda.UnitTests.Objects.dll" />
+    			<includes name="${sooda.dir}/Sooda.UnitTests.Objects.Stubs.dll" />
+				<includes name="${sooda.dir}/Sooda.UnitTests.TestCases.dll" />
+				<includes name="${sooda.dir}/NUnit.Framework.dll" />
+				<includes name="${sooda.dir}/log4net.dll" />
+				<includes name="System.Data.dll" asis="true" />
+			</references>
+			<sources basedir="tests/ConsoleTest">
+				<includes name="*.cs" />
+			</sources>
+		</csc>
+        <copy file="tests/ConsoleTest/App.config" tofile="${sooda.dir}/ConsoleTest.exe.config" />
+	</target>
+
+    <target name="dist">
+        <property name="sooda.debug" value="false" />
+
+        <call target="newbuild" />
+        <call target="clean" />
+        <call target="build" />
+        <call target="installer" />
+    </target>
+
+    <target name="installer">
+        <readregistry property="nsis.dir" key="SOFTWARE\NSIS\" />
+        <property name="makensis.exe" value="${nsis.dir}/makensis.exe" />
+
+        <foreach item="Line" in="sooda.version" delim="." property="sooda.major,sooda.minor,sooda.revision,sooda.build">
+            <exec program="${makensis.exe}" commandline="/DVERSION=${sooda.major}.${sooda.minor}.${sooda.revision}.${sooda.build} tools\SetupSooda.nsi" />
+            <move file="SetupSooda.exe" tofile="SetupSooda-${sooda.major}.${sooda.minor}.${sooda.revision}.${sooda.build}.exe" />
+        </foreach>
+    </target>
+
+    <target name="log4net">
+        <copy file="${sooda.external}/log4net.dll" tofile="${sooda.dir}/log4net.dll" />
+    </target>
+
+    <target name="disttest">
+        <nant buildfile="UnitTests/unittests.build" target="clean" />
+        <nant buildfile="UnitTests/unittests.build" target="test" />
+        <nant buildfile="UnitTests/unittests.build" target="teststubs" />
+    </target>
+
+    <target name="updateversion">
+        <foreach item="Line" in="sooda.version" delim=";" property="sooda.version">
+            <exec workingdir="${nant.project.basedir}" program="BuildTools/ReplaceVersion.exe" commandline=". ${sooda.version}" />
+        </foreach>
+    </target>
+
+    <target name="newbuild">
+        <exec workingdir="${nant.project.basedir}" 
+            program="BuildTools/NewBuild.exe" 
+            commandline="${nant.project.basedir}/sooda.version build" />
+        <call target="updateversion" />
+    </target>
+
+    <target name="newrevision">
+        <exec workingdir="${nant.project.basedir}" program="BuildTools/NewBuild.exe" commandline="${nant.project.basedir}/sooda.version revision" />
+        <call target="updateversion" />
+    </target>
+
+    <target name="newminor">
+        <exec workingdir="${nant.project.basedir}" program="BuildTools/NewBuild.exe" commandline="${nant.project.basedir}/sooda.version minor" />
+        <call target="updateversion" />
+    </target>
+
+    <target name="newmajor">
+        <exec workingdir="${nant.project.basedir}" program="BuildTools/NewBuild.exe" commandline="${nant.project.basedir}/sooda.version major" />
+        <call target="updateversion" />
+    </target>
+
+    <target name="sln">
+        <solution configuration="Release" solutionfile="Sooda.sln" />
+    </target>
+
+    <target name="keyfile">
+        <exec program="${nant.settings.currentframework.sdkdirectory}/sn.exe" workingdir="${nant.project.basedir}" commandline="-q -k Sooda.snk"/>
+        <exec program="${nant.settings.currentframework.sdkdirectory}/sn.exe" workingdir="${nant.project.basedir}" commandline="-q -i Sooda.snk SoodaPublisherKey"/>
+    </target>
+
+    <target name="keyfile-mono">
+        <exec useruntimeengine="true" program="${nant.settings.currentframework.sdkdirectory}/sn.exe" workingdir="${nant.project.basedir}" commandline="-q -k Sooda.snk"/>
+        <exec useruntimeengine="true" program="${nant.settings.currentframework.sdkdirectory}/sn.exe" workingdir="${nant.project.basedir}" commandline="-q -i Sooda.snk SoodaPublisherKey"/>
+    </target>
+
+    <target name="putty">
+        <property name="scp.program" value="pscp" />
+        <property name="ssh.program" value="plink" />
+        <property name="scp.args" value="-q -batch" />
+        <property name="ssh.args" value="-batch" />
+    </target>
+
+    <target name="deploy-web">
+        <delete file="web.zip" if="${file::exists('web.zip')}" />
+        <zip zipfile="web.zip" stampdatetime="${datetime::now()}" includeemptydirs="true">
+            <fileset basedir="web">
+                <includes name="**/*" />
+                <excludes name="**/.svn" />
+                <excludes name="**/.svn/**" />
+                <excludes name="**/*.swp" />
+            </fileset>
+        </zip>
+        <echo message="Uploading web.zip to ${ssh.server}..." />
+        <exec program="${scp.program}" commandline="${scp.args} web.zip ${ssh.server}:." workingdir="." />
+        <echo message="Uploading web_install.sh to ${ssh.server}..." />
+        <exec program="${scp.program}" commandline="${scp.args} web_install.sh ${ssh.server}:." workingdir="." />
+        <echo message="Spawning web_install.sh..." />
+        <exec program="${ssh.program}" commandline="${ssh.args} ${ssh.server} source web_install.sh" workingdir="." />
+        <delete file="web.zip" />
+    </target>
+</project>

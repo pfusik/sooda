@@ -1,0 +1,32 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda", "..\src\Library\Sooda.csproj", "{FCC9B644-9093-41F6-8F0D-F98F22474CB5}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "VB_Sooda.UnitTests.Objects", "VBUnitTestObjects\VB_Sooda.UnitTests.Objects.vbproj", "{0AD1412A-6DBD-4F37-A072-460594267F6A}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(DPCodeReviewSolutionGUID) = preSolution
+		DPCodeReviewSolutionGUID = {00000000-0000-0000-0000-000000000000}
+	EndGlobalSection
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{FCC9B644-9093-41F6-8F0D-F98F22474CB5}.Debug.ActiveCfg = Debug|.NET
+		{FCC9B644-9093-41F6-8F0D-F98F22474CB5}.Debug.Build.0 = Debug|.NET
+		{FCC9B644-9093-41F6-8F0D-F98F22474CB5}.Release.ActiveCfg = Release|.NET
+		{FCC9B644-9093-41F6-8F0D-F98F22474CB5}.Release.Build.0 = Release|.NET
+		{0AD1412A-6DBD-4F37-A072-460594267F6A}.Debug.ActiveCfg = Debug|.NET
+		{0AD1412A-6DBD-4F37-A072-460594267F6A}.Debug.Build.0 = Debug|.NET
+		{0AD1412A-6DBD-4F37-A072-460594267F6A}.Release.ActiveCfg = Release|.NET
+		{0AD1412A-6DBD-4F37-A072-460594267F6A}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
