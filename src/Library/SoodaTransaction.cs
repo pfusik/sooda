@@ -356,14 +356,17 @@ namespace Sooda {
                 SoodaObject obj = refcache;
                 if (obj != null && (object)obj != (object)theObject) 
                 {
-                    if (obj.VisitedOnCommit && !obj.WrittenIntoDatabase) 
+                    if (obj.IsInsertMode())
                     {
-                        throw new Exception("Cyclic reference between " + theObject.GetObjectKeyString() + " and " + obj.GetObjectKeyString());
-                        // cyclic reference
-                    } 
-                    else 
-                    {
-                        SaveObjectChanges(obj);
+                        if (obj.VisitedOnCommit && !obj.WrittenIntoDatabase)
+                        {
+                            throw new Exception("Cyclic reference between " + theObject.GetObjectKeyString() + " and " + obj.GetObjectKeyString());
+                            // cyclic reference
+                        } 
+                        else 
+                        {
+                            SaveObjectChanges(obj);
+                        }
                     }
                 }
             };
@@ -605,6 +608,24 @@ namespace Sooda {
         public SoodaObject GetObject(Type type, string keyString) 
         {
             return GetObject(GetFactory(type), keyString);
+        }
+
+        private SoodaObject LoadObject(ISoodaObjectFactory factory , string keyString) 
+        {
+            object keyValue = factory.GetPrimaryKeyFieldHandler().RawDeserialize(keyString);
+            SoodaObject obj = factory.GetRef(this, keyValue);
+            obj.LoadAllData();
+            return obj;
+        }
+
+        public SoodaObject LoadObject(string className, string keyString) 
+        {
+            return LoadObject(GetFactory(className), keyString);
+        }
+
+        public SoodaObject LoadObject(Type type, string keyString) 
+        {
+            return LoadObject(GetFactory(type), keyString);
         }
 
         private SoodaObject GetNewObject(ISoodaObjectFactory factory) 

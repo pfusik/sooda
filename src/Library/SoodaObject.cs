@@ -333,52 +333,6 @@ namespace Sooda
             return DeleteMarker;
         }
 
-#if FALSE
-        protected internal void ObjectDeleting(SoodaObject o, object refId) 
-        {
-            if (refId is String) 
-            {
-                EnsureFieldsInited();
-                Sooda.Schema.FieldInfo refField = GetClassInfo().FindFieldByName(refId as String);
-
-                switch (refField.DeleteAction) 
-                {
-                    case DeleteAction.Nothing:
-                        if (_fieldValues[refField.ClassUnifiedOrdinal] != null) 
-                        {
-                            throw new SoodaDatabaseException("Cannot delete object " + o.GetObjectKeyString() + " because it's referenced by " + GetObjectKeyString() + "." + refId);
-                        }
-                        break;
-
-                    case DeleteAction.Nullify:
-                        SoodaFieldHandler fieldHandler = GetFieldHandler(refField.ClassUnifiedOrdinal);
-                        if (_fieldValues[refField.ClassUnifiedOrdinal] != null) 
-                        {
-                            if (!fieldHandler.IsNullable) 
-                            {
-                                throw new SoodaDatabaseException("Cannot delete object " + o.GetObjectKeyString() + " because it's referenced by non-nullable " + GetObjectKeyString() + "." + refId + " and delete action is to nullify the field");
-                            }
-
-                            GetType().GetProperty(refField.Name).SetValue(this, null, null);
-                            Console.WriteLine(GetObjectKeyString() + ". Nullifying " + refField.Name + " of type " + refField.DataType);
-                        }
-                        break;
-
-                    case DeleteAction.Cascade:
-                        if (!IsMarkedForDelete()) 
-                        {
-                            Console.WriteLine(GetObjectKeyString() + ". Cascading delete because object referenced by " + refField.Name + " has been deleted");
-                            MarkForDelete();
-                        }
-                        break;
-
-                    default:
-                        throw new NotSupportedException("Unknown DeleteAction: " + refField.DeleteAction);
-                }
-            }
-        }
-#endif
-
         internal object GetFieldValue(int fieldNumber) 
         {
             return _fieldValues[fieldNumber];
