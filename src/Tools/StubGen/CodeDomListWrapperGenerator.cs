@@ -52,7 +52,7 @@ namespace Sooda.StubGen {
         public CodeConstructor Constructor() {
             CodeConstructor ctor = new CodeConstructor();
             ctor.Attributes = MemberAttributes.Public;
-            ctor.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(Sooda.ObjectMapper.ISoodaObjectList)), "list"));
+            ctor.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(typeof(Sooda.ISoodaObjectList)), "list"));
             //ctor.Statements.Add(
             // new CodeAssignStatement(TheList(), Arg("list")));
             ctor.BaseConstructorArgs.Add(Arg("list"));
@@ -269,7 +269,7 @@ namespace Sooda.StubGen {
         }
 
         public CodeMemberField Field__theList() {
-            CodeMemberField field = new CodeMemberField(typeof(Sooda.ObjectMapper.ISoodaObjectList), "_theList");
+            CodeMemberField field = new CodeMemberField(typeof(Sooda.ISoodaObjectList), "_theList");
             return field;
         }
 

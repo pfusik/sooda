@@ -35,18 +35,6 @@ using System;
 using System.Collections;
 
 namespace Sooda.ObjectMapper {
-    public interface ISoodaObjectList : System.Collections.IList {
-        SoodaObject GetItem(int pos);
-
-        ISoodaObjectList GetSnapshot();
-        ISoodaObjectList SelectFirst(int n);
-        ISoodaObjectList SelectLast(int n);
-        ISoodaObjectList SelectRange(int from, int to);
-        ISoodaObjectList Filter(SoodaObjectFilter filter);
-        ISoodaObjectList Sort(IComparer comparer);
-
-    }
-
     public interface ISoodaObjectListInternal {
         void InternalAdd(SoodaObject o);
         void InternalRemove(SoodaObject o);

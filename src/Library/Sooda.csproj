@@ -123,6 +123,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ISoodaObjectList.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SoodaConfig.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -134,6 +139,11 @@
                 />
                 <File
                     RelPath = "SoodaConfigException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SoodaConstructor.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -233,7 +243,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "ObjectMapper\ISoodaObjectList.cs"
+                    RelPath = "ObjectMapper\ISoodaObjectListInternal.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -577,6 +587,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Schema\ClassCardinality.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Schema\ClassInfo.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -651,11 +666,6 @@
                 />
                 <File
                     RelPath = "Schema\IndexInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\ClassCardinality.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
