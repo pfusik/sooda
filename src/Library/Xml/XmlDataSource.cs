@@ -100,5 +100,10 @@ namespace Sooda.Xml {
         {
             return 0;
         }
+
+        public override bool IsOpen
+        {
+            get { return false; }
+        }
     }
 }

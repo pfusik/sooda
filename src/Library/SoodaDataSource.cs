@@ -39,7 +39,7 @@ using System.Data;
 using Sooda.Schema;
 
 namespace Sooda {
-    public abstract class SoodaDataSource {
+    public abstract class SoodaDataSource : IDisposable {
         private string dataSourceName;
 
         protected SoodaDataSource(string dataSourceName) {
@@ -69,6 +69,15 @@ namespace Sooda {
             return null;
         }
 
+        public void Dispose()
+        {
+            if (IsOpen)
+            {
+                Close();
+            }
+        }
+
+        public abstract bool IsOpen { get; }
         public abstract void Rollback();
         public abstract void Commit();
         public abstract void Open();

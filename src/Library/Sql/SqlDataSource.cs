@@ -92,6 +92,11 @@ namespace Sooda.Sql {
             };
         }
 
+        public override bool IsOpen
+        {
+            get { return Connection.State == ConnectionState.Open ; }
+        }
+
         public override void Rollback() {
             if (!DisableTransactions) {
                 Transaction.Rollback();
