@@ -28,7 +28,7 @@
     <target name="libraries" depends="Sooda" />
 
     <target name="settings">
-        <property name="sooda.define" value="" />
+        <property name="sooda.define" value="NANT" />
         <property name="sooda.optimize" value="false" />
         <property name="sooda.optimize" value="true" unless="${sooda.debug}" />
 		<property name="sooda.dir" value="${nant.project.basedir}/build/${framework::get-target-framework()}${if(sooda.debug,'-debug','')}/bin" overwrite="false"/>
