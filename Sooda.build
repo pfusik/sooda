@@ -12,6 +12,7 @@
 
     <property name="sooda.csc.args" value="/nowarn:1591" />
     <property name="sooda.external" value="${nant.project.basedir}/src/ExternalLib" />
+    <property name="sooda.nlog" value="${sooda.external}/NLog.dll" unless="${property::exists('sooda.nlog')}" />
     
     <target name="build" depends="build-${nant.settings.currentframework}" />
     <target name="build-net-1.0" depends="build-common, tools" />
@@ -149,10 +150,10 @@
             <fileset defaultexcludes="false">
                 <include name="SetupSooda.exe" />
                 <include name="*.suo" />
-                <include name="${sooda.dir}/*.dll" />
-                <include name="${sooda.dir}/*.pdb" />
-                <include name="${sooda.dir}/*.xml" />
-                <include name="${sooda.dir}/*.exe" />
+                <include name="${sooda.dir}/Sooda*.dll" />
+                <include name="${sooda.dir}/Sooda*.pdb" />
+                <include name="${sooda.dir}/Sooda*.xml" />
+                <include name="${sooda.dir}/StubGen.*" />
                 <include name="${sooda.dir}/*.tlb" />
                 <include name="${sooda.dir}/*.exe.config" />
                 <include name="${sooda.dir}/*.exe.manifest" />
@@ -312,7 +313,7 @@
     </target>
 
     <target name="NLog">
-        <copy file="${sooda.external}/NLog.dll" tofile="${sooda.dir}/NLog.dll" />
+        <copy file="${sooda.nlog}/NLog.dll" tofile="${sooda.dir}/NLog.dll" />
     </target>
 
     <target name="disttest">
