@@ -61,8 +61,6 @@ namespace ConsoleTest
     {
         static void Main(string[] args)
         {
-            log4net.Config.DOMConfigurator.Configure();
-
 			Sooda.UnitTests.TestCases.ObjectMapper.ComplexGetListTest t = new Sooda.UnitTests.TestCases.ObjectMapper.ComplexGetListTest();
 			t.Test1();
 			SoodaCache.Dump(Console.Out);

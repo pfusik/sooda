@@ -44,9 +44,5 @@ using Sooda;
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyVersion("0.1.0.0")]
 
-//[assembly: log4net.Config.DOMConfigurator(ConfigFile = "../../App.config")]
-
 [assembly: SoodaStubAssembly(typeof(Sooda.UnitTests.Objects.Stubs.Contact_Stub))]
 [assembly: SoodaConfig(XmlConfigFileName="Sooda.config.xml")]
-
-[assembly: log4net.Config.DOMConfigurator(ConfigFileExtension=".config", Watch=true)]
