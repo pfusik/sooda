@@ -40,14 +40,14 @@
         </html>
     </xsl:template>
 
-    <xsl:template match="@* | node()" mode="copy">
+    <xsl:template match="@* | node()">
         <xsl:copy>
-            <xsl:apply-templates select="@* | node()" mode="copy" />
+            <xsl:apply-templates select="@* | node()" />
         </xsl:copy>
     </xsl:template>
 
     <xsl:template match="content">
-        <xsl:apply-templates select="*" mode="copy" />
+        <xsl:apply-templates select="*" />
     </xsl:template>
 
     <xsl:template name="controls">

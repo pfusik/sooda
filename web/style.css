@@ -8,7 +8,7 @@ html, body
     font-family: Verdana;
     font-size: 70%;
     overflow-y: scroll;
-    overflow: moz-scrollbars-vertical;
+    overflow: -moz-scrollbars-vertical;
 }
 
 h1

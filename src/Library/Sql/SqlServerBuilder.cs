@@ -67,9 +67,9 @@ namespace Sooda.Sql {
             case FieldDataType.DateTime:
                 return "datetime";
 
-			case FieldDataType.Image:
-				return "image";
-            
+            case FieldDataType.Image:
+                return "image";
+
             case FieldDataType.Long:
                 return "bigint";
 

@@ -429,4 +429,41 @@
         <exec program="${ssh.program}" commandline="${ssh.args} ${ssh.server} source web_install.sh" workingdir="." />
         <delete file="web.zip" />
     </target>
+
+    <target name="build-web">
+        <property name="web.dir" value="web/build" unless="${property::exists('web.dir')}" />
+        <property name="web.sourceforge" value="1" />
+        <delete dir="${web.dir}" if="${directory::exists(web.dir)}" failonerror="false" />
+        <mkdir dir="${web.dir}" />
+        <mkdir dir="${web.dir}/pl" />
+        <mkdir dir="${web.dir}/en" />
+        <style destdir="${web.dir}/pl" style="web/style.xsl">
+            <infiles basedir="web/pl">
+                <include name="*.xml" />
+            </infiles>
+            <parameters>
+                <parameter name="file_extension" value="html" />
+                <parameter name="sourceforge" value="${web.sourceforge}" />
+            </parameters>
+        </style>
+        <style destdir="${web.dir}/en" style="web/style.xsl">
+            <infiles basedir="web/en">
+                <include name="*.xml" />
+            </infiles>
+            <parameters>
+                <parameter name="file_extension" value="html" />
+                <parameter name="sourceforge" value="${web.sourceforge}" />
+            </parameters>
+        </style>
+        <copy todir="${web.dir}">
+            <fileset basedir="web">
+                <include name="index.html" />
+                <include name="style.css" />
+                <include name="titlebanner.png" />
+                <include name="lang_pl.gif" />
+                <include name="lang_en.gif" />
+                <include name="screenshots/*" />
+            </fileset>
+        </copy>
+    </target>
 </project>
