@@ -390,6 +390,15 @@
         <property name="ssh.args" value="-batch" />
     </target>
 
+    <target name="astyle">
+        <astyle style="NAnt" cleanup="true">
+            <fileset>
+                <include name="**/*.cs" />
+                <exclude name="**/_*.cs" />
+            </fileset>
+        </astyle>
+    </target>
+
     <target name="deploy-web">
         <delete file="web.zip" if="${file::exists('web.zip')}" />
         <zip zipfile="web.zip" stampdatetime="${datetime::now()}" includeemptydirs="true">

@@ -1,45 +1,44 @@
-// 
+//
 // Copyright (c) 2002-2004 Jaroslaw Kowalski <jaak@polbox.com>
-// 
+//
 // All rights reserved.
-// 
-// Redistribution and use in source and binary forms, with or without 
-// modification, are permitted provided that the following conditions 
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
 // are met:
-// 
-// * Redistributions of source code must retain the above copyright notice, 
-//   this list of conditions and the following disclaimer. 
-// 
+//
+// * Redistributions of source code must retain the above copyright notice,
+//   this list of conditions and the following disclaimer.
+//
 // * Redistributions in binary form must reproduce the above copyright notice,
 //   this list of conditions and the following disclaimer in the documentation
-//   and/or other materials provided with the distribution. 
-// 
-// * Neither the name of the Jaroslaw Kowalski nor the names of its 
+//   and/or other materials provided with the distribution.
+//
+// * Neither the name of the Jaroslaw Kowalski nor the names of its
 //   contributors may be used to endorse or promote products derived from this
-//   software without specific prior written permission. 
-// 
+//   software without specific prior written permission.
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
-// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
 // CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
-// 
+//
 
 using System;
 
 namespace Sooda.Schema {
     using System.Xml.Serialization;
-    
-    [XmlType(Namespace="http://sooda.sourceforge.net/schemas/DBSchema.xsd")]
+
+    [XmlType(Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd")]
     [Serializable]
-    public class RelationInfo : IFieldContainer
-    {
+    public class RelationInfo : IFieldContainer {
         [XmlAttribute("datasource")]
         public string DataSourceName = null;
 
@@ -48,30 +47,24 @@ namespace Sooda.Schema {
         [XmlAttribute("name")]
         public string Name
         {
-            get
-            {
+            get {
                 return _name;
             }
-            set
-            {
+            set {
                 _name = value;
             }
         }
 
-		[XmlElement("table")]
-		public TableInfo Table = new TableInfo();
+        [XmlElement("table")]
+        public TableInfo Table = new TableInfo();
 
-        public RelationInfo()
-        {
-        }
+        public RelationInfo() {}
 
-        public ClassInfo GetRef1ClassInfo()
-        {
+        public ClassInfo GetRef1ClassInfo() {
             return Table.Fields[0].ReferencedClass;
         }
 
-        public ClassInfo GetRef2ClassInfo()
-        {
+        public ClassInfo GetRef2ClassInfo() {
             return Table.Fields[1].ReferencedClass;
         }
 
@@ -80,45 +73,38 @@ namespace Sooda.Schema {
 
         public SchemaInfo Schema
         {
-            get
-            {
+            get {
                 return parentSchema;
             }
         }
 
-        internal void Resolve(SchemaInfo schemaInfo)
-        {
+        internal void Resolve(SchemaInfo schemaInfo) {
             parentSchema = schemaInfo;
 
             Table.Resolve(this.Name);
-			Table.Rehash();
+            Table.Rehash();
 
             Table.Fields[0].ReferencedClass = schemaInfo.FindClassByName(Table.Fields[0].References);
             Table.Fields[1].ReferencedClass = schemaInfo.FindClassByName(Table.Fields[1].References);
         }
 
-        public DataSourceInfo GetDataSource()
-        {
+        public DataSourceInfo GetDataSource() {
             return parentSchema.GetDataSourceInfo(DataSourceName);
         }
 
-        public int ContainsCollection(string name)
-        {
+        public int ContainsCollection(string name) {
             return 0;
         }
 
-        public bool ContainsField(string name)
-        {
+        public bool ContainsField(string name) {
             return Table.ContainsField(name);
         }
 
-        public FieldInfo FindFieldByName(string name)
-        {
-			return Table.FindFieldByName(name);
+        public FieldInfo FindFieldByName(string name) {
+            return Table.FindFieldByName(name);
         }
 
-        public FieldInfoCollection GetAllFields()
-        {
+        public FieldInfoCollection GetAllFields() {
             return Table.Fields;
         }
 

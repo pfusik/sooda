@@ -1,35 +1,35 @@
-// 
+//
 // Copyright (c) 2002-2004 Jaroslaw Kowalski <jaak@polbox.com>
-// 
+//
 // All rights reserved.
-// 
-// Redistribution and use in source and binary forms, with or without 
-// modification, are permitted provided that the following conditions 
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
 // are met:
-// 
-// * Redistributions of source code must retain the above copyright notice, 
-//   this list of conditions and the following disclaimer. 
-// 
+//
+// * Redistributions of source code must retain the above copyright notice,
+//   this list of conditions and the following disclaimer.
+//
 // * Redistributions in binary form must reproduce the above copyright notice,
 //   this list of conditions and the following disclaimer in the documentation
-//   and/or other materials provided with the distribution. 
-// 
-// * Neither the name of the Jaroslaw Kowalski nor the names of its 
+//   and/or other materials provided with the distribution.
+//
+// * Neither the name of the Jaroslaw Kowalski nor the names of its
 //   contributors may be used to endorse or promote products derived from this
-//   software without specific prior written permission. 
-// 
+//   software without specific prior written permission.
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
-// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
 // CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
-// 
+//
 
 using System;
 using System.Diagnostics;
@@ -40,18 +40,14 @@ using Sooda.UnitTests.Objects;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.ObjectMapper
-{
+namespace Sooda.UnitTests.TestCases.ObjectMapper {
     [TestFixture]
-    public class SerializationTest
-    {
+    public class SerializationTest {
         [Test]
-        public void Bug1()
-        {   
+        public void Bug1() {
             string ser1, ser2;
 
-            using (SoodaTransaction tran = new SoodaTransaction())
-            {
+            using (SoodaTransaction tran = new SoodaTransaction()) {
                 Group g1 = new Group();
                 Group g2 = new Group();
                 Contact c1 = new Contact();
@@ -65,8 +61,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
 
                 ser1 = tran.Serialize(SerializeOptions.Canonical);
             }
-            using (SoodaTransaction tran = new SoodaTransaction())
-            {
+            using (SoodaTransaction tran = new SoodaTransaction()) {
                 tran.Deserialize(ser1);
 
                 ser2 = tran.Serialize(SerializeOptions.Canonical);
@@ -77,21 +72,17 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
         }
 
         [Test]
-        public void Collection1toNTest()
-        {
+        public void Collection1toNTest() {
             Collection1toNTest(false);
         }
 
-        public void Collection1toNTest(bool quiet)
-        {
+        public void Collection1toNTest(bool quiet) {
             string serialized;
 
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
-            {
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) {
                 testDataSource.Open();
 
-                using (SoodaTransaction tran = new SoodaTransaction())
-                {
+                using (SoodaTransaction tran = new SoodaTransaction()) {
                     tran.RegisterDataSource(testDataSource);
                     Contact c1;
                     Group g = Group.Load(10);
@@ -117,8 +108,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
                     Assertion.Assert(g.Members.Contains(Contact.GetRef(1)));
                     Assertion.Assert(g.Members.Contains(Contact.GetRef(2)));
                     int times = 0;
-                    foreach (Contact c in g.Members)
-                    {
+                    foreach (Contact c in g.Members) {
                         if (!quiet)
                             Console.WriteLine("Got {0} [{1}]", c.Name, c.ContactId);
                         times++;
@@ -136,8 +126,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
                     Assertion.Assert(g.Members.Contains(c1));
                     Assertion.AssertEquals(g.Members.Count, 4);
 
-                    foreach (Contact c in g.Members)
-                    {
+                    foreach (Contact c in g.Members) {
                         if (!quiet)
                             Console.WriteLine("before serialization, member: {0}", c.Name);
                     }
@@ -147,21 +136,17 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
                         Console.WriteLine("Serialized as\n{0}", serialized);
                 }
 
-                using (SoodaTransaction tran = new SoodaTransaction())
-                {
+                using (SoodaTransaction tran = new SoodaTransaction()) {
                     tran.RegisterDataSource(testDataSource);
                     tran.Deserialize(serialized);
 
                     Console.WriteLine(ContactType.Employee.Description);
                     string serialized2 = tran.Serialize(SerializeOptions.IncludeNonDirtyFields | SerializeOptions.IncludeNonDirtyObjects);
                     //string serialized2 = tran.Serialize();
-                    if (serialized == serialized2)
-                    {
+                    if (serialized == serialized2) {
                         if (!quiet)
                             Console.WriteLine("Serialization is stable\n{0}", serialized);
-                    }
-                    else
-                    {
+                    } else {
                         if (!quiet)
                             Console.WriteLine("Serialized again as\n{0}", serialized2);
                     }
@@ -169,8 +154,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
 
                     Group g = Group.Load(10);
 
-                    foreach (Contact c in g.Members)
-                    {
+                    foreach (Contact c in g.Members) {
                         //if (!quiet)
                         Console.WriteLine("after deserialization, member: {0}", c.Name);
                     }
@@ -182,8 +166,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
                     Assertion.Assert(g.Members.Contains(Contact.GetRef(1)));
                     Assertion.Assert(g.Members.Contains(Contact.GetRef(2)));
                     int times = 0;
-                    foreach (Contact c in g.Members)
-                    {
+                    foreach (Contact c in g.Members) {
                         times++;
                         Assertion.Assert(
                             c == Contact.GetRef(51) ||

@@ -1,24 +1,24 @@
-// 
+//
 // SoodaQuery - A Sooda database query tool
-// 
+//
 // Copyright (C) 2003-2004 Jaroslaw Kowalski
-// 
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-// 
+//
 // Jaroslaw Kowalski (jaak@polbox.com)
-// 
+//
 
 using System;
 using System.Drawing;
@@ -37,13 +37,11 @@ using Microsoft.Win32;
 using System.Reflection;
 using ICSharpCode.TextEditor.Document;
 
-namespace SoodaQuery
-{
+namespace SoodaQuery {
     /// <summary>
     /// Summary description for MainForm.
     /// </summary>
-    public class MainForm : System.Windows.Forms.Form
-    {
+    public class MainForm : System.Windows.Forms.Form {
         private System.Windows.Forms.MainMenu mainMenu1;
         private System.Windows.Forms.MenuItem menuItem1;
         private System.Windows.Forms.MenuItem menuItem7;
@@ -100,8 +98,7 @@ namespace SoodaQuery
         private ICSharpCode.TextEditor.TextEditorControl soqlPrettyPrint;
         private System.ComponentModel.IContainer components;
 
-        public MainForm()
-        {
+        public MainForm() {
             HighlightingManager.Manager.AddSyntaxModeFileProvider(new MyResourceSyntaxModeProvider());
 
             InitializeComponent();
@@ -134,8 +131,7 @@ namespace SoodaQuery
             TextEditorControl1.Focus();
         }
 
-        void SetupControl(ICSharpCode.TextEditor.TextEditorControl tec)
-        {
+        void SetupControl(ICSharpCode.TextEditor.TextEditorControl tec) {
             tec.ShowEOLMarkers = false;
             tec.ShowVRuler = false;
             tec.ShowSpaces = false;
@@ -148,25 +144,21 @@ namespace SoodaQuery
         /// <summary>
         /// Clean up any resources being used.
         /// </summary>
-        protected override void Dispose( bool disposing )
-        {
-            if( disposing )
-            {
-                if (components != null) 
-                {
+        protected override void Dispose( bool disposing ) {
+            if ( disposing ) {
+                if (components != null) {
                     components.Dispose();
                 }
             }
             base.Dispose( disposing );
         }
 
-        #region Windows Form Designer generated code
+#region Windows Form Designer generated code
         /// <summary>
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent()
-        {
+        private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
             System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(MainForm));
             this.mainMenu1 = new System.Windows.Forms.MainMenu();
@@ -236,139 +228,139 @@ namespace SoodaQuery
             this.panel1.SuspendLayout();
             this.panel5.SuspendLayout();
             this.SuspendLayout();
-            // 
+            //
             // mainMenu1
-            // 
+            //
             this.mainMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-                                                                                      this.menuItem1,
-                                                                                      this.menuItem2,
-                                                                                      this.menuItem3});
-            // 
+                                                  this.menuItem1,
+                                                  this.menuItem2,
+                                                  this.menuItem3});
+            //
             // menuItem1
-            // 
+            //
             this.menuItem1.Index = 0;
             this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-                                                                                      this.menuitemFileNew,
-                                                                                      this.menuitemFileOpen,
-                                                                                      this.menuitemFileSave,
-                                                                                      this.menuitemFileSaveAs,
-                                                                                      this.menuItem7,
-                                                                                      this.menuitemFileExit});
+                                                  this.menuitemFileNew,
+                                                  this.menuitemFileOpen,
+                                                  this.menuitemFileSave,
+                                                  this.menuitemFileSaveAs,
+                                                  this.menuItem7,
+                                                  this.menuitemFileExit});
             this.menuItem1.Text = "&File";
-            // 
+            //
             // menuitemFileNew
-            // 
+            //
             this.menuitemFileNew.Index = 0;
             this.menuitemFileNew.Shortcut = System.Windows.Forms.Shortcut.CtrlN;
             this.menuitemFileNew.Text = "&New";
-            // 
+            //
             // menuitemFileOpen
-            // 
+            //
             this.menuitemFileOpen.Index = 1;
             this.menuitemFileOpen.Shortcut = System.Windows.Forms.Shortcut.CtrlO;
             this.menuitemFileOpen.Text = "&Open";
             this.menuitemFileOpen.Click += new System.EventHandler(this.menuitemProjectOpen_Click);
-            // 
+            //
             // menuitemFileSave
-            // 
+            //
             this.menuitemFileSave.Index = 2;
             this.menuitemFileSave.Shortcut = System.Windows.Forms.Shortcut.CtrlS;
             this.menuitemFileSave.Text = "&Save";
-            // 
+            //
             // menuitemFileSaveAs
-            // 
+            //
             this.menuitemFileSaveAs.Index = 3;
             this.menuitemFileSaveAs.Text = "Save &as...";
-            // 
+            //
             // menuItem7
-            // 
+            //
             this.menuItem7.Index = 4;
             this.menuItem7.Text = "-";
-            // 
+            //
             // menuitemFileExit
-            // 
+            //
             this.menuitemFileExit.Index = 5;
             this.menuitemFileExit.Shortcut = System.Windows.Forms.Shortcut.AltF4;
             this.menuitemFileExit.Text = "&Exit";
             this.menuitemFileExit.Click += new System.EventHandler(this.menuitemFileExit_Click);
-            // 
+            //
             // menuItem2
-            // 
+            //
             this.menuItem2.Index = 1;
             this.menuItem2.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-                                                                                      this.menuItemProjectNew,
-                                                                                      this.menuItemProjectOpen,
-                                                                                      this.menuItemProjectSave,
-                                                                                      this.menuItem9,
-                                                                                      this.menuItemProjectProperties,
-                                                                                      this.menuItem4});
+                                                  this.menuItemProjectNew,
+                                                  this.menuItemProjectOpen,
+                                                  this.menuItemProjectSave,
+                                                  this.menuItem9,
+                                                  this.menuItemProjectProperties,
+                                                  this.menuItem4});
             this.menuItem2.Text = "&Project";
-            // 
+            //
             // menuItemProjectNew
-            // 
+            //
             this.menuItemProjectNew.Index = 0;
             this.menuItemProjectNew.Text = "&New project";
-            // 
+            //
             // menuItemProjectOpen
-            // 
+            //
             this.menuItemProjectOpen.Index = 1;
             this.menuItemProjectOpen.Text = "&Open project from file...";
-            // 
+            //
             // menuItemProjectSave
-            // 
+            //
             this.menuItemProjectSave.Index = 2;
             this.menuItemProjectSave.Text = "&Save project to file...";
-            // 
+            //
             // menuItem9
-            // 
+            //
             this.menuItem9.Index = 3;
             this.menuItem9.Text = "-";
-            // 
+            //
             // menuItemProjectProperties
-            // 
+            //
             this.menuItemProjectProperties.Index = 4;
             this.menuItemProjectProperties.Text = "&Properties...";
             this.menuItemProjectProperties.Click += new System.EventHandler(this.menuItemProjectProperties_Click);
-            // 
+            //
             // menuItem4
-            // 
+            //
             this.menuItem4.Index = 5;
             this.menuItem4.Text = "-";
-            // 
+            //
             // menuItem3
-            // 
+            //
             this.menuItem3.Index = 2;
             this.menuItem3.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-                                                                                      this.menuitemQueryRun});
+                                                  this.menuitemQueryRun});
             this.menuItem3.Text = "&Query";
-            // 
+            //
             // menuitemQueryRun
-            // 
+            //
             this.menuitemQueryRun.Index = 0;
             this.menuitemQueryRun.Shortcut = System.Windows.Forms.Shortcut.CtrlE;
             this.menuitemQueryRun.Text = "&Run";
             this.menuitemQueryRun.Click += new System.EventHandler(this.menuitemQueryRun_Click);
-            // 
+            //
             // statusBar1
-            // 
+            //
             this.statusBar1.Location = new System.Drawing.Point(0, 403);
             this.statusBar1.Name = "statusBar1";
             this.statusBar1.ShowPanels = true;
             this.statusBar1.Size = new System.Drawing.Size(640, 22);
             this.statusBar1.TabIndex = 4;
             this.statusBar1.Text = "statusBar1";
-            // 
+            //
             // toolBar1
-            // 
+            //
             this.toolBar1.Appearance = System.Windows.Forms.ToolBarAppearance.Flat;
             this.toolBar1.Buttons.AddRange(new System.Windows.Forms.ToolBarButton[] {
-                                                                                        this.toolBarButtonNew,
-                                                                                        this.toolBarButtonOpen,
-                                                                                        this.toolBarButtonSave,
-                                                                                        this.toolBarSeparator1,
-                                                                                        this.toolBarButtonRun,
-                                                                                        this.toolBarButton1,
-                                                                                        this.toolBarButtonConnection});
+                                               this.toolBarButtonNew,
+                                               this.toolBarButtonOpen,
+                                               this.toolBarButtonSave,
+                                               this.toolBarSeparator1,
+                                               this.toolBarButtonRun,
+                                               this.toolBarButton1,
+                                               this.toolBarButtonConnection});
             this.toolBar1.DropDownArrows = true;
             this.toolBar1.ImageList = this.imageList1;
             this.toolBar1.Location = new System.Drawing.Point(0, 0);
@@ -378,92 +370,92 @@ namespace SoodaQuery
             this.toolBar1.TabIndex = 3;
             this.toolBar1.TextAlign = System.Windows.Forms.ToolBarTextAlign.Right;
             this.toolBar1.ButtonClick += new System.Windows.Forms.ToolBarButtonClickEventHandler(this.toolBar1_ButtonClick);
-            // 
+            //
             // toolBarButtonNew
-            // 
+            //
             this.toolBarButtonNew.ImageIndex = 0;
             this.toolBarButtonNew.Text = "New";
-            // 
+            //
             // toolBarButtonOpen
-            // 
+            //
             this.toolBarButtonOpen.ImageIndex = 1;
             this.toolBarButtonOpen.Text = "Open";
-            // 
+            //
             // toolBarButtonSave
-            // 
+            //
             this.toolBarButtonSave.ImageIndex = 2;
             this.toolBarButtonSave.Text = "Save";
-            // 
+            //
             // toolBarSeparator1
-            // 
+            //
             this.toolBarSeparator1.Style = System.Windows.Forms.ToolBarButtonStyle.Separator;
-            // 
+            //
             // toolBarButtonRun
-            // 
+            //
             this.toolBarButtonRun.ImageIndex = 3;
             this.toolBarButtonRun.Text = "Run";
-            // 
+            //
             // toolBarButton1
-            // 
+            //
             this.toolBarButton1.Style = System.Windows.Forms.ToolBarButtonStyle.Separator;
-            // 
+            //
             // toolBarButtonConnection
-            // 
+            //
             this.toolBarButtonConnection.DropDownMenu = this.contextMenuDatabases;
             this.toolBarButtonConnection.ImageIndex = 4;
             this.toolBarButtonConnection.Style = System.Windows.Forms.ToolBarButtonStyle.DropDownButton;
             this.toolBarButtonConnection.Text = "No connection";
-            // 
+            //
             // contextMenuDatabases
-            // 
+            //
             this.contextMenuDatabases.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-                                                                                                 this.menuItem5,
-                                                                                                 this.menuItem8,
-                                                                                                 this.menuItem6});
-            // 
+                        this.menuItem5,
+                        this.menuItem8,
+                        this.menuItem6});
+            //
             // menuItem5
-            // 
+            //
             this.menuItem5.Index = 0;
             this.menuItem5.Text = "&Connect to database...";
-            // 
+            //
             // menuItem8
-            // 
+            //
             this.menuItem8.Index = 1;
             this.menuItem8.Text = "&Manage databases...";
-            // 
+            //
             // menuItem6
-            // 
+            //
             this.menuItem6.Index = 2;
             this.menuItem6.Text = "-";
-            // 
+            //
             // imageList1
-            // 
+            //
             this.imageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth24Bit;
             this.imageList1.ImageSize = new System.Drawing.Size(16, 16);
             this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
             this.imageList1.TransparentColor = System.Drawing.Color.Silver;
-            // 
+            //
             // recordsetContextMenu
-            // 
+            //
             this.recordsetContextMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-                                                                                                 this.contextMenuItemSelectAll,
-                                                                                                 this.contextMenuItemCopy});
+                        this.contextMenuItemSelectAll,
+                        this.contextMenuItemCopy});
             this.recordsetContextMenu.Popup += new System.EventHandler(this.recordsetContextMenu_Popup);
-            // 
+            //
             // contextMenuItemSelectAll
-            // 
+            //
             this.contextMenuItemSelectAll.Index = 0;
             this.contextMenuItemSelectAll.Text = "Select &All";
             this.contextMenuItemSelectAll.Click += new System.EventHandler(this.contextMenuItemSelectAll_Click);
-            // 
+            //
             // contextMenuItemCopy
-            // 
+            //
             this.contextMenuItemCopy.Index = 1;
             this.contextMenuItemCopy.Text = "&Copy";
             this.contextMenuItemCopy.Click += new System.EventHandler(this.contextMenuItemCopy_Click);
-            // 
+            //
             // tabControl1
-            // 
+            //
             this.tabControl1.Controls.Add(this.tabPageRecordSet);
             this.tabControl1.Controls.Add(this.tabPagePrettyPrint);
             this.tabControl1.Controls.Add(this.tabPageCsv);
@@ -476,18 +468,18 @@ namespace SoodaQuery
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(640, 248);
             this.tabControl1.TabIndex = 2;
-            // 
+            //
             // tabPageRecordSet
-            // 
+            //
             this.tabPageRecordSet.Controls.Add(this.resultSet);
             this.tabPageRecordSet.Location = new System.Drawing.Point(4, 22);
             this.tabPageRecordSet.Name = "tabPageRecordSet";
             this.tabPageRecordSet.Size = new System.Drawing.Size(768, 222);
             this.tabPageRecordSet.TabIndex = 0;
             this.tabPageRecordSet.Text = "Recordset";
-            // 
+            //
             // resultSet
-            // 
+            //
             this.resultSet.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.resultSet.ContextMenu = this.recordsetContextMenu;
             this.resultSet.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -499,18 +491,18 @@ namespace SoodaQuery
             this.resultSet.TabIndex = 0;
             this.resultSet.View = System.Windows.Forms.View.Details;
             this.resultSet.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
-            // 
+            //
             // tabPageXml
-            // 
+            //
             this.tabPageXml.Controls.Add(this.panel3);
             this.tabPageXml.Location = new System.Drawing.Point(4, 22);
             this.tabPageXml.Name = "tabPageXml";
             this.tabPageXml.Size = new System.Drawing.Size(632, 222);
             this.tabPageXml.TabIndex = 2;
             this.tabPageXml.Text = "XML";
-            // 
+            //
             // panel3
-            // 
+            //
             this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel3.Controls.Add(this.xmlResults);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -518,9 +510,9 @@ namespace SoodaQuery
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(632, 222);
             this.panel3.TabIndex = 0;
-            // 
+            //
             // xmlResults
-            // 
+            //
             this.xmlResults.Dock = System.Windows.Forms.DockStyle.Fill;
             this.xmlResults.DockPadding.Top = 2;
             this.xmlResults.EnableFolding = false;
@@ -538,18 +530,18 @@ namespace SoodaQuery
             this.xmlResults.TabIndent = 8;
             this.xmlResults.TabIndex = 0;
             this.xmlResults.Load += new System.EventHandler(this.xmlResults_Load);
-            // 
+            //
             // tabPageCsv
-            // 
+            //
             this.tabPageCsv.Controls.Add(this.panel4);
             this.tabPageCsv.Location = new System.Drawing.Point(4, 22);
             this.tabPageCsv.Name = "tabPageCsv";
             this.tabPageCsv.Size = new System.Drawing.Size(632, 222);
             this.tabPageCsv.TabIndex = 4;
             this.tabPageCsv.Text = "CSV";
-            // 
+            //
             // panel4
-            // 
+            //
             this.panel4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel4.Controls.Add(this.csvResults);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -557,9 +549,9 @@ namespace SoodaQuery
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(632, 222);
             this.panel4.TabIndex = 0;
-            // 
+            //
             // csvResults
-            // 
+            //
             this.csvResults.Dock = System.Windows.Forms.DockStyle.Fill;
             this.csvResults.DockPadding.Top = 2;
             this.csvResults.EnableFolding = false;
@@ -576,9 +568,9 @@ namespace SoodaQuery
             this.csvResults.Size = new System.Drawing.Size(630, 220);
             this.csvResults.TabIndent = 8;
             this.csvResults.TabIndex = 0;
-            // 
+            //
             // tabPagePrettyPrint
-            // 
+            //
             this.tabPagePrettyPrint.Controls.Add(this.panel5);
             this.tabPagePrettyPrint.Location = new System.Drawing.Point(4, 22);
             this.tabPagePrettyPrint.Name = "tabPagePrettyPrint";
@@ -586,18 +578,18 @@ namespace SoodaQuery
             this.tabPagePrettyPrint.TabIndex = 5;
             this.tabPagePrettyPrint.Text = "Parsed SOQL";
             this.tabPagePrettyPrint.Click += new System.EventHandler(this.tabPagePrettyPrint_Click);
-            // 
+            //
             // tabPageTSql
-            // 
+            //
             this.tabPageTSql.Controls.Add(this.panel2);
             this.tabPageTSql.Location = new System.Drawing.Point(4, 22);
             this.tabPageTSql.Name = "tabPageTSql";
             this.tabPageTSql.Size = new System.Drawing.Size(632, 222);
             this.tabPageTSql.TabIndex = 1;
             this.tabPageTSql.Text = "Translated SQL";
-            // 
+            //
             // panel2
-            // 
+            //
             this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel2.Controls.Add(this.translatedSql);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -605,9 +597,9 @@ namespace SoodaQuery
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(632, 222);
             this.panel2.TabIndex = 2;
-            // 
+            //
             // translatedSql
-            // 
+            //
             this.translatedSql.BackColor = System.Drawing.SystemColors.Control;
             this.translatedSql.Dock = System.Windows.Forms.DockStyle.Fill;
             this.translatedSql.DockPadding.Top = 2;
@@ -625,18 +617,18 @@ namespace SoodaQuery
             this.translatedSql.Size = new System.Drawing.Size(630, 220);
             this.translatedSql.TabIndent = 8;
             this.translatedSql.TabIndex = 1;
-            // 
+            //
             // tabPageMessages
-            // 
+            //
             this.tabPageMessages.Controls.Add(this.messagesTextBox);
             this.tabPageMessages.Location = new System.Drawing.Point(4, 22);
             this.tabPageMessages.Name = "tabPageMessages";
             this.tabPageMessages.Size = new System.Drawing.Size(768, 222);
             this.tabPageMessages.TabIndex = 3;
             this.tabPageMessages.Text = "Messages";
-            // 
+            //
             // messagesTextBox
-            // 
+            //
             this.messagesTextBox.AcceptsReturn = true;
             this.messagesTextBox.AcceptsTab = true;
             this.messagesTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -650,9 +642,9 @@ namespace SoodaQuery
             this.messagesTextBox.Size = new System.Drawing.Size(768, 222);
             this.messagesTextBox.TabIndex = 0;
             this.messagesTextBox.Text = "";
-            // 
+            //
             // TextEditorControl1
-            // 
+            //
             this.TextEditorControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.TextEditorControl1.DockPadding.Top = 2;
             this.TextEditorControl1.EnableFolding = false;
@@ -669,18 +661,18 @@ namespace SoodaQuery
             this.TextEditorControl1.Size = new System.Drawing.Size(638, 122);
             this.TextEditorControl1.TabIndent = 1;
             this.TextEditorControl1.TabIndex = 0;
-            // 
+            //
             // splitter2
-            // 
+            //
             this.splitter2.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.splitter2.Location = new System.Drawing.Point(0, 152);
             this.splitter2.Name = "splitter2";
             this.splitter2.Size = new System.Drawing.Size(640, 3);
             this.splitter2.TabIndex = 0;
             this.splitter2.TabStop = false;
-            // 
+            //
             // panel1
-            // 
+            //
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel1.Controls.Add(this.TextEditorControl1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -689,9 +681,9 @@ namespace SoodaQuery
             this.panel1.Size = new System.Drawing.Size(640, 124);
             this.panel1.TabIndex = 1;
             this.panel1.TabStop = true;
-            // 
+            //
             // panel5
-            // 
+            //
             this.panel5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel5.Controls.Add(this.soqlPrettyPrint);
             this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -699,9 +691,9 @@ namespace SoodaQuery
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(632, 222);
             this.panel5.TabIndex = 0;
-            // 
+            //
             // soqlPrettyPrint
-            // 
+            //
             this.soqlPrettyPrint.BackColor = System.Drawing.SystemColors.Control;
             this.soqlPrettyPrint.Dock = System.Windows.Forms.DockStyle.Fill;
             this.soqlPrettyPrint.DockPadding.Top = 2;
@@ -719,9 +711,9 @@ namespace SoodaQuery
             this.soqlPrettyPrint.Size = new System.Drawing.Size(630, 220);
             this.soqlPrettyPrint.TabIndent = 8;
             this.soqlPrettyPrint.TabIndex = 2;
-            // 
+            //
             // MainForm
-            // 
+            //
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
             this.ClientSize = new System.Drawing.Size(640, 425);
             this.Controls.Add(this.panel1);
@@ -748,32 +740,27 @@ namespace SoodaQuery
             this.ResumeLayout(false);
 
         }
-        #endregion
+#endregion
 
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main() 
-        {
+        static void Main() {
             Application.Run(new MainForm());
         }
 
-        private void menuitemFileExit_Click(object sender, System.EventArgs e)
-        {
+        private void menuitemFileExit_Click(object sender, System.EventArgs e) {
             this.Close();
         }
 
-        private void menuitemProjectOpen_Click(object sender, System.EventArgs e)
-        {
-            using (OpenFileDialog fd = new OpenFileDialog())
-            {
+        private void menuitemProjectOpen_Click(object sender, System.EventArgs e) {
+            using (OpenFileDialog fd = new OpenFileDialog()) {
 
                 fd.CheckFileExists = true;
                 fd.Filter = "Database XML Schema (*.xml)|*.xml|StubGen-Generated Assembly (*.dll)|*.dll|All files (*.*)|*.*";
 
-                if (fd.ShowDialog(this) == DialogResult.OK)
-                {
+                if (fd.ShowDialog(this) == DialogResult.OK) {
                     LoadProject(fd.FileName);
                 }
             }
@@ -781,41 +768,31 @@ namespace SoodaQuery
 
         RegistryKey PreferencesRegistryKey
         {
-            get
-            {
+            get {
                 return Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Sooda\QueryAnalyzer");
             }
         }
 
-        #region Project Support
+#region Project Support
 
         private string currentProject = null;
         private SchemaInfo schemaInfo = null;
 
-        private void LoadSchemaFromXml(string fileName)
-        {
+        private void LoadSchemaFromXml(string fileName) {
             schemaInfo = SchemaManager.ReadAndValidateSchema(new XmlTextReader(fileName));
         }
 
-        private void LoadSchemaFromAssembly(string fileName)
-        {
+        private void LoadSchemaFromAssembly(string fileName) {
             throw new NotImplementedException();
         }
 
-        private void LoadProject(string fileName)
-        {
-            try
-            {
-                if (fileName.EndsWith(".xml"))
-                {
+        private void LoadProject(string fileName) {
+            try {
+                if (fileName.EndsWith(".xml")) {
                     LoadSchemaFromXml(fileName);
-                }
-                else if (fileName.EndsWith(".dll"))
-                {
+                } else if (fileName.EndsWith(".dll")) {
                     LoadSchemaFromAssembly(fileName);
-                }
-                else
-                {
+                } else {
                     throw new NotSupportedException("Loading from this file type is not supported");
                 }
 
@@ -823,57 +800,46 @@ namespace SoodaQuery
 
                 currentProject = fileName;
 
-                using (RegistryKey key = PreferencesRegistryKey)
-                {
+                using (RegistryKey key = PreferencesRegistryKey) {
                     key.SetValue("LastWorkspace", fileName);
                 }
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 MessageBox.Show(this, "Unable to open project:\n\n" + fileName + "\n\n" + e.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             UpdateTitleBar();
         }
 
-        private void ReloadLastProject()
-        {
-            using (RegistryKey key = PreferencesRegistryKey)
-            {
+        private void ReloadLastProject() {
+            using (RegistryKey key = PreferencesRegistryKey) {
                 string s = (string)key.GetValue("LastWorkspace", "");
-                if (s != "")
-                {
+                if (s != "") {
                     LoadProject(s);
                 }
             }
         }
 
-        #endregion
+#endregion
 
-        private void UpdateTitleBar()
-        {
+        private void UpdateTitleBar() {
             this.Text = "Sooda QueryAnalyzer - " + currentProject;
         }
 
-        private void menuitemQueryRun_Click(object sender, System.EventArgs e)
-        {
+        private void menuitemQueryRun_Click(object sender, System.EventArgs e) {
             RunQuery();
         }
 
-        private void AppendCsvValue(StringBuilder sb, object v)
-        {
+        private void AppendCsvValue(StringBuilder sb, object v) {
             if (v is DBNull)
-                return;
+                return ;
 
             sb.Append('"');
             sb.Append(v.ToString());
             sb.Append('"');
         }
 
-        public void RunQuery()
-        {
-            try
-            {
-                string inputText = null; 
+        public void RunQuery() {
+            try {
+                string inputText = null;
                 if (inputText == null || inputText.Length == 0)
                     inputText = TextEditorControl1.Text;
 
@@ -911,8 +877,7 @@ namespace SoodaQuery
 
                 sds.Open();
 
-                try
-                {
+                try {
 
                     IDbConnection conn = sds.Connection;
                     IDbCommand cmd = conn.CreateCommand();
@@ -924,8 +889,7 @@ namespace SoodaQuery
                     resultSet.Columns.Clear();
 
                     IDataReader reader = cmd.ExecuteReader();
-                    for (int i = 0; i < reader.FieldCount; ++i)
-                    {
+                    for (int i = 0; i < reader.FieldCount; ++i) {
                         string name = reader.GetName(i);
 
                         ColumnHeader ch = new ColumnHeader();
@@ -943,8 +907,7 @@ namespace SoodaQuery
                     xmlWriter.Formatting = Formatting.Indented;
                     xmlWriter.WriteStartDocument(true);
                     xmlWriter.WriteStartElement("results");
-                    while (reader.Read())
-                    {
+                    while (reader.Read()) {
                         xmlWriter.WriteStartElement("item");
                         object v = reader.GetValue(0);
                         string text = (v is DBNull) ? "(null)" : v.ToString();
@@ -954,8 +917,7 @@ namespace SoodaQuery
                         //if (!(v is DBNull))
                         xmlWriter.WriteAttributeString(reader.GetName(0), text);
 
-                        for (int i = 1; i < reader.FieldCount; ++i)
-                        {
+                        for (int i = 1; i < reader.FieldCount; ++i) {
                             csvText.Append(";");
                             v = reader.GetValue(i);
                             text = (v is DBNull) ? "(null)" : v.ToString();
@@ -971,84 +933,58 @@ namespace SoodaQuery
                     csvResults.Text = csvText.ToString();
                     xmlResults.Text = xmlStringWriter.ToString();
 
-                    foreach (ColumnHeader ch in resultSet.Columns)
-                    {
+                    foreach (ColumnHeader ch in resultSet.Columns) {
                         ch.Width = -2;
                     }
-                }
-                finally
-                {
+                } finally {
                     sds.Close();
                 }
 
                 DateTime t1 = DateTime.Now;
                 messagesTextBox.Text = String.Format("Got {0} row(s)\r\nQuery took {1}\r\nTranslation took {2}", resultSet.Items.Count, t1 - t0, translationEnd - translationStart);
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 messagesTextBox.Text = e.ToString();
                 MessageBox.Show(this, e.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
+            } finally {
                 toolBarButtonRun.Enabled = true;
             }
         }
 
-        private void listView1_SelectedIndexChanged(object sender, System.EventArgs e)
-        {
-        
-        }
+        private void listView1_SelectedIndexChanged(object sender, System.EventArgs e) {}
 
-        private void toolBar1_ButtonClick(object sender, System.Windows.Forms.ToolBarButtonClickEventArgs e)
-        {
-            if (e.Button == toolBarButtonRun)
-            {
+        private void toolBar1_ButtonClick(object sender, System.Windows.Forms.ToolBarButtonClickEventArgs e) {
+            if (e.Button == toolBarButtonRun) {
                 RunQuery();
-            }
-            else if (e.Button == toolBarButtonNew)
-            {
+            } else if (e.Button == toolBarButtonNew) {
                 TextEditorControl1.Text = "";
                 TextEditorControl1.Refresh();
-            }
-            else if (e.Button == toolBarButtonConnection)
-            {
+            } else if (e.Button == toolBarButtonConnection) {
                 toolBarButtonConnection.Text = "Database: " + DateTime.Now.Ticks;
             }
         }
 
-        private void MainFor_Load(object sender, System.EventArgs e)
-        {
+        private void MainFor_Load(object sender, System.EventArgs e) {
             statusBar1.Text = "Ready";
             TextEditorControl1.Focus();
             TextEditorControl1.Invalidate();
         }
 
-        private void recordsetContextMenu_Popup(object sender, System.EventArgs e)
-        {
-        
-        }
+        private void recordsetContextMenu_Popup(object sender, System.EventArgs e) {}
 
-        private void contextMenuItemSelectAll_Click(object sender, System.EventArgs e)
-        {
-            foreach (ListViewItem lvi in resultSet.Items)
-            {
+        private void contextMenuItemSelectAll_Click(object sender, System.EventArgs e) {
+            foreach (ListViewItem lvi in resultSet.Items) {
                 lvi.Selected = true;
             }
         }
 
-        private void contextMenuItemCopy_Click(object sender, System.EventArgs e)
-        {
+        private void contextMenuItemCopy_Click(object sender, System.EventArgs e) {
             StringBuilder sb = new StringBuilder();
 
-            foreach (ListViewItem lvi in resultSet.Items)
-            {
-                if (lvi.Selected)
-                {
+            foreach (ListViewItem lvi in resultSet.Items) {
+                if (lvi.Selected) {
                     sb.Append(lvi.Text);
 
-                    foreach (ListViewItem.ListViewSubItem lvsi in lvi.SubItems)
-                    {
+                    foreach (ListViewItem.ListViewSubItem lvsi in lvi.SubItems) {
                         sb.Append("\t");
                         sb.Append(lvsi.Text);
                     }
@@ -1059,46 +995,35 @@ namespace SoodaQuery
             Clipboard.SetDataObject(sb.ToString(), true);
         }
 
-        private void xmlResults_Load(object sender, System.EventArgs e)
-        {
-        
-        }
+        private void xmlResults_Load(object sender, System.EventArgs e) {}
 
-        private void menuItemProjectProperties_Click(object sender, System.EventArgs e) 
-        {
-            using (ProjectDialog dlg = new ProjectDialog())
-            {
+        private void menuItemProjectProperties_Click(object sender, System.EventArgs e) {
+            using (ProjectDialog dlg = new ProjectDialog()) {
                 dlg.ShowDialog(this);
             }
         }
 
-        private void tabPagePrettyPrint_Click(object sender, System.EventArgs e)
-        {
-        
-        }
+        private void tabPagePrettyPrint_Click(object sender, System.EventArgs e) {}
 
-        class MyResourceSyntaxModeProvider : ISyntaxModeFileProvider
-        {
+    class MyResourceSyntaxModeProvider : ISyntaxModeFileProvider {
             ArrayList syntaxModes = null;
-        
-            public ArrayList SyntaxModes 
+
+            public ArrayList SyntaxModes
             {
-                get 
-                {
+                get {
                     return syntaxModes;
                 }
             }
-        
-            public MyResourceSyntaxModeProvider()
-            {
+
+            public MyResourceSyntaxModeProvider() {
                 Assembly assembly = typeof(MainForm).Assembly;
                 Stream syntaxModeStream = assembly.GetManifestResourceStream("SoodaQuery.SyntaxModes.xml");
-                if (syntaxModeStream == null) throw new ApplicationException();
+                if (syntaxModeStream == null)
+                    throw new ApplicationException();
                 syntaxModes = SyntaxMode.GetSyntaxModes(syntaxModeStream);
             }
-        
-            public XmlTextReader GetSyntaxModeFile(ICSharpCode.TextEditor.Document.SyntaxMode syntaxMode)
-            {
+
+            public XmlTextReader GetSyntaxModeFile(ICSharpCode.TextEditor.Document.SyntaxMode syntaxMode) {
                 Assembly assembly = typeof(MainForm).Assembly;
                 return new XmlTextReader(assembly.GetManifestResourceStream("SoodaQuery." + syntaxMode.FileName));
             }

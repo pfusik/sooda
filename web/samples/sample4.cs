@@ -5,9 +5,9 @@ class Sample4 {
     static void Main() {
         using (SoodaTransaction transaction = new SoodaTransaction()) {
             Where where = new Where(
-                    "Name = {0} and " + 
-                    "Owner.PrimaryGroup.Manager.Name like 'Mary Mana%'",
-                    "My Bike");
+                              "Name = {0} and " +
+                              "Owner.PrimaryGroup.Manager.Name like 'Mary Mana%'",
+                              "My Bike");
 
             // get a list of matching objects
             VehicleList lst = Vehicle.GetList(where);
@@ -21,8 +21,8 @@ class Sample4 {
 
                 if (b != null) {
                     // cast successful
-                    Console.WriteLine("It's a bike! Wheel diameter is {0}", 
-                            b.WheelDiameter);
+                    Console.WriteLine("It's a bike! Wheel diameter is {0}",
+                                      b.WheelDiameter);
                 }
             }
         }
