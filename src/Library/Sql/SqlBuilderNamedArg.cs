@@ -108,6 +108,11 @@ namespace Sooda.Sql {
                     }
 
                     object v = par[paramNumber];
+
+                    if (v is SoodaObject)
+                    {
+                        v = ((SoodaObject)v).GetPrimaryKeyValue();
+                    }
                     if (v == null)
                         sb.Append("null");
                     else {
