@@ -96,6 +96,7 @@
 		<xsd:attribute name="alwaysTrigger" use="optional" type="xsd:boolean" default="false" />
 		<xsd:attribute name="wrapperType" use="optional" type="xsd:string" />
 		<xsd:attribute name="primaryKey" use="optional" type="xsd:boolean" default="false" />
+        <xsd:anyAttribute processContents="lax" />
 	</xsd:complexType>
 	<xsd:simpleType name="FieldDataType">
 		<xsd:restriction base="xsd:string">

@@ -76,6 +76,9 @@ namespace Sooda.Sql {
             case FieldDataType.BooleanAsInteger:
                 return "int";
 
+            case FieldDataType.TimeSpan:
+                return "int";
+
             default:
                 throw new NotImplementedException(String.Format("Datatype {0} not supported for this database", fi.DataType.ToString()));
             }
