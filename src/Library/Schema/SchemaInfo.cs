@@ -49,6 +49,10 @@ namespace Sooda.Schema {
         [XmlElement("class", typeof(ClassInfo))]
         public ClassInfoCollection Classes = new ClassInfoCollection();
 
+        [System.Xml.Serialization.XmlAnyAttribute()]
+        [NonSerialized]
+        public System.Xml.XmlAttribute[] Extensions;
+
         [XmlElement("relation", typeof(RelationInfo))]
         public RelationInfoCollection Relations = new RelationInfoCollection();
 

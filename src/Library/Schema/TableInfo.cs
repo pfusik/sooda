@@ -50,6 +50,10 @@ namespace Sooda.Schema {
         public ClassInfo OwnerClass = null;
         public int OrdinalInClass = 0;
 
+        [System.Xml.Serialization.XmlAnyAttribute()]
+        [NonSerialized]
+        public System.Xml.XmlAttribute[] Extensions;
+
         [NonSerialized]
         [XmlIgnore]
         public string NameToken;

@@ -64,6 +64,10 @@ namespace Sooda.Schema {
 
         private string _name = null;
 
+        [System.Xml.Serialization.XmlAnyAttribute()]
+        [NonSerialized]
+        public System.Xml.XmlAttribute[] Extensions;
+
         [System.Xml.Serialization.XmlAttributeAttribute("name")]
         public string Name
         {

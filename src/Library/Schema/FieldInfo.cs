@@ -80,6 +80,10 @@ namespace Sooda.Schema {
         [System.ComponentModel.DefaultValueAttribute(DeleteAction.Nothing)]
         public DeleteAction DeleteAction = DeleteAction.Nothing;
 
+        [System.Xml.Serialization.XmlAnyAttribute()]
+        [NonSerialized]
+        public System.Xml.XmlAttribute[] Extensions;
+
         [XmlAttribute("label")]
         [DefaultValue(false)]
         public bool IsLabel = false;

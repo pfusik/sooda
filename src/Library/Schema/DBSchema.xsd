@@ -36,6 +36,7 @@
 			<xsd:element name="collectionOneToMany" type="sooda:CollectionOnetoManyInfo" minOccurs="0" maxOccurs="unbounded" />
 			<xsd:element name="collectionManyToMany" type="sooda:CollectionManyToManyInfo" minOccurs="0" maxOccurs="unbounded" />
 			<xsd:element name="const" type="sooda:ConstInfo" minOccurs="0" maxOccurs="unbounded" />
+			<!-- <xsd:any minOccurs="0" maxOccurs="unbounded" processContents="lax" /> -->
 		</xsd:sequence>
 		<xsd:attribute name="cardinality" use="optional" type="sooda:ClassCardinality" default="Medium" />
 		<xsd:attribute name="datasource" use="optional" />
@@ -54,6 +55,7 @@
 		<xsd:attribute name="precacheAll" use="optional" type="xsd:boolean" default="false" />
 		<xsd:attribute name="triggers" use="optional" type="xsd:boolean" default="true" />
 		<xsd:attribute name="readOnly" use="optional" type="xsd:boolean" default="false" />
+		<xsd:anyAttribute processContents="lax" />
 	</xsd:complexType>
 	<xsd:complexType name="IndexInfo">
 		<xsd:sequence>
