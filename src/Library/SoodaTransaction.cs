@@ -43,6 +43,7 @@ using System.Runtime.InteropServices;
 using Sooda.Schema;
 
 using Sooda.ObjectMapper;
+using Sooda.Collections;
 
 namespace Sooda {
     [Flags]
@@ -60,18 +61,18 @@ namespace Sooda {
         private static LocalDataStoreSlot g_activeTransactionDataStoreSlot = System.Threading.Thread.AllocateDataSlot();
 
         private TransactionOptions transactionOptions;
-        private TypeToSoodaRelationTableDictionary _relationTables = new TypeToSoodaRelationTableDictionary();
+        private TypeToSoodaRelationTableAssociation _relationTables = new TypeToSoodaRelationTableAssociation();
         //private KeyToSoodaObjectMap _objects = new KeyToSoodaObjectMap();
         private SoodaObjectCollection _objectList = new SoodaObjectCollection ();
         private Queue _precommitQueue = null;
         private Queue _deleteQueue = null;
         private SoodaObjectCollection _postCommitQueue = null;
-        private StringToSoodaObjectCollectionDictionary _objectsByClass = new StringToSoodaObjectCollectionDictionary();
-        private StringToSoodaObjectDictionaryDictionary _objectDictByClass = new StringToSoodaObjectDictionaryDictionary();
+        private StringToSoodaObjectCollectionAssociation _objectsByClass = new StringToSoodaObjectCollectionAssociation();
+        private StringToObjectToSoodaObjectAssociation _objectDictByClass = new StringToObjectToSoodaObjectAssociation();
 
-        private DataSourceCollection _dataSources = new DataSourceCollection(10);
-        private StringToSoodaObjectFactoryMap factoryForClassName = new StringToSoodaObjectFactoryMap();
-        private TypeToSoodaObjectFactoryMap factoryForType = new TypeToSoodaObjectFactoryMap();
+        private SoodaDataSourceCollection _dataSources = new SoodaDataSourceCollection();
+        private StringToISoodaObjectFactoryAssociation factoryForClassName = new StringToISoodaObjectFactoryAssociation();
+        private TypeToISoodaObjectFactoryAssociation factoryForType = new TypeToISoodaObjectFactoryAssociation();
         private Assembly _assembly;
 
         public static Assembly DefaultObjectsAssembly = null;
@@ -175,10 +176,10 @@ namespace Sooda {
             }
         }
 
-        private ObjectToSoodaObjectDictionary GetObjectDictionaryForClass(string className) {
-            ObjectToSoodaObjectDictionary dict = _objectDictByClass[className];
+        private ObjectToSoodaObjectAssociation GetObjectDictionaryForClass(string className) {
+            ObjectToSoodaObjectAssociation dict = _objectDictByClass[className];
             if (dict == null) {
-                dict = new ObjectToSoodaObjectDictionary();
+                dict = new ObjectToSoodaObjectAssociation();
                 _objectDictByClass[className] = dict;
             }
             return dict;
@@ -226,7 +227,7 @@ namespace Sooda {
         }
 
         protected internal void UnregisterObject(SoodaObject o) {
-            ObjectToSoodaObjectDictionary classDict = _objectDictByClass[o.GetClassInfo().Name];
+            ObjectToSoodaObjectAssociation classDict = _objectDictByClass[o.GetClassInfo().Name];
             object pkValue = o.GetPrimaryKeyValue();
 
             if (ExistsObjectWithKey(o.GetClassInfo().Name, pkValue)) {
@@ -382,7 +383,8 @@ namespace Sooda {
             CallPrecommits();
             CheckCommitConditions();
 
-            _postCommitQueue = new SoodaObjectCollection(_objectList.Count);
+            _postCommitQueue = new SoodaObjectCollection();
+            // TODO - prealloc
             SaveObjectChanges();
 
             // commit all transactions on all data sources

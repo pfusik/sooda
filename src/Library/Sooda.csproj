@@ -104,20 +104,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Collections.xml"
-                    BuildAction = "Content"
-                    Generator = "SBCollectionGenerator"
-                    LastGenOutput = "Collections.cs"
-                />
-                <File
-                    RelPath = "Collections.cs"
-                    DependentUpon = "Collections.xml"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                    DesignTime = "True"
-                    AutoGen = "True"
-                />
-                <File
                     RelPath = "ISoodaObjectFactory.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -193,11 +179,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "SoodaSerializableAttribute.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "SoodaSerializeOptions.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -219,6 +200,66 @@
                 />
                 <File
                     RelPath = "SoodaWhereClause.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Collections\ObjectToSoodaObjectAssociation.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Collections\ObjectToSoodaObjectFactoryAssociation.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Collections\SoodaDataSourceCollection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Collections\SoodaObjectCollection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Collections\SoodaObjectToInt32Association.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Collections\SoodaObjectToObjectAssociation.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Collections\StringToISoodaObjectFactoryAssociation.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Collections\StringToObjectToSoodaObjectAssociation.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Collections\StringToSoodaObjectCollectionAssociation.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Collections\StringToStringToISoodaObjectFactoryAssociation.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Collections\TypeToISoodaObjectFactoryAssociation.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Collections\TypeToSoodaRelationTableAssociation.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -612,6 +653,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Schema\ClassInfoCollection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Schema\Collection1toNInfo.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -622,26 +668,17 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Schema\Collections.xml"
-                    BuildAction = "Content"
-                    Generator = "SBCollectionGenerator"
-                    LastGenOutput = "Collections.cs"
-                />
-                <File
-                    RelPath = "Schema\Collections.cs"
-                    DependentUpon = "Collections.xml"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                    DesignTime = "True"
-                    AutoGen = "True"
-                />
-                <File
                     RelPath = "Schema\ConstantInfo.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Schema\DataSourceInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Schema\DataSourceInfoCollection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -670,6 +707,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Schema\FieldInfoCollection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Schema\IFieldContainer.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -680,12 +722,27 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Schema\IndexFieldInfoCollection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Schema\IndexInfo.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Schema\IndexInfoCollection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Schema\RelationInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Schema\RelationInfoCollection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -701,6 +758,11 @@
                 />
                 <File
                     RelPath = "Schema\TableInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Schema\TableInfoCollection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

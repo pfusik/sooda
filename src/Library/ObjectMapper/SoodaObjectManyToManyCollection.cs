@@ -38,12 +38,14 @@ using System.Text;
 using System.Collections;
 using System.Reflection;
 
+using Sooda.Collections;
+
 using Sooda.Schema;
 
 namespace Sooda.ObjectMapper {
     public class SoodaObjectManyToManyCollection : IList, ISoodaObjectList {
         protected SoodaTransaction transaction;
-        protected SoodaObjectToIntDictionary items = null;
+        protected SoodaObjectToInt32Association items = null;
         protected SoodaObjectCollection itemsArray = null;
         protected int masterColumn;
         protected object masterValue;
@@ -142,7 +144,7 @@ namespace Sooda.ObjectMapper {
         }
 
         protected void LoadDataFromReader(ISoodaObjectFactory factory, IDataReader reader, TableInfo[] loadedTables) {
-            items = new SoodaObjectToIntDictionary();
+            items = new SoodaObjectToInt32Association();
             itemsArray = new SoodaObjectCollection();
 
             using (reader) {

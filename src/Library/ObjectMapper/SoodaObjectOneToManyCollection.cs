@@ -39,11 +39,12 @@ using System.Collections;
 using System.Reflection;
 
 using Sooda.Schema;
+using Sooda.Collections;
 
 namespace Sooda.ObjectMapper {
     public class SoodaObjectOneToManyCollection : IList, ISoodaObjectList, ISoodaObjectListInternal {
-        private SoodaObjectToIntDictionary items = null;
-        private SoodaObjectToObjectDictionary tempItems = null;
+        private SoodaObjectToInt32Association items = null;
+        private SoodaObjectToObjectAssociation tempItems = null;
         private SoodaObjectCollection itemsArray = null;
         private SoodaObject parentObject;
         private string childRefField;
@@ -117,7 +118,7 @@ namespace Sooda.ObjectMapper {
         public void InternalAdd(SoodaObject c) {
             if (items == null) {
                 if (tempItems == null)
-                    tempItems = new SoodaObjectToObjectDictionary();
+                    tempItems = new SoodaObjectToObjectAssociation();
                 tempItems[c] = markerAdded;
                 return ;
             }
@@ -132,7 +133,7 @@ namespace Sooda.ObjectMapper {
         public void InternalRemove(SoodaObject c) {
             if (items == null) {
                 if (tempItems == null)
-                    tempItems = new SoodaObjectToObjectDictionary();
+                    tempItems = new SoodaObjectToObjectAssociation();
                 tempItems[c] = markerRemoved;
                 return ;
             }
@@ -155,7 +156,7 @@ namespace Sooda.ObjectMapper {
             SoodaDataSource ds = transaction.OpenDataSource(classInfo.GetDataSource());
             TableInfo[] loadedTables;
 
-            items = new SoodaObjectToIntDictionary();
+            items = new SoodaObjectToInt32Association();
             itemsArray = new SoodaObjectCollection();
 
             ISoodaObjectFactory factory = transaction.GetFactory(classInfo);

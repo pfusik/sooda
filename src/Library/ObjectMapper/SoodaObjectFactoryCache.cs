@@ -33,16 +33,17 @@
 
 using System;
 using Sooda;
+using Sooda.Collections;
 
 namespace Sooda.ObjectMapper {
     public class SoodaObjectFactoryCache : ISoodaObjectFactoryCache {
-        private StringToSoodaObjectFactoryDictionaryDictionary _classes = new StringToSoodaObjectFactoryDictionaryDictionary();
+        private StringToStringToISoodaObjectFactoryAssociation _classes = new StringToStringToISoodaObjectFactoryAssociation();
         private NLog.Logger logger = NLog.LogManager.GetLogger("Sooda.FactoryCache");
 
-        private ObjectToSoodaObjectFactoryDictionary GetObjectFactoryDictionaryForClass(string className) {
-            ObjectToSoodaObjectFactoryDictionary dict = _classes[className];
+        private ObjectToSoodaObjectFactoryAssociation GetObjectFactoryDictionaryForClass(string className) {
+            ObjectToSoodaObjectFactoryAssociation dict = _classes[className];
             if (dict == null) {
-                dict = new ObjectToSoodaObjectFactoryDictionary();
+                dict = new ObjectToSoodaObjectFactoryAssociation();
                 _classes[className] = dict;
             }
             return dict;

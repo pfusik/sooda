@@ -39,6 +39,7 @@ using System.Collections;
 using System.Reflection;
 
 using Sooda.Schema;
+using Sooda.Collections;
 
 namespace Sooda.ObjectMapper {
     public class SoodaObjectListSnapshot : ISoodaObjectList {
@@ -89,7 +90,7 @@ namespace Sooda.ObjectMapper {
                 // the filter expression may materialize new objects
                 // during checking. This way we avoid "collection modified" exception
 
-                foreach (SoodaObject obj in (SoodaObjectCollection)al.Clone()) {
+                foreach (SoodaObject obj in al.Clone()) {
                     if (filter(obj)) {
                         items.Add(obj);
                     }
