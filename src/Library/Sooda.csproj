@@ -229,6 +229,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Collections\SoodaObjectToNameValueCollectionAssociation.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Collections\SoodaObjectToObjectAssociation.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

@@ -53,13 +53,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
             using (SoodaTransaction tran = new SoodaTransaction()) 
             {
                 Contact c = Contact.Mary;
-
-                c.PersistentValue1 = 134;
-                c.PersistentValue2 = true;
-                c.PersistentValue3 = (decimal)1234;
-                c.PersistentValue4 = "test123";
-                c.SerializeExtraFields(true);
-
+                c.PersistentValue = "test123";
                 s = tran.Serialize();
             }
 
@@ -68,14 +62,17 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
             using (SoodaTransaction tran = new SoodaTransaction()) 
             {
                 tran.Deserialize(s);
-
                 Contact c = Contact.Mary;
+                Assertion.AssertEquals("test123", c.PersistentValue);
+                s2 = tran.Serialize();
+            }
+            Assertion.AssertEquals(s, s2);
 
-                Assertion.AssertEquals(134, c.PersistentValue1);
-                Assertion.AssertEquals(true, c.PersistentValue2);
-                Assertion.AssertEquals((decimal)1234, c.PersistentValue3);
-                Assertion.AssertEquals("test123", c.PersistentValue4);
-
+            using (SoodaTransaction tran = new SoodaTransaction()) 
+            {
+                tran.Deserialize(s);
+                Contact c = Contact.Mary;
+                Assertion.AssertEquals("test123", c.PersistentValue);
                 s2 = tran.Serialize();
             }
             Assertion.AssertEquals(s, s2);

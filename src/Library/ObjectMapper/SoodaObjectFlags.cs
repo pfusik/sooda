@@ -57,6 +57,5 @@ namespace Sooda.ObjectMapper {
         VisitedOnCommit = 0x80,
         InsertedIntoDatabase = 0x100,
         ForcePostCommit = 0x200,
-        SerializeExtraFields = 0x400,
     }
 }

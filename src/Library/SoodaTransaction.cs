@@ -39,6 +39,7 @@ using System.Collections;
 using System.Xml;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Collections.Specialized;
 
 using Sooda.Schema;
 
@@ -56,7 +57,8 @@ namespace Sooda {
         WithInit = 0x0000,
     }
 
-    public class SoodaTransaction : IDisposable {
+    public class SoodaTransaction : IDisposable 
+    {
         private static NLog.Logger transactionLogger = NLog.LogManager.GetLogger("Sooda.Transaction");
         private static LocalDataStoreSlot g_activeTransactionDataStoreSlot = System.Threading.Thread.AllocateDataSlot();
 
@@ -73,11 +75,12 @@ namespace Sooda {
         private SoodaDataSourceCollection _dataSources = new SoodaDataSourceCollection();
         private StringToISoodaObjectFactoryAssociation factoryForClassName = new StringToISoodaObjectFactoryAssociation();
         private TypeToISoodaObjectFactoryAssociation factoryForType = new TypeToISoodaObjectFactoryAssociation();
+        private SoodaObjectToNameValueCollectionAssociation _persistentValues = new SoodaObjectToNameValueCollectionAssociation();
         private Assembly _assembly;
 
         public static Assembly DefaultObjectsAssembly = null;
 
-#region Constructors, Dispose & Finalizer
+        #region Constructors, Dispose & Finalizer
 
         public SoodaTransaction() : this(null, TransactionOptions.Implicit | TransactionOptions.WithInit, Assembly.GetCallingAssembly()) {}
 
@@ -87,13 +90,16 @@ namespace Sooda {
 
         public SoodaTransaction(Assembly objectsAssembly, TransactionOptions options) : this(objectsAssembly, options, Assembly.GetCallingAssembly()) {}
 
-        private SoodaTransaction(Assembly objectsAssembly, TransactionOptions options, Assembly callingAssembly) {
+        private SoodaTransaction(Assembly objectsAssembly, TransactionOptions options, Assembly callingAssembly) 
+        {
             if (objectsAssembly != null)
                 ObjectsAssembly = objectsAssembly;
 
-            if (ObjectsAssembly == null) {
+            if (ObjectsAssembly == null) 
+            {
                 SoodaStubAssemblyAttribute[] attrs = (SoodaStubAssemblyAttribute[])callingAssembly.GetCustomAttributes(typeof(SoodaStubAssemblyAttribute), false);
-                if (attrs != null && attrs.Length == 1) {
+                if (attrs != null && attrs.Length == 1) 
+                {
                     ObjectsAssembly = attrs[0].Assembly;
                 }
             }
@@ -102,51 +108,65 @@ namespace Sooda {
                 ObjectsAssembly = DefaultObjectsAssembly;
 
             this.transactionOptions = options;
-            if ((options & TransactionOptions.Implicit) != 0) {
-                if (null != System.Threading.Thread.GetData(g_activeTransactionDataStoreSlot)) {
-                    transactionLogger.Warn("Nested transaction detected! Overriding active transaction.");
+            if ((options & TransactionOptions.Implicit) != 0) 
+            {
+                if (null != System.Threading.Thread.GetData(g_activeTransactionDataStoreSlot)) 
+                {
+                    throw new InvalidOperationException("There's already a open implicit transaction.");
                 };
                 System.Threading.Thread.SetData(g_activeTransactionDataStoreSlot, this);
             }
-            if ((options & TransactionOptions.NoInit) == 0) {
+            if ((options & TransactionOptions.NoInit) == 0) 
+            {
                 InitTransaction();
             }
         }
 
-        ~SoodaTransaction() {
+        ~SoodaTransaction() 
+        {
             Dispose(false);
         }
 
-        void IDisposable.Dispose() {
+        void IDisposable.Dispose() 
+        {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        void Dispose(bool disposing) {
+        void Dispose(bool disposing) 
+        {
             // Log("Disposing transaction", "Materialize");
-            if (disposing) {
-                foreach (SoodaDataSource source in _dataSources) {
+            if (disposing) 
+            {
+                foreach (SoodaDataSource source in _dataSources) 
+                {
                     source.Close();
                 }
             };
-            if ((transactionOptions & TransactionOptions.Implicit) != 0) {
-                if (System.Threading.Thread.GetData(g_activeTransactionDataStoreSlot) == this) {
+            if ((transactionOptions & TransactionOptions.Implicit) != 0) 
+            {
+                if (System.Threading.Thread.GetData(g_activeTransactionDataStoreSlot) == this) 
+                {
                     System.Threading.Thread.SetData(g_activeTransactionDataStoreSlot, null);
-                } else {
+                } 
+                else 
+                {
                     transactionLogger.Warn("ActiveTransactionDataStoreSlot has been overwritten by someone.");
                 };
             }
         }
 
-#endregion
+        #endregion
 
         public static SoodaTransaction ActiveTransaction
         {
             [DebuggerStepThrough]
-            get {
+            get 
+            {
                 SoodaTransaction retVal = (SoodaTransaction)System.Threading.Thread.GetData(g_activeTransactionDataStoreSlot);
 
-                if (retVal == null) {
+                if (retVal == null) 
+                {
                     throw new InvalidOperationException("There's no implicit transaction currently active. Either use explicit transactions or create a new implicit one.");
                 }
 
@@ -156,19 +176,23 @@ namespace Sooda {
 
         protected void InitTransaction() {}
 
-        public SoodaObjectCollection GetObjects() {
+        public SoodaObjectCollection GetObjects() 
+        {
             return _objectList;
         }
 
-        public SoodaObjectCollection GetObjectsByClassName(string className) {
+        public SoodaObjectCollection GetObjectsByClassName(string className) 
+        {
             return _objectsByClass[className];
         }
 
         public SoodaObjectCollection DirtyObjects
         {
-            get {
+            get 
+            {
                 SoodaObjectCollection dirty = new SoodaObjectCollection();
-                foreach (SoodaObject o in _objectList) {
+                foreach (SoodaObject o in _objectList) 
+                {
                     if (o.IsObjectDirty())
                         dirty.Add(o);
                 }
@@ -176,39 +200,47 @@ namespace Sooda {
             }
         }
 
-        private ObjectToSoodaObjectAssociation GetObjectDictionaryForClass(string className) {
+        private ObjectToSoodaObjectAssociation GetObjectDictionaryForClass(string className) 
+        {
             ObjectToSoodaObjectAssociation dict = _objectDictByClass[className];
-            if (dict == null) {
+            if (dict == null) 
+            {
                 dict = new ObjectToSoodaObjectAssociation();
                 _objectDictByClass[className] = dict;
             }
             return dict;
         }
 
-        private void AddObjectWithKey(string className, object keyValue, SoodaObject obj) {
+        private void AddObjectWithKey(string className, object keyValue, SoodaObject obj) 
+        {
             // Console.WriteLine("AddObjectWithKey('{0}',{1})", className, keyValue);
             GetObjectDictionaryForClass(className).Add(keyValue, obj);
         }
 
-        private void UnregisterObjectWithKey(string className, object keyValue) {
+        private void UnregisterObjectWithKey(string className, object keyValue) 
+        {
             GetObjectDictionaryForClass(className).Remove(keyValue);
         }
 
-        internal bool ExistsObjectWithKey(string className, object keyValue) {
+        internal bool ExistsObjectWithKey(string className, object keyValue) 
+        {
             return GetObjectDictionaryForClass(className).Contains(keyValue);
         }
 
-        private SoodaObject FindObjectWithKey(string className, object keyValue) {
+        private SoodaObject FindObjectWithKey(string className, object keyValue) 
+        {
             return GetObjectDictionaryForClass(className)[keyValue];
         }
 
-        protected internal void RegisterObject(SoodaObject o) {
+        protected internal void RegisterObject(SoodaObject o) 
+        {
             // Console.WriteLine("Registering object {0}...", o.GetObjectKey());
 
             object pkValue = o.GetPrimaryKeyValue();
             AddObjectWithKey(o.GetClassInfo().Name, pkValue, o);
             // Console.WriteLine("Adding key: " + o.GetObjectKey() + " of type " + o.GetType());
-            for (ClassInfo ci = o.GetClassInfo().InheritsFromClass; ci != null; ci = ci.InheritsFromClass) {
+            for (ClassInfo ci = o.GetClassInfo().InheritsFromClass; ci != null; ci = ci.InheritsFromClass) 
+            {
                 AddObjectWithKey(ci.Name, pkValue, o);
             }
 
@@ -218,7 +250,8 @@ namespace Sooda {
                 _precommitQueue.Enqueue(o);
 
             SoodaObjectCollection al = _objectsByClass[o.GetClassInfo().Name];
-            if (al == null) {
+            if (al == null) 
+            {
                 al = new SoodaObjectCollection();
                 _objectsByClass[o.GetClassInfo().Name] = al;
             }
@@ -226,43 +259,52 @@ namespace Sooda {
             al.Add(o);
         }
 
-        protected internal void UnregisterObject(SoodaObject o) {
+        protected internal void UnregisterObject(SoodaObject o) 
+        {
             ObjectToSoodaObjectAssociation classDict = _objectDictByClass[o.GetClassInfo().Name];
             object pkValue = o.GetPrimaryKeyValue();
 
-            if (ExistsObjectWithKey(o.GetClassInfo().Name, pkValue)) {
+            if (ExistsObjectWithKey(o.GetClassInfo().Name, pkValue)) 
+            {
                 UnregisterObjectWithKey(o.GetClassInfo().Name, pkValue);
-                for (ClassInfo ci = o.GetClassInfo().InheritsFromClass; ci != null; ci = ci.InheritsFromClass) {
+                for (ClassInfo ci = o.GetClassInfo().InheritsFromClass; ci != null; ci = ci.InheritsFromClass) 
+                {
                     UnregisterObjectWithKey(ci.Name, pkValue);
                 }
                 _objectList.Remove(o);
 
                 SoodaObjectCollection al = _objectsByClass[o.GetClassInfo().Name];
-                if (al != null) {
+                if (al != null) 
+                {
                     al.Remove(o);
                 }
             }
         }
 
-        public object FindObjectWithKey(string className, object keyValue, Type expectedType) {
+        public object FindObjectWithKey(string className, object keyValue, Type expectedType) 
+        {
             object o = FindObjectWithKey(className, keyValue);
             if (o == null)
                 return null;
 
             if (expectedType.IsAssignableFrom(o.GetType()))
                 return o;
-            else {
+            else 
+            {
                 // Console.WriteLine("FAILING TryGet for {0}:{1} because it's of type {2} instead of {3}", className, keyValue, o.GetType(), expectedType);
                 return null;
             }
         }
 
-        public void RegisterDataSource(SoodaDataSource dataSource) {
+        public void RegisterDataSource(SoodaDataSource dataSource) 
+        {
             _dataSources.Add(dataSource);
         }
 
-        public SoodaDataSource OpenDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo) {
-            if (_dataSources.Count == 0) {
+        public SoodaDataSource OpenDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo) 
+        {
+            if (_dataSources.Count == 0) 
+            {
                 SoodaDataSource ds = (SoodaDataSource)dataSourceInfo.CreateDataSource();
                 _dataSources.Add(ds);
                 ds.Open();
@@ -271,16 +313,21 @@ namespace Sooda {
             return _dataSources[0] as SoodaDataSource;
         }
 
-        void CallPrecommits() {
-            foreach (SoodaObject o in _objectList) {
-                if (o.IsObjectDirty()) {
+        void CallPrecommits() 
+        {
+            foreach (SoodaObject o in _objectList) 
+            {
+                if (o.IsObjectDirty()) 
+                {
                     _precommitQueue.Enqueue(o);
                 };
             };
 
-            while (_precommitQueue.Count > 0) {
+            while (_precommitQueue.Count > 0) 
+            {
                 SoodaObject o = (SoodaObject)_precommitQueue.Dequeue();
-                if (o.IsObjectDirty()) {
+                if (o.IsObjectDirty()) 
+                {
                     o.PreCommit();
                 }
             }
@@ -288,22 +335,31 @@ namespace Sooda {
             _precommitQueue = null;
         }
 
-        void CallPostcommits() {
-            foreach (SoodaObject o in _postCommitQueue) {
+        void CallPostcommits() 
+        {
+            foreach (SoodaObject o in _postCommitQueue) 
+            {
                 o.PostCommit();
             }
         }
 
-        protected static internal SoodaObject SaveOuterReferences(SoodaObject theObject, string fieldName, object fieldValue, bool isDirty, SoodaObject refcache, ISoodaObjectFactory factory, object context) {
-            if (fieldValue != null) {
+        protected static internal SoodaObject SaveOuterReferences(SoodaObject theObject, string fieldName, object fieldValue, bool isDirty, SoodaObject refcache, ISoodaObjectFactory factory, object context) 
+        {
+            if (fieldValue != null) 
+            {
                 SoodaObject obj = RefCache.TryGetObject(refcache, fieldValue, theObject.GetTransaction(), factory);
                 refcache = obj;
-                if (obj != null && (object)obj != (object)theObject) {
-                    if (obj.IsInsertMode()) {
-                        if (obj.VisitedOnCommit && !obj.WrittenIntoDatabase) {
+                if (obj != null && (object)obj != (object)theObject) 
+                {
+                    if (obj.IsInsertMode()) 
+                    {
+                        if (obj.VisitedOnCommit && !obj.WrittenIntoDatabase) 
+                        {
                             throw new Exception("Cyclic reference between " + theObject.GetObjectKeyString() + " and " + obj.GetObjectKeyString());
                             // cyclic reference
-                        } else {
+                        } 
+                        else 
+                        {
                             SaveObjectChanges(obj);
                         }
                     }
@@ -314,7 +370,8 @@ namespace Sooda {
 
         private static SoodaObjectRefFieldIterator saveOuterReferencesIterator = new SoodaObjectRefFieldIterator(SoodaTransaction.SaveOuterReferences);
 
-        static void SaveObjectChanges(SoodaObject o) {
+        static void SaveObjectChanges(SoodaObject o) 
+        {
             o.VisitedOnCommit = true;
             o.IterateOuterReferences(saveOuterReferencesIterator, null);
             if (o.WrittenIntoDatabase)
@@ -331,54 +388,67 @@ namespace Sooda {
             o.WrittenIntoDatabase = true;
         }
 
-        internal void SaveObjectChanges() {
-            foreach (SoodaObject o in _objectList) {
+        internal void SaveObjectChanges() 
+        {
+            foreach (SoodaObject o in _objectList) 
+            {
                 o.VisitedOnCommit = false;
             }
 
-            foreach (SoodaObject o in _objectList) {
-                if (!o.VisitedOnCommit) {
+            foreach (SoodaObject o in _objectList) 
+            {
+                if (!o.VisitedOnCommit) 
+                {
                     SaveObjectChanges(o);
                 }
             }
 #warning TODO - restore support for deletion
 
-            if (_relationTables != null) {
-                foreach (SoodaRelationTable rel in _relationTables.Values) {
+            if (_relationTables != null) 
+            {
+                foreach (SoodaRelationTable rel in _relationTables.Values) 
+                {
                     rel.SaveTuples(this);
                 }
             }
         }
 
-        private void Reset() {
+        private void Reset() 
+        {
             _objectDictByClass.Clear();
             _objectList.Clear();
             _objectsByClass.Clear();
             _relationTables.Clear();
         }
 
-        public void Rollback() {
+        public void Rollback() 
+        {
             Reset();
 
             // rollback all transactions on all data sources
 
-            foreach (SoodaDataSource source in _dataSources) {
+            foreach (SoodaDataSource source in _dataSources) 
+            {
                 source.Rollback();
             }
         }
 
-        private void CheckCommitConditions() {
-            foreach (SoodaObject o in _objectList) {
+        private void CheckCommitConditions() 
+        {
+            foreach (SoodaObject o in _objectList) 
+            {
                 if (o.IsObjectDirty() || o.IsInsertMode())
                     o.CheckForNulls();
             }
 
-            foreach (SoodaObject o in _objectList) {
+            foreach (SoodaObject o in _objectList) 
+            {
                 o.CheckAssertions();
             }
         }
 
-        public void Commit() {
+        public void Commit() 
+        {
             _precommitQueue = new Queue(_objectList.Count);
             CallPrecommits();
             CheckCommitConditions();
@@ -389,14 +459,16 @@ namespace Sooda {
 
             // commit all transactions on all data sources
 
-            foreach (SoodaDataSource source in _dataSources) {
+            foreach (SoodaDataSource source in _dataSources) 
+            {
                 source.Commit();
                 // source.Rollback();
             }
 
             if (_relationTables != null) 
             {
-                foreach (SoodaRelationTable rel in _relationTables.Values) {
+                foreach (SoodaRelationTable rel in _relationTables.Values) 
+                {
                     rel.Commit();
                 }
             }
@@ -408,15 +480,18 @@ namespace Sooda {
                 o.ResetObjectDirty();
             }
 
-            foreach (SoodaObject o in _objectList) {
-                if (o.CanBeCached() && o.IsAnyDataLoaded() && !o.FromCache) {
+            foreach (SoodaObject o in _objectList) 
+            {
+                if (o.CanBeCached() && o.IsAnyDataLoaded() && !o.FromCache) 
+                {
                     SoodaCache.AddObject(o.GetClassInfo().Name, o.GetPrimaryKeyValue(), o.GetCacheEntry());
                     o.FromCache = true;
                 }
             }
         }
 
-        private void _Reset() {
+        private void _Reset() 
+        {
             _objectList.Clear();
             _objectsByClass.Clear();
             _precommitQueue.Clear();
@@ -425,32 +500,39 @@ namespace Sooda {
 
         private static object[] relationTableConstructorArguments = new object[0] { };
 
-        private SoodaObject GetObject(ISoodaObjectFactory factory , string keyString) {
+        private SoodaObject GetObject(ISoodaObjectFactory factory , string keyString) 
+        {
             object keyValue = factory.GetPrimaryKeyFieldHandler().RawDeserialize(keyString);
             return factory.GetRef(this, keyValue);
         }
 
-        public SoodaObject GetObject(string className, string keyString) {
+        public SoodaObject GetObject(string className, string keyString) 
+        {
             return GetObject(GetFactory(className), keyString);
         }
 
-        public SoodaObject GetObject(Type type, string keyString) {
+        public SoodaObject GetObject(Type type, string keyString) 
+        {
             return GetObject(GetFactory(type), keyString);
         }
 
-        private SoodaObject GetNewObject(ISoodaObjectFactory factory) {
+        private SoodaObject GetNewObject(ISoodaObjectFactory factory) 
+        {
             return factory.CreateNew(this);
         }
 
-        public SoodaObject GetNewObject(string className) {
+        public SoodaObject GetNewObject(string className) 
+        {
             return GetNewObject(GetFactory(className));
         }
 
-        public SoodaObject GetNewObject(Type type) {
+        public SoodaObject GetNewObject(Type type) 
+        {
             return GetNewObject(GetFactory(type));
         }
 
-        internal SoodaRelationTable GetRelationTable(Type relationType) {
+        internal SoodaRelationTable GetRelationTable(Type relationType) 
+        {
             SoodaRelationTable table = _relationTables[relationType];
             if (table != null)
                 return table;
@@ -462,16 +544,21 @@ namespace Sooda {
 
         public Assembly ObjectsAssembly
         {
-            get {
+            get 
+            {
                 return _assembly;
             }
-            set {
+            set 
+            {
                 _assembly = value;
 
-                if (_assembly != null) {
-                    foreach (Type t in _assembly.GetExportedTypes()) {
+                if (_assembly != null) 
+                {
+                    foreach (Type t in _assembly.GetExportedTypes()) 
+                    {
                         SoodaObjectFactoryAttribute[] attr = (SoodaObjectFactoryAttribute[])t.GetCustomAttributes(typeof(SoodaObjectFactoryAttribute), false);
-                        if (attr != null && attr.Length == 1) {
+                        if (attr != null && attr.Length == 1) 
+                        {
                             ISoodaObjectFactory fact = (ISoodaObjectFactory)t.GetProperty("TheFactory").GetValue(null, new object[0]);
                             factoryForClassName[attr[0].ClassName] = fact;
                             factoryForType[attr[0].Type] = fact;
@@ -481,19 +568,23 @@ namespace Sooda {
             }
         }
 
-        public ISoodaObjectFactory GetFactory(string className) {
+        public ISoodaObjectFactory GetFactory(string className) 
+        {
             return factoryForClassName[className];
         }
 
-        public ISoodaObjectFactory GetFactory(Type type) {
+        public ISoodaObjectFactory GetFactory(Type type) 
+        {
             return factoryForType[type];
         }
 
-        public ISoodaObjectFactory GetFactory(ClassInfo classInfo) {
+        public ISoodaObjectFactory GetFactory(ClassInfo classInfo) 
+        {
             return factoryForClassName[classInfo.Name];
         }
 
-        public void MaterializeExtraObjects(IDataRecord record, TableInfo[] tables) {
+        public void MaterializeExtraObjects(IDataRecord record, TableInfo[] tables) 
+        {
             if (tables == null)
                 return ;
 
@@ -512,37 +603,44 @@ namespace Sooda {
 
         }
 
-        internal void AddToDeleteQueue(SoodaObject o) {
+        internal void AddToDeleteQueue(SoodaObject o) 
+        {
             if (_deleteQueue != null)
                 _deleteQueue.Enqueue(o);
         }
 
-        internal void AddToPostCommitQueue(SoodaObject o) {
+        internal void AddToPostCommitQueue(SoodaObject o) 
+        {
             if (_postCommitQueue != null)
                 _postCommitQueue.Add(o);
         }
 
-        public string Serialize() {
+        public string Serialize() 
+        {
             StringWriter sw = new StringWriter();
             Serialize(sw, SerializeOptions.DirtyOnly);
             return sw.ToString();
         }
 
-        public string Serialize(SerializeOptions opt) {
+        public string Serialize(SerializeOptions opt) 
+        {
             StringWriter sw = new StringWriter();
             Serialize(sw, opt);
             return sw.ToString();
         }
 
-        public void Serialize(TextWriter tw, SerializeOptions options) {
+        public void Serialize(TextWriter tw, SerializeOptions options) 
+        {
             XmlTextWriter xtw = new XmlTextWriter(tw);
 
             xtw.Formatting = Formatting.Indented;
             Serialize(xtw, options);
         }
 
-    internal class KeyStringComparer : IComparer {
-            public int Compare(object x, object y) {
+        internal class KeyStringComparer : IComparer 
+        {
+            public int Compare(object x, object y) 
+            {
                 SoodaObject o1 = (SoodaObject)x;
                 SoodaObject o2 = (SoodaObject)y;
 
@@ -558,29 +656,34 @@ namespace Sooda {
             }
         }
 
-        public void Serialize(XmlWriter xw, SerializeOptions options) {
+        public void Serialize(XmlWriter xw, SerializeOptions options) 
+        {
             xw.WriteStartElement("transaction");
 
             SoodaObjectCollection orderedObjects = _objectList;
 
-            if ((options & SerializeOptions.Canonical) != 0) {
+            if ((options & SerializeOptions.Canonical) != 0) 
+            {
                 ArrayList al = new ArrayList(orderedObjects);
                 al.Sort(new KeyStringComparer());
                 orderedObjects = new SoodaObjectCollection((SoodaObject[])al.ToArray(typeof(SoodaObject)));
             }
 
-            foreach (SoodaObject o in orderedObjects) {
-                if (o.IsObjectDirty() || o.ShouldSerializeExtraFields() || ((options & SerializeOptions.IncludeNonDirtyObjects) != 0))
+            foreach (SoodaObject o in orderedObjects) 
+            {
+                if (o.IsObjectDirty() || ((options & SerializeOptions.IncludeNonDirtyObjects) != 0))
                     o.Serialize(xw, options);
             }
             // serialize N-N relation tables
-            foreach (SoodaRelationTable rel in _relationTables.Values) {
+            foreach (SoodaRelationTable rel in _relationTables.Values) 
+            {
                 rel.Serialize(xw, options);
             }
             xw.WriteEndElement();
         }
 
-        public void Deserialize(string s) {
+        public void Deserialize(string s) 
+        {
             StringReader sr = new StringReader(s);
             XmlTextReader reader = new XmlTextReader(sr);
 
@@ -588,80 +691,93 @@ namespace Sooda {
             Deserialize(reader);
         }
 
-        public void Deserialize(XmlReader reader) {
+        public void Deserialize(XmlReader reader) 
+        {
             Reset();
 
             SoodaObject currentObject = null;
             SoodaRelationTable currentRelation = null;
             bool inDebug = false;
 
-            while (reader.Read()) {
-                if (reader.NodeType == XmlNodeType.Element && !inDebug) {
-                    switch (reader.Name) {
-                    case "field":
-                        if (currentObject == null)
-                            throw new Exception("Field without an object during deserialization!");
+            while (reader.Read()) 
+            {
+                if (reader.NodeType == XmlNodeType.Element && !inDebug) 
+                {
+                    switch (reader.Name) 
+                    {
+                        case "field":
+                            if (currentObject == null)
+                                throw new Exception("Field without an object during deserialization!");
 
-                        currentObject.DeserializeField(reader);
-                        break;
+                            currentObject.DeserializeField(reader);
+                            break;
 
-                    case "extrafield":
-                        if (currentObject == null)
-                            throw new Exception("Field without an object during deserialization!");
+                        case "persistent":
+                            if (currentObject == null)
+                                throw new Exception("Field without an object during deserialization!");
 
-                        currentObject.DeserializeExtraField(reader);
-                        break;
+                            currentObject.DeserializePersistentField(reader);
+                            break;
 
-                    case "object":
-                        if (currentObject != null) {
-                            // end deserialization
+                        case "object":
+                            if (currentObject != null) 
+                            {
+                                // end deserialization
 
-                            currentObject.DisableTriggers = false;
-                        };
+                                currentObject.DisableTriggers = false;
+                            };
 
-                        string isDirty = reader.GetAttribute("isDirty");
+                            string isDirty = reader.GetAttribute("isDirty");
 
-                        currentObject = GetSoodaObjectFromXml(reader);
-                        if (reader.GetAttribute("forcepostcommit") != null)
-                            currentObject.PostCommitForced = true;
-                        currentObject.DisableTriggers = true;
-                        break;
+                            currentObject = GetSoodaObjectFromXml(reader);
+                            if (reader.GetAttribute("forcepostcommit") != null)
+                                currentObject.PostCommitForced = true;
+                            currentObject.DisableTriggers = true;
+                            break;
 
-                    case "transaction":
-                        break;
+                        case "transaction":
+                            break;
 
-                    case "relation":
-                        currentRelation = GetRelationFromXml(reader);
-                        break;
+                        case "relation":
+                            currentRelation = GetRelationFromXml(reader);
+                            break;
 
-                    case "tuple":
-                        currentRelation.DeserializeTuple(reader);
-                        break;
+                        case "tuple":
+                            currentRelation.DeserializeTuple(reader);
+                            break;
 
-                    case "debug":
-                        if (!reader.IsEmptyElement) {
-                            inDebug = true;
-                        }
-                        break;
+                        case "debug":
+                            if (!reader.IsEmptyElement) 
+                            {
+                                inDebug = true;
+                            }
+                            break;
 
-                    default:
-                        throw new NotImplementedException("Element not implemented in deserialization: " + reader.Name);
+                        default:
+                            throw new NotImplementedException("Element not implemented in deserialization: " + reader.Name);
                     }
-                } else if (reader.NodeType == XmlNodeType.EndElement) {
-                    if (reader.Name == "debug") {
+                } 
+                else if (reader.NodeType == XmlNodeType.EndElement) 
+                {
+                    if (reader.Name == "debug") 
+                    {
                         inDebug = false;
-                    } else if (reader.Name == "object") {
+                    } 
+                    else if (reader.Name == "object") 
+                    {
                         currentObject.DisableTriggers = false;
                     }
                 }
             };
 
-            foreach (SoodaObject ob in _objectList) {
+            foreach (SoodaObject ob in _objectList) 
+            {
                 ob.AfterDeserialize();
             }
         }
 
-        private SoodaRelationTable GetRelationFromXml(XmlReader reader) {
+        private SoodaRelationTable GetRelationFromXml(XmlReader reader) 
+        {
             string className = reader.GetAttribute("type");
             Type t = _assembly.GetType(className, true, false);
             ConstructorInfo ci = t.GetConstructor(new Type[] { });
@@ -672,7 +788,8 @@ namespace Sooda {
             return retVal;
         }
 
-        private SoodaObject GetSoodaObjectFromXml(XmlReader reader) {
+        private SoodaObject GetSoodaObjectFromXml(XmlReader reader) 
+        {
             string className = reader.GetAttribute("class");
             string mode = reader.GetAttribute("mode");
 
@@ -685,18 +802,25 @@ namespace Sooda {
             transactionLogger.Debug("Deserializing object {0} {1}.", className, pkValue);
 
             retVal = factory.TryGet(this, pkValue);
-            if (retVal == null) {
-                if (mode == "update") {
+            if (retVal == null) 
+            {
+                if (mode == "update") 
+                {
                     transactionLogger.Debug("Object not found. GetRef() ing");
                     retVal = factory.GetRef(this, pkValue);
-                } else {
+                } 
+                else 
+                {
                     transactionLogger.Debug("Object not found. Getting new raw object.");
                     retVal = factory.GetRawObject(this);
                     retVal.SetPrimaryKeyValue(pkValue);
                     retVal.SetInsertMode();
                 }
-            } else {
-                if (mode == "insert") {
+            } 
+            else 
+            {
+                if (mode == "insert") 
+                {
                     retVal.SetInsertMode();
                 }
             }
@@ -705,5 +829,29 @@ namespace Sooda {
         }
 
         public static ISoodaObjectFactoryCache SoodaObjectFactoryCache = new SoodaObjectFactoryCache();
+
+        internal NameValueCollection GetPersistentValues(SoodaObject obj)
+        {
+            return _persistentValues[obj];
+        }
+
+        internal string GetPersistentValue(SoodaObject obj, string name)
+        {
+            NameValueCollection dict = _persistentValues[obj];
+            if (dict == null)
+                return null;
+            return dict[name];
+        }
+
+        internal void SetPersistentValue(SoodaObject obj, string name, string value)
+        {
+            NameValueCollection dict = _persistentValues[obj];
+            if (dict == null)
+            {
+                dict = new NameValueCollection();
+                _persistentValues[obj] = dict;
+            }
+            dict[name] = value;
+        }
     }
 }

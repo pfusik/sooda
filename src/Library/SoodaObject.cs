@@ -40,9 +40,12 @@ using System.Reflection;
 using System.Xml;
 using System.IO;
 using System.Globalization;
+using System.Collections.Specialized;
 
 using Sooda.Schema;
 using Sooda.ObjectMapper;
+
+using Sooda.Collections;
 
 namespace Sooda {
     public class SoodaObject {
@@ -125,19 +128,6 @@ namespace Sooda {
                 else
                     _flags &= ~SoodaObjectFlags.ForcePostCommit;
             }
-        }
-
-        public bool ShouldSerializeExtraFields()
-        {
-            return (_flags & SoodaObjectFlags.SerializeExtraFields) != 0;
-        }
-
-        public void SerializeExtraFields(bool value)
-        {
-            if (value)
-                _flags |= SoodaObjectFlags.SerializeExtraFields;
-            else
-                _flags &= ~SoodaObjectFlags.SerializeExtraFields;
         }
 
         public void ForcePostCommit()
@@ -625,8 +615,6 @@ namespace Sooda {
             }
         }
 
-#region Serialization
-
         internal void Serialize(XmlWriter xw, SerializeOptions options) {
             xw.WriteStartElement("object");
             xw.WriteAttributeString("mode", (IsInsertMode()) ? "insert" : "update");
@@ -675,55 +663,26 @@ namespace Sooda {
                 xw.WriteAttributeString("disableTriggers", DisableTriggers ? "true" : "false");
                 xw.WriteEndElement();
             }
-            if ((_flags & SoodaObjectFlags.SerializeExtraFields) != 0)
+            NameValueCollection persistentValues = GetTransaction().GetPersistentValues(this);
+            if (persistentValues != null)
             {
-                foreach (PropertyInfo pi in this.GetType().GetProperties())
+                foreach (string s in persistentValues.AllKeys)
                 {
-                    if (pi.IsDefined(typeof(SoodaSerializableAttribute), false))
-                    {
-                        xw.WriteStartElement("extrafield");
-                        xw.WriteAttributeString("name", pi.Name);
-                        object val = pi.GetValue(this, null);
-                        xw.WriteAttributeString("value", Convert.ToString(val, CultureInfo.InvariantCulture));
-                        xw.WriteEndElement();
-                    }
-                }
-                foreach (System.Reflection.FieldInfo fi in this.GetType().GetFields())
-                {
-                    if (fi.IsDefined(typeof(SoodaSerializableAttribute), false))
-                    {
-                        xw.WriteStartElement("extrafield");
-                        xw.WriteAttributeString("name", fi.Name);
-                        object val = fi.GetValue(this);
-                        xw.WriteAttributeString("value", Convert.ToString(val, CultureInfo.InvariantCulture));
-                        xw.WriteEndElement();
-                    }
+                    xw.WriteStartElement("persistent");
+                    xw.WriteAttributeString("name", s);
+                    xw.WriteAttributeString("value", persistentValues[s]);
+                    xw.WriteEndElement();
                 }
             }
             xw.WriteEndElement();
         }
 
-        internal void DeserializeExtraField(XmlReader reader) 
+        internal void DeserializePersistentField(XmlReader reader) 
         {
             string name = reader.GetAttribute("name");
             string value = reader.GetAttribute("value");
-            SerializeExtraFields(true);
 
-            PropertyInfo pi = this.GetType().GetProperty(name);
-            if (pi != null) 
-            {
-                pi.SetValue(this, Convert.ChangeType(value, pi.PropertyType), null);
-                return;
-            }
-
-            System.Reflection.FieldInfo fi = this.GetType().GetField(name);
-            if (fi != null)
-            {
-                fi.SetValue(this, Convert.ChangeType(value, fi.FieldType));
-                return;
-            }
-
-            throw new ArgumentException("Unknown field: " + name);
+            SetTransactionPersistentValue(name, value);
         }
 
         internal void DeserializeField(XmlReader reader) 
@@ -762,8 +721,6 @@ namespace Sooda {
                 // Console.WriteLine("Not deserializing field: {0}", name);
             }
         }
-
-#endregion
 
         protected void SetPlainFieldValue(int tableNumber, string fieldName, int fieldOrdinal, object newValue) {
             EnsureFieldsInited();
@@ -1027,6 +984,22 @@ namespace Sooda {
                 _fieldValues = newFieldValues;
                 FromCache = false;
             }
+        }
+
+        protected NameValueCollection GetTrasnsactionPersistentValues()
+        {
+            return GetTransaction().GetPersistentValues(this);
+        }
+
+        protected void SetTransactionPersistentValue(string name, string value)
+        {
+            SetObjectDirty();
+            GetTransaction().SetPersistentValue(this, name, value);
+        }
+
+        protected string GetTransactionPersistentValue(string name)
+        {
+            return GetTransaction().GetPersistentValue(this, name);
         }
 
         public string GetLabel(bool throwOnError)
