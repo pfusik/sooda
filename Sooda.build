@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="Sooda" default="build" basedir=".">
-    <property name="sooda.debug" value="true" overwrite="false" />
-    <property name="sooda.optimize" value="false" overwrite="false" />
+    <property name="sooda.debug" value="true" unless="${property::exists('sooda.debug')}" />
+    <property name="sooda.optimize" value="false" unless="${property::exists('sooda.optimize')}" />
 
     <property name="scp.program" value="scp" />
     <property name="scp.args" value="" />
@@ -10,9 +10,9 @@
     <property name="ssh.server" value="jkowalski@sooda.sourceforge.net" />
 
     <property name="sooda.csc.args" value="/nowarn:1591" />
-    <property name="sooda.external" value="${nant.project.basedir}/src/ExternalLib" overwrite="false" />
-    <property name="sooda.nlog.dir" value="${sooda.external}" overwrite="false" />
-    <property name="sooda.icsharpcode.texteditor.dir" value="${sooda.external}" overwrite="false" />
+    <property name="sooda.external" value="${nant.project.basedir}/src/ExternalLib" unless="${property::exists('sooda.external')}" />
+    <property name="sooda.nlog.dir" value="${sooda.external}" unless="${property::exists('sooda.nlog.dir')}" />
+    <property name="sooda.icsharpcode.texteditor.dir" value="${sooda.external}" unless="${property::exists('sooda.icsharpcode.texteditor.dir')}" />
     
     <target name="build" depends="build-${nant.settings.currentframework}" />
     <target name="build-net-1.0" depends="build-common, tools" />
@@ -31,7 +31,7 @@
         <property name="sooda.define" value="NANT" />
         <property name="sooda.optimize" value="false" />
         <property name="sooda.optimize" value="true" unless="${sooda.debug}" />
-		<property name="sooda.dir" value="${nant.project.basedir}/build/${framework::get-target-framework()}${if(sooda.debug,'-debug','')}/bin" overwrite="false"/>
+		<property name="sooda.dir" value="${nant.project.basedir}/build/${framework::get-target-framework()}${if(sooda.debug,'-debug','')}/bin" unless="${property::exists('sooda.dir')}" />
 
         <mkdir dir="${sooda.dir}" />
 
