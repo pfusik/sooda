@@ -9,7 +9,7 @@ write_start_page();
         </p>
         <p>Sooda uses Subversion 1.0 (<a href="http://subversion.tigris.org">http://subversion.tigris.org</a>)
         as its version control system. We recommend a very good Win32 Subversion client called <a href="http://tortoisesvn.tigris.org">TortoiseSVN</a>.</p>
-        <p>You can grab the latest sources of the library and supporting tools at: <a href="http://svn.sav.net/svn/repos/trunk/sooda">http://svn.sav.net/svn/repos/trunk/sooda</a>.</p>
+        <p>You can grab the latest sources of the library and supporting tools at: <a href="http://svn.sav.net/repos/sooda/trunk/Sooda">http://svn.sav.net/repos/sooda/trunk/Sooda</a>.</p>
         <p>If you're interested in Sooda development, you may consider joining the following mailing lists:</p>
         <ul>
             <li><a href="http://lists.sourceforge.net/lists/listinfo/sooda-list">sooda-list@lists.sourceforge.net</a> (English discussion)</li>
