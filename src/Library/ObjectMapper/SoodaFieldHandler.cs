@@ -65,13 +65,9 @@ namespace Sooda.ObjectMapper {
             }
         }
 
-        protected abstract string TypeName
-        {
-            get
-                ;
-            }
+        protected abstract string TypeName { get ; }
 
-            public void Serialize(object fieldValue, XmlWriter xw) {
+        public void Serialize(object fieldValue, XmlWriter xw) {
             xw.WriteAttributeString("type", TypeName);
             if (fieldValue == null)
                 xw.WriteAttributeString("null", "true");

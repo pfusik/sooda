@@ -522,8 +522,6 @@ namespace Sooda {
                 _postCommitQueue.Add(o);
         }
 
-#region Serialization
-
         public string Serialize() {
             StringWriter sw = new StringWriter();
             Serialize(sw, SerializeOptions.DirtyOnly);
@@ -572,7 +570,7 @@ namespace Sooda {
             }
 
             foreach (SoodaObject o in orderedObjects) {
-                if (o.IsObjectDirty() || ((options & SerializeOptions.IncludeNonDirtyObjects) != 0))
+                if (o.IsObjectDirty() || o.ShouldSerializeExtraFields() || ((options & SerializeOptions.IncludeNonDirtyObjects) != 0))
                     o.Serialize(xw, options);
             }
             // serialize N-N relation tables
@@ -605,6 +603,13 @@ namespace Sooda {
                             throw new Exception("Field without an object during deserialization!");
 
                         currentObject.DeserializeField(reader);
+                        break;
+
+                    case "extrafield":
+                        if (currentObject == null)
+                            throw new Exception("Field without an object during deserialization!");
+
+                        currentObject.DeserializeExtraField(reader);
                         break;
 
                     case "object":
@@ -698,8 +703,6 @@ namespace Sooda {
 
             return retVal;
         }
-
-#endregion
 
         public static ISoodaObjectFactoryCache SoodaObjectFactoryCache = new SoodaObjectFactoryCache();
     }

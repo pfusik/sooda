@@ -70,7 +70,6 @@ namespace Sooda {
                 else
                     _flags &= ~SoodaObjectFlags.DisableTriggers;
             }
-
         }
 
         private bool InsertMode
@@ -126,6 +125,19 @@ namespace Sooda {
                 else
                     _flags &= ~SoodaObjectFlags.ForcePostCommit;
             }
+        }
+
+        public bool ShouldSerializeExtraFields()
+        {
+            return (_flags & SoodaObjectFlags.SerializeExtraFields) != 0;
+        }
+
+        public void SerializeExtraFields(bool value)
+        {
+            if (value)
+                _flags |= SoodaObjectFlags.SerializeExtraFields;
+            else
+                _flags &= ~SoodaObjectFlags.SerializeExtraFields;
         }
 
         public void ForcePostCommit()
@@ -663,19 +675,59 @@ namespace Sooda {
                 xw.WriteAttributeString("disableTriggers", DisableTriggers ? "true" : "false");
                 xw.WriteEndElement();
             }
-            if (this.GetType().IsDefined(typeof(SoodaSerializableAttribute), true))
+            if ((_flags & SoodaObjectFlags.SerializeExtraFields) != 0)
             {
                 foreach (PropertyInfo pi in this.GetType().GetProperties())
                 {
                     if (pi.IsDefined(typeof(SoodaSerializableAttribute), false))
                     {
+                        xw.WriteStartElement("extrafield");
+                        xw.WriteAttributeString("name", pi.Name);
+                        object val = pi.GetValue(this, null);
+                        xw.WriteAttributeString("value", Convert.ToString(val, CultureInfo.InvariantCulture));
+                        xw.WriteEndElement();
+                    }
+                }
+                foreach (System.Reflection.FieldInfo fi in this.GetType().GetFields())
+                {
+                    if (fi.IsDefined(typeof(SoodaSerializableAttribute), false))
+                    {
+                        xw.WriteStartElement("extrafield");
+                        xw.WriteAttributeString("name", fi.Name);
+                        object val = fi.GetValue(this);
+                        xw.WriteAttributeString("value", Convert.ToString(val, CultureInfo.InvariantCulture));
+                        xw.WriteEndElement();
                     }
                 }
             }
             xw.WriteEndElement();
         }
 
-        internal void DeserializeField(XmlReader reader) {
+        internal void DeserializeExtraField(XmlReader reader) 
+        {
+            string name = reader.GetAttribute("name");
+            string value = reader.GetAttribute("value");
+            SerializeExtraFields(true);
+
+            PropertyInfo pi = this.GetType().GetProperty(name);
+            if (pi != null) 
+            {
+                pi.SetValue(this, Convert.ChangeType(value, pi.PropertyType), null);
+                return;
+            }
+
+            System.Reflection.FieldInfo fi = this.GetType().GetField(name);
+            if (fi != null)
+            {
+                fi.SetValue(this, Convert.ChangeType(value, fi.FieldType));
+                return;
+            }
+
+            throw new ArgumentException("Unknown field: " + name);
+        }
+
+        internal void DeserializeField(XmlReader reader) 
+        {
             string name = reader.GetAttribute("name");
 
             if (reader.GetAttribute("dirty") != "false") {
@@ -788,27 +840,32 @@ namespace Sooda {
             return newValue;
         }
 
-        public object Evaluate(string[] propertyAccessChain, bool throwOnError) {
-            try {
+        public object Evaluate(string[] propertyAccessChain, bool throwOnError) 
+        {
+            try 
+            {
                 object currentObject = this;
 
-                for (int i = 0; i < (propertyAccessChain.Length) && (currentObject != null) && (currentObject is SoodaObject); ++i) {
+                for (int i = 0; i < (propertyAccessChain.Length) && (currentObject != null) && (currentObject is SoodaObject); ++i) 
+                {
                     Type currenttype = currentObject.GetType();
                     string prop = (string)propertyAccessChain[i];
                     PropertyInfo pi = currenttype.GetProperty(prop);
                     currentObject = pi.GetValue(currentObject, null);
                 }
                 return currentObject;
-            } catch
+            } 
+            catch
             {
                 if (throwOnError)
                     throw;
-                    else
-                        return null;
-                    }
-                }
+                else
+                    return null;
+            }
+        }
 
-    public object Evaluate(string propertyAccessChain) {
+        public object Evaluate(string propertyAccessChain) 
+        {
             return Evaluate(propertyAccessChain, true);
         }
 

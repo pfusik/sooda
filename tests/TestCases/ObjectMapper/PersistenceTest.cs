@@ -32,38 +32,53 @@
 //
 
 using System;
-using System.IO;
+using System.Diagnostics;
 using System.Data;
-using System.Runtime.InteropServices;
-using System.Runtime.Remoting;
-using System.Threading;
 
-using Sooda;
-using Sooda.Schema;
-using Sooda.UnitTests.TestCases;
-using Sooda.QL;
 using Sooda.ObjectMapper;
 using Sooda.UnitTests.Objects;
 
-using System.Collections;
-using System.Xml;
-using System.Xml.Serialization;
+using NUnit.Framework;
 
-using System.Security.Principal;
-using System.Security.Permissions;
-
-[assembly: SoodaStubAssembly(typeof(Sooda.UnitTests.Objects.Stubs.Contact_Stub))]
-[assembly: SoodaConfig(XmlConfigFileName = "sooda.config.xml")]
-
-namespace ConsoleTest 
+namespace Sooda.UnitTests.TestCases.ObjectMapper 
 {
-    class Class1 
+    [TestFixture]
+    public class PersistenceTest
     {
-        static void Main(string[] args) 
+        [Test]
+        public void Test1() 
         {
-            Sooda.UnitTests.TestCases.ObjectMapper.PersistenceTest t = new Sooda.UnitTests.TestCases.ObjectMapper.PersistenceTest();
-            t.Test1();
+            string s, s2;
+
+            using (SoodaTransaction tran = new SoodaTransaction()) 
+            {
+                Contact c = Contact.Mary;
+
+                c.PersistentValue1 = 134;
+                c.PersistentValue2 = true;
+                c.PersistentValue3 = (decimal)1234;
+                c.PersistentValue4 = "test123";
+                c.SerializeExtraFields(true);
+
+                s = tran.Serialize();
+            }
+
+            Console.WriteLine(s);
+
+            using (SoodaTransaction tran = new SoodaTransaction()) 
+            {
+                tran.Deserialize(s);
+
+                Contact c = Contact.Mary;
+
+                Assertion.AssertEquals(134, c.PersistentValue1);
+                Assertion.AssertEquals(true, c.PersistentValue2);
+                Assertion.AssertEquals((decimal)1234, c.PersistentValue3);
+                Assertion.AssertEquals("test123", c.PersistentValue4);
+
+                s2 = tran.Serialize();
+            }
+            Assertion.AssertEquals(s, s2);
         }
     }
 }
-

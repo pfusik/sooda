@@ -182,6 +182,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ObjectMapper\PersistenceTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ObjectMapper\PrimaryKeyTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
