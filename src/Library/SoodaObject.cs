@@ -760,15 +760,17 @@ namespace Sooda {
             }
         }
 
-        protected SoodaObject SetRefFieldValue(int tableNumber, string fieldName, int fieldOrdinal, SoodaObject newValue, SoodaObject refcache, ISoodaObjectFactory factory) {
+        protected void SetRefFieldValue(int tableNumber, string fieldName, int fieldOrdinal, SoodaObject newValue, ref SoodaObject refcache, ISoodaObjectFactory factory) {
             EnsureFieldsInited();
             EnsureDataLoaded(tableNumber);
             CopyOnWrite();
 
             try {
-                SoodaObject oldValue = RefCache.GetOrCreateObject(refcache, _fieldValues[fieldOrdinal], GetTransaction(), factory);
+                SoodaObject oldValue = null;
+                
+                RefCache.GetOrCreateObject(ref oldValue, _fieldValues[fieldOrdinal], GetTransaction(), factory);
                 if (Object.Equals(oldValue, newValue))
-                    return newValue;
+                    return;
                 object[] triggerArgs = new object[] { oldValue, newValue };
 
                 if (!DisableTriggers) {
@@ -798,7 +800,6 @@ namespace Sooda {
             } catch (Exception e) {
                 throw new Exception("BeforeFieldUpdate raised an exception: ", e);
             }
-            return newValue;
         }
 
         public object Evaluate(string[] propertyAccessChain, bool throwOnError) 

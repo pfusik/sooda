@@ -597,10 +597,9 @@ namespace Sooda.StubGen {
 
                 if (fi.References != null) {
                     prop.GetStatements.Add(
-                        new CodeAssignStatement(
-                            new CodeFieldReferenceExpression(This, "_refCache_" + fi.Name),
+                        new CodeExpressionStatement(
                             new CodeMethodInvokeExpression(new CodeTypeReferenceExpression("Sooda.ObjectMapper.RefCache"), "GetOrCreateObject",
-                                                           new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), "_refCache_" + fi.Name),
+                                                           new CodeDirectionExpression(FieldDirection.Ref, new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), "_refCache_" + fi.Name)),
                                                            GetFieldValueExpression(fi),
                                                            new CodeMethodInvokeExpression(new CodeThisReferenceExpression(), "GetTransaction"),
                                                            new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(fi.References + "_Factory"), "TheFactory")
@@ -612,8 +611,7 @@ namespace Sooda.StubGen {
 
                     if (!classInfo.ReadOnly) {
                         prop.SetStatements.Add(
-                            new CodeAssignStatement(
-                                new CodeFieldReferenceExpression(This, "_refCache_" + fi.Name),
+                            new CodeExpressionStatement(
 
                                 new CodeMethodInvokeExpression(
                                     new CodeThisReferenceExpression(), "SetRefFieldValue",
@@ -623,7 +621,7 @@ namespace Sooda.StubGen {
                                     new CodePrimitiveExpression(fi.Name),
                                     new CodePrimitiveExpression(fi.ClassUnifiedOrdinal),
                                     new CodePropertySetValueReferenceExpression(),
-                                    new CodeFieldReferenceExpression(This, "_refCache_" + fi.Name),
+                                    new CodeDirectionExpression(FieldDirection.Ref, new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), "_refCache_" + fi.Name)),
                                     new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(returnType.BaseType + "_Factory"), "TheFactory"
                                                                        ))));
                     }
@@ -1257,15 +1255,14 @@ namespace Sooda.StubGen {
                     continue;
 
                 method.Statements.Add(
-                    new CodeAssignStatement(
-                        new CodeFieldReferenceExpression(This, "_refCache_" + fi.Name),
+                    new CodeExpressionStatement(
                         new CodeDelegateInvokeExpression(
                             new CodeArgumentReferenceExpression("iter"),
                             new CodeThisReferenceExpression(),
                             new CodePrimitiveExpression(fi.Name),
                             GetFieldValueExpression(fi),
                             GetFieldIsDirtyExpression(fi),
-                            new CodeFieldReferenceExpression(This, "_refCache_" + fi.Name),
+                            new CodeDirectionExpression(FieldDirection.Ref, new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), "_refCache_" + fi.Name)),
                             new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(fi.References + "_Factory"), "TheFactory"),
                             new CodeArgumentReferenceExpression("context")
                         )));

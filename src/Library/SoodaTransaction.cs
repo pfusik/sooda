@@ -343,12 +343,12 @@ namespace Sooda {
             }
         }
 
-        protected static internal SoodaObject SaveOuterReferences(SoodaObject theObject, string fieldName, object fieldValue, bool isDirty, SoodaObject refcache, ISoodaObjectFactory factory, object context) 
+        protected static internal void SaveOuterReferences(SoodaObject theObject, string fieldName, object fieldValue, bool isDirty, ref SoodaObject refcache, ISoodaObjectFactory factory, object context) 
         {
             if (fieldValue != null) 
             {
-                SoodaObject obj = RefCache.TryGetObject(refcache, fieldValue, theObject.GetTransaction(), factory);
-                refcache = obj;
+                RefCache.TryGetObject(ref refcache, fieldValue, theObject.GetTransaction(), factory);
+                SoodaObject obj = refcache;
                 if (obj != null && (object)obj != (object)theObject) 
                 {
                     if (obj.IsInsertMode()) 
@@ -365,7 +365,6 @@ namespace Sooda {
                     }
                 };
             };
-            return refcache;
         }
 
         private static SoodaObjectRefFieldIterator saveOuterReferencesIterator = new SoodaObjectRefFieldIterator(SoodaTransaction.SaveOuterReferences);

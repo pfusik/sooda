@@ -44,5 +44,5 @@ using Sooda.Schema;
 using Sooda.ObjectMapper;
 
 namespace Sooda.ObjectMapper {
-    public delegate SoodaObject SoodaObjectRefFieldIterator(SoodaObject obj, string fieldName, object fieldValue, bool isDirty, SoodaObject refCache, ISoodaObjectFactory factory, object context);
+    public delegate void SoodaObjectRefFieldIterator(SoodaObject obj, string fieldName, object fieldValue, bool isDirty, ref SoodaObject refCache, ISoodaObjectFactory factory, object context);
 }
