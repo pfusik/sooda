@@ -61,6 +61,10 @@ namespace Sooda.StubGen {
                 case FieldDataType.Guid:
                     keyGen = "guid";
                     break;
+                
+                case FieldDataType.Long:
+                    keyGen = "long";
+                    break;
                 }
             }
 
@@ -89,6 +93,15 @@ namespace Sooda.StubGen {
 
             case "integer":
                 field.InitExpression = new CodeObjectCreateExpression("Sooda.ObjectMapper.KeyGenerators.TableBasedGenerator",
+                                       new CodePrimitiveExpression(GetRootClass(classInfo).Name),
+                                       new CodeMethodInvokeExpression(
+                                           new CodeMethodInvokeExpression(
+                                               new CodeTypeReferenceExpression("_DatabaseSchema"), "GetSchema"),
+                                           "GetDataSourceInfo",
+                                           new CodePrimitiveExpression("default")));
+                break;
+            case "long":
+                field.InitExpression = new CodeObjectCreateExpression("Sooda.ObjectMapper.KeyGenerators.TableBasedGeneratorBigint",
                                        new CodePrimitiveExpression(GetRootClass(classInfo).Name),
                                        new CodeMethodInvokeExpression(
                                            new CodeMethodInvokeExpression(

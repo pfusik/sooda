@@ -29,7 +29,7 @@ namespace SoodaFixKeygen
                 foreach (ClassInfo classInfo in schemaInfo.Classes)
                 {
                     FieldInfo fieldInfo = classInfo.GetPrimaryKeyField();
-                    if (fieldInfo.DataType == FieldDataType.Integer)
+                    if (fieldInfo.DataType == FieldDataType.Integer || fieldInfo.DataType == FieldDataType.Long)
                     {
                         if (!first)
                             output.WriteLine("union");
