@@ -63,6 +63,7 @@ namespace Sooda
         private SoodaTransaction _transaction;
         private SoodaObjectFlags _flags;
         private object _primaryKeyValue;
+        internal SoodaObjectCollection OuterDeleteReferences;
 
         public bool DisableTriggers
         {
@@ -323,6 +324,7 @@ namespace Sooda
                 {
                     GetTransaction().AddToDeleteQueue(this);
                 }
+                SetObjectDirty();
             }
         }
 
@@ -331,6 +333,7 @@ namespace Sooda
             return DeleteMarker;
         }
 
+#if FALSE
         protected internal void ObjectDeleting(SoodaObject o, object refId) 
         {
             if (refId is String) 
@@ -374,6 +377,7 @@ namespace Sooda
                 }
             }
         }
+#endif
 
         internal object GetFieldValue(int fieldNumber) 
         {
@@ -649,8 +653,9 @@ namespace Sooda
             }
         }
 
-        protected void LoadAllData() 
+        protected internal void LoadAllData() 
         {
+#warning FIXME: Optimize!
             for (int i = 0; i < GetClassInfo().UnifiedTables.Count; ++i) 
             {
                 if (!IsDataLoaded(i)) 
@@ -1059,7 +1064,7 @@ namespace Sooda
                 // used for object creation
 
                 int selectorFieldOrdinal = factory.GetClassInfo().SubclassSelectorField.OrdinalInTable;
-                object selectorActualValue = record.GetValue(selectorFieldOrdinal);
+                object selectorActualValue = record.GetValue(firstColumnIndex + selectorFieldOrdinal);
 
                 if (!selectorActualValue.Equals(factory.GetClassInfo().SubclassSelectorValue)) 
                 {
@@ -1086,7 +1091,7 @@ namespace Sooda
                     }
 
                     if (newFactory == null)
-                        throw new Exception("Cannot determine subclass");
+                        throw new Exception("Cannot determine subclass. Selector actual value: " + selectorActualValue + " base class: " + factory.GetClassInfo().Name);
 
                     factory = newFactory;
                 }

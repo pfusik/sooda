@@ -356,23 +356,36 @@ namespace Sooda {
                 SoodaObject obj = refcache;
                 if (obj != null && (object)obj != (object)theObject) 
                 {
-                    if (obj.IsInsertMode()) 
+                    if (obj.VisitedOnCommit && !obj.WrittenIntoDatabase) 
                     {
-                        if (obj.VisitedOnCommit && !obj.WrittenIntoDatabase) 
-                        {
-                            throw new Exception("Cyclic reference between " + theObject.GetObjectKeyString() + " and " + obj.GetObjectKeyString());
-                            // cyclic reference
-                        } 
-                        else 
-                        {
-                            SaveObjectChanges(obj);
-                        }
+                        throw new Exception("Cyclic reference between " + theObject.GetObjectKeyString() + " and " + obj.GetObjectKeyString());
+                        // cyclic reference
+                    } 
+                    else 
+                    {
+                        SaveObjectChanges(obj);
                     }
-                };
+                }
+            };
+        }
+
+        protected static internal void MarkDeleteReferences(SoodaObject theObject, string fieldName, object fieldValue, bool isDirty, ref SoodaObject refcache, ISoodaObjectFactory factory, object context) 
+        {
+            //transactionLogger.Debug("MarkDeleteReferences: {0}.{1}", theObject.GetObjectKeyString(), fieldName);
+            if (fieldValue != null) 
+            {
+                RefCache.TryGetObject(ref refcache, fieldValue, theObject.GetTransaction(), factory);
+                SoodaObject obj = refcache;
+                // transactionLogger.Debug("Pointing at: {0}", (obj != null) ? obj.GetObjectKeyString() : "null");
+                if (obj != null && (object)obj != (object)theObject && obj.IsMarkedForDelete()) 
+                {
+                    obj.OuterDeleteReferences.Add(theObject);
+                }
             };
         }
 
         private static SoodaObjectRefFieldIterator saveOuterReferencesIterator = new SoodaObjectRefFieldIterator(SoodaTransaction.SaveOuterReferences);
+        private static SoodaObjectRefFieldIterator MarkDeleteReferencesIterator = new SoodaObjectRefFieldIterator(SoodaTransaction.MarkDeleteReferences);
 
         static void SaveObjectChanges(SoodaObject o) 
         {
@@ -383,13 +396,34 @@ namespace Sooda {
 
             if ((o.IsObjectDirty() || o.IsInsertMode()) && !o.WrittenIntoDatabase) 
             {
-                o.CommitObjectChanges();
+                // deletes are performed in a separate pass
+                if (!o.IsMarkedForDelete())
+                {
+                    o.CommitObjectChanges();
+                }
+                o.WrittenIntoDatabase = true;
             } 
             else if (o.PostCommitForced)
             {
                 o.GetTransaction().AddToPostCommitQueue(o);
             }
-            o.WrittenIntoDatabase = true;
+        }
+
+        private void TraverseAndDelete(SoodaObject obj)
+        {
+            transactionLogger.Debug(">>> TraverseAndDelete({0})", obj.GetObjectKeyString());
+            //if (obj.VisitedOnCommit)
+                //throw new SoodaException("Cyclic reference between deleted objects.");
+
+            obj.VisitedOnCommit = true;
+            for (int i = 0; i < obj.OuterDeleteReferences.Count; ++i)
+            {
+                if (!obj.OuterDeleteReferences[i].VisitedOnCommit)
+                    TraverseAndDelete(obj.OuterDeleteReferences[i]);
+            }
+            obj.OuterDeleteReferences.Clear();
+            obj.CommitObjectChanges();
+            transactionLogger.Debug("<<< TraverseAndDelete({0})", obj.GetObjectKeyString());
         }
 
         internal void SaveObjectChanges() 
@@ -403,9 +437,16 @@ namespace Sooda {
 
                 _savingObjects = true;
 
+                SoodaObjectCollection objectDeleteList = new SoodaObjectCollection();
+
                 foreach (SoodaObject o in _objectList) 
                 {
                     o.VisitedOnCommit = false;
+                    if (o.IsMarkedForDelete())
+                    {
+                        transactionLogger.Debug("Object {0} is marked for deletion. Adding to delete list.", o.GetObjectKeyString());
+                        objectDeleteList.Add(o);
+                    }
                 }
 
                 foreach (SoodaObject o in _objectList) 
@@ -415,7 +456,6 @@ namespace Sooda {
                         SaveObjectChanges(o);
                     }
                 }
-#warning TODO - restore support for deletion
 
                 if (_relationTables != null) 
                 {
@@ -424,6 +464,34 @@ namespace Sooda {
                         rel.SaveTuples(this);
                     }
                 }
+
+                if (objectDeleteList.Count > 0)
+                {
+                    foreach (SoodaObject o in objectDeleteList)
+                    {
+                        //
+                        // load all data - this is needed to ensure that IterateOuterReferences works...
+                        // ideally this wouldn't be needed.
+                        //
+
+                        o.LoadAllData();
+                        o.OuterDeleteReferences = new SoodaObjectCollection();
+                        o.VisitedOnCommit = false;
+                    }
+
+                    foreach (SoodaObject o in objectDeleteList)
+                    {
+                        o.IterateOuterReferences(MarkDeleteReferencesIterator, objectDeleteList);
+                    }
+
+                    foreach (SoodaObject o in objectDeleteList)
+                    {
+                        transactionLogger.Debug("Object to delete: {0}. Del ref count: {1}", o.GetObjectKeyString(), o.OuterDeleteReferences.Count);
+                        if (!o.VisitedOnCommit)
+                            TraverseAndDelete(o);
+                    }
+                }
+
                 foreach (SoodaDataSource source in _dataSources) 
                 {
                     source.FinishSaveChanges();
@@ -479,7 +547,6 @@ namespace Sooda {
             // TODO - prealloc
 
             SaveObjectChanges();
-
 
             // commit all transactions on all data sources
 

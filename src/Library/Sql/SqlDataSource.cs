@@ -178,6 +178,10 @@ namespace Sooda.Sql {
 
         public override void SaveObjectChanges(SoodaObject obj) 
         {
+            if (obj.IsMarkedForDelete())
+            {
+                DoDeletes(obj);
+            }
             if (obj.IsInsertMode() && !obj.InsertedIntoDatabase) 
             {
                 DoInserts(obj);
@@ -227,13 +231,21 @@ namespace Sooda.Sql {
         public override IDataReader LoadObjectList(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, out TableInfo[] tables) {
             try
             {
-                tables = classInfo.UnifiedTables[0].ArraySingleton;
-
+                ArrayList tablesArrayList = new ArrayList(classInfo.UnifiedTables.Count);
                 SoqlQueryExpression queryExpression = new SoqlQueryExpression();
                 queryExpression.From.Add(classInfo.Name);
                 queryExpression.FromAliases.Add("obj");
-                queryExpression.SelectExpressions.Add(new SoqlAsteriskExpression(new SoqlPathExpression("obj")));
-                queryExpression.SelectAliases.Add("");
+                foreach (TableInfo ti in classInfo.UnifiedTables)
+                {
+                    tablesArrayList.Add(ti);
+                    foreach (FieldInfo fi in ti.Fields)
+                    {
+                        queryExpression.SelectExpressions.Add(new SoqlPathExpression("obj", fi.Name));
+                        queryExpression.SelectAliases.Add("");
+                    }
+                    // just load the first table - temporary
+                    break;
+                }
                 if (whereClause != null && whereClause.WhereExpression != null) 
                 {
                     queryExpression.WhereClause = whereClause.WhereExpression;
@@ -258,6 +270,8 @@ namespace Sooda.Sql {
 
                 SqlBuilder.BuildCommandWithParameters(cmd, false, query, whereClause.Parameters);
                 LogCommand(cmd);
+
+                tables = (TableInfo[])tablesArrayList.ToArray(typeof(TableInfo));
                 return cmd.ExecuteReader();
             }
             catch (Exception ex)
@@ -358,7 +372,33 @@ namespace Sooda.Sql {
             }
         }
 
-        void DoInsertsForTable(SoodaObject obj, TableInfo table) {
+        void DoDeletes(SoodaObject obj) 
+        {
+            foreach (TableInfo table in obj.GetClassInfo().MergedTables) 
+            {
+                DoDeletesForTable(obj, table);
+            }
+        }
+
+        void DoDeletesForTable(SoodaObject obj, TableInfo table) 
+        {
+            ClassInfo info = obj.GetClassInfo();
+            StringBuilder builder = new StringBuilder(500);
+            ArrayList par = new ArrayList();
+            builder.Append("delete from ");
+            builder.Append(table.DBTableName);
+            builder.Append(" where ");
+            builder.Append(table.TablePrimaryKeyField.DBColumnName);
+            builder.Append("={");
+            builder.Append(par.Add(obj.GetPrimaryKeyValue()));
+            builder.Append('}');
+
+            SqlBuilder.BuildCommandWithParameters(_updateCommand, true, builder.ToString(), par.ToArray());
+            FlushUpdateCommand(false);
+        }
+
+        void DoInsertsForTable(SoodaObject obj, TableInfo table) 
+        {
             ClassInfo info = obj.GetClassInfo();
             StringBuilder builder = new StringBuilder(500);
             builder.Append("insert into ");
