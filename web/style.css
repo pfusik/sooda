@@ -1,149 +1,151 @@
-body
+html, body
 {
-	margin-right: 4px;
-	margin-left: 4px;
+    margin-right: 4px;
+    margin-left: 4px;
     margin-top: 2px;
-	background: white;
-	color: black;
-	font-family: Verdana;
-	font-size: 70%;
+    background: white;
+    color: black;
+    font-family: Verdana;
+    font-size: 70%;
+    overflow-y: scroll;
+    overflow: moz-scrollbars-vertical;
 }
 
 h1
 {
-	font-size: 150%;
+    font-size: 150%;
 }
 
 h2
 {
-	margin-top: 30px;
-	font-size: 120%;
+    margin-top: 30px;
+    font-size: 120%;
 }
 
 td.nav
 {
     font-family: Trebuchet MS, Arial, Helv;
-	font-size: 16px;
+    font-size: 16px;
     font-style: italic;
-	padding: 3px;
+    padding: 3px;
 }
 
 a:link
 {
-	color: #5b5b0e;
-	background-color: inherit;
+    color: #5b5b0e;
+    background-color: inherit;
 }
 
 a:visited
 {
-	color: #5b5b0e;
-	background-color: inherit;
+    color: #5b5b0e;
+    background-color: inherit;
 }
 
 a:hover
 {
-	color: black;
-	background-color: inherit;
+    color: black;
+    background-color: inherit;
 }
 
 span.path
 {
-	font-family: Courier New;
-	color: #404080;
-	font-size: 100%;
-	font-weight: bold;
+    font-family: Courier New;
+    color: #404080;
+    font-size: 100%;
+    font-weight: bold;
 }
 
 span.code
 {
-	font-family: Courier New;
-	color: #404080;
-	font-size: 100%;
-	font-weight: bold;
+    font-family: Courier New;
+    color: #404080;
+    font-size: 100%;
+    font-weight: bold;
 }
 
 span.sql
 {
-	font-family: Courier New;
-	color: #0000ff;
-	font-size: 100%;
-	font-weight: bold;
+    font-family: Courier New;
+    color: #0000ff;
+    font-size: 100%;
+    font-weight: bold;
 }
 
 span.class
 {
-	font-family: Courier New;
-	color: #0000c0;
-	font-size: 100%;
-	font-weight: bold;
+    font-family: Courier New;
+    color: #0000c0;
+    font-size: 100%;
+    font-weight: bold;
 }
 
 li
 {
-	/* font-weight: bold; */
-	color: black;
+    /* font-weight: bold; */
+    color: black;
 }
 
 pre.csharp
 {
-	font-family: Courier New;
-	font-size: 11px;
-	padding: 4px;
-	font-color: #606060;
-	background-color: #f0f0f0;
-	border: 1px solid #e0e0e0;
+    font-family: Courier New;
+    font-size: 11px;
+    padding: 4px;
+    font-color: #606060;
+    background-color: #f0f0f0;
+    border: 1px solid #e0e0e0;
 }
 
 span.keyword
 {
-	color: blue;
+    color: blue;
 }
 
 span.string
 {
-	color: #c00000;
+    color: #c00000;
 }
 
 span.operator
 {
-	color: #404040;
+    color: #404040;
 }
 
 span.number
 {
-	color: #ff00ff;
+    color: #ff00ff;
 }
 
 span.type
 {
-	color: #008000;
-	font-weight: bold;
+    color: #008000;
+    font-weight: bold;
 }
 
 span.xmlattribute
 {
-	color: #ff0000;
+    color: #ff0000;
 }
 
 span.xmlstring
 {
-	color: #0000ff;
+    color: #0000ff;
 }
 
 span.xmlbracket
 {
-	color: #0000ff;
+    color: #0000ff;
 }
 
 span.xmltag
 {
-	color: #800000;
+    color: #800000;
 }
 
 span.comment
 {
-	color: #008000;
-	font-style: italic;
+    color: #008000;
+    font-style: italic;
 }
 
 a.nav
@@ -154,6 +156,7 @@ a.nav
     font-weight: normal;
     font-size: 17px;
     color: #202040;
+    margin: 1px;
     cursor: pointer; cursor: hand;
     text-decoration: none;
     padding-left: 4px;
@@ -176,11 +179,11 @@ a.nav_selected
     display: block;
     font-family: Trebuchet MS, Arial, Helv;
     font-style: italic;
-    font-weight: bold;
+    font-weight: normal;
     font-size: 17px;
     color: #205080;
     background-color: white;
-    border: 1px dotted black;
+    border: 1px dotted #c0c0c0;
     padding-left: 4px;
     padding-right: 4px;
     width: 160px;
@@ -222,7 +225,7 @@ tr.nav_selected
 td.titledesc
 {
     font-family: Verdana;
-	font-size: 70%;
+    font-size: 70%;
     vertical-align: bottom;
     padding-bottom: 10px;
     padding-right: 10px;
@@ -235,24 +238,25 @@ img.thinborder
 
 td.header
 {
-	margin-right: 0px;
-	margin-left: 0px;
-    background-color: #ffffe0;
-    border-bottom: 2px solid black;
+    border-bottom: 1px solid black;
+    margin-bottom: 0px;
+    height: 80px;
 }
 
 td.content
 {
-	font-family: Verdana;
-	font-size: 12px;
-	padding: 4px;
+    font-family: Trebuchet MS;
+    font-size: 12px;
+    padding: 4px;
+    width: 620px;
+    text-align: left;
     background-color: #f8f8ff;
 }
 
 td.controls
 {
     padding: 6px;
-    width: 200px;
+    width: 180px;
     background-color: #f8f8ff;
 }
 
@@ -265,4 +269,21 @@ table.page
 tr.spacer
 {
     height: 10px;
+}
+
+
+td.copyright
+{
+    background-color: #f8f8ff;
+    padding: 4px;
+    font-size: 11px;
+    text-align: center;
+    font-family: Trebuchet MS, Arial, Helv;
+}
+
+
+td.hostedby
+{
+    background-color: #f8f8ff;
+    padding: 4px;
 }

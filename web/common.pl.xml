@@ -9,6 +9,7 @@
         <nav href="screenshots" label="Zrzuty ekranu" />
         <nav href="download" label="Pobierz" />
         <nav href="development" label="Rozwój" />
+        <nav href="users" label="U¿ytkownicy" />
         <nav href="faq" label="FAQ" />
         <nav href="links" label="Linki" />
     </navigation>

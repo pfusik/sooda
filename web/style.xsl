@@ -5,13 +5,13 @@
     <xsl:variable name="common_file" select="concat('common.', $result_lang, '.xml')" />
     <xsl:variable name="page_id" select="/*[position()=1]/@id" />
     <xsl:variable name="common" select="document($common_file)" />
-    <xsl:variable name="file_extension">xml</xsl:variable>
+    <xsl:param name="file_extension">xml</xsl:param>
+    <xsl:param name="sourceforge">0</xsl:param>
 
     <xsl:template match="/">
         <html>
             <head>
                 <link rel="stylesheet" href="../style.css" type="text/css" />
-        		<script language="javascript" src="sooda.js"></script>
                 <title>Sooda</title>
             </head>
             <body width="100%">
@@ -27,13 +27,27 @@
                             <xsl:apply-templates select="content" />
                         </td>
                     </tr>
+                    <tr>
+                        <td class="hostedby">
+                            <xsl:if test="$sourceforge='1'">
+                                <a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=71422&amp;type=1" width="88" height="31" border="0" alt="SourceForge.net Logo" /></a>
+                            </xsl:if>
+                        </td>
+                        <td class="copyright">Copyright (c) 2003-2004 by Jaros³aw Kowalski</td>
+                    </tr>
                 </table>
             </body>
         </html>
     </xsl:template>
 
+    <xsl:template match="@* | node()" mode="copy">
+        <xsl:copy>
+            <xsl:apply-templates select="@* | node()" mode="copy" />
+        </xsl:copy>
+    </xsl:template>
+
     <xsl:template match="content">
-        <xsl:copy-of select="." />
+        <xsl:apply-templates select="*" mode="copy" />
     </xsl:template>
 
     <xsl:template name="controls">
