@@ -164,6 +164,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SoodaObjectMultiFieldComparer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SoodaObjectNotFoundException.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

@@ -36,65 +36,74 @@ using System.Text;
 using System.Collections;
 
 namespace Sooda {
-    public enum SortOrder
-    {
-        None,
-        Ascending,
-        Descending,
-    }
+    public class SoodaObjectMultiFieldComparer : IComparer {
+        class FieldCompareInfo {
+            public FieldCompareInfo(string[] propertyChain, SortOrder sortOrder) {
+                this.propertyChain = propertyChain;
+                this.sortOrder = sortOrder;
+            }
 
-    public class SoodaObjectFieldComparer : IComparer {
-        private string[] _propertyChain;
-        private SortOrder _sortOrder;
-
-        public SoodaObjectFieldComparer(string propertyName, SortOrder sortOrder) {
-            this._propertyChain = propertyName.Split('.');
-            this._sortOrder = sortOrder;
-        }
-
-        public SoodaObjectFieldComparer(string[] propertyChain, SortOrder sortOrder) {
-            this._propertyChain = propertyChain;
-            this._sortOrder = sortOrder;
+            public string[] propertyChain;
+            public SortOrder sortOrder;
         }
 
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("singlefieldcomparer[");
-            sb.Append(String.Join(".", _propertyChain));
-            sb.Append(" ");
-            sb.Append(_sortOrder);
+            sb.Append("multifieldcomparer[");
+            bool first = true;
+            foreach (FieldCompareInfo fci in fields) 
+            {
+                if (!first)
+                    sb.Append(",");
+                sb.Append(String.Join(".", fci.propertyChain));
+                sb.Append(" ");
+                sb.Append(fci.sortOrder);
+            }
             sb.Append("]");
             return sb.ToString ();
         }
 
+        private ArrayList fields = new ArrayList();
 
-        int IComparer.Compare(object o1, object o2) 
-        {
+        public SoodaObjectMultiFieldComparer() {}
+
+        int IComparer.Compare(object o1, object o2) {
             SoodaObject dbo1 = o1 as SoodaObject;
             SoodaObject dbo2 = o2 as SoodaObject;
 
             return Compare(dbo1, dbo2);
         }
 
+        public void AddField(string field, SortOrder sortOrder) {
+            fields.Add(new FieldCompareInfo(field.Split('.'), sortOrder));
+        }
+
+        public void AddField(string[] field, SortOrder sortOrder) {
+            fields.Add(new FieldCompareInfo(field, sortOrder));
+        }
+
         public int Compare(SoodaObject dbo1, SoodaObject dbo2) {
-            object v1 = dbo1.Evaluate(_propertyChain, false);
-            object v2 = dbo2.Evaluate(_propertyChain, false);
+            foreach (FieldCompareInfo fci in fields) {
+                object v1 = dbo1.Evaluate(fci.propertyChain, false);
+                object v2 = dbo2.Evaluate(fci.propertyChain, false);
 
-            if (_sortOrder == SortOrder.Ascending)
-                return DoCompare(v1, v2, dbo1, dbo2);
-            else
-                return -DoCompare(v1, v2, dbo1, dbo2);
+                int result = DoCompare(v1, v2);
+                if (result != 0) {
+                    if (fci.sortOrder == SortOrder.Ascending)
+                        return result;
+                    else
+                        return -result;
+                }
+            }
+
+            return PrimaryKeyCompare(dbo1, dbo2);
         }
 
-        private static int PrimaryKeyCompare(SoodaObject dbo1, SoodaObject dbo2) {
-            return ((IComparable)dbo1.GetPrimaryKeyValue()).CompareTo(dbo2.GetPrimaryKeyValue());
-        }
-
-        private static int DoCompare(object v1, object v2, SoodaObject dbo1, SoodaObject dbo2) {
+        private static int DoCompare(object v1, object v2) {
             if (v1 == null) {
                 if (v2 == null)
-                    return PrimaryKeyCompare(dbo1, dbo2);
+                    return 0;
                 else
                     return -1;  // null is less than anything
             };
@@ -103,11 +112,11 @@ namespace Sooda {
                 return 1;   // not null is greater than anything
             }
 
-            int v = ((IComparable)v1).CompareTo(v2);
-            if (v == 0)
-                return PrimaryKeyCompare(dbo1, dbo2);
-            else
-                return v;
+            return ((IComparable)v1).CompareTo(v2);
+        }
+
+        private static int PrimaryKeyCompare(SoodaObject dbo1, SoodaObject dbo2) {
+            return ((IComparable)dbo1.GetPrimaryKeyValue()).CompareTo(dbo2.GetPrimaryKeyValue());
         }
     }
 }
