@@ -61,7 +61,7 @@ namespace Sooda
                 }
             }
 
-            logger.Debug(String.Format("{0} resolved to {1}", assemblyName, _assembly.FullName));
+            logger.Debug("{0} resolved to {1}", assemblyName, _assembly.FullName);
         }
 
         public SoodaStubAssemblyAttribute(Type sampleObject)

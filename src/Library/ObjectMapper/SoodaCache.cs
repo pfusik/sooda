@@ -70,7 +70,7 @@ namespace Sooda.ObjectMapper
                 }
             }
 
-            logger.Debug(String.Format("SoodaCache.FindObjectData('{0}',{1}) {2}", className, primaryKeyValue, (retVal != null) ? "FOUND" : "NOT FOUND"));
+            logger.Debug("SoodaCache.FindObjectData('{0}',{1}) {2}", className, primaryKeyValue, (retVal != null) ? "FOUND" : "NOT FOUND");
             return retVal;
         }
 
@@ -88,7 +88,7 @@ namespace Sooda.ObjectMapper
 
             if (logger.IsDebugEnabled)
             {
-                logger.Debug(String.Format("Add {0}({1}): {2}", className, primaryKeyValue, entry.ToString()));
+                logger.Debug("Add {0}({1}): {2}", className, primaryKeyValue, entry.ToString());
             }
 
             ht[primaryKeyValue] = entry;
@@ -96,7 +96,7 @@ namespace Sooda.ObjectMapper
 
         public static void Clear()
         {
-            logger.Debug(String.Format("Clear"));
+            logger.Debug("Clear");
             _hashtable.Clear();
         }
 

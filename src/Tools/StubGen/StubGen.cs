@@ -594,9 +594,9 @@ namespace Sooda.StubGen
 
                     if (File.Exists(outputFile))
                     {
-                        DateTime stubgenDateTime = File.GetLastWriteTimeUtc(stubgenFile);
-                        DateTime schemaDateTime = File.GetLastWriteTimeUtc(schemaFile);
-                        DateTime outputDateTime = File.GetLastWriteTimeUtc(outputFile);
+                        DateTime stubgenDateTime = File.GetLastWriteTime(stubgenFile);
+                        DateTime schemaDateTime = File.GetLastWriteTime(schemaFile);
+                        DateTime outputDateTime = File.GetLastWriteTime(outputFile);
 
                         DateTime maxInputDate = schemaDateTime;
                         if (stubgenDateTime > maxInputDate)

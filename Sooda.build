@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="Sooda" default="build" basedir=".">
-    <property name="sooda.dir" value="${nant.project.basedir}/bin" unless="${property::exists('sooda.dir')}" />
     <property name="sooda.debug" value="true" unless="${property::exists('sooda.debug')}" />
     <property name="sooda.optimize" value="false" unless="${property::exists('sooda.optimize')}" />
 
@@ -12,7 +11,8 @@
 
     <property name="sooda.csc.args" value="/nowarn:1591" />
     <property name="sooda.external" value="${nant.project.basedir}/src/ExternalLib" />
-    <property name="sooda.nlog" value="${sooda.external}" unless="${property::exists('sooda.nlog')}" />
+    <property name="sooda.nlog.dir" value="${sooda.external}" unless="${property::exists('sooda.nlog.dir')}" />
+    <property name="sooda.icsharpcode.texteditor.dir" value="${sooda.external}" unless="${property::exists('sooda.icsharpcode.texteditor.dir')}" />
     
     <target name="build" depends="build-${nant.settings.currentframework}" />
     <target name="build-net-1.0" depends="build-common, tools" />
@@ -27,11 +27,13 @@
 
     <target name="libraries" depends="Sooda" />
 
-    <target name="settings" depends="NLog">
-        <property name="sooda.define" value="TRACE,DEBUG" />
-        <property name="sooda.define" value="TRACE" unless="${sooda.debug}" />
+    <target name="settings">
+        <property name="sooda.define" value="" />
         <property name="sooda.optimize" value="false" />
         <property name="sooda.optimize" value="true" unless="${sooda.debug}" />
+        <property name="sooda.dir" value="${nant.project.basedir}/build/${framework::get-target-framework()}${if(sooda.debug,'-debug','')}/bin" unless="${property::exists('sooda.dir')}" />/>
+
+        <mkdir dir="${sooda.dir}" />
 
         <call target="settings-${nant.settings.currentframework}" 
             if="${target::exists('settings-' + nant.settings.currentframework)}" />
@@ -42,11 +44,11 @@
         <echo message="optimize:  ${sooda.optimize}" />
         <echo message="output:    ${sooda.dir}" />
         <echo message="framework: ${nant.settings.currentframework.description}" />
-	</target>
-	
+    </target>
+
     <target name="settings-net-1.0">
         <property name="sooda.define" value="${sooda.define},SOODA_NO_ODBC" />
-	</target>
+    </target>
 
     <target name="linuxtoolwrappers">
         <exec workingdir="${sooda.dir}" program="${nant.project.basedir}/BuildTools/makewrapper ${sooda.dir}/StubGen" />
@@ -64,6 +66,9 @@
     <target name="Sooda" depends="settings, NLog" description="Sooda">
         <csc target="library" output="${sooda.dir}/Sooda.dll" debug="${sooda.debug}" define="${sooda.define}">
             <references>                                  
+                <include name="mscorlib.dll" />
+                <include name="System.dll" />
+                <include name="System.XML.dll" />
                 <include name="System.Data.dll" />
                 <include name="System.Drawing.dll" />
                 <include name="${sooda.dir}/NLog.dll" />
@@ -125,11 +130,11 @@
         </csc>
     </target>
 
-    <target name="SoodaQuery" depends="settings, Sooda">
+    <target name="SoodaQuery" depends="settings, Sooda, ICSharpCode.TextEditor">
         <csc target="winexe" output="${sooda.dir}/SoodaQuery.exe" debug="${sooda.debug}" define="${sooda.define}" win32icon="src/Tools/SoodaQuery/app.ico">
             <references>                                  
                 <include name="${sooda.dir}/Sooda.dll" />
-                <include name="${sooda.external}/ICSharpCode.TextEditor.dll" />
+                <include name="${sooda.dir}/ICSharpCode.TextEditor.dll" />
             </references>
             <sources basedir="src/Tools/SoodaQuery">
                 <include name="*.cs" />
@@ -145,7 +150,7 @@
         <copy file="${sooda.external}/ICSharpCode.TextEditor.dll" tofile="${sooda.dir}/ICSharpCode.TextEditor.dll" />
     </target>
 
-    <target name="clean" description="Delete *.exe,*.dll,*.pdb and *.exe files from output directory">
+    <target name="clean" depends="settings" description="Delete *.exe,*.dll,*.pdb and *.exe files from output directory">
         <delete>
             <fileset defaultexcludes="false">
                 <include name="SetupSooda.exe" />
@@ -230,68 +235,68 @@
 
     <target name="nunit-gui" depends="Sooda.UnitTests.TestCases">
         <exec workingdir="${sooda.dir}" program="nunit-gui.exe" commandline="${sooda.dir}/Sooda.UnitTests.TestCases.dll" />
-	</target>
+    </target>
 
-	<target name="nunit-console" depends="Sooda.UnitTests.TestCases">
-		<exec verbose="true" workingdir="${sooda.dir}" program="nunit-console.exe" commandline="${sooda.dir}/Sooda.UnitTests.TestCases.dll" />
-	</target>
+    <target name="nunit-console" depends="Sooda.UnitTests.TestCases">
+        <exec verbose="true" workingdir="${sooda.dir}" program="nunit-console.exe" commandline="${sooda.dir}/Sooda.UnitTests.TestCases.dll" />
+    </target>
 
-	<target name="test" depends="Sooda.UnitTests.TestCases">
-		<nunit2>
-			<formatter type="Plain" />
-			<test assemblyname="${sooda.dir}/Sooda.UnitTests.TestCases.dll" />
-		</nunit2>
-	</target>
+    <target name="test" depends="Sooda.UnitTests.TestCases">
+        <nunit2>
+            <formatter type="Plain" />
+            <test assemblyname="${sooda.dir}/Sooda.UnitTests.TestCases.dll" />
+        </nunit2>
+    </target>
 
-	<target name="Sooda.UnitTests.Objects" depends="Sooda, stubs">
-		<csc target="library" output="${sooda.dir}/Sooda.UnitTests.Objects.dll" debug="true">
-			<references>                                  
-				<include name="${sooda.dir}/NLog.dll" />
-				<include name="${sooda.dir}/Sooda.dll" />
-				<include name="System.Data.dll" asis="true" />
-			</references>
+    <target name="Sooda.UnitTests.Objects" depends="Sooda, stubs">
+        <csc target="library" output="${sooda.dir}/Sooda.UnitTests.Objects.dll" debug="true">
+            <references>                                  
+                <include name="${sooda.dir}/NLog.dll" />
+                <include name="${sooda.dir}/Sooda.dll" />
+                <include name="System.Data.dll" asis="true" />
+            </references>
             <sources basedir="tests/UnitTestObjects">
-				<include name="*.cs" />
-			</sources>
-			<resources basedir="tests/UnitTestObjects" prefix="Sooda.UnitTests.Objects" dynamicprefix="true">
+                <include name="*.cs" />
+            </sources>
+            <resources basedir="tests/UnitTestObjects" prefix="Sooda.UnitTests.Objects" dynamicprefix="true">
                 <include name="_DBSchema.*" />
             </resources>
-		</csc>
-	</target>
+        </csc>
+    </target>
 
-	<target name="Sooda.UnitTests.TestCases" depends="Sooda, Sooda.UnitTests.Objects">
-		<copy file="${nant.location}/nunit.framework.dll" tofile="${sooda.dir}/nunit.framework.dll" />
-		<csc target="library" output="${sooda.dir}/Sooda.UnitTests.TestCases.dll" debug="true">
-			<references>                                  
-				<include name="${sooda.dir}/Sooda.dll" />
-    			<include name="${sooda.dir}/Sooda.UnitTests.Objects.dll" />
-    			<include name="${sooda.dir}/nunit.framework.dll" />
-    			<include name="${sooda.dir}/NLog.dll" />
-				<include name="System.Data.dll" asis="true" />
-			</references>
-			<sources basedir="tests/TestCases">
-				<include name="**/*.cs" />
-			</sources>
-		</csc>
-	</target>
+    <target name="Sooda.UnitTests.TestCases" depends="Sooda, Sooda.UnitTests.Objects">
+        <copy file="${nant.location}/nunit.framework.dll" tofile="${sooda.dir}/nunit.framework.dll" />
+        <csc target="library" output="${sooda.dir}/Sooda.UnitTests.TestCases.dll" debug="true">
+            <references>                                  
+                <include name="${sooda.dir}/Sooda.dll" />
+                <include name="${sooda.dir}/Sooda.UnitTests.Objects.dll" />
+                <include name="${sooda.dir}/nunit.framework.dll" />
+                <include name="${sooda.dir}/NLog.dll" />
+                <include name="System.Data.dll" asis="true" />
+            </references>
+            <sources basedir="tests/TestCases">
+                <include name="**/*.cs" />
+            </sources>
+        </csc>
+    </target>
 
-	<target name="ConsoleTest" depends="Sooda, Sooda.UnitTests.TestCases">
-		<csc target="exe" output="${sooda.dir}/ConsoleTest.exe" debug="true">
-			<references>                                  
-				<include name="${sooda.dir}/Sooda.dll" />
-    			<include name="${sooda.dir}/Sooda.UnitTests.Objects.dll" />
-    			<include name="${sooda.dir}/Sooda.UnitTests.Objects.Stubs.dll" />
-				<include name="${sooda.dir}/Sooda.UnitTests.TestCases.dll" />
-				<include name="${sooda.dir}/NUnit.Framework.dll" />
-				<include name="${sooda.dir}/NLog.dll" />
-				<include name="System.Data.dll" asis="true" />
-			</references>
-			<sources basedir="tests/ConsoleTest">
-				<include name="*.cs" />
-			</sources>
-		</csc>
+    <target name="ConsoleTest" depends="Sooda, Sooda.UnitTests.TestCases">
+        <csc target="exe" output="${sooda.dir}/ConsoleTest.exe" debug="true">
+            <references>                                  
+                <include name="${sooda.dir}/Sooda.dll" />
+                <include name="${sooda.dir}/Sooda.UnitTests.Objects.dll" />
+                <include name="${sooda.dir}/Sooda.UnitTests.Objects.Stubs.dll" />
+                <include name="${sooda.dir}/Sooda.UnitTests.TestCases.dll" />
+                <include name="${sooda.dir}/NUnit.Framework.dll" />
+                <include name="${sooda.dir}/NLog.dll" />
+                <include name="System.Data.dll" asis="true" />
+            </references>
+            <sources basedir="tests/ConsoleTest">
+                <include name="*.cs" />
+            </sources>
+        </csc>
         <copy file="tests/ConsoleTest/App.config" tofile="${sooda.dir}/ConsoleTest.exe.config" />
-	</target>
+    </target>
 
     <target name="dist">
         <property name="sooda.debug" value="false" />
@@ -313,7 +318,21 @@
     </target>
 
     <target name="NLog">
-        <copy file="${sooda.nlog}/NLog.dll" tofile="${sooda.dir}/NLog.dll" />
+        <copy todir="${sooda.dir}">
+            <fileset basedir="${sooda.nlog.dir}">
+                <include name="NLog*.dll" />
+                <include name="NLog*.pdb" />
+                <include name="NLog*.xml" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="ICSharpCode.TextEditor">
+        <copy todir="${sooda.dir}">
+            <fileset basedir="${sooda.icsharpcode.texteditor.dir}">
+                <include name="ICSharpCode.TextEditor.*" />
+            </fileset>
+        </copy>
     </target>
 
     <target name="disttest">

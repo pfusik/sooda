@@ -797,7 +797,7 @@ namespace Sooda
 
             SoodaFieldHandler handler = factory.GetPrimaryKeyFieldHandler();
             pkValue = handler.RawDeserialize(reader.GetAttribute("value"));
-			transactionLogger.Debug(String.Format("Deserializing object {0} {1}.", className, pkValue));
+			transactionLogger.Debug("Deserializing object {0} {1}.", className, pkValue);
 
 			retVal = factory.TryGet(this, pkValue);
 			if (retVal == null)

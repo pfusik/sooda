@@ -237,7 +237,7 @@ namespace Sooda
                 SoodaCacheEntry cachedData = SoodaCache.FindObjectData(GetClassInfo().Name, primaryKeyValue);
                 if (cachedData != null)
                 {
-                    logger.Debug(String.Format("Initializing object {0}({1}) from cache: {2}", this.GetType().Name, primaryKeyValue, cachedData));
+                    logger.Debug("Initializing object {0}({1}) from cache: {2}", this.GetType().Name, primaryKeyValue, cachedData);
                     _fieldValues = cachedData.Data;
                     _fieldData = new SoodaFieldData[_fieldValues.Length];
                     _dataLoadedMask = cachedData.DataLoadedMask;
@@ -245,7 +245,7 @@ namespace Sooda
                 }
                 else
                 {
-                    logger.Debug(String.Format("Object {0}({1}) not in cache. Creating uninitialized object.", this.GetType().Name, primaryKeyValue, cachedData));
+                    logger.Debug("Object {0}({1}) not in cache. Creating uninitialized object.", this.GetType().Name, primaryKeyValue, cachedData);
                 }
             }
         }
@@ -583,7 +583,7 @@ namespace Sooda
         {
             if (logger.IsDebugEnabled)
             {
-                logger.Debug(String.Format("Loading data for {0}({1}) from table #{2}", GetClassInfo().Name, keyVal, tableNumber));
+                logger.Debug("Loading data for {0}({1}) from table #{2}", GetClassInfo().Name, keyVal, tableNumber);
             };
 
             try

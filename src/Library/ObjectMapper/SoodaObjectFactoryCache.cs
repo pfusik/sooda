@@ -79,11 +79,11 @@ namespace Sooda.ObjectMapper
             {
                 if (fact == null)
                 {
-                    logger.Debug(String.Format("{0}[{1}] not found in the factory cache", className, primaryKeyValue));
+                    logger.Debug("{0}[{1}] not found in the factory cache", className, primaryKeyValue);
                 }
                 else
                 {
-                    logger.Debug(String.Format("{0}[{1}] found in factory cache as {2}", className, primaryKeyValue, fact.GetClassInfo().Name));
+                    logger.Debug("{0}[{1}] found in factory cache as {2}", className, primaryKeyValue, fact.GetClassInfo().Name);
                 }
             }
             return fact;
@@ -93,7 +93,7 @@ namespace Sooda.ObjectMapper
         {
             if (logger.IsDebugEnabled)
             {
-                logger.Debug(String.Format("Adding {0}[{1}]={2} to the factory cache", className, primaryKeyValue, factory.GetClassInfo().Name));
+                logger.Debug("Adding {0}[{1}]={2} to the factory cache", className, primaryKeyValue, factory.GetClassInfo().Name);
             }
             AddObjectWithKey(className, primaryKeyValue, factory);
         }
