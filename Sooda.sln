@@ -11,10 +11,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaQuery", "src\Tools\Soo
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaFixKeygen", "src\Tools\SoodaFixKeygen\SoodaFixKeygen.csproj", "{74410A3C-F7F5-47FE-8F72-1856753BDD26}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLog", "..\NLog\src\NLog\NLog.csproj", "{020354EE-5073-4BB5-9AA2-A7EADA8CAD09}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
-	GlobalSection(DPCodeReviewSolutionGUID) = preSolution
-		DPCodeReviewSolutionGUID = {00000000-0000-0000-0000-000000000000}
-	EndGlobalSection
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
 		Release = Release
@@ -32,9 +37,20 @@ Global
 		{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}.Debug.Build.0 = Debug|.NET
 		{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}.Release.ActiveCfg = Release|.NET
 		{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}.Release.Build.0 = Release|.NET
+		{74410A3C-F7F5-47FE-8F72-1856753BDD26}.Debug.ActiveCfg = Debug|.NET
+		{74410A3C-F7F5-47FE-8F72-1856753BDD26}.Debug.Build.0 = Debug|.NET
+		{74410A3C-F7F5-47FE-8F72-1856753BDD26}.Release.ActiveCfg = Release|.NET
+		{74410A3C-F7F5-47FE-8F72-1856753BDD26}.Release.Build.0 = Release|.NET
+		{020354EE-5073-4BB5-9AA2-A7EADA8CAD09}.Debug.ActiveCfg = Debug|.NET
+		{020354EE-5073-4BB5-9AA2-A7EADA8CAD09}.Debug.Build.0 = Debug|.NET
+		{020354EE-5073-4BB5-9AA2-A7EADA8CAD09}.Release.ActiveCfg = Release|.NET
+		{020354EE-5073-4BB5-9AA2-A7EADA8CAD09}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
 	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+	GlobalSection(DPCodeReviewSolutionGUID) = preSolution
+		DPCodeReviewSolutionGUID = {00000000-0000-0000-0000-000000000000}
 	EndGlobalSection
 EndGlobal

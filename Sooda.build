@@ -22,7 +22,7 @@
     <target name="build-mono-1.0" depends="build-common, minitools" />
 
     <target name="build-common" depends="settings, libraries" />
-    <target name="tools" depends="StubGen, SoodaQuery, SoodaSchemaTool" />
+    <target name="tools" depends="StubGen, SoodaQuery, SoodaSchemaTool, SoodaFixKeygen" />
     <target name="minitools" depends="StubGen-mini" />
 
     <target name="libraries" depends="Sooda" />
@@ -125,6 +125,18 @@
                 <include name="${sooda.dir}/Sooda.dll" />
             </references>
             <sources basedir="src/Tools/SoodaSchemaTool">
+                <include name="*.cs" />
+            </sources>
+        </csc>
+    </target>
+
+    <target name="SoodaFixKeygen" depends="settings, Sooda">
+        <csc target="exe" output="${sooda.dir}/SoodaFixKeygen.exe" debug="${sooda.debug}" define="${sooda.define}">
+            <references>                                  
+                <include name="System.Data.dll" asis="true" />
+                <include name="${sooda.dir}/Sooda.dll" />
+            </references>
+            <sources basedir="src/Tools/SoodaFixKeygen">
                 <include name="*.cs" />
             </sources>
         </csc>
