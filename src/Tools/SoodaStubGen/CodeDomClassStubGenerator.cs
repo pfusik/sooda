@@ -70,6 +70,14 @@ namespace Sooda.StubGen {
             this.KeyGen = keyGen;
         }
 
+        private ClassInfo GetRootClass(ClassInfo ci)
+        {
+            if (ci.InheritsFromClass != null)
+                return GetRootClass(ci.InheritsFromClass);
+            else
+                return ci;
+        }
+
         public CodeMemberField Field_keyGenerator() {
             CodeMemberField field = new CodeMemberField("IPrimaryKeyGenerator", "keyGenerator");
             field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
@@ -81,7 +89,7 @@ namespace Sooda.StubGen {
 
             case "integer":
                 field.InitExpression = new CodeObjectCreateExpression("Sooda.ObjectMapper.KeyGenerators.TableBasedGenerator",
-                                       new CodePrimitiveExpression(classInfo.Name),
+                                       new CodePrimitiveExpression(GetRootClass(classInfo).Name),
                                        new CodeMethodInvokeExpression(
                                            new CodeMethodInvokeExpression(
                                                new CodeTypeReferenceExpression("_DatabaseSchema"), "GetSchema"),
