@@ -277,7 +277,7 @@
     </target>
 
     <target name="Sooda.UnitTests.TestCases" depends="Sooda, Sooda.UnitTests.Objects">
-        <copy file="${nant.location}/nunit.framework.dll" tofile="${sooda.dir}/nunit.framework.dll" />
+        <copy file="${nant.location}/lib/mono/1.0/nunit.framework.dll" tofile="${sooda.dir}/nunit.framework.dll" />
         <csc target="library" output="${sooda.dir}/Sooda.UnitTests.TestCases.dll" debug="true">
             <references>                                  
                 <include name="${sooda.dir}/Sooda.dll" />
