@@ -44,6 +44,9 @@ namespace Sooda.ObjectMapper.KeyGenerators
         private int maxValue = 0;
         private static Random random = new Random();
         private Sooda.Schema.DataSourceInfo dataSourceInfo;
+        private string table_name = "KeyGen";
+        private string key_name_column = "key_name";
+        private string key_value_column = "key_value";
 
         public TableBasedGenerator(string keyName, Sooda.Schema.DataSourceInfo dataSourceInfo)
         {
@@ -80,7 +83,7 @@ namespace Sooda.ObjectMapper.KeyGenerators
                 int maxRandomTimeout = 2;
                 for (int i = 0; (i < 10) && !gotKey; ++i)
                 {
-                    string query = "select key_value from KeyGen where key_name = '" + keyName + "'";
+                    string query = "select " + key_value_column + " from " + table_name + " where " + key_name_column + " = '" + keyName + "'";
                     IDbCommand cmd = conn.CreateCommand();
 
                     if (!sds.DisableTransactions)
@@ -98,7 +101,7 @@ namespace Sooda.ObjectMapper.KeyGenerators
                     {
                         if (justInserted)
                             throw new Exception("FATAL DATABASE ERROR - cannot get new key value");
-                        cmd.CommandText = "insert into KeyGen(key_name, key_value) values('" + keyName + "', 1)";
+                        cmd.CommandText = "insert into " + table_name + "(" + key_name_column + ", " + key_value_column + ") values('" + keyName + "', 1)";
                         cmd.ExecuteNonQuery();
                         justInserted = true;
                         continue;
@@ -110,7 +113,7 @@ namespace Sooda.ObjectMapper.KeyGenerators
 
                     int nextKeyValue = keyValue + poolSize;
 
-                    cmd.CommandText = "update KeyGen set key_value = " + nextKeyValue + " where key_name = '" + keyName + "' and key_value = " + keyValue;
+                    cmd.CommandText = "update " + table_name + " set " + key_value_column + " = " + nextKeyValue + " where " + key_name_column + " = '" + keyName + "' and " + key_value_column + " = " + keyValue;
                     int rows = cmd.ExecuteNonQuery();
                     // Console.WriteLine("{0} row(s) affected", rows);
 
