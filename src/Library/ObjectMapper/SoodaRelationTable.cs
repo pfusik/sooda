@@ -66,10 +66,12 @@ namespace Sooda.ObjectMapper {
         private string tableName;
         private string leftColumnName;
         private string rightColumnName;
+        private Sooda.Schema.DataSourceInfo _dataSourceInfo;
 
         public event SoodaRelationTupleChanged OnTupleChanged;
 
-        protected SoodaRelationTable(string tableName, string leftColumnName, string rightColumnName) {
+        protected SoodaRelationTable(string tableName, string leftColumnName, string rightColumnName, Sooda.Schema.ClassInfo dsi) {
+            this._dataSourceInfo = dsi.GetDataSource();
             this.tableName = tableName;
             this.leftColumnName = leftColumnName;
             this.rightColumnName = rightColumnName;
@@ -133,7 +135,10 @@ namespace Sooda.ObjectMapper {
             if (count == 0)
                 return ;
 
-            SoodaDataSource ds = tran.OpenDataSource(null);
+ 
+            Sooda.Schema.DataSourceInfo dataSourceInfo = _dataSourceInfo;
+
+            SoodaDataSource ds = tran.OpenDataSource(dataSourceInfo);
             for (int i = 0; i < count; ++i) {
                 if (!tuples[i].saved) {
                     ds.MakeTuple(tableName, leftColumnName, rightColumnName, tuples[i].ref1, tuples[i].ref2, tuples[i].tupleMode);

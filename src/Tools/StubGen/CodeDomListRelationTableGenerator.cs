@@ -55,6 +55,9 @@ namespace Sooda.StubGen {
             ctor.BaseConstructorArgs.Add(new CodePrimitiveExpression(relationInfo.Table.DBTableName));
             ctor.BaseConstructorArgs.Add(new CodePrimitiveExpression(relationInfo.Table.Fields[0].DBColumnName));
             ctor.BaseConstructorArgs.Add(new CodePrimitiveExpression(relationInfo.Table.Fields[1].DBColumnName));
+            ctor.BaseConstructorArgs.Add(new CodeMethodInvokeExpression(
+                        new CodeMethodInvokeExpression(new CodeTypeReferenceExpression("_DatabaseSchema"), "GetSchema"), 
+                    "FindClassByName", new CodePrimitiveExpression(relationInfo.Table.Fields[0].References)));
 
             return ctor;
         }
