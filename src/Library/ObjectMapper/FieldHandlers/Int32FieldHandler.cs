@@ -72,7 +72,7 @@ namespace Sooda.ObjectMapper.FieldHandlers {
         public static object GetBoxedFromReader(IDataRecord record, int pos) {
             object v = record.GetValue(pos);
             if (!(v is Int32))
-                throw new SoodaDatabaseException();
+                throw new SoodaDatabaseException("Wrong data type at position: " + pos + " expected Int32, got " + v.GetType().FullName);
             return v;
         }
 

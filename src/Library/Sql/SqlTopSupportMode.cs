@@ -40,6 +40,7 @@ namespace Sooda.Sql {
     {
         None,
         SelectTop,
-        Limit
+        Limit,
+        Oracle,
     }
 }

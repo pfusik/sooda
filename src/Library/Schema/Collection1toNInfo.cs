@@ -31,10 +31,12 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-namespace Sooda.Schema {
-    using System.Xml.Serialization;
-    using System;
+using System;
+using System.Xml.Serialization;
+using System.ComponentModel;
 
+namespace Sooda.Schema 
+{
     /// <remarks/>
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd")]
     [Serializable]
@@ -80,5 +82,8 @@ namespace Sooda.Schema {
                 deleteAction = value;
             }
         }
+        [XmlAttribute("prefetch")]
+        [DefaultValue(0)]
+        public int PrefetchLevel = 0;
     }
 }

@@ -149,10 +149,9 @@ namespace Sooda.ObjectMapper {
 
             using (reader) {
                 while (reader.Read()) {
-                    SoodaObject obj = factory.GetRefFromRecord(transaction, reader, 0, loadedTables);
+                    SoodaObject obj = factory.GetRefFromRecord(transaction, reader, 0, loadedTables, 0);
 
                     InternalAdd(obj);
-                    transaction.MaterializeExtraObjects(reader, loadedTables);
                 }
             }
         }

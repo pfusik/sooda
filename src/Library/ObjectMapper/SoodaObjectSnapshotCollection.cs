@@ -126,7 +126,7 @@ namespace Sooda.ObjectMapper {
 
                 using (IDataReader reader = ds.LoadObjectList(classInfo, whereClause, orderBy, out loadedTables)) {
                     while (reader.Read()) {
-                        SoodaObject obj = factory.GetRefFromRecord(transaction, reader, 0, loadedTables);
+                        SoodaObject obj = factory.GetRefFromRecord(transaction, reader, 0, loadedTables, 0);
 
                         int pos = items.Add(obj);
                         itemsHash.Add(obj, pos);

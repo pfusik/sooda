@@ -81,8 +81,10 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     } else {
                         Console.WriteLine("Serialized again as\n{0}", serialized2);
                     }
-                    Assert.AreEqual("Serialization preserves state", serialized, serialized2);
-                    foreach (SoodaObject r in Contact.Mary.Roles) {
+                    Assert.AreEqual(serialized, serialized2, "Serialization preserves state");
+
+                    foreach (SoodaObject r in Contact.Mary.Roles) 
+                    {
                         Console.WriteLine("After deserialization mary has role: {0}", r.GetObjectKeyString());
                     }
                     Assert.IsTrue(Contact.Mary.Roles.Contains(Role.Customer), "Deserialization preserves N-N relation membersips");
@@ -118,7 +120,8 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     } else {
                         Console.WriteLine("Serialized again as\n{0}", serialized2);
                     }
-                    Assert.AreEqual("Serialization preserves state", serialized, serialized2);
+                    Assert.AreEqual(serialized, serialized2, "Serialization preserves state");
+
                     tran.Commit();
                 }
             }

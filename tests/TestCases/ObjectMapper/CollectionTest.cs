@@ -177,7 +177,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                         if (!quiet)
                             Console.WriteLine("Serialized again as\n{0}", serialized2);
                     }
-                    Assert.AreEqual("Serialization preserves state", serialized, serialized2);
+                    Assert.AreEqual(serialized, serialized2, "Serialization preserves state");
 
                     Group g = Group.Load(10);
 

@@ -67,7 +67,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                 ser2 = tran.Serialize(SerializeOptions.Canonical);
                 Console.WriteLine("ser1 {0}", ser1);
                 Console.WriteLine("ser2 {0}", ser2);
-                Assert.AreEqual("Serialization is stable", ser1, ser2);
+                Assert.AreEqual(ser1, ser2, "Serialization is stable");
             }
         }
 
@@ -150,7 +150,8 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                         if (!quiet)
                             Console.WriteLine("Serialized again as\n{0}", serialized2);
                     }
-                    Assert.AreEqual("Serialization preserves state", serialized, serialized2);
+                    Assert.AreEqual(serialized, serialized2, "Serialization preserves state");
+
 
                     Group g = Group.Load(10);
 

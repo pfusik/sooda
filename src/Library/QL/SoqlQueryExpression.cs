@@ -51,6 +51,7 @@ namespace Sooda.QL {
 
         public SoqlBooleanExpression WhereClause = null;
         public SoqlBooleanExpression Having = null;
+        public StringCollection WhereJoins = new StringCollection();
 
         public SoqlExpressionCollection GroupByExpressions = null;
         public SoqlExpressionCollection OrderByExpressions = null;

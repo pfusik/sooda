@@ -117,8 +117,9 @@ namespace Sooda.StubGen {
             method.Name = "GetRefFromRecord";
             method.Parameters.Add(new CodeParameterDeclarationExpression("SoodaTransaction", "tran"));
             method.Parameters.Add(new CodeParameterDeclarationExpression("System.Data.IDataRecord", "record"));
-            method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(int), "firstColumn"));
+            method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(int), "firstColumnIndex"));
             method.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(new CodeTypeReference(typeof(TableInfo)), 1), "loadedTables"));
+            method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(int), "tableIndex"));
             method.PrivateImplementationType = new CodeTypeReference("ISoodaObjectFactory");
             method.ReturnType = new CodeTypeReference("SoodaObject");
             method.Statements.Add(
@@ -129,8 +130,9 @@ namespace Sooda.StubGen {
                         new CodeExpression[] {
                             Arg("tran"),
                             Arg("record"),
-                            Arg("firstColumn"),
-                            Arg("loadedTables")
+                            Arg("firstColumnIndex"),
+                            Arg("loadedTables"),
+                            Arg("tableIndex")
                         })));
             return method;
         }

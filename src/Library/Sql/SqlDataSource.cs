@@ -88,6 +88,10 @@ namespace Sooda.Sql {
                 case "mysql4":
                     this.SqlBuilder = new MySqlBuilder();
                     break;
+
+                case "oracle":
+                    this.SqlBuilder = new OracleBuilder();
+                    break;
             }
 
             Connection.Open();
@@ -484,7 +488,6 @@ namespace Sooda.Sql {
                         item.classInfo = fi.ReferencedClass;
                         item.level = fi.PrefetchLevel;
                         item.prefix = pathExpr;
-
                         queue.Enqueue(item);
                     }
                 }
@@ -493,22 +496,30 @@ namespace Sooda.Sql {
                 while (queue.Count > 0) {
                     _QueueItem it = (_QueueItem)queue.Dequeue();
 
-                    foreach (FieldInfo fi in it.classInfo.UnifiedFields) {
-                        // TODO - this relies on the fact that path expressions
-                        // are never reconstructed or broken. We simply share previous prefix
-                        // perhaps it's cleaner to Clone() the expression here
+                    foreach (TableInfo ti in it.classInfo.UnifiedTables)
+                    {
+                        foreach (FieldInfo fi in ti.Fields) 
+                        {
+                            if (!additional.Contains(ti))
+                                additional.Add(ti);
 
-                        SoqlPathExpression extendedExpression = new SoqlPathExpression(it.prefix, fi.Name);
+                            // TODO - this relies on the fact that path expressions
+                            // are never reconstructed or broken. We simply share previous prefix
+                            // perhaps it's cleaner to Clone() the expression here
 
-                        queryExpression.SelectExpressions.Add(extendedExpression);
-                        queryExpression.SelectAliases.Add("");
+                            SoqlPathExpression extendedExpression = new SoqlPathExpression(it.prefix, fi.Name);
 
-                        if (it.level >= 1 && fi.PrefetchLevel > 0 && fi.ReferencedClass != null) {
-                            _QueueItem newItem = new _QueueItem();
-                            newItem.classInfo = fi.ReferencedClass;
-                            newItem.prefix = extendedExpression;
-                            newItem.level = it.level - 1;
-                            queue.Enqueue(newItem);
+                            queryExpression.SelectExpressions.Add(extendedExpression);
+                            queryExpression.SelectAliases.Add("");
+
+                            if (it.level >= 1 && fi.PrefetchLevel > 0 && fi.ReferencedClass != null) 
+                            {
+                                _QueueItem newItem = new _QueueItem();
+                                newItem.classInfo = fi.ReferencedClass;
+                                newItem.prefix = extendedExpression;
+                                newItem.level = it.level - 1;
+                                queue.Enqueue(newItem);
+                            }
                         }
                     }
                 }
@@ -523,6 +534,8 @@ namespace Sooda.Sql {
                 converter.ConvertQuery(queryExpression);
 
                 string query = sw.ToString();
+
+                logger.Debug("Loading statement for table {0}: {1}", tableInfo.NameToken, query);
 
                 cacheLoadingSelectStatement[tableInfo] = query;
                 cacheLoadedTables[tableInfo] = additional.ToArray(typeof(TableInfo));
