@@ -12,7 +12,7 @@
 
     <property name="sooda.csc.args" value="/nowarn:1591" />
     <property name="sooda.external" value="${nant.project.basedir}/src/ExternalLib" />
-    <property name="sooda.nlog" value="${sooda.external}/NLog.dll" unless="${property::exists('sooda.nlog')}" />
+    <property name="sooda.nlog" value="${sooda.external}" unless="${property::exists('sooda.nlog')}" />
     
     <target name="build" depends="build-${nant.settings.currentframework}" />
     <target name="build-net-1.0" depends="build-common, tools" />
