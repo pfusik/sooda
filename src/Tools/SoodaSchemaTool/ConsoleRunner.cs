@@ -10,7 +10,7 @@ namespace SoodaSchemaTool {
             XmlTextReader xr = new XmlTextReader(schemaFileName);
             SchemaInfo schemaInfo = SchemaManager.ReadAndValidateSchema(xr);
 
-            SqlDataSource sds = new SqlDataSource("default");
+            SqlDataSource sds = new SqlDataSource(schemaInfo.GetDataSourceInfo("default"));
             sds.SqlBuilder = new SqlServerBuilder();
             sds.GenerateDdlForSchema(schemaInfo, Console.Out);
         }

@@ -34,6 +34,7 @@
 using System;
 
 namespace Sooda {
+    [Serializable]
     public class SoodaConfigException : SoodaException {
         public SoodaConfigException() {}
 

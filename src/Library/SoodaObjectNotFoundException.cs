@@ -34,6 +34,7 @@
 using System;
 
 namespace Sooda {
+    [Serializable]
     public class SoodaObjectNotFoundException : SoodaDatabaseException {
         public SoodaObjectNotFoundException() : this(null, null) {}
         public SoodaObjectNotFoundException(string msg) : this(msg, null) {}

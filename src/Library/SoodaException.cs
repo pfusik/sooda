@@ -34,11 +34,10 @@
 using System;
 
 namespace Sooda {
+    [Serializable]
     public class SoodaException : ApplicationException {
         public SoodaException() {}
-
         public SoodaException(string message) : base(message) {}
-
         public SoodaException(string message, Exception inner) : base(message, inner) {}
     }
 }

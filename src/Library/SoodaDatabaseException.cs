@@ -34,6 +34,7 @@
 using System;
 
 namespace Sooda {
+    [Serializable]
     public class SoodaDatabaseException : SoodaException {
         public SoodaDatabaseException() : this(null, null) {}
         public SoodaDatabaseException(string msg) : this(msg, null) {}
