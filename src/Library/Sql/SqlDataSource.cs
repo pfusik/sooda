@@ -161,8 +161,6 @@ namespace Sooda.Sql {
                 reader.Dispose();
                 return null;
             }
-
-            return null;
         }
 
         public override IDataReader LoadObject(SoodaObject obj, object keyVal, out TableInfo[] loadedTables) {
@@ -257,7 +255,7 @@ namespace Sooda.Sql {
 
 				string queryText = sw.ToString();
 
-				return ExecuteRawQuery(queryText, schema, parameters);
+				return ExecuteRawQuery(queryText, parameters);
 			}
 			catch (Exception ex)
 			{
@@ -266,7 +264,7 @@ namespace Sooda.Sql {
 			}
 		}
 
-		public override IDataReader ExecuteRawQuery(string queryText, SchemaInfo schema, object[] parameters) 
+		public override IDataReader ExecuteRawQuery(string queryText, object[] parameters) 
 		{
 			try 
 			{
@@ -282,6 +280,26 @@ namespace Sooda.Sql {
 			catch (Exception ex)
 			{
 				logger.Error("Exception in ExecuteRawQuery: {0}", ex);
+				throw;
+			}
+		}
+
+		public override int ExecuteNonQuery(string queryText, object[] parameters) 
+		{
+			try 
+			{
+				IDbCommand cmd = Connection.CreateCommand();
+
+				if (!DisableTransactions)
+					cmd.Transaction = this.Transaction;
+
+				SqlBuilder.BuildCommandWithParameters(cmd, queryText, parameters);
+				LogCommand(cmd);
+				return cmd.ExecuteNonQuery();
+			}
+			catch (Exception ex)
+			{
+				logger.Error("Exception in ExecuteNonQuery: {0}", ex);
 				throw;
 			}
 		}

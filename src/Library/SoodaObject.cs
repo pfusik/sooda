@@ -499,7 +499,7 @@ namespace Sooda {
         protected void LoadReadOnlyObject(object keyVal) {
             InsertMode = false;
             SetInitialPrimaryKeyValue(keyVal);
-#warning FIX ME
+// #warning FIX ME
 
             LoadDataWithKey(keyVal, 0);
         }

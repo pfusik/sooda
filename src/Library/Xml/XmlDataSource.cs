@@ -91,8 +91,14 @@ namespace Sooda.Xml {
             return null;
         }
 
-        public override IDataReader ExecuteRawQuery(string expr, SchemaInfo schema, object[] parameters) {
+        public override IDataReader ExecuteRawQuery(string expr, object[] parameters)
+        {
             return null;
+        }
+        
+        public override int ExecuteNonQuery(string expr, object[] parameters)
+        {
+            return 0;
         }
     }
 }

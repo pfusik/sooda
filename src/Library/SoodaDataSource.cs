@@ -82,13 +82,20 @@ namespace Sooda {
         public abstract IDataReader LoadObjectList(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, out TableInfo[] tables);
         public abstract IDataReader LoadRefObjectList(RelationInfo relationInfo, int masterColumn, object masterValue, out TableInfo[] tables);
         public abstract IDataReader ExecuteQuery(Sooda.QL.SoqlQueryExpression query, SchemaInfo schema, object[] parameters);
-        public abstract IDataReader ExecuteRawQuery(string queryText, SchemaInfo schema, object[] parameters);
+        public abstract IDataReader ExecuteRawQuery(string queryText, object[] parameters);
+        public abstract int ExecuteNonQuery(string queryText, object[] parameters);
 
         public IDataReader ExecuteQuery(Sooda.QL.SoqlQueryExpression queryText, SchemaInfo schema, ArrayList parameters) {
             return ExecuteQuery(queryText, schema, parameters.ToArray());
         }
-        public IDataReader ExecuteRawQuery(string queryText, SchemaInfo schema, ArrayList parameters) {
-            return ExecuteRawQuery(queryText, schema, parameters.ToArray());
+
+        public IDataReader ExecuteRawQuery(string queryText, ArrayList parameters) {
+            return ExecuteRawQuery(queryText, parameters.ToArray());
+        }
+        
+        public int ExecuteNonQuery(string queryText, ArrayList parameters)
+        {
+            return ExecuteNonQuery(queryText, parameters.ToArray());
         }
     }
 }

@@ -46,7 +46,6 @@ namespace Sooda.QL {
 
         [XmlAttribute("operator")]
         public SoqlBinaryOperator op;
-        Type expressionType;
 
         public SoqlBinaryExpression() {}
 
