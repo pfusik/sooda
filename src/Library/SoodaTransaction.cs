@@ -110,6 +110,9 @@ namespace Sooda
                 }
             }
 
+            if (ObjectsAssembly == null)
+                ObjectsAssembly = DefaultObjectsAssembly;
+
             this.transactionOptions = options;
             if ((options & TransactionOptions.Implicit) != 0)
             {
