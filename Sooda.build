@@ -51,8 +51,8 @@
     </target>
 
     <target name="linuxtoolwrappers">
-        <exec workingdir="${sooda.dir}" program="${nant.project.basedir}/BuildTools/makewrapper ${sooda.dir}/StubGen" />
-        <exec workingdir="${sooda.dir}" program="${nant.project.basedir}/BuildTools/makewrapper ${sooda.dir}/DBTool" />
+        <exec workingdir="${sooda.dir}" program="${nant.project.basedir}/tools/makewrapper ${sooda.dir}/StubGen" />
+        <exec workingdir="${sooda.dir}" program="${nant.project.basedir}/tools/makewrapper ${sooda.dir}/DBTool" />
     </target>
 
     <target name="gac" description="Registers Sooda in Global Assembly Cache">
@@ -312,6 +312,7 @@
 
     <target name="dist">
         <property name="sooda.debug" value="false" />
+        <property name="sooda.dir" value="bin" />
 
         <call target="newbuild" />
         <call target="clean" />
@@ -355,29 +356,29 @@
 
     <target name="updateversion">
         <foreach item="Line" in="sooda.version" delim=";" property="sooda.version">
-            <exec workingdir="${nant.project.basedir}" program="BuildTools/ReplaceVersion.exe" commandline=". ${sooda.version}" />
+            <exec workingdir="${nant.project.basedir}" program="tools/ReplaceVersion.exe" commandline=". ${sooda.version}" />
         </foreach>
     </target>
 
     <target name="newbuild">
         <exec workingdir="${nant.project.basedir}" 
-            program="BuildTools/NewBuild.exe" 
+            program="tools/NewBuild.exe" 
             commandline="${nant.project.basedir}/sooda.version build" />
         <call target="updateversion" />
     </target>
 
     <target name="newrevision">
-        <exec workingdir="${nant.project.basedir}" program="BuildTools/NewBuild.exe" commandline="${nant.project.basedir}/sooda.version revision" />
+        <exec workingdir="${nant.project.basedir}" program="tools/NewBuild.exe" commandline="${nant.project.basedir}/sooda.version revision" />
         <call target="updateversion" />
     </target>
 
     <target name="newminor">
-        <exec workingdir="${nant.project.basedir}" program="BuildTools/NewBuild.exe" commandline="${nant.project.basedir}/sooda.version minor" />
+        <exec workingdir="${nant.project.basedir}" program="tools/NewBuild.exe" commandline="${nant.project.basedir}/sooda.version minor" />
         <call target="updateversion" />
     </target>
 
     <target name="newmajor">
-        <exec workingdir="${nant.project.basedir}" program="BuildTools/NewBuild.exe" commandline="${nant.project.basedir}/sooda.version major" />
+        <exec workingdir="${nant.project.basedir}" program="tools/NewBuild.exe" commandline="${nant.project.basedir}/sooda.version major" />
         <call target="updateversion" />
     </target>
 

@@ -18,7 +18,8 @@
                 <td align="center"></td>
                 <td>Nightly snapshot of the Subversion repository.</td>
                 <td align="center">
-                    <a href="http://svn.sav.net/snapshots/sooda-latest.tar.bz2">Sources</a>
+                    <a href="http://svn.sav.net/snapshots/sooda-latest.tar.bz2">tar.bz2</a><br/>
+                    <a href="http://svn.sav.net/snapshots/sooda-latest.zip">zip</a>
                 </td>
             </tr>
         </table>

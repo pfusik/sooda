@@ -18,7 +18,8 @@
                 <td align="center"></td>
                 <td>Wersja rozwojowa generowana co noc z repozytorium Subversion.</td>
                 <td align="center">
-                    <a href="http://svn.sav.net/snapshots/sooda-latest.tar.bz2">èrÛd≥a</a>
+                    <a href="http://svn.sav.net/snapshots/sooda-latest.tar.bz2">tar.bz2</a><br/>
+                    <a href="http://svn.sav.net/snapshots/sooda-latest.zip">zip</a>
                 </td>
             </tr>
         </table>

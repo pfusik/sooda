@@ -25,7 +25,7 @@ td.nav
 {
     font-family: Trebuchet MS, Arial, Helv;
     font-size: 16px;
-    font-style: italic;
+    font-style: normal;
     padding: 3px;
 }
 
@@ -126,7 +126,7 @@ span.xmlattribute
     color: #ff0000;
 }
 
-span.xmlstring
+span.xmlattribtext
 {
     color: #0000ff;
 }
@@ -136,12 +136,12 @@ span.xmlbracket
     color: #0000ff;
 }
 
-span.xmltag
+span.xmlelement
 {
     color: #800000;
 }
 
-span.comment
+span.xmlcomment
 {
     color: #008000;
     font-style: italic;
@@ -151,7 +151,7 @@ a.nav
 {
     display: block;
     font-family: Trebuchet MS, Arial, Helv;
-    font-style: italic;
+    font-style: normal;
     font-weight: normal;
     font-size: 17px;
     color: #202040;
@@ -177,7 +177,7 @@ a.nav_selected
 {
     display: block;
     font-family: Trebuchet MS, Arial, Helv;
-    font-style: italic;
+    font-style: normal;
     font-weight: normal;
     font-size: 17px;
     color: #205080;
@@ -250,12 +250,15 @@ td.content
     width: 620px;
     text-align: left;
     background-color: #f8f8ff;
+    padding-top: 16px;
+    padding-bottom: 16px;
 }
 
 td.controls
 {
     padding: 6px;
     width: 180px;
+    padding-top: 16px;
     background-color: #f8f8ff;
 }
 
@@ -372,3 +375,13 @@ code
     color: #000080;
 }
 
+code.commandline
+{
+    display: block;
+    background-color: #ffffff;
+    color: black;
+    padding: 4px;
+    font-size: 11px;
+    border: 1px solid #c0c0c0;
+    width: 600px;
+}

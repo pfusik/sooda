@@ -2,4 +2,106 @@
 <?xml-stylesheet type="text/xsl" href="../style.xsl" ?>
 <content lang="en" id="quickstart">
     <h1>Quick Start</h1>
-</content>
+    <p>This document describes the use of Sooda library based on a real-life example. 
+        We'll begin by designing database, providing the appropriate database schema 
+        describing the compilation process and creating the appropriate Visual Studio .NET 
+        project file. The entire tutorial can be found in a <code>tutorial</code> subdirectory of
+        your Sooda installation.
+    </p>
+    <h2>Creating a database</h2>
+    <p>
+        Let's start with a simple database that will store purchase orders. Each order is related
+        to one customer, has one or more lines, each order line specifies one item and it's quantity.
+        We need the following tables:
+    </p>
+    <img src="tutorial_database.png" />
+    <p>We need to create the database that represents this structure. A MSSQL script to do just that
+        is available <a href="tutorial_database.sql">here</a>.</p>
+    <h2>Create a relational-to-object mapping description</h2>
+    <p>Once we have the database structure in place, it's time to provide a mapping description
+        document. This is an XML file that describes the correspondence between database tables and
+        CLI classes. Typically you want each table mapped to a single class and each column mapped to
+        the appropriate class property, but there can be other cases, so this document is needed.
+    </p>
+    <p>
+        In particular this document describes how to map database column names to C# property names. 
+        For example the <code>parent_order</code> column is mapped to <code>ParentOrder</code> property.
+        Also note that the <code>Order</code> class is based on a <code>PurchaseOrder</code> table, because
+        <code>order</code> is a reserved SQL word.
+    </p>
+    <xml-example src="../../tutorial/schema.xml" />
+    <h2>Creating Visual Studio.NET Project</h2>
+    <p>
+        It's now time to create a Visual Studio project. For the rest of the tutorial
+        we'll assume the following directory structure:
+    </p>
+    <img style="border: 1px solid #c0c0c0;" src="../screenshots/tutorial_directory_structure.gif" />
+    <p>
+        To recreate it:
+        <ol>
+            <li>Create a blank Solution called <code>Tutorial</code> somewhere</li>
+            <li>Create a subdirectory called <code>Tutorial\src</code></li>
+            <li>Create a C# console application called SoodaTutorial under <code>Tutorial\src\SoodaTutorial</code></li>
+            <li>Put <code>schema.xml</code> file in the <code>Tutorial</code></li>
+        </ol>
+        This is just a sample directory structure. Once you become familiar with Sooda and SoodaStubGen you might
+        want to move things around to match your project structure.
+    </p>
+    <h2>Understanding Sooda compilation process</h2>
+    <p>
+        Sooda turns each <x><class/></x> definition from the schema file into a .NET class, so that you can
+        manipulate the objects in your code. In order to generate the appropriate source code one uses the
+        <code>SoodaStubGen.exe</code> utility. This is as simple as running the following command:
+    </p>
+    <p>
+        <commandline>c:\path\to\SoodaStubGen.exe --schema <code>schema.xml</code> --output <code>src\SoodaTutorial</code> --namespace SoodaTutorial</commandline>
+    </p>
+    <p>
+        For the above schema.xml this will generate the following files:
+    </p>
+    <p>
+        <ul>
+            <li><code>src\SoodaTutorial\Customer.cs</code> - a skeleton for Customer class</li>
+            <li><code>src\SoodaTutorial\Order.cs</code> - a skeleton for Order class</li>
+            <li><code>src\SoodaTutorial\OrderLine.cs</code> - a skeleton for OrderLine class</li>
+            <li><code>src\SoodaTutorial\Item.cs</code> - a skeleton for Item class</li>
+            <li><code>src\SoodaTutorial\_Stubs.cs</code> - stub code needed by Sooda (*)</li>
+            <li><code>src\SoodaTutorial\_DBSchema.bin</code> - binary resources needed by Sooda (*)</li>
+        </ul>
+    </p>
+    <p>
+        <b>NOTE</b>: files marked with asterisks will be re-created every time you run SoodaStubGen. You shouldn't
+        modify the files by hand or your changes will be lost.
+    </p>
+    <p>
+        In addition, the Visual Studio .NET project file <code>src\SoodaTutorial\SoodaTutorial.csproj</code> will
+        be automatically updated to include the above files:
+    </p>
+    <img style="border: 1px solid #c0c0c0;" src="../screenshots/tutorial_project.gif" />
+    <p>
+        It's a good idea to automatically regenerate stubs after a change is made to the schema.xml file.
+        This can be achieved by using a VS.NET feature called pre-build event command line. This way, SoodaStubGen
+        will be launched before each compilation. To configure this, you need to perform the following:
+        <ol>
+            <li>Open the Tutorial solution</li>
+            <li>Right-click on SoodaTutorial project and choose <code>Properties</code></li>
+            <li>Navigate to <code>Common Properties / Build Events</code> and click the elipsis (<code>...</code>) button next to <code>Pre-build Event Command Line</code></li>a
+            <p/>
+            <img src="../screenshots/tutorial_prebuild_event.gif" />
+            <p/>
+            <li>In the dialog box that appears enter <code>c:\path\to\SoodaStubGen --schema schema.xml --output src\SoodaTutorial --namespace SoodaTutorial</code> and click OK.</li>
+        </ol>
+    </p>
+    <p>
+        Now the only thing that's left is adding a reference to Sooda.dll to your project.:
+        <ol>
+            <li>Right-click on the SoodaTutorial project and choose <code>Add reference...</code>.</li>
+            <li>Click <code>Browse...</code> and point to the location of Sooda.dll</li>
+            <li>Click OK</li>
+        </ol>
+    </p>
+    <h2>Configuring database connection</h2>
+    <p>
+        To configure a database connection you must put the following entries in the application configuration file:
+    </p>
+</content> 

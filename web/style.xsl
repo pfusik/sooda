@@ -30,10 +30,21 @@
                     <tr>
                         <td class="hostedby">
                             <xsl:if test="$sourceforge='1'">
+<!-- Start of StatCounter Code -->
+<script type="text/javascript" language="javascript">
+var sc_project=575055; 
+var sc_partition=4; 
+var sc_security="e249d6a5"; 
+</script>
+
+<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><a href="http://www.statcounter.com/" target="_blank"><img  src="http://c5.statcounter.com/counter.php?sc_project=575055&amp;amp;java=0&amp;amp;security=e249d6a5" alt="free web stats" border="0" /></a> </noscript>
+<!-- End of StatCounter Code -->
+                                <br/>
                                 <a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=71422&amp;type=1" width="88" height="31" border="0" alt="SourceForge.net Logo" /></a>
                             </xsl:if>
-                        </td>
-                        <td class="copyright">Copyright (c) 2003-2004 by Jaros³aw Kowalski</td>
+                        </td>                                                                         
+                        <td class="copyright">Copyright (c) 2003-2005 by Jaros³aw Kowalski
+                            <img width="1" height="1"><xsl:attribute name="src">http://jaak.sav.net/transpixel.gif</xsl:attribute></img></td>
                     </tr>
                 </table>
             </body>
@@ -94,6 +105,12 @@
 
     <xsl:template match="x">
         <xsl:apply-templates mode="xml-example" />
+    </xsl:template>
+
+    <xsl:template match="commandline">
+        <code class="commandline">
+            <xsl:apply-templates />
+        </code>
     </xsl:template>
 
     <xsl:template match="xml-example[@src]">

@@ -198,6 +198,16 @@ namespace Sooda.Sql {
                 Output.Write(p);
                 Output.Write(".");
                 Output.Write(currentClass.SubclassSelectorField.DBColumnName);
+                if (!currentClass.IsAbstractClass())
+                {
+                    Output.Write(" when ");
+                    Output.Write(currentClass.SubclassSelectorValue);
+                    Output.Write(" then ");
+                    Output.Write("'");
+                    Output.Write(currentClass.Name);
+                    Output.Write("'");
+                }
+
                 foreach (ClassInfo subci in currentClass.Subclasses)
                 {
                     Output.Write(" when ");
