@@ -41,6 +41,7 @@ namespace Sooda.Schema {
         Integer,
         Long,
         Boolean,
+        BooleanAsInteger,
         Decimal,
         Float,
         Double,
@@ -75,6 +76,7 @@ namespace Sooda.Schema {
                 {
                     new FieldDataLookup(FieldDataType.Blob, typeof(byte[]), typeof(System.Data.SqlTypes.SqlBinary), true, false, "Sooda.ObjectMapper.FieldHandlers.BlobFieldHandler"),
                     new FieldDataLookup(FieldDataType.Boolean, typeof(bool), typeof(System.Data.SqlTypes.SqlBoolean), false, false, "Sooda.ObjectMapper.FieldHandlers.BooleanFieldHandler"),
+                    new FieldDataLookup(FieldDataType.BooleanAsInteger, typeof(bool), typeof(System.Data.SqlTypes.SqlBoolean), false, false, "Sooda.ObjectMapper.FieldHandlers.BooleanAsIntegerFieldHandler"),
                     new FieldDataLookup(FieldDataType.Integer, typeof(System.Int32), typeof(System.Data.SqlTypes.SqlInt32), false, false, "Sooda.ObjectMapper.FieldHandlers.Int32FieldHandler"),
                     new FieldDataLookup(FieldDataType.Long, typeof(System.Int64), typeof(System.Data.SqlTypes.SqlInt64), false, false, "Sooda.ObjectMapper.FieldHandlers.Int64FieldHandler"),
                     new FieldDataLookup(FieldDataType.DateTime, typeof(System.DateTime), typeof(System.Data.SqlTypes.SqlDateTime), false, false, "Sooda.ObjectMapper.FieldHandlers.DateTimeFieldHandler"),

@@ -102,6 +102,7 @@
 			<xsd:enumeration value="Integer" />
 			<xsd:enumeration value="Long" />
 			<xsd:enumeration value="Boolean" />
+			<xsd:enumeration value="BooleanAsInteger" />
 			<xsd:enumeration value="Decimal" />
 			<xsd:enumeration value="Float" />
 			<xsd:enumeration value="Double" />
