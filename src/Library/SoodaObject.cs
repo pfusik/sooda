@@ -113,6 +113,21 @@ namespace Sooda {
             }
         }
 
+        internal bool InsertedIntoDatabase
+        {
+            get 
+            {
+                return (_flags & SoodaObjectFlags.InsertedIntoDatabase) != 0;
+            }
+            set 
+            {
+                if (value)
+                    _flags |= SoodaObjectFlags.InsertedIntoDatabase;
+                else
+                    _flags &= ~SoodaObjectFlags.InsertedIntoDatabase;
+            }
+        }
+
         internal bool FromCache
         {
             get {

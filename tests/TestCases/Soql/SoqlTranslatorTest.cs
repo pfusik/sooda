@@ -104,7 +104,15 @@ namespace Sooda.UnitTests.TestCases.Soql {
         public void SimpleTest1() {
             AssertTranslation(
                 "select * from Contact",
-                "select t0.id as ContactId, t0.primary_group as PrimaryGroup, t0.type as Type, t0.name as Name, t0.active as Active, t0.last_salary as LastSalary from Contact t0");
+                @"
+select   t0.id as [ContactId],
+         t0.primary_group as [PrimaryGroup],
+         t0.type as [Type],
+         t0.name as [Name],
+         t0.active as [Active],
+         t0.last_salary as [LastSalary]
+from     Contact t0"
+);
         }
         [Test]
         public void SimpleTest2() {
@@ -198,7 +206,14 @@ namespace Sooda.UnitTests.TestCases.Soql {
         public void OneToManyContainsTest3() {
             AssertTranslation(
                 "select Name from Group where Members.Contains(Contact where Name='Mary Manager')",
-                "select t0.name as Name from _Group t0 where exists (select * from Contact where primary_group=t0.id and id in (select t1.id as ContactId from Contact t1 where (t1.name = 'Mary Manager')))");
+                @"
+select   t0.name as Name
+from     _Group t0
+where    exists (select * from Contact where primary_group=t0.id and id in (
+    select   t1.id as [ContactId]
+    from     Contact t1
+    where    (t1.name = 'Mary Manager')))
+");
         }
 
         [Test]
@@ -226,7 +241,15 @@ namespace Sooda.UnitTests.TestCases.Soql {
         public void ManyToManyContainsTest4() {
             AssertTranslation(
                 "select Name from Contact where Roles.Contains(Role where Name like 'Man%' and Members.Contains(1))",
-                "select t0.name as Name from Contact t0 where exists (select * from ContactRole where contact_id=t0.id and role_id in (select t1.id as Id from _Role t1 where ((t1.name like 'Man%') and exists (select * from ContactRole where role_id=t1.id and contact_id in (1)))))");
+                @"
+select   t0.name as Name
+from     Contact t0
+where    exists (select * from ContactRole where contact_id=t0.id and role_id in (
+    select   t1.id as [Id]
+    from     _Role t1
+    where    ((t1.name like 'Man%') and exists (select * from ContactRole where role_id=t1.id and contact_id in (
+1)))))
+");
         }
 
         [Test]
@@ -277,7 +300,36 @@ namespace Sooda.UnitTests.TestCases.Soql {
                 and Members.Count > 3
                 and Members.Contains(Contact where Name='ZZZ' and PrimaryGroup.Members.Contains(3))
                 and Manager.Roles.Contains(Role where Name='Customer'))",
-                "select cr.contact_id as Contact, cr.role_id as Role from ContactRole cr left outer join Contact t0 on (cr.contact_id = t0.id) left outer join _Group t1 on (t0.primary_group = t1.id) left outer join Contact t2 on (t1.manager = t2.id) where ((((t2.name = 'zzz') and exists (select * from Contact t3 where (t3.name = t0.name))) and exists (select * from Contact t4 where (t4.name = (t0.name + 'a')))) and exists (select * from _Group t5 left outer join Contact t6 on (t5.manager = t6.id) where ((((t6.name = 'Mary Manager') and ((select count(*) from Contact where primary_group=t5.id) > 3)) and exists (select * from Contact where primary_group=t5.id and id in (select t7.id as ContactId from Contact t7 left outer join _Group t8 on (t7.primary_group = t8.id) where ((t7.name = 'ZZZ') and exists (select * from Contact where primary_group=t8.id and id in (3)))))) and exists (select * from ContactRole where contact_id=t6.id and role_id in (select t9.id as Id from _Role t9 where (t9.name = 'Customer'))))))");
+
+                @"select   cr.contact_id as [Contact],
+         cr.role_id as [Role]
+from     ContactRole cr
+         left outer join Contact t0 on (cr.contact_id = t0.id)
+         left outer join _Group t1 on (t0.primary_group = t1.id)
+         left outer join Contact t2 on (t1.manager = t2.id)
+where    ((((t2.name = 'zzz') and exists (
+    select   *
+    from     Contact t3
+    where    (t3.name = t0.name)
+)) and exists (
+    select   *
+    from     Contact t4
+    where    (t4.name = (t0.name + 'a'))
+)) and exists (
+    select   *
+    from     _Group t5
+             left outer join Contact t6 on (t5.manager = t6.id)
+    where    ((((t6.name = 'Mary Manager') and ((select count(*) from Contact where primary_group=t5.id) > 3)) and exists (select * from Contact where primary_group=t5.id and id in (
+        select   t7.id as [ContactId]
+        from     Contact t7
+                 left outer join _Group t8 on (t7.primary_group = t8.id)
+        where    ((t7.name = 'ZZZ') and exists (select * from Contact where primary_group=t8.id and id in (
+3)))))) and exists (select * from ContactRole where contact_id=t6.id and role_id in (
+        select   t9.id as [Id]
+        from     _Role t9
+        where    (t9.name = 'Customer'))))
+))
+");
         }
 
         [Test]

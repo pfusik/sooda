@@ -90,14 +90,14 @@
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
                 <Reference
-                    Name = "log4net"
-                    AssemblyName = "log4net"
-                    HintPath = "..\..\src\ExternalLib\log4net.dll"
-                />
-                <Reference
                     Name = "NUnit.Framework"
                     AssemblyName = "nunit.framework"
                     HintPath = "..\..\src\ExternalLib\NUnit.Framework.dll"
+                />
+                <Reference
+                    Name = "NLog"
+                    Project = "{020354EE-5073-4BB5-9AA2-A7EADA8CAD09}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
             </References>
         </Build>
@@ -158,6 +158,11 @@
                 />
                 <File
                     RelPath = "ObjectMapper\InheritanceTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ObjectMapper\InsertBugTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

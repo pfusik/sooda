@@ -34,27 +34,32 @@
 using System;
 using System.Diagnostics;
 using System.Data;
-using System.Text;
-using System.Collections;
-using System.Reflection;
-using System.Xml;
-using System.IO;
 
-using Sooda.Schema;
 using Sooda.ObjectMapper;
+using Sooda.UnitTests.Objects;
 
-namespace Sooda.ObjectMapper {
-    [Flags]
-    internal enum SoodaObjectFlags : int
-    {
-        InsertMode = 0x01,
-        MarkedForDeletion = 0x02,
-        DataLoaded = 0x04,
-        Dirty = 0x08,
-        DisableTriggers = 0x10,
-        FromCache = 0x20,
-        WrittenIntoDatabase = 0x40,
-        VisitedOnCommit = 0x80,
-        InsertedIntoDatabase = 0x100,
+using NUnit.Framework;
+
+namespace Sooda.UnitTests.TestCases.ObjectMapper {
+    [TestFixture]
+    public class InsertBugTest {
+
+        [Test]
+        public void BugTest() {
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) {
+                testDataSource.Open();
+
+                using (SoodaTransaction tran = new SoodaTransaction()) {
+                    tran.RegisterDataSource(testDataSource);
+
+                    Contact c = new Contact();
+                    c.Name = "a";
+                    c.Type = ContactType.Customer;
+                    GroupList list = Group.GetList(SoodaWhereClause.Unrestricted);
+                    c.Name = "B";
+                    tran.Commit();
+                }
+            }
+        }
     }
 }

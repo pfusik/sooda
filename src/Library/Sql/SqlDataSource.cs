@@ -142,8 +142,9 @@ namespace Sooda.Sql {
                 if (!DisableTransactions)
                     cmd.Transaction = this.Transaction;
 
-                if (obj.IsInsertMode()) {
+                if (obj.IsInsertMode() && !obj.InsertedIntoDatabase) {
                     DoInserts(obj, cmd);
+                    obj.InsertedIntoDatabase = true;
                 } else {
                     DoUpdates(obj, cmd);
                 }
