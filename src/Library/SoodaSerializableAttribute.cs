@@ -32,30 +32,11 @@
 //
 
 using System;
-using System.Diagnostics;
-using System.Data;
-using System.Text;
-using System.Collections;
 using System.Reflection;
-using System.Xml;
-using System.IO;
 
-using Sooda.Schema;
-using Sooda.ObjectMapper;
-
-namespace Sooda.ObjectMapper {
-    [Flags]
-    internal enum SoodaObjectFlags : int
-    {
-        InsertMode = 0x01,
-        MarkedForDeletion = 0x02,
-        DataLoaded = 0x04,
-        Dirty = 0x08,
-        DisableTriggers = 0x10,
-        FromCache = 0x20,
-        WrittenIntoDatabase = 0x40,
-        VisitedOnCommit = 0x80,
-        InsertedIntoDatabase = 0x100,
-        ForcePostCommit = 0x200,
+namespace Sooda {
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Class)]
+    public sealed class SoodaSerializableAttribute : Attribute {
+        public SoodaSerializableAttribute() {}
     }
 }

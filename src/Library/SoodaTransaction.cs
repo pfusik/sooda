@@ -319,8 +319,13 @@ namespace Sooda {
             if (o.WrittenIntoDatabase)
                 return ;
 
-            if ((o.IsObjectDirty() || o.IsInsertMode()) && !o.WrittenIntoDatabase) {
+            if ((o.IsObjectDirty() || o.IsInsertMode()) && !o.WrittenIntoDatabase) 
+            {
                 o.CommitObjectChanges();
+            } 
+            else if (o.PostCommitForced)
+            {
+                o.GetTransaction().AddToPostCommitQueue(o);
             }
             o.WrittenIntoDatabase = true;
         }
@@ -379,7 +384,6 @@ namespace Sooda {
 
             _postCommitQueue = new SoodaObjectCollection(_objectList.Count);
             SaveObjectChanges();
-            CallPostcommits();
 
             // commit all transactions on all data sources
 
@@ -388,13 +392,17 @@ namespace Sooda {
                 // source.Rollback();
             }
 
-            if (_relationTables != null) {
+            if (_relationTables != null) 
+            {
                 foreach (SoodaRelationTable rel in _relationTables.Values) {
                     rel.Commit();
                 }
             }
 
-            foreach (SoodaObject o in _objectList) {
+            CallPostcommits();
+
+            foreach (SoodaObject o in _objectList) 
+            {
                 o.ResetObjectDirty();
             }
 
@@ -607,6 +615,8 @@ namespace Sooda {
                         string isDirty = reader.GetAttribute("isDirty");
 
                         currentObject = GetSoodaObjectFromXml(reader);
+                        if (reader.GetAttribute("forcepostcommit") != null)
+                            currentObject.PostCommitForced = true;
                         currentObject.DisableTriggers = true;
                         break;
 

@@ -113,6 +113,26 @@ namespace Sooda {
             }
         }
 
+        internal bool PostCommitForced
+        {
+            get 
+            {
+                return (_flags & SoodaObjectFlags.ForcePostCommit) != 0;
+            }
+            set 
+            {
+                if (value)
+                    _flags |= SoodaObjectFlags.ForcePostCommit;
+                else
+                    _flags &= ~SoodaObjectFlags.ForcePostCommit;
+            }
+        }
+
+        public void ForcePostCommit()
+        {
+            _flags |= SoodaObjectFlags.ForcePostCommit;
+        }
+
         internal bool InsertedIntoDatabase
         {
             get 
@@ -602,6 +622,8 @@ namespace Sooda {
             //xw.WriteAttributeString("key", PrimaryKeyFieldName);
             if (!IsObjectDirty())
                 xw.WriteAttributeString("dirty", "false");
+            if (PostCommitForced)
+                xw.WriteAttributeString("forcepostcommit", "true");
 
             SoodaFieldHandler pkField = GetFieldHandler(PrimaryKeyFieldOrdinal);
             logger.Debug("Serializing " + GetObjectKeyString() + "...");
@@ -640,6 +662,15 @@ namespace Sooda {
                 xw.WriteAttributeString("dataLoaded", IsAllDataLoaded() ? "true" : "false");
                 xw.WriteAttributeString("disableTriggers", DisableTriggers ? "true" : "false");
                 xw.WriteEndElement();
+            }
+            if (this.GetType().IsDefined(typeof(SoodaSerializableAttribute), true))
+            {
+                foreach (PropertyInfo pi in this.GetType().GetProperties())
+                {
+                    if (pi.IsDefined(typeof(SoodaSerializableAttribute), false))
+                    {
+                    }
+                }
             }
             xw.WriteEndElement();
         }
@@ -946,7 +977,18 @@ namespace Sooda {
             string labelField = GetClassInfo().GetLabel();
             if (labelField == null)
                 return null;
-            return (string)Evaluate(labelField, throwOnError);
+
+            object o = Evaluate(labelField, throwOnError);
+            if (o == null)
+                return String.Empty;
+
+            if (o is System.Data.SqlTypes.INullable)
+            {
+                if (((System.Data.SqlTypes.INullable)o).IsNull)
+                    return String.Empty;
+            }
+
+            return Convert.ToString(o);
         }
     } // class SoodaObject
 } // namespace
