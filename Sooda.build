@@ -10,7 +10,7 @@
     <property name="ssh.server" value="jkowalski@sooda.sourceforge.net" />
 
     <property name="sooda.csc.args" value="/nowarn:1591" />
-    <property name="sooda.external" value="${nant.project.basedir}/src/ExternalLib" />
+    <property name="sooda.external" value="${nant.project.basedir}/src/ExternalLib" overwrite="false" />
     <property name="sooda.nlog.dir" value="${sooda.external}" overwrite="false" />
     <property name="sooda.icsharpcode.texteditor.dir" value="${sooda.external}" overwrite="false" />
     
