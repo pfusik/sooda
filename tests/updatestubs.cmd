@@ -1,5 +1,5 @@
 @echo off
-..\bin\StubGen.exe --project vs -s DBSchema.xml -n Sooda.UnitTests.Objects -o UnitTestObjects || exit 1
+..\bin\StubGen.exe --separate-stubs --project vs -s DBSchema.xml -n Sooda.UnitTests.Objects -o UnitTestObjects || exit 1
 exit
 cd UnitTestObjects\Stubs
 call _rebuild_stubs.cmd || exit 1
