@@ -68,22 +68,22 @@ namespace Sooda.Sql {
                 dialect = "microsoft";
 
             switch (dialect) {
-            default:
-            case "msde":
-            case "mssql":
-            case "microsoft":
-                this.SqlBuilder = new SqlServerBuilder();
-                break;
+                default:
+                    case "msde":
+                        case "mssql":
+                        case "microsoft":
+                        this.SqlBuilder = new SqlServerBuilder();
+                    break;
 
-            case "postgres":
-            case "postgresql":
-                this.SqlBuilder = new PostgreSqlBuilder();
-                break;
+                    case "postgres":
+                        case "postgresql":
+                        this.SqlBuilder = new PostgreSqlBuilder();
+                    break;
 
-            case "mysql":
-            case "mysql4":
-                this.SqlBuilder = new MySqlBuilder();
-                break;
+                    case "mysql":
+                        case "mysql4":
+                        this.SqlBuilder = new MySqlBuilder();
+                    break;
             };
 
             Connection.Open();
@@ -207,127 +207,131 @@ namespace Sooda.Sql {
         }
 
         public override IDataReader LoadObjectList(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, out TableInfo[] tables) {
-			try
-			{
-				tables = classInfo.UnifiedTables[0].ArraySingleton;
+            try
+            {
+                tables = classInfo.UnifiedTables[0].ArraySingleton;
 
-				SoqlQueryExpression queryExpression = new SoqlQueryExpression();
-				queryExpression.From.Add(classInfo.Name);
-				queryExpression.FromAliases.Add("obj");
-				queryExpression.SelectExpressions.Add(new SoqlAsteriskExpression(new SoqlPathExpression("obj")));
-				queryExpression.SelectAliases.Add("");
-				if (whereClause != null && whereClause.WhereExpression != null) 
-				{
-					queryExpression.WhereClause = whereClause.WhereExpression;
-				}
+                SoqlQueryExpression queryExpression = new SoqlQueryExpression();
+                queryExpression.From.Add(classInfo.Name);
+                queryExpression.FromAliases.Add("obj");
+                queryExpression.SelectExpressions.Add(new SoqlAsteriskExpression(new SoqlPathExpression("obj")));
+                queryExpression.SelectAliases.Add("");
+                if (whereClause != null && whereClause.WhereExpression != null) 
+                {
+                    queryExpression.WhereClause = whereClause.WhereExpression;
+                }
 
-				//queryExpression.O
+                if (orderBy != null) {
+                    SoqlParser.ParseOrderBy(queryExpression, "order by " + orderBy.ToString());
+                }
 
-				StringWriter sw = new StringWriter();
-				SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, classInfo.Schema, SqlBuilder);
-				converter.ConvertQuery(queryExpression);
+                //queryExpression.O
 
-				string query = sw.ToString();
+                StringWriter sw = new StringWriter();
+                SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, classInfo.Schema, SqlBuilder);
+                converter.ConvertQuery(queryExpression);
 
-				IDbCommand cmd = Connection.CreateCommand();
+                string query = sw.ToString();
 
-				if (!DisableTransactions)
-					cmd.Transaction = this.Transaction;
+                IDbCommand cmd = Connection.CreateCommand();
 
-				SqlBuilder.BuildCommandWithParameters(cmd, query, whereClause.Parameters);
-				LogCommand(cmd);
-				return cmd.ExecuteReader();
-			}
-			catch (Exception ex)
-			{
-				logger.Error("Exception in LoadObjectList: {0}", ex);
-				throw;
-			}
+                if (!DisableTransactions)
+                    cmd.Transaction = this.Transaction;
+
+                SqlBuilder.BuildCommandWithParameters(cmd, query, whereClause.Parameters);
+                LogCommand(cmd);
+                return cmd.ExecuteReader();
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Exception in LoadObjectList: {0}", ex);
+                throw;
+            }
         }
 
-		public override IDataReader ExecuteQuery(Sooda.QL.SoqlQueryExpression query, SchemaInfo schema, object[] parameters) 
-		{
-			try 
-			{
-				StringWriter sw = new StringWriter();
-				SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, schema, SqlBuilder);
-				converter.ConvertQuery(query);
+        public override IDataReader ExecuteQuery(Sooda.QL.SoqlQueryExpression query, SchemaInfo schema, object[] parameters) 
+        {
+            try 
+            {
+                StringWriter sw = new StringWriter();
+                SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, schema, SqlBuilder);
+                converter.ConvertQuery(query);
 
-				string queryText = sw.ToString();
+                string queryText = sw.ToString();
 
-				return ExecuteRawQuery(queryText, parameters);
-			}
-			catch (Exception ex)
-			{
-				logger.Error("Exception in ExecuteQuery: {0}", ex);
-				throw;
-			}
-		}
+                return ExecuteRawQuery(queryText, parameters);
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Exception in ExecuteQuery: {0}", ex);
+                throw;
+            }
+        }
 
-		public override IDataReader ExecuteRawQuery(string queryText, object[] parameters) 
-		{
-			try 
-			{
-				IDbCommand cmd = Connection.CreateCommand();
+        public override IDataReader ExecuteRawQuery(string queryText, object[] parameters) 
+        {
+            try 
+            {
+                IDbCommand cmd = Connection.CreateCommand();
 
-				if (!DisableTransactions)
-					cmd.Transaction = this.Transaction;
+                if (!DisableTransactions)
+                    cmd.Transaction = this.Transaction;
 
-				SqlBuilder.BuildCommandWithParameters(cmd, queryText, parameters);
-				LogCommand(cmd);
-				return cmd.ExecuteReader();
-			}
-			catch (Exception ex)
-			{
-				logger.Error("Exception in ExecuteRawQuery: {0}", ex);
-				throw;
-			}
-		}
+                SqlBuilder.BuildCommandWithParameters(cmd, queryText, parameters);
+                LogCommand(cmd);
+                return cmd.ExecuteReader();
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Exception in ExecuteRawQuery: {0}", ex);
+                throw;
+            }
+        }
 
-		public override int ExecuteNonQuery(string queryText, object[] parameters) 
-		{
-			try 
-			{
-				IDbCommand cmd = Connection.CreateCommand();
+        public override int ExecuteNonQuery(string queryText, object[] parameters) 
+        {
+            try 
+            {
+                IDbCommand cmd = Connection.CreateCommand();
 
-				if (!DisableTransactions)
-					cmd.Transaction = this.Transaction;
+                if (!DisableTransactions)
+                    cmd.Transaction = this.Transaction;
 
-				SqlBuilder.BuildCommandWithParameters(cmd, queryText, parameters);
-				LogCommand(cmd);
-				return cmd.ExecuteNonQuery();
-			}
-			catch (Exception ex)
-			{
-				logger.Error("Exception in ExecuteNonQuery: {0}", ex);
-				throw;
-			}
-		}
+                SqlBuilder.BuildCommandWithParameters(cmd, queryText, parameters);
+                LogCommand(cmd);
+                return cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Exception in ExecuteNonQuery: {0}", ex);
+                throw;
+            }
+        }
 
         public override IDataReader LoadRefObjectList(RelationInfo relationInfo, int masterColumn, object masterValue, out TableInfo[] tables) {
-			try 
-			{
-				if (masterColumn == 0)
-					tables = relationInfo.GetRef1ClassInfo().UnifiedTables[0].ArraySingleton;
-				else
-					tables = relationInfo.GetRef2ClassInfo().UnifiedTables[0].ArraySingleton;
+            try 
+            {
+                if (masterColumn == 0)
+                    tables = relationInfo.GetRef1ClassInfo().UnifiedTables[0].ArraySingleton;
+                else
+                    tables = relationInfo.GetRef2ClassInfo().UnifiedTables[0].ArraySingleton;
 
-				string query = GetLoadRefObjectSelectStatement(relationInfo, masterColumn);
+                string query = GetLoadRefObjectSelectStatement(relationInfo, masterColumn);
 
-				IDbCommand cmd = Connection.CreateCommand();
+                IDbCommand cmd = Connection.CreateCommand();
 
-				if (!DisableTransactions)
-					cmd.Transaction = this.Transaction;
+                if (!DisableTransactions)
+                    cmd.Transaction = this.Transaction;
 
-				SqlBuilder.BuildCommandWithParameters(cmd, query, new object[] { masterValue });
-				LogCommand(cmd);
-				return cmd.ExecuteReader();
-			}
-			catch (Exception ex)
-			{
-				logger.Error("Exception in LoadRefObjectList: {0}", ex);
-				throw;
-			}
+                SqlBuilder.BuildCommandWithParameters(cmd, query, new object[] { masterValue });
+                LogCommand(cmd);
+                return cmd.ExecuteReader();
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Exception in LoadRefObjectList: {0}", ex);
+                throw;
+            }
         }
 
         void DoInserts(SoodaObject obj, IDbCommand cmd) {
@@ -507,9 +511,9 @@ namespace Sooda.Sql {
                 }
 
                 queryExpression.WhereClause = new SoqlBooleanRelationalExpression(
-                                                  new SoqlPathExpression("obj", tableInfo.TablePrimaryKeyField.Name),
-                                                  new SoqlParameterLiteralExpression(0),
-                                                  SoqlRelationalOperator.Equal);
+                        new SoqlPathExpression("obj", tableInfo.TablePrimaryKeyField.Name),
+                        new SoqlParameterLiteralExpression(0),
+                        SoqlRelationalOperator.Equal);
 
                 StringWriter sw = new StringWriter();
                 SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, tableInfo.OwnerClass.Schema, SqlBuilder);
@@ -529,9 +533,9 @@ namespace Sooda.Sql {
                 string soqlQuery = "";
 
                 soqlQuery = String.Format("select mt.{0}.* from {2} mt where mt.{1} = {{0}}",
-                                          relationInfo.Table.Fields[masterColumn].Name,
-                                          relationInfo.Table.Fields[1 - masterColumn].Name,
-                                          relationInfo.Name);
+                        relationInfo.Table.Fields[masterColumn].Name,
+                        relationInfo.Table.Fields[1 - masterColumn].Name,
+                        relationInfo.Name);
 
                 StringWriter sw = new StringWriter();
                 SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, relationInfo.Schema, SqlBuilder);
@@ -594,6 +598,14 @@ namespace Sooda.Sql {
             foreach (string s in names) {
                 tw.WriteLine("--- table {0}", s);
                 SqlBuilder.GenerateCreateTable(tw, (TableInfo)tables[s]);
+            }
+
+            foreach (string s in names) {
+                SqlBuilder.GeneratePrimaryKey(tw, (TableInfo)tables[s]);
+            }
+            
+            foreach (string s in names) {
+                SqlBuilder.GenerateForeignKeys(tw, (TableInfo)tables[s]);
             }
         }
     }

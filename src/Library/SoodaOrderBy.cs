@@ -37,68 +37,126 @@ using System.Xml;
 using System.Text;
 using System.Collections;
 
-namespace Sooda {
-    public class SoodaOrderBy {
-        private string[] columnName;
-        private SortOrder[] sortOrder;
+namespace Sooda 
+{
+	public class SoodaOrderBy 
+	{
+		private string[] columnName;
+		private SortOrder[] sortOrder;
 
-        public SoodaOrderBy(string columnName, SortOrder sortOrder) {
-            this.columnName = new string[1];
-            this.sortOrder = new SortOrder[1];
-            this.columnName[0] = columnName;
-            this.sortOrder[0] = sortOrder;
-        }
+		public SoodaOrderBy(string columnName, SortOrder sortOrder) 
+		{
+			this.columnName = new string[1];
+			this.sortOrder = new SortOrder[1];
+			this.columnName[0] = columnName;
+			this.sortOrder[0] = sortOrder;
+		}
 
-        public SoodaOrderBy(string columnName1, SortOrder sortOrder1,
-                            string columnName2, SortOrder sortOrder2) {
-            this.columnName = new string[2];
-            this.sortOrder = new SortOrder[2];
-            this.columnName[0] = columnName1;
-            this.sortOrder[0] = sortOrder1;
-            this.columnName[1] = columnName2;
-            this.sortOrder[1] = sortOrder2;
-        }
+		public SoodaOrderBy(string columnName1, SortOrder sortOrder1,
+			string columnName2, SortOrder sortOrder2) 
+		{
+			this.columnName = new string[2];
+			this.sortOrder = new SortOrder[2];
+			this.columnName[0] = columnName1;
+			this.sortOrder[0] = sortOrder1;
+			this.columnName[1] = columnName2;
+			this.sortOrder[1] = sortOrder2;
+		}
 
-        public SoodaOrderBy(string columnName1, SortOrder sortOrder1,
-                            string columnName2, SortOrder sortOrder2,
-                            string columnName3, SortOrder sortOrder3) {
-            this.columnName = new string[3];
-            this.sortOrder = new SortOrder[3];
-            this.columnName[0] = columnName1;
-            this.sortOrder[0] = sortOrder1;
-            this.columnName[1] = columnName2;
-            this.sortOrder[1] = sortOrder2;
-            this.columnName[2] = columnName3;
-            this.sortOrder[2] = sortOrder3;
-        }
+		public SoodaOrderBy(string columnName1, SortOrder sortOrder1,
+			string columnName2, SortOrder sortOrder2,
+			string columnName3, SortOrder sortOrder3) 
+		{
+			this.columnName = new string[3];
+			this.sortOrder = new SortOrder[3];
+			this.columnName[0] = columnName1;
+			this.sortOrder[0] = sortOrder1;
+			this.columnName[1] = columnName2;
+			this.sortOrder[1] = sortOrder2;
+			this.columnName[2] = columnName3;
+			this.sortOrder[2] = sortOrder3;
+		}
 
-        public SoodaOrderBy(string[] columnNames, SortOrder[] sortOrders) {
-            this.columnName = columnNames;
-            this.sortOrder = sortOrders;
-        }
+		public SoodaOrderBy(string[] columnNames, SortOrder[] sortOrders) 
+		{
+			this.columnName = columnNames;
+			this.sortOrder = sortOrders;
+		}
 
-        public IComparer GetComparer() {
-            if (columnName.Length == 1) {
-                return new SoodaObjectFieldComparer(columnName[0], sortOrder[0]);
-            } else {
-                SoodaObjectMultiFieldComparer retVal = new SoodaObjectMultiFieldComparer();
+		public IComparer GetComparer() 
+		{
+			if (columnName.Length == 1) 
+			{
+				return new SoodaObjectFieldComparer(columnName[0], sortOrder[0]);
+			} 
+			else 
+			{
+				SoodaObjectMultiFieldComparer retVal = new SoodaObjectMultiFieldComparer();
 
-                for (int i = 0; i < sortOrder.Length; ++i) {
-                    retVal.AddField(columnName[i], sortOrder[i]);
+				for (int i = 0; i < sortOrder.Length; ++i) 
+				{
+					retVal.AddField(columnName[i], sortOrder[i]);
+				}
+				return retVal;
+			}
+		}
+
+		public static SoodaOrderBy Ascending(string columnName) 
+		{
+			return new SoodaOrderBy(columnName, SortOrder.Ascending);
+		}
+
+		public static SoodaOrderBy Descending(string columnName) 
+		{
+			return new SoodaOrderBy(columnName, SortOrder.Descending);
+		}
+
+		public static SoodaOrderBy Parse(string sortString) 
+		{
+			string[] components = sortString.Trim().Split(',');
+			string[] columnNames = new string[components.Length];
+			SortOrder[] sortOrders = new SortOrder[components.Length];
+
+			for (int i = 0; i < components.Length; ++i)
+			{
+				string[] tokens = components[i].Trim().Split(' ');
+				if (tokens.Length > 2 || tokens.Length == 0)
+				{
+					throw new ArgumentException("Invalid order by string");
+				}
+
+				SortOrder order = SortOrder.Ascending;
+				if (tokens.Length == 2)
+				{
+					if (tokens[1].ToLower() == "desc")
+					{
+						order = SortOrder.Descending;
+					}
+				}
+
+				columnNames[i] = tokens[0];
+				sortOrders[i] = order;
+			}
+
+			return new SoodaOrderBy(columnNames, sortOrders);
+		}
+
+		public static readonly SoodaOrderBy Unsorted = null;
+
+        public override string ToString() {
+            StringBuilder sb = new StringBuilder(40);
+
+            for (int i = 0; i < columnName.Length; ++i) {
+                if (i != 0)
+                    sb.Append(", ");
+                sb.Append(columnName[i]);
+                if (sortOrder[i] == SortOrder.Descending) {
+                    sb.Append(" desc");
                 }
-                return retVal;
             }
-        }
 
-        public static SoodaOrderBy Ascending(string columnName) {
-            return new SoodaOrderBy(columnName, SortOrder.Ascending);
+            return sb.ToString();
         }
-
-        public static SoodaOrderBy Descending(string columnName) {
-            return new SoodaOrderBy(columnName, SortOrder.Descending);
-        }
-
-        public static readonly SoodaOrderBy Unsorted = null;
-    }
+	}
 }
 

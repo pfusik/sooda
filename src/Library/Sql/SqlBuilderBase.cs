@@ -66,22 +66,40 @@ namespace Sooda.Sql {
 			xtw.Write(GetDDLCommandTerminator());
 		}
 
+		public void GeneratePrimaryKey(TextWriter xtw, Sooda.Schema.TableInfo tableInfo) {
+            bool first = true;
+            
+            foreach (Sooda.Schema.FieldInfo fi in tableInfo.Fields) {
+                if (fi.IsPrimaryKey) {
+                    if (first) {
+                        xtw.Write("alter table {0} add primary key (", tableInfo.DBTableName);
+                    } else {
+                        xtw.Write(", ");
+                    }
+                    xtw.Write(fi.DBColumnName);
+                    first = false;
+                }
+            }
+            if (!first)
+            {
+                xtw.Write(")");
+                xtw.Write(GetDDLCommandTerminator());
+            }
+		}
+
+		public void GenerateForeignKeys(TextWriter xtw, Sooda.Schema.TableInfo tableInfo) {
+            foreach (Sooda.Schema.FieldInfo fi in tableInfo.Fields) {
+                if (fi.References != null) {
+                    xtw.Write("alter table {0} add constraint FK_{0}_{1} foreign key ({2}) references {3}({4})", 
+                            tableInfo.DBTableName, fi.DBColumnName, fi.DBColumnName,
+                            fi.ReferencedClass.LocalTables[0].DBTableName, fi.ReferencedClass.GetPrimaryKeyField().DBColumnName
+                            );
+                    xtw.Write(GetDDLCommandTerminator());
+                }
+            }
+        }
+        
 		public abstract string GetSQLDataType(Sooda.Schema.FieldInfo fi);
-
-		public virtual string CreatePrimaryKey(string name, string table, string column) {
-			return String.Format("ALTER TABLE {1} ADD CONSTRAINT {0} PRIMARY KEY ({2})",
-					name, table, column);
-		}
-
-		public virtual string CreatePrimaryKey2(string name, string table, string column1, string column2) {
-			return String.Format("ALTER TABLE {1} ADD CONSTRAINT {0} PRIMARY KEY ({2},{3})",
-					name, table, column1, column2);
-		}
-
-		public virtual string CreateForeignKey(string name, string sourceTable, string sourceColumn, string destTable, string destColumn) {
-			return String.Format("ALTER TABLE {1} ADD CONSTRAINT {0} FOREIGN KEY ({2}) REFERENCES {3}({4})",
-					name, sourceTable, sourceColumn, destTable, destColumn);
-		}
 
 		public abstract void BuildCommandWithParameters(IDbCommand command, string query, object[] par);
 

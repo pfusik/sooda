@@ -108,10 +108,6 @@ namespace Sooda.ObjectMapper {
 
             if ((options & SoodaSnapshotOptions.NoWriteObjects) == 0) {
                 t.SaveObjectChanges();
-                t.SaveObjectChanges();
-                t.SaveObjectChanges();
-                t.SaveObjectChanges();
-                t.SaveObjectChanges();
             }
 
             LoadList(t, whereClause, orderBy, options);

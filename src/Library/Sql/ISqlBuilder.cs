@@ -41,18 +41,17 @@ using System.Data;
 using Sooda.Schema;
 
 namespace Sooda.Sql {
-	public interface ISqlBuilder {
-		string GetSQLDataType(Sooda.Schema.FieldInfo fi);
-		string GetDDLCommandTerminator();
-		SqlOuterJoinSyntax OuterJoinSyntax { get ; }
-		SqlTopSupportMode TopSupport { get; }
-		string CreatePrimaryKey(string name, string table, string column);
-		string CreatePrimaryKey2(string name, string table, string column1, string column2);
-		string CreateForeignKey(string name, string sourceTable, string sourceColumn, string destTable, string destColumn);
+    public interface ISqlBuilder {
+        string GetSQLDataType(Sooda.Schema.FieldInfo fi);
+        string GetDDLCommandTerminator();
+        SqlOuterJoinSyntax OuterJoinSyntax { get ; }
+        SqlTopSupportMode TopSupport { get; }
 
-		void BuildCommandWithParameters(IDbCommand command, string query, params object[] par);
+        void BuildCommandWithParameters(IDbCommand command, string query, params object[] par);
 
-		void GenerateCreateTable(TextWriter tw, TableInfo tableInfo);
-		string QuoteFieldName(string name);
-	}
+        void GenerateCreateTable(TextWriter tw, TableInfo tableInfo);
+        void GeneratePrimaryKey(TextWriter tw, TableInfo tableInfo);
+        void GenerateForeignKeys(TextWriter tw, TableInfo tableInfo);
+        string QuoteFieldName(string name);
+    }
 }
