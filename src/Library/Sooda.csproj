@@ -379,6 +379,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ObjectMapper\FieldHandlers\BooleanAsIntegerFieldHandler.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ObjectMapper\FieldHandlers\BooleanFieldHandler.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
