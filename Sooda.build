@@ -22,8 +22,8 @@
     <target name="build-mono-1.0" depends="build-common, minitools" />
 
     <target name="build-common" depends="settings, libraries" />
-    <target name="tools" depends="StubGen, SoodaQuery, SoodaSchemaTool, SoodaFixKeygen" />
-    <target name="minitools" depends="StubGen-mini" />
+    <target name="tools" depends="SoodaStubGen, SoodaQuery, SoodaSchemaTool, SoodaFixKeygen" />
+    <target name="minitools" depends="SoodaStubGen-mini" />
 
     <target name="libraries" depends="Sooda" />
 
@@ -83,39 +83,39 @@
         </csc>
     </target>
 
-    <target name="StubGen-mini" depends="settings, Sooda">
-        <csc target="exe" output="${sooda.dir}/StubGen.exe" debug="${sooda.debug}" define="${sooda.define},NO_VB,NO_JSCRIPT">
+    <target name="SoodaStubGen-mini" depends="settings, Sooda">
+        <csc target="exe" output="${sooda.dir}/SoodaStubGen.exe" debug="${sooda.debug}" define="${sooda.define},NO_VB,NO_JSCRIPT">
             <references>                                  
                 <include name="${sooda.dir}/Sooda.dll" />
             </references>
-            <sources basedir="src/Tools/StubGen">
+            <sources basedir="src/Tools/SoodaStubGen">
                 <include name="*.cs" />
             </sources>
-            <resources basedir="src/Tools/StubGen" prefix="Sooda.StubGen" dynamicprefix="true">
+            <resources basedir="src/Tools/SoodaStubGen" prefix="Sooda.StubGen" dynamicprefix="true">
                 <include name="Template/*.csproj" />
                 <include name="Template/*.vbproj" />
                 <include name="Template/*.build" />
             </resources>
         </csc>
-        <copy file="src/Tools/StubGen/App.config" tofile="${sooda.dir}/StubGen.exe.config" />
+        <copy file="src/Tools/SoodaStubGen/App.config" tofile="${sooda.dir}/SoodaStubGen.exe.config" />
     </target>
 
-    <target name="StubGen" depends="settings, Sooda">
-        <csc target="exe" output="${sooda.dir}/StubGen.exe" debug="${sooda.debug}" define="${sooda.define}">
+    <target name="SoodaStubGen" depends="settings, Sooda">
+        <csc target="exe" output="${sooda.dir}/SoodaStubGen.exe" debug="${sooda.debug}" define="${sooda.define}">
             <references>                                  
                 <include name="${sooda.dir}/Sooda.dll" />
                 <include name="Microsoft.JScript.dll" asis="true"/>
             </references>
-            <sources basedir="src/Tools/StubGen">
+            <sources basedir="src/Tools/SoodaStubGen">
                 <include name="*.cs" />
             </sources>
-            <resources basedir="src/Tools/StubGen" prefix="Sooda.StubGen" dynamicprefix="true">
+            <resources basedir="src/Tools/SoodaStubGen" prefix="Sooda.StubGen" dynamicprefix="true">
                 <include name="Template/*.csproj" />
                 <include name="Template/*.vbproj" />
                 <include name="Template/*.build" />
             </resources>
         </csc>
-        <copy file="src/Tools/StubGen/App.config" tofile="${sooda.dir}/StubGen.exe.config" />
+        <copy file="src/Tools/SoodaStubGen/App.config" tofile="${sooda.dir}/SoodaStubGen.exe.config" />
     </target>
 
     <target name="SoodaSchemaTool" depends="settings, Sooda">
@@ -170,7 +170,7 @@
                 <include name="${sooda.dir}/Sooda*.dll" />
                 <include name="${sooda.dir}/Sooda*.pdb" />
                 <include name="${sooda.dir}/Sooda*.xml" />
-                <include name="${sooda.dir}/StubGen.*" />
+                <include name="${sooda.dir}/SoodaStubGen.*" />
                 <include name="${sooda.dir}/*.tlb" />
                 <include name="${sooda.dir}/*.exe.config" />
                 <include name="${sooda.dir}/*.exe.manifest" />
@@ -237,7 +237,7 @@
     </target>
 
     <target name="stubs" depends="minitools">
-        <exec program="${sooda.dir}/StubGen.exe" useruntimeengine="true" workingdir="tests" 
+        <exec program="${sooda.dir}/SoodaStubGen.exe" useruntimeengine="true" workingdir="tests" 
             commandline="--project vs --rebuild-if-changed --nullable-as sqltype -s DBSchema.xml -n Sooda.UnitTests.Objects -o UnitTestObjects" />
     </target>
 

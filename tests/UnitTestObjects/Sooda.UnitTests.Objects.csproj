@@ -16,7 +16,7 @@
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
                 OutputType = "Library"
-                PreBuildEvent = "$(SolutionDir)..\bin\StubGen.exe --rebuild-if-changed --nullable-as sqltype --project vs -s $(SolutionDir)DBSchema.xml -n Sooda.UnitTests.Objects -o $(SolutionDir)UnitTestObjects"
+                PreBuildEvent = "$(SolutionDir)..\bin\SoodaStubGen.exe --rebuild-if-changed --nullable-as sqltype --project vs -s $(SolutionDir)DBSchema.xml -n Sooda.UnitTests.Objects -o $(SolutionDir)UnitTestObjects&#xd;&#xa;&#xd;&#xa;"
                 PostBuildEvent = ""
                 RootNamespace = "Sooda.UnitTests.Objects"
                 RunPostBuildEvent = "OnBuildSuccess"

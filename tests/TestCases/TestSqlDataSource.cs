@@ -51,7 +51,7 @@ namespace Sooda.UnitTests.TestCases {
             // do nothing
         }
 
-        public void Dispose() {
+        public new void Dispose() {
             base.Close();
             Sooda.ObjectMapper.SoodaCache.Clear();
         }

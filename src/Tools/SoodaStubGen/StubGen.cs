@@ -746,7 +746,7 @@ namespace Sooda.StubGen {
                     }
                 }
 
-                codeGenerator = csharpCodeGenerator;
+                // codeGenerator = csharpCodeGenerator;
 
                 if (separateStubs) {
                     fname = Path.Combine(outputPath, "Stubs/_Stubs.csx");
@@ -800,7 +800,6 @@ namespace Sooda.StubGen {
                 }
 
                 fname = "_FakeSkeleton." + codeProvider.FileExtension;
-
 
                 for (int i = 0; i < projectFiles.Count; ++i) {
                     Console.WriteLine("Saving project '{0}'...", projectFiles[i]);

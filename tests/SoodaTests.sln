@@ -12,7 +12,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.UnitTests.TestCases",
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StubGen", "..\src\Tools\StubGen\StubGen.csproj", "{D1076BB4-3E1B-43D3-B176-DBE89B3C413B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaStubGen", "..\src\Tools\SoodaStubGen\SoodaStubGen.csproj", "{D1076BB4-3E1B-43D3-B176-DBE89B3C413B}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject

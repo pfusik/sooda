@@ -9,7 +9,7 @@
             <Settings
                 ApplicationIcon = "App.ico"
                 AssemblyKeyContainerName = ""
-                AssemblyName = "StubGen"
+                AssemblyName = "SoodaStubGen"
                 AssemblyOriginatorKeyFile = ""
                 DefaultClientScript = "JScript"
                 DefaultHTMLPageLayout = "Grid"
@@ -226,19 +226,7 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "Template\nantjs.build"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "Template\nantvb.build"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "Template\Template70.csproj"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "Template\Template70.vbproj"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
