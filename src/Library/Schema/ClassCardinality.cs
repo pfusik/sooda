@@ -36,9 +36,8 @@ namespace Sooda.Schema {
     using System.Xml.Serialization;
 
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd")]
-    public enum ObjectCount
+    public enum ClassCardinality
     {
-        Tiny,
         Small,
         Medium,
         Large,

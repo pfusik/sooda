@@ -655,7 +655,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Schema\ObjectCount.cs"
+                    RelPath = "Schema\ClassCardinality.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
