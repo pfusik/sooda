@@ -66,7 +66,8 @@ namespace Sooda.Sql
                 else
                     Console.WriteLine(",");
             }
-            xtw.WriteLine(");");
+            xtw.Write(")");
+			xtw.Write(GetDDLCommandTerminator());
         }
 
         public abstract string GetSQLDataType(Sooda.Schema.FieldInfo fi);

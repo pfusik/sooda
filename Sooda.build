@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="Sooda" default="build" basedir=".">
-    <property name="sooda.debug" value="true" unless="${property::exists('sooda.debug')}" />
-    <property name="sooda.optimize" value="false" unless="${property::exists('sooda.optimize')}" />
+    <property name="sooda.debug" value="true" overwrite="false" />
+    <property name="sooda.optimize" value="false" overwrite="false" />
 
     <property name="scp.program" value="scp" />
     <property name="scp.args" value="" />
@@ -11,13 +11,13 @@
 
     <property name="sooda.csc.args" value="/nowarn:1591" />
     <property name="sooda.external" value="${nant.project.basedir}/src/ExternalLib" />
-    <property name="sooda.nlog.dir" value="${sooda.external}" unless="${property::exists('sooda.nlog.dir')}" />
-    <property name="sooda.icsharpcode.texteditor.dir" value="${sooda.external}" unless="${property::exists('sooda.icsharpcode.texteditor.dir')}" />
+    <property name="sooda.nlog.dir" value="${sooda.external}" overwrite="false" />
+    <property name="sooda.icsharpcode.texteditor.dir" value="${sooda.external}" overwrite="false" />
     
     <target name="build" depends="build-${nant.settings.currentframework}" />
     <target name="build-net-1.0" depends="build-common, tools" />
     <target name="build-net-1.1" depends="build-common, tools" />
-    <target name="build-net-2.0-beta-1" depends="build-common, tools" />
+    <target name="build-net-2.0" depends="build-common, tools" />
     <target name="build-netcf-1.0" depends="build-common" />
     <target name="build-mono-1.0" depends="build-common, minitools" />
 
@@ -31,7 +31,7 @@
         <property name="sooda.define" value="" />
         <property name="sooda.optimize" value="false" />
         <property name="sooda.optimize" value="true" unless="${sooda.debug}" />
-        <property name="sooda.dir" value="${nant.project.basedir}/build/${framework::get-target-framework()}${if(sooda.debug,'-debug','')}/bin" unless="${property::exists('sooda.dir')}" />/>
+		<property name="sooda.dir" value="${nant.project.basedir}/build/${framework::get-target-framework()}${if(sooda.debug,'-debug','')}/bin" overwrite="false"/>
 
         <mkdir dir="${sooda.dir}" />
 
