@@ -59,6 +59,8 @@ namespace Sooda.ObjectMapper.FieldHandlers {
 */
         public TimeSpan GetNotNullValue(object val) 
         {
+            if (val == null)
+                return TimeSpan.Zero;
             return (TimeSpan)val;
         }
 
