@@ -81,6 +81,11 @@ namespace Sooda.ObjectMapper {
         public abstract object ZeroValue();
 
         public abstract Type GetFieldType();
+
+        public virtual object GetDBFieldValue(object val)
+        {
+            return val;
+        }
     }
 }
 

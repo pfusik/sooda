@@ -332,6 +332,10 @@ namespace Sooda {
             return _fieldValues[fieldNumber];
         }
 
+        internal object GetDBFieldValue(int fieldNumber) {
+            return GetFieldHandler(fieldNumber).GetDBFieldValue(_fieldValues[fieldNumber]);
+        }
+
         public bool IsFieldDirty(int fieldNumber) {
             EnsureFieldsInited();
             return _fieldData[fieldNumber].IsDirty;

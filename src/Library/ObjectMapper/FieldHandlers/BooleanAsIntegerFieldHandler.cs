@@ -88,12 +88,24 @@ namespace Sooda.ObjectMapper.FieldHandlers {
         }
 
         private static object _zeroValue = false;
+        private static object _boxed1 = 1;
+        private static object _boxed0 = 0;
+
         public override object ZeroValue() {
             return _zeroValue;
         }
 
         public override Type GetFieldType() {
             return typeof(bool);
+        }
+
+        public override object GetDBFieldValue(object val) {
+            if (val == null)
+                return null;
+            if ((bool)val)
+                return _boxed1;
+            else
+                return _boxed0;
         }
     }
 }

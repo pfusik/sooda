@@ -366,7 +366,7 @@ namespace Sooda.Sql {
                 if (i > 0)
                     builder.Append(",");
 
-                object val = obj.GetFieldValue(table.Fields[i].ClassUnifiedOrdinal);
+                object val = obj.GetDBFieldValue(table.Fields[i].ClassUnifiedOrdinal);
                 builder.Append('{');
                 int fieldnum = par.Add(val);
                 builder.Append(fieldnum);
@@ -405,7 +405,7 @@ namespace Sooda.Sql {
                     }
                     builder.Append(table.Fields[i].DBColumnName);
                     builder.Append("={");
-                    int fieldnum = par.Add(obj.GetFieldValue(fieldNumber));
+                    int fieldnum = par.Add(obj.GetDBFieldValue(fieldNumber));
                     builder.Append(fieldnum);
                     builder.Append("}");
                     anyChange = true;
