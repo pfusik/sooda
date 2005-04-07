@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaFixKeygen", "src\Tools
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaCompileStubs", "src\Tools\SoodaCompileStubs\SoodaCompileStubs.csproj", "{7DACB842-1C46-4145-B02D-91E7C3CD4276}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -37,6 +41,10 @@ Global
 		{74410A3C-F7F5-47FE-8F72-1856753BDD26}.Debug.Build.0 = Debug|.NET
 		{74410A3C-F7F5-47FE-8F72-1856753BDD26}.Release.ActiveCfg = Release|.NET
 		{74410A3C-F7F5-47FE-8F72-1856753BDD26}.Release.Build.0 = Release|.NET
+		{7DACB842-1C46-4145-B02D-91E7C3CD4276}.Debug.ActiveCfg = Debug|.NET
+		{7DACB842-1C46-4145-B02D-91E7C3CD4276}.Debug.Build.0 = Debug|.NET
+		{7DACB842-1C46-4145-B02D-91E7C3CD4276}.Release.ActiveCfg = Release|.NET
+		{7DACB842-1C46-4145-B02D-91E7C3CD4276}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

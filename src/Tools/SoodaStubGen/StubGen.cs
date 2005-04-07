@@ -50,7 +50,7 @@ namespace Sooda.StubGen {
                 ctd.BaseTypes.Add(ci.ExtBaseClassName);
             } else if (ci.InheritFrom != null && !miniStub) {
                 ctd.BaseTypes.Add(ci.InheritFrom);
-            } else if (options.BaseClassName != null) {
+            } else if (options.BaseClassName != null && !miniStub) {
                 ctd.BaseTypes.Add(options.BaseClassName);
             } else {
                 ctd.BaseTypes.Add("SoodaObject");
@@ -328,11 +328,8 @@ namespace Sooda.StubGen {
 
             Console.WriteLine("        --lang <type>    - generate code using the specified CodeDOM codeProvider");
             Console.WriteLine();
-            Console.WriteLine("        --project vs2002 - (default) generate VS.NET 2002 project file (.??proj)");
-            Console.WriteLine("        --project vs2003 - generate VS.NET 2003 project file (.??proj)");
-            Console.WriteLine("        --project nant   - generate NAnt build file (.build)");
-            Console.WriteLine("        --project nmake  - generate nmake style makefile");
-            Console.WriteLine("        --project gmake  - generate GNU make style makefile");
+            Console.WriteLine("        --project vs2003 - (default) generate VS.NET 2003 project file (.??proj)");
+            Console.WriteLine("        --project null   - generate no project file");
             Console.WriteLine("        --project <type> - generate project file using custom type");
             Console.WriteLine();
             Console.WriteLine("    (*) --schema filename.xml - generate code from the specified schema");
@@ -365,6 +362,45 @@ namespace Sooda.StubGen {
             Xml,
             Source,
             Binary,
+        }
+
+        private static Hashtable generatedMiniBaseClasses = new Hashtable();
+
+        private static void GenerateMiniBaseClass(CodeCompileUnit ccu, string className)
+        {
+            if (!generatedMiniBaseClasses.Contains(className))
+            {
+                generatedMiniBaseClasses.Add(className, className);
+
+                int lastPeriod = className.LastIndexOf('.');
+                string namespaceName = className.Substring(0, lastPeriod);
+                className = className.Substring(lastPeriod + 1);
+
+                CodeNamespace ns = new CodeNamespace(namespaceName);
+                ns.Imports.Add(new CodeNamespaceImport("Sooda"));
+                ccu.Namespaces.Add(ns);
+
+                CodeTypeDeclaration ctd = new CodeTypeDeclaration(className);
+                ctd.BaseTypes.Add(typeof(SoodaObject));
+                ns.Types.Add(ctd);
+
+                CodeConstructor ctor = new CodeConstructor();
+
+                ctor.Attributes = MemberAttributes.Family;
+                ctor.Parameters.Add(new CodeParameterDeclarationExpression("SoodaConstructor", "c"));
+                ctor.BaseConstructorArgs.Add(new CodeArgumentReferenceExpression("c"));
+
+                ctd.Members.Add(ctor);
+
+                ctor = new CodeConstructor();
+
+                ctor.Attributes = MemberAttributes.Family;
+                ctor.Parameters.Add(new CodeParameterDeclarationExpression("SoodaTransaction", "tran"));
+                ctor.BaseConstructorArgs.Add(new CodeArgumentReferenceExpression("tran"));
+                ctd.Members.Add(ctor);
+
+                Console.WriteLine("Generating mini base class {0}", className);
+            }
         }
 
         public static int Main(string[] args) {
@@ -498,7 +534,7 @@ namespace Sooda.StubGen {
                 };
 
                 if (projectTypes.Count == 0 && !noProject) {
-                    projectTypes.Add("vs2002");
+                    projectTypes.Add("vs2003");
                 };
 
                 if (schemaFile == null) {
@@ -698,7 +734,22 @@ namespace Sooda.StubGen {
                     foreach (ClassInfo ci in schema.Classes) {
                         GenerateClassSkeleton(nspace, ci, outputNamespace, codeGenerator.Supports(GeneratorSupport.ChainedConstructorArguments) ? true : false, true);
                     }
-                    using (StreamWriter sw = new StreamWriter(fname)) {
+
+                    foreach (ClassInfo ci in schema.Classes)
+                    {
+                        if (ci.ExtBaseClassName != null)
+                        {
+                            GenerateMiniBaseClass(ccu, ci.ExtBaseClassName);
+                        }
+                    }
+
+                    if (options.BaseClassName != null)
+                    {
+                        GenerateMiniBaseClass(ccu, options.BaseClassName);
+                    }
+
+                    using (StreamWriter sw = new StreamWriter(fname)) 
+                    {
                         csharpCodeGenerator.GenerateCodeFromCompileUnit(ccu, sw, codeGeneratorOptions);
                     }
 
@@ -847,19 +898,7 @@ namespace Sooda.StubGen {
         }
 
         static IProjectFile GetProjectProvider(string projectType, CodeDomProvider codeProvider) {
-            if (projectType == "vs2002" || projectType == "vs") {
-                switch (codeProvider.FileExtension) {
-                case "cs":
-                    return new VScsprojProjectFile("Sooda.StubGen.Template.Template70.csproj");
-
-                case "vb":
-                    return new VSvbprojProjectFile("Sooda.StubGen.Template.Template70.vbproj");
-
-                default:
-                    throw new Exception("Visual Studio project not supported for '" + codeProvider.FileExtension + "' files");
-                }
-            }
-            if (projectType == "vs2003") {
+            if (projectType == "vs2003" || projectType == "vs") {
                 switch (codeProvider.FileExtension) {
                 case "cs":
                     return new VScsprojProjectFile("Sooda.StubGen.Template.Template71.csproj");
@@ -870,32 +909,6 @@ namespace Sooda.StubGen {
                 default:
                     throw new Exception("Visual Studio project not supported for '" + codeProvider.FileExtension + "' files");
                 }
-            }
-            if (projectType == "nant") {
-                switch (codeProvider.FileExtension) {
-                case "cs":
-                    return new NantCscProjectFile();
-
-#if !NO_JSCRIPT
-
-                case "js":
-                    return new NantJsProjectFile();
-#endif
-#if !NO_VB
-
-                case "vb":
-                    return new NantVbProjectFile();
-#endif
-
-                default:
-                    throw new Exception("NAnt project not supported for '" + codeProvider.FileExtension + "' files");
-                }
-            }
-            if (projectType == "gmake") {
-                throw new NotSupportedException("Project type '" + projectType + "' is not supported (yet).");
-            }
-            if (projectType == "nmake") {
-                throw new NotSupportedException("Project type '" + projectType + "' is not supported (yet).");
             }
             if (projectType == "null") {
                 return new NullProjectFile();

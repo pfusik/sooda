@@ -682,16 +682,37 @@ namespace Sooda {
 
         public ISoodaObjectFactory GetFactory(string className) 
         {
+            return GetFactory(className, true);
+        }
+
+        public ISoodaObjectFactory GetFactory(string className, bool throwOnError) 
+        {
+            if (throwOnError && !factoryForClassName.Contains(className))
+                throw new SoodaException("Class " + className + " not registered for Sooda");
             return factoryForClassName[className];
         }
 
         public ISoodaObjectFactory GetFactory(Type type) 
         {
+            return GetFactory(type, true);
+        }
+
+        public ISoodaObjectFactory GetFactory(Type type, bool throwOnError) 
+        {
+            if (throwOnError && !factoryForType.Contains(type))
+                throw new SoodaException("Class " + type.Name + " not registered for Sooda");
             return factoryForType[type];
         }
 
         public ISoodaObjectFactory GetFactory(ClassInfo classInfo) 
         {
+            return GetFactory(classInfo, true);
+        }
+
+        public ISoodaObjectFactory GetFactory(ClassInfo classInfo, bool throwOnError) 
+        {
+            if (throwOnError && !factoryForClassName.Contains(classInfo.Name))
+                throw new SoodaException("Class " + classInfo.Name + " not registered for Sooda");
             return factoryForClassName[classInfo.Name];
         }
 

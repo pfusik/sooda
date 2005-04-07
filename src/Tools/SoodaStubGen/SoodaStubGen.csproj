@@ -167,26 +167,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "NantCscProjectFile.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "NantJsProjectFile.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "NantProjectFileBase.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "NantVbProjectFile.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "NullProjectFile.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

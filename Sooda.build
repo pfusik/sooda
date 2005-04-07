@@ -22,8 +22,8 @@
     <target name="build-mono-1.0" depends="build-common, minitools" />
 
     <target name="build-common" depends="settings, libraries" />
-    <target name="tools" depends="SoodaStubGen-mini, SoodaQuery, SoodaSchemaTool, SoodaFixKeygen" />
-    <target name="minitools" depends="SoodaStubGen-mini" />
+    <target name="tools" depends="SoodaStubGen-mini, SoodaQuery, SoodaSchemaTool, SoodaFixKeygen, SoodaCompileStubs" />
+    <target name="minitools" depends="SoodaStubGen-mini, SoodaCompileStubs" />
 
     <target name="libraries" depends="Sooda" />
 
@@ -98,6 +98,17 @@
             </resources>
         </csc>
         <copy file="src/Tools/SoodaStubGen/App.config" tofile="${sooda.dir}/SoodaStubGen.exe.config" />
+    </target>
+
+    <target name="SoodaCompileStubs" depends="settings, Sooda">
+        <csc target="exe" output="${sooda.dir}/SoodaCompileStubs.exe" debug="${sooda.debug}" define="${sooda.define}">
+            <references>                                  
+                <include name="${sooda.dir}/Sooda.dll" />
+            </references>
+            <sources basedir="src/Tools/SoodaCompileStubs">
+                <include name="*.cs" />
+            </sources>
+        </csc>
     </target>
 
     <target name="SoodaStubGen" depends="settings, Sooda">
