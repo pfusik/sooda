@@ -38,7 +38,7 @@ namespace SoodaCompileStubs
             bool success = false;
             ArrayList sourceFiles = new ArrayList();
             for (int i = 2; i < args.Length; ++i)
-                sourceFiles.Add(args[i]);
+                sourceFiles.Add(Path.GetFullPath(args[i]));
 
             sourceFiles.Add(miniSkeletonCSX);
             sourceFiles.Add(miniStubsCSX);
@@ -137,7 +137,7 @@ namespace SoodaCompileStubs
                 for (int i = 2; i < args.Length; ++i)
                 {
                     Console.WriteLine("Additional file: {0}", args[i]);
-                    skeletonSourceFiles[i - 2 + 1] = args[i];
+                    skeletonSourceFiles[i - 2 + 1] = Path.GetFullPath(args[i]);
                 }
 
                 results = compiler.CompileAssemblyFromFileBatch(options, skeletonSourceFiles);
@@ -157,6 +157,7 @@ namespace SoodaCompileStubs
                 options.ReferencedAssemblies.Add("System.Data.dll");
                 options.ReferencedAssemblies.Add("System.Xml.dll");
                 options.ReferencedAssemblies.Add(objectsAssemblyDll);
+                options.CompilerOptions = "/res:" + Path.Combine(basePath, "_DBSchema.bin");
                 options.OutputAssembly = stubsDll;
                 options.GenerateInMemory = false;
 
