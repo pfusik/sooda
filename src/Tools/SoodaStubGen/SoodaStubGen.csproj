@@ -117,11 +117,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "CodeDomClassFactoryGenerator.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "CodeDomClassSkeletonGenerator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

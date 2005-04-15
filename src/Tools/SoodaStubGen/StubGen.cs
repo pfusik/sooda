@@ -311,36 +311,6 @@ namespace Sooda.StubGen {
             }
 
             nspace.Types.Add(factoryClass);
-#if A
-            CodeTypeDeclaration ctd = new CodeTypeDeclaration(ci.Name + "_Factory");
-            //ctd.TypeAttributes = System.Reflection.TypeAttributes.NotPublic;
-            ctd.CustomAttributes.Add(new CodeAttributeDeclaration("SoodaObjectFactoryAttribute",
-                                     new CodeAttributeArgument(new CodePrimitiveExpression(ci.Name)),
-                                     new CodeAttributeArgument(new CodeTypeOfExpression(ci.Name))
-                                                                 ));
-            ctd.BaseTypes.Add(typeof(object));
-            ctd.BaseTypes.Add(new CodeTypeReference("ISoodaObjectFactory"));
-            nspace.Types.Add(ctd);
-
-            CodeDomClassFactoryGenerator gen = new CodeDomClassFactoryGenerator(ci, outNamespace);
-
-            ctd.Members.Add(gen.Constructor());
-            ctd.Members.Add(gen.Method_CreateNew());
-            ctd.Members.Add(gen.Method_Get());
-            ctd.Members.Add(gen.Method_TryGet());
-            ctd.Members.Add(gen.Method_GetRawObject());
-            ctd.Members.Add(gen.Method_GetRefFromRecord());
-            ctd.Members.Add(gen.Method_GetClassInfo());
-            ctd.Members.Add(gen.Method_GetPrimaryKeyFieldHandler());
-            ctd.Members.Add(gen.Method_GetList());
-            ctd.Members.Add(gen.Field__primaryKeyFieldHandler());
-            ctd.Members.Add(gen.Field__theFactory());
-            ctd.Members.Add(gen.Field__theClassInfo());
-            ctd.Members.Add(gen.Field__theType());
-            ctd.Members.Add(gen.Property_TheFactory());
-            ctd.Members.Add(gen.Property_TheClassInfo());
-            ctd.Members.Add(gen.Property_TheType());
-#endif
         }
 
         public static void GenerateClassSkeleton(CodeNamespace nspace, ClassInfo ci, string outNamespace, bool useChainedConstructorCall, bool fakeSkeleton) {
