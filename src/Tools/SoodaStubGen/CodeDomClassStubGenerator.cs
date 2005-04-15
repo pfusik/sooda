@@ -42,6 +42,7 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 
 using Sooda.Schema;
+using Sooda.StubGen.CDIL;
 
 namespace Sooda.StubGen 
 {
@@ -355,7 +356,7 @@ namespace Sooda.StubGen
             method.ReturnType = new CodeTypeReference(typeof(SoodaObjectFieldValues));
             method.Attributes = MemberAttributes.Override | MemberAttributes.Family;
 
-            method.Statements.Add(CDIL.CDILParser.ParseStatement("return new SoodaObjectArrayFieldValues(" + classInfo.UnifiedFields.Count + ")"));
+            method.Statements.Add(CDILParser.ParseStatement("return new SoodaObjectArrayFieldValues(" + classInfo.UnifiedFields.Count + ")", CDILContext.Null));
             return method;
         }
         public CodeTypeConstructor Constructor_Class() 

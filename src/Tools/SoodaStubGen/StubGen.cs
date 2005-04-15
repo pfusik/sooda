@@ -280,12 +280,13 @@ namespace Sooda.StubGen {
             string pkClrTypeName = FieldDataTypeHelper.GetClrType(fi.DataType).Name;
             string pkFieldHandlerTypeName = FieldDataTypeHelper.GetDefaultWrapperTypeName(fi.DataType);
 
-            CodeTypeDeclaration factoryClass = CDILParser.ParseClass(CDILTemplate.Get("Factory.cdil"),
-                ci.Name,
-                outNamespace,
-                pkClrTypeName,
-                pkFieldHandlerTypeName
-                );
+            CDILContext context = new CDILContext();
+            context[0] = ci.Name;
+            context[1] = outNamespace;
+            context[2] = pkClrTypeName;
+            context[3] = pkFieldHandlerTypeName;
+
+            CodeTypeDeclaration factoryClass = CDILParser.ParseClass(CDILTemplate.Get("Factory.cdil"), context);
 
             factoryClass.CustomAttributes.Add(new CodeAttributeDeclaration("SoodaObjectFactoryAttribute",
                 new CodeAttributeArgument(new CodePrimitiveExpression(ci.Name)),
@@ -293,21 +294,11 @@ namespace Sooda.StubGen {
                 ));
             if (ci.IsAbstractClass())
             {
-                factoryClass.Members.AddRange(CDILParser.ParseMembers(CDILTemplate.Get("Factory.abstract.cdil"),
-                    ci.Name,
-                    outNamespace,
-                    pkClrTypeName,
-                    pkFieldHandlerTypeName
-                    ));
+                factoryClass.Members.AddRange(CDILParser.ParseMembers(CDILTemplate.Get("Factory.abstract.cdil"), context));
             }
             else
             {
-                factoryClass.Members.AddRange(CDILParser.ParseMembers(CDILTemplate.Get("Factory.nonabstract.cdil"),
-                    ci.Name,
-                    outNamespace,
-                    pkClrTypeName,
-                    pkFieldHandlerTypeName
-                    ));
+                factoryClass.Members.AddRange(CDILParser.ParseMembers(CDILTemplate.Get("Factory.nonabstract.cdil"), context));
             }
 
             nspace.Types.Add(factoryClass);
@@ -332,15 +323,16 @@ namespace Sooda.StubGen {
         }
 
         public static void GenerateDatabaseSchema(CodeNamespace nspace, string outNamespace) {
-            CodeTypeDeclaration listWrapperClass = CDILParser.ParseClass(CDILTemplate.Get("DatabaseSchema.cdil"));
+            CodeTypeDeclaration listWrapperClass = CDILParser.ParseClass(CDILTemplate.Get("DatabaseSchema.cdil"), CDILContext.Null);
 
             nspace.Types.Add(listWrapperClass);
         }
 
         public static void GenerateListWrapper(CodeNamespace nspace, ClassInfo ci, string outNamespace, StubGenOptions options) {
-            CodeTypeDeclaration listWrapperClass = CDILParser.ParseClass(CDILTemplate.Get("ListWrapper.cdil"),
-                ci.Name
-                );
+            CDILContext context = new CDILContext();
+            context[0] = ci.Name;
+
+            CodeTypeDeclaration listWrapperClass = CDILParser.ParseClass(CDILTemplate.Get("ListWrapper.cdil"), context);
 
             nspace.Types.Add(listWrapperClass);
         }

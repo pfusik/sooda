@@ -172,6 +172,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "CDIL\CDILContext.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "CDIL\CDILParser.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

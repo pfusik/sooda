@@ -488,28 +488,28 @@ namespace Sooda.StubGen.CDIL
             throw BuildException("Invalid token: '" + TokenType + "': " + TokenValue);
         }
 
-        public static CodeStatement ParseStatement(string s, params object[] par)
+        public static CodeStatement ParseStatement(string s, CDILContext context)
         {
-            CDILParser parser = new CDILParser(String.Format(s, par));
+            CDILParser parser = new CDILParser(context.Format(s));
             return parser.ParseStatement();
         }
 
-        public static CodeTypeMember ParseMember(string s, params object[] par)
+        public static CodeTypeMember ParseMember(string s, CDILContext context)
         {
-            CDILParser parser = new CDILParser(String.Format(s, par));
+            CDILParser parser = new CDILParser(context.Format(s));
             return parser.ParseMember();
         }
 
-        public static CodeTypeMemberCollection ParseMembers(string s, params object[] par)
+        public static CodeTypeMemberCollection ParseMembers(string s, CDILContext context)
         {
-            CDILParser parser = new CDILParser(String.Format(s, par));
+            CDILParser parser = new CDILParser(context.Format(s));
             return parser.ParseMembers();
         }
 
-        public static CodeTypeDeclaration ParseClass(string s, params object[] par)
+        public static CodeTypeDeclaration ParseClass(string s, CDILContext context)
         {
             // Console.WriteLine(s, par);
-            CDILParser parser = new CDILParser(String.Format(s, par));
+            CDILParser parser = new CDILParser(context.Format(s));
             return parser.ParseClass();
         }
     }
