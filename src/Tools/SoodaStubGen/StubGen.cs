@@ -41,10 +41,112 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 
 using Sooda.Schema;
+using Sooda.StubGen.CDIL;
 
 namespace Sooda.StubGen {
     public class StubGen {
+        public static void GenerateClassValues(CodeNamespace nspace, ClassInfo ci, string outNamespace, StubGenOptions options, bool miniStub)
+        {
+            CodeDomClassStubGenerator gen = new CodeDomClassStubGenerator(ci);
+
+            CodeTypeDeclaration ctd = new CodeTypeDeclaration(ci.Name + "_Values");
+            if (ci.InheritFrom != null)
+                ctd.BaseTypes.Add(ci.InheritFrom + "_Values");
+            else
+                ctd.BaseTypes.Add(typeof(SoodaObjectFieldValues));
+            ctd.Attributes = MemberAttributes.Assembly;
+
+            foreach (FieldInfo fi in ci.LocalFields)
+            {
+                CodeTypeReference fieldType;
+                if (fi.References != null)
+                {
+                    fieldType = gen.GetReturnType(PrimitiveRepresentation.SqlType, fi);
+                }
+                else if (fi.IsNullable)
+                {
+                    fieldType = gen.GetReturnType(options.NullableRepresentation, fi);
+                }
+                else
+                {
+                    fieldType = gen.GetReturnType(options.NotNullRepresentation, fi);
+                }
+
+                CodeMemberField field = new CodeMemberField(fieldType, fi.Name);
+                field.Attributes = MemberAttributes.Public;
+                ctd.Members.Add(field);
+            }
+
+            CodeMemberMethod cloneMethod = new CodeMemberMethod();
+            cloneMethod.Name = "Clone";
+            cloneMethod.ReturnType = new CodeTypeReference(typeof(SoodaObjectFieldValues));
+            cloneMethod.Attributes = MemberAttributes.Public | MemberAttributes.Override;
+            cloneMethod.Statements.Add(new CodeThrowExceptionStatement(new CodeObjectCreateExpression(typeof(NotImplementedException))));
+            ctd.Members.Add(cloneMethod);
+
+            CodeMemberMethod getBoxedFieldValueMethod = new CodeMemberMethod();
+            getBoxedFieldValueMethod.Name = "GetBoxedFieldValue";
+            getBoxedFieldValueMethod.Parameters.Add(new CodeParameterDeclarationExpression(typeof(int), "fieldOrdinal"));
+            getBoxedFieldValueMethod.Attributes = MemberAttributes.Public | MemberAttributes.Override;
+            getBoxedFieldValueMethod.ReturnType = new CodeTypeReference(typeof(object));
+            getBoxedFieldValueMethod.Statements.Add(new CodeThrowExceptionStatement(new CodeObjectCreateExpression(typeof(NotImplementedException))));
+            ctd.Members.Add(getBoxedFieldValueMethod);
+
+            CodeMemberMethod setFieldValueMethod = new CodeMemberMethod();
+            setFieldValueMethod.Name = "SetFieldValue";
+            setFieldValueMethod.Parameters.Add(new CodeParameterDeclarationExpression(typeof(int), "fieldOrdinal"));
+            setFieldValueMethod.Parameters.Add(new CodeParameterDeclarationExpression(typeof(object), "fieldValue"));
+            setFieldValueMethod.Attributes = MemberAttributes.Public | MemberAttributes.Override;
+            setFieldValueMethod.Statements.Add(new CodeThrowExceptionStatement(new CodeObjectCreateExpression(typeof(NotImplementedException))));
+            ctd.Members.Add(setFieldValueMethod);
+
+            CodeMemberMethod isNullMethod = new CodeMemberMethod();
+            isNullMethod.Name = "IsNull";
+            isNullMethod.Parameters.Add(new CodeParameterDeclarationExpression(typeof(int), "fieldOrdinal"));
+            isNullMethod.Attributes = MemberAttributes.Public | MemberAttributes.Override;
+
+            foreach (FieldInfo fi in ci.LocalFields)
+            {
+                if (fi.IsNullable)
+                {
+                    isNullMethod.Statements.Add(
+                        new CodeConditionStatement(
+                        new CodeBinaryOperatorExpression(
+                        new CodeArgumentReferenceExpression("fieldOrdinal"),CodeBinaryOperatorType.ValueEquality, new CodePrimitiveExpression(fi.ClassUnifiedOrdinal)),
+                        new CodeMethodReturnStatement(
+                        new CodePropertyReferenceExpression(new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), fi.Name), "IsNull")
+                        )
+                        ));
+                }
+            }
+            if (ci.InheritFrom != null)
+            {
+                isNullMethod.Statements.Add(
+                    new CodeMethodReturnStatement(
+                    new CodeMethodInvokeExpression(
+                    new CodeBaseReferenceExpression(),"IsNull",
+                    new CodeArgumentReferenceExpression("fieldOrdinal"))));
+            }
+            else
+            {
+                isNullMethod.Statements.Add(new CodeMethodReturnStatement(new CodePrimitiveExpression(false)));
+            }
+            isNullMethod.ReturnType = new CodeTypeReference(typeof(bool));
+            ctd.Members.Add(isNullMethod);
+
+            CodeMemberProperty lengthProperty = new CodeMemberProperty();
+            lengthProperty.Name = "Length";
+            lengthProperty.Attributes = MemberAttributes.Public | MemberAttributes.Override;
+            lengthProperty.GetStatements.Add(new CodeMethodReturnStatement(new CodePrimitiveExpression(ci.UnifiedFields.Count)));
+            lengthProperty.Type = new CodeTypeReference(typeof(int));
+            ctd.Members.Add(lengthProperty);
+
+            nspace.Types.Add(ctd);
+        }
         public static void GenerateClassStub(CodeNamespace nspace, ClassInfo ci, string outNamespace, StubGenOptions options, bool miniStub) {
+            if (!miniStub)
+                GenerateClassValues(nspace, ci, outNamespace, options, miniStub);
+
             CodeTypeDeclaration ctd = new CodeTypeDeclaration(ci.Name + "_Stub");
             if (ci.ExtBaseClassName != null) {
                 ctd.BaseTypes.Add(ci.ExtBaseClassName);
@@ -129,6 +231,7 @@ namespace Sooda.StubGen {
 
             //ctd.Members.Add(gen.Method_GetPrimaryKeyValue(options));
             ctd.Members.Add(gen.Method_InitFields());
+            ctd.Members.Add(gen.Method_InitFieldValues());
             //ctd.Members.Add(gen.Method_InitInstanceFields());
             ctd.Members.Add(gen.Method_GetFieldHandler());
             if (gen.KeyGen != "none") {
@@ -175,7 +278,40 @@ namespace Sooda.StubGen {
         public static void GenerateClassFactory(CodeNamespace nspace, ClassInfo ci, string outNamespace) {
             FieldInfo fi = ci.GetPrimaryKeyField();
             string pkClrTypeName = FieldDataTypeHelper.GetClrType(fi.DataType).Name;
+            string pkFieldHandlerTypeName = FieldDataTypeHelper.GetDefaultWrapperTypeName(fi.DataType);
 
+            CodeTypeDeclaration factoryClass = CDILParser.ParseClass(CDILTemplate.Get("Factory.cdil"),
+                ci.Name,
+                outNamespace,
+                pkClrTypeName,
+                pkFieldHandlerTypeName
+                );
+
+            factoryClass.CustomAttributes.Add(new CodeAttributeDeclaration("SoodaObjectFactoryAttribute",
+                new CodeAttributeArgument(new CodePrimitiveExpression(ci.Name)),
+                new CodeAttributeArgument(new CodeTypeOfExpression(ci.Name))
+                ));
+            if (ci.IsAbstractClass())
+            {
+                factoryClass.Members.AddRange(CDILParser.ParseMembers(CDILTemplate.Get("Factory.abstract.cdil"),
+                    ci.Name,
+                    outNamespace,
+                    pkClrTypeName,
+                    pkFieldHandlerTypeName
+                    ));
+            }
+            else
+            {
+                factoryClass.Members.AddRange(CDILParser.ParseMembers(CDILTemplate.Get("Factory.nonabstract.cdil"),
+                    ci.Name,
+                    outNamespace,
+                    pkClrTypeName,
+                    pkFieldHandlerTypeName
+                    ));
+            }
+
+            nspace.Types.Add(factoryClass);
+#if A
             CodeTypeDeclaration ctd = new CodeTypeDeclaration(ci.Name + "_Factory");
             //ctd.TypeAttributes = System.Reflection.TypeAttributes.NotPublic;
             ctd.CustomAttributes.Add(new CodeAttributeDeclaration("SoodaObjectFactoryAttribute",
@@ -204,6 +340,7 @@ namespace Sooda.StubGen {
             ctd.Members.Add(gen.Property_TheFactory());
             ctd.Members.Add(gen.Property_TheClassInfo());
             ctd.Members.Add(gen.Property_TheType());
+#endif
         }
 
         public static void GenerateClassSkeleton(CodeNamespace nspace, ClassInfo ci, string outNamespace, bool useChainedConstructorCall, bool fakeSkeleton) {
@@ -242,32 +379,11 @@ namespace Sooda.StubGen {
         }
 
         public static void GenerateListWrapper(CodeNamespace nspace, ClassInfo ci, string outNamespace, StubGenOptions options) {
-            // internal class CLASS_NAMEListSnapshot : SoodaObjectListSnapshot, CLASS_NAMEList
-            CodeTypeDeclaration ctd = new CodeTypeDeclaration(ci.Name + "List");
-            ctd.Attributes = MemberAttributes.Public;
-            ctd.BaseTypes.Add(typeof(Sooda.ObjectMapper.SoodaObjectCollectionWrapper));
-            nspace.Types.Add(ctd);
+            CodeTypeDeclaration listWrapperClass = CDILParser.ParseClass(CDILTemplate.Get("ListWrapper.cdil"),
+                ci.Name
+                );
 
-            CodeDomListWrapperGenerator gen = new CodeDomListWrapperGenerator(ci);
-
-            ctd.Members.Add(gen.Constructor());
-
-            if (options.WithIndexers) {
-                ctd.Members.Add(gen.Property_Item());
-            }
-
-            // ctd.Members.Add(gen.Field__theList());
-            ctd.Members.Add(gen.Method_Add());
-            ctd.Members.Add(gen.Method_Remove());
-            ctd.Members.Add(gen.Method_Contains());
-
-            ctd.Members.Add(gen.Method_Sort());
-            ctd.Members.Add(gen.Method_SelectFirst());
-            ctd.Members.Add(gen.Method_SelectLast());
-            ctd.Members.Add(gen.Method_SelectRange());
-            ctd.Members.Add(gen.Method_Filter());
-
-            ctd.Members.Add(gen.Method_GetSnapshot());
+            nspace.Types.Add(listWrapperClass);
         }
 
         public static void GenerateRelationStub(CodeNamespace nspace, RelationInfo ri, string outNamespace, StubGenOptions options) {

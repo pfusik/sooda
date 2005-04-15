@@ -89,12 +89,13 @@
                 <include name="${sooda.dir}/Sooda.dll" />
             </references>
             <sources basedir="src/Tools/SoodaStubGen">
-                <include name="*.cs" />
+                <include name="**/*.cs" />
             </sources>
             <resources basedir="src/Tools/SoodaStubGen" prefix="Sooda.StubGen" dynamicprefix="true">
                 <include name="Template/*.csproj" />
                 <include name="Template/*.vbproj" />
                 <include name="Template/*.build" />
+                <include name="CDIL/Templates/**/*" />
             </resources>
         </csc>
         <copy file="src/Tools/SoodaStubGen/App.config" tofile="${sooda.dir}/SoodaStubGen.exe.config" />
@@ -118,12 +119,13 @@
                 <include name="Microsoft.JScript.dll" asis="true"/>
             </references>
             <sources basedir="src/Tools/SoodaStubGen">
-                <include name="*.cs" />
+                <include name="**/*.cs" />
             </sources>
             <resources basedir="src/Tools/SoodaStubGen" prefix="Sooda.StubGen" dynamicprefix="true">
                 <include name="Template/*.csproj" />
                 <include name="Template/*.vbproj" />
                 <include name="Template/*.build" />
+                <include name="CDIL/Templates/**/*" />
             </resources>
         </csc>
         <copy file="src/Tools/SoodaStubGen/App.config" tofile="${sooda.dir}/SoodaStubGen.exe.config" />

@@ -35,14 +35,14 @@ using System;
 
 namespace Sooda.ObjectMapper {
     public class RefCache {
-        public static void GetOrCreateObject(ref SoodaObject refCache, object fieldValue, SoodaTransaction tran, ISoodaObjectFactory factory) {
+        public static void GetOrCreateObject(ref SoodaObject refCache, SoodaObjectFieldValues fieldValues, int fieldOrdinal, SoodaTransaction tran, ISoodaObjectFactory factory) {
             if (refCache != null)
                 return;
 
-            if (fieldValue == null)
+            if (fieldValues.IsNull(fieldOrdinal))
                 return;
 
-            refCache = factory.GetRef(tran, fieldValue);
+            refCache = factory.GetRef(tran, fieldValues.GetBoxedFieldValue(fieldOrdinal));
         }
 
         public static void TryGetObject(ref SoodaObject refCache, object fieldValue, SoodaTransaction tran, ISoodaObjectFactory factory) {

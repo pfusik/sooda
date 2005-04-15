@@ -1,0 +1,18 @@
+method CreateNew(SoodaTransaction tran)
+    returns SoodaObject
+    attributes Private
+    implementsprivate ISoodaObjectFactory
+begin
+    throw new Exception()
+end
+
+method GetRawObject(SoodaTransaction tran)
+    returns SoodaObject
+    attributes Private
+    implementsprivate ISoodaObjectFactory
+begin
+    let {0} retVal = new {0}(typeref(SoodaConstructor).Constructor);
+    call var(retVal).InitRawObject(arg(tran));
+    return var(retVal)
+end
+    

@@ -100,7 +100,9 @@ namespace Sooda.ObjectMapper {
 
                     output.Write("{0,8} [", de.Key);
                     bool first = true;
-                    foreach (object fd in entry.Data) {
+                    for (int i = 0; i < entry.Data.Length; ++i)
+                    {
+                        object fd = entry.Data.GetBoxedFieldValue(i);
                         if (!first)
                             output.Write("|");
                         output.Write(fd);

@@ -49,7 +49,7 @@ using Sooda.Collections;
 
 namespace Sooda 
 {
-    public class SoodaObject 
+    public abstract class SoodaObject 
     {
         private static NLog.Logger logger = NLog.LogManager.GetLogger("Sooda.Object");
 
@@ -57,8 +57,9 @@ namespace Sooda
 
         [CLSCompliant(false)]
         protected SoodaFieldData[] _fieldData;
+
         [CLSCompliant(false)]
-        protected object[] _fieldValues;
+        protected SoodaObjectFieldValues _fieldValues;
         private int _dataLoadedMask;
         private SoodaTransaction _transaction;
         private SoodaObjectFlags _flags;
@@ -229,18 +230,20 @@ namespace Sooda
             }
         }
 
+        protected abstract SoodaObjectFieldValues InitFieldValues();
+
         private void InitFieldData() 
         {
             ClassInfo ci = GetClassInfo();
 
             int fieldCount = ci.UnifiedFields.Count;
             _fieldData = new SoodaFieldData[fieldCount];
-            _fieldValues = new object[fieldCount];
+            _fieldValues = InitFieldValues();
 
             if (_primaryKeyValue != null) 
             {
                 int ordinal = ci.GetPrimaryKeyField().ClassUnifiedOrdinal;
-                _fieldValues[ordinal] = _primaryKeyValue;
+                _fieldValues.SetFieldValue(ordinal, _primaryKeyValue);
             }
 
             if (InsertMode) 
@@ -264,7 +267,7 @@ namespace Sooda
                 {
                     if (ci.UnifiedFields[i].ReferencedClass == null) 
                     {
-                        _fieldValues[i] = handler.ZeroValue();
+                        _fieldValues.SetFieldValue(i, handler.ZeroValue());
                     }
                 }
             }
@@ -333,14 +336,9 @@ namespace Sooda
             return DeleteMarker;
         }
 
-        internal object GetFieldValue(int fieldNumber) 
-        {
-            return _fieldValues[fieldNumber];
-        }
-
         internal object GetDBFieldValue(int fieldNumber) 
         {
-            return GetFieldHandler(fieldNumber).GetDBFieldValue(_fieldValues[fieldNumber]);
+            return GetFieldHandler(fieldNumber).GetDBFieldValue(_fieldValues.GetBoxedFieldValue(fieldNumber));
         }
 
         public bool IsFieldDirty(int fieldNumber) 
@@ -382,7 +380,7 @@ namespace Sooda
             {
                 if (!ci.UnifiedFields[i].IsNullable && IsInsertMode()) 
                 {
-                    if ((_fieldValues[i] == null) && (IsInsertMode() || _fieldData[i].IsDirty))
+                    if (_fieldValues.IsNull(i) && (IsInsertMode() || _fieldData[i].IsDirty))
                         FieldCannotBeNull(ci.UnifiedFields[i].Name);
                 }
             }
@@ -446,7 +444,7 @@ namespace Sooda
                 if (_fieldData != null) 
                 {
                     int ordinal = GetClassInfo().GetPrimaryKeyField().ClassUnifiedOrdinal;
-                    _fieldValues[ordinal] = _primaryKeyValue;
+                    _fieldValues.SetFieldValue(ordinal, _primaryKeyValue);
                 }
                 // Console.WriteLine("Registering object {0}:{1}", GetClassInfo().Name, keyValue);
                 RegisterObjectInTransaction();
@@ -539,9 +537,9 @@ namespace Sooda
                         if (!_fieldData[ordinal].IsDirty) 
                         {
                             if (reader.IsDBNull(recordPos))
-                                _fieldValues[ordinal] = null;
+                                _fieldValues.SetFieldValue(ordinal, null);
                             else
-                                _fieldValues[ordinal] = handler.RawRead(reader, recordPos);
+                                _fieldValues.SetFieldValue(ordinal, handler.RawRead(reader, recordPos));
                         }
                     }
                     recordPos++;
@@ -739,7 +737,7 @@ namespace Sooda
             SoodaFieldHandler pkField = GetFieldHandler(PrimaryKeyFieldOrdinal);
             logger.Debug("Serializing " + GetObjectKeyString() + "...");
             EnsureFieldsInited();
-            pkField.Serialize(_fieldValues[PrimaryKeyFieldOrdinal], xw);
+            pkField.Serialize(_fieldValues.GetBoxedFieldValue(PrimaryKeyFieldOrdinal), xw);
 
             if ((options & SerializeOptions.IncludeNonDirtyFields) != 0) 
             {
@@ -759,14 +757,14 @@ namespace Sooda
                 {
                     xw.WriteStartElement("field");
                     xw.WriteAttributeString("name", s);
-                    field.Serialize(_fieldValues[fi.ClassUnifiedOrdinal], xw);
+                    field.Serialize(_fieldValues.GetBoxedFieldValue(fi.ClassUnifiedOrdinal), xw);
                     xw.WriteEndElement();
                 } 
                 else if ((options & SerializeOptions.IncludeNonDirtyFields) != 0) 
                 {
                     xw.WriteStartElement("field");
                     xw.WriteAttributeString("name", s);
-                    field.Serialize(_fieldValues[fi.ClassUnifiedOrdinal], xw);
+                    field.Serialize(_fieldValues.GetBoxedFieldValue(fi.ClassUnifiedOrdinal), xw);
                     xw.WriteAttributeString("dirty", "false");
                     xw.WriteEndElement();
                 };
@@ -836,7 +834,7 @@ namespace Sooda
 
                     int fieldOrdinal = GetClassInfo().FindFieldByName(name).ClassUnifiedOrdinal;
 
-                    _fieldValues[fieldOrdinal] = val;
+                    _fieldValues.SetFieldValue(fieldOrdinal, val);
                     _fieldData[fieldOrdinal].IsDirty = true;
                 }
 
@@ -857,7 +855,7 @@ namespace Sooda
                 EnsureDataLoaded(tableNumber);
                 try 
                 {
-                    object oldValue = _fieldValues[fieldOrdinal];
+                    object oldValue = _fieldValues.GetBoxedFieldValue(fieldOrdinal);
                     if (Object.Equals(oldValue, newValue))
                         return ;
                     object[] triggerArgs = new object[] { oldValue, newValue };
@@ -866,7 +864,7 @@ namespace Sooda
                     mi.Invoke(this, triggerArgs);
 
                     CopyOnWrite();
-                    _fieldValues[fieldOrdinal] = newValue;
+                    _fieldValues.SetFieldValue(fieldOrdinal, newValue);
                     _fieldData[fieldOrdinal].IsDirty = true;
 
                     mi = this.GetType().GetMethod("AfterFieldUpdate_" + fieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
@@ -883,7 +881,7 @@ namespace Sooda
             {
                 // optimization here - we don't even need to load old values from database
 
-                _fieldValues[fieldOrdinal] = newValue;
+                _fieldValues.SetFieldValue(fieldOrdinal, newValue);
                 _fieldData[fieldOrdinal].IsDirty = true;
                 SetObjectDirty();
             }
@@ -899,7 +897,7 @@ namespace Sooda
             {
                 SoodaObject oldValue = null;
                 
-                RefCache.GetOrCreateObject(ref oldValue, _fieldValues[fieldOrdinal], GetTransaction(), factory);
+                RefCache.GetOrCreateObject(ref oldValue, _fieldValues, fieldOrdinal, GetTransaction(), factory);
                 if (Object.Equals(oldValue, newValue))
                     return;
                 object[] triggerArgs = new object[] { oldValue, newValue };
@@ -916,11 +914,11 @@ namespace Sooda
                 }
                 if (newValue == null) 
                 {
-                    _fieldValues[fieldOrdinal] = null;
+                    _fieldValues.SetFieldValue(fieldOrdinal, null);
                 } 
                 else 
                 {
-                    _fieldValues[fieldOrdinal] = newValue.GetPrimaryKeyValue();
+                    _fieldValues.SetFieldValue(fieldOrdinal, newValue.GetPrimaryKeyValue());
                 }
                 _fieldData[fieldOrdinal].IsDirty = true;
                 refcache = null;
@@ -992,7 +990,7 @@ namespace Sooda
 
                     SoodaObject obj = factory.GetRawObject(null);
                     obj.LoadDataFromRecord(reader, 0, loadedTables, 0);
-                    obj._fieldValues[obj.PrimaryKeyFieldOrdinal] = key;
+                    obj._fieldValues.SetFieldValue(obj.PrimaryKeyFieldOrdinal, key);
                     hash[key] = obj;
                 }
             }
@@ -1159,8 +1157,7 @@ namespace Sooda
         {
             if (FromCache) 
             {
-                object[] newFieldValues = new object[_fieldValues.Length];
-                Array.Copy(_fieldValues, newFieldValues, _fieldValues.Length);
+                SoodaObjectFieldValues newFieldValues = _fieldValues.Clone();
                 _fieldValues = newFieldValues;
                 FromCache = false;
             }

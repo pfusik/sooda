@@ -1,0 +1,84 @@
+class {0}List
+    extends Sooda.ObjectMapper.SoodaObjectCollectionWrapper
+
+constructor(ISoodaObjectList list)
+    attributes Public
+    baseArg(arg(list))
+begin
+end
+
+property {0} Item(System.Int32 pos)
+    attributes New,Public,Final
+get
+    return cast({0}, base.GetItem(arg(pos)))
+end
+
+method Add({0} obj)
+    attributes Public,Final
+    returns System.Int32
+    implements {0}List
+begin
+    return base.Add(arg(obj))
+end
+
+method Remove({0} obj)
+    attributes Public,Final
+    implements {0}List
+begin
+    call base.Remove(arg(obj))
+end
+
+method Contains({0} obj)
+    attributes Public,Final
+    returns System.Boolean
+    implements {0}List
+begin
+    return base.Contains(arg(obj))
+end
+
+method Sort(IComparer comp)
+    attributes Public,Final,New
+    returns {0}List
+    implements {0}List
+begin
+    return new {0}List(base.Sort(arg(comp)))
+end
+
+method SelectFirst(System.Int32 count)
+    attributes Public,Final,New
+    returns {0}List
+    implements {0}List
+begin
+    return new {0}List(base.SelectFirst(arg(count)))
+end
+
+method SelectLast(System.Int32 count)
+    attributes Public,Final,New
+    returns {0}List
+    implements {0}List
+begin
+    return new {0}List(base.SelectLast(arg(count)))
+end
+
+method SelectRange(System.Int32 _from, System.Int32 _to)
+    attributes Public,Final,New
+    returns {0}List
+    implements {0}List
+begin
+    return new {0}List(base.SelectRange(arg(_from),arg(_to)))
+end
+
+method Filter(SoodaObjectFilter f)
+    attributes Public,Final,New
+    returns {0}List
+    implements {0}List
+begin
+    return new {0}List(base.Filter(arg(f)))
+end
+
+method GetSnapshot()
+    returns {0}List
+    attributes Public,Final,New
+begin    
+    return new {0}List(base.GetSnapshot())
+end

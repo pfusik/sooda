@@ -147,17 +147,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "CodeDomListRelationGenerator.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "CodeDomListRelationTableGenerator.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "CodeDomListWrapperGenerator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -200,6 +190,50 @@
                     RelPath = "VSvbprojProjectFile.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "CDIL\CDILParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "CDIL\CDILTemplate.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "CDIL\CDILToken.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "CDIL\CDILTokenizer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "CDIL\Templates\Factory.abstract.cdil"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "CDIL\Templates\Factory.cdil"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "CDIL\Templates\Factory.nonabstract.cdil"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "CDIL\Templates\ListWrapper.cdil"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "CDIL\Templates\Skeleton.cdil"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "CDIL\Templates\Stub.cdil"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "Template\nantcs.build"

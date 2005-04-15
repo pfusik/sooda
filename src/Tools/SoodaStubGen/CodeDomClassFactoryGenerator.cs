@@ -41,6 +41,8 @@ using System.CodeDom.Compiler;
 
 using Sooda.Schema;
 
+using Sooda.StubGen.CDIL;
+
 namespace Sooda.StubGen {
     public class CodeDomClassFactoryGenerator : CodeDomHelpers {
         private ClassInfo classInfo;
@@ -51,20 +53,18 @@ namespace Sooda.StubGen {
             this.outNamespace = outNamespace;
         }
         public CodeMemberMethod Method_CreateNew() {
-            CodeMemberMethod method = new CodeMemberMethod();
-            method.Attributes = MemberAttributes.Private;
-            method.Name = "CreateNew";
-            method.Parameters.Add(new CodeParameterDeclarationExpression("SoodaTransaction", "tran"));
-            method.PrivateImplementationType = new CodeTypeReference("ISoodaObjectFactory");
-            method.ReturnType = new CodeTypeReference("SoodaObject");
+            CodeMemberMethod method = (CodeMemberMethod)CDILParser.ParseMember(@"
+method CreateNew(SoodaTransaction tran)
+returns SoodaObject
+attributes Private
+implementsprivate ISoodaObjectFactory
+begin
+end", classInfo.Name);
+
             if (classInfo.IsAbstractClass()) {
-                method.Statements.Add(
-                    new CodeThrowExceptionStatement(
-                        new CodeObjectCreateExpression(typeof(NotSupportedException), new CodePrimitiveExpression("Cannot create instances of abstract class " + classInfo.Name))));
+                method.Statements.Add(CDILParser.ParseStatement("throw new NotSupportedException('Cannot create instances of abstract class {0}')", classInfo.Name));
             } else {
-                method.Statements.Add(
-                    new CodeMethodReturnStatement(
-                        new CodeObjectCreateExpression(outNamespace + "." + classInfo.Name, new CodeExpression[] { Arg("tran") })));
+                method.Statements.Add(CDILParser.ParseStatement("return new {0}(arg(tran))", outNamespace + "." + classInfo.Name));
             }
             return method;
         }

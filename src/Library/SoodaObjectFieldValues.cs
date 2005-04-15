@@ -32,72 +32,34 @@
 //
 
 using System;
-using System.IO;
-using System.Xml;
+using System.Diagnostics;
+using System.Data;
+using System.Text;
 using System.Collections;
 using System.Reflection;
-using System.Text;
+using System.Xml;
+using System.IO;
 using System.Globalization;
+using System.Collections.Specialized;
 
-namespace Sooda.ObjectMapper {
-    public class SoodaCacheEntry {
-        private int _dataLoadedMask;
-        private SoodaObjectFieldValues _data;
-        private DateTime _timestamp;
+using Sooda.Schema;
+using Sooda.ObjectMapper;
+using Sooda.Collections;
 
-        public SoodaCacheEntry(int dataLoadedMask, SoodaObjectFieldValues data) {
-            _dataLoadedMask = dataLoadedMask;
-            _data = data;
-            _timestamp = DateTime.Now;
-        }
+using System.Data.SqlTypes;
 
-        public SoodaObjectFieldValues Data
+namespace Sooda 
+{
+    public abstract class SoodaObjectFieldValues
+    {
+        public abstract SoodaObjectFieldValues Clone();
+        public abstract void SetFieldValue(int fieldOrdinal, object val);
+        public abstract object GetBoxedFieldValue(int fieldOrdinal);
+        public abstract int Length
         {
-            get {
-                return _data;
-            }
+            get;
         }
 
-        public int DataLoadedMask
-        {
-            get {
-                return _dataLoadedMask;
-            }
-        }
-
-        public DateTime TimeStamp
-        {
-            get {
-                return _timestamp;
-            }
-        }
-
-        public TimeSpan Age
-        {
-            get {
-                return DateTime.Now - TimeStamp;
-            }
-        }
-
-        public override string ToString() {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < Data.Length; ++i)
-            {
-                object o = Data.GetBoxedFieldValue(i);
-                if (sb.Length != 0)
-                    sb.Append(",");
-
-                if (o == null)
-                    sb.Append("null");
-                else if (o is string) {
-                    sb.Append("'");
-                    sb.Append((string)o);
-                    sb.Append("'");
-                } else {
-                    sb.Append(Convert.ToString(o, CultureInfo.InvariantCulture));
-                }
-            }
-            return String.Format("Mask: [{0}] Data: [{1}]", DataLoadedMask, sb.ToString());
-        }
-    }
-}
+        public abstract bool IsNull(int fieldOrdinal);
+    } // class SoodaObjectFieldValues
+} // namespace
