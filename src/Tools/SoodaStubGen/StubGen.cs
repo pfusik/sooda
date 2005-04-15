@@ -332,20 +332,9 @@ namespace Sooda.StubGen {
         }
 
         public static void GenerateDatabaseSchema(CodeNamespace nspace, string outNamespace) {
-            CodeTypeDeclaration ctd = new CodeTypeDeclaration("_DatabaseSchema");
-            ctd.BaseTypes.Add("Sooda.ObjectMapper.SchemaLoader");
-            nspace.Types.Add(ctd);
+            CodeTypeDeclaration listWrapperClass = CDILParser.ParseClass(CDILTemplate.Get("DatabaseSchema.cdil"));
 
-            ctd.Members.Add(CodeDomDatabaseSchemaGenerator.Method_GetSchema());
-        }
-        public static void GenerateDatabaseSchemaSource(CodeNamespace nspace, string outNamespace, SchemaInfo schema) {
-            CodeTypeDeclaration ctd = new CodeTypeDeclaration("_DatabaseSchema");
-            nspace.Types.Add(ctd);
-
-            CodeDomDatabaseSchemaSourceGenerator.GenHelpers(ctd, schema);
-            ctd.Members.Add(CodeDomDatabaseSchemaSourceGenerator.Field_theSchema());
-            ctd.Members.Add(CodeDomDatabaseSchemaSourceGenerator.Constructor_Class(schema));
-            ctd.Members.Add(CodeDomDatabaseSchemaSourceGenerator.Method_GetSchema());
+            nspace.Types.Add(listWrapperClass);
         }
 
         public static void GenerateListWrapper(CodeNamespace nspace, ClassInfo ci, string outNamespace, StubGenOptions options) {
@@ -429,7 +418,6 @@ namespace Sooda.StubGen {
             Console.WriteLine("        --separate-stubs      - ");
             Console.WriteLine("        --schema-embed-xml    - embed schema as an XML file");
             Console.WriteLine("        --schema-embed-bin    - embed schema as an BIN file");
-            Console.WriteLine("        --schema-embed-src    - generate code that creates schema at runtime");
             Console.WriteLine("        --help                - display this help");
             Console.WriteLine();
             Console.WriteLine("        --null-progagation    - enable null propagation");
@@ -446,8 +434,7 @@ namespace Sooda.StubGen {
         enum EmbedSchema
         {
             Xml,
-            Source,
-            Binary,
+            Binary
         }
 
         private static Hashtable generatedMiniBaseClasses = new Hashtable();
@@ -556,10 +543,6 @@ namespace Sooda.StubGen {
 
                     case "--schema-embed-xml":
                         embedSchema = EmbedSchema.Xml;
-                        break;
-
-                    case "--schema-embed-src":
-                        embedSchema = EmbedSchema.Source;
                         break;
 
                     case "--schema-embed-bin":
@@ -803,10 +786,6 @@ namespace Sooda.StubGen {
                 if (separateStubs) {
                     options.IsVB = false;
 
-                    fname = Path.Combine(outputPath, "Stubs/_rebuild_stubs.cmd");
-                    if (!File.Exists(fname)) {
-                        StubRebuilderWriter.WriteStubRebuilder(fname, outputNamespace);
-                    }
                     fname = Path.Combine(outputPath, "Stubs/_MiniSkeleton.csx");
                     Console.WriteLine("Generating code for {0}...", fname);
                     // fake skeletons for first compilation only
@@ -910,10 +889,7 @@ namespace Sooda.StubGen {
                         GenerateListWrapper(nspace, ci, outputNamespace, options);
                     }
                     Console.WriteLine("    * database schema");
-                    if (embedSchema != EmbedSchema.Source)
-                        GenerateDatabaseSchema(nspace, outputNamespace);
-                    else
-                        GenerateDatabaseSchemaSource(nspace, outputNamespace, schema);
+                    GenerateDatabaseSchema(nspace, outputNamespace);
 
                     // stubs namespace
                     nspace = CreateStubsNamespace(outputNamespace);

@@ -1,0 +1,10 @@
+class _DatabaseSchema
+    extends Sooda.ObjectMapper.SchemaLoader
+    
+    method GetSchema()
+        returns Sooda.Schema.SchemaInfo
+        attributes Public,Static
+    begin
+        return typeref(Sooda.ObjectMapper.SchemaLoader).GetSchemaFromAssembly(typeof(_DatabaseSchema).Assembly)
+    end
+end    

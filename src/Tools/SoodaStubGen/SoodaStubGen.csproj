@@ -127,16 +127,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "CodeDomDatabaseSchemaGenerator.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "CodeDomDatabaseSchemaSourceGenerator.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "CodeDomHelpers.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -163,11 +153,6 @@
                 />
                 <File
                     RelPath = "StubGenOptions.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "StubRebuilderWriter.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -207,6 +192,10 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "CDIL\Templates\DatabaseSchema.cdil"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "CDIL\Templates\Factory.abstract.cdil"
                     BuildAction = "EmbeddedResource"
                 />
@@ -228,14 +217,6 @@
                 />
                 <File
                     RelPath = "CDIL\Templates\Stub.cdil"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "Template\nantcs.build"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "Template\nantvb.build"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
