@@ -1,0 +1,4 @@
+class {0}
+    extends {0}_Stub
+
+end    
