@@ -666,6 +666,9 @@ namespace Sooda {
 
                 if (_assembly != null) 
                 {
+                    if (!_assembly.IsDefined(typeof(SoodaObjectsAssemblyAttribute), false))
+                        throw new ArgumentException("Invalid objects assembly: " + _assembly.FullName + ". Must be the stubs assembly and define assembly:SoodaObjectsAssemblyAttribute");
+                        
                     foreach (Type t in _assembly.GetExportedTypes()) 
                     {
                         SoodaObjectFactoryAttribute[] attr = (SoodaObjectFactoryAttribute[])t.GetCustomAttributes(typeof(SoodaObjectFactoryAttribute), false);
