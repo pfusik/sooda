@@ -667,8 +667,17 @@ namespace Sooda {
                 if (_assembly != null) 
                 {
                     if (!_assembly.IsDefined(typeof(SoodaObjectsAssemblyAttribute), false))
+                    {
+                        SoodaStubAssemblyAttribute sa = (SoodaStubAssemblyAttribute)Attribute.GetCustomAttribute(_assembly, typeof(SoodaStubAssemblyAttribute), false);
+                        if (sa != null)
+                            _assembly = sa.Assembly;
+                    }
+
+                    if (!_assembly.IsDefined(typeof(SoodaObjectsAssemblyAttribute), false))
+                    {
                         throw new ArgumentException("Invalid objects assembly: " + _assembly.FullName + ". Must be the stubs assembly and define assembly:SoodaObjectsAssemblyAttribute");
-                        
+                    }
+
                     foreach (Type t in _assembly.GetExportedTypes()) 
                     {
                         SoodaObjectFactoryAttribute[] attr = (SoodaObjectFactoryAttribute[])t.GetCustomAttributes(typeof(SoodaObjectFactoryAttribute), false);
