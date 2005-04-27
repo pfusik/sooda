@@ -32,29 +32,66 @@
 //
 
 using System;
+using System.Diagnostics;
+using System.Data;
+using System.Text;
+using System.Collections;
+using System.Reflection;
 using System.Xml;
-using System.Xml.Serialization;
 using System.IO;
-
-using System.CodeDom;
-using System.CodeDom.Compiler;
+using System.Globalization;
+using System.Collections.Specialized;
 
 using Sooda.Schema;
+using Sooda.ObjectMapper;
+using Sooda.Collections;
 
-namespace Sooda.StubGen {
-    public class CodeDomDatabaseSchemaGenerator : CodeDomHelpers {
-        public static CodeMemberMethod Method_GetSchema() {
-            CodeMemberMethod method = new CodeMemberMethod();
-            method.Attributes = MemberAttributes.Public | MemberAttributes.Static;
-            method.Name = "GetSchema";
-            method.ReturnType = new CodeTypeReference("Sooda.Schema.SchemaInfo");
-            method.Statements.Add(
-                new CodeMethodReturnStatement(
-                    new CodeMethodInvokeExpression(new CodeTypeReferenceExpression("Sooda.ObjectMapper.SchemaLoader"), "GetSchemaFromAssembly",
-                                                   new CodePropertyReferenceExpression(
-                                                       new CodeTypeOfExpression(new CodeTypeReference("_DatabaseSchema")), "Assembly")
-                                                  )));
-            return method;
+using System.Data.SqlTypes;
+
+namespace Sooda 
+{
+    public class SoodaObjectArrayFieldValues : SoodaObjectFieldValues
+    {
+        private object[] _values;
+
+        private SoodaObjectArrayFieldValues(object[] v)
+        {
+            _values = v;
         }
-    }
-}
+
+        public SoodaObjectArrayFieldValues(int count)
+        {
+            _values = new object[count];
+        }
+
+        public override SoodaObjectFieldValues Clone()
+        {
+            object[] newValues = new object[_values.Length];
+            Array.Copy(_values, 0, newValues, 0, _values.Length);
+            return new SoodaObjectArrayFieldValues(newValues);
+        }
+
+        public override void SetFieldValue(int fieldOrdinal, object val)
+        {
+            _values[fieldOrdinal] = val;
+        }
+
+        public override object GetBoxedFieldValue(int fieldOrdinal)
+        {
+            return _values[fieldOrdinal];
+        }
+
+        public override int Length
+        {
+            get
+            {
+                return _values.Length;
+            }
+        }
+
+        public override bool IsNull(int fieldOrdinal)
+        {
+            return _values[fieldOrdinal] == null;
+        }
+    } // class SoodaObjectFieldValues
+} // namespace

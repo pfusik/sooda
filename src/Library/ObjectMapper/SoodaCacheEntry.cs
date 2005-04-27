@@ -42,16 +42,16 @@ using System.Globalization;
 namespace Sooda.ObjectMapper {
     public class SoodaCacheEntry {
         private int _dataLoadedMask;
-        private object[] _data;
+        private SoodaObjectFieldValues _data;
         private DateTime _timestamp;
 
-        public SoodaCacheEntry(int dataLoadedMask, object[] data) {
+        public SoodaCacheEntry(int dataLoadedMask, SoodaObjectFieldValues data) {
             _dataLoadedMask = dataLoadedMask;
             _data = data;
             _timestamp = DateTime.Now;
         }
 
-        public object[] Data
+        public SoodaObjectFieldValues Data
         {
             get {
                 return _data;
@@ -81,7 +81,9 @@ namespace Sooda.ObjectMapper {
 
         public override string ToString() {
             StringBuilder sb = new StringBuilder();
-            foreach (object o in Data) {
+            for (int i = 0; i < Data.Length; ++i)
+            {
+                object o = Data.GetBoxedFieldValue(i);
                 if (sb.Length != 0)
                     sb.Append(",");
 

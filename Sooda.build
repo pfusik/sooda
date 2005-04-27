@@ -89,12 +89,13 @@
                 <include name="${sooda.dir}/Sooda.dll" />
             </references>
             <sources basedir="src/Tools/SoodaStubGen">
-                <include name="*.cs" />
+                <include name="**/*.cs" />
             </sources>
             <resources basedir="src/Tools/SoodaStubGen" prefix="Sooda.StubGen" dynamicprefix="true">
                 <include name="Template/*.csproj" />
                 <include name="Template/*.vbproj" />
                 <include name="Template/*.build" />
+                <include name="CDIL/Templates/**/*" />
             </resources>
         </csc>
         <copy file="src/Tools/SoodaStubGen/App.config" tofile="${sooda.dir}/SoodaStubGen.exe.config" />
@@ -118,12 +119,13 @@
                 <include name="Microsoft.JScript.dll" asis="true"/>
             </references>
             <sources basedir="src/Tools/SoodaStubGen">
-                <include name="*.cs" />
+                <include name="**/*.cs" />
             </sources>
             <resources basedir="src/Tools/SoodaStubGen" prefix="Sooda.StubGen" dynamicprefix="true">
                 <include name="Template/*.csproj" />
                 <include name="Template/*.vbproj" />
                 <include name="Template/*.build" />
+                <include name="CDIL/Templates/**/*" />
             </resources>
         </csc>
         <copy file="src/Tools/SoodaStubGen/App.config" tofile="${sooda.dir}/SoodaStubGen.exe.config" />
@@ -262,6 +264,10 @@
 
     <target name="nunit-console" depends="Sooda.UnitTests.TestCases">
         <exec verbose="true" workingdir="${sooda.dir}" program="nunit-console.exe" commandline="${sooda.dir}/Sooda.UnitTests.TestCases.dll" />
+    </target>
+
+    <target name="ncover-nunit-console" depends="Sooda.UnitTests.TestCases">
+        <exec verbose="true" workingdir="${sooda.dir}" program="c:\program files\NCover\ncover.console.exe" commandline='/a Sooda /o d:\work\sooda\NCover.xml /l d:\work\sooda\NCover.log /c "c:\program files\NUnit 2.2\bin\nunit-console.exe" "${sooda.dir}/Sooda.UnitTests.TestCases.dll"' />
     </target>
 
     <target name="test" depends="Sooda.UnitTests.TestCases">

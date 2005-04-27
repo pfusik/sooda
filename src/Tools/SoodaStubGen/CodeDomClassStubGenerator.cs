@@ -42,6 +42,7 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 
 using Sooda.Schema;
+using Sooda.StubGen.CDIL;
 
 namespace Sooda.StubGen 
 {
@@ -344,17 +345,18 @@ namespace Sooda.StubGen
                     new CodeFieldReferenceExpression(null, "_fieldhandler_" + fi.Name)));
             }
 
-            foreach (FieldInfo fi in classInfo.LocalFields) 
-            {
-                method.Statements.Add(
-                    new CodeAssignStatement(
-                    new CodeArrayIndexerExpression(
-                    new CodeFieldReferenceExpression(null, "_fieldHandlers"),
-                    new CodePrimitiveExpression(fi.ClassLocalOrdinal)
-                    ),
-                    new CodeFieldReferenceExpression(null, "_fieldhandler_" + fi.Name)));
-            }
+            return method;
+        }
+        public CodeMemberMethod Method_InitFieldValues() 
+        {
+            CodeMemberMethod method;
 
+            method = new CodeMemberMethod();
+            method.Name = "InitFieldValues";
+            method.ReturnType = new CodeTypeReference(typeof(SoodaObjectFieldValues));
+            method.Attributes = MemberAttributes.Override | MemberAttributes.Family;
+
+            method.Statements.Add(CDILParser.ParseStatement("return new SoodaObjectArrayFieldValues(" + classInfo.UnifiedFields.Count + ")", CDILContext.Null));
             return method;
         }
         public CodeTypeConstructor Constructor_Class() 
@@ -436,7 +438,7 @@ namespace Sooda.StubGen
             return prop;
         }
 
-        private CodeTypeReference GetReturnType(PrimitiveRepresentation rep, FieldInfo fi) 
+        public CodeTypeReference GetReturnType(PrimitiveRepresentation rep, FieldInfo fi) 
         {
             switch (rep) 
             {
@@ -496,10 +498,11 @@ namespace Sooda.StubGen
 
         private CodeExpression GetFieldValueExpression(FieldInfo fi) 
         {
-            return new CodeArrayIndexerExpression(
+            return new CodeMethodInvokeExpression(
                 new CodeFieldReferenceExpression(
                 new CodeThisReferenceExpression(),
                 "_fieldValues"),
+                "GetBoxedFieldValue",
                 new CodePrimitiveExpression(fi.ClassUnifiedOrdinal));
         }
 
@@ -519,15 +522,12 @@ namespace Sooda.StubGen
 
         private CodeExpression GetFieldIsNullExpression(FieldInfo fi) 
         {
-            return
-                new CodeBinaryOperatorExpression(
-                new CodeArrayIndexerExpression(
+            return new CodeMethodInvokeExpression(
                 new CodeFieldReferenceExpression(
                 new CodeThisReferenceExpression(),
                 "_fieldValues"),
-                new CodePrimitiveExpression(fi.ClassUnifiedOrdinal)
-                ), CodeBinaryOperatorType.IdentityEquality,
-                new CodePrimitiveExpression(null));
+                "IsNull",
+                new CodePrimitiveExpression(fi.ClassUnifiedOrdinal));
         }
 
         private CodeMemberProperty _IsNull(FieldInfo fi) 
@@ -689,7 +689,8 @@ namespace Sooda.StubGen
                         new CodeExpressionStatement(
                         new CodeMethodInvokeExpression(new CodeTypeReferenceExpression("Sooda.ObjectMapper.RefCache"), "GetOrCreateObject",
                         new CodeDirectionExpression(FieldDirection.Ref, new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), "_refCache_" + fi.Name)),
-                        GetFieldValueExpression(fi),
+                        new CodeFieldReferenceExpression(This, "_fieldValues"),
+                        new CodePrimitiveExpression(fi.ClassUnifiedOrdinal),
                         new CodeMethodInvokeExpression(new CodeThisReferenceExpression(), "GetTransaction"),
                         new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(fi.References + "_Factory"), "TheFactory")
                         )));

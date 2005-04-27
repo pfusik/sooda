@@ -1,0 +1,95 @@
+class {0}_Factory
+    extends System.Object
+    implements ISoodaObjectFactory
+    
+    constructor ()
+        attributes Public
+    begin
+    end
+    
+    field SoodaFieldHandler _primaryKeyFieldHandler
+        attributes Private,Static
+        value new {3}(false)
+    end
+    
+    field {0}_Factory _theFactory
+        attributes Private,Static
+        value new {0}_Factory()
+    end
+    
+    field Sooda.Schema.ClassInfo _theClassInfo
+        attributes Private,Static
+        value typeref(_DatabaseSchema).GetSchema().FindClassByName('{0}')
+    end
+    
+    field Type _theType
+        attributes Private,Static
+        value typeof({0})
+    end
+    
+    property {0}_Factory TheFactory
+        attributes Public,Static
+    get
+        return thistype._theFactory;
+    end
+    
+    property Type TheType
+        attributes Public
+    get
+        return thistype._theType;
+    end
+    
+    property Sooda.Schema.ClassInfo TheClassInfo
+        attributes Public,Static
+    get
+        return thistype._theClassInfo;
+    end
+    
+    method GetRef(SoodaTransaction tran, System.Object keyValue)
+        returns SoodaObject
+        attributes Private
+        implementsprivate ISoodaObjectFactory
+    begin
+        return typeref({1}.Stubs.{0}_Stub).GetRef(arg(tran), cast({2},arg(keyValue)))
+    end
+    
+    method TryGet(SoodaTransaction tran, System.Object keyValue)
+        returns SoodaObject
+        attributes Private
+        implementsprivate ISoodaObjectFactory
+    begin
+        return typeref({1}.Stubs.{0}_Stub).TryGet(arg(tran), cast({2},arg(keyValue)))
+    end
+    
+    method GetRefFromRecord(SoodaTransaction tran, System.Data.IDataRecord record, System.Int32 firstColumnIndex, arrayof(Sooda.Schema.TableInfo) loadedTables, System.Int32 tableIndex)
+        returns SoodaObject
+        attributes Private
+        implementsprivate ISoodaObjectFactory
+    begin
+        return typeref({1}.Stubs.{0}_Stub).GetRefFromRecord(arg(tran), arg(record), arg(firstColumnIndex), arg(loadedTables), arg(tableIndex))
+    end
+    
+    method GetList(SoodaTransaction tran, SoodaWhereClause whereClause, SoodaOrderBy orderBy, SoodaSnapshotOptions options)
+        returns System.Collections.IList
+        attributes Private
+        implementsprivate ISoodaObjectFactory
+    begin
+        return typeref({1}.Stubs.{0}_Stub).GetList(arg(tran), arg(whereClause), arg(orderBy), arg(options))
+    end
+    
+    method GetClassInfo()
+        returns Sooda.Schema.ClassInfo
+        attributes Private
+        implementsprivate ISoodaObjectFactory
+    begin
+        return thistype.TheClassInfo;
+    end
+    
+    method GetPrimaryKeyFieldHandler()
+        returns Sooda.ObjectMapper.SoodaFieldHandler
+        attributes Private
+        implementsprivate ISoodaObjectFactory
+    begin
+        return thistype._primaryKeyFieldHandler;
+    end
+end    

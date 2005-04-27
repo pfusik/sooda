@@ -154,7 +154,17 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SoodaObjectArrayFieldValues.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SoodaObjectFieldComparer.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SoodaObjectFieldValues.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

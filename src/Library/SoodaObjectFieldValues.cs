@@ -32,15 +32,34 @@
 //
 
 using System;
+using System.Diagnostics;
+using System.Data;
+using System.Text;
+using System.Collections;
+using System.Reflection;
 using System.Xml;
-using System.Xml.Serialization;
 using System.IO;
-
-using System.CodeDom;
-using System.CodeDom.Compiler;
+using System.Globalization;
+using System.Collections.Specialized;
 
 using Sooda.Schema;
+using Sooda.ObjectMapper;
+using Sooda.Collections;
 
-namespace Sooda.StubGen {
-    public class CodeDomListRelationGenerator : CodeDomHelpers {}
-}
+using System.Data.SqlTypes;
+
+namespace Sooda 
+{
+    public abstract class SoodaObjectFieldValues
+    {
+        public abstract SoodaObjectFieldValues Clone();
+        public abstract void SetFieldValue(int fieldOrdinal, object val);
+        public abstract object GetBoxedFieldValue(int fieldOrdinal);
+        public abstract int Length
+        {
+            get;
+        }
+
+        public abstract bool IsNull(int fieldOrdinal);
+    } // class SoodaObjectFieldValues
+} // namespace
