@@ -49,6 +49,7 @@ namespace Sooda.StubGen
     {
         public static void GenerateClassValues(CodeNamespace nspace, ClassInfo ci, string outNamespace, StubGenOptions options, bool miniStub)
         {
+            return;
             CodeDomClassStubGenerator gen = new CodeDomClassStubGenerator(ci);
 
             CodeTypeDeclaration ctd = new CodeTypeDeclaration(ci.Name + "_Values");

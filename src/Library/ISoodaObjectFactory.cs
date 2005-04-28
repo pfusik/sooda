@@ -43,8 +43,10 @@ using System.IO;
 using Sooda.ObjectMapper;
 using Sooda.Schema;
 
-namespace Sooda {
-    public interface ISoodaObjectFactory {
+namespace Sooda 
+{
+    public interface ISoodaObjectFactory 
+    {
         SoodaObject CreateNew(SoodaTransaction tran);
         SoodaObject GetRef(SoodaTransaction tran, object keyValue);
         SoodaObject TryGet(SoodaTransaction tran, object keyValue);
@@ -53,8 +55,6 @@ namespace Sooda {
         System.Collections.IList GetList(SoodaTransaction tran, SoodaWhereClause whereClause, SoodaOrderBy orderByClause, SoodaSnapshotOptions options);
         SoodaFieldHandler GetPrimaryKeyFieldHandler();
         ClassInfo GetClassInfo();
-        System.Type TheType { get
-                                  ;
-                                }
-        }
+        System.Type TheType { get; }
+    }
 }

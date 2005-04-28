@@ -31,7 +31,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-namespace Sooda.Schema {
+namespace Sooda.Schema 
+{
     using System;
     using System.Xml.Serialization;
 
@@ -51,9 +52,11 @@ namespace Sooda.Schema {
         Guid,
         Image,
         TimeSpan,
+        Compound,
     }
 
-    internal class FieldDataLookup {
+    internal class FieldDataLookup 
+    {
         public readonly FieldDataType fieldDataType;
         public readonly Type clrRawType;
         public readonly Type clrSqlType;
@@ -61,7 +64,8 @@ namespace Sooda.Schema {
         public readonly bool needsSize;
         public readonly bool needsPrecision;
 
-        public FieldDataLookup(FieldDataType fieldDataType, Type clrRawType, Type clrSqlType, bool needsSize, bool needsPrecision, string defaultWrapperTypeName) {
+        public FieldDataLookup(FieldDataType fieldDataType, Type clrRawType, Type clrSqlType, bool needsSize, bool needsPrecision, string defaultWrapperTypeName) 
+        {
             this.fieldDataType = fieldDataType;
             this.clrRawType = clrRawType;
             this.clrSqlType = clrSqlType;
@@ -71,7 +75,8 @@ namespace Sooda.Schema {
         }
     }
 
-    public class FieldDataTypeHelper {
+    public class FieldDataTypeHelper 
+    {
         private static FieldDataLookup[] lookupTable = new FieldDataLookup[]
                 {
                     new FieldDataLookup(FieldDataType.Blob, typeof(byte[]), typeof(System.Data.SqlTypes.SqlBinary), true, false, "Sooda.ObjectMapper.FieldHandlers.BlobFieldHandler"),
@@ -89,45 +94,49 @@ namespace Sooda.Schema {
                     new FieldDataLookup(FieldDataType.TimeSpan, typeof(System.TimeSpan), null, false, false, "Sooda.ObjectMapper.FieldHandlers.TimeSpanFieldHandler"),
         };
 
-        public static Type GetClrType(FieldDataType t) {
+        public static Type GetClrType(FieldDataType t) 
+        {
             foreach (FieldDataLookup lookup in lookupTable)
-            if (lookup.fieldDataType == t)
-                return lookup.clrRawType;
+                if (lookup.fieldDataType == t)
+                    return lookup.clrRawType;
 
             throw new NotSupportedException("Data type " + t + " not supported (yet!)");
         }
 
-        public static string GetDefaultWrapperTypeName(FieldDataType t) {
+        public static string GetDefaultWrapperTypeName(FieldDataType t) 
+        {
             foreach (FieldDataLookup lookup in lookupTable)
-            if (lookup.fieldDataType == t)
-                return lookup.defaultWrapperTypeName;
+                if (lookup.fieldDataType == t)
+                    return lookup.defaultWrapperTypeName;
 
             throw new NotSupportedException("Data type " + t + " not supported (yet!)");
         }
 
-        public static Type GetSqlType(FieldDataType t) {
+        public static Type GetSqlType(FieldDataType t) 
+        {
             foreach (FieldDataLookup lookup in lookupTable)
-            if (lookup.fieldDataType == t)
-                return lookup.clrSqlType;
+                if (lookup.fieldDataType == t)
+                    return lookup.clrSqlType;
 
             throw new NotSupportedException("Data type " + t + " not supported (yet!)");
         }
 
-        public static FieldDataType FromCLRType(Type t) {
+        public static FieldDataType FromCLRType(Type t) 
+        {
             foreach (FieldDataLookup lookup in lookupTable)
-            if (lookup.clrRawType == t)
-                return lookup.fieldDataType;
+                if (lookup.clrRawType == t)
+                    return lookup.fieldDataType;
 
             throw new NotSupportedException("Data type " + t.FullName + " not supported (yet!)");
         }
 
-        public static bool NeedsSize(FieldDataType t) {
+        public static bool NeedsSize(FieldDataType t) 
+        {
             foreach (FieldDataLookup lookup in lookupTable)
-            if (lookup.fieldDataType == t)
-                return lookup.needsSize;
+                if (lookup.fieldDataType == t)
+                    return lookup.needsSize;
 
             throw new NotSupportedException("Data type " + t + " not supported (yet!)");
         }
     }
-
 }

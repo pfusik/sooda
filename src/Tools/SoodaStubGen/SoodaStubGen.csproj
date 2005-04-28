@@ -221,10 +221,6 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "CDIL\Templates\Skeleton.partial.cdil"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "CDIL\Templates\Stub.cdil"
                     BuildAction = "EmbeddedResource"
                 />
