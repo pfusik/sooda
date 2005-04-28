@@ -655,11 +655,11 @@ namespace Sooda
                 }
 
             } 
-            catch (Exception e) 
+            catch (Exception ex) 
             {
                 GetTransaction().UnregisterObject(this);
-
-                throw new SoodaObjectNotFoundException(String.Format("Object {0} not found in the database: {1}", GetObjectKeyString(), e.ToString()), e);
+                logger.Error("Exception in LoadDataWithKey({0}): {1}", GetObjectKeyString(), ex);
+                throw;
             }
         }
 

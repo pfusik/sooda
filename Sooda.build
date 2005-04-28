@@ -13,6 +13,11 @@
     <property name="sooda.external" value="${nant.project.basedir}/external" unless="${property::exists('sooda.external')}" />
     <property name="sooda.nlog.dir" value="${sooda.external}" unless="${property::exists('sooda.nlog.dir')}" />
     <property name="sooda.icsharpcode.texteditor.dir" value="${sooda.external}" unless="${property::exists('sooda.icsharpcode.texteditor.dir')}" />
+
+    <property name="clover.enabled" value="true" />
+    <property name="clover.home" value="C:\Program Files\Cenqua\Clover.NET" />
+
+    <property name="sources" value="src" />
     
     <target name="build" depends="build-${nant.settings.currentframework}" />
     <target name="build-net-1.0" depends="build-common, tools" />
@@ -226,23 +231,6 @@
                 <exclude name="${zipfile}" />
             </fileset>
         </zip>
-    </target>
-
-    <target name="SoodaCore-test" depends="settings">
-        <csc target="library" output="${sooda.dir}/SoodaCore.dll" debug="${sooda.debug}" define="${sooda.define}">
-            <references>                                  
-                <include name="System.Data.dll" asis="true" />
-                <include name="${sooda.dir}/NLog.dll" />
-            </references>
-            <sources basedir="Library">
-                <include name="**/*.cs" />
-                <exclude name="Sql/**/*.cs" />
-            </sources>
-            <resources basedir="Library" prefix="Sooda" dynamicprefix="true">
-                <include name="Schema/DBSchema.xsd" />
-            </resources>
-        </csc>
-        <echo message="test" />
     </target>
 
     <target name="rebuildstubs" depends="minitools">
@@ -500,5 +488,38 @@
                 <include name="screenshots/*" />
             </fileset>
         </copy>
+    </target>
+
+    <target name="coverage">
+        <call target="clover" />
+        <call target="build" />
+        <call target="test" />
+        <call target="clover-html-report" />
+    </target>
+
+    <target name="upload-coverage">
+        <zip zipfile="coverage.zip">
+            <fileset basedir="temp/clover-report">
+                <include name="**/*" />
+            </fileset>
+        </zip>
+        <exec program="${scp.program}" commandline="${scp.args} coverage.zip tools/coverage_install.sh ${ssh.server}:." workingdir="." />
+        <exec program="${ssh.program}" commandline="${ssh.args} ${ssh.server} dos2unix coverage_install.sh &amp;&amp; /bin/bash coverage_install.sh&quot;" workingdir="." />
+    </target>
+
+    <target name="load-clover">
+        <loadtasks assembly="${clover.home}\CloverNAnt-0.85.dll" />
+    </target>
+
+    <target name="clover" depends="settings, load-clover">
+        <delete dir="CloverBuild" failonerror="false" />
+        <mkdir dir="CloverBuild" />
+        <property name="clover.enabled" value="true" />
+        <clover-setup 
+            initstring="CloverBuild/clover.cdb"
+            builddir="CloverBuild"
+            enabled="${clover.enabled}"
+            flushinterval="1000"
+            />
     </target>
 </project>
