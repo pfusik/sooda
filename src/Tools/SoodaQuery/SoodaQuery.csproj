@@ -97,7 +97,7 @@
                 <Reference
                     Name = "ICSharpCode.TextEditor"
                     AssemblyName = "ICSharpCode.TextEditor"
-                    HintPath = "..\..\ExternalLib\ICSharpCode.TextEditor.dll"
+                    HintPath = "..\..\..\external\ICSharpCode.TextEditor.dll"
                 />
                 <Reference
                     Name = "Sooda"

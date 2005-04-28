@@ -87,7 +87,7 @@
                 <Reference
                     Name = "NLog"
                     AssemblyName = "NLog"
-                    HintPath = "..\..\ExternalLib\NLog.dll"
+                    HintPath = "..\..\external\NLog.dll"
                 />
             </References>
         </Build>
