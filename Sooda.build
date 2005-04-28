@@ -405,7 +405,6 @@
 
     <target name="keyfile">
         <exec program="${nant.settings.currentframework.sdkdirectory}/sn.exe" workingdir="${nant.project.basedir}" commandline="-q -k Sooda.snk"/>
-        <exec program="${nant.settings.currentframework.sdkdirectory}/sn.exe" workingdir="${nant.project.basedir}" commandline="-q -i Sooda.snk SoodaPublisherKey"/>
     </target>
 
     <target name="keyfile-mono">

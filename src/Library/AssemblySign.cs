@@ -34,7 +34,7 @@
 using System.Reflection;
 
 #if NANT
-[assembly: AssemblyKeyFile("src/Sooda.snk")]
+[assembly: AssemblyKeyFile("Sooda.snk")]
 #else 
-[assembly: AssemblyKeyFile("../../../Sooda.snk")]
+[assembly: AssemblyKeyFile("../../../../Sooda.snk")]
 #endif
