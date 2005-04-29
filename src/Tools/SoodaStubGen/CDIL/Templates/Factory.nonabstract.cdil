@@ -11,7 +11,7 @@ method GetRawObject(SoodaTransaction tran)
     attributes Private
     implementsprivate ISoodaObjectFactory
 begin
-    let {0} retVal = new {0}(typeref(SoodaConstructor).Constructor);
+    let ${ClassName} retVal = new ${ClassName}(typeref(SoodaConstructor).Constructor);
     call var(retVal).InitRawObject(arg(tran));
     return var(retVal)
 end

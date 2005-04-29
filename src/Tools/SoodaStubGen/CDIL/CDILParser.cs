@@ -1,13 +1,32 @@
 using System;
 using System.CodeDom;
+using System.IO;
 
 namespace Sooda.StubGen.CDIL
 {
 	public class CDILParser : CDILTokenizer
 	{
-		public CDILParser(string txt) : base(txt)
+        private CDILContext _context;
+
+		public CDILParser(string txt, CDILContext context) : base(Preprocess(txt))
 		{
+            _context = context;
 		}
+
+        private static string Preprocess(string txt)
+        {
+            StringReader sr = new StringReader(txt);
+            StringWriter sw = new StringWriter();
+
+            string line;
+
+            while ((line = sr.ReadLine()) != null)
+            {
+                sw.WriteLine(line);
+            }
+
+            return sw.ToString();
+        }
 
         public CodeExpression ParseBaseExpression()
         {
@@ -490,26 +509,26 @@ namespace Sooda.StubGen.CDIL
 
         public static CodeStatement ParseStatement(string s, CDILContext context)
         {
-            CDILParser parser = new CDILParser(context.Format(s));
+            CDILParser parser = new CDILParser(context.Format(s), context);
             return parser.ParseStatement();
         }
 
         public static CodeTypeMember ParseMember(string s, CDILContext context)
         {
-            CDILParser parser = new CDILParser(context.Format(s));
+            CDILParser parser = new CDILParser(context.Format(s), context);
             return parser.ParseMember();
         }
 
         public static CodeTypeMemberCollection ParseMembers(string s, CDILContext context)
         {
-            CDILParser parser = new CDILParser(context.Format(s));
+            CDILParser parser = new CDILParser(context.Format(s), context);
             return parser.ParseMembers();
         }
 
         public static CodeTypeDeclaration ParseClass(string s, CDILContext context)
         {
             // Console.WriteLine(s, par);
-            CDILParser parser = new CDILParser(context.Format(s));
+            CDILParser parser = new CDILParser(context.Format(s), context);
             return parser.ParseClass();
         }
     }

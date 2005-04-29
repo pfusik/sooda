@@ -3,7 +3,7 @@ method CreateNew(SoodaTransaction tran)
     attributes Private
     implementsprivate ISoodaObjectFactory
 begin
-    throw new NotSupportedException('Cannot create instances of abstract class {0}')
+    throw new NotSupportedException('Cannot create instances of abstract class ${ClassName}')
 end
 
 method GetRawObject(SoodaTransaction tran)
@@ -11,5 +11,5 @@ method GetRawObject(SoodaTransaction tran)
     attributes Private
     implementsprivate ISoodaObjectFactory
 begin
-    throw new NotSupportedException('Cannot create instances of abstract class {0}')
+    throw new NotSupportedException('Cannot create instances of abstract class ${ClassName}')
 end

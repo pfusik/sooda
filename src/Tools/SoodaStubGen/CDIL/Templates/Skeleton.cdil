@@ -1,4 +1,4 @@
-class {0}
-    extends {0}_Stub
+class ${ClassName}
+    extends ${ClassName}_Stub
 
 end    

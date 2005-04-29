@@ -286,10 +286,10 @@ namespace Sooda.StubGen
             string pkFieldHandlerTypeName = FieldDataTypeHelper.GetDefaultWrapperTypeName(fi.DataType);
 
             CDILContext context = new CDILContext();
-            context[0] = ci.Name;
-            context[1] = outNamespace;
-            context[2] = pkClrTypeName;
-            context[3] = pkFieldHandlerTypeName;
+            context["ClassName"] = ci.Name;
+            context["OutNamespace"] = outNamespace;
+            context["PrimaryKeyType"] = pkClrTypeName;
+            context["PrimaryKeyHandlerType"] = pkFieldHandlerTypeName;
 
             CodeTypeDeclaration factoryClass = CDILParser.ParseClass(CDILTemplate.Get("Factory.cdil"), context);
 
@@ -339,7 +339,7 @@ namespace Sooda.StubGen
         public static void GenerateListWrapper(CodeNamespace nspace, ClassInfo ci, string outNamespace, StubGenOptions options) 
         {
             CDILContext context = new CDILContext();
-            context[0] = ci.Name;
+            context["ClassName"] = ci.Name;
 
             CodeTypeDeclaration listWrapperClass = CDILParser.ParseClass(CDILTemplate.Get("ListWrapper.cdil"), context);
 

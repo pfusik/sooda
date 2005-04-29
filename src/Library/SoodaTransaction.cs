@@ -46,7 +46,8 @@ using Sooda.Schema;
 using Sooda.ObjectMapper;
 using Sooda.Collections;
 
-namespace Sooda {
+namespace Sooda 
+{
     [Flags]
     public enum TransactionOptions
     {
@@ -407,7 +408,7 @@ namespace Sooda {
         {
             transactionLogger.Debug(">>> TraverseAndDelete({0})", obj.GetObjectKeyString());
             //if (obj.VisitedOnCommit)
-                //throw new SoodaException("Cyclic reference between deleted objects.");
+            //throw new SoodaException("Cyclic reference between deleted objects.");
 
             obj.VisitedOnCommit = true;
             for (int i = 0; i < obj.OuterDeleteReferences.Count; ++i)

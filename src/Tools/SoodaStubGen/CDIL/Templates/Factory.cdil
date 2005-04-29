@@ -1,4 +1,4 @@
-class {0}_Factory
+class ${ClassName}_Factory
     extends System.Object
     implements ISoodaObjectFactory
     
@@ -9,25 +9,25 @@ class {0}_Factory
     
     field SoodaFieldHandler _primaryKeyFieldHandler
         attributes Private,Static
-        value new {3}(false)
+        value new ${PrimaryKeyHandlerType}(false)
     end
     
-    field {0}_Factory _theFactory
+    field ${ClassName}_Factory _theFactory
         attributes Private,Static
-        value new {0}_Factory()
+        value new ${ClassName}_Factory()
     end
     
     field Sooda.Schema.ClassInfo _theClassInfo
         attributes Private,Static
-        value typeref(_DatabaseSchema).GetSchema().FindClassByName('{0}')
+        value typeref(_DatabaseSchema).GetSchema().FindClassByName('${ClassName}')
     end
     
     field Type _theType
         attributes Private,Static
-        value typeof({0})
+        value typeof(${ClassName})
     end
     
-    property {0}_Factory TheFactory
+    property ${ClassName}_Factory TheFactory
         attributes Public,Static
     get
         return thistype._theFactory;
@@ -50,7 +50,7 @@ class {0}_Factory
         attributes Private
         implementsprivate ISoodaObjectFactory
     begin
-        return typeref({1}.Stubs.{0}_Stub).GetRef(arg(tran), cast({2},arg(keyValue)))
+        return typeref(${OutNamespace}.Stubs.${ClassName}_Stub).GetRef(arg(tran), cast(${PrimaryKeyType},arg(keyValue)))
     end
     
     method TryGet(SoodaTransaction tran, System.Object keyValue)
@@ -58,7 +58,7 @@ class {0}_Factory
         attributes Private
         implementsprivate ISoodaObjectFactory
     begin
-        return typeref({1}.Stubs.{0}_Stub).TryGet(arg(tran), cast({2},arg(keyValue)))
+        return typeref(${OutNamespace}.Stubs.${ClassName}_Stub).TryGet(arg(tran), cast(${PrimaryKeyType},arg(keyValue)))
     end
     
     method GetRefFromRecord(SoodaTransaction tran, System.Data.IDataRecord record, System.Int32 firstColumnIndex, arrayof(Sooda.Schema.TableInfo) loadedTables, System.Int32 tableIndex)
@@ -66,7 +66,7 @@ class {0}_Factory
         attributes Private
         implementsprivate ISoodaObjectFactory
     begin
-        return typeref({1}.Stubs.{0}_Stub).GetRefFromRecord(arg(tran), arg(record), arg(firstColumnIndex), arg(loadedTables), arg(tableIndex))
+        return typeref(${OutNamespace}.Stubs.${ClassName}_Stub).GetRefFromRecord(arg(tran), arg(record), arg(firstColumnIndex), arg(loadedTables), arg(tableIndex))
     end
     
     method GetList(SoodaTransaction tran, SoodaWhereClause whereClause, SoodaOrderBy orderBy, SoodaSnapshotOptions options)
@@ -74,7 +74,7 @@ class {0}_Factory
         attributes Private
         implementsprivate ISoodaObjectFactory
     begin
-        return typeref({1}.Stubs.{0}_Stub).GetList(arg(tran), arg(whereClause), arg(orderBy), arg(options))
+        return typeref(${OutNamespace}.Stubs.${ClassName}_Stub).GetList(arg(tran), arg(whereClause), arg(orderBy), arg(options))
     end
     
     method GetClassInfo()
