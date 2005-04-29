@@ -92,4 +92,30 @@ class ${ClassName}_Factory
     begin
         return thistype._primaryKeyFieldHandler;
     end
+    
+    method CreateNew(SoodaTransaction tran)
+        returns SoodaObject
+        attributes Private
+        implementsprivate ISoodaObjectFactory
+    begin
+#if IsAbstract
+        throw new NotSupportedException('Cannot create instances of abstract class ${ClassName}')
+#else
+        throw new NotImplementedException()
+#endif
+    end
+
+    method GetRawObject(SoodaTransaction tran)
+        returns SoodaObject
+        attributes Private
+        implementsprivate ISoodaObjectFactory
+    begin
+#if IsAbstract
+        throw new NotSupportedException('Cannot create instances of abstract class ${ClassName}')
+#else
+        let ${ClassName} retVal = new ${ClassName}(typeref(SoodaConstructor).Constructor);
+        call var(retVal).InitRawObject(arg(tran));
+        return var(retVal)
+#endif
+    end
 end    

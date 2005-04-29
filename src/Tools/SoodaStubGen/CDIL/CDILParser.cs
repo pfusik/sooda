@@ -1,6 +1,8 @@
 using System;
 using System.CodeDom;
 using System.IO;
+using System.Collections;
+using System.Collections.Specialized;
 
 namespace Sooda.StubGen.CDIL
 {
@@ -8,22 +10,59 @@ namespace Sooda.StubGen.CDIL
 	{
         private CDILContext _context;
 
-		public CDILParser(string txt, CDILContext context) : base(Preprocess(txt))
+		public CDILParser(string txt, CDILContext context) : base(Preprocess(txt, context))
 		{
             _context = context;
 		}
 
-        private static string Preprocess(string txt)
+        private static string Preprocess(string txt, CDILContext context)
         {
             StringReader sr = new StringReader(txt);
             StringWriter sw = new StringWriter();
 
             string line;
+            bool skip = false;
+            Stack skipStack = new Stack();
 
             while ((line = sr.ReadLine()) != null)
             {
-                sw.WriteLine(line);
+                if (line.StartsWith("#ifnot "))
+                {
+                    string conditionalName = line.Substring(7);
+                    object o = context[conditionalName];
+                    if (o == null)
+                        throw new ArgumentException("No such conditional: " + conditionalName);
+                    bool v = Convert.ToBoolean(o);
+                    skipStack.Push(skip);
+                    skip = v;
+                    continue;
+                }
+                if (line.StartsWith("#if "))
+                {
+                    string conditionalName = line.Substring(4);
+                    object o = context[conditionalName];
+                    if (o == null)
+                        throw new ArgumentException("No such conditional: " + conditionalName);
+                    bool v = !Convert.ToBoolean(o);
+                    skipStack.Push(skip);
+                    skip = v;
+                    continue;
+                }
+                if (line.StartsWith("#endif"))
+                {
+                    skip = (bool)skipStack.Pop();
+                    continue;
+                }
+                if (line.StartsWith("#else"))
+                {
+                    skip = !skip;
+                    continue;
+                }
+                if (!skip)
+                    sw.WriteLine(line);
             }
+
+            // Console.WriteLine("Preprocessed as {0}", sw);
 
             return sw.ToString();
         }

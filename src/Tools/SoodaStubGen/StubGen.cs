@@ -290,6 +290,7 @@ namespace Sooda.StubGen
             context["OutNamespace"] = outNamespace;
             context["PrimaryKeyType"] = pkClrTypeName;
             context["PrimaryKeyHandlerType"] = pkFieldHandlerTypeName;
+            context["IsAbstract"] = ci.IsAbstractClass();
 
             CodeTypeDeclaration factoryClass = CDILParser.ParseClass(CDILTemplate.Get("Factory.cdil"), context);
 
@@ -297,14 +298,6 @@ namespace Sooda.StubGen
                 new CodeAttributeArgument(new CodePrimitiveExpression(ci.Name)),
                 new CodeAttributeArgument(new CodeTypeOfExpression(ci.Name))
                 ));
-            if (ci.IsAbstractClass())
-            {
-                factoryClass.Members.AddRange(CDILParser.ParseMembers(CDILTemplate.Get("Factory.abstract.cdil"), context));
-            }
-            else
-            {
-                factoryClass.Members.AddRange(CDILParser.ParseMembers(CDILTemplate.Get("Factory.nonabstract.cdil"), context));
-            }
 
             nspace.Types.Add(factoryClass);
         }
