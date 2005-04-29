@@ -49,7 +49,7 @@ using Sooda.Collections;
 
 namespace Sooda 
 {
-    public abstract class SoodaObject 
+    public class SoodaObject 
     {
         private static NLog.Logger logger = NLog.LogManager.GetLogger("Sooda.Object");
 
@@ -230,7 +230,9 @@ namespace Sooda
             }
         }
 
-        protected abstract SoodaObjectFieldValues InitFieldValues();
+        protected virtual SoodaObjectFieldValues InitFieldValues() { 
+            throw new NotImplementedException();
+        }
 
         private void InitFieldData() 
         {
@@ -242,7 +244,9 @@ namespace Sooda
 
             if (_primaryKeyValue != null) 
             {
-                int ordinal = ci.GetPrimaryKeyField().ClassUnifiedOrdinal;
+#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
+
+                int ordinal = ci.GetFirstPrimaryKeyField().ClassUnifiedOrdinal;
                 _fieldValues.SetFieldValue(ordinal, _primaryKeyValue);
             }
 
@@ -255,11 +259,10 @@ namespace Sooda
         private void SetDefaultNotNullValues() 
         {
             ClassInfo ci = GetClassInfo();
-            int pkOrdinal = ci.GetPrimaryKeyField().ClassUnifiedOrdinal;
 
             for (int i = 0; i < _fieldValues.Length; ++i) 
             {
-                if (i == pkOrdinal)
+                if (ci.UnifiedFields[i].IsPrimaryKey)
                     continue;
 
                 SoodaFieldHandler handler = GetFieldHandler(i);
@@ -367,7 +370,8 @@ namespace Sooda
         {
             get 
             {
-                return GetClassInfo().GetPrimaryKeyField().ClassUnifiedOrdinal;
+#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
+                return GetClassInfo().GetFirstPrimaryKeyField().ClassUnifiedOrdinal;
             }
         }
 
@@ -443,7 +447,9 @@ namespace Sooda
                 _primaryKeyValue = keyValue;
                 if (_fieldData != null) 
                 {
-                    int ordinal = GetClassInfo().GetPrimaryKeyField().ClassUnifiedOrdinal;
+#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
+
+                    int ordinal = GetClassInfo().GetFirstPrimaryKeyField().ClassUnifiedOrdinal;
                     _fieldValues.SetFieldValue(ordinal, _primaryKeyValue);
                 }
                 // Console.WriteLine("Registering object {0}:{1}", GetClassInfo().Name, keyValue);
@@ -563,7 +569,7 @@ namespace Sooda
                     {
                         logger.Debug("Materializing {0} at {1}", tables[i].NameToken, recordPos);
 
-                        int pkOrdinal = tables[i].OwnerClass.GetPrimaryKeyField().OrdinalInTable;
+                        int pkOrdinal = tables[i].OwnerClass.GetFirstPrimaryKeyField().OrdinalInTable;
                         if (reader.IsDBNull(recordPos + pkOrdinal))
                         {
                             logger.Debug("Object is null. Skipping.");
@@ -747,7 +753,7 @@ namespace Sooda
 
             foreach (Sooda.Schema.FieldInfo fi in GetClassInfo().UnifiedFields) 
             {
-                if (fi == GetClassInfo().GetPrimaryKeyField())
+                if (fi.IsPrimaryKey)
                     continue;
 
                 SoodaFieldHandler field = GetFieldHandler(fi.ClassUnifiedOrdinal);
@@ -974,29 +980,6 @@ namespace Sooda
             return Evaluate(propertyAccessChain.Split('.'), throwOnError);
         }
 
-        protected static void PrecacheHelper(Hashtable hash, ISoodaObjectFactory factory, ClassInfo classInfo) 
-        {
-            DataSourceInfo dsi = classInfo.GetDataSource();
-            TableInfo[] loadedTables;
-
-            SoodaDataSource ds = (SoodaDataSource)dsi.CreateDataSource();
-            ds.Open();
-
-            using (IDataReader reader = ds.LoadObjectList(classInfo, SoodaWhereClause.Unrestricted, null, out loadedTables)) 
-            {
-                while (reader.Read()) 
-                {
-                    object key = reader.GetValue(classInfo.GetPrimaryKeyField().ClassUnifiedOrdinal);
-
-                    SoodaObject obj = factory.GetRawObject(null);
-                    obj.LoadDataFromRecord(reader, 0, loadedTables, 0);
-                    obj._fieldValues.SetFieldValue(obj.PrimaryKeyFieldOrdinal, key);
-                    hash[key] = obj;
-                }
-            }
-            ds.Close();
-        }
-
         public static SoodaObject GetRefFromRecordHelper(SoodaTransaction tran, ISoodaObjectFactory factory, object keyValue, IDataRecord record, int firstColumnIndex, TableInfo[] loadedTables, int tableIndex) 
         {
             SoodaObject retVal = factory.TryGet(tran, keyValue);
@@ -1088,9 +1071,10 @@ namespace Sooda
                     // if the class is actually inherited, we delegate the responsibility
                     // to the appropriate GetRefFromRecord which will be called by the snapshot
 
-#warning FIX ME - optimize
+#warning FIX ME - OPTIMIZE
+#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
 
-                    SoodaWhereClause whereClause = new SoodaWhereClause(factory.GetClassInfo().GetPrimaryKeyField().Name + " = {0}", keyValue);
+                    SoodaWhereClause whereClause = new SoodaWhereClause(factory.GetClassInfo().GetFirstPrimaryKeyField().Name + " = {0}", keyValue);
                     IList list = factory.GetList(tran, whereClause, null, SoodaSnapshotOptions.NoTransaction | SoodaSnapshotOptions.NoWriteObjects);
                     if (list.Count == 1)
                         return (SoodaObject)list[0];

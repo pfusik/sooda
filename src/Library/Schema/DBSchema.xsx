@@ -28,8 +28,10 @@
     <CollectionOnetoManyInfo_XmlComplexType left="83281" top="254" width="5292" height="2963" selected="0" zOrder="35" index="8" expanded="1" />
     <CollectionManyToManyInfo_XmlComplexType left="89207" top="254" width="5292" height="2963" selected="0" zOrder="36" index="9" expanded="1" />
     <ConstInfo_XmlComplexType left="95133" top="254" width="5292" height="2963" selected="0" zOrder="37" index="10" expanded="1" />
-    <FieldInfo_XmlComplexType left="101059" top="254" width="5292" height="2963" selected="0" zOrder="38" index="11" expanded="1" />
-    <FieldDataType_XmlSimpleType left="106985" top="254" width="5292" height="2963" selected="0" zOrder="39" index="12" expanded="1" />
-    <ClassCardinality_XmlSimpleType left="118837" top="1000" width="5292" height="2963" selected="0" zOrder="40" index="13" expanded="1" />
-    <DeleteAction_XmlSimpleType left="112911" top="254" width="5292" height="2963" selected="0" zOrder="41" index="14" expanded="1" />
+    <FieldInfo_XmlComplexType left="101059" top="254" width="5292" height="2963" selected="0" zOrder="38" index="11" expanded="1">
+        <subfield_XmlElement left="101059" top="3725" width="5292" height="2963" selected="0" zOrder="39" index="0" expanded="0" />
+    </FieldInfo_XmlComplexType>
+    <FieldDataType_XmlSimpleType left="106985" top="254" width="5292" height="2963" selected="0" zOrder="41" index="12" expanded="1" />
+    <ClassCardinality_XmlSimpleType left="118837" top="1000" width="5292" height="2963" selected="0" zOrder="42" index="13" expanded="1" />
+    <DeleteAction_XmlSimpleType left="112911" top="254" width="5292" height="2963" selected="0" zOrder="43" index="14" expanded="1" />
 </XSDDesignerLayout>

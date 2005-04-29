@@ -52,7 +52,6 @@
 		<xsd:attribute name="cached" use="optional" type="xsd:boolean" default="false" />
 		<xsd:attribute name="disableTypeCache" use="optional" type="xsd:boolean" default="false" />
 		<xsd:attribute name="loadOnDemand" use="optional" type="xsd:boolean" default="true" />
-		<xsd:attribute name="precacheAll" use="optional" type="xsd:boolean" default="false" />
 		<xsd:attribute name="triggers" use="optional" type="xsd:boolean" default="true" />
 		<xsd:attribute name="readOnly" use="optional" type="xsd:boolean" default="false" />
 		<xsd:anyAttribute processContents="lax" />

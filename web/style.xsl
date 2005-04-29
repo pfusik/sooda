@@ -78,6 +78,8 @@ var sc_security="e249d6a5";
             <a><xsl:attribute name="href">../en/<xsl:value-of select="$page_id" />.<xsl:value-of select="$file_extension" /></xsl:attribute>
                 <img alt="English flag" title="Click here to switch to English" class="thinborder" src="../lang_en.gif" /></a>
         </xsl:if>
+        <p/>
+        <a href="http://www.cenqua.com/clover.net"><img src="http://www.cenqua.com/images/cloverednet1.gif" width="89" height="33" border="0" alt="Code Coverage by Clover.NET"/></a>
     </xsl:template>
     
     <xsl:template match="nav">

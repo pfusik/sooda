@@ -56,9 +56,9 @@ namespace Sooda.StubGen
             this.classInfo = ci;
             string keyGen = "none";
 
-            if (!ci.ReadOnly) 
+            if (!ci.ReadOnly && ci.GetPrimaryKeyFields().Length == 1) 
             {
-                switch (ci.GetPrimaryKeyField().DataType) 
+                switch (ci.GetFirstPrimaryKeyField().DataType) 
                 {
                     case FieldDataType.Integer:
                         keyGen = "integer";
@@ -122,16 +122,6 @@ namespace Sooda.StubGen
                     field.InitExpression = new CodeObjectCreateExpression(KeyGen);
                     break;
             }
-            return field;
-        }
-
-        public CodeMemberField Field_precacheHash() 
-        {
-            CodeMemberField field;
-
-            field = new CodeMemberField("Hashtable", "precacheHash");
-            field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
-            field.InitExpression = new CodeObjectCreateExpression("Hashtable");
             return field;
         }
 
@@ -221,13 +211,14 @@ namespace Sooda.StubGen
             method.Name = "GetPrimaryKeyValue";
             method.Attributes = MemberAttributes.Override | MemberAttributes.Public;
             method.ReturnType = new CodeTypeReference(typeof(object));
+#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
             if (options.NotNullRepresentation == PrimitiveRepresentation.SqlType) 
             {
-                method.Statements.Add(new CodeMethodReturnStatement(new CodePropertyReferenceExpression(new CodeFieldReferenceExpression(This, classInfo.GetPrimaryKeyField().Name), "Value")));
+                method.Statements.Add(new CodeMethodReturnStatement(new CodePropertyReferenceExpression(new CodeFieldReferenceExpression(This, classInfo.GetFirstPrimaryKeyField().Name), "Value")));
             } 
             else 
             {
-                method.Statements.Add(new CodeMethodReturnStatement(new CodeFieldReferenceExpression(This, classInfo.GetPrimaryKeyField().Name)));
+                method.Statements.Add(new CodeMethodReturnStatement(new CodeFieldReferenceExpression(This, classInfo.GetFirstPrimaryKeyField().Name)));
             }
 
             return method;
@@ -363,10 +354,6 @@ namespace Sooda.StubGen
         {
             CodeTypeConstructor ctor = new CodeTypeConstructor();
 
-            if (classInfo.PrecacheAll && classInfo.ReadOnly) 
-            {
-                ctor.Statements.Add(new CodeExpressionStatement(new CodeMethodInvokeExpression(null, "PrecacheAll")));
-            }
             ctor.Statements.Add(new CodeExpressionStatement(new CodeMethodInvokeExpression(null, "InitFields")));
 
             return ctor;
@@ -632,7 +619,7 @@ namespace Sooda.StubGen
                 //prop.GetStatements.Add(new CodeMethodReturnStatement(new CodeFieldReferenceExpression(null, "_FieldNames")));
                 ctd.Members.Add(prop);
 
-                if (classInfo.GetPrimaryKeyField() == fi) 
+                if (fi.IsPrimaryKey)
                 {
                     prop.GetStatements.Add(
                         new CodeMethodReturnStatement(
@@ -1110,7 +1097,8 @@ namespace Sooda.StubGen
             }
             method.ReturnType = new CodeTypeReference(classInfo.Name);
 
-            CodeTypeReference ctr = new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetPrimaryKeyField().DataType).FullName);
+#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
+            CodeTypeReference ctr = new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetFirstPrimaryKeyField().DataType).FullName);
             method.Parameters.Add(new CodeParameterDeclarationExpression(ctr, "val"));
 
             method.Statements.Add(
@@ -1136,7 +1124,8 @@ namespace Sooda.StubGen
             method.ReturnType = new CodeTypeReference(classInfo.Name);
 
             method.Parameters.Add(new CodeParameterDeclarationExpression("SoodaTransaction", "tran"));
-            CodeTypeReference ctr = new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetPrimaryKeyField().DataType).FullName);
+#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
+            CodeTypeReference ctr = new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetFirstPrimaryKeyField().DataType).FullName);
             method.Parameters.Add(new CodeParameterDeclarationExpression(ctr, "val"));
 
             method.Statements.Add(new CodeVariableDeclarationStatement(method.ReturnType, "retVal",
@@ -1176,15 +1165,16 @@ namespace Sooda.StubGen
             method.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(new CodeTypeReference(typeof(TableInfo)), 1), "loadedTables"));
             method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(int), "tableIndex"));
 
+#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
             method.Statements.Add(new CodeVariableDeclarationStatement(typeof(object), "val",
                 new CodeMethodInvokeExpression(
-                new CodeTypeReferenceExpression(classInfo.GetPrimaryKeyField().GetWrapperTypeName()),
+                new CodeTypeReferenceExpression(classInfo.GetFirstPrimaryKeyField().GetWrapperTypeName()),
                 "GetBoxedFromReader",
                 Arg("record"),
                 new CodeBinaryOperatorExpression(
                 new CodeArgumentReferenceExpression("firstColumnIndex"),
                 CodeBinaryOperatorType.Add,
-                new CodePrimitiveExpression(classInfo.GetPrimaryKeyField().ClassUnifiedOrdinal)
+                new CodePrimitiveExpression(classInfo.GetFirstPrimaryKeyField().ClassUnifiedOrdinal)
                 )
                 )
                 ));
@@ -1218,7 +1208,8 @@ namespace Sooda.StubGen
             }
             method.ReturnType = new CodeTypeReference(classInfo.Name);
 
-            CodeTypeReference ctr = new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetPrimaryKeyField().DataType).FullName);
+#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
+            CodeTypeReference ctr = new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetFirstPrimaryKeyField().DataType).FullName);
             method.Parameters.Add(new CodeParameterDeclarationExpression(ctr, "val"));
 
             method.Statements.Add(
@@ -1244,7 +1235,7 @@ namespace Sooda.StubGen
             }
             method.ReturnType = new CodeTypeReference(classInfo.Name);
 
-            CodeTypeReference ctr = new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetPrimaryKeyField().DataType).FullName);
+            CodeTypeReference ctr = new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetFirstPrimaryKeyField().DataType).FullName);
             method.Parameters.Add(new CodeParameterDeclarationExpression(ctr, "val"));
 
             method.Statements.Add(
@@ -1253,73 +1244,6 @@ namespace Sooda.StubGen
                 new CodePropertyReferenceExpression(new CodeTypeReferenceExpression("SoodaTransaction"), "ActiveTransaction"),
                 Arg("val")
                 )));
-
-            return method;
-        }
-        public CodeMemberMethod Method_PrecacheAll() 
-        {
-            CodeMemberMethod method;
-
-            method = new CodeMemberMethod();
-            method.Name = "PrecacheAll";
-            method.Attributes = MemberAttributes.Private | MemberAttributes.Static;
-
-            method.Statements.Add(
-                new CodeExpressionStatement(
-                new CodeMethodInvokeExpression(null, "PrecacheHelper",
-                new CodeFieldReferenceExpression(null, "precacheHash"),
-                new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(classInfo.Name + "_Factory"), "TheFactory"),
-                new CodeFieldReferenceExpression(new CodeTypeReferenceExpression(classInfo.Name + "_Factory"), "TheClassInfo")
-                )));
-
-            return method;
-        }
-        public CodeMemberMethod Method_PrecachedGet() 
-        {
-            CodeMemberMethod method;
-
-            method = new CodeMemberMethod();
-            method.Name = "GetRef";
-            method.Attributes = MemberAttributes.Static | MemberAttributes.Public | MemberAttributes.Overloaded;
-            if (classInfo.InheritFrom != null) 
-            {
-                method.Attributes |= MemberAttributes.New;
-            }
-            method.ReturnType = new CodeTypeReference(classInfo.Name);
-
-            CodeTypeReference ctr = new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetPrimaryKeyField().DataType).FullName);
-            method.Parameters.Add(new CodeParameterDeclarationExpression("SoodaTransaction", "tran"));
-            method.Parameters.Add(new CodeParameterDeclarationExpression(ctr, "val"));
-
-            method.Statements.Add(
-                new CodeMethodReturnStatement(
-                new CodeCastExpression(classInfo.Name,
-                new CodeIndexerExpression(
-                new CodeFieldReferenceExpression(null, "precacheHash"), Arg("val")))));
-            return method;
-        }
-        public CodeMemberMethod Method_PrecachedTryGet() 
-        {
-            CodeMemberMethod method;
-
-            method = new CodeMemberMethod();
-            method.Name = "TryGet";
-            method.Attributes = MemberAttributes.Static | MemberAttributes.Public | MemberAttributes.Overloaded;
-            if (classInfo.InheritFrom != null) 
-            {
-                method.Attributes |= MemberAttributes.New;
-            }
-            method.ReturnType = new CodeTypeReference(classInfo.Name);
-
-            CodeTypeReference ctr = new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetPrimaryKeyField().DataType).FullName);
-            method.Parameters.Add(new CodeParameterDeclarationExpression("SoodaTransaction", "tran"));
-            method.Parameters.Add(new CodeParameterDeclarationExpression(ctr, "val"));
-
-            method.Statements.Add(
-                new CodeMethodReturnStatement(
-                new CodeCastExpression(classInfo.Name,
-                new CodeIndexerExpression(
-                new CodeFieldReferenceExpression(null, "precacheHash"), Arg("val")))));
 
             return method;
         }
@@ -1336,7 +1260,8 @@ namespace Sooda.StubGen
             }
             method.ReturnType = new CodeTypeReference(classInfo.Name);
 
-            CodeTypeReference ctr = new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetPrimaryKeyField().DataType).FullName);
+#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
+            CodeTypeReference ctr = new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetFirstPrimaryKeyField().DataType).FullName);
             method.Parameters.Add(new CodeParameterDeclarationExpression("SoodaTransaction", "tran"));
             method.Parameters.Add(new CodeParameterDeclarationExpression(ctr, "val"));
 
@@ -1368,7 +1293,8 @@ namespace Sooda.StubGen
             }
             method.ReturnType = new CodeTypeReference(classInfo.Name);
 
-            CodeTypeReference ctr = new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetPrimaryKeyField().DataType).FullName);
+#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
+            CodeTypeReference ctr = new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetFirstPrimaryKeyField().DataType).FullName);
             method.Parameters.Add(new CodeParameterDeclarationExpression("SoodaTransaction", "tran"));
             method.Parameters.Add(new CodeParameterDeclarationExpression(ctr, "val"));
 
@@ -1443,7 +1369,8 @@ namespace Sooda.StubGen
             method.Name = "SetPrimaryKeyValue";
             method.Attributes = MemberAttributes.Override | MemberAttributes.Family;
 
-            CodeTypeReference ctr = new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetPrimaryKeyField().DataType).FullName);
+#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
+            CodeTypeReference ctr = new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetFirstPrimaryKeyField().DataType).FullName);
             method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(object), "o"));
 
             if (classInfo.ReadOnly) 
@@ -1456,9 +1383,9 @@ namespace Sooda.StubGen
             {
                 method.Statements.Add(
                     new CodeAssignStatement(
-                    new CodePropertyReferenceExpression(This, classInfo.GetPrimaryKeyField().Name),
+                    new CodePropertyReferenceExpression(This, classInfo.GetFirstPrimaryKeyField().Name),
                     new CodeCastExpression(
-                    new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetPrimaryKeyField().DataType)),
+                    new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetFirstPrimaryKeyField().DataType)),
                     new CodeVariableReferenceExpression("o"))));
             };
 

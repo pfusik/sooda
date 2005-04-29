@@ -286,7 +286,7 @@ namespace Sooda.Sql
 
                 Output.Write(GetTableAliasForExpressionPrefix(p));
                 Output.Write(".");
-                Output.Write(currentClass.GetPrimaryKeyField().DBColumnName);
+                Output.Write(currentClass.GetFirstPrimaryKeyField().DBColumnName);
                 Output.Write(")");
                 return ;
             }
@@ -304,7 +304,7 @@ namespace Sooda.Sql
 
                 Output.Write(GetTableAliasForExpressionPrefix(p));
                 Output.Write(".");
-                Output.Write(currentClass.GetPrimaryKeyField().DBColumnName);
+                Output.Write(currentClass.GetFirstPrimaryKeyField().DBColumnName);
                 Output.Write(")");
                 return ;
             }
@@ -339,9 +339,9 @@ namespace Sooda.Sql
 
                 Output.Write(GetTableAliasForExpressionPrefix(p));
                 Output.Write(".");
-                Output.Write(currentClass.GetPrimaryKeyField().DBColumnName);
+                Output.Write(currentClass.GetFirstPrimaryKeyField().DBColumnName);
                 Output.Write(" and ");
-                Output.Write(col1n.Class.GetPrimaryKeyField().DBColumnName);
+                Output.Write(col1n.Class.GetFirstPrimaryKeyField().DBColumnName);
                 Output.WriteLine(" in (");
 
                 v.Expr.Accept(this);
@@ -363,7 +363,7 @@ namespace Sooda.Sql
 
                 Output.Write(GetTableAliasForExpressionPrefix(p));
                 Output.Write(".");
-                Output.Write(currentClass.GetPrimaryKeyField().DBColumnName);
+                Output.Write(currentClass.GetFirstPrimaryKeyField().DBColumnName);
                 Output.Write(" and ");
                 Output.Write(ri.Table.Fields[colnn.MasterField].DBColumnName);
                 Output.WriteLine(" in (");
@@ -447,11 +447,19 @@ namespace Sooda.Sql
                         // simplified query - emit the primary key here
 
                         Sooda.Schema.ClassInfo ci = Schema.FindClassByName(v.From[0]);
-                        Output.Write(v.FromAliases[0]);
-                        Output.Write(".");
-                        Output.Write(ci.GetPrimaryKeyField().DBColumnName);
-                        Output.Write(" as ");
-                        Output.Write(_builder.QuoteFieldName(ci.GetPrimaryKeyField().Name));
+                        bool first = true;
+
+                        foreach (FieldInfo pkfi in ci.GetPrimaryKeyFields())
+                        {
+                            if (!first)
+                                Output.Write(", ");
+                            Output.Write(v.FromAliases[0]);
+                            Output.Write(".");
+                            Output.Write(pkfi.DBColumnName);
+                            Output.Write(" as ");
+                            Output.Write(_builder.QuoteFieldName(pkfi.Name));
+                            first = false;
+                        }
                     } 
                     else 
                     {
@@ -839,7 +847,7 @@ namespace Sooda.Sql
                     tbl,
                     lastTableAlias,
                     field.DBColumnName,
-                    field.ReferencedClass.GetPrimaryKeyField().DBColumnName);
+                    field.ReferencedClass.GetFirstPrimaryKeyField().DBColumnName);
             }
             else
             {
@@ -852,7 +860,7 @@ namespace Sooda.Sql
                     tbl,
                     lastTableAlias,
                     field.DBColumnName,
-                    field.ReferencedClass.GetPrimaryKeyField().DBColumnName));
+                    field.ReferencedClass.GetFirstPrimaryKeyField().DBColumnName));
             }
 
             StringCollection coll = (StringCollection)Query.FromJoins[foundPos];

@@ -28,7 +28,10 @@ namespace SoodaFixKeygen
                 output.WriteLine("insert into KeyGen");
                 foreach (ClassInfo classInfo in schemaInfo.Classes)
                 {
-                    FieldInfo fieldInfo = classInfo.GetPrimaryKeyField();
+                    if (classInfo.GetPrimaryKeyFields().Length != 1)
+                        continue;
+
+                    FieldInfo fieldInfo = classInfo.GetFirstPrimaryKeyField();
                     if (fieldInfo.DataType == FieldDataType.Integer || fieldInfo.DataType == FieldDataType.Long)
                     {
                         if (!first)

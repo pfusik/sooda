@@ -52,9 +52,6 @@ namespace Sooda {
     {
         NoImplicit = 0x0000,
         Implicit = 0x0001,
-
-        NoInit = 0x0002,
-        WithInit = 0x0000,
     }
 
     public class SoodaTransaction : IDisposable 
@@ -83,9 +80,9 @@ namespace Sooda {
 
         #region Constructors, Dispose & Finalizer
 
-        public SoodaTransaction() : this(null, TransactionOptions.Implicit | TransactionOptions.WithInit, Assembly.GetCallingAssembly()) {}
+        public SoodaTransaction() : this(null, TransactionOptions.Implicit, Assembly.GetCallingAssembly()) {}
 
-        public SoodaTransaction(Assembly objectsAssembly) : this(objectsAssembly, TransactionOptions.Implicit | TransactionOptions.WithInit, Assembly.GetCallingAssembly()) {}
+        public SoodaTransaction(Assembly objectsAssembly) : this(objectsAssembly, TransactionOptions.Implicit, Assembly.GetCallingAssembly()) {}
 
         public SoodaTransaction(TransactionOptions options) : this(null, options, Assembly.GetCallingAssembly()) {}
 
@@ -116,10 +113,6 @@ namespace Sooda {
                     throw new InvalidOperationException("There's already a open implicit transaction.");
                 };
                 System.Threading.Thread.SetData(g_activeTransactionDataStoreSlot, this);
-            }
-            if ((options & TransactionOptions.NoInit) == 0) 
-            {
-                InitTransaction();
             }
         }
 
@@ -174,8 +167,6 @@ namespace Sooda {
                 return retVal;
             }
         }
-
-        protected void InitTransaction() {}
 
         public SoodaObjectCollection GetObjects() 
         {

@@ -180,10 +180,6 @@ namespace Sooda.StubGen
                 return ;
             }
 
-            if (ci.PrecacheAll && ci.ReadOnly) 
-            {
-                ctd.Members.Add(gen.Field_precacheHash());
-            }
             ctd.Members.Add(gen.Constructor_Class());
             ctd.Members.Add(gen.Constructor_Inserting());
             ctd.Members.Add(gen.Constructor_Raw());
@@ -201,26 +197,26 @@ namespace Sooda.StubGen
             gen.GenerateProperties(ctd, ci, outNamespace, options);
 
             // literals
-            if (ci.Constants != null) 
+            if (ci.Constants != null && ci.GetPrimaryKeyFields().Length == 1)
             {
                 foreach (ConstantInfo constInfo in ci.Constants) 
                 {
-                    if (ci.GetPrimaryKeyField().DataType == FieldDataType.Integer) 
+                    if (ci.GetFirstPrimaryKeyField().DataType == FieldDataType.Integer) 
                     {
                         ctd.Members.Add(gen.Prop_LiteralValue(constInfo.Name, Int32.Parse(constInfo.Key)));
                     } 
-                    else if (ci.GetPrimaryKeyField().DataType == FieldDataType.String) 
+                    else if (ci.GetFirstPrimaryKeyField().DataType == FieldDataType.String) 
                     {
                         ctd.Members.Add(gen.Prop_LiteralValue(constInfo.Name, constInfo.Key));
                     } 
                     else
-                        throw new NotSupportedException("Primary key type " + ci.GetPrimaryKeyField().DataType + " is not supported");
+                        throw new NotSupportedException("Primary key type " + ci.GetFirstPrimaryKeyField().DataType + " is not supported");
                 }
             }
 
             foreach (FieldInfo fi in ci.LocalFields) 
             {
-                if (fi == ci.GetPrimaryKeyField())
+                if (fi.IsPrimaryKey)
                     continue;
 
                 if (fi.Name == ci.LastModifiedFieldName && !fi.ForceTrigger)
@@ -274,17 +270,8 @@ namespace Sooda.StubGen
             ctd.Members.Add(gen.Method_Get1());
             ctd.Members.Add(gen.Method_TryGet1());
 
-            if (ci.PrecacheAll && ci.ReadOnly) 
-            {
-                ctd.Members.Add(gen.Method_PrecacheAll());
-                ctd.Members.Add(gen.Method_PrecachedGet());
-                ctd.Members.Add(gen.Method_PrecachedTryGet());
-            } 
-            else 
-            {
-                ctd.Members.Add(gen.Method_NormalGet());
-                ctd.Members.Add(gen.Method_NormalTryGet());
-            }
+            ctd.Members.Add(gen.Method_NormalGet());
+            ctd.Members.Add(gen.Method_NormalTryGet());
             ctd.Members.Add(gen.Method_SetPrimaryKeyValue());
             CodeMemberMethod m = gen.Method_IterateOuterReferences();
             if (m != null)
@@ -293,7 +280,8 @@ namespace Sooda.StubGen
 
         public static void GenerateClassFactory(CodeNamespace nspace, ClassInfo ci, string outNamespace) 
         {
-            FieldInfo fi = ci.GetPrimaryKeyField();
+#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
+            FieldInfo fi = ci.GetFirstPrimaryKeyField();
             string pkClrTypeName = FieldDataTypeHelper.GetClrType(fi.DataType).Name;
             string pkFieldHandlerTypeName = FieldDataTypeHelper.GetDefaultWrapperTypeName(fi.DataType);
 

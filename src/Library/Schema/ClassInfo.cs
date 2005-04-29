@@ -113,10 +113,6 @@ namespace Sooda.Schema {
         [System.Xml.Serialization.XmlAttributeAttribute("subclassSelectorValue")]
         public string SubclassSelectorStringValue = null;
 
-        [System.Xml.Serialization.XmlAttributeAttribute("precacheAll")]
-        [System.ComponentModel.DefaultValueAttribute(false)]
-        public bool PrecacheAll = false;
-
         [System.Xml.Serialization.XmlAttributeAttribute("inheritFrom")]
         public string InheritFrom = null;
 
@@ -184,10 +180,15 @@ namespace Sooda.Schema {
             return 0;
         }
 
-        FieldInfo _primaryKeyField = null;
+        FieldInfo[] _primaryKeyFields = null;
 
-        public FieldInfo GetPrimaryKeyField() {
-            return _primaryKeyField;
+        public FieldInfo[] GetPrimaryKeyFields() {
+            return _primaryKeyFields;
+        }
+
+        public FieldInfo GetFirstPrimaryKeyField() 
+        {
+            return _primaryKeyFields[0];
         }
 
         [NonSerialized]
@@ -338,15 +339,14 @@ namespace Sooda.Schema {
                 }
             }
 
-            _primaryKeyField = null;
+            ArrayList pkFields = new ArrayList();
 
             foreach (FieldInfo fi in UnifiedFields) {
                 if (fi.IsPrimaryKey) {
-                    if (_primaryKeyField != null)
-                        throw new Exception("Multiple primary keys found in " + Name);
-                    _primaryKeyField = fi;
+                    pkFields.Add(fi);
                 }
             }
+            _primaryKeyFields = (FieldInfo[])pkFields.ToArray(typeof(FieldInfo));
         }
 
         internal void MergeTables() {
@@ -410,27 +410,9 @@ namespace Sooda.Schema {
                     fi.ReferencedClass = ci;
 
                     if (ci != null) {
-                        if (PrecacheAll && !ci.PrecacheAll) {
-                            throw new Exception("Precached class " + Name + " cannot have outer references to non-precached class " + ci.Name);
-                        }
-
                         ci.OuterReferences.Add(fi);
                     } else {
                         throw new Exception("Class " + Name + " refers to nonexisting class " + fi.References);
-                    }
-                }
-            }
-
-            if (PrecacheAll) {
-                if (CollectionsNtoN != null) {
-                    if (CollectionsNtoN.Length > 0) {
-                        throw new Exception("Precached class " + Name + " cannot have outer references via N-N relations.");
-                    }
-                }
-
-                if (Collections1toN != null) {
-                    if (Collections1toN.Length > 0) {
-                        throw new Exception("Precached class " + Name + " cannot have outer references via 1-N relations.");
                     }
                 }
             }
