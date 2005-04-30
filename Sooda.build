@@ -512,8 +512,10 @@
     </target>
 
     <target name="clover" depends="settings, load-clover">
+        <!--
         <delete dir="CloverBuild" failonerror="false" />
         <mkdir dir="CloverBuild" />
+        -->
         <property name="clover.enabled" value="true" />
         <clover-setup 
             initstring="CloverBuild/clover.cdb"
@@ -521,5 +523,13 @@
             enabled="${clover.enabled}"
             flushinterval="1000"
             />
+    </target>
+
+    <target name="clover-html-report" depends="clover">
+        <clover-report>
+            <current title="Sooda Coverage" output="temp/clover-report">
+                <format type="html" />
+            </current>
+        </clover-report>
     </target>
 </project>

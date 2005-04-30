@@ -203,26 +203,6 @@ namespace Sooda.StubGen
             return method;
         }
 
-        public CodeMemberMethod Method_GetPrimaryKeyValue(StubGenOptions options) 
-        {
-            CodeMemberMethod method;
-
-            method = new CodeMemberMethod();
-            method.Name = "GetPrimaryKeyValue";
-            method.Attributes = MemberAttributes.Override | MemberAttributes.Public;
-            method.ReturnType = new CodeTypeReference(typeof(object));
-#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
-            if (options.NotNullRepresentation == PrimitiveRepresentation.SqlType) 
-            {
-                method.Statements.Add(new CodeMethodReturnStatement(new CodePropertyReferenceExpression(new CodeFieldReferenceExpression(This, classInfo.GetFirstPrimaryKeyField().Name), "Value")));
-            } 
-            else 
-            {
-                method.Statements.Add(new CodeMethodReturnStatement(new CodeFieldReferenceExpression(This, classInfo.GetFirstPrimaryKeyField().Name)));
-            }
-
-            return method;
-        }
         public CodeMemberMethod Method_GetKeyGenerator() 
         {
             CodeMemberMethod method;
@@ -890,42 +870,6 @@ namespace Sooda.StubGen
             }
         }
 
-        private void MakeParameters(CodeMemberMethod method, int paramCount) 
-        {
-            if (paramCount == -1) 
-            {
-                method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(object[]), "par"));
-            } 
-            else 
-            {
-                CodeExpression initexpr;
-
-                if (paramCount == 0) 
-                {
-                    initexpr = new CodePrimitiveExpression(null);
-                } 
-                else 
-                {
-                    initexpr = new CodeArrayCreateExpression(typeof(object), new CodePrimitiveExpression(paramCount));
-                }
-                method.Statements.Add(
-                    new CodeVariableDeclarationStatement(
-                    new CodeTypeReference(new CodeTypeReference(typeof(object)), 1), "par",
-                    initexpr));
-
-                for (int i = 0; i < paramCount; ++i) 
-                {
-                    string varname = "p" + i.ToString();
-                    method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(object), varname));
-                    method.Statements.Add(new CodeAssignStatement(
-                        new CodeArrayIndexerExpression(
-                        new CodeVariableReferenceExpression("par"),
-                        new CodePrimitiveExpression(i)),
-                        new CodeArgumentReferenceExpression(varname)));
-                }
-            }
-        }
-
         public CodeMemberMethod Method_GetList(bool withTransaction, bool withOrderBy, bool withOptions) 
         {
             CodeMemberMethod method;
@@ -1267,37 +1211,6 @@ namespace Sooda.StubGen
                 return method;
             else
                 return null;
-        }
-
-        public CodeMemberMethod Method_SetPrimaryKeyValue() 
-        {
-            CodeMemberMethod method;
-
-            method = new CodeMemberMethod();
-            method.Name = "SetPrimaryKeyValue";
-            method.Attributes = MemberAttributes.Override | MemberAttributes.Family;
-
-#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
-            CodeTypeReference ctr = new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetFirstPrimaryKeyField().DataType).FullName);
-            method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(object), "o"));
-
-            if (classInfo.ReadOnly) 
-            {
-                method.Statements.Add(new CodeThrowExceptionStatement(
-                    new CodeObjectCreateExpression("NotSupportedException",
-                    new CodePrimitiveExpression("SetPrimaryKeyValue() is not supported on read-only objects of type " + classInfo.Name))));
-            } 
-            else 
-            {
-                method.Statements.Add(
-                    new CodeAssignStatement(
-                    new CodePropertyReferenceExpression(This, classInfo.GetFirstPrimaryKeyField().Name),
-                    new CodeCastExpression(
-                    new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetFirstPrimaryKeyField().DataType)),
-                    new CodeVariableReferenceExpression("o"))));
-            };
-
-            return method;
         }
     }
 }

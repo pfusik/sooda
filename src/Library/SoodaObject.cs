@@ -1062,9 +1062,25 @@ namespace Sooda
                     // to the appropriate GetRefFromRecord which will be called by the snapshot
 
 #warning FIX ME - OPTIMIZE
-#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
 
-                    SoodaWhereClause whereClause = new SoodaWhereClause(factory.GetClassInfo().GetFirstPrimaryKeyField().Name + " = {0}", keyValue);
+                    StringBuilder query = new StringBuilder();
+                    Sooda.Schema.FieldInfo[] pkFields = factory.GetClassInfo().GetPrimaryKeyFields();
+                    object[] par = new object[pkFields.Length];
+
+                    for (int i = 0; i < pkFields.Length; ++i)
+                    {
+                        if (i > 0)
+                            query.Append(" and ");
+                        query.Append("(");
+                        query.Append(pkFields[i].Name);
+                        query.Append("={");
+                        query.Append(i);
+                        query.Append("})");
+#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
+                        par[i] = keyValue;
+                    }
+
+                    SoodaWhereClause whereClause = new SoodaWhereClause(query.ToString(), par);
                     IList list = factory.GetList(tran, whereClause, null, SoodaSnapshotOptions.NoTransaction | SoodaSnapshotOptions.NoWriteObjects);
                     if (list.Count == 1)
                         return (SoodaObject)list[0];
