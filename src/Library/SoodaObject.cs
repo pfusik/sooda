@@ -242,6 +242,8 @@ namespace Sooda
             _fieldData = new SoodaFieldData[fieldCount];
             _fieldValues = InitFieldValues();
 
+            // primary key was set before the fields - propagate the value
+            // back to the field(s)
             if (_primaryKeyValue != null) 
             {
 #warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
@@ -279,7 +281,7 @@ namespace Sooda
         protected internal void SetUpdateMode(object primaryKeyValue) 
         {
             InsertMode = false;
-            SetInitialPrimaryKeyValue(primaryKeyValue);
+            SetPrimaryKeyValue(primaryKeyValue);
             SetAllDataNotLoaded();
 
             if (_fieldValues == null) 
@@ -366,15 +368,6 @@ namespace Sooda
                 throw new Exception("Field " + name + " not found in " + info.Name);
         }
 
-        protected internal int PrimaryKeyFieldOrdinal
-        {
-            get 
-            {
-#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
-                return GetClassInfo().GetFirstPrimaryKeyField().ClassUnifiedOrdinal;
-            }
-        }
-
         internal void CheckForNulls() 
         {
             EnsureFieldsInited();
@@ -419,14 +412,6 @@ namespace Sooda
             throw new NotImplementedException();
         }
 
-        public Object this[String field]
-        {
-            get 
-            {
-                return Evaluate(field);
-            }
-        }
-
         public string GetObjectKeyString() 
         {
             return String.Format("{0}[{1}]", GetClassInfo().Name, GetPrimaryKeyValue());
@@ -435,24 +420,22 @@ namespace Sooda
         public object GetPrimaryKeyValue() 
         {
             return _primaryKeyValue;
-
-            // int ordinal = GetClassInfo().GetPrimaryKeyField().ClassUnifiedOrdinal;
-            // return _fieldData[ordinal].FieldValue;
         }
 
-        protected void SetInitialPrimaryKeyValue(object keyValue) 
+        protected internal void SetPrimaryKeyValue(object keyValue) 
         {
             if (_primaryKeyValue == null) 
             {
                 _primaryKeyValue = keyValue;
                 if (_fieldData != null) 
                 {
-#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
+                    // primary key was set after the fields have been inited
+                    // propagate the value back to the field(s)
 
+#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
                     int ordinal = GetClassInfo().GetFirstPrimaryKeyField().ClassUnifiedOrdinal;
                     _fieldValues.SetFieldValue(ordinal, _primaryKeyValue);
                 }
-                // Console.WriteLine("Registering object {0}:{1}", GetClassInfo().Name, keyValue);
                 RegisterObjectInTransaction();
             } 
             else 
@@ -463,10 +446,6 @@ namespace Sooda
 
         protected internal virtual void AfterDeserialize() { }
         protected virtual void InitNewObject() { }
-        protected internal virtual void SetPrimaryKeyValue(object o) 
-        {
-            throw new SoodaException("Object is read-only!");
-        }
 
         internal bool CanBeCached() 
         {
@@ -631,7 +610,7 @@ namespace Sooda
         protected void LoadReadOnlyObject(object keyVal) 
         {
             InsertMode = false;
-            SetInitialPrimaryKeyValue(keyVal);
+            SetPrimaryKeyValue(keyVal);
             // #warning FIX ME
             LoadDataWithKey(keyVal, 0);
         }
@@ -734,22 +713,33 @@ namespace Sooda
             xw.WriteStartElement("object");
             xw.WriteAttributeString("mode", (IsInsertMode()) ? "insert" : "update");
             xw.WriteAttributeString("class", GetClassInfo().Name);
-            //xw.WriteAttributeString("key", PrimaryKeyFieldName);
             if (!IsObjectDirty())
                 xw.WriteAttributeString("dirty", "false");
             if (PostCommitForced)
                 xw.WriteAttributeString("forcepostcommit", "true");
 
-            SoodaFieldHandler pkField = GetFieldHandler(PrimaryKeyFieldOrdinal);
             logger.Debug("Serializing " + GetObjectKeyString() + "...");
             EnsureFieldsInited();
-            pkField.Serialize(_fieldValues.GetBoxedFieldValue(PrimaryKeyFieldOrdinal), xw);
 
             if ((options & SerializeOptions.IncludeNonDirtyFields) != 0) 
             {
                 if (!IsAllDataLoaded())
                     LoadAllData();
             };
+
+            foreach (Sooda.Schema.FieldInfo fi in GetClassInfo().UnifiedFields) 
+            {
+                if (!fi.IsPrimaryKey)
+                    continue;
+
+                SoodaFieldHandler field = GetFieldHandler(fi.ClassUnifiedOrdinal);
+                string s = fi.Name;
+
+                xw.WriteStartElement("key");
+                xw.WriteAttributeString("ordinal", fi.ClassUnifiedOrdinal.ToString());
+                field.Serialize(_fieldValues.GetBoxedFieldValue(fi.ClassUnifiedOrdinal), xw);
+                xw.WriteEndElement();
+            }
 
             foreach (Sooda.Schema.FieldInfo fi in GetClassInfo().UnifiedFields) 
             {
@@ -1034,7 +1024,7 @@ namespace Sooda
 
             retVal = factory.GetRawObject(tran);
             retVal.InsertMode = false;
-            retVal.SetInitialPrimaryKeyValue(keyValue);
+            retVal.SetPrimaryKeyValue(keyValue);
             retVal.LoadDataFromRecord(record, firstColumnIndex, loadedTables, tableIndex);
             return retVal;
         }

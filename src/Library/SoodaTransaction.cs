@@ -586,7 +586,7 @@ namespace Sooda
 
         private static object[] relationTableConstructorArguments = new object[0] { };
 
-        private SoodaObject GetObject(ISoodaObjectFactory factory , string keyString) 
+        private SoodaObject GetObject(ISoodaObjectFactory factory, string keyString) 
         {
             object keyValue = factory.GetPrimaryKeyFieldHandler().RawDeserialize(keyString);
             return factory.GetRef(this, keyValue);
@@ -816,6 +816,16 @@ namespace Sooda
             SoodaRelationTable currentRelation = null;
             bool inDebug = false;
 
+            // state data for just-being-read object
+
+            bool objectForcePostCommit = false;
+            string objectClassName;
+            string objectMode = null;
+            ClassInfo objectClassInfo;
+            ISoodaObjectFactory objectFactory = null;
+            int objectKeyCounter = 0;
+            int objectTotalKeyCounter = 0;
+
             while (reader.Read()) 
             {
                 if (reader.NodeType == XmlNodeType.Element && !inDebug) 
@@ -842,14 +852,34 @@ namespace Sooda
                                 // end deserialization
 
                                 currentObject.DisableTriggers = false;
+                                currentObject = null;
                             };
 
-                            string isDirty = reader.GetAttribute("isDirty");
-
-                            currentObject = GetSoodaObjectFromXml(reader);
+                            objectKeyCounter = 0;
+                            objectForcePostCommit = false;
+                            objectClassName = reader.GetAttribute("class");
+                            objectMode = reader.GetAttribute("mode");
+                            objectFactory = GetFactory(objectClassName);
+                            objectClassInfo = objectFactory.GetClassInfo();
+                            objectTotalKeyCounter = objectClassInfo.GetPrimaryKeyFields().Length;
                             if (reader.GetAttribute("forcepostcommit") != null)
-                                currentObject.PostCommitForced = true;
-                            currentObject.DisableTriggers = true;
+                                objectForcePostCommit = true;
+                            break;
+
+                        case "key":
+                            objectKeyCounter++;
+                            int ordinal = Convert.ToInt32(reader.GetAttribute("ordinal"));
+                            object val = objectFactory.GetFieldHandler(ordinal).RawDeserialize(reader.GetAttribute("value"));
+
+#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
+
+                            if (objectKeyCounter == objectTotalKeyCounter)
+                            {
+                                currentObject = BeginObjectDeserialization(objectFactory, val, objectMode);
+                                if (objectForcePostCommit)
+                                    currentObject.ForcePostCommit();
+                                currentObject.DisableTriggers = true;
+                            }
                             break;
 
                         case "transaction":
@@ -905,18 +935,9 @@ namespace Sooda
             return retVal;
         }
 
-        private SoodaObject GetSoodaObjectFromXml(XmlReader reader) 
+        private SoodaObject BeginObjectDeserialization(ISoodaObjectFactory factory, object pkValue, string mode) 
         {
-            string className = reader.GetAttribute("class");
-            string mode = reader.GetAttribute("mode");
-
-            ISoodaObjectFactory factory = GetFactory(className);
             SoodaObject retVal = null;
-            object pkValue = null;
-
-            SoodaFieldHandler handler = factory.GetPrimaryKeyFieldHandler();
-            pkValue = handler.RawDeserialize(reader.GetAttribute("value"));
-            transactionLogger.Debug("Deserializing object {0} {1}.", className, pkValue);
 
             retVal = factory.TryGet(this, pkValue);
             if (retVal == null) 

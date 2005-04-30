@@ -32,38 +32,13 @@
 //
 
 using System;
-using System.IO;
-using System.Data;
-using System.Runtime.InteropServices;
-using System.Runtime.Remoting;
-using System.Threading;
 
-using Sooda;
-using Sooda.Schema;
-using Sooda.UnitTests.TestCases;
-using Sooda.QL;
-using Sooda.ObjectMapper;
-using Sooda.UnitTests.Objects;
-
-using System.Collections;
-using System.Xml;
-using System.Xml.Serialization;
-
-using System.Security.Principal;
-using System.Security.Permissions;
-
-[assembly: SoodaStubAssembly(typeof(Sooda.UnitTests.Objects.Stubs.Contact_Stub))]
-[assembly: SoodaConfig(XmlConfigFileName = "sooda.config.xml")]
-
-namespace ConsoleTest 
-{
-    class Class1 
+namespace Sooda {
+    [Serializable]
+    public class SoodaTuple
     {
-        static void Main(string[] args) 
+        public SoodaTuple()
         {
-            Sooda.UnitTests.TestCases.ObjectMapper.InheritanceTest t = new Sooda.UnitTests.TestCases.ObjectMapper.InheritanceTest();
-            t.InsertTest();
         }
     }
 }
-

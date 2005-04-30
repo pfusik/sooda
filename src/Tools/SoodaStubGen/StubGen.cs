@@ -180,7 +180,6 @@ namespace Sooda.StubGen
                 return ;
             }
 
-            ctd.Members.Add(gen.Constructor_Class());
             ctd.Members.Add(gen.Constructor_Inserting());
             ctd.Members.Add(gen.Constructor_Raw());
 
@@ -235,7 +234,6 @@ namespace Sooda.StubGen
                 }
             }
 
-            ctd.Members.Add(gen.Method_InitFields());
             ctd.Members.Add(gen.Method_InitFieldValues());
             ctd.Members.Add(gen.Method_GetFieldHandler());
             if (gen.KeyGen != "none") 
@@ -272,7 +270,7 @@ namespace Sooda.StubGen
 
             ctd.Members.Add(gen.Method_NormalGet());
             ctd.Members.Add(gen.Method_NormalTryGet());
-            ctd.Members.Add(gen.Method_SetPrimaryKeyValue());
+            //ctd.Members.Add(gen.Method_SetPrimaryKeyValue());
             CodeMemberMethod m = gen.Method_IterateOuterReferences();
             if (m != null)
                 ctd.Members.Add(m);
@@ -298,6 +296,33 @@ namespace Sooda.StubGen
                 new CodeAttributeArgument(new CodePrimitiveExpression(ci.Name)),
                 new CodeAttributeArgument(new CodeTypeOfExpression(ci.Name))
                 ));
+
+            CodeTypeConstructor cctor = new CodeTypeConstructor();
+            cctor.Statements.Add(new CodeAssignStatement(new CodeFieldReferenceExpression(null, "_fieldHandlers"),
+                new CodeArrayCreateExpression("SoodaFieldHandler", new CodePrimitiveExpression(ci.UnifiedFields.Count))));
+
+            foreach (FieldInfo fi2 in ci.UnifiedFields)
+            {
+                string typeWrapper = fi2.GetWrapperTypeName();
+                bool isNullable = fi2.IsNullable;
+
+                CodeMemberField field = new CodeMemberField(typeWrapper, "_fieldhandler_" + fi2.Name);
+                field.Attributes = MemberAttributes.Assembly | MemberAttributes.Static;
+                field.InitExpression = new CodeObjectCreateExpression(typeWrapper, new CodePrimitiveExpression(isNullable));
+                factoryClass.Members.Add(field);
+
+                cctor.Statements.Add(
+                    new CodeAssignStatement(
+                    new CodeArrayIndexerExpression(
+                    new CodeFieldReferenceExpression(null, "_fieldHandlers"),
+                    new CodePrimitiveExpression(fi2.ClassUnifiedOrdinal)
+                    ),
+                    new CodeFieldReferenceExpression(null, "_fieldhandler_" + fi2.Name)));
+            }
+
+
+
+            factoryClass.Members.Add(cctor);
 
             nspace.Types.Add(factoryClass);
         }

@@ -265,76 +265,9 @@ namespace Sooda.StubGen
             method.Attributes = MemberAttributes.Family | MemberAttributes.Override;
             method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(int), "ordinal"));
             method.ReturnType = new CodeTypeReference("Sooda.ObjectMapper.SoodaFieldHandler");
-
-            if (classInfo.InheritsFromClass == null) 
-            {
-                method.Statements.Add(
-                    new CodeMethodReturnStatement(
-                    new CodeArrayIndexerExpression(
-                    new CodeFieldReferenceExpression(null, "_fieldHandlers"),
-                    new CodeArgumentReferenceExpression("ordinal")))
-                    );
-            } 
-            else 
-            {
-                if (classInfo.LocalFields.Count > 0) 
-                {
-                    int firstFieldOrdinal = classInfo.LocalFields[0].ClassUnifiedOrdinal;
-
-                    method.Statements.Add(
-                        new CodeConditionStatement(
-                        new CodeBinaryOperatorExpression(
-                        Arg("ordinal"),
-                        CodeBinaryOperatorType.GreaterThanOrEqual,
-                        new CodePrimitiveExpression(firstFieldOrdinal)),
-                        new CodeStatement[] {
-                                                new CodeMethodReturnStatement(
-                                                new CodeArrayIndexerExpression(
-                                                new CodeFieldReferenceExpression(null, "_fieldHandlers"),
-                                                new CodeBinaryOperatorExpression(new CodeArgumentReferenceExpression("ordinal"), CodeBinaryOperatorType.Subtract, new CodePrimitiveExpression(firstFieldOrdinal))))
-                                            },
-                        new CodeStatement[] {
-                                                new CodeMethodReturnStatement(
-                                                new CodeMethodInvokeExpression(
-                                                new CodeBaseReferenceExpression(),
-                                                "GetFieldHandler",
-                                                Arg("ordinal")))
-                                            }));
-                } 
-                else 
-                {
-                    method.Statements.Add(new CodeMethodReturnStatement(
-                        new CodeMethodInvokeExpression(
-                        new CodeBaseReferenceExpression(),
-                        "GetFieldHandler",
-                        Arg("ordinal"))));
-
-                }
-            }
-
-            return method;
-        }
-        public CodeMemberMethod Method_InitFields() 
-        {
-            CodeMemberMethod method;
-
-            method = new CodeMemberMethod();
-            method.Name = "InitFields";
-            method.Attributes = MemberAttributes.Private | MemberAttributes.Static;
-
-            method.Statements.Add(new CodeAssignStatement(new CodeFieldReferenceExpression(null, "_fieldHandlers"),
-                new CodeArrayCreateExpression("SoodaFieldHandler", new CodePrimitiveExpression(classInfo.LocalFields.Count))));
-
-            foreach (FieldInfo fi in classInfo.LocalFields) 
-            {
-                method.Statements.Add(
-                    new CodeAssignStatement(
-                    new CodeArrayIndexerExpression(
-                    new CodeFieldReferenceExpression(null, "_fieldHandlers"),
-                    new CodePrimitiveExpression(fi.ClassLocalOrdinal)
-                    ),
-                    new CodeFieldReferenceExpression(null, "_fieldhandler_" + fi.Name)));
-            }
+            method.Statements.Add(new CodeMethodReturnStatement(
+                new CodeMethodInvokeExpression(
+                new CodeTypeReferenceExpression(classInfo.Name + "_Factory"), "InternalGetFieldHandler", new CodeArgumentReferenceExpression("ordinal"))));
 
             return method;
         }
@@ -349,14 +282,6 @@ namespace Sooda.StubGen
 
             method.Statements.Add(CDILParser.ParseStatement("return new SoodaObjectArrayFieldValues(" + classInfo.UnifiedFields.Count + ")", CDILContext.Null));
             return method;
-        }
-        public CodeTypeConstructor Constructor_Class() 
-        {
-            CodeTypeConstructor ctor = new CodeTypeConstructor();
-
-            ctor.Statements.Add(new CodeExpressionStatement(new CodeMethodInvokeExpression(null, "InitFields")));
-
-            return ctor;
         }
         public CodeConstructor Constructor_Inserting() 
         {
@@ -591,7 +516,6 @@ namespace Sooda.StubGen
 
                 CodeTypeReference returnType;
                 CodeTypeReference rawReturnType;
-                string _db_FieldName = "_fieldhandler_" + fi.Name;
 
                 //if (fi.Name == classInfo.PrimaryKeyFieldName)
                 //{
@@ -632,7 +556,7 @@ namespace Sooda.StubGen
                         prop.SetStatements.Add(
                             new CodeExpressionStatement(
                             new CodeMethodInvokeExpression(
-                            new CodeThisReferenceExpression(), "SetInitialPrimaryKeyValue",
+                            new CodeThisReferenceExpression(), "SetPrimaryKeyValue",
                             new CodePropertySetValueReferenceExpression())));
                     }
                     continue;
@@ -718,14 +642,14 @@ namespace Sooda.StubGen
                             prop.GetStatements.Add(
                                 new CodeMethodReturnStatement(
                                 new CodeMethodInvokeExpression(
-                                new CodeFieldReferenceExpression(null, "_fieldhandler_" + fi.Name), "GetSqlNullableValue", GetFieldValueExpression(fi))));
+                                new CodeFieldReferenceExpression(new CodeTypeReferenceExpression(classInfo.Name + "_Factory"), "_fieldhandler_" + fi.Name), "GetSqlNullableValue", GetFieldValueExpression(fi))));
                             break;
 
                         case PrimitiveRepresentation.Raw:
                             prop.GetStatements.Add(
                                 new CodeMethodReturnStatement(
                                 new CodeMethodInvokeExpression(
-                                new CodeFieldReferenceExpression(null, "_fieldhandler_" + fi.Name), "GetNotNullValue", GetFieldValueExpression(fi)
+                                new CodeFieldReferenceExpression(new CodeTypeReferenceExpression(classInfo.Name + "_Factory"), "_fieldhandler_" + fi.Name), "GetNotNullValue", GetFieldValueExpression(fi)
                                 )));
                             break;
 
@@ -779,7 +703,7 @@ namespace Sooda.StubGen
                     prop.GetStatements.Add(
                         new CodeMethodReturnStatement(
                         new CodeMethodInvokeExpression(
-                        new CodeFieldReferenceExpression(null, "_fieldhandler_" + fi.Name), "GetNotNullValue",
+                        new CodeFieldReferenceExpression(new CodeTypeReferenceExpression(classInfo.Name + "_Factory"), "_fieldhandler_" + fi.Name), "GetNotNullValue",
                         GetFieldValueExpression(fi))));
                     if (!classInfo.ReadOnly) 
                     {
@@ -904,22 +828,6 @@ namespace Sooda.StubGen
             CodeMemberField field;
             CodeTypeReference fieldArrayType = new CodeTypeReference(
                 "Sooda.ObjectMapper.SoodaFieldHandler", 1);
-
-            field = new CodeMemberField(fieldArrayType , "_fieldHandlers");
-            field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
-            field.InitExpression = new CodeArrayCreateExpression("Sooda.ObjectMapper.SoodaFieldHandler", new CodePrimitiveExpression(ci.LocalFields.Count));
-            ctd.Members.Add(field);
-
-            foreach (FieldInfo fi in classInfo.LocalFields) 
-            {
-                string typeWrapper = fi.GetWrapperTypeName();
-                bool isNullable = fi.IsNullable;
-
-                field = new CodeMemberField(typeWrapper, "_fieldhandler_" + fi.Name);
-                field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
-                field.InitExpression = new CodeObjectCreateExpression(typeWrapper, new CodePrimitiveExpression(isNullable));
-                ctd.Members.Add(field);
-            }
 
             foreach (FieldInfo fi in classInfo.LocalFields) 
             {

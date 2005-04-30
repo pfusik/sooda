@@ -7,6 +7,10 @@ class ${ClassName}_Factory
     begin
     end
     
+    field arrayof(SoodaFieldHandler) _fieldHandlers
+        attributes Private,Static
+    end
+    
     field SoodaFieldHandler _primaryKeyFieldHandler
         attributes Private,Static
         value new ${PrimaryKeyHandlerType}(false)
@@ -47,68 +51,75 @@ class ${ClassName}_Factory
     
     method GetRef(SoodaTransaction tran, System.Object keyValue)
         returns SoodaObject
-        attributes Private
-        implementsprivate ISoodaObjectFactory
+        attributes Public
     begin
         return typeref(${OutNamespace}.Stubs.${ClassName}_Stub).GetRef(arg(tran), cast(${PrimaryKeyType},arg(keyValue)))
     end
     
     method TryGet(SoodaTransaction tran, System.Object keyValue)
         returns SoodaObject
-        attributes Private
-        implementsprivate ISoodaObjectFactory
+        attributes Public
     begin
         return typeref(${OutNamespace}.Stubs.${ClassName}_Stub).TryGet(arg(tran), cast(${PrimaryKeyType},arg(keyValue)))
     end
     
     method GetRefFromRecord(SoodaTransaction tran, System.Data.IDataRecord record, System.Int32 firstColumnIndex, arrayof(Sooda.Schema.TableInfo) loadedTables, System.Int32 tableIndex)
         returns SoodaObject
-        attributes Private
-        implementsprivate ISoodaObjectFactory
+        attributes Public
     begin
         return typeref(${OutNamespace}.Stubs.${ClassName}_Stub).GetRefFromRecord(arg(tran), arg(record), arg(firstColumnIndex), arg(loadedTables), arg(tableIndex))
     end
     
     method GetList(SoodaTransaction tran, SoodaWhereClause whereClause, SoodaOrderBy orderBy, SoodaSnapshotOptions options)
         returns System.Collections.IList
-        attributes Private
-        implementsprivate ISoodaObjectFactory
+        attributes Public
     begin
         return typeref(${OutNamespace}.Stubs.${ClassName}_Stub).GetList(arg(tran), arg(whereClause), arg(orderBy), arg(options))
     end
     
     method GetClassInfo()
         returns Sooda.Schema.ClassInfo
-        attributes Private
-        implementsprivate ISoodaObjectFactory
+        attributes Public
     begin
         return thistype.TheClassInfo;
     end
     
     method GetPrimaryKeyFieldHandler()
         returns Sooda.ObjectMapper.SoodaFieldHandler
-        attributes Private
-        implementsprivate ISoodaObjectFactory
+        attributes Public
     begin
         return thistype._primaryKeyFieldHandler;
     end
     
+    method GetFieldHandler(System.Int32 ordinal)
+        returns Sooda.ObjectMapper.SoodaFieldHandler
+        attributes Public
+    begin
+        return thistype.InternalGetFieldHandler(arg(ordinal));
+    end
+    
+    
+    method InternalGetFieldHandler(System.Int32 ordinal)
+        returns Sooda.ObjectMapper.SoodaFieldHandler
+        attributes Assembly,Static
+    begin
+        return arrayitem(thistype._fieldHandlers, arg(ordinal))
+    end
+    
     method CreateNew(SoodaTransaction tran)
         returns SoodaObject
-        attributes Private
-        implementsprivate ISoodaObjectFactory
+        attributes Public
     begin
 #if IsAbstract
         throw new NotSupportedException('Cannot create instances of abstract class ${ClassName}')
 #else
-        throw new NotImplementedException()
+        return new ${ClassName}(arg(tran))
 #endif
     end
 
     method GetRawObject(SoodaTransaction tran)
         returns SoodaObject
-        attributes Private
-        implementsprivate ISoodaObjectFactory
+        attributes Public
     begin
 #if IsAbstract
         throw new NotSupportedException('Cannot create instances of abstract class ${ClassName}')

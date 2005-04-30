@@ -54,6 +54,7 @@ namespace Sooda
         SoodaObject GetRefFromRecord(SoodaTransaction tran, System.Data.IDataRecord record, int firstColumnIndex, TableInfo[] loadedTables, int tableIndex);
         System.Collections.IList GetList(SoodaTransaction tran, SoodaWhereClause whereClause, SoodaOrderBy orderByClause, SoodaSnapshotOptions options);
         SoodaFieldHandler GetPrimaryKeyFieldHandler();
+        SoodaFieldHandler GetFieldHandler(int ordinal);
         ClassInfo GetClassInfo();
         System.Type TheType { get; }
     }

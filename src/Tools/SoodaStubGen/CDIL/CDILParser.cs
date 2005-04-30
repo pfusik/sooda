@@ -132,6 +132,17 @@ namespace Sooda.StubGen.CDIL
                 return new CodeTypeOfExpression(typeRef);
             }
 
+            if (IsKeyword("arrayitem"))
+            {
+                GetNextToken();
+                Expect(CDILToken.LeftParen);
+                CodeExpression array = ParseExpression();
+                Expect(CDILToken.Comma);
+                CodeExpression item = ParseExpression();
+                Expect(CDILToken.RightParen);
+                return new CodeArrayIndexerExpression(array, item);
+            }
+
             if (IsKeyword("var"))
             {
                 GetNextToken();
