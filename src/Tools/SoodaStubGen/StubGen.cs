@@ -152,23 +152,29 @@ namespace Sooda.StubGen
             if (!miniStub)
                 GenerateClassValues(nspace, ci, outNamespace, options, miniStub);
 
-            CodeTypeDeclaration ctd = new CodeTypeDeclaration(ci.Name + "_Stub");
+            CDILContext context = new CDILContext();
+            context["ClassName"] = ci.Name;
+            context["HasBaseClass"] = ci.InheritsFromClass != null;
+            context["MiniStub"] = miniStub;
+
             if (ci.ExtBaseClassName != null) 
             {
-                ctd.BaseTypes.Add(ci.ExtBaseClassName);
+                context["BaseClassName"] = ci.ExtBaseClassName;
             } 
             else if (ci.InheritFrom != null && !miniStub) 
             {
-                ctd.BaseTypes.Add(ci.InheritFrom);
+                context["BaseClassName"] = ci.InheritFrom;
             } 
             else if (options.BaseClassName != null && !miniStub) 
             {
-                ctd.BaseTypes.Add(options.BaseClassName);
+                context["BaseClassName"] = options.BaseClassName;
             } 
             else 
             {
-                ctd.BaseTypes.Add("SoodaObject");
+                context["BaseClassName"] = "SoodaObject";
             }
+
+            CodeTypeDeclaration ctd = CDILParser.ParseClass(CDILTemplate.Get("Stub.cdil"), context);
             nspace.Types.Add(ctd);
 
             CodeDomClassStubGenerator gen = new CodeDomClassStubGenerator(ci);
@@ -180,12 +186,7 @@ namespace Sooda.StubGen
                 return ;
             }
 
-            ctd.Members.Add(gen.Constructor_Inserting());
-            ctd.Members.Add(gen.Constructor_Raw());
-
             // class constructor
-
-            ctd.Members.Add(gen.Method_GetClassInfo());
 
             if (gen.KeyGen != "none") 
             {

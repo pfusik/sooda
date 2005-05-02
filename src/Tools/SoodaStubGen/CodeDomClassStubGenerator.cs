@@ -298,21 +298,6 @@ namespace Sooda.StubGen
 
             return ctor;
         }
-        public CodeMemberMethod Method_GetClassInfo() 
-        {
-            CodeMemberMethod method;
-
-            method = new CodeMemberMethod();
-            method.Name = "GetClassInfo";
-            method.Attributes = MemberAttributes.Override | MemberAttributes.Public;
-            method.ReturnType = new CodeTypeReference("Sooda.Schema.ClassInfo");
-            NoStepThrough(method.CustomAttributes);
-            method.Statements.Add(
-                new CodeMethodReturnStatement(
-                new CodeFieldReferenceExpression(new CodeTypeReferenceExpression(classInfo.Name + "_Factory"), "TheClassInfo")));
-
-            return method;
-        }
         public CodeMemberProperty Prop_LiteralValue(string name, object val) 
         {
             CodeMemberProperty prop;

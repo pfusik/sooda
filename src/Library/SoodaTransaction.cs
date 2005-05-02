@@ -821,6 +821,7 @@ namespace Sooda
             bool objectForcePostCommit = false;
             string objectClassName;
             string objectMode = null;
+            object[] objectPrimaryKey = null;
             ClassInfo objectClassInfo;
             ISoodaObjectFactory objectFactory = null;
             int objectKeyCounter = 0;
@@ -862,20 +863,41 @@ namespace Sooda
                             objectFactory = GetFactory(objectClassName);
                             objectClassInfo = objectFactory.GetClassInfo();
                             objectTotalKeyCounter = objectClassInfo.GetPrimaryKeyFields().Length;
+                            if (objectTotalKeyCounter > 1)
+                                objectPrimaryKey = new object[objectTotalKeyCounter];
                             if (reader.GetAttribute("forcepostcommit") != null)
                                 objectForcePostCommit = true;
                             break;
 
                         case "key":
-                            objectKeyCounter++;
                             int ordinal = Convert.ToInt32(reader.GetAttribute("ordinal"));
                             object val = objectFactory.GetFieldHandler(ordinal).RawDeserialize(reader.GetAttribute("value"));
 
-#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
+                            if (objectTotalKeyCounter > 1)
+                            {
+                                objectPrimaryKey[objectKeyCounter] = val;
+                            }
+
+                            objectKeyCounter++;
 
                             if (objectKeyCounter == objectTotalKeyCounter)
                             {
-                                currentObject = BeginObjectDeserialization(objectFactory, val, objectMode);
+                                object primaryKey;
+
+                                if (objectTotalKeyCounter == 1)
+                                {
+                                    primaryKey = val;
+                                }
+                                else if (objectTotalKeyCounter > 2)
+                                {
+                                    primaryKey = new SoodaTuple(objectPrimaryKey);
+                                }
+                                else
+                                {
+                                    primaryKey = new SoodaPair(objectPrimaryKey[0], objectPrimaryKey[1]);
+                                }
+
+                                currentObject = BeginObjectDeserialization(objectFactory, primaryKey, objectMode);
                                 if (objectForcePostCommit)
                                     currentObject.ForcePostCommit();
                                 currentObject.DisableTriggers = true;

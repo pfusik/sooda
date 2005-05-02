@@ -32,61 +32,13 @@
 //
 
 using System;
+using System.Collections;
 
-using Sooda.ObjectMapper;
-
-namespace Sooda {
-    [Serializable]
-    public class SoodaTuple : ISoodaTuple, IComparable
+namespace Sooda.ObjectMapper 
+{
+    public interface ISoodaTuple 
     {
-        private object[] _items;
-
-        public SoodaTuple(params object[] items)
-        {
-            _items = items;
-        }
-
-        public override bool Equals(object obj)
-        {
-            SoodaTuple tuple2 = obj as SoodaTuple;
-            if (tuple2 == null)
-                return false;
-
-            if (_items.Length != tuple2._items.Length)
-                return false;
-
-            for (int i = 0; i < _items.Length; ++i)
-            {
-                if (!_items[i].Equals(tuple2._items[i]))
-                    return false;
-            }
-            return true;
-        }
-
-        public override int GetHashCode()
-        {
-            int retVal = 0;
-
-            for (int i = 0; i < _items.Length; ++i)
-            {
-                retVal = retVal ^ _items[i].GetHashCode();
-            }
-            return retVal;
-        }
-
-        public int Length
-        {
-            get { return _items.Length; }
-        }
-
-        public object GetValue(int ordinal)
-        {
-            return _items[ordinal];
-        }
-        
-        public int CompareTo(object obj)
-        {
-            throw new NotImplementedException();
-        }
+        int Length { get; }
+        object GetValue(int ordinal);
     }
 }

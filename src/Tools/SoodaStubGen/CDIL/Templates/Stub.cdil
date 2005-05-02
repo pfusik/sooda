@@ -1,0 +1,25 @@
+class ${ClassName}_Stub
+    extends ${BaseClassName}
+    
+constructor(SoodaTransaction tran)
+    attributes Public
+    baseArg(arg(tran))
+begin
+#ifnot HasBaseClass
+    call this.InitNewObject();
+#endif
+end
+
+constructor(SoodaConstructor c)
+    attributes Public
+    baseArg(arg(c))
+begin
+end
+ 
+method GetClassInfo()
+    customattribute System.Diagnostics.DebuggerStepThroughAttribute
+    attributes Public,Override
+    returns Sooda.Schema.ClassInfo
+begin
+    return typeref(${ClassName}_Factory).TheClassInfo
+end

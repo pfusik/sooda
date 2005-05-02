@@ -32,56 +32,55 @@
 //
 
 using System;
-
 using Sooda.ObjectMapper;
 
-namespace Sooda {
+namespace Sooda 
+{
     [Serializable]
-    public class SoodaTuple : ISoodaTuple, IComparable
+    public class SoodaPair : ISoodaTuple, IComparable
     {
-        private object[] _items;
+        private object _o1;
+        private object _o2;
 
-        public SoodaTuple(params object[] items)
+        public SoodaPair(object o1, object o2)
         {
-            _items = items;
+            _o1 = o1;
+            _o2 = o2;
         }
 
         public override bool Equals(object obj)
         {
-            SoodaTuple tuple2 = obj as SoodaTuple;
-            if (tuple2 == null)
+            SoodaPair pair2 = obj as SoodaPair;
+            if (pair2 == null)
                 return false;
 
-            if (_items.Length != tuple2._items.Length)
+            if (!_o1.Equals(pair2._o1))
                 return false;
 
-            for (int i = 0; i < _items.Length; ++i)
-            {
-                if (!_items[i].Equals(tuple2._items[i]))
-                    return false;
-            }
+            if (!_o2.Equals(pair2._o2))
+                return false;
+
             return true;
         }
 
         public override int GetHashCode()
         {
-            int retVal = 0;
-
-            for (int i = 0; i < _items.Length; ++i)
-            {
-                retVal = retVal ^ _items[i].GetHashCode();
-            }
-            return retVal;
+            return _o1.GetHashCode() ^ _o2.GetHashCode();
         }
 
         public int Length
         {
-            get { return _items.Length; }
+            get { return 2; }
         }
 
         public object GetValue(int ordinal)
         {
-            return _items[ordinal];
+            if (ordinal == 0)
+                return _o1;
+            else if (ordinal == 1)
+                return _o2;
+            else 
+                throw new ArgumentException("ordinal");
         }
         
         public int CompareTo(object obj)

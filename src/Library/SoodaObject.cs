@@ -234,6 +234,32 @@ namespace Sooda
             throw new NotImplementedException();
         }
 
+        private void PropagatePrimaryKeyToFields()
+        {
+            Sooda.Schema.FieldInfo[] primaryKeys = GetClassInfo().GetPrimaryKeyFields();
+            ISoodaTuple tuple = _primaryKeyValue as ISoodaTuple;
+
+            if (tuple != null)
+            {
+                if (tuple.Length != primaryKeys.Length)
+                    throw new InvalidOperationException("Primary key tuple length doesn't match the expected length");
+
+                for (int i = 0; i < primaryKeys.Length; ++i)
+                {
+                    _fieldValues.SetFieldValue(primaryKeys[i].ClassUnifiedOrdinal, tuple.GetValue(i));
+                }
+            }
+            else
+            {
+                if (primaryKeys.Length != 1)
+                    throw new InvalidOperationException("Primary key is not a scalar.");
+
+                // scalar
+                int ordinal = primaryKeys[0].ClassUnifiedOrdinal;
+                _fieldValues.SetFieldValue(ordinal, _primaryKeyValue);
+            }
+        }
+
         private void InitFieldData() 
         {
             ClassInfo ci = GetClassInfo();
@@ -246,10 +272,7 @@ namespace Sooda
             // back to the field(s)
             if (_primaryKeyValue != null) 
             {
-#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
-
-                int ordinal = ci.GetFirstPrimaryKeyField().ClassUnifiedOrdinal;
-                _fieldValues.SetFieldValue(ordinal, _primaryKeyValue);
+                PropagatePrimaryKeyToFields();
             }
 
             if (InsertMode) 
@@ -428,14 +451,7 @@ namespace Sooda
             {
                 _primaryKeyValue = keyValue;
                 if (_fieldData != null) 
-                {
-                    // primary key was set after the fields have been inited
-                    // propagate the value back to the field(s)
-
-#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
-                    int ordinal = GetClassInfo().GetFirstPrimaryKeyField().ClassUnifiedOrdinal;
-                    _fieldValues.SetFieldValue(ordinal, _primaryKeyValue);
-                }
+                    PropagatePrimaryKeyToFields();
                 RegisterObjectInTransaction();
             } 
             else 
@@ -1066,6 +1082,7 @@ namespace Sooda
                     StringBuilder query = new StringBuilder();
                     Sooda.Schema.FieldInfo[] pkFields = factory.GetClassInfo().GetPrimaryKeyFields();
                     object[] par = new object[pkFields.Length];
+                    ISoodaTuple tuple = keyValue as ISoodaTuple;
 
                     for (int i = 0; i < pkFields.Length; ++i)
                     {
@@ -1076,8 +1093,16 @@ namespace Sooda
                         query.Append("={");
                         query.Append(i);
                         query.Append("})");
-#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
-                        par[i] = keyValue;
+                        if (tuple != null)
+                        {
+                            par[i] = tuple.GetValue(i);
+                        }
+                        else
+                        {
+                            if (i != 0)
+                                throw new InvalidOperationException("Primary key tuple length mismatch.");
+                            par[i] = keyValue;
+                        }
                     }
 
                     SoodaWhereClause whereClause = new SoodaWhereClause(query.ToString(), par);

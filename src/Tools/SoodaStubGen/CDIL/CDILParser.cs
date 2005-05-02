@@ -356,6 +356,14 @@ namespace Sooda.StubGen.CDIL
             ExpectKeyword("end");
             return property;
         }
+
+        public CodeAttributeDeclaration ParseCustomAttribute()
+        {
+            CodeAttributeDeclaration decl = new CodeAttributeDeclaration();
+            decl.Name = ParseType().BaseType;
+            // TODO: add support for parameters
+            return decl;
+        }
         
         public CodeMemberMethod ParseMethod()
         {
@@ -386,6 +394,12 @@ namespace Sooda.StubGen.CDIL
                 {
                     GetNextToken();
                     method.ImplementationTypes.Add(ParseType());
+                    continue;
+                }
+                if (IsKeyword("customattribute"))
+                {
+                    GetNextToken();
+                    method.CustomAttributes.Add(ParseCustomAttribute());
                     continue;
                 }
                 if (IsKeyword("implementsprivate"))
