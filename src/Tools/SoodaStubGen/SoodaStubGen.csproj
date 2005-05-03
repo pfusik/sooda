@@ -182,6 +182,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "CDIL\CDILPrettyPrinter.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "CDIL\CDILTemplate.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

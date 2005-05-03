@@ -34,19 +34,19 @@ class ${ClassName}_Factory
     property ${ClassName}_Factory TheFactory
         attributes Public,Static
     get
-        return thistype._theFactory;
+        return defaultscope._theFactory;
     end
     
     property Type TheType
         attributes Public
     get
-        return thistype._theType;
+        return defaultscope._theType;
     end
     
     property Sooda.Schema.ClassInfo TheClassInfo
         attributes Public,Static
     get
-        return thistype._theClassInfo;
+        return defaultscope._theClassInfo;
     end
     
     method GetRef(SoodaTransaction tran, System.Object keyValue)
@@ -81,21 +81,21 @@ class ${ClassName}_Factory
         returns Sooda.Schema.ClassInfo
         attributes Public
     begin
-        return thistype.TheClassInfo;
+        return defaultscope.TheClassInfo;
     end
     
     method GetPrimaryKeyFieldHandler()
         returns Sooda.ObjectMapper.SoodaFieldHandler
         attributes Public
     begin
-        return thistype._primaryKeyFieldHandler;
+        return defaultscope._primaryKeyFieldHandler;
     end
     
     method GetFieldHandler(System.Int32 ordinal)
         returns Sooda.ObjectMapper.SoodaFieldHandler
         attributes Public
     begin
-        return thistype.InternalGetFieldHandler(arg(ordinal));
+        return defaultscope.InternalGetFieldHandler(arg(ordinal));
     end
     
     
@@ -103,7 +103,7 @@ class ${ClassName}_Factory
         returns Sooda.ObjectMapper.SoodaFieldHandler
         attributes Assembly,Static
     begin
-        return arrayitem(thistype._fieldHandlers, arg(ordinal))
+        return arrayitem(defaultscope._fieldHandlers, arg(ordinal))
     end
     
     method CreateNew(SoodaTransaction tran)
@@ -124,7 +124,7 @@ class ${ClassName}_Factory
 #if IsAbstract
         throw new NotSupportedException('Cannot create instances of abstract class ${ClassName}')
 #else
-        let ${ClassName} retVal = new ${ClassName}(typeref(SoodaConstructor).Constructor);
+        var ${ClassName} retVal = new ${ClassName}(typeref(SoodaConstructor).Constructor);
         call var(retVal).InitRawObject(arg(tran));
         return var(retVal)
 #endif

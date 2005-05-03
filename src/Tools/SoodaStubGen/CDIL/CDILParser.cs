@@ -81,10 +81,16 @@ namespace Sooda.StubGen.CDIL
                 GetNextToken();
                 return expr;
             }
-            if (TokenType == CDILToken.Base)
+            if (IsKeyword("base"))
             {
                 GetNextToken();
                 return new CodeBaseReferenceExpression();
+            }
+
+            if (IsKeyword("null"))
+            {
+                GetNextToken();
+                return new CodePrimitiveExpression(null);
             }
 
             if (IsKeyword("false"))
@@ -99,19 +105,46 @@ namespace Sooda.StubGen.CDIL
                 return new CodePrimitiveExpression(true);
             }
 
-            if (TokenType == CDILToken.This)
+            if (IsKeyword("this"))
             {
                 GetNextToken();
                 return new CodeThisReferenceExpression();
             }
 
-            if (TokenType == CDILToken.Arg)
+            if (IsKeyword("setvalue"))
+            {
+                GetNextToken();
+                return new CodePropertySetValueReferenceExpression();
+            }
+
+            if (IsKeyword("arg"))
             {
                 GetNextToken();
                 Expect(CDILToken.LeftParen);
                 string name = EatKeyword();
                 Expect(CDILToken.RightParen);
                 return new CodeArgumentReferenceExpression(name);
+            }
+
+            if (IsKeyword("delegatecall"))
+            {
+                CodeDelegateInvokeExpression retval = new CodeDelegateInvokeExpression();
+                GetNextToken();
+                Expect(CDILToken.LeftParen);
+                retval.TargetObject = ParseExpression();
+                Expect(CDILToken.RightParen);
+                Expect(CDILToken.LeftParen);
+                while (TokenType != CDILToken.RightParen && TokenType != CDILToken.EOF)
+                {
+                    CodeExpression expr = ParseExpression();
+                    retval.Parameters.Add(expr);
+                    if (TokenType == CDILToken.Comma)
+                    {
+                        GetNextToken();
+                    }
+                }
+                Expect(CDILToken.RightParen);
+                return retval;
             }
 
             if (IsKeyword("typeref"))
@@ -132,15 +165,71 @@ namespace Sooda.StubGen.CDIL
                 return new CodeTypeOfExpression(typeRef);
             }
 
+            if (IsKeyword("add"))
+            {
+                CodeBinaryOperatorExpression cboe = new CodeBinaryOperatorExpression();
+                cboe.Operator = CodeBinaryOperatorType.Add;
+                GetNextToken();
+                Expect(CDILToken.LeftParen);
+                cboe.Left = ParseExpression();
+                Expect(CDILToken.Comma);
+                cboe.Right = ParseExpression();
+                Expect(CDILToken.RightParen);
+                return cboe;
+            }
+
+            if (IsKeyword("equal"))
+            {
+                CodeBinaryOperatorExpression cboe = new CodeBinaryOperatorExpression();
+                cboe.Operator = CodeBinaryOperatorType.ValueEquality;
+                GetNextToken();
+                Expect(CDILToken.LeftParen);
+                cboe.Left = ParseExpression();
+                Expect(CDILToken.Comma);
+                cboe.Right = ParseExpression();
+                Expect(CDILToken.RightParen);
+                return cboe;
+            }
+
+            if (IsKeyword("refequal"))
+            {
+                CodeBinaryOperatorExpression cboe = new CodeBinaryOperatorExpression();
+                cboe.Operator = CodeBinaryOperatorType.IdentityEquality;
+                GetNextToken();
+                Expect(CDILToken.LeftParen);
+                cboe.Left = ParseExpression();
+                Expect(CDILToken.Comma);
+                cboe.Right = ParseExpression();
+                Expect(CDILToken.RightParen);
+                return cboe;
+            }
+
+            if (IsKeyword("refnotequal"))
+            {
+                CodeBinaryOperatorExpression cboe = new CodeBinaryOperatorExpression();
+                cboe.Operator = CodeBinaryOperatorType.IdentityInequality;
+                GetNextToken();
+                Expect(CDILToken.LeftParen);
+                cboe.Left = ParseExpression();
+                Expect(CDILToken.Comma);
+                cboe.Right = ParseExpression();
+                Expect(CDILToken.RightParen);
+                return cboe;
+            }
+
             if (IsKeyword("arrayitem"))
             {
                 GetNextToken();
                 Expect(CDILToken.LeftParen);
-                CodeExpression array = ParseExpression();
-                Expect(CDILToken.Comma);
-                CodeExpression item = ParseExpression();
+                CodeArrayIndexerExpression caie = new CodeArrayIndexerExpression();
+                caie.TargetObject = ParseExpression();
+                while (TokenType == CDILToken.Comma)
+                {
+                    Expect(CDILToken.Comma);
+                    caie.Indices.Add(ParseExpression());
+                }
                 Expect(CDILToken.RightParen);
-                return new CodeArrayIndexerExpression(array, item);
+                return caie;
             }
 
             if (IsKeyword("var"))
@@ -152,23 +241,41 @@ namespace Sooda.StubGen.CDIL
                 return new CodeVariableReferenceExpression(name);
             }
 
-            if (IsKeyword("thistype"))
+            if (IsKeyword("defaultscope"))
             {
                 GetNextToken();
                 return null;
             }
 
-            if (TokenType == CDILToken.Cast)
+            if (IsKeyword("ref"))
             {
                 GetNextToken();
                 Expect(CDILToken.LeftParen);
-                string typeName = EatKeyword();
+                CodeExpression expr = ParseExpression();
+                Expect(CDILToken.RightParen);
+                return new CodeDirectionExpression(FieldDirection.Ref, expr);
+            }
+
+            if (IsKeyword("out"))
+            {
+                GetNextToken();
+                Expect(CDILToken.LeftParen);
+                CodeExpression expr = ParseExpression();
+                Expect(CDILToken.RightParen);
+                return new CodeDirectionExpression(FieldDirection.Out, expr);
+            }
+
+            if (IsKeyword("cast"))
+            {
+                GetNextToken();
+                Expect(CDILToken.LeftParen);
+                CodeTypeReference type = ParseType();
                 Expect(CDILToken.Comma);
                 CodeExpression expr = ParseExpression();
                 Expect(CDILToken.RightParen);
-                return new CodeCastExpression(typeName, expr);
+                return new CodeCastExpression(type, expr);
             }
-            if (TokenType == CDILToken.New)
+            if (IsKeyword("new"))
             {
                 GetNextToken();
                 CodeTypeReference type = ParseType();
@@ -183,6 +290,18 @@ namespace Sooda.StubGen.CDIL
                         GetNextToken();
                     }
                 }
+                Expect(CDILToken.RightParen);
+                return retval;
+            }
+
+            if (IsKeyword("newarray"))
+            {
+                GetNextToken();
+                Expect(CDILToken.LeftParen);
+                CodeArrayCreateExpression retval = new CodeArrayCreateExpression();
+                retval.CreateType = ParseType();
+                Expect(CDILToken.Comma);
+                retval.SizeExpression = ParseExpression();
                 Expect(CDILToken.RightParen);
                 return retval;
             }
@@ -280,6 +399,8 @@ namespace Sooda.StubGen.CDIL
                 return ParseField();
             if (IsKeyword("property"))
                 return ParseProperty();
+            if (IsKeyword("typeconstructor"))
+                return ParseTypeConstructor();
             throw BuildException("Unknown member: " + TokenType);
         }
 
@@ -486,6 +607,24 @@ namespace Sooda.StubGen.CDIL
             return ctor;
         }
 
+        public CodeTypeConstructor ParseTypeConstructor()
+        {
+            CodeTypeConstructor ctor = new CodeTypeConstructor();
+
+            ExpectKeyword("typeconstructor");
+            ExpectKeyword("begin");
+            while (!IsKeyword("end") && TokenType != CDILToken.EOF)
+            {
+                ctor.Statements.Add(ParseStatement());
+                if (TokenType == CDILToken.Semicolon)
+                    Expect(CDILToken.Semicolon);
+                else
+                    break;
+            }
+            ExpectKeyword("end");
+            return ctor;
+        }
+
         public CodeTypeDeclaration ParseClass()
         {
             ExpectKeyword("class");
@@ -525,7 +664,7 @@ namespace Sooda.StubGen.CDIL
 
         public CodeStatement ParseStatement()
         {
-            if (IsKeyword("let"))
+            if (IsKeyword("var"))
             {
                 GetNextToken();
                 CodeTypeReference type = ParseType();
@@ -540,7 +679,6 @@ namespace Sooda.StubGen.CDIL
                 {
                     return new CodeVariableDeclarationStatement(type, name);
                 }
-
             }
             if (IsKeyword("call"))
             {
@@ -548,6 +686,18 @@ namespace Sooda.StubGen.CDIL
                 return new CodeExpressionStatement(ParseExpression());
             }
 
+            if (IsKeyword("return"))
+            {
+                CodeMethodReturnStatement retVal;
+
+                GetNextToken();
+                retVal = new CodeMethodReturnStatement();
+                if (!IsKeyword("nothing"))
+                    retVal.Expression = ParseExpression();
+                else
+                    GetNextToken();
+                return retVal;
+            }
             if (IsKeyword("return"))
             {
                 CodeMethodReturnStatement retVal;
@@ -566,6 +716,40 @@ namespace Sooda.StubGen.CDIL
                 retVal = new CodeThrowExceptionStatement();
                 if (TokenType != CDILToken.Semicolon && TokenType != CDILToken.EOF)
                     retVal.ToThrow = ParseExpression();
+                return retVal;
+            }
+            if (IsKeyword("if"))
+            {
+                CodeConditionStatement retVal = new CodeConditionStatement();
+                GetNextToken();
+                retVal.Condition = ParseExpression();
+                ExpectKeyword("then");
+                while (TokenType != CDILToken.EOF && !IsKeyword("else") && !IsKeyword("endif"))
+                {
+                    retVal.TrueStatements.Add(ParseStatement());
+                    if (TokenType == CDILToken.Semicolon)
+                        GetNextToken();
+                }
+                if (IsKeyword("else"))
+                {
+                    ExpectKeyword("else");
+                    while (TokenType != CDILToken.EOF && !IsKeyword("endif"))
+                    {
+                        retVal.FalseStatements.Add(ParseStatement());
+                        if (TokenType == CDILToken.Semicolon)
+                            GetNextToken();
+                    }
+                }
+                ExpectKeyword("endif");
+                return retVal;
+            }
+            if (IsKeyword("let"))
+            {
+                CodeAssignStatement retVal = new CodeAssignStatement();
+                GetNextToken();
+                retVal.Left = ParseExpression();
+                Expect(CDILToken.Assign);
+                retVal.Right = ParseExpression();
                 return retVal;
             }
             throw BuildException("Invalid token: '" + TokenType + "': " + TokenValue);

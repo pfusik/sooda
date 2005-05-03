@@ -87,7 +87,14 @@ namespace Sooda.StubGen.CDIL
                     ch = (char)p;
                     if (ch == '\'')
                         break;
-                    text += ch;
+                    if (ch == '\\')
+                    {
+                        text += (char)ReadChar();
+                    }
+                    else
+                    {
+                        text += ch;
+                    }
                 }
                 _tokenType = CDILToken.String;
                 _tokenValue = text;
@@ -163,48 +170,7 @@ namespace Sooda.StubGen.CDIL
                     ch = (char)PeekChar();
                 }
                 _tokenValue = tokenName;
-                switch (tokenName)
-                {
-                    case "let":
-                        _tokenType = CDILToken.Let;
-                        break;
-
-                    case "return":
-                        _tokenType = CDILToken.Return;
-                        break;
-
-                    case "new":
-                        _tokenType = CDILToken.New;
-                        break;
-
-                    case "if":
-                        _tokenType = CDILToken.If;
-                        break;
-
-                    case "throw":
-                        _tokenType = CDILToken.Throw;
-                        break;
-
-                    case "base":
-                        _tokenType = CDILToken.Base;
-                        break;
-
-                    case "this":
-                        _tokenType = CDILToken.This;
-                        break;
-
-                    case "arg":
-                        _tokenType = CDILToken.Arg;
-                        break;
-
-                    case "cast":
-                        _tokenType = CDILToken.Cast;
-                        break;
-
-                    default:
-                        _tokenType = CDILToken.Keyword;
-                        break;
-                }
+                _tokenType = CDILToken.Keyword;
                 return;
             }
 

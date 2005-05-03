@@ -147,6 +147,29 @@ namespace Sooda.StubGen
             nspace.Types.Add(ctd);
         }
 
+        private static void CDILParserTest(CodeTypeDeclaration ctd)
+        {
+            using (StringWriter sw = new StringWriter())
+            {
+                CDILPrettyPrinter.PrintType(sw, ctd);
+                using (StreamWriter fsw = File.CreateText(ctd.Name + "_1.txt"))
+                {
+                    fsw.Write(sw.ToString());
+                }
+                CodeTypeDeclaration ctd2 = CDILParser.ParseClass(sw.ToString(), new CDILContext());
+                StringWriter sw2 = new StringWriter();
+                CDILPrettyPrinter.PrintType(sw2, ctd2);
+                using (StreamWriter fsw = File.CreateText(ctd.Name + "_2.txt"))
+                {
+                    fsw.Write(sw2.ToString());
+                }
+                if (sw2.ToString() != sw.ToString())
+                {
+                    throw new InvalidOperationException("DIFFERENT!");
+                }
+            }
+        }
+
         public static void GenerateClassStub(CodeNamespace nspace, ClassInfo ci, string outNamespace, StubGenOptions options, bool miniStub) 
         {
             if (!miniStub)
@@ -272,9 +295,12 @@ namespace Sooda.StubGen
             ctd.Members.Add(gen.Method_NormalGet());
             ctd.Members.Add(gen.Method_NormalTryGet());
             //ctd.Members.Add(gen.Method_SetPrimaryKeyValue());
+
             CodeMemberMethod m = gen.Method_IterateOuterReferences();
             if (m != null)
                 ctd.Members.Add(m);
+
+            CDILParserTest(ctd);
         }
 
         public static void GenerateClassFactory(CodeNamespace nspace, ClassInfo ci, string outNamespace) 
@@ -326,6 +352,7 @@ namespace Sooda.StubGen
             factoryClass.Members.Add(cctor);
 
             nspace.Types.Add(factoryClass);
+            CDILParserTest(factoryClass);
         }
 
         public static void GenerateClassSkeleton(CodeNamespace nspace, ClassInfo ci, string outNamespace, bool useChainedConstructorCall, bool fakeSkeleton) 
@@ -346,6 +373,7 @@ namespace Sooda.StubGen
             {
                 ctd.Members.Add(gen.Method_InitObject());
             }
+            CDILParserTest(ctd);
         }
 
         public static void GenerateDatabaseSchema(CodeNamespace nspace, string outNamespace) 
@@ -361,8 +389,8 @@ namespace Sooda.StubGen
             context["ClassName"] = ci.Name;
 
             CodeTypeDeclaration listWrapperClass = CDILParser.ParseClass(CDILTemplate.Get("ListWrapper.cdil"), context);
-
             nspace.Types.Add(listWrapperClass);
+            CDILParserTest(listWrapperClass);
         }
 
         public static void GenerateRelationStub(CodeNamespace nspace, RelationInfo ri, string outNamespace, StubGenOptions options) 
@@ -402,6 +430,7 @@ namespace Sooda.StubGen
                 new CodePrimitiveExpression(ri.Name));
 
             ctd.Members.Add(field);
+            CDILParserTest(ctd);
 
             //public class RELATION_NAME_L_List : RELATION_NAME_Rel_List, LEFT_COLUMN_REF_TYPEList, ISoodaObjectList
 

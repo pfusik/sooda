@@ -22,14 +22,5 @@ namespace Sooda.StubGen.CDIL
         Boolean,    // true,false
 
         Keyword,    // keyword - generic
-        Let,        // let()
-        Return,     // return()
-        Throw,      // throw()
-        If,         // if()
-        New,        // new()
-        Base,       // base
-        This,       // this
-        Arg,        // arg
-        Cast,       // cast
 	}
 }
