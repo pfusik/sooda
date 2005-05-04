@@ -61,13 +61,8 @@ namespace ConsoleTest
     {
         static void Main(string[] args) 
         {
-            foreach (System.Reflection.FieldInfo fi in typeof(System.CodeDom.MemberAttributes).GetFields())
-            {
-                if (fi.IsStatic)
-                    Console.WriteLine(fi.Name + "=" + (int)fi.GetValue(null));
-            }
-            Sooda.UnitTests.TestCases.ObjectMapper.InheritanceTest t = new Sooda.UnitTests.TestCases.ObjectMapper.InheritanceTest();
-            t.InsertTest();
+            Sooda.UnitTests.TestCases.ObjectMapper.DeleteTest t = new Sooda.UnitTests.TestCases.ObjectMapper.DeleteTest();
+            t.MultiTableDelete();
         }
     }
 }

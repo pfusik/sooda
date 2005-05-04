@@ -133,11 +133,33 @@ namespace Sooda.Sql {
 
         public override void DeleteObject(SoodaObject obj) 
         {
-#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
-#warning DELETE FROM ALL TABLES HERE
             ClassInfo ci = obj.GetClassInfo();
-            SqlBuilder.BuildCommandWithParameters(_updateCommand, true, "delete from " + ci.UnifiedTables[0].DBTableName + " where " + ci.GetFirstPrimaryKeyField().DBColumnName + " = {0}", obj.GetPrimaryKeyValue());
-            FlushUpdateCommand(false);
+            object[] queryParams = new object[ci.GetPrimaryKeyFields().Length];
+            for (int i = 0; i < queryParams.Length; ++i)
+                queryParams[i] = SoodaTuple.GetValue(obj.GetPrimaryKeyValue(), i);
+
+            foreach (TableInfo table in ci.UnifiedTables)
+            {
+                StringBuilder query = new StringBuilder();
+                query.Append("delete from ");
+                query.Append(table.DBTableName);
+                query.Append(" where ");
+                int pos = 0;
+                foreach (FieldInfo fi in ci.GetPrimaryKeyFields())
+                {
+                    if (pos > 0)
+                        query.Append(" and ");
+                    query.Append("(");
+                    query.Append(fi.DBColumnName);
+                    query.Append(" = {");
+                    query.Append(pos++);
+                    query.Append("}");
+                    query.Append(")");
+                }
+
+                SqlBuilder.BuildCommandWithParameters(_updateCommand, true, query.ToString(), queryParams);
+                FlushUpdateCommand(false);
+            }
         }
 
         public override void BeginSaveChanges()

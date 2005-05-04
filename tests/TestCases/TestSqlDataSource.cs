@@ -54,6 +54,7 @@ namespace Sooda.UnitTests.TestCases {
         }
 
         public new void Dispose() {
+            Console.WriteLine("TestSqlDataSource.Dispose!");
             base.Close();
             Sooda.ObjectMapper.SoodaCache.Clear();
         }

@@ -646,7 +646,7 @@ namespace Sooda
                 IDataReader record = ds.LoadObjectTable(this, keyVal, tableNumber, out loadedTables);
                 if (record == null) 
                 {
-                    Console.WriteLine("LoadObjectTable() failed for {0}.{1} {2}", this.GetType().Name, keyVal, tableNumber);
+                    logger.Debug("LoadObjectTable() failed for {0}", GetObjectKeyString());
                     GetTransaction().UnregisterObject(this);
                     throw new SoodaObjectNotFoundException(String.Format("Object {0} not found in the database", GetObjectKeyString()));
                 };
@@ -1082,7 +1082,6 @@ namespace Sooda
                     StringBuilder query = new StringBuilder();
                     Sooda.Schema.FieldInfo[] pkFields = factory.GetClassInfo().GetPrimaryKeyFields();
                     object[] par = new object[pkFields.Length];
-                    ISoodaTuple tuple = keyValue as ISoodaTuple;
 
                     for (int i = 0; i < pkFields.Length; ++i)
                     {
@@ -1093,16 +1092,7 @@ namespace Sooda
                         query.Append("={");
                         query.Append(i);
                         query.Append("})");
-                        if (tuple != null)
-                        {
-                            par[i] = tuple.GetValue(i);
-                        }
-                        else
-                        {
-                            if (i != 0)
-                                throw new InvalidOperationException("Primary key tuple length mismatch.");
-                            par[i] = keyValue;
-                        }
+                        par[i] = SoodaTuple.GetValue(keyValue, i);
                     }
 
                     SoodaWhereClause whereClause = new SoodaWhereClause(query.ToString(), par);

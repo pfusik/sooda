@@ -46,7 +46,7 @@ create table Contact
 	last_salary decimal(20,10) null,
 	name varchar(64) null,
 	type varchar(16) not null references ContactType(code),
-	primary_group int null references _Group(id) on delete cascade
+	primary_group int null references _Group(id)
 )
 go
 
@@ -83,21 +83,21 @@ go
 
 create table ContactRole
 (
-	contact_id int not null references Contact(id) on delete cascade,
+	contact_id int not null references Contact(id),
 	role_id int not null references _Role(id)
 )
 go
 
 create table ContactVehicle
 (
-	contact_id int not null references Contact(id) on delete cascade,
+	contact_id int not null references Contact(id),
 	vehicle_id int not null references Vehicle(id)
 )
 go
 
 create table ContactBike
 (
-	contact_id int not null references Contact(id) on delete cascade,
+	contact_id int not null references Contact(id),
 	bike_id int not null references Vehicle(id)
 )
 go

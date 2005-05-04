@@ -44,17 +44,30 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
     [TestFixture]
     public class DeleteTest {
         [Test]
-        public void Test1() {
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) {
+        public void MultiTableDelete() 
+        {
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) 
+            {
                 testDataSource.Open();
 
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction()) 
+                {
                     tran.RegisterDataSource(testDataSource);
-                    Contact.Ed.PrimaryGroup.Manager = Contact.Mary;
-                    Contact.Mary.PrimaryGroup.MarkForDelete();
-                    //Contact.Mary.MarkForDelete();
-
+                    ExtendedBike.Load(10).MarkForDelete();
                     tran.Commit();
+                }
+
+                try
+                {
+                    using (SoodaTransaction tran = new SoodaTransaction()) 
+                    {
+                        tran.RegisterDataSource(testDataSource);
+                        ExtendedBike b = ExtendedBike.Load(10);
+                    }
+                    Assert.Fail("Object not deleted!");
+                }
+                catch (SoodaObjectNotFoundException ex)
+                {
                 }
             }
         }

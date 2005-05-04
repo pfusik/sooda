@@ -115,7 +115,16 @@ namespace Sooda.StubGen.CDIL
 
         private static void PrintTypeReference(TextWriter output, CodeTypeReference ctr)
         {
-            output.Write(ctr.BaseType);
+            if (ctr.ArrayRank == 1)
+            {
+                output.Write("arrayof(");
+                output.Write(ctr.BaseType);
+                output.Write(")");
+            }
+            else
+            {
+                output.Write(ctr.BaseType);
+            }
         }
 
         private static void PrintExpression(TextWriter output, CodeExpression expression)

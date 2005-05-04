@@ -32,7 +32,7 @@ namespace Sooda.StubGen.CDIL
                     object o = context[conditionalName];
                     if (o == null)
                         throw new ArgumentException("No such conditional: " + conditionalName);
-                    bool v = Convert.ToBoolean(o);
+                    bool v = Convert.ToBoolean(o) || skip;
                     skipStack.Push(skip);
                     skip = v;
                     continue;
@@ -43,7 +43,7 @@ namespace Sooda.StubGen.CDIL
                     object o = context[conditionalName];
                     if (o == null)
                         throw new ArgumentException("No such conditional: " + conditionalName);
-                    bool v = !Convert.ToBoolean(o);
+                    bool v = !Convert.ToBoolean(o) || skip;
                     skipStack.Push(skip);
                     skip = v;
                     continue;

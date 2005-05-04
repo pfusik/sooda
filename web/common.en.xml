@@ -8,6 +8,7 @@
         <nav href="examples" label="Examples" />
         <nav href="screenshots" label="Screenshots" />
         <nav href="download" label="Download" />
+        <nav href="technical" label="Technical" />
         <nav href="development" label="Development" />
         <!-- <nav href="users" label="Users" /> -->
         <nav href="faq" label="FAQ" />

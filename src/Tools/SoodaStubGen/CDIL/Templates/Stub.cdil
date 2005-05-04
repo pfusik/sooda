@@ -23,3 +23,158 @@ method GetClassInfo()
 begin
     return typeref(${ClassName}_Factory).TheClassInfo
 end
+
+
+method InitFieldValues()
+    attributes Assembly,Family,Override
+    returns Sooda.SoodaObjectFieldValues
+begin
+    return new SoodaObjectArrayFieldValues(${ClassUnifiedFieldCount})
+end
+
+method GetFieldHandler(System.Int32 ordinal)
+    attributes Assembly,Family,Override
+    returns Sooda.ObjectMapper.SoodaFieldHandler
+begin
+    return typeref(${ClassName}_Factory).InternalGetFieldHandler(arg(ordinal))
+end
+
+#ifnot HasBaseClass
+#if HasKeyGen
+
+method GetKeyGenerator()
+    attributes Abstract,Public,Static,Final
+    returns IPrimaryKeyGenerator
+begin
+    return defaultscope.keyGenerator$
+end
+
+#endif
+#endif
+
+#if HasKeyGen
+
+method InitNewObject()
+    attributes Assembly,Family,Override
+begin
+    call this.SetPrimaryKeyValue(defaultscope.GetKeyGenerator().GetNextKeyValue())
+end
+
+#endif
+
+method GetList(SoodaWhereClause where)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, arg(where), typeref(SoodaOrderBy).Unsorted$, typeref(SoodaSnapshotOptions).Default$)
+end
+
+method GetList(SoodaWhereClause where, SoodaSnapshotOptions options)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, arg(where), typeref(SoodaOrderBy).Unsorted$, arg(options))
+end
+
+method GetList(SoodaWhereClause where, SoodaOrderBy orderBy)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, arg(where), arg(orderBy), typeref(SoodaSnapshotOptions).Default$)
+end
+
+method GetList(SoodaWhereClause where, SoodaOrderBy orderBy, SoodaSnapshotOptions options)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, arg(where), arg(orderBy), arg(options))
+end
+
+method GetList(SoodaTransaction tran, SoodaWhereClause where)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(arg(tran), arg(where), typeref(SoodaOrderBy).Unsorted$, typeref(SoodaSnapshotOptions).Default$)
+end
+
+method GetList(SoodaTransaction tran, SoodaWhereClause where, SoodaSnapshotOptions options)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(arg(tran), arg(where), typeref(SoodaOrderBy).Unsorted$, arg(options))
+end
+
+method GetList(SoodaTransaction tran, SoodaWhereClause where, SoodaOrderBy orderBy)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(arg(tran), arg(where), arg(orderBy), typeref(SoodaSnapshotOptions).Default$)
+end
+
+method GetList(SoodaTransaction tran, SoodaWhereClause where, SoodaOrderBy orderBy, SoodaSnapshotOptions options)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(arg(tran), arg(where), arg(orderBy), arg(options))
+end
+
+method DoGetList(SoodaTransaction tran, SoodaWhereClause whereClause, SoodaOrderBy orderByClause, SoodaSnapshotOptions options)
+    attributes Abstract,Assembly,Static,Private,Overloaded,Final
+    returns ${ClassName}List
+begin
+    return new ${ClassName}List(new Sooda.ObjectMapper.SoodaObjectListSnapshot(arg(tran), arg(whereClause), arg(orderByClause), arg(options), typeref(${ClassName}_Factory).TheClassInfo$))
+end
+
+method Load(${PrimaryKeyFormalParameters})
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}
+begin
+    return defaultscope.Load(typeref(SoodaTransaction).ActiveTransaction, ${PrimaryKeyActualParameters})
+end
+
+method Load(SoodaTransaction tran, ${PrimaryKeyFormalParameters})
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}
+begin
+    var ${ClassName} retVal = typeref(${ClassName}_Stub).GetRef(arg(tran), ${PrimaryKeyActualParameters});
+    call var(retVal).LoadAllData();
+    return var(retVal)
+end
+
+method GetRefFromRecord(SoodaTransaction tran, System.Data.IDataRecord record, System.Int32 firstColumnIndex, arrayof(Sooda.Schema.TableInfo) loadedTables, System.Int32 tableIndex)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}
+begin
+    var System.Object val = typeref(${PrimaryKeyFieldHandler}).GetBoxedFromReader(arg(record), add(arg(firstColumnIndex), 0));
+    return cast(${ClassName}, typeref(Sooda.SoodaObject).GetRefFromRecordHelper(arg(tran), typeref(${ClassName}_Factory).TheFactory, var(val), arg(record), arg(firstColumnIndex), arg(loadedTables), arg(tableIndex)))
+end
+
+method GetRef(${PrimaryKeyFormalParameters})
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}
+begin
+    return defaultscope.GetRef(typeref(SoodaTransaction).ActiveTransaction, ${PrimaryKeyActualParameters})
+end
+
+method TryGet(${PrimaryKeyFormalParameters})
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}
+    customattribute System.Diagnostics.DebuggerStepThroughAttribute
+begin
+    return defaultscope.TryGet(typeref(SoodaTransaction).ActiveTransaction, ${PrimaryKeyActualParameters})
+end
+
+method GetRef(SoodaTransaction tran, ${PrimaryKeyFormalParameters})
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}
+begin
+    return cast(${ClassName}, typeref(Sooda.SoodaObject).GetRefHelper(arg(tran), typeref(${ClassName}_Factory).TheFactory, ${PrimaryKeyActualParameters}))
+end
+
+method TryGet(SoodaTransaction tran, ${PrimaryKeyFormalParameters})
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}
+    customattribute System.Diagnostics.DebuggerStepThroughAttribute
+begin
+    return cast(${ClassName}, arg(tran).FindObjectWithKey('${ClassName}', ${PrimaryKeyActualParameters}, typeof(${ClassName})))
+end

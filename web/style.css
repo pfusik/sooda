@@ -308,6 +308,25 @@ td.hostedby
     margin: 0px;
 }
 
+.smalltable table {
+    border: 1px solid #c0c0c0;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.smalltable td {
+    border: 1px solid #c0c0c0;
+    margin: 0px;
+    background-color: white;
+    vertical-align: top;
+}
+
+.smalltable th {
+    border: 1px solid #c0c0c0;
+    background-color: #efe8e8;
+    margin: 0px;
+}
+
 .xml-example
 {
     background-color: #ffffff; 
@@ -384,4 +403,14 @@ code.commandline
     font-size: 11px;
     border: 1px solid #c0c0c0;
     width: 600px;
+}
+
+.smalltable tr.subheader td
+{
+    border: 1px solid #c0c0c0;
+    background-color: #eff0f0;
+    margin: 0px;
+    color: #000040;
+    font-weight: bold;
+    font-size: 13px;
 }

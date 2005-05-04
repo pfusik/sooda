@@ -83,6 +83,16 @@ namespace Sooda {
         {
             return _items[ordinal];
         }
+
+        public static object GetValue(object tupleOrScalar, int ordinal)
+        {
+            ISoodaTuple tuple = tupleOrScalar as ISoodaTuple;
+            if (tuple != null)
+                return tuple.GetValue(ordinal);
+            if (ordinal != 0)
+                throw new ArgumentException("Ordinal must be zero for scalar values");
+            return tupleOrScalar;
+        }
         
         public int CompareTo(object obj)
         {

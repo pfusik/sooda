@@ -170,15 +170,45 @@ namespace Sooda.StubGen
             }
         }
 
+        public static string MakeCamelCase(string s)
+        {
+            return "val";
+            return Char.ToLower(s[0]) + s.Substring(1);
+        }
+
         public static void GenerateClassStub(CodeNamespace nspace, ClassInfo ci, string outNamespace, StubGenOptions options, bool miniStub) 
         {
             if (!miniStub)
                 GenerateClassValues(nspace, ci, outNamespace, options, miniStub);
 
+            CodeDomClassStubGenerator gen = new CodeDomClassStubGenerator(ci);
+
             CDILContext context = new CDILContext();
             context["ClassName"] = ci.Name;
             context["HasBaseClass"] = ci.InheritsFromClass != null;
             context["MiniStub"] = miniStub;
+            context["HasKeyGen"] = gen.KeyGen != "none";
+
+            string formalParameters = "";
+            string actualParameters = "";
+            
+            foreach (FieldInfo fi in ci.GetPrimaryKeyFields())
+            {
+                if (formalParameters != "")
+                {
+                    formalParameters += ", ";
+                    actualParameters += ", ";
+                }
+                string pkClrTypeName = FieldDataTypeHelper.GetClrType(fi.DataType).FullName;
+                formalParameters += pkClrTypeName + " " + MakeCamelCase(fi.Name);
+                actualParameters += "arg(" + MakeCamelCase(fi.Name) + ")";
+            }
+
+            context["PrimaryKeyFormalParameters"] = formalParameters;
+            context["PrimaryKeyActualParameters"] = actualParameters;
+            context["ClassUnifiedFieldCount"] = ci.UnifiedFields.Count;
+            context["PrimaryKeyFieldHandler"] = ci.GetFirstPrimaryKeyField().GetWrapperTypeName();
+            context["OptionalNewAttribute"] = (ci.InheritsFromClass != null) ? ",New" : "";
 
             if (ci.ExtBaseClassName != null) 
             {
@@ -199,8 +229,6 @@ namespace Sooda.StubGen
 
             CodeTypeDeclaration ctd = CDILParser.ParseClass(CDILTemplate.Get("Stub.cdil"), context);
             nspace.Types.Add(ctd);
-
-            CodeDomClassStubGenerator gen = new CodeDomClassStubGenerator(ci);
 
             if (miniStub) 
             {
@@ -258,6 +286,7 @@ namespace Sooda.StubGen
                 }
             }
 
+#if A
             ctd.Members.Add(gen.Method_InitFieldValues());
             ctd.Members.Add(gen.Method_GetFieldHandler());
             if (gen.KeyGen != "none") 
@@ -295,7 +324,7 @@ namespace Sooda.StubGen
             ctd.Members.Add(gen.Method_NormalGet());
             ctd.Members.Add(gen.Method_NormalTryGet());
             //ctd.Members.Add(gen.Method_SetPrimaryKeyValue());
-
+#endif
             CodeMemberMethod m = gen.Method_IterateOuterReferences();
             if (m != null)
                 ctd.Members.Add(m);
