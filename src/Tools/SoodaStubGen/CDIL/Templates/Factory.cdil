@@ -63,13 +63,6 @@ class ${ClassName}_Factory
         return typeref(${OutNamespace}.Stubs.${ClassName}_Stub).TryGet(arg(tran), cast(${PrimaryKeyType},arg(keyValue)))
     end
     
-    method GetRefFromRecord(SoodaTransaction tran, System.Data.IDataRecord record, System.Int32 firstColumnIndex, arrayof(Sooda.Schema.TableInfo) loadedTables, System.Int32 tableIndex)
-        returns SoodaObject
-        attributes Public
-    begin
-        return typeref(${OutNamespace}.Stubs.${ClassName}_Stub).GetRefFromRecord(arg(tran), arg(record), arg(firstColumnIndex), arg(loadedTables), arg(tableIndex))
-    end
-    
     method GetList(SoodaTransaction tran, SoodaWhereClause whereClause, SoodaOrderBy orderBy, SoodaSnapshotOptions options)
         returns System.Collections.IList
         attributes Public

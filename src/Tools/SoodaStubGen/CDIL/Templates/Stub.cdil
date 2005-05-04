@@ -141,14 +141,6 @@ begin
     return var(retVal)
 end
 
-method GetRefFromRecord(SoodaTransaction tran, System.Data.IDataRecord record, System.Int32 firstColumnIndex, arrayof(Sooda.Schema.TableInfo) loadedTables, System.Int32 tableIndex)
-    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
-    returns ${ClassName}
-begin
-    var System.Object val = typeref(${PrimaryKeyFieldHandler}).GetBoxedFromReader(arg(record), add(arg(firstColumnIndex), 0));
-    return cast(${ClassName}, typeref(Sooda.SoodaObject).GetRefFromRecordHelper(arg(tran), typeref(${ClassName}_Factory).TheFactory, var(val), arg(record), arg(firstColumnIndex), arg(loadedTables), arg(tableIndex)))
-end
-
 method GetRef(${PrimaryKeyFormalParameters})
     attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
     returns ${ClassName}

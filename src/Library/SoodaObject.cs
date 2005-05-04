@@ -572,7 +572,7 @@ namespace Sooda
                         else
                         {
                             ISoodaObjectFactory factory = GetTransaction().GetFactory(tables[i].OwnerClass);
-                            factory.GetRefFromRecord(GetTransaction(), reader, recordPos, tables, i);
+                            SoodaObject.GetRefFromRecordHelper(GetTransaction(), factory, reader, recordPos, tables, i);
                         }
                     }
                     else
@@ -986,8 +986,12 @@ namespace Sooda
             return Evaluate(propertyAccessChain.Split('.'), throwOnError);
         }
 
-        public static SoodaObject GetRefFromRecordHelper(SoodaTransaction tran, ISoodaObjectFactory factory, object keyValue, IDataRecord record, int firstColumnIndex, TableInfo[] loadedTables, int tableIndex) 
+        public static SoodaObject GetRefFromRecordHelper(SoodaTransaction tran, ISoodaObjectFactory factory, IDataRecord record, int firstColumnIndex, TableInfo[] loadedTables, int tableIndex)
         {
+#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
+            int pkFieldOrdinal = factory.GetClassInfo().GetFirstPrimaryKeyField().OrdinalInTable;
+            object keyValue = factory.GetPrimaryKeyFieldHandler().RawRead(record, firstColumnIndex + pkFieldOrdinal);
+
             SoodaObject retVal = factory.TryGet(tran, keyValue);
             if ((retVal != null)) 
             {

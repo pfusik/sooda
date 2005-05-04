@@ -167,7 +167,7 @@ namespace Sooda.ObjectMapper {
 
             using (IDataReader reader = ds.LoadObjectList(classInfo, whereClause, null, out loadedTables)) {
                 while (reader.Read()) {
-                    SoodaObject obj = factory.GetRefFromRecord(transaction, reader, 0, loadedTables, 0);
+                    SoodaObject obj = SoodaObject.GetRefFromRecordHelper(transaction, factory, reader, 0, loadedTables, 0);
 
                     if (tempItems != null) {
                         object o = tempItems[obj];
