@@ -1155,19 +1155,6 @@ namespace Sooda
         private static Type[] rawConstructorParameterTypes = new Type[] { typeof(SoodaConstructor) };
         private static object[] rawConstructorParameterValues = new object[] { SoodaConstructor.Constructor };
 
-        public static SoodaObject GetRawObjectHelper(Type type, SoodaTransaction tran) 
-        {
-            ConstructorInfo constructorInfo = type.GetConstructor(rawConstructorParameterTypes);
-            if (constructorInfo == null) 
-            {
-                throw new Exception("Constructor taking SoodaConstructor parameter not found in class " + type.FullName);
-            }
-            SoodaObject obj = (SoodaObject)constructorInfo.Invoke(rawConstructorParameterValues);
-
-            obj.InitRawObject(tran);
-            return obj;
-        }
-
         private void CopyOnWrite() 
         {
             if (FromCache) 
@@ -1178,7 +1165,7 @@ namespace Sooda
             }
         }
 
-        protected NameValueCollection GetTrasnsactionPersistentValues()
+        protected NameValueCollection GetTransactionPersistentValues()
         {
             return GetTransaction().GetPersistentValues(this);
         }

@@ -15,6 +15,8 @@ constructor(SoodaConstructor c)
     baseArg(arg(c))
 begin
 end
+
+#ifnot MiniStub
  
 method GetClassInfo()
     customattribute System.Diagnostics.DebuggerStepThroughAttribute
@@ -185,3 +187,5 @@ method TryGet(SoodaTransaction tran, SoodaTuple tuple)
 begin
     return cast(${ClassName}, arg(tran).FindObjectWithKey('${ClassName}', arg(tuple), typeof(${ClassName})))
 end
+
+#endif  // MiniStub

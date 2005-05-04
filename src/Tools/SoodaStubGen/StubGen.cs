@@ -243,11 +243,7 @@ namespace Sooda.StubGen
             nspace.Types.Add(ctd);
 
             if (miniStub) 
-            {
-                ctd.Members.Add(gen.Constructor_Mini_Inserting());
-                ctd.Members.Add(gen.Constructor_Raw());
                 return ;
-            }
 
             // class constructor
 
