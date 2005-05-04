@@ -42,6 +42,11 @@ namespace Sooda {
     {
         private object[] _items;
 
+        public SoodaTuple(int size)
+        {
+            _items = new object[size];
+        }
+
         public SoodaTuple(params object[] items)
         {
             _items = items;
@@ -85,6 +90,11 @@ namespace Sooda {
             return _items[ordinal];
         }
 
+        public void SetValue(int ordinal, object v)
+        {
+            _items[ordinal] = v;
+        }
+
         public static object GetValue(object tupleOrScalar, int ordinal)
         {
             SoodaTuple tuple = tupleOrScalar as SoodaTuple;
@@ -109,6 +119,16 @@ namespace Sooda {
             }
             else
                 return new object[] { tupleOrScalar };
+        }
+        
+        public bool IsAllNotNull()
+        {
+            for (int i = 0; i < _items.Length; ++i)
+            {
+                if (_items[i] == null)
+                    return false;
+            }
+            return true;
         }
         
         public int CompareTo(object obj)

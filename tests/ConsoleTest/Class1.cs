@@ -62,7 +62,7 @@ namespace ConsoleTest
         static void Main(string[] args) 
         {
             Sooda.UnitTests.TestCases.ObjectMapper.MultiPKTest t = new Sooda.UnitTests.TestCases.ObjectMapper.MultiPKTest();
-            t.MultiTableGetListTest();
+            t.InsertTest();
         }
     }
 }

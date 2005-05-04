@@ -252,6 +252,21 @@ namespace Sooda
             al.Add(o);
         }
 
+        protected internal bool IsRegistered(SoodaObject o) 
+        {
+            ObjectToSoodaObjectAssociation classDict = _objectDictByClass[o.GetClassInfo().Name];
+            object pkValue = o.GetPrimaryKeyValue();
+
+            if (ExistsObjectWithKey(o.GetClassInfo().Name, pkValue)) 
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         protected internal void UnregisterObject(SoodaObject o) 
         {
             ObjectToSoodaObjectAssociation classDict = _objectDictByClass[o.GetClassInfo().Name];

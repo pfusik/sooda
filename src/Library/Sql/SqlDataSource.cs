@@ -43,8 +43,10 @@ using Sooda.Schema;
 using Sooda;
 using Sooda.QL;
 
-namespace Sooda.Sql {
-    public class SqlDataSource : Sooda.SoodaDataSource {
+namespace Sooda.Sql 
+{
+    public class SqlDataSource : Sooda.SoodaDataSource 
+    {
         static NLog.Logger logger = NLog.LogManager.GetLogger("Sooda.SqlDataSource");
         static NLog.Logger sqllogger = NLog.LogManager.GetLogger("Sooda.SQL");
 
@@ -57,7 +59,8 @@ namespace Sooda.Sql {
 
         public SqlDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo) : base(dataSourceInfo) {}
 
-        public override void Open() {
+        public override void Open() 
+        {
             Type connectionType = Type.GetType(GetParameter("connectionType", true));
             string connectionString = GetParameter("connectionString", true);
             Connection = (IDbConnection)Activator.CreateInstance(connectionType, new object[] { connectionString });
@@ -95,7 +98,8 @@ namespace Sooda.Sql {
             }
 
             Connection.Open();
-            if (!DisableTransactions) {
+            if (!DisableTransactions) 
+            {
                 Transaction = Connection.BeginTransaction();
             };
         }
@@ -105,28 +109,35 @@ namespace Sooda.Sql {
             get { return Connection.State == ConnectionState.Open ; }
         }
 
-        public override void Rollback() {
-            if (!DisableTransactions) {
+        public override void Rollback() 
+        {
+            if (!DisableTransactions) 
+            {
                 Transaction.Rollback();
                 Transaction.Dispose();
                 Transaction = Connection.BeginTransaction();
             };
         }
 
-        public override void Commit() {
-            if (!DisableTransactions) {
+        public override void Commit() 
+        {
+            if (!DisableTransactions) 
+            {
                 Transaction.Commit();
                 Transaction.Dispose();
                 Transaction = Connection.BeginTransaction();
             };
         }
 
-        public override void Close() {
-            if (!DisableTransactions && Transaction != null) {
+        public override void Close() 
+        {
+            if (!DisableTransactions && Transaction != null) 
+            {
                 Transaction.Rollback();
                 Transaction.Dispose();
             };
-            if (Connection != null) {
+            if (Connection != null) 
+            {
                 Connection.Dispose();
             }
         }
@@ -216,7 +227,8 @@ namespace Sooda.Sql {
             }
         }
 
-        public override IDataReader LoadObjectTable(SoodaObject obj, object keyVal, int tableNumber, out TableInfo[] loadedTables) {
+        public override IDataReader LoadObjectTable(SoodaObject obj, object keyVal, int tableNumber, out TableInfo[] loadedTables) 
+        {
             ClassInfo classInfo = obj.GetClassInfo();
             IDbCommand cmd = Connection.CreateCommand();
 
@@ -228,30 +240,35 @@ namespace Sooda.Sql {
             IDataReader reader = cmd.ExecuteReader();
             if (reader.Read())
                 return reader;
-            else {
+            else 
+            {
                 reader.Dispose();
                 return null;
             }
         }
 
-        public override IDataReader LoadObject(SoodaObject obj, object keyVal, out TableInfo[] loadedTables) {
+        public override IDataReader LoadObject(SoodaObject obj, object keyVal, out TableInfo[] loadedTables) 
+        {
             return LoadObjectTable(obj, keyVal, 0, out loadedTables);
         }
 
-        public override void MakeTuple(string tableName, string leftColumnName, string rightColumnName, object leftVal, object rightVal, int mode) {
+        public override void MakeTuple(string tableName, string leftColumnName, string rightColumnName, object leftVal, object rightVal, int mode) 
+        {
             object[] parameters = new object[] { leftVal, rightVal };
             string query = "delete from " + tableName + " where " + leftColumnName + "={0} and " + rightColumnName + "={1}";
             SqlBuilder.BuildCommandWithParameters(_updateCommand, true, query, parameters);
             FlushUpdateCommand(false);
 
-            if (mode == 1) {
+            if (mode == 1) 
+            {
                 query = "insert into " + tableName + "(" + leftColumnName + "," + rightColumnName + ") values({0},{1})";
                 SqlBuilder.BuildCommandWithParameters(_updateCommand, true, query, parameters);
                 FlushUpdateCommand(false);
             }
         }
 
-        public override IDataReader LoadObjectList(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, out TableInfo[] tables) {
+        public override IDataReader LoadObjectList(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, out TableInfo[] tables) 
+        {
             try
             {
                 ArrayList tablesArrayList = new ArrayList(classInfo.UnifiedTables.Count);
@@ -274,7 +291,8 @@ namespace Sooda.Sql {
                     queryExpression.WhereClause = whereClause.WhereExpression;
                 }
 
-                if (orderBy != null) {
+                if (orderBy != null) 
+                {
                     SoqlParser.ParseOrderBy(queryExpression, "order by " + orderBy.ToString());
                 }
 
@@ -363,7 +381,8 @@ namespace Sooda.Sql {
             }
         }
 
-        public override IDataReader LoadRefObjectList(RelationInfo relationInfo, int masterColumn, object masterValue, out TableInfo[] tables) {
+        public override IDataReader LoadRefObjectList(RelationInfo relationInfo, int masterColumn, object masterValue, out TableInfo[] tables) 
+        {
             try 
             {
                 if (masterColumn == 0)
@@ -389,8 +408,10 @@ namespace Sooda.Sql {
             }
         }
 
-        void DoInserts(SoodaObject obj) {
-            foreach (TableInfo table in obj.GetClassInfo().MergedTables) {
+        void DoInserts(SoodaObject obj) 
+        {
+            foreach (TableInfo table in obj.GetClassInfo().MergedTables) 
+            {
                 DoInsertsForTable(obj, table);
             }
         }
@@ -405,14 +426,16 @@ namespace Sooda.Sql {
 
             ArrayList par = new ArrayList();
 
-            for (int i = 0; i < table.Fields.Count; ++i) {
+            for (int i = 0; i < table.Fields.Count; ++i) 
+            {
                 if (i != 0)
                     builder.Append(",");
                 builder.Append(table.Fields[i].DBColumnName);
             };
 
             builder.Append(") values (");
-            for (int i = 0; i < table.Fields.Count; ++i) {
+            for (int i = 0; i < table.Fields.Count; ++i) 
+            {
                 if (i > 0)
                     builder.Append(",");
 
@@ -427,14 +450,16 @@ namespace Sooda.Sql {
             FlushUpdateCommand(false);
         }
 
-        void DoUpdates(SoodaObject obj) {
+        void DoUpdates(SoodaObject obj) 
+        {
             foreach (TableInfo table in obj.GetClassInfo().MergedTables) 
             {
                 DoUpdatesForTable(obj, table);
             }
         }
 
-        void DoUpdatesForTable(SoodaObject obj, TableInfo table) {
+        void DoUpdatesForTable(SoodaObject obj, TableInfo table) 
+        {
             ClassInfo info = obj.GetClassInfo();
             StringBuilder builder = new StringBuilder(500);
             builder.Append("update ");
@@ -446,11 +471,14 @@ namespace Sooda.Sql {
 
 #warning FIX ME
 
-            for (int i = 0; i < table.Fields.Count; ++i) {
+            for (int i = 0; i < table.Fields.Count; ++i) 
+            {
                 int fieldNumber = table.Fields[i].ClassUnifiedOrdinal;
 
-                if (obj.IsFieldDirty(fieldNumber)) {
-                    if (anyChange) {
+                if (obj.IsFieldDirty(fieldNumber)) 
+                {
+                    if (anyChange) 
+                    {
                         builder.Append(", ");
                     }
                     builder.Append(table.Fields[i].DBColumnName);
@@ -462,14 +490,22 @@ namespace Sooda.Sql {
                 };
             };
             builder.Append(" where ");
+            int pkordinal = 0;
             foreach (FieldInfo fi in table.Fields)
             {
                 if (fi.IsPrimaryKey)
                 {
+                    if (pkordinal > 0)
+                    {
+                        builder.Append(" and ");
+                    }
+                    builder.Append("(");
                     builder.Append(fi.DBColumnName);
                     builder.Append("={");
-                    builder.Append(par.Add(obj.GetPrimaryKeyValue()));
+                    builder.Append(par.Add(SoodaTuple.GetValue(obj.GetPrimaryKeyValue(), pkordinal)));
                     builder.Append('}');
+                    builder.Append(")");
+                    pkordinal++;
                 }
             }
             if (anyChange)
@@ -479,11 +515,13 @@ namespace Sooda.Sql {
             }
         }
 
-        private void LogCommand(IDbCommand cmd) {
+        private void LogCommand(IDbCommand cmd) 
+        {
             StringBuilder txt = new StringBuilder();
             txt.Append(cmd.CommandText);
             txt.Append(" [");
-            foreach (IDataParameter par in cmd.Parameters) {
+            foreach (IDataParameter par in cmd.Parameters) 
+            {
                 txt.AppendFormat(" {0}={1}", par.ParameterName, par.Value);
             }
             txt.Append(" ]");
@@ -492,8 +530,10 @@ namespace Sooda.Sql {
             sqllogger.Debug(txt.ToString());
         }
 
-        public void ExecuteRaw(string sql) {
-            using (IDbCommand cmd = Connection.CreateCommand()) {
+        public void ExecuteRaw(string sql) 
+        {
+            using (IDbCommand cmd = Connection.CreateCommand()) 
+            {
                 if (!DisableTransactions)
                     cmd.Transaction = this.Transaction;
 
@@ -506,14 +546,17 @@ namespace Sooda.Sql {
         private Hashtable cacheLoadedTables = new Hashtable();
         private Hashtable[] cacheLoadRefObjectSelectStatement = new Hashtable[] { new Hashtable(), new Hashtable() };
 
-        class _QueueItem {
+        class _QueueItem 
+        {
             public ClassInfo classInfo;
             public SoqlPathExpression prefix;
             public int level;
         }
 
-        private string GetLoadingSelectStatement(ClassInfo classInfo, TableInfo tableInfo, out TableInfo[] loadedTables) {
-            if (!cacheLoadingSelectStatement.Contains(tableInfo)) {
+        private string GetLoadingSelectStatement(ClassInfo classInfo, TableInfo tableInfo, out TableInfo[] loadedTables) 
+        {
+            if (!cacheLoadingSelectStatement.Contains(tableInfo)) 
+            {
                 Queue queue = new Queue();
                 ArrayList additional = new ArrayList();
                 additional.Add(tableInfo);
@@ -522,12 +565,14 @@ namespace Sooda.Sql {
                 queryExpression.From.Add(classInfo.Name);
                 queryExpression.FromAliases.Add("obj");
 
-                foreach (FieldInfo fi in tableInfo.Fields) {
+                foreach (FieldInfo fi in tableInfo.Fields) 
+                {
                     SoqlPathExpression pathExpr = new SoqlPathExpression("obj", fi.Name);
                     queryExpression.SelectExpressions.Add(pathExpr);
                     queryExpression.SelectAliases.Add("");
 
-                    if (fi.ReferencedClass != null && fi.PrefetchLevel > 0) {
+                    if (fi.ReferencedClass != null && fi.PrefetchLevel > 0) 
+                    {
                         _QueueItem item = new _QueueItem();
                         item.classInfo = fi.ReferencedClass;
                         item.level = fi.PrefetchLevel;
@@ -537,7 +582,8 @@ namespace Sooda.Sql {
                 }
 
                 // TODO - add prefetching
-                while (queue.Count > 0) {
+                while (queue.Count > 0) 
+                {
                     _QueueItem it = (_QueueItem)queue.Dequeue();
 
                     foreach (TableInfo ti in it.classInfo.UnifiedTables)
@@ -609,14 +655,16 @@ namespace Sooda.Sql {
             return (string)cacheLoadingSelectStatement[tableInfo];
         }
 
-        private string GetLoadRefObjectSelectStatement(RelationInfo relationInfo, int masterColumn) {
-            if (!cacheLoadRefObjectSelectStatement[masterColumn].Contains(relationInfo)) {
+        private string GetLoadRefObjectSelectStatement(RelationInfo relationInfo, int masterColumn) 
+        {
+            if (!cacheLoadRefObjectSelectStatement[masterColumn].Contains(relationInfo)) 
+            {
                 string soqlQuery = "";
 
                 soqlQuery = String.Format("select mt.{0}.* from {2} mt where mt.{1} = {{0}}",
-                        relationInfo.Table.Fields[masterColumn].Name,
-                        relationInfo.Table.Fields[1 - masterColumn].Name,
-                        relationInfo.Name);
+                    relationInfo.Table.Fields[masterColumn].Name,
+                    relationInfo.Table.Fields[1 - masterColumn].Name,
+                    relationInfo.Name);
 
                 StringWriter sw = new StringWriter();
                 SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, relationInfo.Schema, SqlBuilder);
@@ -628,64 +676,78 @@ namespace Sooda.Sql {
             return (string)cacheLoadRefObjectSelectStatement[masterColumn][relationInfo];
         }
 
-        private void UnifyTable(Hashtable tables, TableInfo ti) {
+        private void UnifyTable(Hashtable tables, TableInfo ti) 
+        {
             TableInfo baseTable;
 
             baseTable = (TableInfo)tables[ti.DBTableName];
-            if (baseTable == null) {
+            if (baseTable == null) 
+            {
                 baseTable = new TableInfo();
                 baseTable.DBTableName = ti.DBTableName;
 
                 tables[ti.DBTableName] = baseTable;
             }
 
-            foreach (FieldInfo fi in ti.Fields) {
+            foreach (FieldInfo fi in ti.Fields) 
+            {
                 bool found = false;
 
-                foreach (FieldInfo fi0 in baseTable.Fields) {
-                    if (fi0.Name == fi.Name) {
+                foreach (FieldInfo fi0 in baseTable.Fields) 
+                {
+                    if (fi0.Name == fi.Name) 
+                    {
                         found = true;
                         break;
                     }
                 }
 
-                if (!found) {
+                if (!found) 
+                {
                     baseTable.Fields.Add(fi);
                 }
             }
         }
 
-        public virtual void GenerateDdlForSchema(SchemaInfo schema, TextWriter tw) {
+        public virtual void GenerateDdlForSchema(SchemaInfo schema, TextWriter tw) 
+        {
             Hashtable tables = new Hashtable();
 
-            foreach (ClassInfo ci in schema.Classes) {
-                foreach (TableInfo ti in ci.UnifiedTables) {
+            foreach (ClassInfo ci in schema.Classes) 
+            {
+                foreach (TableInfo ti in ci.UnifiedTables) 
+                {
                     UnifyTable(tables, ti);
                 }
             }
 
-            foreach (RelationInfo ri in schema.Relations) {
+            foreach (RelationInfo ri in schema.Relations) 
+            {
                 UnifyTable(tables, ri.Table);
             }
 
             ArrayList names = new ArrayList();
 
-            foreach (TableInfo ti in tables.Values) {
+            foreach (TableInfo ti in tables.Values) 
+            {
                 names.Add(ti.DBTableName);
             }
 
             names.Sort();
 
-            foreach (string s in names) {
+            foreach (string s in names) 
+            {
                 tw.WriteLine("--- table {0}", s);
                 SqlBuilder.GenerateCreateTable(tw, (TableInfo)tables[s]);
             }
 
-            foreach (string s in names) {
+            foreach (string s in names) 
+            {
                 SqlBuilder.GeneratePrimaryKey(tw, (TableInfo)tables[s]);
             }
             
-            foreach (string s in names) {
+            foreach (string s in names) 
+            {
                 SqlBuilder.GenerateForeignKeys(tw, (TableInfo)tables[s]);
             }
         }

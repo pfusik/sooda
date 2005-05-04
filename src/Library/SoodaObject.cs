@@ -230,7 +230,8 @@ namespace Sooda
             }
         }
 
-        protected virtual SoodaObjectFieldValues InitFieldValues() { 
+        protected virtual SoodaObjectFieldValues InitFieldValues() 
+        { 
             throw new NotImplementedException();
         }
 
@@ -445,6 +446,36 @@ namespace Sooda
             return _primaryKeyValue;
         }
 
+        bool IsPrimaryKeyReadyForRegistration(object keyValue)
+        {
+            if (keyValue is SoodaTuple)
+            {
+                return ((SoodaTuple)keyValue).IsAllNotNull();
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        protected internal void SetPrimaryKeySubValue(object keyValue, int valueOrdinal, int totalValues)
+        {
+            if (_primaryKeyValue == null)
+                _primaryKeyValue = new SoodaTuple(totalValues);
+            ((SoodaTuple)_primaryKeyValue).SetValue(valueOrdinal, keyValue);
+            if (IsPrimaryKeyReadyForRegistration(_primaryKeyValue))
+            {
+                if (IsRegisteredInTransaction())
+                {
+                    throw new SoodaException("Cannot set primary key value more than once.");
+                }
+                else
+                {
+                    RegisterObjectInTransaction();
+                }
+            }
+        }
+
         protected internal void SetPrimaryKeyValue(object keyValue) 
         {
             if (_primaryKeyValue == null) 
@@ -454,7 +485,7 @@ namespace Sooda
                     PropagatePrimaryKeyToFields();
                 RegisterObjectInTransaction();
             } 
-            else 
+            else if (IsRegisteredInTransaction())
             {
                 throw new SoodaException("Cannot set primary key value more than once.");
             }
@@ -667,6 +698,11 @@ namespace Sooda
         protected internal void RegisterObjectInTransaction() 
         {
             GetTransaction().RegisterObject(this);
+        }
+
+        protected internal bool IsRegisteredInTransaction() 
+        {
+            return GetTransaction().IsRegistered(this);
         }
 
         internal void CommitObjectChanges() 

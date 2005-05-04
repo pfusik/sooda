@@ -444,7 +444,6 @@ namespace Sooda.StubGen
                     {
                         getPrimaryKeyValue = new CodeMethodInvokeExpression(
                             new CodeTypeReferenceExpression(typeof(SoodaTuple)), "GetValue", getPrimaryKeyValue, new CodePrimitiveExpression(primaryKeyComponentNumber));
-                        primaryKeyComponentNumber++;
                     }
 
                     prop.GetStatements.Add(
@@ -456,12 +455,26 @@ namespace Sooda.StubGen
 
                     if (!classInfo.ReadOnly) 
                     {
-                        prop.SetStatements.Add(
-                            new CodeExpressionStatement(
-                            new CodeMethodInvokeExpression(
-                            new CodeThisReferenceExpression(), "SetPrimaryKeyValue",
-                            new CodePropertySetValueReferenceExpression())));
+                        if (classInfo.GetPrimaryKeyFields().Length == 1)
+                        {
+                            prop.SetStatements.Add(
+                                new CodeExpressionStatement(
+                                new CodeMethodInvokeExpression(
+                                new CodeThisReferenceExpression(), "SetPrimaryKeyValue",
+                                new CodePropertySetValueReferenceExpression())));
+                        }
+                        else
+                        {
+                            prop.SetStatements.Add(
+                                new CodeExpressionStatement(
+                                new CodeMethodInvokeExpression(
+                                new CodeThisReferenceExpression(), "SetPrimaryKeySubValue",
+                                new CodePropertySetValueReferenceExpression(),
+                                new CodePrimitiveExpression(primaryKeyComponentNumber),
+                                new CodePrimitiveExpression(classInfo.GetPrimaryKeyFields().Length))));
+                        }
                     }
+                    primaryKeyComponentNumber++;
                     continue;
                 }
 
