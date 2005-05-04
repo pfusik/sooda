@@ -1,5 +1,5 @@
 // 
-// Copyright (c) 2004 Jaroslaw Kowalski <jaak@polbox.com>
+// Copyright (c) 2002-2005 Jaroslaw Kowalski <jkowalski@users.sourceforge.net>
 // 
 // All rights reserved.
 // 
@@ -14,7 +14,7 @@
 //   this list of conditions and the following disclaimer in the documentation
 //   and/or other materials provided with the distribution. 
 // 
-// * Neither the name of the Jaroslaw Kowalski nor the names of its 
+// * Neither the name of Jaroslaw Kowalski nor the names of its 
 //   contributors may be used to endorse or promote products derived from this
 //   software without specific prior written permission. 
 // 

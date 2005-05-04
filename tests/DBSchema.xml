@@ -200,6 +200,16 @@
             <field name="Group" dbcolumn="group_id" type="Integer" primaryKey="true" />
             <field name="Value" dbcolumn="value" type="Integer" />
         </table>
+        <table name="MultiKey">
+            <field name="Contact" dbcolumn="contact_id" type="Integer" primaryKey="true" />
+            <field name="Group" dbcolumn="group_id" type="Integer" primaryKey="true" />
+            <field name="Value2" dbcolumn="value2" type="Integer" />
+        </table>
+        <table name="MultiKey">
+            <field name="Contact" dbcolumn="contact_id" type="Integer" primaryKey="true" />
+            <field name="Group" dbcolumn="group_id" type="Integer" primaryKey="true" />
+            <field name="Value3" dbcolumn="value3" type="Integer" />
+        </table>
     </class>
 
     <relation name="ContactToRole">

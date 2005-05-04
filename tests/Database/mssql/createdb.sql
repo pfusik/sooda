@@ -62,6 +62,8 @@ create table MultiKey
 	contact_id int not null,
 	group_id int not null,
     value int not null,
+    value2 int not null,
+    value3 int not null,
 )
 go
 
@@ -257,9 +259,9 @@ insert into Bike values(5,1);
 insert into Bike values(6,1);
 insert into Bike values(10,1);
 
-insert into MultiKey values (1,1,11);
-insert into MultiKey values (2,3,456);
-insert into MultiKey values (7,8,901);
+insert into MultiKey values (1,1,11,22,33);
+insert into MultiKey values (2,3,456,789,123);
+insert into MultiKey values (7,8,901,111,222);
 
 insert into ExtendedBike values(10,'an extended bike info');
 

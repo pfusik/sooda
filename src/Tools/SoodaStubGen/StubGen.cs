@@ -149,6 +149,8 @@ namespace Sooda.StubGen
 
         private static void CDILParserTest(CodeTypeDeclaration ctd)
         {
+            return;
+
             using (StringWriter sw = new StringWriter())
             {
                 CDILPrettyPrinter.PrintType(sw, ctd);
