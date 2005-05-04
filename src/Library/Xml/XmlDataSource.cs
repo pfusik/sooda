@@ -54,8 +54,6 @@ namespace Sooda.Xml {
 
         public override void Close() {}
 
-        public override void DeleteObject(Sooda.SoodaObject obj) {}
-
         public override IDataReader LoadObject(Sooda.SoodaObject obj, object keyValue, out TableInfo[] tables) {
             tables = null;
             // TODO:  Add XmlDataSource.LoadObject implementation

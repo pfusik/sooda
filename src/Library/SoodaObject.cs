@@ -237,7 +237,7 @@ namespace Sooda
         private void PropagatePrimaryKeyToFields()
         {
             Sooda.Schema.FieldInfo[] primaryKeys = GetClassInfo().GetPrimaryKeyFields();
-            ISoodaTuple tuple = _primaryKeyValue as ISoodaTuple;
+            SoodaTuple tuple = _primaryKeyValue as SoodaTuple;
 
             if (tuple != null)
             {
@@ -669,20 +669,6 @@ namespace Sooda
             GetTransaction().RegisterObject(this);
         }
 
-        internal void DeleteObject() 
-        {
-            SoodaDataSource ds = GetTransaction().OpenDataSource(GetClassInfo().GetDataSource());
-
-            try 
-            {
-                ds.DeleteObject(this);
-            } 
-            catch (Exception e) 
-            {
-                throw new SoodaDatabaseException("Cannot delete object in the database", e);
-            }
-        }
-
         internal void CommitObjectChanges() 
         {
             SoodaDataSource ds = GetTransaction().OpenDataSource(GetClassInfo().GetDataSource());
@@ -989,8 +975,29 @@ namespace Sooda
         public static SoodaObject GetRefFromRecordHelper(SoodaTransaction tran, ISoodaObjectFactory factory, IDataRecord record, int firstColumnIndex, TableInfo[] loadedTables, int tableIndex)
         {
 #warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
-            int pkFieldOrdinal = factory.GetClassInfo().GetFirstPrimaryKeyField().OrdinalInTable;
-            object keyValue = factory.GetPrimaryKeyFieldHandler().RawRead(record, firstColumnIndex + pkFieldOrdinal);
+            object keyValue;
+            int pkSize = factory.GetClassInfo().GetPrimaryKeyFields().Length;
+
+            if (pkSize == 1)
+            {
+                int pkFieldOrdinal = factory.GetClassInfo().GetFirstPrimaryKeyField().OrdinalInTable;
+                keyValue = factory.GetPrimaryKeyFieldHandler().RawRead(record, firstColumnIndex + pkFieldOrdinal);
+            }
+            else
+            {
+                object[] pkParts = new object[pkSize];
+                int currentPkPart = 0;
+                foreach (Sooda.Schema.FieldInfo fi in factory.GetClassInfo().UnifiedFields)
+                {
+                    if (fi.IsPrimaryKey)
+                    {
+                        int pkFieldOrdinal = firstColumnIndex + fi.OrdinalInTable;
+                        pkParts[currentPkPart++] = factory.GetPrimaryKeyFieldHandler().RawRead(record, pkFieldOrdinal);
+                    }
+                }
+                keyValue = new SoodaTuple(pkParts);
+                logger.Debug("Tuple: {0}", keyValue);
+            }
 
             SoodaObject retVal = factory.TryGet(tran, keyValue);
             if ((retVal != null)) 

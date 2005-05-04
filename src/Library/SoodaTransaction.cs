@@ -888,13 +888,9 @@ namespace Sooda
                                 {
                                     primaryKey = val;
                                 }
-                                else if (objectTotalKeyCounter > 2)
-                                {
-                                    primaryKey = new SoodaTuple(objectPrimaryKey);
-                                }
                                 else
                                 {
-                                    primaryKey = new SoodaPair(objectPrimaryKey[0], objectPrimaryKey[1]);
+                                    primaryKey = new SoodaTuple(objectPrimaryKey);
                                 }
 
                                 currentObject = BeginObjectDeserialization(objectFactory, primaryKey, objectMode);

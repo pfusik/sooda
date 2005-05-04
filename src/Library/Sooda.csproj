@@ -194,11 +194,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "SoodaPair.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "SoodaSerializeOptions.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -320,11 +315,6 @@
                 />
                 <File
                     RelPath = "ObjectMapper\ISoodaObjectListInternal.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\ISoodaTuple.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

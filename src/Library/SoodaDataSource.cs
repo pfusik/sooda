@@ -90,7 +90,6 @@ namespace Sooda {
 
         public abstract void BeginSaveChanges();
         public abstract void SaveObjectChanges(SoodaObject obj);
-        public abstract void DeleteObject(SoodaObject obj);
         public abstract void FinishSaveChanges();
 
         public abstract IDataReader LoadObject(SoodaObject obj, object keyValue, out TableInfo[] tables);

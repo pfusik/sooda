@@ -302,15 +302,8 @@ namespace Sooda.Schema
             int count = 0;
             foreach (TableInfo table in UnifiedTables) 
             {
-                table.TablePrimaryKeyField = null;
                 foreach (FieldInfo fi in table.Fields) 
                 {
-                    if (fi.IsPrimaryKey) 
-                    {
-                        if (table.TablePrimaryKeyField != null)
-                            throw new Exception("Multiple primary keys found in " + table.DBTableName);
-                        table.TablePrimaryKeyField = fi;
-                    }
                 }
             }
             foreach (TableInfo table in LocalTables) 
@@ -411,7 +404,6 @@ namespace Sooda.Schema
                     mt = new TableInfo();
                     mt.DBTableName = table.DBTableName;
                     mt.OrdinalInClass = -1;
-                    mt.TablePrimaryKeyField = table.TablePrimaryKeyField;
                     mt.Rehash();
                     mergedTables[table.DBTableName] = mt;
                     MergedTables.Add(mt);

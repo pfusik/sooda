@@ -444,6 +444,11 @@ namespace Sooda.StubGen.CDIL
             PrintExpression(output, statement.Right);
         }
 
+        private static void PrintCommentStatement(TextWriter output, CodeCommentStatement statement)
+        {
+            output.Write("comment '{0}'", statement.Comment.Text.Replace("'", "\\'"));
+        }
+
         private static void PrintThrowExceptionStatement(TextWriter output, CodeThrowExceptionStatement statement)
         {
             output.Write("throw ");
@@ -483,6 +488,11 @@ namespace Sooda.StubGen.CDIL
             if (statement is CodeConditionStatement)
             {
                 PrintConditionStatement(output, (CodeConditionStatement)statement);
+                return;
+            }
+            if (statement is CodeCommentStatement)
+            {
+                PrintCommentStatement(output, (CodeCommentStatement)statement);
                 return;
             }
             output.WriteLine("*** UNKNOWN STATEMENT: " + statement.GetType() + " ***");

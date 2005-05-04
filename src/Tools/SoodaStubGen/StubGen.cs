@@ -172,7 +172,6 @@ namespace Sooda.StubGen
 
         public static string MakeCamelCase(string s)
         {
-            return "val";
             return Char.ToLower(s[0]) + s.Substring(1);
         }
 
@@ -206,6 +205,17 @@ namespace Sooda.StubGen
 
             context["PrimaryKeyFormalParameters"] = formalParameters;
             context["PrimaryKeyActualParameters"] = actualParameters;
+            if (ci.GetPrimaryKeyFields().Length == 1)
+            {
+                context["PrimaryKeyActualParametersTuple"] = actualParameters;
+                context["PrimaryKeyIsTuple"] = false;
+            }
+            else
+            {
+                context["PrimaryKeyIsTuple"] = true;
+                context["PrimaryKeyActualParametersTuple"] = "new SoodaTuple(" + actualParameters + ")"; 
+            }
+
             context["ClassUnifiedFieldCount"] = ci.UnifiedFields.Count;
             context["PrimaryKeyFieldHandler"] = ci.GetFirstPrimaryKeyField().GetWrapperTypeName();
             context["OptionalNewAttribute"] = (ci.InheritsFromClass != null) ? ",New" : "";
@@ -342,7 +352,14 @@ namespace Sooda.StubGen
             CDILContext context = new CDILContext();
             context["ClassName"] = ci.Name;
             context["OutNamespace"] = outNamespace;
-            context["PrimaryKeyType"] = pkClrTypeName;
+            if (ci.GetPrimaryKeyFields().Length == 1)
+            {
+                context["GetRefArgumentType"] = pkClrTypeName;
+            }
+            else
+            {
+                context["GetRefArgumentType"] = "SoodaTuple";
+            }
             context["PrimaryKeyHandlerType"] = pkFieldHandlerTypeName;
             context["IsAbstract"] = ci.IsAbstractClass();
 

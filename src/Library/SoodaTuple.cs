@@ -32,12 +32,13 @@
 //
 
 using System;
+using System.Text;
 
 using Sooda.ObjectMapper;
 
 namespace Sooda {
     [Serializable]
-    public class SoodaTuple : ISoodaTuple, IComparable
+    public class SoodaTuple : IComparable
     {
         private object[] _items;
 
@@ -86,17 +87,47 @@ namespace Sooda {
 
         public static object GetValue(object tupleOrScalar, int ordinal)
         {
-            ISoodaTuple tuple = tupleOrScalar as ISoodaTuple;
+            SoodaTuple tuple = tupleOrScalar as SoodaTuple;
             if (tuple != null)
                 return tuple.GetValue(ordinal);
             if (ordinal != 0)
                 throw new ArgumentException("Ordinal must be zero for scalar values");
             return tupleOrScalar;
         }
+
+        public static object[] GetValuesArray(object tupleOrScalar)
+        {
+            SoodaTuple tuple = tupleOrScalar as SoodaTuple;
+            if (tuple != null)
+            {
+                object[] retval = new object[tuple.Length];
+                for (int i = 0; i < tuple.Length; ++i)
+                {
+                    retval[i] = tuple.GetValue(i);
+                }
+                return retval;
+            }
+            else
+                return new object[] { tupleOrScalar };
+        }
         
         public int CompareTo(object obj)
         {
             throw new NotImplementedException();
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("[");
+            for (int i = 0; i < _items.Length; ++i)
+            {
+                if (i > 0)
+                    sb.Append(",");
+                sb.Append(_items[i].ToString());
+            }
+            sb.Append("]");
+            return sb.ToString();
         }
     }
 }

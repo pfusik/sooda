@@ -203,81 +203,6 @@ namespace Sooda.StubGen
             return method;
         }
 
-        public CodeMemberMethod Method_GetKeyGenerator() 
-        {
-            CodeMemberMethod method;
-
-            method = new CodeMemberMethod();
-            method.Name = "GetKeyGenerator";
-            method.Attributes = MemberAttributes.Static | MemberAttributes.Public;
-            if (classInfo.InheritFrom != null) 
-            {
-                method.Attributes |= MemberAttributes.New;
-            }
-            method.ReturnType = new CodeTypeReference("IPrimaryKeyGenerator");
-            method.Statements.Add(new CodeMethodReturnStatement(new CodeFieldReferenceExpression(null, "keyGenerator")));
-
-            return method;
-        }
-        public CodeMemberMethod Method_InitNewObject() 
-        {
-            CodeMemberMethod method;
-
-            // protected override void InitNewObject()
-            method = new CodeMemberMethod();
-            method.Name = "InitNewObject";
-            method.Attributes = MemberAttributes.Override | MemberAttributes.Family;
-            method.Statements.Add(
-                new CodeExpressionStatement(
-                new CodeMethodInvokeExpression(
-                new CodeThisReferenceExpression(),
-                "SetPrimaryKeyValue",
-                new CodeMethodInvokeExpression(new CodeMethodInvokeExpression(null, "GetKeyGenerator"), "GetNextKeyValue"))));
-
-            return method;
-        }
-        public CodeMemberMethod Method_GetFieldHandler() 
-        {
-            CodeMemberMethod method;
-
-            method = new CodeMemberMethod();
-            method.Name = "GetFieldHandler";
-            method.Attributes = MemberAttributes.Family | MemberAttributes.Override;
-            method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(int), "ordinal"));
-            method.ReturnType = new CodeTypeReference("Sooda.ObjectMapper.SoodaFieldHandler");
-            method.Statements.Add(new CodeMethodReturnStatement(
-                new CodeMethodInvokeExpression(
-                new CodeTypeReferenceExpression(classInfo.Name + "_Factory"), "InternalGetFieldHandler", new CodeArgumentReferenceExpression("ordinal"))));
-
-            return method;
-        }
-        public CodeMemberMethod Method_InitFieldValues() 
-        {
-            CodeMemberMethod method;
-
-            method = new CodeMemberMethod();
-            method.Name = "InitFieldValues";
-            method.ReturnType = new CodeTypeReference(typeof(SoodaObjectFieldValues));
-            method.Attributes = MemberAttributes.Override | MemberAttributes.Family;
-
-            method.Statements.Add(CDILParser.ParseStatement("return new SoodaObjectArrayFieldValues(" + classInfo.UnifiedFields.Count + ")", CDILContext.Null));
-            return method;
-        }
-        public CodeConstructor Constructor_Inserting() 
-        {
-            CodeConstructor ctor = new CodeConstructor();
-
-            ctor.Attributes = MemberAttributes.Public;
-            ctor.Parameters.Add(new CodeParameterDeclarationExpression("SoodaTransaction", "tran"));
-            ctor.BaseConstructorArgs.Add(Arg("tran"));
-
-            if (classInfo.InheritsFromClass == null) 
-            {
-                ctor.Statements.Add(new CodeExpressionStatement(new CodeMethodInvokeExpression(This, "InitNewObject")));
-            }
-
-            return ctor;
-        }
         public CodeConstructor Constructor_Raw() 
         {
             CodeConstructor ctor = new CodeConstructor();
@@ -465,6 +390,9 @@ namespace Sooda.StubGen
                     }
                 }
             }
+
+            int primaryKeyComponentNumber = 0;
+
             foreach (FieldInfo fi in classInfo.LocalFields) 
             {
                 PrimitiveRepresentation actualNullableRepresentation = options.NullableRepresentation;
@@ -510,11 +438,21 @@ namespace Sooda.StubGen
 
                 if (fi.IsPrimaryKey)
                 {
+                    CodeExpression getPrimaryKeyValue = new CodeMethodInvokeExpression(new CodeThisReferenceExpression(), "GetPrimaryKeyValue");
+
+                    if (classInfo.GetPrimaryKeyFields().Length > 1)
+                    {
+                        getPrimaryKeyValue = new CodeMethodInvokeExpression(
+                            new CodeTypeReferenceExpression(typeof(SoodaTuple)), "GetValue", getPrimaryKeyValue, new CodePrimitiveExpression(primaryKeyComponentNumber));
+                        primaryKeyComponentNumber++;
+                    }
+
                     prop.GetStatements.Add(
                         new CodeMethodReturnStatement(
                         new CodeCastExpression(
                         prop.Type,
-                        new CodeMethodInvokeExpression(new CodeThisReferenceExpression(), "GetPrimaryKeyValue"))));
+                        getPrimaryKeyValue
+                        )));
 
                     if (!classInfo.ReadOnly) 
                     {
@@ -855,297 +793,6 @@ namespace Sooda.StubGen
             }
         }
 
-        public CodeMemberMethod Method_GetList(bool withTransaction, bool withOrderBy, bool withOptions) 
-        {
-            CodeMemberMethod method;
-
-            method = new CodeMemberMethod();
-            method.Name = "GetList";
-            method.Attributes = MemberAttributes.Static | MemberAttributes.Public | MemberAttributes.Overloaded;
-            if (classInfo.InheritFrom != null) 
-            {
-                method.Attributes |= MemberAttributes.New;
-            }
-            method.ReturnType = new CodeTypeReference(classInfo.Name + "List");
-            if (withTransaction) 
-            {
-                method.Parameters.Add(new CodeParameterDeclarationExpression("SoodaTransaction", "tran"));
-            }
-            method.Parameters.Add(new CodeParameterDeclarationExpression("SoodaWhereClause", "where"));
-            if (withOrderBy) 
-            {
-                method.Parameters.Add(new CodeParameterDeclarationExpression("SoodaOrderBy", "orderBy"));
-            }
-            if (withOptions) 
-            {
-                method.Parameters.Add(new CodeParameterDeclarationExpression("SoodaSnapshotOptions", "options"));
-            }
-
-            method.Statements.Add(
-                new CodeMethodReturnStatement(
-                new CodeMethodInvokeExpression(null, "DoGetList",
-                withTransaction ? (CodeExpression)Arg("tran") : (CodeExpression)new CodePropertyReferenceExpression(new CodeTypeReferenceExpression("SoodaTransaction"), "ActiveTransaction"),
-                Arg("where"),
-                withOrderBy
-                ? (CodeExpression)Arg("orderBy")
-                : (CodeExpression)new CodeFieldReferenceExpression(new CodeTypeReferenceExpression("SoodaOrderBy"), "Unsorted"),
-                withOptions
-                ? (CodeExpression)Arg("options")
-                : (CodeExpression)new CodeFieldReferenceExpression(new CodeTypeReferenceExpression("SoodaSnapshotOptions"), "Default"))));
-
-            return method;
-        }
-        public CodeMemberMethod Method_DoGetList() 
-        {
-            CodeMemberMethod method;
-
-            method = new CodeMemberMethod();
-            method.Name = "DoGetList";
-            method.Attributes = MemberAttributes.Static | MemberAttributes.Private | MemberAttributes.Overloaded;
-            method.ReturnType = new CodeTypeReference(classInfo.Name + "List");
-            method.Parameters.Add(new CodeParameterDeclarationExpression("SoodaTransaction", "tran"));
-            method.Parameters.Add(new CodeParameterDeclarationExpression("SoodaWhereClause", "whereClause"));
-            method.Parameters.Add(new CodeParameterDeclarationExpression("SoodaOrderBy", "orderByClause"));
-            method.Parameters.Add(new CodeParameterDeclarationExpression("SoodaSnapshotOptions", "options"));
-
-            method.Statements.Add(
-                new CodeMethodReturnStatement(
-                new CodeObjectCreateExpression(classInfo.Name + "List",
-                new CodeObjectCreateExpression(typeof(Sooda.ObjectMapper.SoodaObjectListSnapshot),
-                Arg("tran"),
-                Arg("whereClause"),
-                Arg("orderByClause"),
-                Arg("options"),
-                new CodeFieldReferenceExpression(new CodeTypeReferenceExpression(classInfo.Name + "_Factory"), "TheClassInfo")
-                ))));
-
-            return method;
-        }
-        public CodeMemberMethod Method_Load1() 
-        {
-            CodeMemberMethod method;
-
-            method = new CodeMemberMethod();
-            method.Name = "Load";
-            method.Attributes = MemberAttributes.Static | MemberAttributes.Public | MemberAttributes.Overloaded;
-            if (classInfo.InheritFrom != null) 
-            {
-                method.Attributes |= MemberAttributes.New;
-            }
-            method.ReturnType = new CodeTypeReference(classInfo.Name);
-
-#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
-            CodeTypeReference ctr = new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetFirstPrimaryKeyField().DataType).FullName);
-            method.Parameters.Add(new CodeParameterDeclarationExpression(ctr, "val"));
-
-            method.Statements.Add(
-                new CodeMethodReturnStatement(
-                new CodeMethodInvokeExpression(null, "Load",
-                new CodePropertyReferenceExpression(new CodeTypeReferenceExpression("SoodaTransaction"), "ActiveTransaction"),
-                Arg("val")
-                )));
-
-            return method;
-        }
-        public CodeMemberMethod Method_Load2() 
-        {
-            CodeMemberMethod method;
-
-            method = new CodeMemberMethod();
-            method.Name = "Load";
-            method.Attributes = MemberAttributes.Static | MemberAttributes.Public | MemberAttributes.Overloaded;
-            if (classInfo.InheritFrom != null) 
-            {
-                method.Attributes |= MemberAttributes.New;
-            }
-            method.ReturnType = new CodeTypeReference(classInfo.Name);
-
-            method.Parameters.Add(new CodeParameterDeclarationExpression("SoodaTransaction", "tran"));
-#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
-            CodeTypeReference ctr = new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetFirstPrimaryKeyField().DataType).FullName);
-            method.Parameters.Add(new CodeParameterDeclarationExpression(ctr, "val"));
-
-            method.Statements.Add(new CodeVariableDeclarationStatement(method.ReturnType, "retVal",
-                new CodeMethodInvokeExpression(
-                new CodeTypeReferenceExpression(classInfo.Name + "_Stub"), "GetRef",
-                new CodeArgumentReferenceExpression("tran"),
-                new CodeArgumentReferenceExpression("val"))));
-
-            // TODO - this just makes sure that the first table is loaded
-            // maybe we should support loading ALL tables here?
-
-            method.Statements.Add(new CodeMethodInvokeExpression(
-                new CodeVariableReferenceExpression("retVal"),
-                "LoadAllData"
-                ));
-
-            method.Statements.Add(new CodeMethodReturnStatement(new CodeVariableReferenceExpression("retVal")));
-
-            return method;
-        }
-        public CodeMemberMethod Method_GetRefFromRecord() 
-        {
-            CodeMemberMethod method;
-
-            method = new CodeMemberMethod();
-            method.Name = "GetRefFromRecord";
-            method.Attributes = MemberAttributes.Static | MemberAttributes.Public | MemberAttributes.Overloaded;
-            if (classInfo.InheritFrom != null) 
-            {
-                method.Attributes |= MemberAttributes.New;
-            }
-            method.ReturnType = new CodeTypeReference(classInfo.Name);
-
-            method.Parameters.Add(new CodeParameterDeclarationExpression("SoodaTransaction", "tran"));
-            method.Parameters.Add(new CodeParameterDeclarationExpression("System.Data.IDataRecord", "record"));
-            method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(int), "firstColumnIndex"));
-            method.Parameters.Add(new CodeParameterDeclarationExpression(new CodeTypeReference(new CodeTypeReference(typeof(TableInfo)), 1), "loadedTables"));
-            method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(int), "tableIndex"));
-
-#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
-            method.Statements.Add(new CodeVariableDeclarationStatement(typeof(object), "val",
-                new CodeMethodInvokeExpression(
-                new CodeTypeReferenceExpression(classInfo.GetFirstPrimaryKeyField().GetWrapperTypeName()),
-                "GetBoxedFromReader",
-                Arg("record"),
-                new CodeBinaryOperatorExpression(
-                new CodeArgumentReferenceExpression("firstColumnIndex"),
-                CodeBinaryOperatorType.Add,
-                new CodePrimitiveExpression(classInfo.GetFirstPrimaryKeyField().ClassUnifiedOrdinal)
-                )
-                )
-                ));
-
-            method.Statements.Add(
-                new CodeMethodReturnStatement(
-                new CodeCastExpression(classInfo.Name,
-                new CodeMethodInvokeExpression(
-                new CodeTypeReferenceExpression(typeof(SoodaObject)),
-                "GetRefFromRecordHelper",
-                Arg("tran"),
-                new CodePropertyReferenceExpression(
-                new CodeTypeReferenceExpression(classInfo.Name + "_Factory"), "TheFactory"),
-                new CodeVariableReferenceExpression("val"),
-                Arg("record"),
-                Arg("firstColumnIndex"),
-                Arg("loadedTables"),
-                Arg("tableIndex")))));
-            return method;
-        }
-        public CodeMemberMethod Method_Get1() 
-        {
-            CodeMemberMethod method;
-
-            method = new CodeMemberMethod();
-            method.Name = "GetRef";
-            method.Attributes = MemberAttributes.Static | MemberAttributes.Public | MemberAttributes.Overloaded;
-            if (classInfo.InheritFrom != null) 
-            {
-                method.Attributes |= MemberAttributes.New;
-            }
-            method.ReturnType = new CodeTypeReference(classInfo.Name);
-
-#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
-            CodeTypeReference ctr = new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetFirstPrimaryKeyField().DataType).FullName);
-            method.Parameters.Add(new CodeParameterDeclarationExpression(ctr, "val"));
-
-            method.Statements.Add(
-                new CodeMethodReturnStatement(
-                new CodeMethodInvokeExpression(null, "GetRef",
-                new CodePropertyReferenceExpression(new CodeTypeReferenceExpression("SoodaTransaction"), "ActiveTransaction"),
-                Arg("val")
-                )));
-
-            return method;
-        }
-        public CodeMemberMethod Method_TryGet1() 
-        {
-            CodeMemberMethod method;
-
-            method = new CodeMemberMethod();
-            method.Name = "TryGet";
-            method.Attributes = MemberAttributes.Static | MemberAttributes.Public | MemberAttributes.Overloaded;
-            NoStepThrough(method.CustomAttributes);
-            if (classInfo.InheritFrom != null) 
-            {
-                method.Attributes |= MemberAttributes.New;
-            }
-            method.ReturnType = new CodeTypeReference(classInfo.Name);
-
-            CodeTypeReference ctr = new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetFirstPrimaryKeyField().DataType).FullName);
-            method.Parameters.Add(new CodeParameterDeclarationExpression(ctr, "val"));
-
-            method.Statements.Add(
-                new CodeMethodReturnStatement(
-                new CodeMethodInvokeExpression(null, "TryGet",
-                new CodePropertyReferenceExpression(new CodeTypeReferenceExpression("SoodaTransaction"), "ActiveTransaction"),
-                Arg("val")
-                )));
-
-            return method;
-        }
-        public CodeMemberMethod Method_NormalGet() 
-        {
-            CodeMemberMethod method;
-
-            method = new CodeMemberMethod();
-            method.Name = "GetRef";
-            method.Attributes = MemberAttributes.Static | MemberAttributes.Public | MemberAttributes.Overloaded;
-            if (classInfo.InheritFrom != null) 
-            {
-                method.Attributes |= MemberAttributes.New;
-            }
-            method.ReturnType = new CodeTypeReference(classInfo.Name);
-
-#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
-            CodeTypeReference ctr = new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetFirstPrimaryKeyField().DataType).FullName);
-            method.Parameters.Add(new CodeParameterDeclarationExpression("SoodaTransaction", "tran"));
-            method.Parameters.Add(new CodeParameterDeclarationExpression(ctr, "val"));
-
-            method.Statements.Add(
-                new CodeMethodReturnStatement(
-                new CodeCastExpression(classInfo.Name,
-                new CodeMethodInvokeExpression(
-                new CodeTypeReferenceExpression(typeof(SoodaObject)),
-                "GetRefHelper",
-                Arg("tran"),
-                new CodePropertyReferenceExpression(
-                new CodeTypeReferenceExpression(classInfo.Name + "_Factory"), "TheFactory"),
-                new CodeVariableReferenceExpression("val")
-                ))));
-
-            return method;
-        }
-        public CodeMemberMethod Method_NormalTryGet() 
-        {
-            CodeMemberMethod method;
-
-            method = new CodeMemberMethod();
-            method.Name = "TryGet";
-            method.Attributes = MemberAttributes.Static | MemberAttributes.Public | MemberAttributes.Overloaded;
-            NoStepThrough(method.CustomAttributes);
-            if (classInfo.InheritFrom != null) 
-            {
-                method.Attributes |= MemberAttributes.New;
-            }
-            method.ReturnType = new CodeTypeReference(classInfo.Name);
-
-#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
-            CodeTypeReference ctr = new CodeTypeReference(FieldDataTypeHelper.GetClrType(classInfo.GetFirstPrimaryKeyField().DataType).FullName);
-            method.Parameters.Add(new CodeParameterDeclarationExpression("SoodaTransaction", "tran"));
-            method.Parameters.Add(new CodeParameterDeclarationExpression(ctr, "val"));
-
-            method.Statements.Add(new CodeMethodReturnStatement(new CodeCastExpression(classInfo.Name,
-                new CodeMethodInvokeExpression(
-                Arg("tran"),
-                "FindObjectWithKey",
-                new CodePrimitiveExpression(classInfo.GetRootClass().Name),
-                Arg("val"),
-                new CodeTypeOfExpression(classInfo.Name)
-                ))));
-
-            return method;
-        }
         public CodeMemberMethod Method_IterateOuterReferences() 
         {
             CodeMemberMethod method;

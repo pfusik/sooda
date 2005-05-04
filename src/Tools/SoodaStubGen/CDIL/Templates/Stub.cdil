@@ -160,7 +160,7 @@ method GetRef(SoodaTransaction tran, ${PrimaryKeyFormalParameters})
     attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
     returns ${ClassName}
 begin
-    return cast(${ClassName}, typeref(Sooda.SoodaObject).GetRefHelper(arg(tran), typeref(${ClassName}_Factory).TheFactory, ${PrimaryKeyActualParameters}))
+    return cast(${ClassName}, typeref(Sooda.SoodaObject).GetRefHelper(arg(tran), typeref(${ClassName}_Factory).TheFactory, ${PrimaryKeyActualParametersTuple}))
 end
 
 method TryGet(SoodaTransaction tran, ${PrimaryKeyFormalParameters})
@@ -168,5 +168,20 @@ method TryGet(SoodaTransaction tran, ${PrimaryKeyFormalParameters})
     returns ${ClassName}
     customattribute System.Diagnostics.DebuggerStepThroughAttribute
 begin
-    return cast(${ClassName}, arg(tran).FindObjectWithKey('${ClassName}', ${PrimaryKeyActualParameters}, typeof(${ClassName})))
+    return cast(${ClassName}, arg(tran).FindObjectWithKey('${ClassName}', ${PrimaryKeyActualParametersTuple}, typeof(${ClassName})))
+end
+
+method GetRef(SoodaTransaction tran, SoodaTuple tuple)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}
+begin
+    return cast(${ClassName}, typeref(Sooda.SoodaObject).GetRefHelper(arg(tran), typeref(${ClassName}_Factory).TheFactory, arg(tuple)))
+end
+
+method TryGet(SoodaTransaction tran, SoodaTuple tuple)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}
+    customattribute System.Diagnostics.DebuggerStepThroughAttribute
+begin
+    return cast(${ClassName}, arg(tran).FindObjectWithKey('${ClassName}', arg(tuple), typeof(${ClassName})))
 end

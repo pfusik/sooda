@@ -114,9 +114,6 @@ namespace Sooda.Schema {
         [NonSerialized]
         public TableInfo[] ArraySingleton;
 
-        [NonSerialized]
-        public FieldInfo TablePrimaryKeyField;
-
         internal void Rehash() {
             ArraySingleton = new TableInfo[] { this };
 

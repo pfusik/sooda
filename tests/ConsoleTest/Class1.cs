@@ -61,8 +61,8 @@ namespace ConsoleTest
     {
         static void Main(string[] args) 
         {
-            Sooda.UnitTests.TestCases.ObjectMapper.DeleteTest t = new Sooda.UnitTests.TestCases.ObjectMapper.DeleteTest();
-            t.MultiTableDelete();
+            Sooda.UnitTests.TestCases.ObjectMapper.MultiPKTest t = new Sooda.UnitTests.TestCases.ObjectMapper.MultiPKTest();
+            t.GetListTest();
         }
     }
 }

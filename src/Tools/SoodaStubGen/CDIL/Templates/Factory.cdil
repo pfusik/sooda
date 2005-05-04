@@ -53,14 +53,14 @@ class ${ClassName}_Factory
         returns SoodaObject
         attributes Public
     begin
-        return typeref(${OutNamespace}.Stubs.${ClassName}_Stub).GetRef(arg(tran), cast(${PrimaryKeyType},arg(keyValue)))
+        return typeref(${OutNamespace}.Stubs.${ClassName}_Stub).GetRef(arg(tran), cast(${GetRefArgumentType},arg(keyValue)))
     end
     
     method TryGet(SoodaTransaction tran, System.Object keyValue)
         returns SoodaObject
         attributes Public
     begin
-        return typeref(${OutNamespace}.Stubs.${ClassName}_Stub).TryGet(arg(tran), cast(${PrimaryKeyType},arg(keyValue)))
+        return typeref(${OutNamespace}.Stubs.${ClassName}_Stub).TryGet(arg(tran), cast(${GetRefArgumentType},arg(keyValue)))
     end
     
     method GetList(SoodaTransaction tran, SoodaWhereClause whereClause, SoodaOrderBy orderBy, SoodaSnapshotOptions options)

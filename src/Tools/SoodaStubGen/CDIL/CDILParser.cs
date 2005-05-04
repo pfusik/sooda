@@ -752,6 +752,13 @@ namespace Sooda.StubGen.CDIL
                 retVal.Right = ParseExpression();
                 return retVal;
             }
+            if (IsKeyword("comment"))
+            {
+                GetNextToken();
+                string s = TokenValue.ToString();
+                GetNextToken();
+                return new CodeCommentStatement(s);
+            }
             throw BuildException("Invalid token: '" + TokenType + "': " + TokenValue);
         }
 

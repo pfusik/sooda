@@ -57,6 +57,14 @@ create table _Role
 )
 go
 
+create table MultiKey
+(
+	contact_id int not null,
+	group_id int not null,
+    value int not null,
+)
+go
+
 create table Vehicle
 (
 	id int primary key,
@@ -249,6 +257,10 @@ insert into Bike values(5,1);
 insert into Bike values(6,1);
 insert into Bike values(10,1);
 
+insert into MultiKey values (1,1,11);
+insert into MultiKey values (2,3,456);
+insert into MultiKey values (7,8,901);
+
 insert into ExtendedBike values(10,'an extended bike info');
 
 insert into PKInt32 values(7777777,'test data',7777777);
@@ -294,6 +306,7 @@ grant select,insert,update,delete on PKString to soodatest
 grant select,insert,update,delete on Vehicle to soodatest
 grant select,insert,update,delete on Bike to soodatest
 grant select,insert,update,delete on ExtendedBike to soodatest
+grant select,insert,update,delete on MultiKey to soodatest
 
 go
 

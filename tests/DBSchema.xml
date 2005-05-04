@@ -194,6 +194,14 @@
         </table>
     </class>
 
+    <class name="MultiKey" cached="true">
+        <table name="MultiKey">
+            <field name="Contact" dbcolumn="contact_id" type="Integer" primaryKey="true" />
+            <field name="Group" dbcolumn="group_id" type="Integer" primaryKey="true" />
+            <field name="Value" dbcolumn="value" type="Integer" />
+        </table>
+    </class>
+
     <relation name="ContactToRole">
         <table name="ContactRole">
             <field name="Contact" dbcolumn="contact_id" type="Integer" references="Contact" primaryKey="true" />

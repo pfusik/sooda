@@ -167,6 +167,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ObjectMapper\MultiPKTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ObjectMapper\Nto1CollectionTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

@@ -131,37 +131,6 @@ namespace Sooda.Sql {
             }
         }
 
-        public override void DeleteObject(SoodaObject obj) 
-        {
-            ClassInfo ci = obj.GetClassInfo();
-            object[] queryParams = new object[ci.GetPrimaryKeyFields().Length];
-            for (int i = 0; i < queryParams.Length; ++i)
-                queryParams[i] = SoodaTuple.GetValue(obj.GetPrimaryKeyValue(), i);
-
-            foreach (TableInfo table in ci.UnifiedTables)
-            {
-                StringBuilder query = new StringBuilder();
-                query.Append("delete from ");
-                query.Append(table.DBTableName);
-                query.Append(" where ");
-                int pos = 0;
-                foreach (FieldInfo fi in ci.GetPrimaryKeyFields())
-                {
-                    if (pos > 0)
-                        query.Append(" and ");
-                    query.Append("(");
-                    query.Append(fi.DBColumnName);
-                    query.Append(" = {");
-                    query.Append(pos++);
-                    query.Append("}");
-                    query.Append(")");
-                }
-
-                SqlBuilder.BuildCommandWithParameters(_updateCommand, true, query.ToString(), queryParams);
-                FlushUpdateCommand(false);
-            }
-        }
-
         public override void BeginSaveChanges()
         {
             _updateCommand = Connection.CreateCommand();
@@ -198,11 +167,43 @@ namespace Sooda.Sql {
             }
         }
 
+        void DoDeletes(SoodaObject obj) 
+        {
+            ClassInfo ci = obj.GetClassInfo();
+            object[] queryParams = new object[ci.GetPrimaryKeyFields().Length];
+            for (int i = 0; i < queryParams.Length; ++i)
+                queryParams[i] = SoodaTuple.GetValue(obj.GetPrimaryKeyValue(), i);
+
+            foreach (TableInfo table in ci.UnifiedTables)
+            {
+                StringBuilder query = new StringBuilder();
+                query.Append("delete from ");
+                query.Append(table.DBTableName);
+                query.Append(" where ");
+                int pos = 0;
+                foreach (FieldInfo fi in ci.GetPrimaryKeyFields())
+                {
+                    if (pos > 0)
+                        query.Append(" and ");
+                    query.Append("(");
+                    query.Append(fi.DBColumnName);
+                    query.Append(" = {");
+                    query.Append(pos++);
+                    query.Append("}");
+                    query.Append(")");
+                }
+
+                SqlBuilder.BuildCommandWithParameters(_updateCommand, true, query.ToString(), queryParams);
+                FlushUpdateCommand(false);
+            }
+        }
+
         public override void SaveObjectChanges(SoodaObject obj) 
         {
             if (obj.IsMarkedForDelete())
             {
                 DoDeletes(obj);
+                return;
             }
             if (obj.IsInsertMode() && !obj.InsertedIntoDatabase) 
             {
@@ -222,7 +223,7 @@ namespace Sooda.Sql {
             if (!DisableTransactions)
                 cmd.Transaction = this.Transaction;
 
-            SqlBuilder.BuildCommandWithParameters(cmd, false, GetLoadingSelectStatement(classInfo, classInfo.UnifiedTables[tableNumber], out loadedTables), new object[] { keyVal });
+            SqlBuilder.BuildCommandWithParameters(cmd, false, GetLoadingSelectStatement(classInfo, classInfo.UnifiedTables[tableNumber], out loadedTables), SoodaTuple.GetValuesArray(keyVal));
             LogCommand(cmd);
             IDataReader reader = cmd.ExecuteReader();
             if (reader.Read())
@@ -394,31 +395,6 @@ namespace Sooda.Sql {
             }
         }
 
-        void DoDeletes(SoodaObject obj) 
-        {
-            foreach (TableInfo table in obj.GetClassInfo().MergedTables) 
-            {
-                DoDeletesForTable(obj, table);
-            }
-        }
-
-        void DoDeletesForTable(SoodaObject obj, TableInfo table) 
-        {
-            ClassInfo info = obj.GetClassInfo();
-            StringBuilder builder = new StringBuilder(500);
-            ArrayList par = new ArrayList();
-            builder.Append("delete from ");
-            builder.Append(table.DBTableName);
-            builder.Append(" where ");
-            builder.Append(table.TablePrimaryKeyField.DBColumnName);
-            builder.Append("={");
-            builder.Append(par.Add(obj.GetPrimaryKeyValue()));
-            builder.Append('}');
-
-            SqlBuilder.BuildCommandWithParameters(_updateCommand, true, builder.ToString(), par.ToArray());
-            FlushUpdateCommand(false);
-        }
-
         void DoInsertsForTable(SoodaObject obj, TableInfo table) 
         {
             ClassInfo info = obj.GetClassInfo();
@@ -486,10 +462,16 @@ namespace Sooda.Sql {
                 };
             };
             builder.Append(" where ");
-            builder.Append(table.TablePrimaryKeyField.DBColumnName);
-            builder.Append("={");
-            builder.Append(par.Add(obj.GetPrimaryKeyValue()));
-            builder.Append('}');
+            foreach (FieldInfo fi in table.Fields)
+            {
+                if (fi.IsPrimaryKey)
+                {
+                    builder.Append(fi.DBColumnName);
+                    builder.Append("={");
+                    builder.Append(par.Add(obj.GetPrimaryKeyValue()));
+                    builder.Append('}');
+                }
+            }
             if (anyChange)
             {
                 SqlBuilder.BuildCommandWithParameters(_updateCommand, true, builder.ToString(), par.ToArray());
@@ -586,10 +568,31 @@ namespace Sooda.Sql {
                     }
                 }
 
-                queryExpression.WhereClause = new SoqlBooleanRelationalExpression(
-                        new SoqlPathExpression("obj", tableInfo.TablePrimaryKeyField.Name),
-                        new SoqlParameterLiteralExpression(0),
-                        SoqlRelationalOperator.Equal);
+                queryExpression.WhereClause = null;
+
+                int parameterPos = 0;
+
+                foreach (FieldInfo fi in tableInfo.Fields)
+                {
+                    if (fi.IsPrimaryKey)
+                    {
+                        SoqlBooleanRelationalExpression expr = 
+                            new SoqlBooleanRelationalExpression(
+                            new SoqlPathExpression("obj", fi.Name),
+                            new SoqlParameterLiteralExpression(parameterPos),
+                            SoqlRelationalOperator.Equal);
+
+                        if (parameterPos == 0)
+                        {
+                            queryExpression.WhereClause = expr;
+                        }
+                        else
+                        {
+                            queryExpression.WhereClause = new SoqlBooleanAndExpression(queryExpression.WhereClause, expr);
+                        }
+                        parameterPos++;
+                    }
+                }
 
                 StringWriter sw = new StringWriter();
                 SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, tableInfo.OwnerClass.Schema, SqlBuilder);
