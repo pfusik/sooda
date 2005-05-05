@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="windows-1250" ?>
+<?xml-stylesheet type="text/xsl" href="../style.xsl" ?>
+<content lang="en" id="technical">
+    <h1>Technical Information</h1>
+    <p>
+        Here you'll find some information about the inner working of Sooda.
+    </p>
+</content>
+

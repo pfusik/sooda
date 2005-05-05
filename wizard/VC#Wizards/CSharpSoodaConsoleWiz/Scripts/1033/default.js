@@ -95,9 +95,13 @@ function DoOpenFile(strName)
 
 function SetFileProperties(oFileItem, strFileName)
 {
-    if(strFileName == "File1.cs" || strFileName == "assemblyinfo.cs")
+    if(strFileName == "File1.cs" || strFileName == "assemblyinfo.cs" || strFileName == "_Stubs.cs")
     {
         oFileItem.Properties("SubType").Value = "Code";
+    }
+    if(strFileName == "_DBSchema.bin")
+    {
+        oFileItem.Properties("BuildAction").Value = 3;  // embedded resource
     }
 }
 

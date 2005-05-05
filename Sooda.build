@@ -325,12 +325,12 @@
         <call target="installer" />
     </target>
 
-    <target name="installer">
+    <target name="installer" depends="build">
         <readregistry property="nsis.dir" key="SOFTWARE\NSIS\" />
         <property name="makensis.exe" value="${nsis.dir}/makensis.exe" />
 
         <foreach item="Line" in="sooda.version" delim="." property="sooda.major,sooda.minor,sooda.revision,sooda.build">
-            <exec program="${makensis.exe}" commandline="/DVERSION=${sooda.major}.${sooda.minor}.${sooda.revision}.${sooda.build} tools\SetupSooda.nsi" />
+            <exec program="${makensis.exe}" commandline="/DSOODA_BINARIES=${sooda.dir} /DSOODA_VERSION=${sooda.major}.${sooda.minor} tools\SetupSooda.nsi" />
             <move file="SetupSooda.exe" tofile="SetupSooda-${sooda.major}.${sooda.minor}.${sooda.revision}.${sooda.build}.exe" />
         </foreach>
     </target>
@@ -361,7 +361,7 @@
 
     <target name="updateversion">
         <foreach item="Line" in="sooda.version" delim=";" property="sooda.version">
-            <exec workingdir="${nant.project.basedir}" program="tools/ReplaceVersion.exe" commandline=". ${sooda.version}" />
+            <exec workingdir="${nant.project.basedir}" program="tools/ReplaceVersion.exe" commandline="src ${sooda.version}" />
         </foreach>
     </target>
 

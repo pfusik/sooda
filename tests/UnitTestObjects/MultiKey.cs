@@ -31,15 +31,32 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System.Reflection;
-using System.Runtime.CompilerServices;
-
-[assembly: AssemblyTitle("Sooda")]
-[assembly: AssemblyDescription("Sooda")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Sooda")]
-[assembly: AssemblyProduct("Sooda - Simple Object Oriented Database Access")]
-[assembly: AssemblyCopyright("Copyright (c) 2003 by Jaroslaw Kowalski")]
-[assembly: AssemblyCulture("")]
-
-[assembly: AssemblyVersion("0.7.0.0")]
+namespace Sooda.UnitTests.Objects
+{
+    using System;
+    using System.Collections;
+    using System.Diagnostics;
+    using System.Data;
+    using Sooda;
+    
+    public class MultiKey : Sooda.UnitTests.Objects.Stubs.MultiKey_Stub
+    {
+        public MultiKey(SoodaConstructor c) : 
+                base(c)
+        {
+            // Do not modify this constructor.
+        }
+        public MultiKey(SoodaTransaction transaction) : 
+                base(transaction)
+        {
+            // 
+            // TODO: Add construction logic here.
+            // 
+        }
+        public MultiKey() : 
+                this(SoodaTransaction.ActiveTransaction)
+        {
+            // Do not modify this constructor.
+        }
+    }
+}
