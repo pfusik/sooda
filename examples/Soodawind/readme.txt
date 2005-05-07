@@ -1,6 +1,6 @@
 
 The database is a modification of the standard Northwind database that comes 
-with SQL Server 2000 with the following modifications:
+with SQL Server 2000 with the following changes:
 
 1. Removed IDENTITY columns. Sooda doesn't support them (yet ?).
 2. Added KeyGen table 
