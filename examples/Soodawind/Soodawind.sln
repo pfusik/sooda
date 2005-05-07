@@ -1,0 +1,29 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Soodawind.Objects", "Soodawind.Objects\Soodawind.Objects.csproj", "{237528F8-676D-4932-BFAA-EBBB56F7B708}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Soodawind.ConsoleApp", "Soodawind.ConsoleApp\Soodawind.ConsoleApp.csproj", "{15488893-192C-4F41-A80F-934612AD5085}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{237528F8-676D-4932-BFAA-EBBB56F7B708}.Debug.ActiveCfg = Debug|.NET
+		{237528F8-676D-4932-BFAA-EBBB56F7B708}.Debug.Build.0 = Debug|.NET
+		{237528F8-676D-4932-BFAA-EBBB56F7B708}.Release.ActiveCfg = Release|.NET
+		{237528F8-676D-4932-BFAA-EBBB56F7B708}.Release.Build.0 = Release|.NET
+		{15488893-192C-4F41-A80F-934612AD5085}.Debug.ActiveCfg = Debug|.NET
+		{15488893-192C-4F41-A80F-934612AD5085}.Debug.Build.0 = Debug|.NET
+		{15488893-192C-4F41-A80F-934612AD5085}.Release.ActiveCfg = Release|.NET
+		{15488893-192C-4F41-A80F-934612AD5085}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
