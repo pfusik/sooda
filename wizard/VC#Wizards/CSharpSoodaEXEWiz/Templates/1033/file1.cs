@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
 
+using Sooda;
+
 namespace [!output SAFE_NAMESPACE_NAME]
 {
 	/// <summary>
@@ -27,6 +29,16 @@ namespace [!output SAFE_NAMESPACE_NAME]
 			//
 			// TODO: Add any constructor code after InitializeComponent call
 			//
+
+            //
+            // TODO
+            // 1. adjust your connection parameters in App.config file
+            //
+            // 2. adjust your mapping schema in SoodaSchema.xml 
+            //    then rebuild your project. NOTE: each time you add a
+            //    new class, you need to rebuild twice because of VS.NET
+            //    file caching issues
+            //    
 		}
 
 		/// <summary>

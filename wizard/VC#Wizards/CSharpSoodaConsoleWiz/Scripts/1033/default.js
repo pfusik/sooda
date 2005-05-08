@@ -77,18 +77,6 @@ function DoOpenFile(strName)
         case "Class1.cs":
             bOpen = true;
         break;
-
-        case "SoodaSchema.xml":
-            bOpen = true;
-        break;
-
-        case "App.config":
-            bOpen = true;
-        break;
-
-        case "ReadMe.txt":
-            bOpen = true;
-        break;
     }
     return bOpen; 
 }
