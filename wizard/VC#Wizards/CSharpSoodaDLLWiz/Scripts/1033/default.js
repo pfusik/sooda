@@ -31,7 +31,7 @@ function OnFinish(selProj, selObj)
             AddReferencesForSooda(proj);
             AddFilesToCSharpProject(proj, strProjectName, strProjectPath, InfFile, false);
         }
-        proj.Properties("PreBuildEvent").Value = "SoodaStubGen.exe --rebuild-if-changed --schema $(ProjectDir)SoodaSchema.xml --output $(ProjectDir) --namespace " + strSafeProjectName;
+        proj.Properties("PreBuildEvent").Value = "SoodaStubGen.exe --rebuild-if-changed --schema \"$(ProjectDir)SoodaSchema.xml\" --output \"$(ProjectDir).\" --namespace " + strSafeProjectName;
         proj.Save();
     }
     catch(e)

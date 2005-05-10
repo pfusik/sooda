@@ -202,7 +202,16 @@ namespace Sooda.QL {
         }
 
         public virtual void Visit(SoqlLiteralExpression v) {
-            Output.Write(v.literalValue);
+            if (v.literalValue is String)
+            {
+                Output.Write("'");
+                Output.Write(v.literalValue);
+                Output.Write("'");
+            }
+            else
+            {
+                Output.Write(v.literalValue);
+            }
         }
 
         public virtual void Visit(SoqlNullLiteral v) {
@@ -345,10 +354,6 @@ namespace Sooda.QL {
             } finally {
                 IndentLevel--;
             }
-        }
-
-        public virtual void Visit(SoqlStringLiteralExpression v) {
-            Output.Write("'" + v.val + "'");
         }
 
         public virtual void Visit(SoqlRawExpression v) {

@@ -52,11 +52,11 @@ namespace Sooda.Schema {
         public static Stream GetSchemaXsdStream() {
             Assembly ass = typeof(SchemaManager).Assembly;
             foreach (string name in ass.GetManifestResourceNames()) {
-                if (name.EndsWith(".DBSchema.xsd")) {
+                if (name.EndsWith(".SoodaSchema.xsd")) {
                     return ass.GetManifestResourceStream(name);
                 };
             }
-            return null;
+            throw new InvalidProgramException("SoodaSchema not embedded in Sooda assembly");
         }
 
         public static XmlReader GetSchemaXsdStreamXmlReader() {

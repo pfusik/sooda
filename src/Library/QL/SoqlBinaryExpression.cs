@@ -96,7 +96,7 @@ namespace Sooda.QL {
                     if (v1.GetType() == typeof(string)) {
                         switch (op) {
                         case SoqlBinaryOperator.Add:
-                            return new SoqlStringLiteralExpression((string)v1 + (string)v2);
+                            return new SoqlLiteralExpression((string)v1 + (string)v2);
 
                         default:
                             throw new NotImplementedException();

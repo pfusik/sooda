@@ -3,32 +3,4 @@
     <datasource name="default" type="Sooda.Sql.SqlDataSource" />
 
     <!-- TODO: add <class /> and <relation /> mappings here here -->
-
-    <!-- example of a Customer class based on 'Customer' table-->
-    <class name="Customer">
-        <table name="Customer">
-            <field name="Id" dbcolumn="id" type="Integer" primaryKey="true" nullable="false" />
-            <field name="Name" dbcolumn="name" type="String" size="100" nullable="false" />
-            <field name="Address" dbcolumn="address" type="String" size="100" nullable="false" />
-            <field name="PhoneNumber" dbcolumn="phone_number" type="String" size="100" nullable="true" />
-            <field name="City" dbcolumn="city" type="Integer" nullable="false" references="City" />
-        </table>
-    </class>
-
-    <class name="City">
-        <table name="City">
-            <field name="Id" dbcolumn="id" type="Integer" primaryKey="true" nullable="false" />
-            <field name="Name" dbcolumn="name" type="String" size="100" nullable="false" />
-            <field name="Region" dbcolumn="region" type="Integer" nullable="false" references="Region" />
-        </table>
-        <collectionOneToMany name="Customers" class="Customer" foreignField="City" />
-    </class>
-    
-    <class name="Region">
-        <table name="Region">
-            <field name="Id" dbcolumn="id" type="Integer" primaryKey="true" nullable="false" />
-            <field name="Name" dbcolumn="name" type="String" size="100" nullable="false" />
-        </table>
-        <collectionOneToMany name="Cities" class="City" foreignField="Region" />
-    </class>
 </schema>

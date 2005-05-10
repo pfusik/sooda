@@ -55,7 +55,6 @@ namespace Sooda.QL {
         void Visit(SoqlParameterLiteralExpression v);
         void Visit(SoqlPathExpression v);
         void Visit(SoqlQueryExpression v);
-        void Visit(SoqlStringLiteralExpression v);
         void Visit(SoqlUnaryNegationExpression v);
         void Visit(SoqlRawExpression v);
     }

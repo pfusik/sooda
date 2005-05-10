@@ -74,7 +74,7 @@ namespace Sooda.StubGen {
             }
         }
 
-        public PrimitiveRepresentation NullableRepresentation = PrimitiveRepresentation.Boxed;
+        public PrimitiveRepresentation NullableRepresentation = PrimitiveRepresentation.SqlType;
         public PrimitiveRepresentation NotNullRepresentation = PrimitiveRepresentation.Raw;
         public string BaseClassName = null;
 

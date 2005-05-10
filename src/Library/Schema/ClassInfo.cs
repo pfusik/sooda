@@ -541,5 +541,11 @@ namespace Sooda.Schema
                 return InheritsFromClass.GetLabel();
             return null;
         }
+
+        public string GetSafeDataSourceName()
+        {
+            if (DataSourceName == null) return "default";
+            return DataSourceName;
+        }
     }
 }

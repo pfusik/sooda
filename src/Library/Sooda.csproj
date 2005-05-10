@@ -598,7 +598,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "QL\SoqlInt32LiteralExpression.cs"
+                    RelPath = "QL\SoqlLiteralExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -649,11 +649,6 @@
                 />
                 <File
                     RelPath = "QL\SoqlStringCastExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlStringLiteralExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -716,15 +711,6 @@
                     RelPath = "Schema\DataSourceInfoCollection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\DBSchema.xsd"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "Schema\DBSchema.xsx"
-                    DependentUpon = "DBSchema.xsd"
-                    BuildAction = "None"
                 />
                 <File
                     RelPath = "Schema\DeleteAction.cs"
@@ -790,6 +776,10 @@
                     RelPath = "Schema\SchemaManager.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Schema\SoodaSchema.xsd"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "Schema\TableInfo.cs"

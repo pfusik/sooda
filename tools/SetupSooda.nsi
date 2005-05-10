@@ -31,8 +31,6 @@ OutFile "SetupSooda.exe"
 
 ; The default installation directory
 InstallDir "$PROGRAMFILES\Sooda ${SOODA_VERSION}"
-AutoCloseWindow true
-ShowInstDetails nevershow
 
 ; The text to prompt the user to enter a directory
 DirText "This will install Sooda ${SOODA_VERSION} on your computer. Choose a directory:"
@@ -46,12 +44,16 @@ Section "Library and Tools"
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
   File License.txt
+  File src\Library\Schema\SoodaSchema.xsd
 
   SetOutPath $INSTDIR\bin
   ; Put file there
   File ${SOODA_BINARIES}\NLog.dll
   File ${SOODA_BINARIES}\Sooda.dll
   File ${SOODA_BINARIES}\SoodaStubGen.exe
+  File ${SOODA_BINARIES}\SoodaSchemaTool.exe
+  File ${SOODA_BINARIES}\SoodaCompileStubs.exe
+  File ${SOODA_BINARIES}\Sooda*.pdb
 
   SetOutPath $INSTDIR\docs
 
@@ -83,6 +85,14 @@ Section "Sooda Query Analyzer"
   CreateDirectory "$SMPROGRAMS\Sooda ${SOODA_VERSION}"
   CreateShortCut  "$SMPROGRAMS\Sooda ${SOODA_VERSION}\View Sooda Query Analyzer License.lnk" "$INSTDIR\SoodaQuery_License.txt" ""
   CreateShortCut  "$SMPROGRAMS\Sooda ${SOODA_VERSION}\Soql Query Analyzer.lnk" "$INSTDIR\bin\SoodaQuery.exe" ""
+  CreateShortCut  "$SMPROGRAMS\Sooda ${SOODA_VERSION}\Examples.lnk" "$INSTDIR\examples" ""
+SectionEnd
+
+Section "Examples"
+  SectionIn 1
+  SetOutPath $INSTDIR
+  File /r /x _svn examples
+  CreateShortCut  "$SMPROGRAMS\Sooda ${SOODA_VERSION}\Examples.lnk" "$INSTDIR\examples" ""
 SectionEnd
 
 Section "VC# .NET 2003 Wizards"
@@ -92,8 +102,8 @@ Section "VC# .NET 2003 Wizards"
   IfErrors novsnet
   DetailPrint "Visual C# .NET 2003 installed in $0"
   SetOutPath $0
-  File /r wizard\CSharpProjects
-  File /r "wizard\VC#Wizards"
+  File /r /x _svn wizard\CSharpProjects
+  File /r /x _svn "wizard\VC#Wizards"
   Return
 
 novsnet:
@@ -102,6 +112,16 @@ SectionEnd
 
 Section "Documentation"
   SectionIn 1
+  ClearErrors
+  ReadRegStr $0 HKLM Software\Microsoft\VisualStudio\7.1\Setup\VS "VS7CommonDir"
+  IfErrors novsnet
+  DetailPrint "Visual Studio .NET 2003 installed in $0"
+  SetOutPath "$0\Packages\schemas\xml"
+  File src\Library\Schema\SoodaSchema.xsd
+  Return
+novsnet:
+  MessageBox MB_OK "Visual Studio .NET 2003 was not found. Schema not installed."
+
 SectionEnd
 
 Section "Add bin directory to PATH"
@@ -110,33 +130,40 @@ Section "Add bin directory to PATH"
   call AddToPath
 SectionEnd
 
+Section "Schema for VS.NET 2003 Intellisense"
+  SectionIn 1
+SectionEnd
+
 Section "Uninstall"
   Push "$INSTDIR\bin"
   call un.RemoveFromPath
 
+  ClearErrors
+  ReadRegStr $0 HKLM Software\Microsoft\VisualStudio\7.1\Setup\VC# "ProductDir"
+  IfErrors novsnet
+  Delete "$0CSharpProjects\CSharpSooda*"
+  RMDir /r "$0VC#Wizards\CSharpSoodaConsoleWiz"
+  RMDir /r "$0VC#Wizards\CSharpSoodaDLLWiz"
+  RMDir /r "$0VC#Wizards\CSharpSoodaEXEWiz"
+  RMDir /r "$0VC#Wizards\CSharpAddSoodaSchemaWiz"
+
+novsnet:
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Sooda"
   DeleteRegKey HKCU "Software\Microsoft\VisualStudio\7.1\AssemblyFolders\Sooda"
 
+  ClearErrors
+  ReadRegStr $0 HKLM Software\Microsoft\VisualStudio\7.1\Setup\VS "VS7CommonDir"
+  IfErrors novsnet2
+  Delete "$0\Packages\schemas\xml\SoodaSchema.xsd"
+
+novsnet2:
   Delete "$SMPROGRAMS\Sooda ${SOODA_VERSION}\*.lnk"
   RMDir "$SMPROGRAMS\Sooda ${SOODA_VERSION}"
-
-  Delete "$INSTDIR\LICENSE.txt"
-  Delete "$INSTDIR\SoodaQuery_LICENSE.txt"
-  Delete "$INSTDIR\bin\*.dll"
-  Delete "$INSTDIR\bin\*.exe.config"
-  Delete "$INSTDIR\bin\*.exe.manifest"
-  Delete "$INSTDIR\bin\*.exe"
-  Delete "$INSTDIR\docs\*.chm"
-  Delete "$INSTDIR\Uninstall.exe"
-
-  RMDir "$INSTDIR\bin"
-  RMDir "$INSTDIR\docs"
-  RMDir "$INSTDIR"
+  RMDir /r "$INSTDIR"
 SectionEnd
 ; eof
 
 Function .onInstSuccess
-  MessageBox MB_OK "Installation succeeded."
   ExecShell open '$SMPROGRAMS\Sooda ${SOODA_VERSION}'
 FunctionEnd
 

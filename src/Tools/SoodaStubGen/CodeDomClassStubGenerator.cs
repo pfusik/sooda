@@ -106,7 +106,7 @@ namespace Sooda.StubGen
                         new CodeMethodInvokeExpression(
                         new CodeTypeReferenceExpression("_DatabaseSchema"), "GetSchema"),
                         "GetDataSourceInfo",
-                        new CodePrimitiveExpression("default")));
+                        new CodePrimitiveExpression(classInfo.GetSafeDataSourceName())));
                     break;
                 case "long":
                     field.InitExpression = new CodeObjectCreateExpression("Sooda.ObjectMapper.KeyGenerators.TableBasedGeneratorBigint",
@@ -115,7 +115,7 @@ namespace Sooda.StubGen
                         new CodeMethodInvokeExpression(
                         new CodeTypeReferenceExpression("_DatabaseSchema"), "GetSchema"),
                         "GetDataSourceInfo",
-                        new CodePrimitiveExpression("default")));
+                        new CodePrimitiveExpression(classInfo.GetSafeDataSourceName())));
                     break;
 
                 default:

@@ -50,7 +50,6 @@ namespace Sooda.QL {
     [XmlInclude(typeof(SoqlBinaryExpression))]
     [XmlInclude(typeof(SoqlBooleanNegationExpression))]
     [XmlInclude(typeof(SoqlBooleanInExpression))]
-    [XmlInclude(typeof(SoqlStringLiteralExpression))]
     [XmlInclude(typeof(SoqlParameterLiteralExpression))]
     [XmlInclude(typeof(SoqlBooleanLiteralExpression))]
     [XmlInclude(typeof(SoqlDecimalLiteralExpression))]

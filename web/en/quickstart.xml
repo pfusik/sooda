@@ -5,13 +5,12 @@
     <p>
         This document describes steps necessary to use Sooda in your project. You'll need 
         Visual Studio.NET 2003 and a SQL Server 2000 installation with the sample Northwind
-        database.
+        database. The tutorial is available in <code>examples/Soodawind</code> directory.
     </p>
-    <h3>Steps</h3>
     <ol>
         <li><a href="#downloading">Downloading and installing Sooda</a></li>
         <li><a href="#wizard">Running Sooda application wizard</a></li>
-        <li>Creating mapping schema</li>
+        <li><a href="#mapping">Creating a simple mapping schema</a></li>
         <li>Generating stubs</li>
         <li>Using Sooda</li>
     </ol>
@@ -36,7 +35,7 @@
     <img src="../screenshots/tutorial_wizard.gif" />
     <p>
         The wizard creates the following application files:
-    </p>
+    </p> 
     <ul>
         <li><code>SoodaSchema.xml</code> - which defines the mapping between database tables and objects</li>
         <li><code>App.config</code> - which sets up the database connection type and connection string</li>
@@ -45,5 +44,33 @@
     </ul>
     <p>
         It also sets up the project build events so that the SoodaStubGen utility is invoked before each build.
+        Because SoodaStubGen has been added to the PATH variable it can be executed without specifying a full path.
+        If you've decided not to select "Add to PATH" option during install you may want to adjust your project 
+        <code>Pre-Build Event</code> to point it to the location of your SoodaStubGen.exe.
     </p>
+    <h4>Creating a simple mapping schema<a name="mapping" /></h4>
+    <p>
+        We now need to create a mapping schema that describes the corespondence between
+        database tables and .NET classes. Let's start with a simple mapping for the "Categories" table
+        to the <code>Category</code> class.
+    </p>
+    <p>
+        To do this we need to put this in the <code>SoodaSchema.xml</code> file:
+    </p>
+    <xml-example>
+<schema xml:space="preserve" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://sooda.sourceforge.net/schemas/DBSchema.xsd">
+    <datasource name="default" type="Sooda.Sql.SqlDataSource" />
+
+    <class name="Category">
+        <table name="Categories">
+            <field name="ID" dbcolumn="CategoryID" type="Integer" primaryKey="true" nullable="false" />
+            <field name="Name" dbcolumn="CategoryName" type="String" size="15" nullable="false" />
+            <field name="Description" dbcolumn="Description" type="String" size="1" nullable="true" />
+            <field name="Picture" dbcolumn="Picture" type="Blob" nullable="true" />
+        </table>
+    </class>
+</schema>
+
+&#160; </xml-example>
 </content> 

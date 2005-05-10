@@ -143,7 +143,7 @@ namespace Sooda.QL {
             }
 
             if (tokenizer.TokenType == SoqlTokenType.String) {
-                SoqlExpression e = new SoqlStringLiteralExpression(tokenizer.StringTokenValue);
+                SoqlExpression e = new SoqlLiteralExpression(tokenizer.StringTokenValue);
                 tokenizer.GetNextToken();
                 return e;
             }

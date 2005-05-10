@@ -60,12 +60,14 @@
         <exec workingdir="${sooda.dir}" program="${nant.project.basedir}/tools/makewrapper ${sooda.dir}/DBTool" />
     </target>
 
-    <target name="gac" description="Registers Sooda in Global Assembly Cache">
-        <exec workingdir="${sooda.dir}" program="gacutil.exe" commandline="/silent /i Sooda.dll" />
+    <target name="release">
+        <property name="sooda.debug" value="false" />
+        <property name="sooda.optimize" value="true" />
     </target>
 
-    <target name="ungac" description="Unregisters Sooda from Global Assembly Cache">
-        <exec workingdir="${sooda.dir}" program="gacutil.exe" commandline="/silent /u Sooda" />
+    <target name="debug">
+        <property name="sooda.debug" value="true" />
+        <property name="sooda.optimize" value="false" />
     </target>
 
     <target name="Sooda" depends="settings, NLog" description="Sooda">
@@ -82,7 +84,7 @@
                 <include name="**/*.cs" />
             </sources>
             <resources basedir="src/Library" prefix="Sooda" dynamicprefix="true">
-                <include name="Schema/DBSchema.xsd" />
+                <include name="Schema/SoodaSchema.xsd" />
             </resources>
             <arg value="${sooda.csc.args}"/>
         </csc>
@@ -196,6 +198,9 @@
                 <include name="tests/UnitTestObjects/_Stubs.cs" />
                 <include name="tests/UnitTestObjects/_DBSchema.bin" />
                 <include name="tests/UnitTestObjects/_DBSchema.xml" />
+                <include name="examples/**/_Stubs.cs" />
+                <include name="examples/**/_DBSchema.bin" />
+                <include name="examples/**/*.csproj.user" />
             </fileset>
         </delete>
         <foreach item="Folder" property="dirname">
@@ -203,6 +208,8 @@
                 <items>
                     <include name="src/**/bin" />
                     <include name="src/**/obj" />
+                    <include name="examples/**/bin" />
+                    <include name="examples/**/obj" />
                     <include name="tests/**/bin" />
                     <include name="tests/**/obj" />
                 </items>
@@ -329,9 +336,10 @@
         <readregistry property="nsis.dir" key="SOFTWARE\NSIS\" />
         <property name="makensis.exe" value="${nsis.dir}/makensis.exe" />
 
+        <exec program="tools\svnclearignore.cmd" commandline="examples" />
+
         <foreach item="Line" in="sooda.version" delim="." property="sooda.major,sooda.minor,sooda.revision,sooda.build">
             <exec program="${makensis.exe}" commandline="/DSOODA_BINARIES=${sooda.dir} /DSOODA_VERSION=${sooda.major}.${sooda.minor} tools\SetupSooda.nsi" />
-            <move file="SetupSooda.exe" tofile="SetupSooda-${sooda.major}.${sooda.minor}.${sooda.revision}.${sooda.build}.exe" />
         </foreach>
     </target>
 
@@ -531,5 +539,9 @@
                 <format type="html" />
             </current>
         </clover-report>
+    </target>
+
+    <target name="sourceforge-release">
+        <nant buildfile="${nant.project.buildfile}" target="debug clean build installer" />
     </target>
 </project>
