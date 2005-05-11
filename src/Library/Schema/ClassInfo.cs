@@ -248,12 +248,13 @@ namespace Sooda.Schema
 
         internal void FlattenTables() 
         {
+            // Console.WriteLine(">>> FlattenTables for {0}", Name);
             if (LocalTables == null)
                 LocalTables = new TableInfoCollection();
 
             if (InheritsFromClass != null) 
             {
-                if (InheritsFromClass.UnifiedTables == null) 
+                if (InheritsFromClass.UnifiedTables == null || InheritsFromClass.UnifiedTables.Count == 0)
                 {
                     InheritsFromClass.FlattenTables();
                 }
@@ -288,6 +289,7 @@ namespace Sooda.Schema
             {
                 throw new Exception("Class " + Name + " is invalid, because it's base on more than 30 tables. ");
             }
+            // Console.WriteLine("<<< End of FlattenTables for {0}", Name);
         }
 
         internal void Resolve(SchemaInfo schema) 
@@ -335,33 +337,6 @@ namespace Sooda.Schema
                 }
             }
 
-            if (SubclassSelectorFieldName != null) 
-            {
-                SubclassSelectorField = FindFieldByName(SubclassSelectorFieldName);
-            } 
-            else if (InheritFrom != null) 
-            {
-                throw new Exception("Must use subclassSelectorFieldName when defining inherited class");
-            }
-            if (SubclassSelectorStringValue != null) 
-            {
-                // TODO - allow other types based on the field type
-                //
-                switch (SubclassSelectorField.DataType) 
-                {
-                    case FieldDataType.Integer:
-                        SubclassSelectorValue = Convert.ToInt32(SubclassSelectorStringValue);
-                        break;
-
-                    case FieldDataType.String:
-                        SubclassSelectorValue = SubclassSelectorStringValue;
-                        break;
-
-                    default:
-                        throw new NotSupportedException("Field data type not supported for subclassSelectorValue: " + SubclassSelectorField.DataType);
-                }
-            }
-
             // all inherited fields + local fields
 
             UnifiedFields = new FieldInfoCollection();
@@ -376,6 +351,37 @@ namespace Sooda.Schema
                         UnifiedFields.Add(fi);
                         fi.ClassUnifiedOrdinal = unifiedOrdinal++;
                     }
+                }
+            }
+
+            if (SubclassSelectorFieldName != null) 
+            {
+                SubclassSelectorField = FindFieldByName(SubclassSelectorFieldName);
+                if (SubclassSelectorField == null)
+                    throw new SoodaException("subclassSelectorField points to invalid field name " + SubclassSelectorFieldName + " in " + Name);
+            } 
+            else if (InheritFrom != null) 
+            {
+                throw new Exception("Must use subclassSelectorFieldName when defining inherited class");
+            }
+            if (SubclassSelectorStringValue != null) 
+            {
+                // TODO - allow other types based on the field type
+                //
+                if (SubclassSelectorField == null)
+                    throw new SoodaException("subclassSelectorField is invalid");
+                switch (SubclassSelectorField.DataType) 
+                {
+                    case FieldDataType.Integer:
+                        SubclassSelectorValue = Convert.ToInt32(SubclassSelectorStringValue);
+                        break;
+
+                    case FieldDataType.String:
+                        SubclassSelectorValue = SubclassSelectorStringValue;
+                        break;
+
+                    default:
+                        throw new NotSupportedException("Field data type not supported for subclassSelectorValue: " + SubclassSelectorField.DataType);
                 }
             }
 

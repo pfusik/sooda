@@ -1052,8 +1052,11 @@ namespace Sooda
 
                 int selectorFieldOrdinal = factory.GetClassInfo().SubclassSelectorField.OrdinalInTable;
                 object selectorActualValue = record.GetValue(firstColumnIndex + selectorFieldOrdinal);
-
-                if (!selectorActualValue.Equals(factory.GetClassInfo().SubclassSelectorValue)) 
+                IComparer comparer = Comparer.DefaultInvariant;
+                if (selectorActualValue is string)
+                    comparer = CaseInsensitiveComparer.DefaultInvariant;
+                    
+                if (0 != comparer.Compare(selectorActualValue, factory.GetClassInfo().SubclassSelectorValue))
                 {
                     ISoodaObjectFactory newFactory = null;
 
@@ -1065,7 +1068,7 @@ namespace Sooda
                     {
                         foreach (ClassInfo ci in factory.GetClassInfo().Subclasses) 
                         {
-                            if (selectorActualValue.Equals(ci.SubclassSelectorValue)) 
+                            if (0 == comparer.Compare(selectorActualValue, ci.SubclassSelectorValue))
                             {
                                 newFactory = tran.GetFactory(ci);
                                 break;

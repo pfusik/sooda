@@ -70,7 +70,7 @@ namespace Sooda {
                     }
                 }
             } catch (Exception e) {
-                logger.Debug("Error while scanning for SoodaConfigAttribute: ", e);
+                logger.Debug("Error while scanning for SoodaConfigAttribute: {0}", e);
             }
 
             try {
@@ -78,7 +78,7 @@ namespace Sooda {
                 if (s != null) {}
             }
             catch (Exception e) {
-                logger.Error("Error while loading configuration provider", e);
+                logger.Error("Error while loading configuration provider {0}", e);
             }
 
             if (configProvider == null) {
