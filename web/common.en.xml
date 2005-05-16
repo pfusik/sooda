@@ -2,16 +2,15 @@
 <common>
     <navigation>
         <nav href="index" label="Introduction" />
-        <nav href="quickstart" label="Quick Start" />
-        <!-- <nav href="components" label="Components" /> -->
-        <!-- <nav href="tools" label="Tools" /> -->
+        <nav href="status" label="Current Status" />
+        <nav href="tutorial" label="Tutorial" />
         <nav href="examples" label="Examples" />
         <nav href="screenshots" label="Screenshots" />
         <nav href="download" label="Download" />
-        <nav href="technical" label="Technical" />
         <nav href="development" label="Development" />
-        <!-- <nav href="users" label="Users" /> -->
-        <nav href="faq" label="FAQ" />
+        <!-- <nav href="faq" label="FAQ" /> -->
+        <!-- <nav href="users" label="Users of Sooda" /> -->
+        <nav href="blog" label="Blog" />
         <nav href="links" label="Links" />
     </navigation>
 </common>

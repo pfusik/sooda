@@ -6,26 +6,10 @@
         <meta http-equiv="Refresh" content="0; en/index.html" />
         <title>Sooda</title>
         <script language="javascript">
-            function lang_redirect()
-            {
-                var lang = "en";
-                
-                if (navigator.userLanguage)
-                {
-                    lang = navigator.userLanguage;
-                }
-                else if (navigator.language)
-                {
-                    lang = window.navigator.language;
-                }
-                if (lang.indexOf("pl") == 0)
-                    location.replace("pl/index.html");
-                else
-                    location.replace("en/index.html");
-            }
+            location.replace("en/index.html");
         </script>
     </head>
-    <body onload="lang_redirect()">
+    <body>
         Click <a href="en/">here</a> to go to Sooda site.
     </body>
 </html>

@@ -1,16 +1,3 @@
 <?xml version="1.0" encoding="windows-1250" ?>
 <?xml-stylesheet type="text/xsl" href="../style.xsl" ?>
-<content lang="pl" id="development">
-    <h1>Rozwój</h1>
-    <p>
-        Sooda jest oprogramowaniem open-source, co znaczy że kod źródłowy jest publicznie dostępny. 
-        Każdy może przyłączyć się do rozwoju tego projektu.
-    </p>
-    <p>Jako system kontroli wersji Sooda używa Subversion 1.0 (<a href="http://subversion.tigris.org">http://subversion.tigris.org</a>). Dostępny jest bardzo dobry klient Subversion dla Win32 o nazwie <a href="http://tortoisesvn.tigris.org">TortoiseSVN</a>.</p>
-    <p>Najnowsza wersja biblioteki i narzędzi jest dostępna zawsze pod adresem: <a href="http://svn.sav.net/repos/sooda/trunk/Sooda">http://svn.sav.net/repos/sooda/trunk/Sooda</a>.</p>
-    <p>Dostępne są listy dyskusyjne dla wszystkich zainteresowanych rozwojem Soody.</p>
-    <ul>
-        <li><a href="http://lists.sourceforge.net/lists/listinfo/sooda-list">sooda-list@lists.sourceforge.net</a> (lista w języku angielskim)</li>
-        <li><a href="http://lists.sourceforge.net/lists/listinfo/sooda-pl-list">sooda-pl-list@lists.sourceforge.net</a> (lista po polsku).</li>
-    </ul>
-</content>
+<content lang="pl" id="development" />

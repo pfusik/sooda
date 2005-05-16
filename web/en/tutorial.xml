@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="windows-1250" ?>
 <?xml-stylesheet type="text/xsl" href="../style.xsl" ?>
-<content lang="en" id="quickstart">
+<content lang="en" id="tutorial">
     <h1>Tutorial</h1>
     <p>
         This document describes steps necessary to use Sooda in your project. You'll need 

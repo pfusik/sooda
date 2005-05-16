@@ -1,31 +1,4 @@
 <?xml version="1.0" encoding="windows-1250" ?>
 <?xml-stylesheet type="text/xsl" href="../style.xsl" ?>
 <content lang="pl" id="index">
-    <h1>Wprowadzenie</h1>
-    <p>
-        System <b>Sooda</b> (Simple Object-Oriented Data Access) pozwala na automatyczne generowanie 
-        obiektowej warstwy dostępu do danych (Data Access Layer) dla aplikacji działających
-        na platformie .NET.
-    </p>
-    <p>
-        Sooda jest oprogramowaniem open source dystrybuowanym 
-        na zasadach <a href="../LICENSE.txt">licencji BSD</a>. Narzędzie <b>SoodaQuery</b> dystrybuowane jest
-        na zasadach licencji <a href="../SoodaQuery_LICENSE.txt">GPL v2</a>, ponieważ wykorzystuje komponent 
-        <a href="http://www.icsharpcode.net/OpenSource/SD/Default.aspx">ICSharpCode.TextEditor.dll</a>.
-    </p>
-    <h2>Możliwości systemu</h2>
-    <p>
-        System udostępnia następujące mechanizmy wspierające tworzenie rozwiązań bazodanowych:</p>
-    <ul>
-        <li>automatyczne materializowanie obiektów bazodanowych jako obiektów w środowisku zarządzanym</li>
-        <li>obsługa wszystkich prostych typów danych wspieranych przez CLI + możliwość definiowania własnych typów i sposobów odwzorowania</li>
-        <li>naturalne odwzorowanie relacji 1-N w formie obiektów powiązanych i kolekcji</li>
-        <li>naturalne odwzorowanie relacji N-N w formie kolekcji obiektów</li>
-        <li>przezroczysty dostęp do heterogenicznych źródeł danych (RDBMS, w przyszłości także pliki XML, katalogi LDAP i ActiveDirectory)</li>
-        <li>serializacja i deserializacja do formatu XML</li>
-        <li>wsparcie dla długo działających transakcji (<i>long running transactions</i>)</li>
-    </ul>
-    <p>Sooda wspiera <a href="http://msdn.microsoft.com/net">Microsoft .NET Framework</a> w wersji 1.x, możliwa jest także kompilacja 
-        z użyciem <a href="http://www.go-mono.com">Mono</a>, lecz nie wszystkie funkcjonalności
-        działają w tym środowisku.</p>
 </content>

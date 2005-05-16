@@ -19,32 +19,41 @@
                     <tr>
                         <td class="header" colspan="2"><img src="../titlebanner.jpg" /></td>
                     </tr>
-                    <tr>
-                        <td valign="top" class="controls">
-                            <xsl:call-template name="controls" />
-                        </td>
-                        <td valign="top" align="left" class="content">
-                            <xsl:apply-templates select="content" />
-                        </td>
-                    </tr>
+                    <xsl:if test="$result_lang = 'pl'">
+                        <tr>
+                            <td colspan="2" align="left" class="content">
+                                <xsl:variable name="new_url">../en/<xsl:value-of select="$page_id" />.<xsl:value-of select="$file_extension" /></xsl:variable>
+                                This page is available in English only. Click <a href="{$new_url}">here</a> to view it.
+                            </td>
+                        </tr>
+                    </xsl:if>
+                    <xsl:if test="$result_lang != 'pl'">
+                        <tr>
+                            <td valign="top" class="controls">
+                                <xsl:call-template name="controls" />
+                            </td>
+                            <td valign="top" align="left" class="content">
+                                <xsl:apply-templates select="content" />
+                            </td>
+                        </tr>
+                    </xsl:if>
                     <tr>
                         <td class="hostedby">
                             <xsl:if test="$sourceforge='1'">
-<!-- Start of StatCounter Code -->
-<script type="text/javascript" language="javascript">
-var sc_project=575055; 
-var sc_partition=4; 
-var sc_security="e249d6a5"; 
-</script>
+                                <!-- Start of StatCounter Code -->
+                                <script type="text/javascript" language="javascript">
+                                    var sc_project=575055; 
+                                    var sc_partition=4; 
+                                    var sc_security="e249d6a5"; 
+                                </script>
 
-<script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><a href="http://www.statcounter.com/" target="_blank"><img  src="http://c5.statcounter.com/counter.php?sc_project=575055&amp;amp;java=0&amp;amp;security=e249d6a5" alt="free web stats" border="0" /></a> </noscript>
-<!-- End of StatCounter Code -->
+                                <script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><a href="http://www.statcounter.com/" target="_blank"><img  src="http://c5.statcounter.com/counter.php?sc_project=575055&amp;amp;java=0&amp;amp;security=e249d6a5" alt="free web stats" border="0" /></a> </noscript>
+                                <!-- End of StatCounter Code -->
                                 <br/>
                                 <a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=71422&amp;type=1" width="88" height="31" border="0" alt="SourceForge.net Logo" /></a>
                             </xsl:if>
                         </td>                                                                         
-                        <td class="copyright">Copyright (c) 2003-2005 by Jaros³aw Kowalski
-                            <img width="1" height="1"><xsl:attribute name="src">http://jaak.sav.net/transpixel.gif</xsl:attribute></img></td>
+                        <td class="copyright">Copyright (c) 2003-2005 by Jaros³aw Kowalski <img width="1" height="1"><xsl:attribute name="src">http://jaak.sav.net/transpixel.gif</xsl:attribute></img></td>
                     </tr>
                 </table>
             </body>
@@ -67,17 +76,6 @@ var sc_security="e249d6a5";
 
     <xsl:template match="navigation">
         <xsl:apply-templates select="nav" />
-        <p/>
-        <xsl:if test="$result_lang = 'en'">
-            <a>
-                <xsl:attribute name="href">../pl/<xsl:value-of select="$page_id" />.<xsl:value-of select="$file_extension" /></xsl:attribute>
-                <img alt="Polish flag" title="Kliknij tutaj aby prze³¹czyæ na jêzyk polski" class="thinborder" src="../lang_pl.gif" />
-            </a>
-        </xsl:if>
-        <xsl:if test="$result_lang = 'pl'">
-            <a><xsl:attribute name="href">../en/<xsl:value-of select="$page_id" />.<xsl:value-of select="$file_extension" /></xsl:attribute>
-                <img alt="English flag" title="Click here to switch to English" class="thinborder" src="../lang_en.gif" /></a>
-        </xsl:if>
         <p/>
         <a href="http://www.cenqua.com/clover.net"><img src="http://www.cenqua.com/images/cloverednet1.gif" width="89" height="33" border="0" alt="Code Coverage by Clover.NET"/></a>
     </xsl:template>
@@ -103,6 +101,10 @@ var sc_security="e249d6a5";
             <xsl:copy-of select="document(concat(@src,'.html'))" />
         </pre>
         <!-- <a href="{@src}">Download this sample</a><br/> -->
+    </xsl:template>
+
+    <xsl:template match="link">
+        <a href="{@href}.{$file_extension}"><xsl:apply-templates /></a>
     </xsl:template>
 
     <xsl:template match="x">
