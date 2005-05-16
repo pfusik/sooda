@@ -32,6 +32,7 @@
 // 
 
 using System;
+using System.Runtime.Serialization;
 
 namespace Sooda {
     [Serializable]
@@ -39,5 +40,6 @@ namespace Sooda {
         public SoodaDatabaseException() : this(null, null) {}
         public SoodaDatabaseException(string msg) : this(msg, null) {}
         public SoodaDatabaseException(string msg, Exception inner) : base(msg, inner) {}
+		protected SoodaDatabaseException(SerializationInfo info, StreamingContext context) : base(info, context) {}
     }
 }

@@ -122,32 +122,41 @@ namespace Sooda
             Dispose(false);
         }
 
-        void IDisposable.Dispose() 
+        public void Dispose() 
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        void Dispose(bool disposing) 
+        private void Dispose(bool disposing) 
         {
-            // Log("Disposing transaction", "Materialize");
-            if (disposing) 
+            try
             {
-                foreach (SoodaDataSource source in _dataSources) 
+                transactionLogger.Debug("Disposing transaction");
+                if (disposing) 
                 {
-                    source.Close();
-                }
-            };
-            if ((transactionOptions & TransactionOptions.Implicit) != 0) 
-            {
-                if (System.Threading.Thread.GetData(g_activeTransactionDataStoreSlot) == this) 
-                {
-                    System.Threading.Thread.SetData(g_activeTransactionDataStoreSlot, null);
-                } 
-                else 
-                {
-                    transactionLogger.Warn("ActiveTransactionDataStoreSlot has been overwritten by someone.");
+                    foreach (SoodaDataSource source in _dataSources) 
+                    {
+                        source.Close();
+                    }
                 };
+                if ((transactionOptions & TransactionOptions.Implicit) != 0) 
+                {
+                    if (System.Threading.Thread.GetData(g_activeTransactionDataStoreSlot) == this) 
+                    {
+                        System.Threading.Thread.SetData(g_activeTransactionDataStoreSlot, null);
+                    } 
+                    else 
+                    {
+                        transactionLogger.Warn("ActiveTransactionDataStoreSlot has been overwritten by someone.");
+                    };
+                }
+                transactionLogger.Debug("Disposed.");
+            }
+            catch (Exception ex)
+            {
+                transactionLogger.Error("Error while disposing transaction {0}", ex);
+                throw;
             }
         }
 

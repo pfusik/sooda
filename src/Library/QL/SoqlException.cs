@@ -66,6 +66,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using System;
+using System.Runtime.Serialization;
 
 namespace Sooda.QL {
     public class SoqlException : SoodaException {
@@ -89,5 +90,6 @@ namespace Sooda.QL {
             _p0 = p0;
             _p1 = p1;
         }
+		protected SoqlException(SerializationInfo info, StreamingContext context) : base(info, context) {}
     }
 }

@@ -31,8 +31,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-// #define EMPTYACCESSORS
-
 using System;
 using System.Xml;
 using System.Xml.Serialization;
