@@ -60,6 +60,8 @@ namespace Sooda
         private static NLog.Logger transactionLogger = NLog.LogManager.GetLogger("Sooda.Transaction");
         private static LocalDataStoreSlot g_activeTransactionDataStoreSlot = System.Threading.Thread.AllocateDataSlot();
 
+        private SoodaTransaction previousTransaction;
+
         private TransactionOptions transactionOptions;
         private TypeToSoodaRelationTableAssociation _relationTables = new TypeToSoodaRelationTableAssociation();
         //private KeyToSoodaObjectMap _objects = new KeyToSoodaObjectMap();
@@ -109,10 +111,7 @@ namespace Sooda
             this.transactionOptions = options;
             if ((options & TransactionOptions.Implicit) != 0) 
             {
-                if (null != System.Threading.Thread.GetData(g_activeTransactionDataStoreSlot)) 
-                {
-                    throw new InvalidOperationException("There's already a open implicit transaction.");
-                };
+                previousTransaction = (SoodaTransaction)System.Threading.Thread.GetData(g_activeTransactionDataStoreSlot);
                 System.Threading.Thread.SetData(g_activeTransactionDataStoreSlot, this);
             }
         }
@@ -142,14 +141,11 @@ namespace Sooda
                 };
                 if ((transactionOptions & TransactionOptions.Implicit) != 0) 
                 {
-                    if (System.Threading.Thread.GetData(g_activeTransactionDataStoreSlot) == this) 
-                    {
-                        System.Threading.Thread.SetData(g_activeTransactionDataStoreSlot, null);
-                    } 
-                    else 
+                    if (System.Threading.Thread.GetData(g_activeTransactionDataStoreSlot) != this) 
                     {
                         transactionLogger.Warn("ActiveTransactionDataStoreSlot has been overwritten by someone.");
-                    };
+                    } 
+                    System.Threading.Thread.SetData(g_activeTransactionDataStoreSlot, previousTransaction);
                 }
                 transactionLogger.Debug("Disposed.");
             }
