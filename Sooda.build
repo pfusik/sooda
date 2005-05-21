@@ -424,13 +424,15 @@
         </astyle>
     </target>
 
-    <target name="deploy-web">
+    <target name="deploy-web" depends="build-web">
         <delete file="web.zip" if="${file::exists('web.zip')}" />
         <zip zipfile="web.zip" stampdatetime="${datetime::now()}" includeemptydirs="true">
             <fileset basedir="web/build">
                 <include name="**/*" />
                 <exclude name="**/.svn" />
                 <exclude name="**/.svn/**" />
+                <exclude name="**/_svn" />
+                <exclude name="**/_svn/**" />
                 <exclude name="**/*.swp" />
             </fileset>
         </zip>

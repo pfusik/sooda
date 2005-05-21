@@ -18,7 +18,7 @@
     <h5>The CDIL language</h5>
     <p>
         The easiest way to define a CDIL language is to show the correspondence between various CodeDOM constructs
-        and CDIL constructs:
+        and CDIL constructs. See the source code for more information:
     </p>
     <div class="smalltable">
         <table width="100%" border="1">

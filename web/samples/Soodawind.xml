@@ -12,7 +12,7 @@
             <field name="Description" dbcolumn="Description" type="String" size="1" nullable="true" />
             <field name="Picture" dbcolumn="Picture" type="Blob" nullable="true" />
         </table>
-        <collectionOneToMany name="Products" class="Product" foreignField="Category" />
+        <collectionOneToMany name="ProductsInThisCategory" class="Product" foreignField="Category" />
         <!-- an example constant -->
         <const name="Beverages" key="1" />
         <const name="Seafood" key="8" />

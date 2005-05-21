@@ -13,6 +13,16 @@
                 <th>Description</th>
                 <th>Download</th>
             </tr>
+            <!--
+            <tr>
+                <td align="center">0.7</td>
+                <td align="center">2005-05-22</td>
+                <td>Source and binary of Sooda 0.7</td>
+                <td align="center">
+                    <a href="http://sourceforge.net/project/showfiles.php?group_id=71422">download</a><br/>
+                </td>
+            </tr>
+            -->
             <tr>
                 <td align="center">latest</td>
                 <td align="center"></td>

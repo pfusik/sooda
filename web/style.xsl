@@ -120,6 +120,7 @@
     <xsl:template match="xml-example[@src]">
         <pre class="xml-example">
             <xsl:apply-templates mode="xml-example" select="document(@src)" />
+        <p/>
         </pre>
         <!-- <a href="{@src}">Download this sample</a><br/> -->
     </xsl:template>
@@ -127,6 +128,7 @@
     <xsl:template match="xml-example">
         <pre class="xml-example">
             <xsl:apply-templates mode="xml-example" />
+        <p/>
         </pre>
     </xsl:template>
 

@@ -5,5 +5,8 @@
     <p>
         Here you'll find some information about the inner working of Sooda.
     </p>
+    <ol>
+        <li><link href="technical-cdil">CDIL - CodeDOM intermediate template used by SoodaStubGen</link></li>
+        <li><a href="../clover/index.html">Latest code coverage results.</a></li>
+    </ol>
 </content>
-
