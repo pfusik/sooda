@@ -3,6 +3,8 @@
     <property name="sooda.debug" value="true" unless="${property::exists('sooda.debug')}" />
     <property name="sooda.optimize" value="false" unless="${property::exists('sooda.optimize')}" />
 
+    <tstamp />
+
     <property name="scp.program" value="scp" />
     <property name="scp.args" value="" />
     <property name="ssh.program" value="ssh" />
@@ -541,6 +543,19 @@
                 <format type="html" />
             </current>
         </clover-report>
+    </target>
+
+    <target name="source_snapshot">
+        <delete dir="temp/source_snapshot" if="${directory::exists('temp/source_snapshot')}" />
+        <property name="temp.dir" value="temp/source_snapshot/Sooda-${tstamp.date}" />
+        <mkdir dir="temp/source_snapshot" if="${not directory::exists('temp/source_snapshot')}" />
+        <exec program="svn" commandline="export . ${temp.dir}" />
+        <zip zipfile="Sooda-source.zip">
+            <fileset basedir="temp/source_snapshot">
+                <include name="**/*" />
+                <exclude name="_svn" />
+            </fileset>
+        </zip>
     </target>
 
     <target name="sourceforge-release">
