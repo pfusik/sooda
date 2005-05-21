@@ -5,6 +5,8 @@
 
     <tstamp />
 
+    <property name="release.version" value="${tstamp.date}" unless="${property::exists('release.version')}" />
+
     <property name="scp.program" value="scp" />
     <property name="scp.args" value="" />
     <property name="ssh.program" value="ssh" />
@@ -341,7 +343,7 @@
         <exec program="tools\svnclearignore.cmd" commandline="examples" />
 
         <foreach item="Line" in="sooda.version" delim="." property="sooda.major,sooda.minor,sooda.revision,sooda.build">
-            <exec program="${makensis.exe}" commandline="/DSOODA_BINARIES=${sooda.dir} /DSOODA_VERSION=${sooda.major}.${sooda.minor} tools\SetupSooda.nsi" />
+            <exec program="${makensis.exe}" commandline="/DSOODA_BINARIES=${sooda.dir} /DSOODA_VERSION=${sooda.major}.${sooda.minor} /DRELEASE_VERSION=${release.version} tools\SetupSooda.nsi" />
         </foreach>
     </target>
 
@@ -547,10 +549,10 @@
 
     <target name="source_snapshot">
         <delete dir="temp/source_snapshot" if="${directory::exists('temp/source_snapshot')}" />
-        <property name="temp.dir" value="temp/source_snapshot/Sooda-${tstamp.date}" />
+        <property name="temp.dir" value="temp/source_snapshot/Sooda-${release.version}" />
         <mkdir dir="temp/source_snapshot" if="${not directory::exists('temp/source_snapshot')}" />
         <exec program="svn" commandline="export . ${temp.dir}" />
-        <zip zipfile="Sooda-source.zip">
+        <zip zipfile="Sooda-source-${release.version}.zip">
             <fileset basedir="temp/source_snapshot">
                 <include name="**/*" />
                 <exclude name="_svn" />
@@ -558,7 +560,16 @@
         </zip>
     </target>
 
+    <target name="binary_snapshot">
+        <zip zipfile="Sooda-binary-${release.version}.zip">
+            <fileset basedir="${sooda.dir}">
+                <include name="**/*" />
+                <exclude name="_svn" />
+            </fileset>
+        </zip>
+    </target>
+
     <target name="sourceforge-release">
-        <nant buildfile="${nant.project.buildfile}" target="debug clean build installer" />
+        <nant buildfile="${nant.project.buildfile}" target="debug clean build installer source_snapshot binary_snapshot" />
     </target>
 </project>

@@ -1,0 +1,46 @@
+Announcing the release of Sooda 0.7
+
+We're proud to announce the immediate availability 
+of Sooda v0.7.
+
+Version 0.7 is the initial public release made after
+more than 2 years of development and testing as well
+as a number of deployments in various projects.
+
+Sooda homepage:          http://www.sooda.org/
+Download Sooda 0.7 here: http://www.sooda.org/en/download.html
+Sooda mailing lists:     http://www.sooda.org/en/mailinglist.html
+
+About Sooda:
+
+Sooda is an open-source easy-to-use object-to-relational 
+mapping software for .NET released under the terms of BSD
+license with portions released under GPLv2.
+
+This release includes:
+
+* Sooda library
+* Sooda stub generator utility
+* Sooda stub precompilation utility
+* Sooda Query Analyzer
+
+Sooda supports the following O/R features:
+
+* transparent object materialization
+* lazy reads
+* clean and natural syntax - the amount of boilerplate code 
+  is reduced to the absolute minimum, the code is readable
+  and maintainable
+* support for most data types supported by the .NET Framework
+* natural mapping of one-to-many relations as referenced 
+  objects and collections.
+* natural mapping of many-to-many relations as collections
+* various models of object inheritance
+* differential XML serialization and deserialization for 
+  moving data across layers
+* support for long running transactions
+* data caching with copy-on-write support
+
+Sooda supports Microsoft .NET Framework version 1.1 or 
+later and Mono 1.x. Visual Studio.NET 2003 and NAnt 0.85 
+are supported build platforms.
