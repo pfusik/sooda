@@ -47,11 +47,28 @@
             {
                 <span class='c'>// do something</span>
             }
-            
+             
             <span class='c'>// iterate over the products sorted by name</span>
             <span class='k'>foreach</span> (Product p <span class='k'>in</span> c.ProductsInThisCategory.Sort(SoodaOrderBy.Ascending(<span class='s'>&quot;Name&quot;</span>).GetComparer()))
             {
                 <span class='c'>// do something</span>
+            }
+            
+            <span class='c'>// get the snapshot of this collection. Updates to c.ProductsInThisCategory (direct or indirect)</span>
+            <span class='c'>// will not affect the snapshot</span>
+            ProductList snapshot = c.ProductsInThisCategory.GetSnapshot();
+
+            <span class='k'>foreach</span> (Product p <span class='k'>in</span> snapshot)
+            {
+                <span class='c'>// do something</span>
+            }
+
+            <span class='c'>// another way to iterate the collection. Note that ProductList returns strongly-typed instances</span>
+            <span class='c'>// of Product</span>
+
+            <span class='k'>for</span> (<span class='k'>int</span> i = 0; i &lt; snapshot.Count; ++i)
+            {
+                Product p3 = snapshot[i];
             }
         }
     }

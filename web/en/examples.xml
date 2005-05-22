@@ -44,6 +44,6 @@
 		column-renaming, lazy-loading, split-classes, inheritance, collections, enumerations 
         and so on.
 
-        <xml-example src="../samples/sample5.xml" />
+        <xml-example src="samples/sample5.xml" />
 </content>
 

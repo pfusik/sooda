@@ -64,13 +64,13 @@
         database tables and .NET classes. The following file describes a partial mapping of Soodawind database tables
         to objects. The contents of this file should go to <code>SoodaSchema.xml</code>.
     </p>
-    <xml-example src="../samples/Soodawind.xml" />
+    <xml-example src="samples/Soodawind.xml" />
     <h4>Configuring database connection<a name="config" /></h4>
     <p>
         It's now time to configure the database connection parameters. Open <code>App.config</code> file that wizard
         has created for you and modify it accordingly by changing the <code>default.connectionString</code> and/or <code>default.connectionType</code>:
     </p>
-    <xml-example src="../samples/App.config" />
+    <xml-example src="samples/App.config" />
     <h4>Generating stubs<a name="stubgen" /></h4>
     <p>
         It's now time to generate the class stubs and compile your project. Thanks to the pre-build event mentioned

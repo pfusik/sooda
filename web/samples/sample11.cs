@@ -20,5 +20,3 @@ Supplier.GetList(new SoodaWhereClause(
 Product.GetList(new SoodaWhereClause(
             "Supplier.Country = 'Poland' and Category.ProductsInThisCategory.Count > 10"
             ));
-
-

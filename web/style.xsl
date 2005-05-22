@@ -8,6 +8,8 @@
     <xsl:param name="file_extension">xml</xsl:param>
     <xsl:param name="sourceforge">0</xsl:param>
 
+    <xsl:output method="xml" indent="no" />
+
     <xsl:template match="/">
         <html>
             <head>
@@ -119,7 +121,7 @@
 
     <xsl:template match="xml-example[@src]">
         <pre class="xml-example">
-            <xsl:apply-templates mode="xml-example" select="document(@src)" />
+            <xsl:apply-templates mode="xml-example" select="document(concat(@src,''))" />
         <p/>
         </pre>
         <!-- <a href="{@src}">Download this sample</a><br/> -->

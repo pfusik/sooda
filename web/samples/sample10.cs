@@ -66,7 +66,10 @@ class Sample4
             // another way to iterate the collection. Note that ProductList returns strongly-typed instances
             // of Product
 
-            for (int i = 0; i < snapshot
+            for (int i = 0; i < snapshot.Count; ++i)
+            {
+                Product p3 = snapshot[i];
+            }
         }
     }
 }
