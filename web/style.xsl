@@ -156,7 +156,7 @@
     </xsl:template>
 
     <xsl:template match="@*[name()='xml:space']" mode="xml-example"></xsl:template>
-    <xsl:template match="attribute::*" mode="xml-example"><span class="xmlattribute">&#160;<xsl:value-of select="name()"/></span><span class="xmlpunct">=</span><span class="xmlattribtext">"<xsl:value-of select="." />"</span></xsl:template>
+    <xsl:template match="attribute::*" mode="xml-example"><xsl:text> </xsl:text><span class="xmlattribute"><xsl:value-of select="name()"/></span><span class="xmlpunct">=</span><span class="xmlattribtext">"<xsl:value-of select="." />"</span></xsl:template>
 
     <xsl:template match="comment()" mode="xml-example">
         <span class="xmlcomment">&lt;!--<xsl:value-of select="." />--&gt;</span>
