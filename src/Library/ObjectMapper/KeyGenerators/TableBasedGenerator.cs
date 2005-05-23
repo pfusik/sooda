@@ -34,21 +34,29 @@
 using System;
 using System.Data;
 
+using Sooda;
+
 namespace Sooda.ObjectMapper.KeyGenerators {
     public class TableBasedGenerator : IPrimaryKeyGenerator {
         private string keyName;
-        private int poolSize = 10;
+        private int poolSize;
         private int currentValue = 0;
         private int maxValue = 0;
         private static Random random = new Random();
         private Sooda.Schema.DataSourceInfo dataSourceInfo;
-        private string table_name = "KeyGen";
-        private string key_name_column = "key_name";
-        private string key_value_column = "key_value";
+        private string table_name;
+        private string key_name_column;
+        private string key_value_column;
 
-        public TableBasedGenerator(string keyName, Sooda.Schema.DataSourceInfo dataSourceInfo) {
+        public TableBasedGenerator(string keyName, Sooda.Schema.DataSourceInfo dataSourceInfo)
+        {
             this.keyName = keyName;
             this.dataSourceInfo = dataSourceInfo;
+
+            table_name = SoodaConfig.GetString(dataSourceInfo.Name + ".keygentable.name", "KeyGen");
+            key_name_column = SoodaConfig.GetString(dataSourceInfo.Name + ".keygentable.keycolumn", "key_name");
+            key_value_column = SoodaConfig.GetString(dataSourceInfo.Name + ".keygentable.valuecolumn", "key_value");
+            poolSize = Convert.ToInt32(SoodaConfig.GetString(dataSourceInfo.Name + ".keygentable.pool_size", "10"));
         }
 
         public object GetNextKeyValue() {

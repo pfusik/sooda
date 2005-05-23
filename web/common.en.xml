@@ -12,7 +12,7 @@
         <nav href="mailinglist" label="Mailing Lists" />
         <nav href="technical" label="Technical" />
         <nav href="faq" label="FAQ" />
-        <nav href="users" label="Who uses Sooda?" />
+        <!-- <nav href="users" label="Who uses Sooda?" /> -->
         <nav href="blog" label="Blog" />
         <!-- <nav href="links" label="Links" /> -->
     </navigation>
