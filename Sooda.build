@@ -135,17 +135,17 @@
             <references>                                  
                 <include name="${sooda.dir}/Sooda.dll" />
             </references>
-            <sources basedir="src/Tools/SoodaStubGen">
+            <sources basedir="src/SoodaStubGen">
                 <include name="**/*.cs" />
             </sources>
-            <resources basedir="src/Tools/SoodaStubGen" prefix="Sooda.StubGen" dynamicprefix="true">
+            <resources basedir="src/SoodaStubGen" prefix="Sooda.StubGen" dynamicprefix="true">
                 <include name="Template/*.csproj" />
                 <include name="Template/*.vbproj" />
                 <include name="Template/*.build" />
                 <include name="CDIL/Templates/**/*" />
             </resources>
         </csc>
-        <copy file="src/Tools/SoodaStubGen/App.config" tofile="${sooda.dir}/SoodaStubGen.exe.config" />
+        <copy file="src/SoodaStubGen/App.config" tofile="${sooda.dir}/SoodaStubGen.exe.config" />
     </target>
 
     <target name="SoodaCompileStubs" depends="settings, Sooda">
@@ -153,7 +153,7 @@
             <references>                                  
                 <include name="${sooda.dir}/Sooda.dll" />
             </references>
-            <sources basedir="src/Tools/SoodaCompileStubs">
+            <sources basedir="src/SoodaCompileStubs">
                 <include name="*.cs" />
             </sources>
         </csc>
@@ -165,17 +165,17 @@
                 <include name="${sooda.dir}/Sooda.dll" />
                 <include name="Microsoft.JScript.dll" asis="true"/>
             </references>
-            <sources basedir="src/Tools/SoodaStubGen">
+            <sources basedir="src/SoodaStubGen">
                 <include name="**/*.cs" />
             </sources>
-            <resources basedir="src/Tools/SoodaStubGen" prefix="Sooda.StubGen" dynamicprefix="true">
+            <resources basedir="src/SoodaStubGen" prefix="Sooda.StubGen" dynamicprefix="true">
                 <include name="Template/*.csproj" />
                 <include name="Template/*.vbproj" />
                 <include name="Template/*.build" />
                 <include name="CDIL/Templates/**/*" />
             </resources>
         </csc>
-        <copy file="src/Tools/SoodaStubGen/App.config" tofile="${sooda.dir}/SoodaStubGen.exe.config" />
+        <copy file="src/SoodaStubGen/App.config" tofile="${sooda.dir}/SoodaStubGen.exe.config" />
     </target>
 
     <target name="SoodaSchemaTool" depends="settings, Sooda">
@@ -184,7 +184,7 @@
                 <include name="System.Data.dll" asis="true" />
                 <include name="${sooda.dir}/Sooda.dll" />
             </references>
-            <sources basedir="src/Tools/SoodaSchemaTool">
+            <sources basedir="src/SoodaSchemaTool">
                 <include name="*.cs" />
             </sources>
         </csc>
@@ -196,29 +196,29 @@
                 <include name="System.Data.dll" asis="true" />
                 <include name="${sooda.dir}/Sooda.dll" />
             </references>
-            <sources basedir="src/Tools/SoodaFixKeygen">
+            <sources basedir="src/SoodaFixKeygen">
                 <include name="*.cs" />
             </sources>
         </csc>
     </target>
 
     <target name="SoodaQuery" depends="settings, Sooda, ICSharpCode.TextEditor">
-        <csc target="winexe" output="${sooda.dir}/SoodaQuery.exe" debug="${sooda.debug}" define="${sooda.define}" win32icon="src/Tools/SoodaQuery/app.ico">
+        <csc target="winexe" output="${sooda.dir}/SoodaQuery.exe" debug="${sooda.debug}" define="${sooda.define}" win32icon="src/SoodaQuery/app.ico">
             <references>                                  
                 <include name="${sooda.dir}/Sooda.dll" />
                 <include name="${sooda.dir}/ICSharpCode.TextEditor.dll" />
             </references>
-            <sources basedir="src/Tools/SoodaQuery">
+            <sources basedir="src/SoodaQuery">
                 <include name="*.cs" />
             </sources>
-            <resources basedir="src/Tools/SoodaQuery" prefix="SoodaQuery" dynamicprefix="true">
+            <resources basedir="src/SoodaQuery" prefix="SoodaQuery" dynamicprefix="true">
                 <include name="MainForm.resx" />
                 <include name="*.xshd" />
                 <include name="SyntaxModes.xml" />
             </resources>
         </csc>
-        <copy file="src/Tools/SoodaQuery/App.config" tofile="${sooda.dir}/SoodaQuery.exe.config" />
-        <copy file="src/Tools/SoodaQuery/SoodaQuery.exe.manifest" tofile="${sooda.dir}/SoodaQuery.exe.manifest" />
+        <copy file="src/SoodaQuery/App.config" tofile="${sooda.dir}/SoodaQuery.exe.config" />
+        <copy file="src/SoodaQuery/SoodaQuery.exe.manifest" tofile="${sooda.dir}/SoodaQuery.exe.manifest" />
         <copy file="${sooda.external}/ICSharpCode.TextEditor.dll" tofile="${sooda.dir}/ICSharpCode.TextEditor.dll" />
     </target>
 

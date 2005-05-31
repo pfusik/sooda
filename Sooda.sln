@@ -1,25 +1,25 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda", "src\Library\Sooda.csproj", "{FCC9B644-9093-41F6-8F0D-F98F22474CB5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda", "src\Sooda\Sooda.csproj", "{FCC9B644-9093-41F6-8F0D-F98F22474CB5}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaStubGen", "src\Tools\SoodaStubGen\SoodaStubGen.csproj", "{D1076BB4-3E1B-43D3-B176-DBE89B3C413B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaStubGen", "src\SoodaStubGen\SoodaStubGen.csproj", "{D1076BB4-3E1B-43D3-B176-DBE89B3C413B}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaQuery", "src\Tools\SoodaQuery\SoodaQuery.csproj", "{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaQuery", "src\SoodaQuery\SoodaQuery.csproj", "{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaFixKeygen", "src\Tools\SoodaFixKeygen\SoodaFixKeygen.csproj", "{74410A3C-F7F5-47FE-8F72-1856753BDD26}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaFixKeygen", "src\SoodaFixKeygen\SoodaFixKeygen.csproj", "{74410A3C-F7F5-47FE-8F72-1856753BDD26}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaCompileStubs", "src\Tools\SoodaCompileStubs\SoodaCompileStubs.csproj", "{7DACB842-1C46-4145-B02D-91E7C3CD4276}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaCompileStubs", "src\SoodaCompileStubs\SoodaCompileStubs.csproj", "{7DACB842-1C46-4145-B02D-91E7C3CD4276}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaSchemaTool", "src\Tools\SoodaSchemaTool\SoodaSchemaTool.csproj", "{C5E51DAD-B844-4B20-8A84-2D098E75ABAF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaSchemaTool", "src\SoodaSchemaTool\SoodaSchemaTool.csproj", "{C5E51DAD-B844-4B20-8A84-2D098E75ABAF}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
