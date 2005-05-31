@@ -41,61 +41,56 @@ using System.Data;
 
 using Sooda.Config;
 
+using Sooda.Logging;
+
 namespace Sooda {
     public sealed class SoodaConfig {
-        public delegate string ExpandVariable(string variable);
-
         private static ISoodaConfigProvider configProvider = null;
-        private static NLog.Logger logger = NLog.LogManager.GetLogger("Sooda.Config");
+        private static Logger logger = LogManager.GetLogger("Sooda.Config");
 
-        public static ExpandVariable ExpanderDelegate = null;
+        static SoodaConfig()
+        {
+            try
+            {
+                Assembly a = Assembly.GetEntryAssembly();
+                if (a != null)
+                {
+                    SetConfigProviderFromAttribute((SoodaConfigAttribute)Attribute.GetCustomAttribute(a, typeof(SoodaConfigAttribute), false));
+                }
 
-        static SoodaConfig() {
-            try {
-                foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies()) {
-                    if (a.IsDefined(typeof(SoodaConfigAttribute), false)) {
-                        SoodaConfigAttribute[] attrs = (SoodaConfigAttribute[])a.GetCustomAttributes(typeof(SoodaConfigAttribute), false);
-                        logger.Debug("Found SoodaConfigAttribute in " + a.FullName);
-                        foreach (SoodaConfigAttribute at in attrs) {
-                            if (at.XmlConfigFileName != null) {
-                                // Console.WriteLine("fname: {0}", at.XmlConfigFileName);
-                                SetConfigProvider(XmlConfigProvider.FindConfigFile(at.XmlConfigFileName));
-                                return ;
-                            }
-                            if (at.ProviderType != null) {
-                                CreateConfigProvider(at.ProviderType);
-                                return ;
-                            }
+                if (configProvider == null)
+                {
+                    try {
+                        string typeName = System.Configuration.ConfigurationSettings.AppSettings["sooda.config"];
+                        Console.WriteLine("typeName: {0}", typeName);
+                        if (typeName == "xmlconfig")
+                        {
+                            string xmlconfigfile = System.Configuration.ConfigurationSettings.AppSettings["sooda.xmlconfigfile"];
+                            if (xmlconfigfile == null)
+                                xmlconfigfile = "sooda.config.xml";
+                            SetConfigProvider(XmlConfigProvider.FindConfigFile(xmlconfigfile));
+                        }
+                        else if (typeName != null) {
+                            Type t = Type.GetType(typeName);
+                            SetConfigProvider(Activator.CreateInstance(t) as ISoodaConfigProvider);
                         }
                     }
+                    catch (Exception e) {
+                        throw new SoodaConfigException(String.Format("Error while loading configuration provider {0}", e));
+                    }
                 }
-            } catch (Exception e) {
-                logger.Debug("Error while scanning for SoodaConfigAttribute: {0}", e);
             }
-
-            try {
-                string s = System.Configuration.ConfigurationSettings.AppSettings["SoodaConfigClass"];
-                if (s != null) {}
+            catch (Exception ex)
+            {
+                throw new SoodaConfigException(String.Format("Error while loading configuration provider {0}", ex));
             }
-            catch (Exception e) {
-                logger.Error("Error while loading configuration provider {0}", e);
+            finally
+            {
+
+                if (configProvider == null) {
+                    SetConfigProvider(new AppSettingsConfigProvider());
+                }
             }
-
-            if (configProvider == null) {
-                logger.Debug("Using default AppSettingsConfigProvider");
-                configProvider = new AppSettingsConfigProvider();
-            }
-        }
-
-        public static void CreateConfigProvider(string typeName) {
-            logger.Debug("Loading configuration class: " + typeName);
-            Type t = Type.GetType(typeName);
-            CreateConfigProvider(t);
-        }
-
-        public static void CreateConfigProvider(Type t) {
-            logger.Debug("Creating ConfigProvider");
-            SetConfigProvider(Activator.CreateInstance(t) as ISoodaConfigProvider);
         }
 
         public static void SetConfigProvider(ISoodaConfigProvider provider) {
@@ -105,6 +100,21 @@ namespace Sooda {
             configProvider = provider;
         }
 
+        private static void SetConfigProviderFromAttribute(SoodaConfigAttribute at)
+        {
+            if (at == null)
+                return;
+
+            if (at.XmlConfigFileName != null) {
+                SetConfigProvider(XmlConfigProvider.FindConfigFile(at.XmlConfigFileName));
+                return ;
+            }
+            if (at.ProviderType != null) {
+                SetConfigProvider(Activator.CreateInstance(at.ProviderType) as ISoodaConfigProvider);
+                return ;
+            }
+        }
+        
         public static string GetString(string itemName) {
             return GetString(itemName, null);
         }

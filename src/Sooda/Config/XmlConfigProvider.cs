@@ -38,12 +38,17 @@ using System.Security;
 using System.Configuration;
 using System.Collections.Specialized;
 
+using Sooda.Logging;
+
 namespace Sooda.Config {
     public class XmlConfigProvider : ISoodaConfigProvider {
-        private static NLog.Logger logger = NLog.LogManager.GetLogger("Sooda.Config");
+        private static Logger logger = LogManager.GetLogger("Sooda.Config");
         private NameValueCollection dataDictionary = new NameValueCollection();
         private string fileName;
         private string baseDirectory;
+
+        public XmlConfigProvider() : this("Sooda.config.xml") {
+        }
 
         public XmlConfigProvider(string fileName) {
             this.fileName = fileName;

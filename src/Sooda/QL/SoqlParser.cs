@@ -402,7 +402,6 @@ namespace Sooda.QL {
         private void ParseGroupByExpressions(SoqlQueryExpression query) {
             tokenizer.ExpectKeyword("group");
             tokenizer.ExpectKeyword("by");
-            query.GroupByExpressions = new SoqlExpressionCollection();
 
             bool again;
 
@@ -421,9 +420,6 @@ namespace Sooda.QL {
         private void ParseOrderByExpressions(SoqlQueryExpression query) {
             tokenizer.ExpectKeyword("order");
             tokenizer.ExpectKeyword("by");
-
-            query.OrderByExpressions = new SoqlExpressionCollection();
-            query.OrderByOrder = new System.Collections.Specialized.StringCollection();
 
             bool again;
 

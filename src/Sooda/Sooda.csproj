@@ -84,11 +84,6 @@
                     AssemblyName = "System.Drawing"
                     HintPath = "C:\WINNT\Microsoft.NET\Framework\v1.1.4322\System.Drawing.dll"
                 />
-                <Reference
-                    Name = "NLog"
-                    AssemblyName = "NLog"
-                    HintPath = "..\..\external\NLog.dll"
-                />
             </References>
         </Build>
         <Files>
@@ -300,6 +295,46 @@
                 />
                 <File
                     RelPath = "Config\XmlConfigProvider.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Logging\BasicLogger.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Logging\ConsoleLogger.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Logging\ConsoleLoggingImplementation.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Logging\ILoggingImplementation.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Logging\Logger.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Logging\LogManager.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Logging\NullLogger.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Logging\NullLoggingImplementation.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

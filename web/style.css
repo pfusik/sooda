@@ -391,7 +391,9 @@ td.hostedby
 
 code
 {
-    color: #000080;
+    color: #0000ff;
+    font-weight: bold;
+    font-size: 12px;
 }
 
 code.commandline

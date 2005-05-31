@@ -323,7 +323,7 @@ namespace Sooda.QL {
                     Output.Write("where    ");
                     v.WhereClause.Accept(this);
                 }
-                if (v.GroupByExpressions != null) {
+                if (v.GroupByExpressions != null && v.GroupByExpressions.Count > 0) {
                     Output.WriteLine();
                     WriteIndentString();
                     Output.Write("group by ");
@@ -339,7 +339,7 @@ namespace Sooda.QL {
                     Output.Write("having   ");
                     v.Having.Accept(this);
                 }
-                if (v.OrderByExpressions != null) {
+                if (v.OrderByExpressions != null && v.OrderByExpressions.Count > 0) {
                     Output.WriteLine();
                     WriteIndentString();
                     Output.Write("order by ");

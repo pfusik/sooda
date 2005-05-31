@@ -35,10 +35,12 @@ using System;
 using Sooda;
 using Sooda.Collections;
 
+using Sooda.Logging;
+
 namespace Sooda.ObjectMapper {
     public class SoodaObjectFactoryCache : ISoodaObjectFactoryCache {
         private StringToStringToISoodaObjectFactoryAssociation _classes = new StringToStringToISoodaObjectFactoryAssociation();
-        private NLog.Logger logger = NLog.LogManager.GetLogger("Sooda.FactoryCache");
+        private Logger logger = LogManager.GetLogger("Sooda.FactoryCache");
 
         private ObjectToSoodaObjectFactoryAssociation GetObjectFactoryDictionaryForClass(string className) {
             ObjectToSoodaObjectFactoryAssociation dict = _classes[className];

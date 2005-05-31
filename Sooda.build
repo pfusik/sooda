@@ -16,6 +16,7 @@
     <property name="sooda.csc.args" value="/nowarn:1591" />
     <property name="sooda.external" value="${nant.project.basedir}/external" unless="${property::exists('sooda.external')}" />
     <property name="sooda.nlog.dir" value="${sooda.external}" unless="${property::exists('sooda.nlog.dir')}" />
+    <property name="sooda.log4net.dir" value="${sooda.external}" unless="${property::exists('sooda.log4net.dir')}" />
     <property name="sooda.icsharpcode.texteditor.dir" value="${sooda.external}" unless="${property::exists('sooda.icsharpcode.texteditor.dir')}" />
 
     <property name="clover.enabled" value="true" />
@@ -34,7 +35,7 @@
     <target name="tools" depends="SoodaStubGen-mini, SoodaQuery, SoodaSchemaTool, SoodaFixKeygen, SoodaCompileStubs" />
     <target name="minitools" depends="SoodaStubGen-mini, SoodaCompileStubs" />
 
-    <target name="libraries" depends="Sooda" />
+    <target name="libraries" depends="Sooda, Sooda.Logging.NLog, Sooda.Logging.log4net" />
 
     <target name="settings">
         <property name="sooda.define" value="NANT" />
@@ -74,7 +75,7 @@
         <property name="sooda.optimize" value="false" />
     </target>
 
-    <target name="Sooda" depends="settings, NLog" description="Sooda">
+    <target name="Sooda" depends="settings" description="Sooda">
         <csc target="library" output="${sooda.dir}/Sooda.dll" debug="${sooda.debug}" define="${sooda.define}">
             <references>                                  
                 <include name="mscorlib.dll" />
@@ -82,14 +83,49 @@
                 <include name="System.XML.dll" />
                 <include name="System.Data.dll" />
                 <include name="System.Drawing.dll" />
-                <include name="${sooda.dir}/NLog.dll" />
             </references>
-            <sources basedir="src/Library">
+            <sources basedir="src/Sooda">
                 <include name="**/*.cs" />
             </sources>
-            <resources basedir="src/Library" prefix="Sooda" dynamicprefix="true">
+            <resources basedir="src/Sooda" prefix="Sooda" dynamicprefix="true">
                 <include name="Schema/SoodaSchema.xsd" />
             </resources>
+            <arg value="${sooda.csc.args}"/>
+        </csc>
+    </target>
+
+    <target name="Sooda.Logging.NLog" depends="settings, NLog" description="Sooda">
+        <csc target="library" output="${sooda.dir}/Sooda.Logging.NLog.dll" debug="${sooda.debug}" define="${sooda.define}">
+            <references>                                  
+                <include name="mscorlib.dll" />
+                <include name="System.dll" />
+                <include name="System.XML.dll" />
+                <include name="System.Data.dll" />
+                <include name="System.Drawing.dll" />
+                <include name="${sooda.dir}/Sooda.dll" />
+                <include name="${sooda.dir}/NLog.dll" />
+            </references>
+            <sources basedir="src/Sooda.Logging.NLog">
+                <include name="**/*.cs" />
+            </sources>
+            <arg value="${sooda.csc.args}"/>
+        </csc>
+    </target>
+
+    <target name="Sooda.Logging.log4net" depends="settings, log4net" description="Sooda">
+        <csc target="library" output="${sooda.dir}/Sooda.Logging.log4net.dll" debug="${sooda.debug}" define="${sooda.define}">
+            <references>                                  
+                <include name="mscorlib.dll" />
+                <include name="System.dll" />
+                <include name="System.XML.dll" />
+                <include name="System.Data.dll" />
+                <include name="System.Drawing.dll" />
+                <include name="${sooda.dir}/log4net.dll" />
+                <include name="${sooda.dir}/Sooda.dll" />
+            </references>
+            <sources basedir="src/Sooda.Logging.log4net">
+                <include name="**/*.cs" />
+            </sources>
             <arg value="${sooda.csc.args}"/>
         </csc>
     </target>
@@ -265,14 +301,10 @@
         <exec verbose="true" workingdir="${sooda.dir}" program="nunit-console.exe" commandline="${sooda.dir}/Sooda.UnitTests.TestCases.dll" />
     </target>
 
-    <target name="ncover-nunit-console" depends="Sooda.UnitTests.TestCases">
-        <exec verbose="true" workingdir="${sooda.dir}" program="c:\program files\NCover\ncover.console.exe" commandline='/a Sooda /o d:\work\sooda\NCover.xml /l d:\work\sooda\NCover.log /c "c:\program files\NUnit 2.2\bin\nunit-console.exe" "${sooda.dir}/Sooda.UnitTests.TestCases.dll"' />
-    </target>
-
     <target name="test" depends="Sooda.UnitTests.TestCases">
         <nunit2>
             <formatter type="Plain" />
-            <test assemblyname="${sooda.dir}/Sooda.UnitTests.TestCases.dll" />
+            <test assemblyname="${sooda.dir}/Sooda.UnitTests.TestCases.dll" appconfig="tests/TestCases/App.config" />
         </nunit2>
     </target>
 
@@ -292,7 +324,7 @@
         </csc>
     </target>
 
-    <target name="Sooda.UnitTests.TestCases" depends="Sooda, Sooda.UnitTests.Objects">
+    <target name="Sooda.UnitTests.TestCases" depends="libraries, Sooda.UnitTests.Objects">
         <copy file="${nant.location}/lib/${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}/nunit.framework.dll" tofile="${sooda.dir}/nunit.framework.dll" />
         <csc target="library" output="${sooda.dir}/Sooda.UnitTests.TestCases.dll" debug="true">
             <references>                                  
@@ -353,6 +385,14 @@
                 <include name="NLog*.dll" />
                 <include name="NLog*.pdb" />
                 <include name="NLog*.xml" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="log4net">
+        <copy todir="${sooda.dir}">
+            <fileset basedir="${sooda.log4net.dir}">
+                <include name="log4net.dll" />
             </fileset>
         </copy>
     </target>

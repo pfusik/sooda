@@ -43,12 +43,14 @@ using Sooda.Schema;
 using Sooda;
 using Sooda.QL;
 
+using Sooda.Logging;
+
 namespace Sooda.Sql 
 {
     public class SqlDataSource : Sooda.SoodaDataSource 
     {
-        static NLog.Logger logger = NLog.LogManager.GetLogger("Sooda.SqlDataSource");
-        static NLog.Logger sqllogger = NLog.LogManager.GetLogger("Sooda.SQL");
+        static Logger logger = LogManager.GetLogger("Sooda.SqlDataSource");
+        static Logger sqllogger = LogManager.GetLogger("Sooda.SQL");
 
         public IDbConnection Connection;
         public IDbTransaction Transaction;

@@ -47,11 +47,13 @@ using Sooda.ObjectMapper;
 
 using Sooda.Collections;
 
+using Sooda.Logging;
+
 namespace Sooda 
 {
     public class SoodaObject 
     {
-        private static NLog.Logger logger = NLog.LogManager.GetLogger("Sooda.Object");
+        private static Logger logger = LogManager.GetLogger("Sooda.Object");
 
         // instance fields - initialized in InitRawObject()
 

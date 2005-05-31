@@ -2,5 +2,15 @@
 <?xml-stylesheet type="text/xsl" href="../style.xsl" ?>
 <content lang="en" id="faq">
     <h1>FAQ</h1>
-    <p>To be written</p>
+    <faq-index />
+    <p>More to come. FAQ contributions are <link href="mailinglist">are welcome</link>.</p>
+
+    <faq-answers>
+        <faq id="configuration" title="I've developed my own configuration mechanism. Can I get Sooda to use it?">
+            Yes you can. See <link href="technical-config">here</link> for the full answer.
+        </faq>
+        <faq id="logging" title="How do I enable logging from Sooda?">
+            See <link href="technical-logging">here</link> for more information.
+        </faq>
+    </faq-answers>
 </content>

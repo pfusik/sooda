@@ -533,7 +533,7 @@ namespace Sooda.Sql
                             Output.Write(s);
                         }
                     }
-                    if (v.GroupByExpressions != null) 
+                    if (v.GroupByExpressions != null && v.GroupByExpressions.Count > 0) 
                     {
                         Output.WriteLine();
                         WriteIndentString();
@@ -552,7 +552,7 @@ namespace Sooda.Sql
                         Output.Write("having   ");
                         v.Having.Accept(this);
                     }
-                    if (v.OrderByExpressions != null) 
+                    if (v.OrderByExpressions != null && v.OrderByExpressions.Count > 0) 
                     {
                         Output.WriteLine();
                         WriteIndentString();

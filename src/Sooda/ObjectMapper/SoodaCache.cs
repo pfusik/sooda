@@ -39,10 +39,12 @@ using System.Globalization;
 using System.Collections;
 using System.Reflection;
 
+using Sooda.Logging;
+
 namespace Sooda.ObjectMapper {
     public class SoodaCache {
         private static Hashtable _hashtable = new Hashtable();
-        private static NLog.Logger logger = NLog.LogManager.GetLogger("Sooda.Cache");
+        private static Logger logger = LogManager.GetLogger("Sooda.Cache");
 
         public static TimeSpan ExpirationTimeout = TimeSpan.FromMinutes(1);
         public static bool Enabled = false;

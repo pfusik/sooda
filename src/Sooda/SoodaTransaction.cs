@@ -46,6 +46,8 @@ using Sooda.Schema;
 using Sooda.ObjectMapper;
 using Sooda.Collections;
 
+using Sooda.Logging;
+
 namespace Sooda 
 {
     [Flags]
@@ -57,7 +59,7 @@ namespace Sooda
 
     public class SoodaTransaction : IDisposable 
     {
-        private static NLog.Logger transactionLogger = NLog.LogManager.GetLogger("Sooda.Transaction");
+        private static Logger transactionLogger = LogManager.GetLogger("Sooda.Transaction");
         private static LocalDataStoreSlot g_activeTransactionDataStoreSlot = System.Threading.Thread.AllocateDataSlot();
 
         private SoodaTransaction previousTransaction;

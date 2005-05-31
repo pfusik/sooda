@@ -31,42 +31,10 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System;
-using System.IO;
-using System.Text;
-using System.Collections;
-using System.Collections.Specialized;
+using System.Reflection;
 
-namespace Sooda.QL {
-    public class SoqlQueryExpression : SoqlExpression {
-        public bool Distinct = false;
-        public int TopCount = -1;
-
-        public SoqlExpressionCollection SelectExpressions = new SoqlExpressionCollection();
-        public StringCollection SelectAliases = new StringCollection();
-
-        public StringCollection From = new StringCollection();
-        public StringCollection FromAliases = new StringCollection();
-        public ArrayList FromJoins = new ArrayList();
-
-        public SoqlBooleanExpression WhereClause = null;
-        public SoqlBooleanExpression Having = null;
-        public StringCollection WhereJoins = new StringCollection();
-
-        public SoqlExpressionCollection GroupByExpressions = null;
-        public SoqlExpressionCollection OrderByExpressions = null;
-        public StringCollection OrderByOrder = null;
-
-        public SoqlQueryExpression() {}
-
-        public override SoqlExpressionType GetExpressionType() {
-            throw new NotImplementedException();
-        }
-
-        // visitor pattern
-        public override void Accept(ISoqlVisitor visitor) {
-            visitor.Visit(this);
-        }
-
-    }
-}
+#if NANT
+[assembly: AssemblyKeyFile("Sooda.snk")]
+#else 
+[assembly: AssemblyKeyFile("../../../../Sooda.snk")]
+#endif

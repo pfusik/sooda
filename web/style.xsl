@@ -167,5 +167,35 @@
             <xsl:apply-templates mode="xml-example" />
         </xsl:copy>
     </xsl:template>
+
+    <!-- FAQ -->
     
+    <xsl:template match="faq-index">
+        <ol>
+            <xsl:apply-templates select="//faq" mode="faq-index" />
+        </ol>
+    </xsl:template>
+
+    <xsl:template match="faq-answers">
+            <xsl:apply-templates select="faq" mode="faq-body" />
+    </xsl:template>
+
+    <xsl:template match="faq" mode="faq-index">
+        <li><a>
+                <xsl:attribute name="href">#<xsl:value-of select="@id" /></xsl:attribute>
+                    <xsl:value-of select="@title" />
+            </a>
+        </li>
+    </xsl:template>
+
+    <xsl:template match="faq" mode="faq-body">
+        <hr />
+        <h5>
+            <a><xsl:value-of select="position()" />. 
+                <xsl:attribute name="name"><xsl:value-of select="@id" /></xsl:attribute>
+                <xsl:value-of select="@title" />
+            </a>
+        </h5>
+        <xsl:apply-templates />
+    </xsl:template>
 </xsl:stylesheet>

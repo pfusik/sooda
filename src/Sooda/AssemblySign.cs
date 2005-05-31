@@ -31,42 +31,10 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System;
 using System.Reflection;
 
-namespace Sooda {
-    [AttributeUsage(AttributeTargets.Assembly)]
-    public sealed class SoodaStubAssemblyAttribute : Attribute {
-        static NLog.Logger logger = NLog.LogManager.GetLogger("SoodaStubAssemblyAttribute");
-        private Assembly _assembly;
-
-        public SoodaStubAssemblyAttribute() {
-            _assembly = null;
-        }
-
-        public SoodaStubAssemblyAttribute(string assemblyName) {
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-
-            _assembly = null;
-
-            foreach (Assembly a in assemblies) {
-                if (a.GetName().Name == assemblyName) {
-                    this._assembly = a;
-                }
-            }
-
-            logger.Debug("{0} resolved to {1}", assemblyName, _assembly.FullName);
-        }
-
-        public SoodaStubAssemblyAttribute(Type sampleObject) {
-            _assembly = sampleObject.Assembly;
-        }
-
-        public Assembly Assembly
-        {
-            get {
-                return _assembly;
-            }
-        }
-    }
-}
+#if NANT
+[assembly: AssemblyKeyFile("Sooda.snk")]
+#else 
+[assembly: AssemblyKeyFile("../../../../Sooda.snk")]
+#endif

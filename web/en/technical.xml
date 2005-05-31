@@ -7,6 +7,8 @@
     </p>
     <ol>
         <li><link href="technical-cdil">CDIL - CodeDOM intermediate template used by SoodaStubGen</link></li>
+        <li><link href="technical-logging">Logging in Sooda</link></li>
+        <li><link href="technical-config">Integrating Sooda with external configuration mechanisms</link></li>
         <li><a href="../clover/index.html">Latest code coverage results.</a></li>
     </ol>
 </content>
