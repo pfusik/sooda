@@ -74,6 +74,11 @@
             </summary>
             <returns>A new instance of <see cref="T:NLog.Config.LoggingConfiguration"/> that represents the updated configuration.</returns>
         </member>
+        <member name="M:NLog.Config.LoggingConfiguration.Close">
+            <summary>
+            Closes all targets and releases any unmanaged resources.
+            </summary>
+        </member>
         <member name="P:NLog.Config.LoggingConfiguration.LoggingRules">
             <summary>
             The collection of logging rules
@@ -2192,6 +2197,31 @@
             The separator to be used for concatenating NDC output.
             </summary>
         </member>
+        <member name="T:NLog.LayoutRenderers.NewLine">
+            <summary>
+            A newline literal.
+            </summary>
+        </member>
+        <member name="M:NLog.LayoutRenderers.NewLine.GetEstimatedBufferSize(NLog.LogEventInfo)">
+            <summary>
+            Returns the estimated number of characters that are needed to
+            hold the rendered value for the specified logging event.
+            </summary>
+            <param name="ev">Logging event information.</param>
+            <returns>The number of characters.</returns>
+            <remarks>
+            If the exact number is not known or
+            expensive to calculate this function should return a rough estimate
+            that's big enough in most cases, but not too big, in order to conserve memory.
+            </remarks>
+        </member>
+        <member name="M:NLog.LayoutRenderers.NewLine.Append(System.Text.StringBuilder,NLog.LogEventInfo)">
+            <summary>
+            Renders the specified string literal and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
+            </summary>
+            <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
+            <param name="ev">Logging event.</param>
+        </member>
         <member name="T:NLog.LayoutRenderers.NLogDirLayoutRenderer">
             <summary>
             The directory where NLog.dll is located.
@@ -2276,6 +2306,50 @@
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
             <param name="ev">Logging event.</param>
+        </member>
+        <member name="T:NLog.LayoutRenderers.StackTraceLayoutRenderer">
+            <summary>
+            Stack trace renderer.
+            </summary>
+        </member>
+        <member name="M:NLog.LayoutRenderers.StackTraceLayoutRenderer.GetEstimatedBufferSize(NLog.LogEventInfo)">
+            <summary>
+            Returns the estimated number of characters that are needed to
+            hold the rendered value for the specified logging event.
+            </summary>
+            <param name="ev">Logging event information.</param>
+            <returns>The number of characters.</returns>
+            <remarks>
+            If the exact number is not known or
+            expensive to calculate this function should return a rough estimate
+            that's big enough in most cases, but not too big, in order to conserve memory.
+            </remarks>
+        </member>
+        <member name="M:NLog.LayoutRenderers.StackTraceLayoutRenderer.NeedsStackTrace">
+            <summary>
+            Checks whether the stack trace is requested.
+            </summary>
+            <returns>2 when the source file information is requested, 1 otherwise.</returns>
+        </member>
+        <member name="M:NLog.LayoutRenderers.StackTraceLayoutRenderer.Append(System.Text.StringBuilder,NLog.LogEventInfo)">
+            <summary>
+            Renders the call site and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
+            </summary>
+            <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
+            <param name="ev">Logging event.</param>
+        </member>
+        <member name="P:NLog.LayoutRenderers.StackTraceLayoutRenderer.Format">
+            <summary>
+            The output format of the stack trace.
+            </summary>
+            <remarks>
+            Allowed values are <c>raw</c>, <c>flat</c> and <c>detailedflat</c>.
+            </remarks>
+        </member>
+        <member name="P:NLog.LayoutRenderers.StackTraceLayoutRenderer.TopFrames">
+            <summary>
+            The number of top stack frames to be rendered.
+            </summary>
         </member>
         <member name="T:NLog.LayoutRenderers.ThreadIDLayoutRenderer">
             <summary>
@@ -2395,6 +2469,16 @@
             </summary>
             <returns>A string that describes the target.</returns>
         </member>
+        <member name="M:NLog.Target.Flush">
+            <summary>
+            Flush any pending log messages (in case of asynchronous targets).
+            </summary>
+        </member>
+        <member name="M:NLog.Target.Close">
+            <summary>
+            Closes the target and releases any unmanaged resources.
+            </summary>
+        </member>
         <member name="P:NLog.Target.Name">
             <summary>
             The name of the target.
@@ -2419,6 +2503,121 @@
             <see cref="M:System.Web.TraceContext.Write(System.String)"/> method.
             </summary>
             <param name="ev">The logging event.</param>
+        </member>
+        <member name="T:NLog.Targets.ChainsawTarget">
+            <summary>
+            Sends logging messages to the remote instance of Chainsaw application from log4j. 
+            </summary>
+        </member>
+        <member name="T:NLog.Targets.NLogViewerTarget">
+            <summary>
+            Sends logging messages to the remote instance of NLog Viewer. 
+            NOT OPERATIONAL YET.
+            </summary>
+        </member>
+        <member name="T:NLog.Targets.NetworkTarget">
+            <summary>
+            Sends logging messages over network.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.NetworkTarget.NetworkSend(System.String,System.String)">
+            <summary>
+            Sends the provided text to the specified address.
+            </summary>
+            <param name="address">The address. Can be tcp://host:port, udp://host:port, http://host:port or https://host:port</param>
+            <param name="text">The text to be sent.</param>
+        </member>
+        <member name="M:NLog.Targets.NetworkTarget.Append(NLog.LogEventInfo)">
+            <summary>
+            Sends the 
+            rendered logging event over the network optionally concatenating it with a newline character.
+            </summary>
+            <param name="ev">The logging event.</param>
+        </member>
+        <member name="P:NLog.Targets.NetworkTarget.Async">
+            <summary>
+            Use asynchronous sending routine.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.NetworkTarget.Address">
+            <summary>
+            The network address. Can be tcp://host:port, udp://host:port, http://host:port or https://host:port
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.NetworkTarget.AddressLayout">
+            <summary>
+            The network address. Can be tcp://host:port, udp://host:port, http://host:port or https://host:port
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.NetworkTarget.KeepConnection">
+            <summary>
+            Keep connection open whenever possible.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.NetworkTarget.NewLine">
+            <summary>
+            Append newline at the end of log message.
+            </summary>
+        </member>
+        <member name="F:NLog.Targets.NLogViewerTarget.IncludeNLogData">
+            <summary>
+            Include NLog-specific extensions to log4j schema.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.NLogViewerTarget.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:NLog.Targets.NLogViewerTarget"/> 
+            and initializes default property values.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.NLogViewerTarget.NeedsStackTrace">
+            <summary>
+            Returns the value indicating whether call site and/or source information should be gathered.
+            </summary>
+            <returns>2 - when IncludeSourceInfo is set, 1 when IncludeCallSite is set, 0 otherwise</returns>
+        </member>
+        <member name="M:NLog.Targets.NLogViewerTarget.Append(NLog.LogEventInfo)">
+            <summary>
+            Constructs an XML packet including the logging event information and sends it over the network.
+            </summary>
+            <param name="ev">Logging event information.</param>
+        </member>
+        <member name="P:NLog.Targets.NLogViewerTarget.AppInfo">
+            <summary>
+            The AppInfo field. By default it's the friendly name of the current AppDomain.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.NLogViewerTarget.IncludeCallSite">
+            <summary>
+            Include call site (class and method name) in the information sent over the network.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.NLogViewerTarget.IncludeSourceInfo">
+            <summary>
+            Include source info (file name and line number) in the information sent over the network.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.NLogViewerTarget.IncludeMDC">
+            <summary>
+            Include MDC dictionary in the information sent over the network.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.NLogViewerTarget.IncludeNDC">
+            <summary>
+            Include NDC stack.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.NLogViewerTarget.Parameters">
+            <summary>
+            The collection of paramters. Each parameter contains a mapping
+            between NLog layout and a database named or positional parameter.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.ChainsawTarget.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:NLog.Targets.ChainsawTarget"/> 
+            and initializes default property values.
+            </summary>
         </member>
         <member name="T:NLog.Targets.ConsoleTarget">
             <summary>
@@ -2790,6 +2989,11 @@
             </summary>
             <param name="ev">The logging event.</param>
         </member>
+        <member name="M:NLog.Targets.FileTarget.Close">
+            <summary>
+            Closes the file.
+            </summary>
+        </member>
         <member name="P:NLog.Targets.FileTarget.FileName">
             <summary>
             The name of the file to write to.
@@ -2872,6 +3076,16 @@
             ...<p/>
             and so on.
             </example>
+        </member>
+        <member name="P:NLog.Targets.FileTarget.Async">
+            <summary>
+            Write to the file in a separate thread. (EXPERIMENTAL)
+            </summary>
+        </member>
+        <member name="T:NLog.Targets.FileTarget.FileWriteRequest">
+            <summary>
+            Represents a single request to write to a file.
+            </summary>
         </member>
         <member name="T:NLog.Targets.MemoryTarget">
             <summary>
@@ -3122,87 +3336,170 @@
             
             </summary>
         </member>
-        <member name="T:NLog.Targets.NetworkTarget">
+        <member name="T:NLog.Targets.NLogViewerParameterInfo">
             <summary>
-            Sends logging messages over network.
+            Represents a parameter to a NLogViewer target.
             </summary>
         </member>
-        <member name="M:NLog.Targets.NetworkTarget.NetworkSend(System.String,System.String)">
-            <summary>
-            Sends the provided text to the specified address.
-            </summary>
-            <param name="address">The address. Can be tcp://host:port, udp://host:port, http://host:port or https://host:port</param>
-            <param name="text">The text to be sent.</param>
-        </member>
-        <member name="M:NLog.Targets.NetworkTarget.Append(NLog.LogEventInfo)">
-            <summary>
-            Sends the 
-            rendered logging event over the network optionally concatenating it with a newline character.
-            </summary>
-            <param name="ev">The logging event.</param>
-        </member>
-        <member name="P:NLog.Targets.NetworkTarget.Async">
-            <summary>
-            Use asynchronous sending routine.
+        <member name="M:NLog.Targets.NLogViewerParameterInfo.#ctor">
+            <summary>ba
+            Creates a new instance of <see cref="T:NLog.Targets.NLogViewerParameterInfo"/>.
             </summary>
         </member>
-        <member name="P:NLog.Targets.NetworkTarget.Address">
+        <member name="P:NLog.Targets.NLogViewerParameterInfo.Name">
             <summary>
-            The network address. Can be tcp://host:port, udp://host:port, http://host:port or https://host:port
+            Viewer parameter name.
             </summary>
         </member>
-        <member name="P:NLog.Targets.NetworkTarget.AddressLayout">
+        <member name="P:NLog.Targets.NLogViewerParameterInfo.Layout">
             <summary>
-            The network address. Can be tcp://host:port, udp://host:port, http://host:port or https://host:port
+            The layout that should be use to calcuate the value for the parameter.
             </summary>
         </member>
-        <member name="P:NLog.Targets.NetworkTarget.KeepConnection">
+        <member name="P:NLog.Targets.NLogViewerParameterInfo.CompiledLayout">
             <summary>
-            Keep connection open whenever possible.
+            The compiled representation of the Layout property.
             </summary>
         </member>
-        <member name="P:NLog.Targets.NetworkTarget.NewLine">
+        <member name="T:NLog.Targets.NLogViewerParameterInfoCollection">
             <summary>
-            Append newline at the end of log message.
+            A collection of elements of type NLogViewerParameterInfo
             </summary>
         </member>
-        <member name="T:NLog.Targets.NLogViewerTarget">
+        <member name="M:NLog.Targets.NLogViewerParameterInfoCollection.#ctor">
             <summary>
-            Sends logging messages to the remote instance of NLog Viewer. 
-            NOT OPERATIONAL YET.
+            Initializes a new empty instance of the NLogViewerParameterInfoCollection class.
             </summary>
         </member>
-        <member name="M:NLog.Targets.NLogViewerTarget.#ctor">
+        <member name="M:NLog.Targets.NLogViewerParameterInfoCollection.#ctor(NLog.Targets.NLogViewerParameterInfo[])">
             <summary>
-            Creates a new instance of the <see cref="T:NLog.Targets.NLogViewerTarget"/> 
-            and initializes default property values.
+            Initializes a new instance of the NLogViewerParameterInfoCollection class, containing elements
+            copied from an array.
+            </summary>
+            <param name="items">
+            The array whose elements are to be added to the new NLogViewerParameterInfoCollection.
+            </param>
+        </member>
+        <member name="M:NLog.Targets.NLogViewerParameterInfoCollection.#ctor(NLog.Targets.NLogViewerParameterInfoCollection)">
+            <summary>
+            Initializes a new instance of the NLogViewerParameterInfoCollection class, containing elements
+            copied from another instance of NLogViewerParameterInfoCollection
+            </summary>
+            <param name="items">
+            The NLogViewerParameterInfoCollection whose elements are to be added to the new NLogViewerParameterInfoCollection.
+            </param>
+        </member>
+        <member name="M:NLog.Targets.NLogViewerParameterInfoCollection.AddRange(NLog.Targets.NLogViewerParameterInfo[])">
+            <summary>
+            Adds the elements of an array to the end of this NLogViewerParameterInfoCollection.
+            </summary>
+            <param name="items">
+            The array whose elements are to be added to the end of this NLogViewerParameterInfoCollection.
+            </param>
+        </member>
+        <member name="M:NLog.Targets.NLogViewerParameterInfoCollection.AddRange(NLog.Targets.NLogViewerParameterInfoCollection)">
+            <summary>
+            Adds the elements of another NLogViewerParameterInfoCollection to the end of this NLogViewerParameterInfoCollection.
+            </summary>
+            <param name="items">
+            The NLogViewerParameterInfoCollection whose elements are to be added to the end of this NLogViewerParameterInfoCollection.
+            </param>
+        </member>
+        <member name="M:NLog.Targets.NLogViewerParameterInfoCollection.Add(NLog.Targets.NLogViewerParameterInfo)">
+            <summary>
+            Adds an instance of type NLogViewerParameterInfo to the end of this NLogViewerParameterInfoCollection.
+            </summary>
+            <param name="value">
+            The NLogViewerParameterInfo to be added to the end of this NLogViewerParameterInfoCollection.
+            </param>
+        </member>
+        <member name="M:NLog.Targets.NLogViewerParameterInfoCollection.Contains(NLog.Targets.NLogViewerParameterInfo)">
+            <summary>
+            Determines whether a specfic NLogViewerParameterInfo value is in this NLogViewerParameterInfoCollection.
+            </summary>
+            <param name="value">
+            The NLogViewerParameterInfo value to locate in this NLogViewerParameterInfoCollection.
+            </param>
+            <returns>
+            true if value is found in this NLogViewerParameterInfoCollection;
+            false otherwise.
+            </returns>
+        </member>
+        <member name="M:NLog.Targets.NLogViewerParameterInfoCollection.IndexOf(NLog.Targets.NLogViewerParameterInfo)">
+            <summary>
+            Return the zero-based index of the first occurrence of a specific value
+            in this NLogViewerParameterInfoCollection
+            </summary>
+            <param name="value">
+            The NLogViewerParameterInfo value to locate in the NLogViewerParameterInfoCollection.
+            </param>
+            <returns>
+            The zero-based index of the first occurrence of the _ELEMENT value if found;
+            -1 otherwise.
+            </returns>
+        </member>
+        <member name="M:NLog.Targets.NLogViewerParameterInfoCollection.Insert(System.Int32,NLog.Targets.NLogViewerParameterInfo)">
+            <summary>
+            Inserts an element into the NLogViewerParameterInfoCollection at the specified index
+            </summary>
+            <param name="index">
+            The index at which the NLogViewerParameterInfo is to be inserted.
+            </param>
+            <param name="value">
+            The NLogViewerParameterInfo to insert.
+            </param>
+        </member>
+        <member name="M:NLog.Targets.NLogViewerParameterInfoCollection.Remove(NLog.Targets.NLogViewerParameterInfo)">
+            <summary>
+            Removes the first occurrence of a specific NLogViewerParameterInfo from this NLogViewerParameterInfoCollection.
+            </summary>
+            <param name="value">
+            The NLogViewerParameterInfo value to remove from this NLogViewerParameterInfoCollection.
+            </param>
+        </member>
+        <member name="M:NLog.Targets.NLogViewerParameterInfoCollection.GetEnumerator">
+            <summary>
+            Returns an enumerator that can iterate through the elements of this NLogViewerParameterInfoCollection.
+            </summary>
+            <returns>
+            An object that implements System.Collections.IEnumerator.
+            </returns>        
+        </member>
+        <member name="P:NLog.Targets.NLogViewerParameterInfoCollection.Item(System.Int32)">
+            <summary>
+            Gets or sets the NLogViewerParameterInfo at the given index in this NLogViewerParameterInfoCollection.
             </summary>
         </member>
-        <member name="M:NLog.Targets.NLogViewerTarget.NeedsStackTrace">
+        <member name="T:NLog.Targets.NLogViewerParameterInfoCollection.Enumerator">
             <summary>
-            Returns the value indicating whether call site and/or source information should be gathered.
-            </summary>
-            <returns>2 - when IncludeSourceInfo is set, 1 when IncludeCallSite is set, 0 otherwise</returns>
-        </member>
-        <member name="M:NLog.Targets.NLogViewerTarget.Append(NLog.LogEventInfo)">
-            <summary>
-            Constructs an XML packet including the logging event information and sends it over the network.
-            </summary>
-            <param name="ev">Logging event information.</param>
-        </member>
-        <member name="P:NLog.Targets.NLogViewerTarget.AppInfo">
-            <summary>
-            The AppInfo field. By default it's the friendly name of the current AppDomain.
+            Type-specific enumeration class, used by NLogViewerParameterInfoCollection.GetEnumerator.
             </summary>
         </member>
-        <member name="P:NLog.Targets.NLogViewerTarget.IncludeCallSite">
+        <member name="M:NLog.Targets.NLogViewerParameterInfoCollection.Enumerator.#ctor(NLog.Targets.NLogViewerParameterInfoCollection)">
             <summary>
-            Include call site (class and method name) in the information sent over the network.
+            
+            </summary>
+            <param name="collection"></param>
+        </member>
+        <member name="M:NLog.Targets.NLogViewerParameterInfoCollection.Enumerator.MoveNext">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NLog.Targets.NLogViewerParameterInfoCollection.Enumerator.Reset">
+            <summary>
+            
             </summary>
         </member>
-        <member name="P:NLog.Targets.NLogViewerTarget.IncludeSourceInfo">
+        <member name="P:NLog.Targets.NLogViewerParameterInfoCollection.Enumerator.Current">
             <summary>
-            Include source info (file name and line number) in the information sent over the network.
+            
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.NLogViewerParameterInfoCollection.Enumerator.System#Collections#IEnumerator#Current">
+            <summary>
+            
             </summary>
         </member>
         <member name="T:NLog.Targets.NullTarget">
@@ -3730,6 +4027,12 @@
         <member name="P:NLog.LogEventInfo.UserStackFrame">
             <summary>
             Gets the stack frame of the method that did the logging.
+            </summary>
+        </member>
+        <member name="P:NLog.LogEventInfo.UserStackFrameNumber">
+            <summary>
+            Gets the number index of the stack frame that represents the user
+            code (not the NLog code)
             </summary>
         </member>
         <member name="P:NLog.LogEventInfo.StackTrace">

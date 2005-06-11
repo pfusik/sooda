@@ -38,6 +38,7 @@ namespace Sooda.Schema {
     using System.Collections;
     using System.Xml.Serialization;
     using System.Runtime.Serialization;
+    using System.Text;
 
     [XmlType(Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd")]
     [XmlRoot("schema", Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd", IsNullable = false)]
@@ -149,7 +150,21 @@ namespace Sooda.Schema {
                 if (dsi.Name == name)
                     return dsi;
             }
-            throw new Exception("Data source " + name + " not found");
+            throw new Exception("Data source " + name + " not found. Available data sources: " + GetAvailableDataSources());
+        }
+
+        private string GetAvailableDataSources()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (DataSourceInfo dsi in DataSources)
+            {
+                if (sb.Length > 0)
+                    sb.Append(",");
+                sb.Append(dsi.Name + ": " + dsi.DataSourceType);
+            }   
+
+            return sb.ToString();
         }
     }
 }

@@ -32,6 +32,7 @@
 // 
 
 using System;
+using System.Collections;
 using Sooda.Schema;
 using System.IO;
 using System.Xml;
@@ -39,11 +40,14 @@ using System.Xml.Serialization;
 
 namespace Sooda.ObjectMapper {
     public class SchemaLoader {
-        private static SchemaInfo schemaInfo = null;
+        private static Hashtable assembly2SchemaInfo = new Hashtable();
+
         public static SchemaInfo GetSchemaFromAssembly(System.Reflection.Assembly ass) {
+            SchemaInfo schemaInfo = (SchemaInfo)assembly2SchemaInfo[ass];
+
             if (schemaInfo == null) {
-                DateTime dt0 = DateTime.Now;
                 lock (typeof(SchemaLoader)) {
+                    schemaInfo = (SchemaInfo)assembly2SchemaInfo[ass];
                     if (schemaInfo == null) {
                         foreach (string name in ass.GetManifestResourceNames()) {
                             if (name.EndsWith("_DBSchema.bin")) {
@@ -68,10 +72,9 @@ namespace Sooda.ObjectMapper {
                         if (schemaInfo == null) {
                             throw new InvalidOperationException("_DBSchema.xml not embedded in " + ass.CodeBase);
                         };
+                        assembly2SchemaInfo[ass] = schemaInfo;
                     };
                 }
-                DateTime dt1 = DateTime.Now;
-                //Console.WriteLine("Schema loaded in {0}", dt1 - dt0);
             };
             return schemaInfo;
         }
