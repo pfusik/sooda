@@ -95,14 +95,14 @@
                     HintPath = "F:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Web.Services.dll"
                 />
                 <Reference
-                    Name = "ICSharpCode.TextEditor"
-                    AssemblyName = "ICSharpCode.TextEditor"
-                    HintPath = "..\..\..\external\ICSharpCode.TextEditor.dll"
-                />
-                <Reference
                     Name = "Sooda"
                     Project = "{FCC9B644-9093-41F6-8F0D-F98F22474CB5}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "ICSharpCode.TextEditor"
+                    AssemblyName = "ICSharpCode.TextEditor"
+                    HintPath = "..\..\external\ICSharpCode.TextEditor.dll"
                 />
             </References>
         </Build>

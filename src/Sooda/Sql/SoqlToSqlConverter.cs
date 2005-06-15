@@ -130,9 +130,36 @@ namespace Sooda.Sql
             return currentContainer;
         }
 
+        private void ReplaceEmbeddedSoql(string s0)
+        {
+            int p;
+            string s = s0;
+            string parameterStart = "SOQL{{";
+            string parameterEnd = "}}";
+
+            p = s.IndexOf(parameterStart);
+            while (p != -1)
+            {
+                int r = s.IndexOf(parameterEnd, p);
+                if (r == -1)
+                    break;
+
+                string after = s.Substring(r + parameterEnd.Length);
+                string before = s.Substring(0, p);
+                Output.Write(before);
+                string soqlString = s.Substring(p + parameterStart.Length, r - p - parameterStart.Length);
+                SoqlExpression expr = SoqlParser.ParseExpression(soqlString);
+                expr.Accept(this);
+
+                s = after;
+                p = s.IndexOf(parameterStart);
+            }
+            Output.Write(s);
+        }
+
         public override void Visit(SoqlRawExpression v) 
         {
-            Output.Write(v.Text);
+            ReplaceEmbeddedSoql(v.Text);
         }
 
         public override void Visit(SoqlBooleanLiteralExpression v) 
