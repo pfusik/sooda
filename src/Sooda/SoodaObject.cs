@@ -1029,7 +1029,8 @@ namespace Sooda
                     if (fi.IsPrimaryKey)
                     {
                         int pkFieldOrdinal = firstColumnIndex + fi.OrdinalInTable;
-                        pkParts[currentPkPart++] = factory.GetPrimaryKeyFieldHandler().RawRead(record, pkFieldOrdinal);
+                        SoodaFieldHandler handler = factory.GetFieldHandler(pkFieldOrdinal);
+                        pkParts[currentPkPart++] = handler.RawRead(record, pkFieldOrdinal);
                     }
                 }
                 keyValue = new SoodaTuple(pkParts);
