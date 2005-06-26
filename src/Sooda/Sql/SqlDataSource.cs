@@ -519,17 +519,20 @@ namespace Sooda.Sql
 
         private void LogCommand(IDbCommand cmd) 
         {
-            StringBuilder txt = new StringBuilder();
-            txt.Append(cmd.CommandText);
-            txt.Append(" [");
-            foreach (IDataParameter par in cmd.Parameters) 
+            if (sqllogger.IsDebugEnabled)
             {
-                txt.AppendFormat(" {0}={1}", par.ParameterName, par.Value);
-            }
-            txt.Append(" ]");
-            txt.AppendFormat(" DataSource: {0}", this.Name);
+                StringBuilder txt = new StringBuilder();
+                txt.Append(cmd.CommandText);
+                txt.Append(" [");
+                foreach (IDataParameter par in cmd.Parameters) 
+                {
+                    txt.AppendFormat(" {0}={1}", par.ParameterName, par.Value);
+                }
+                txt.Append(" ]");
+                txt.AppendFormat(" DataSource: {0}", this.Name);
 
-            sqllogger.Debug(txt.ToString());
+                sqllogger.Debug(txt.ToString());
+            }
         }
 
         public void ExecuteRaw(string sql) 
@@ -648,7 +651,7 @@ namespace Sooda.Sql
 
                 string query = sw.ToString();
 
-                logger.Debug("Loading statement for table {0}: {1}", tableInfo.NameToken, query);
+                // logger.Debug("Loading statement for table {0}: {1}", tableInfo.NameToken, query);
 
                 cacheLoadingSelectStatement[tableInfo] = query;
                 cacheLoadedTables[tableInfo] = additional.ToArray(typeof(TableInfo));

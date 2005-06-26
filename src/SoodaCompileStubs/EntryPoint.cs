@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Specialized;
+
 using System.IO;
 using System.CodeDom;
 using System.CodeDom.Compiler;
@@ -29,7 +31,6 @@ namespace SoodaCompileStubs
             string objectsAssemblyDll = Path.Combine(basePath, assemblyBaseName + ".dll");
             string stubsDll = Path.Combine(basePath, assemblyBaseName + ".Stubs.dll");
 
-
             bool rebuildStubs = false;
 
             DateTime maxSourceTime = DateTime.MinValue;
@@ -38,7 +39,9 @@ namespace SoodaCompileStubs
             bool success = false;
             ArrayList sourceFiles = new ArrayList();
             for (int i = 2; i < args.Length; ++i)
+            {
                 sourceFiles.Add(Path.GetFullPath(args[i]));
+            }
 
             sourceFiles.Add(miniSkeletonCSX);
             sourceFiles.Add(miniStubsCSX);
@@ -106,6 +109,11 @@ namespace SoodaCompileStubs
                 options.ReferencedAssemblies.Add(soodaDll);
                 options.ReferencedAssemblies.Add("System.dll");
                 options.ReferencedAssemblies.Add("System.Data.dll");
+                for (int i = 2; i < args.Length; ++i)
+                {
+                    if (args[i].EndsWith(".dll"))
+                        options.ReferencedAssemblies.Add(Path.GetFullPath(args[i]));
+                }
                 options.OutputAssembly = stubsDll;
                 options.GenerateInMemory = false;
 
@@ -129,18 +137,25 @@ namespace SoodaCompileStubs
                 options.ReferencedAssemblies.Add("System.dll");
                 options.ReferencedAssemblies.Add("System.Data.dll");
                 options.ReferencedAssemblies.Add(stubsDll);
+                for (int i = 2; i < args.Length; ++i)
+                {
+                    if (args[i].EndsWith(".dll"))
+                        options.ReferencedAssemblies.Add(Path.GetFullPath(args[i]));
+                }
                 options.OutputAssembly = objectsAssemblyDll;
                 options.GenerateInMemory = false;
 
-                string[] skeletonSourceFiles = new string[1 + args.Length - 2];
-                skeletonSourceFiles[0] = miniSkeletonCSX;
+                ArrayList skeletonSourceFiles = new ArrayList();
+                skeletonSourceFiles.Add(miniSkeletonCSX);
                 for (int i = 2; i < args.Length; ++i)
                 {
-                    Console.WriteLine("Additional file: {0}", args[i]);
-                    skeletonSourceFiles[i - 2 + 1] = Path.GetFullPath(args[i]);
+                    if (args[i].EndsWith(".dll"))
+                        continue;
+
+                    skeletonSourceFiles.Add(Path.GetFullPath(args[i]));
                 }
 
-                results = compiler.CompileAssemblyFromFileBatch(options, skeletonSourceFiles);
+                results = compiler.CompileAssemblyFromFileBatch(options, (string[])skeletonSourceFiles.ToArray(typeof(string)));
                 if (results.NativeCompilerReturnValue != 0)
                 {
                     Console.WriteLine("Compilation failed:");
@@ -157,6 +172,12 @@ namespace SoodaCompileStubs
                 options.ReferencedAssemblies.Add("System.Data.dll");
                 options.ReferencedAssemblies.Add("System.Xml.dll");
                 options.ReferencedAssemblies.Add(objectsAssemblyDll);
+                for (int i = 2; i < args.Length; ++i)
+                {
+                    if (args[i].EndsWith(".dll"))
+                        options.ReferencedAssemblies.Add(Path.GetFullPath(args[i]));
+                }
+                
                 options.CompilerOptions = "/res:" + Path.Combine(basePath, "_DBSchema.bin");
                 options.OutputAssembly = stubsDll;
                 options.GenerateInMemory = false;

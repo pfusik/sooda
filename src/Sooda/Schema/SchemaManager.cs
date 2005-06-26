@@ -63,24 +63,29 @@ namespace Sooda.Schema {
             return new XmlTextReader(GetSchemaXsdStream());
         }
 
-        public static SchemaInfo ReadSchemaFromAssembly(Assembly a) {
-            Type[] types = a.GetTypes();
+        public static void ProcessIncludes(SchemaInfo resultSchema, IncludeInfoCollection includes, string baseDirectoryForIncludes)
+        {
+            if (includes == null)
+                return;
 
-            foreach (Type t in types) {
-                if (t.FullName.EndsWith("._DatabaseSchema")) {
-                    object o = t.InvokeMember("GetSchema", BindingFlags.Static | BindingFlags.InvokeMethod | BindingFlags.Public, null, null, new object[0] { });
-                    return (SchemaInfo)o;
-                }
+            if (includes.Count == 0)
+                return;
+
+            foreach (IncludeInfo ii in includes)
+            {
+                string includeFileName = Path.Combine(baseDirectoryForIncludes, ii.SchemaFile);
+                SchemaInfo includedSchema = ReadAndValidateSchema(new XmlTextReader(includeFileName), Path.GetDirectoryName(includeFileName));
+
+                resultSchema.MergeIncludedSchema(includedSchema);
+                ii.Schema = includedSchema;
             }
-            return null;
         }
 
-        public static SchemaInfo ReadAndValidateSchema(XmlReader reader) {
+        public static SchemaInfo ReadAndValidateSchema(XmlReader reader, string baseDirectoryForIncludes) 
+        {
 #if SOODA_NO_VALIDATING_READER
             XmlSerializer ser = new XmlSerializer(typeof(Sooda.Schema.SchemaInfo));
             SchemaInfo schemaInfo = (SchemaInfo)ser.Deserialize(reader);
-            schemaInfo.Resolve();
-            return schemaInfo;
 #else
 
             XmlValidatingReader validatingReader = new XmlValidatingReader(reader);
@@ -88,10 +93,15 @@ namespace Sooda.Schema {
 
             XmlSerializer ser = new XmlSerializer(typeof(Sooda.Schema.SchemaInfo));
             SchemaInfo schemaInfo = (SchemaInfo)ser.Deserialize(validatingReader);
-            schemaInfo.Resolve();
-            return schemaInfo;
 #endif
 
+            if (baseDirectoryForIncludes != null)
+            {
+                ProcessIncludes(schemaInfo, schemaInfo.Includes, baseDirectoryForIncludes);
+            }
+
+            schemaInfo.Resolve();
+            return schemaInfo;
         }
     }
 }

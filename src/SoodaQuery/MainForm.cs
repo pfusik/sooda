@@ -779,7 +779,7 @@ namespace SoodaQuery {
         private SchemaInfo schemaInfo = null;
 
         private void LoadSchemaFromXml(string fileName) {
-            schemaInfo = SchemaManager.ReadAndValidateSchema(new XmlTextReader(fileName));
+            schemaInfo = SchemaManager.ReadAndValidateSchema(new XmlTextReader(fileName), Path.GetDirectoryName(fileName));
         }
 
         private void LoadSchemaFromAssembly(string fileName) {

@@ -1034,7 +1034,7 @@ namespace Sooda
                     }
                 }
                 keyValue = new SoodaTuple(pkParts);
-                logger.Debug("Tuple: {0}", keyValue);
+                //logger.Debug("Tuple: {0}", keyValue);
             }
 
             SoodaObject retVal = factory.TryGet(tran, keyValue);

@@ -32,22 +32,21 @@
 // 
 
 using System;
+using System.Diagnostics;
+using System.Data;
+using System.Text;
+using System.Collections;
 using System.Reflection;
+using System.Xml;
+using System.IO;
 
-namespace Sooda {
-    [AttributeUsage(AttributeTargets.Assembly)]
-    public sealed class SoodaObjectsAssemblyAttribute : Attribute 
+using Sooda.ObjectMapper;
+using Sooda.Schema;
+
+namespace Sooda.ObjectMapper
+{
+    public interface ISoodaSchema
     {
-        private Type _databaseSchemaType;
-
-        public SoodaObjectsAssemblyAttribute(Type databaseSchemaType) 
-        {
-            _databaseSchemaType = databaseSchemaType;
-        }
-
-        public Type DatabaseSchemaType
-        {
-            get { return _databaseSchemaType; }
-        }
+        ISoodaObjectFactory[] GetFactories();
     }
 }

@@ -1,10 +1,21 @@
 class _DatabaseSchema
-    extends Sooda.ObjectMapper.SchemaLoader
+    implements Sooda.ObjectMapper.ISoodaSchema
+    
+    field arrayof(Sooda.ISoodaObjectFactory) _factories
+        attributes Private,Static
+    end
     
     method GetSchema()
         returns Sooda.Schema.SchemaInfo
         attributes Public,Static
     begin
-        return typeref(Sooda.ObjectMapper.SchemaLoader).GetSchemaFromAssembly(typeof(_DatabaseSchema).Assembly)
+        return typeref(Sooda.ObjectMapper.SchemaLoader).GetSchemaFromAssembly(typeof(${OutNamespace}._DatabaseSchema).Assembly)
+    end
+    
+    method GetFactories()
+        returns arrayof(Sooda.ISoodaObjectFactory)
+        attributes Public
+    begin
+        return defaultscope._factories
     end
 end    

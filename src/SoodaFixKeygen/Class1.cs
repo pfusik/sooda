@@ -18,7 +18,7 @@ namespace SoodaFixKeygen
             SchemaInfo schemaInfo;
 
             XmlTextReader reader = new XmlTextReader(args[0]);
-            schemaInfo = SchemaManager.ReadAndValidateSchema(reader);
+            schemaInfo = SchemaManager.ReadAndValidateSchema(reader, Path.GetDirectoryName(args[0]));
             reader.Close();
 
             using (StreamWriter output = new StreamWriter(args[1], false, System.Text.Encoding.Default))

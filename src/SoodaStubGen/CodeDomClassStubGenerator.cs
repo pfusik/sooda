@@ -47,11 +47,13 @@ namespace Sooda.StubGen
     public class CodeDomClassStubGenerator : CodeDomHelpers 
     {
         private ClassInfo classInfo;
+        private string OutNamespace;
         public readonly string KeyGen;
 
-        public CodeDomClassStubGenerator(ClassInfo ci) 
+        public CodeDomClassStubGenerator(ClassInfo ci, string outNamespace) 
         {
             this.classInfo = ci;
+            this.OutNamespace = outNamespace;
             string keyGen = "none";
 
             if (!ci.ReadOnly && ci.GetPrimaryKeyFields().Length == 1) 
@@ -102,7 +104,7 @@ namespace Sooda.StubGen
                         new CodePrimitiveExpression(GetRootClass(classInfo).Name),
                         new CodeMethodInvokeExpression(
                         new CodeMethodInvokeExpression(
-                        new CodeTypeReferenceExpression("_DatabaseSchema"), "GetSchema"),
+                        new CodeTypeReferenceExpression(OutNamespace + "." + "_DatabaseSchema"), "GetSchema"),
                         "GetDataSourceInfo",
                         new CodePrimitiveExpression(classInfo.GetSafeDataSourceName())));
                     break;
@@ -111,7 +113,7 @@ namespace Sooda.StubGen
                         new CodePrimitiveExpression(GetRootClass(classInfo).Name),
                         new CodeMethodInvokeExpression(
                         new CodeMethodInvokeExpression(
-                        new CodeTypeReferenceExpression("_DatabaseSchema"), "GetSchema"),
+                        new CodeTypeReferenceExpression(OutNamespace + "." + "_DatabaseSchema"), "GetSchema"),
                         "GetDataSourceInfo",
                         new CodePrimitiveExpression(classInfo.GetSafeDataSourceName())));
                     break;

@@ -33,7 +33,8 @@
 
 [assembly: System.CLSCompliant(true)]
 
-namespace Sooda.Schema {
+namespace Sooda.Schema 
+{
     using System;
     using System.Collections;
     using System.Xml.Serialization;
@@ -43,12 +44,28 @@ namespace Sooda.Schema {
     [XmlType(Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd")]
     [XmlRoot("schema", Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd", IsNullable = false)]
     [Serializable]
-    public class SchemaInfo {
+    public class SchemaInfo 
+    {
+        [XmlElement("namespace")]
+        public string Namespace;
+
+        [XmlElement("assembly")]
+        public string AssemblyName;
+
+        [XmlElement("include", typeof(IncludeInfo))]
+        public IncludeInfoCollection Includes = new IncludeInfoCollection();
+
         [XmlElement("datasource", typeof(DataSourceInfo))]
         public DataSourceInfoCollection DataSources = new DataSourceInfoCollection();
 
         [XmlElement("class", typeof(ClassInfo))]
         public ClassInfoCollection Classes = new ClassInfoCollection();
+
+        [XmlIgnore]
+        public ClassInfoCollection LocalClasses;
+
+        [XmlIgnore]
+        public RelationInfoCollection LocalRelations;
 
         [System.Xml.Serialization.XmlAnyAttribute()]
         [NonSerialized]
@@ -57,25 +74,29 @@ namespace Sooda.Schema {
         [XmlElement("relation", typeof(RelationInfo))]
         public RelationInfoCollection Relations = new RelationInfoCollection();
 
-        public bool Contains(string className) {
+        public bool Contains(string className) 
+        {
             return FindClassByName(className) != null;
         }
 
-        public ClassInfo FindClassByName(string className) {
+        public ClassInfo FindClassByName(string className) 
+        {
             if (Classes == null)
                 return null;
 
             return (ClassInfo)classNameHash[className];
         }
 
-        public RelationInfo FindRelationByName(string relationName) {
+        public RelationInfo FindRelationByName(string relationName) 
+        {
             if (Relations == null)
                 return null;
 
             return (RelationInfo)relationNameHash[relationName];
         }
 
-        public void AddClass(ClassInfo ci) {
+        public void AddClass(ClassInfo ci) 
+        {
             Classes.Add(ci);
             Rehash();
         }
@@ -85,68 +106,109 @@ namespace Sooda.Schema {
         [NonSerialized]
         private Hashtable relationNameHash;
 
-        public void Resolve() {
+        public void Include(SchemaInfo schema)
+        {
+        }
+
+        public void Resolve() 
+        {
+            if (Includes == null)
+                Includes = new IncludeInfoCollection();
+
             classNameHash = new Hashtable(new CaseInsensitiveHashCodeProvider(), new CaseInsensitiveComparer());
             relationNameHash = new Hashtable(new CaseInsensitiveHashCodeProvider(), new CaseInsensitiveComparer());
+            
 
             Rehash();
-            foreach (ClassInfo ci in Classes) {
+            foreach (ClassInfo ci in Classes) 
+            {
                 ci.Subclasses = new ClassInfoCollection();
             }
-            foreach (ClassInfo ci in Classes) {
+            foreach (ClassInfo ci in Classes) 
+            {
                 ci.ResolveInheritance(this);
             }
-            foreach (ClassInfo ci in Classes) {
+            foreach (ClassInfo ci in Classes) 
+            {
                 ci.CalculateSubclasses();
             }
-            foreach (ClassInfo ci in Classes) {
+            foreach (ClassInfo ci in Classes) 
+            {
                 ci.FlattenTables();
             }
-            foreach (ClassInfo ci in Classes) {
+            foreach (ClassInfo ci in Classes) 
+            {
                 ci.Resolve(this);
             }
-            foreach (ClassInfo ci in Classes) {
+            foreach (ClassInfo ci in Classes) 
+            {
                 ci.MergeTables();
             }
-            foreach (ClassInfo ci in Classes) {
+            foreach (ClassInfo ci in Classes) 
+            {
                 ci.ResolveReferences(this);
             }
-            foreach (ClassInfo ci in Classes) {
+            foreach (ClassInfo ci in Classes) 
+            {
                 ci.ResolveCollections(this);
             }
 
-            if (Relations != null) {
-                foreach (RelationInfo ri in Relations) {
+            if (Relations != null) 
+            {
+                foreach (RelationInfo ri in Relations) 
+                {
                     ri.Resolve(this);
                 }
             }
 
-            foreach (DataSourceInfo dsi in DataSources) {
+            foreach (DataSourceInfo dsi in DataSources) 
+            {
                 dsi.Resolve();
             };
+
+
+            LocalClasses = new ClassInfoCollection();
+            foreach (ClassInfo ci in Classes)
+            {
+                if (ci.Schema == this)
+                    LocalClasses.Add(ci);
+            }
+            LocalRelations = new RelationInfoCollection();
+            foreach (RelationInfo ri in Relations)
+            {
+                if (ri.Schema == this)
+                    LocalRelations.Add(ri);
+            }
         }
 
-        private void Rehash() {
+        private void Rehash() 
+        {
             classNameHash.Clear();
             relationNameHash.Clear();
-            if (Classes != null) {
-                foreach (ClassInfo ci in Classes) {
+            if (Classes != null) 
+            {
+                foreach (ClassInfo ci in Classes) 
+                {
                     if (ci.Name != null)
                         classNameHash[ci.Name] = ci;
                 }
             }
-            if (Relations != null) {
-                foreach (RelationInfo ri in Relations) {
+            if (Relations != null) 
+            {
+                foreach (RelationInfo ri in Relations) 
+                {
                     relationNameHash[ri.Name] = ri;
                 }
             }
         }
 
-        public DataSourceInfo GetDataSourceInfo(string name) {
+        public DataSourceInfo GetDataSourceInfo(string name) 
+        {
             if (name == null)
                 name = "default";
 
-            foreach (DataSourceInfo dsi in DataSources) {
+            foreach (DataSourceInfo dsi in DataSources) 
+            {
                 if (dsi.Name == name)
                     return dsi;
             }
@@ -165,6 +227,71 @@ namespace Sooda.Schema {
             }   
 
             return sb.ToString();
+        }
+
+        internal void MergeIncludedSchema(SchemaInfo includedSchema)
+        {
+            // merge classes, relations and datasources
+
+            if (includedSchema.Classes != null)
+            {
+                ClassInfoCollection newClasses = new ClassInfoCollection();
+
+                foreach (ClassInfo ci in includedSchema.Classes)
+                {
+                    newClasses.Add(ci);
+                }
+
+                if (this.Classes != null)
+                {
+                    foreach (ClassInfo ci in this.Classes)
+                    {
+                        newClasses.Add(ci);
+                    }
+                }
+
+                this.Classes = newClasses;
+            }
+
+            if (includedSchema.Relations != null)
+            {
+                RelationInfoCollection newRelations = new RelationInfoCollection();
+
+                foreach (RelationInfo ci in includedSchema.Relations)
+                {
+                    newRelations.Add(ci);
+                }
+
+                if (this.Relations != null)
+                {
+                    foreach (RelationInfo ci in this.Relations)
+                    {
+                        newRelations.Add(ci);
+                    }
+                }
+
+                this.Relations = newRelations;
+            }
+
+            if (includedSchema.DataSources != null)
+            {
+                DataSourceInfoCollection newDataSources = new DataSourceInfoCollection();
+
+                foreach (DataSourceInfo ci in includedSchema.DataSources)
+                {
+                    newDataSources.Add(ci);
+                }
+
+                if (this.DataSources != null)
+                {
+                    foreach (DataSourceInfo ci in this.DataSources)
+                    {
+                        newDataSources.Add(ci);
+                    }
+                }
+
+                this.DataSources = newDataSources;
+            }
         }
     }
 }

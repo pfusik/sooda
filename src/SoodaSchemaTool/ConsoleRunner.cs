@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Xml;
 
 using Sooda.Schema;
@@ -15,7 +16,7 @@ namespace SoodaSchemaTool
         private static void GenerateDDLForSchema(string schemaFileName) 
         {
             XmlTextReader xr = new XmlTextReader(schemaFileName);
-            SchemaInfo schemaInfo = SchemaManager.ReadAndValidateSchema(xr);
+            SchemaInfo schemaInfo = SchemaManager.ReadAndValidateSchema(xr, Path.GetDirectoryName(schemaFileName));
 
             SqlDataSource sds = new SqlDataSource(schemaInfo.GetDataSourceInfo("default"));
             sds.SqlBuilder = new SqlServerBuilder();

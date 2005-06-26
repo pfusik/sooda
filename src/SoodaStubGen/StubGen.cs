@@ -50,7 +50,7 @@ namespace Sooda.StubGen
         public static void GenerateClassValues(CodeNamespace nspace, ClassInfo ci, string outNamespace, StubGenOptions options, bool miniStub)
         {
             return;
-            CodeDomClassStubGenerator gen = new CodeDomClassStubGenerator(ci);
+            CodeDomClassStubGenerator gen = new CodeDomClassStubGenerator(ci, outNamespace);
 
             CodeTypeDeclaration ctd = new CodeTypeDeclaration(ci.Name + "_Values");
             if (ci.InheritFrom != null)
@@ -181,7 +181,7 @@ namespace Sooda.StubGen
             if (!miniStub)
                 GenerateClassValues(nspace, ci, outNamespace, options, miniStub);
 
-            CodeDomClassStubGenerator gen = new CodeDomClassStubGenerator(ci);
+            CodeDomClassStubGenerator gen = new CodeDomClassStubGenerator(ci, outNamespace);
 
             CDILContext context = new CDILContext();
             context["ClassName"] = ci.Name;
@@ -419,11 +419,38 @@ namespace Sooda.StubGen
             CDILParserTest(ctd);
         }
 
-        public static void GenerateDatabaseSchema(CodeNamespace nspace, string outNamespace) 
+        private static void OutputFactories(CodeArrayCreateExpression cace, string ns, SchemaInfo schema)
         {
-            CodeTypeDeclaration listWrapperClass = CDILParser.ParseClass(CDILTemplate.Get("DatabaseSchema.cdil"), CDILContext.Null);
+            foreach (IncludeInfo ii in schema.Includes)
+            {
+                OutputFactories(cace, ii.Namespace, ii.Schema);
+            }
 
-            nspace.Types.Add(listWrapperClass);
+            foreach (ClassInfo ci in schema.LocalClasses)
+            {
+                cace.Initializers.Add(new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(ns + ".Stubs." + ci.Name + "_Factory"), "TheFactory"));
+            }
+        }
+
+        public static void GenerateDatabaseSchema(CodeNamespace nspace, string outNamespace, SchemaInfo schema) 
+        {
+            CDILContext context = new CDILContext();
+            context["OutNamespace"] = outNamespace;
+
+            CodeTypeDeclaration databaseSchemaClass = CDILParser.ParseClass(CDILTemplate.Get("DatabaseSchema.cdil"), context);
+            foreach (CodeTypeMember ctm in databaseSchemaClass.Members)
+            {
+                if (ctm.Name == "_factories")
+                {
+                    CodeMemberField fld = ctm as CodeMemberField;
+
+                    CodeArrayCreateExpression cace = new CodeArrayCreateExpression("ISoodaObjectFactory");
+                    OutputFactories(cace, outNamespace, schema);
+                    fld.InitExpression = cace;
+                }
+            }
+
+            nspace.Types.Add(databaseSchemaClass);
         }
 
         public static void GenerateListWrapper(CodeNamespace nspace, ClassInfo ci, string outNamespace, StubGenOptions options) 
@@ -450,7 +477,7 @@ namespace Sooda.StubGen
             ClassInfo ref1ClassInfo = ri.GetRef1ClassInfo();
             ClassInfo ref2ClassInfo = ri.GetRef2ClassInfo();
 
-            CodeDomListRelationTableGenerator gen = new CodeDomListRelationTableGenerator(ri);
+            CodeDomListRelationTableGenerator gen = new CodeDomListRelationTableGenerator(ri, outNamespace);
 
             // public class RELATION_NAME_RelationTable : SoodaRelationTable
             CodeTypeDeclaration ctd = new CodeTypeDeclaration(ri.Name + "_RelationTable");
@@ -469,7 +496,7 @@ namespace Sooda.StubGen
             field.InitExpression =
                 new CodeMethodInvokeExpression(
                 new CodeMethodInvokeExpression(
-                new CodeTypeReferenceExpression("_DatabaseSchema"), "GetSchema"), "FindRelationByName",
+                new CodeTypeReferenceExpression(outNamespace + "." + "_DatabaseSchema"), "GetSchema"), "FindRelationByName",
                 new CodePrimitiveExpression(ri.Name));
 
             ctd.Members.Add(field);
@@ -838,9 +865,9 @@ namespace Sooda.StubGen
                 codeGeneratorOptions.ElseOnClosing = false;
 
                 Console.WriteLine("Loading schema file {0}...", schemaFile);
-                SchemaInfo schema = SchemaManager.ReadAndValidateSchema(new XmlTextReader(schemaFile));
+                SchemaInfo schema = SchemaManager.ReadAndValidateSchema(new XmlTextReader(schemaFile), Path.GetDirectoryName(schemaFile));
 
-                Console.WriteLine("Loaded {0} classes, {1} relations...", schema.Classes.Count, schema.Relations.Count);
+                Console.WriteLine("Loaded {0} classes, {1} relations...", schema.LocalClasses.Count, schema.Relations.Count);
 
                 string dir = outputPath;
                 string fname;
@@ -856,7 +883,7 @@ namespace Sooda.StubGen
                     Console.WriteLine("Creating directory {0}", dir);
                     Directory.CreateDirectory(dir);
                 }
-                foreach (ClassInfo ci in schema.Classes) 
+                foreach (ClassInfo ci in schema.LocalClasses) 
                 {
                     fname = ci.Name + "." + codeProvider.FileExtension;
                     Console.WriteLine("    {0}", fname);
@@ -876,7 +903,7 @@ namespace Sooda.StubGen
                             CodeCompileUnit ccu = new CodeCompileUnit();
                             CodeNamespace nspace;
 
-                            nspace = CreateBaseNamespace(outputNamespace);
+                            nspace = CreateBaseNamespace(outputNamespace, schema);
                             ccu.Namespaces.Add(nspace);
 
                             GenerateClassSkeleton(nspace, ci, outputNamespace, codeGenerator.Supports(GeneratorSupport.ChainedConstructorArguments) ? true : false, false);
@@ -925,15 +952,15 @@ namespace Sooda.StubGen
                     CodeCompileUnit ccu = new CodeCompileUnit();
                     CodeNamespace nspace;
 
-                    nspace = CreateBaseNamespace(outputNamespace);
+                    nspace = CreateBaseNamespace(outputNamespace, schema);
                     ccu.Namespaces.Add(nspace);
 
-                    foreach (ClassInfo ci in schema.Classes) 
+                    foreach (ClassInfo ci in schema.LocalClasses) 
                     {
                         GenerateClassSkeleton(nspace, ci, outputNamespace, codeGenerator.Supports(GeneratorSupport.ChainedConstructorArguments) ? true : false, true);
                     }
 
-                    foreach (ClassInfo ci in schema.Classes)
+                    foreach (ClassInfo ci in schema.LocalClasses)
                     {
                         if (ci.ExtBaseClassName != null)
                         {
@@ -957,11 +984,11 @@ namespace Sooda.StubGen
                     ccu = new CodeCompileUnit();
 
                     // stubs namespace
-                    nspace = CreateStubsNamespace(outputNamespace);
+                    nspace = CreateStubsNamespace(outputNamespace, schema);
                     ccu.Namespaces.Add(nspace);
 
                     Console.WriteLine("    * class stubs");
-                    foreach (ClassInfo ci in schema.Classes) 
+                    foreach (ClassInfo ci in schema.LocalClasses) 
                     {
                         GenerateClassStub(nspace, ci, outputNamespace, options, true);
                     }
@@ -1026,31 +1053,34 @@ namespace Sooda.StubGen
                 using (TextWriter tw = new StreamWriter(fname)) 
                 {
                     CodeCompileUnit ccu = new CodeCompileUnit();
-                    ccu.AssemblyCustomAttributes.Add(new CodeAttributeDeclaration("Sooda.SoodaObjectsAssembly"));
+                    CodeAttributeDeclaration cad = new CodeAttributeDeclaration("Sooda.SoodaObjectsAssembly");
+                    cad.Arguments.Add(new CodeAttributeArgument(new CodeTypeOfExpression(outputNamespace +  "._DatabaseSchema")));
+                    ccu.AssemblyCustomAttributes.Add(cad);
+
                     CodeNamespace nspace;
 
-                    nspace = CreateBaseNamespace(outputNamespace);
+                    nspace = CreateBaseNamespace(outputNamespace, schema);
                     ccu.Namespaces.Add(nspace);
 
                     Console.WriteLine("    * list wrappers");
-                    foreach (ClassInfo ci in schema.Classes) 
+                    foreach (ClassInfo ci in schema.LocalClasses) 
                     {
                         GenerateListWrapper(nspace, ci, outputNamespace, options);
                     }
                     Console.WriteLine("    * database schema");
-                    GenerateDatabaseSchema(nspace, outputNamespace);
+                    GenerateDatabaseSchema(nspace, outputNamespace, schema);
 
                     // stubs namespace
-                    nspace = CreateStubsNamespace(outputNamespace);
+                    nspace = CreateStubsNamespace(outputNamespace, schema);
                     ccu.Namespaces.Add(nspace);
 
                     Console.WriteLine("    * class stubs");
-                    foreach (ClassInfo ci in schema.Classes) 
+                    foreach (ClassInfo ci in schema.LocalClasses) 
                     {
                         GenerateClassStub(nspace, ci, outputNamespace, options, false);
                     }
                     Console.WriteLine("    * class factories");
-                    foreach (ClassInfo ci in schema.Classes) 
+                    foreach (ClassInfo ci in schema.LocalClasses) 
                     {
                         GenerateClassFactory(nspace, ci, outputNamespace);
                     }
@@ -1142,7 +1172,19 @@ namespace Sooda.StubGen
             return Activator.CreateInstance(Type.GetType(projectType, true)) as IProjectFile;
         }
 
-        static CodeNamespace CreateBaseNamespace(string outNamespace) 
+        static void AddImportsFromIncludedSchema(CodeNamespace nspace, IncludeInfoCollection includes, bool stubsSubnamespace)
+        {
+            if (includes == null)
+                return;
+
+            foreach (IncludeInfo ii in includes)
+            {
+                nspace.Imports.Add(new CodeNamespaceImport(ii.Namespace + (stubsSubnamespace ? ".Stubs" : "")));
+                AddImportsFromIncludedSchema(nspace, ii.Schema.Includes, stubsSubnamespace);
+            }
+        }
+
+        static CodeNamespace CreateBaseNamespace(string outNamespace, SchemaInfo schema) 
         {
             CodeNamespace nspace = new CodeNamespace(outNamespace);
             nspace.Imports.Add(new CodeNamespaceImport("System"));
@@ -1150,10 +1192,11 @@ namespace Sooda.StubGen
             nspace.Imports.Add(new CodeNamespaceImport("System.Diagnostics"));
             nspace.Imports.Add(new CodeNamespaceImport("System.Data"));
             nspace.Imports.Add(new CodeNamespaceImport("Sooda"));
+            AddImportsFromIncludedSchema(nspace, schema.Includes, false);
             return nspace;
         }
 
-        static CodeNamespace CreateStubsNamespace(string outNamespace) 
+        static CodeNamespace CreateStubsNamespace(string outNamespace, SchemaInfo schema) 
         {
             CodeNamespace nspace = new CodeNamespace(outNamespace + ".Stubs");
             nspace.Imports.Add(new CodeNamespaceImport("System"));
@@ -1163,6 +1206,8 @@ namespace Sooda.StubGen
             nspace.Imports.Add(new CodeNamespaceImport("Sooda"));
             nspace.Imports.Add(new CodeNamespaceImport("Sooda.ObjectMapper"));
             nspace.Imports.Add(new CodeNamespaceImport(outNamespace));
+            AddImportsFromIncludedSchema(nspace, schema.Includes, false);
+            AddImportsFromIncludedSchema(nspace, schema.Includes, true);
             return nspace;
         }
     }

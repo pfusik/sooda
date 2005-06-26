@@ -23,7 +23,7 @@ class ${ClassName}_Factory
     
     field Sooda.Schema.ClassInfo _theClassInfo
         attributes Private,Static
-        value typeref(_DatabaseSchema).GetSchema().FindClassByName('${ClassName}')
+        value typeref(${OutNamespace}._DatabaseSchema).GetSchema().FindClassByName('${ClassName}')
     end
     
     field Type _theType

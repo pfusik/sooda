@@ -31,23 +31,27 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System;
-using System.Reflection;
+namespace Sooda.Schema 
+{
+    using System;
+    using System.Collections;
+    using System.Xml.Serialization;
+    using System.Runtime.Serialization;
+    using System.Text;
 
-namespace Sooda {
-    [AttributeUsage(AttributeTargets.Assembly)]
-    public sealed class SoodaObjectsAssemblyAttribute : Attribute 
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd")]
+    [Serializable]
+    public class IncludeInfo 
     {
-        private Type _databaseSchemaType;
+        [XmlAttribute("schema")]
+        public string SchemaFile;
 
-        public SoodaObjectsAssemblyAttribute(Type databaseSchemaType) 
-        {
-            _databaseSchemaType = databaseSchemaType;
-        }
+        [XmlAttribute("assembly")]
+        public string AssemblyName;
 
-        public Type DatabaseSchemaType
-        {
-            get { return _databaseSchemaType; }
-        }
+        [XmlAttribute("namespace")]
+        public string Namespace;
+
+        public SchemaInfo Schema;
     }
 }

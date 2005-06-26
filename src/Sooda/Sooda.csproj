@@ -354,6 +354,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ObjectMapper\ISoodaSchema.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ObjectMapper\RefCache.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -773,6 +778,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Schema\IncludeInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Schema\IncludeInfoCollection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Schema\IndexFieldInfo.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -815,6 +830,11 @@
                 <File
                     RelPath = "Schema\SoodaSchema.xsd"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Schema\SoodaSchema.xsx"
+                    DependentUpon = "SoodaSchema.xsd"
+                    BuildAction = "None"
                 />
                 <File
                     RelPath = "Schema\TableInfo.cs"

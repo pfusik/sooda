@@ -687,20 +687,20 @@ namespace Sooda
                             _assembly = sa.Assembly;
                     }
 
-                    if (!_assembly.IsDefined(typeof(SoodaObjectsAssemblyAttribute), false))
+                    SoodaObjectsAssemblyAttribute soa = (SoodaObjectsAssemblyAttribute)Attribute.GetCustomAttribute(_assembly, typeof(SoodaObjectsAssemblyAttribute), false);
+                    if (soa == null)
                     {
                         throw new ArgumentException("Invalid objects assembly: " + _assembly.FullName + ". Must be the stubs assembly and define assembly:SoodaObjectsAssemblyAttribute");
                     }
 
-                    foreach (Type t in _assembly.GetExportedTypes()) 
+                    ISoodaSchema schema = Activator.CreateInstance(soa.DatabaseSchemaType) as ISoodaSchema;
+                    if (schema == null)
+                        throw new ArgumentException("Invalid objects assembly: " + _assembly.FullName + ". Must define a class implementing ISoodaSchema interface.");
+
+                    foreach (ISoodaObjectFactory fact in schema.GetFactories())
                     {
-                        SoodaObjectFactoryAttribute[] attr = (SoodaObjectFactoryAttribute[])t.GetCustomAttributes(typeof(SoodaObjectFactoryAttribute), false);
-                        if (attr != null && attr.Length == 1) 
-                        {
-                            ISoodaObjectFactory fact = (ISoodaObjectFactory)t.GetProperty("TheFactory").GetValue(null, new object[0]);
-                            factoryForClassName[attr[0].ClassName] = fact;
-                            factoryForType[attr[0].Type] = fact;
-                        }
+                        factoryForClassName[fact.GetClassInfo().Name] = fact;
+                        factoryForType[fact.TheType] = fact;
                     }
                 }
             }

@@ -294,6 +294,12 @@ namespace Sooda.Schema
 
         internal void Resolve(SchemaInfo schema) 
         {
+            if (parentSchema != null)
+            {
+                // already resolved, probably as part of included schema Resolve() process
+                return;
+            }
+
             OuterReferences = new FieldInfoCollection();
             parentSchema = schema;
 
