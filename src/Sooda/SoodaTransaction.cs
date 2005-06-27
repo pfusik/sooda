@@ -79,6 +79,7 @@ namespace Sooda
         private TypeToISoodaObjectFactoryAssociation factoryForType = new TypeToISoodaObjectFactoryAssociation();
         private SoodaObjectToNameValueCollectionAssociation _persistentValues = new SoodaObjectToNameValueCollectionAssociation();
         private Assembly _assembly;
+        private SchemaInfo _schema;
         private bool _savingObjects = false;
 
         public static Assembly DefaultObjectsAssembly = null;
@@ -320,7 +321,7 @@ namespace Sooda
         {
             for (int i = 0; i < _dataSources.Count; ++i)
             {
-                if (_dataSources[i].DataSourceInfo == dataSourceInfo)
+                if (_dataSources[i].DataSourceInfo.Name == dataSourceInfo.Name)
                     return _dataSources[i];
             }
 
@@ -702,6 +703,7 @@ namespace Sooda
                         factoryForClassName[fact.GetClassInfo().Name] = fact;
                         factoryForType[fact.TheType] = fact;
                     }
+                    _schema = schema.Schema;
                 }
             }
         }
@@ -966,7 +968,7 @@ namespace Sooda
         private SoodaRelationTable GetRelationFromXml(XmlReader reader) 
         {
             string className = reader.GetAttribute("type");
-            Type t = _assembly.GetType(className, true, false);
+            Type t = Type.GetType(className, true, false);
             ConstructorInfo ci = t.GetConstructor(new Type[] { });
 
             SoodaRelationTable retVal = (SoodaRelationTable)ci.Invoke(new object[] {});
@@ -1004,6 +1006,11 @@ namespace Sooda
             }
 
             return retVal;
+        }
+
+        public SchemaInfo Schema
+        {
+            get { return _schema; }
         }
 
         public static ISoodaObjectFactoryCache SoodaObjectFactoryCache = new SoodaObjectFactoryCache();

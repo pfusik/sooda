@@ -74,6 +74,10 @@ namespace Sooda.Schema
         [XmlElement("relation", typeof(RelationInfo))]
         public RelationInfoCollection Relations = new RelationInfoCollection();
 
+        [XmlIgnore]
+        [NonSerialized]
+        private Hashtable _subclasses = new Hashtable();
+
         public bool Contains(string className) 
         {
             return FindClassByName(className) != null;
@@ -118,19 +122,10 @@ namespace Sooda.Schema
             classNameHash = new Hashtable(new CaseInsensitiveHashCodeProvider(), new CaseInsensitiveComparer());
             relationNameHash = new Hashtable(new CaseInsensitiveHashCodeProvider(), new CaseInsensitiveComparer());
             
-
             Rehash();
             foreach (ClassInfo ci in Classes) 
             {
-                ci.Subclasses = new ClassInfoCollection();
-            }
-            foreach (ClassInfo ci in Classes) 
-            {
                 ci.ResolveInheritance(this);
-            }
-            foreach (ClassInfo ci in Classes) 
-            {
-                ci.CalculateSubclasses();
             }
             foreach (ClassInfo ci in Classes) 
             {
@@ -179,6 +174,26 @@ namespace Sooda.Schema
                 if (ri.Schema == this)
                     LocalRelations.Add(ri);
             }
+
+            _subclasses = new Hashtable();
+
+            foreach (ClassInfo ci in Classes) 
+            {
+                _subclasses[ci.Name] = new ClassInfoCollection();
+            }
+
+            foreach (ClassInfo ci0 in Classes) 
+            {
+                for (ClassInfo ci = ci0.InheritsFromClass; ci != null; ci = ci.InheritsFromClass) 
+                {
+                    ((ClassInfoCollection)_subclasses[ci.Name]).Add(ci0);
+                }
+            }
+        }
+
+        internal ClassInfoCollection GetSubclasses(ClassInfo ci)
+        {
+            return (ClassInfoCollection)_subclasses[ci.Name];
         }
 
         private void Rehash() 

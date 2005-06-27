@@ -247,7 +247,7 @@ namespace Sooda.Sql
                     throw new Exception("Ambiguous SoodaClass!");
                 }
             }
-            if (currentClass.Subclasses.Count == 0)
+            if (currentClass.GetSubclassesForSchema(Schema).Count == 0)
             {
                 Output.Write("'");
                 Output.Write(currentClass.Name);
@@ -269,7 +269,7 @@ namespace Sooda.Sql
                     Output.Write("'");
                 }
 
-                foreach (ClassInfo subci in currentClass.Subclasses)
+                foreach (ClassInfo subci in currentClass.GetSubclassesForSchema(Schema))
                 {
                     if (!subci.IsAbstractClass())
                     {
@@ -916,12 +916,12 @@ namespace Sooda.Sql
 
         public SoqlBooleanExpression BuildClassRestriction(string startingAlias, Sooda.Schema.ClassInfo classInfo) 
         {
-            if (classInfo.Subclasses.Count == 0 && classInfo.InheritsFromClass == null)
+            if (classInfo.GetSubclassesForSchema(Schema).Count == 0 && classInfo.InheritsFromClass == null)
                 return null;
 
             SoqlExpressionCollection literals = new SoqlExpressionCollection();
 
-            foreach (ClassInfo subclass in classInfo.Subclasses) 
+            foreach (ClassInfo subclass in classInfo.GetSubclassesForSchema(Schema)) 
             {
                 if (subclass.SubclassSelectorValue != null) 
                 {

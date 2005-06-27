@@ -1085,7 +1085,7 @@ namespace Sooda.StubGen
                         GenerateClassFactory(nspace, ci, outputNamespace);
                     }
                     Console.WriteLine("    * N-N relation stubs");
-                    foreach (RelationInfo ri in schema.Relations) 
+                    foreach (RelationInfo ri in schema.LocalRelations) 
                     {
                         GenerateRelationStub(nspace, ri, outputNamespace, options);
                     }

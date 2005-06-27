@@ -1048,7 +1048,9 @@ namespace Sooda
                 return retVal;
             }
 
-            if (factory.GetClassInfo().Subclasses.Count > 0) 
+            ClassInfoCollection subclasses = tran.Schema.GetSubclasses(factory.GetClassInfo()); 
+
+            if (subclasses.Count > 0) 
             {
                 // more complex case - we have to determine the actual factory to be
                 // used for object creation
@@ -1069,7 +1071,7 @@ namespace Sooda
                     }
                     if (newFactory == null) 
                     {
-                        foreach (ClassInfo ci in factory.GetClassInfo().Subclasses) 
+                        foreach (ClassInfo ci in subclasses) 
                         {
                             if (0 == comparer.Compare(selectorActualValue, ci.SubclassSelectorValue))
                             {
@@ -1111,7 +1113,7 @@ namespace Sooda
                 }
             }
 
-            if (factory.GetClassInfo().Subclasses.Count > 0) 
+            if (factory.GetClassInfo().GetSubclassesForSchema(tran.Schema).Count > 0) 
             {
                 ISoodaObjectFactory newFactory = null;
 

@@ -185,7 +185,7 @@ namespace Sooda.ObjectMapper {
             TableInfo[] loadedTables;
             ClassInfo classInfo = (masterColumn == 0) ? relationInfo.GetRef1ClassInfo() : relationInfo.GetRef2ClassInfo();
             ISoodaObjectFactory factory = transaction.GetFactory(classInfo);
-            IDataReader reader = ds.LoadRefObjectList(relationInfo, masterColumn, masterValue, out loadedTables);
+            IDataReader reader = ds.LoadRefObjectList(transaction.Schema, relationInfo, masterColumn, masterValue, out loadedTables);
 
             LoadDataFromReader(factory, reader, loadedTables);
             SoodaRelationTable rel = GetSoodaRelationTable();

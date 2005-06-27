@@ -94,6 +94,11 @@
                     AssemblyName = "nunit.framework"
                     HintPath = "..\..\..\external\NUnit.Framework.dll"
                 />
+                <Reference
+                    Name = "Sooda.UnitTests.BaseObjects"
+                    Project = "{A1D122ED-CF84-4EF0-A138-72922DD50409}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
             </References>
         </Build>
         <Files>

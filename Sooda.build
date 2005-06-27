@@ -280,15 +280,6 @@
         </zip>
     </target>
 
-    <target name="rebuildstubs" depends="minitools">
-        <nant buildfile="tests/UnitTestObjects/Stubs/_rebuild_stubs.build" target="stubgen" />
-    </target>
-
-    <target name="stubs" depends="minitools">
-        <exec program="${sooda.dir}/SoodaStubGen.exe" useruntimeengine="true" workingdir="tests" 
-            commandline="--project vs --rebuild-if-changed --nullable-as sqltype -s DBSchema.xml -n Sooda.UnitTests.Objects -o UnitTestObjects" />
-    </target>
-
     <target name="contest" depends="ConsoleTest">
         <exec workingdir="bin" program="${sooda.dir}/ConsoleTest.exe" commandline="" />
     </target>
@@ -308,11 +299,34 @@
         </nunit2>
     </target>
 
-    <target name="Sooda.UnitTests.Objects" depends="Sooda, stubs">
+    <target name="Sooda.UnitTests.BaseObjects" depends="Sooda">
+        <exec program="${sooda.dir}/SoodaStubGen.exe" useruntimeengine="true" workingdir="tests" 
+            commandline="--project vs --rebuild-if-changed --nullable-as sqltype -s DBSchemaBase.xml -n Sooda.UnitTests.BaseObjects -o BaseObjects" />
+
+        <csc target="library" output="${sooda.dir}/Sooda.UnitTests.BaseObjects.dll" debug="true">
+            <references>                                  
+                <include name="${sooda.dir}/NLog.dll" />
+                <include name="${sooda.dir}/Sooda.dll" />
+                <include name="System.Data.dll" asis="true" />
+            </references>
+            <sources basedir="tests/BaseObjects">
+                <include name="*.cs" />
+            </sources>
+            <resources basedir="tests/BaseObjects" prefix="Sooda.UnitTests.BaseObjects" dynamicprefix="true">
+                <include name="_DBSchema.*" />
+            </resources>
+        </csc>
+    </target>
+
+    <target name="Sooda.UnitTests.Objects" depends="Sooda, Sooda.UnitTests.BaseObjects">
+        <exec program="${sooda.dir}/SoodaStubGen.exe" useruntimeengine="true" workingdir="tests" 
+            commandline="--project vs --rebuild-if-changed --nullable-as sqltype -s DBSchema.xml -n Sooda.UnitTests.Objects -o UnitTestObjects" />
+
         <csc target="library" output="${sooda.dir}/Sooda.UnitTests.Objects.dll" debug="true">
             <references>                                  
                 <include name="${sooda.dir}/NLog.dll" />
                 <include name="${sooda.dir}/Sooda.dll" />
+                <include name="${sooda.dir}/Sooda.UnitTests.BaseObjects.dll" />
                 <include name="System.Data.dll" asis="true" />
             </references>
             <sources basedir="tests/UnitTestObjects">
@@ -324,11 +338,12 @@
         </csc>
     </target>
 
-    <target name="Sooda.UnitTests.TestCases" depends="libraries, Sooda.UnitTests.Objects">
+    <target name="Sooda.UnitTests.TestCases" depends="libraries, Sooda.UnitTests.Objects, Sooda.UnitTests.BaseObjects">
         <copy file="${nant.location}/lib/${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}/nunit.framework.dll" tofile="${sooda.dir}/nunit.framework.dll" />
         <csc target="library" output="${sooda.dir}/Sooda.UnitTests.TestCases.dll" debug="true">
             <references>                                  
                 <include name="${sooda.dir}/Sooda.dll" />
+                <include name="${sooda.dir}/Sooda.UnitTests.BaseObjects.dll" />
                 <include name="${sooda.dir}/Sooda.UnitTests.Objects.dll" />
                 <include name="${sooda.dir}/nunit.framework.dll" />
                 <include name="${sooda.dir}/NLog.dll" />

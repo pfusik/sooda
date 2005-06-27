@@ -40,7 +40,7 @@ namespace Sooda.UnitTests.TestCases {
         public TestSqlDataSource(string name) : base(_DatabaseSchema.GetSchema().GetDataSourceInfo(name)) {}
 
         public override void Close() {
-            Console.WriteLine("TestSqlDataSource.Close()");
+            Console.WriteLine("TestSqlDataSource.Close({0})", Name);
         }
 
         public override void Commit() {
@@ -53,7 +53,15 @@ namespace Sooda.UnitTests.TestCases {
             // do nothing
         }
 
-        public new void Dispose() {
+        public override void Open()
+        {
+            Console.WriteLine("Opening: {0}", this.Name);
+            base.Open();
+        }
+
+
+        public new void Dispose() 
+        {
             Console.WriteLine("TestSqlDataSource.Dispose!");
             base.Close();
             Sooda.ObjectMapper.SoodaCache.Clear();

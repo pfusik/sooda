@@ -52,7 +52,7 @@ using System.Xml.Serialization;
 using System.Security.Principal;
 using System.Security.Permissions;
 
-[assembly: SoodaStubAssembly(typeof(Sooda.UnitTests.Objects.Stubs.Contact_Stub))]
+[assembly: SoodaStubAssembly(typeof(Sooda.UnitTests.Objects._DatabaseSchema))]
 [assembly: SoodaConfig(XmlConfigFileName = "sooda.config.xml")]
 
 namespace ConsoleTest 
@@ -61,8 +61,16 @@ namespace ConsoleTest
     {
         static void Main(string[] args) 
         {
-            Sooda.UnitTests.TestCases.ObjectMapper.MultiPKTest t = new Sooda.UnitTests.TestCases.ObjectMapper.MultiPKTest();
-            t.InsertTest();
+            try
+            {
+                Sooda.Logging.LogManager.Implementation = new Sooda.Logging.ConsoleLoggingImplementation();
+                Sooda.UnitTests.TestCases.ObjectMapper.InheritanceTest t = new Sooda.UnitTests.TestCases.ObjectMapper.InheritanceTest();
+                t.LongTest();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
     }
 }

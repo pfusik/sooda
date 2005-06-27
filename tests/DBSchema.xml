@@ -1,95 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="../DBSchema.xsl" ?>
 <schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://sooda.sourceforge.net/schemas/DBSchema.xsd">
+
+    <include schema="DBSchemaBase.xml" assembly="Sooda.UnitTests.BaseObjects" namespace="Sooda.UnitTests.BaseObjects" />
+
     <datasource name="default" type="Sooda.Sql.SqlDataSource" />
     <datasource name="xmldata1" type="Sooda.Xml.XmlDataSource" />
-
-    <class name="Role" cached="false" readOnly="true" precacheAll="false">
-        <table name="_Role">
-            <field name="Id" dbcolumn="id" type="Integer" primaryKey="true" />
-            <field name="Name" dbcolumn="name" type="String" size="64" nullable="true" />
-        </table>
-
-        <collectionManyToMany name="Members" relation="ContactToRole" masterField="0" />
-
-        <const name="Employee" key="1" />
-        <const name="Manager" key="2" />
-        <const name="Customer" key="3" />
-    </class>
-
-    <class name="ContactType" cached="true" precacheAll="false">
-        <table name="ContactType">
-            <field name="Code" dbcolumn="code" type="String" size="16" primaryKey="true" />
-            <field name="Description" dbcolumn="description" type="String" size="64" nullable="true" />
-        </table>
-
-        <const name="Employee" key="Employee" />
-        <const name="Manager" key="Manager" />
-        <const name="Customer" key="Customer" />
-    </class>
-
-    <class name="Contact" cached="true">
-        <table name="Contact">
-            <field name="ContactId" dbcolumn="id" type="Integer" primaryKey="true" />
-            <field name="PrimaryGroup" dbcolumn="primary_group" type="Integer" references="Group" nullable="true" onDelete="Cascade" />
-            <field name="Type" dbcolumn="type" type="String" size="16" references="ContactType" />
-            <field name="Name" dbcolumn="name" type="String" size="64" nullable="false" />
-            <field name="Active" dbcolumn="active" type="Integer" />
-        </table>
-        <table name="Contact">
-            <field name="ContactId" dbcolumn="id" type="Integer" primaryKey="true" />
-            <field name="LastSalary" dbcolumn="last_salary" type="Decimal" size="20" precision="10" nullable="true" />
-        </table>
-
-        <collectionManyToMany name="Roles" relation="ContactToRole" masterField="1" />
-        <collectionManyToMany name="Vehicles" relation="ContactToVehicle" masterField="1" />
-        <collectionManyToMany name="Bikes" relation="ContactToBike" masterField="1" />
-
-        <const name="Mary" key="1" />
-        <const name="Ed" key="2" />
-        <const name="Eva" key="3" />
-    </class>
-
-    <class name="KeyGen">
-        <table name="KeyGen">
-            <field name="key_name" dbcolumn="key_name" type="String" size="64" primaryKey="true" />
-            <field name="key_value" dbcolumn="key_value" type="Integer" />
-        </table>
-    </class>
-
-    <class name="Group" cached="true">
-        <table name="_Group">
-            <field name="Id" dbcolumn="id" type="Integer" primaryKey="true" />
-            <field name="Manager" dbcolumn="manager" type="Integer" references="Contact" onDelete="Cascade" prefetch="2" />
-            <field name="Name" dbcolumn="name" type="String" size="64" nullable="true" />
-        </table>
-
-        <collectionOneToMany name="Members" class="Contact" foreignField="PrimaryGroup" />
-        <collectionOneToMany name="Managers" class="Contact" foreignField="PrimaryGroup" where="Type='Employee'" />
-    </class>
-
-    <class name="Vehicle" subclassSelectorField="Type">
-        <table name="Vehicle">
-            <field name="Id" dbcolumn="id" type="Integer" primaryKey="true" />
-            <field name="Type" dbcolumn="type" type="Integer" />
-            <field name="Name" dbcolumn="name" type="String" size="64" nullable="true" />
-        </table>
-    </class>
-
-    <class name="Car" subclassSelectorValue="1" inheritFrom="Vehicle">
-        <table name="Vehicle">
-            <field name="Id" dbcolumn="id" type="Integer" primaryKey="true" />
-            <field name="ABS" dbcolumn="abs" type="Integer" nullable="false" />
-            <field name="FourWheelDrive" dbcolumn="four_wheel_drive" type="Integer" nullable="false" />
-        </table>
-    </class>
-
-    <class name="Bike" subclassSelectorValue="2" inheritFrom="Vehicle">
-        <table name="Bike">
-            <field name="Id" dbcolumn="id" type="Integer" primaryKey="true" />
-            <field name="TwoWheels" dbcolumn="two_wheels" type="Integer" nullable="false" />
-        </table>
-    </class>
 
     <class name="SuperBike" subclassSelectorValue="3" inheritFrom="Bike" />
     <class name="MegaSuperBike" subclassSelectorValue="4" inheritFrom="SuperBike" />
@@ -211,27 +127,6 @@
             <field name="Value3" dbcolumn="value3" type="Integer" />
         </table>
     </class>
-
-    <relation name="ContactToRole">
-        <table name="ContactRole">
-            <field name="Contact" dbcolumn="contact_id" type="Integer" references="Contact" primaryKey="true" />
-            <field name="Role" dbcolumn="role_id" type="Integer" references="Role" />
-        </table>
-    </relation>
-
-    <relation name="ContactToVehicle">
-        <table name="ContactVehicle">
-            <field name="Contact" dbcolumn="contact_id" type="Integer" references="Contact" primaryKey="true" />
-            <field name="Vehicle" dbcolumn="vehicle_id" type="Integer" references="Vehicle" />
-        </table>
-    </relation>
-
-    <relation name="ContactToBike">
-        <table name="ContactBike">
-            <field name="Contact" dbcolumn="contact_id" type="Integer" references="Contact" primaryKey="true" />
-            <field name="Bike" dbcolumn="bike_id" type="Integer" references="Bike" />
-        </table>
-    </relation>
 
     <relation name="RelInt32ToString">
         <table name="RelInt32ToString">

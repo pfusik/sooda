@@ -60,13 +60,13 @@ namespace Sooda.Xml {
             return null;
         }
 
-        public override IDataReader LoadObjectList(Sooda.Schema.ClassInfo classInfo, Sooda.SoodaWhereClause whereClause, Sooda.SoodaOrderBy orderBy, out TableInfo[] tables) {
+        public override IDataReader LoadObjectList(SchemaInfo schema, Sooda.Schema.ClassInfo classInfo, Sooda.SoodaWhereClause whereClause, Sooda.SoodaOrderBy orderBy, out TableInfo[] tables) {
             tables = null;
             // TODO:  Add XmlDataSource.LoadObjectList implementation
             return null;
         }
 
-        public override IDataReader LoadRefObjectList(Sooda.Schema.RelationInfo relationInfo, int masterColumn, object masterValue, out TableInfo[] tables) {
+        public override IDataReader LoadRefObjectList(SchemaInfo schema, Sooda.Schema.RelationInfo relationInfo, int masterColumn, object masterValue, out TableInfo[] tables) {
             tables = null;
             // TODO:  Add XmlDataSource.LoadRefObjectList implementation
             return null;

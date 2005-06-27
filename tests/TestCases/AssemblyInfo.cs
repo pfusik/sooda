@@ -44,5 +44,5 @@ using Sooda;
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyVersion("0.7.0.0")]
 
-[assembly: SoodaStubAssembly(typeof(Sooda.UnitTests.Objects.Stubs.Contact_Stub))]
+[assembly: SoodaStubAssembly(typeof(Sooda.UnitTests.Objects._DatabaseSchema))]
 [assembly: SoodaConfig(XmlConfigFileName = "Sooda.config.xml")]

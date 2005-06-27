@@ -153,7 +153,11 @@ namespace Sooda.Sql
                     {
                         sb.Append("null");
                     }
-                    else 
+                    //else if (v is int)
+                    //{
+                        //sb.Append(v.ToString());
+                    //}
+                    else
                     {
                         while (parameterObjects.Count <= paramNumber)
                             parameterObjects.Add(null);

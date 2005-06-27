@@ -4,6 +4,12 @@ class _DatabaseSchema
     field arrayof(Sooda.ISoodaObjectFactory) _factories
         attributes Private,Static
     end
+
+    property Sooda.Schema.SchemaInfo Schema
+        attributes Public
+    get
+        return defaultscope.GetSchema()
+    end
     
     method GetSchema()
         returns Sooda.Schema.SchemaInfo

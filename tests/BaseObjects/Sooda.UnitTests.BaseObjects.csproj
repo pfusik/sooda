@@ -3,22 +3,22 @@
         ProjectType = "Local"
         ProductVersion = "7.10.3077"
         SchemaVersion = "2.0"
-        ProjectGuid = "{3574E1EF-2272-4474-85D9-0718B3D452E3}"
+        ProjectGuid = "{FB78BBC5-4698-4105-918F-A633D17BE4EC}"
     >
         <Build>
             <Settings
                 ApplicationIcon = ""
                 AssemblyKeyContainerName = ""
-                AssemblyName = "Sooda.UnitTests.Objects"
+                AssemblyName = "Sooda.UnitTests.BaseObjects"
                 AssemblyOriginatorKeyFile = ""
                 DefaultClientScript = "JScript"
                 DefaultHTMLPageLayout = "Grid"
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
                 OutputType = "Library"
-                PreBuildEvent = "$(SolutionDir)..\src\SoodaStubGen\bin\$(ConfigurationName)\SoodaStubGen.exe --nullable-as sqltype --project vs -s $(SolutionDir)DBSchema.xml -n Sooda.UnitTests.Objects -o $(SolutionDir)UnitTestObjects&#xd;&#xa;"
+                PreBuildEvent = "$(SolutionDir)..\src\SoodaStubGen\bin\$(ConfigurationName)\SoodaStubGen.exe --nullable-as sqltype --project vs -s $(SolutionDir)DBSchemaBase.xml -n Sooda.UnitTests.BaseObjects -o $(SolutionDir)BaseObjects"
                 PostBuildEvent = ""
-                RootNamespace = "Sooda.UnitTests.Objects"
+                RootNamespace = ""
                 RunPostBuildEvent = "OnBuildSuccess"
                 StartupObject = ""
             >
@@ -94,11 +94,6 @@
                     Project = "{FCC9B644-9093-41F6-8F0D-F98F22474CB5}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
-                <Reference
-                    Name = "Sooda.UnitTests.BaseObjects"
-                    Project = "{A1D122ED-CF84-4EF0-A138-72922DD50409}"
-                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-                />
             </References>
         </Build>
         <Files>
@@ -113,82 +108,42 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "AbstractMegaSuperBike.cs"
+                    RelPath = "Bike.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "AllDataTypes.cs"
+                    RelPath = "Car.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "AssemblyInfo.cs"
+                    RelPath = "Contact.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "ConcreteMegaSuperBikeA.cs"
+                    RelPath = "ContactType.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "ConcreteMegaSuperBikeB.cs"
+                    RelPath = "Group.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "ExtendedBike.cs"
+                    RelPath = "KeyGen.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "MegaSuperBike.cs"
+                    RelPath = "Role.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "MultiKey.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "PKBool.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "PKDateTime.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "PKGuid.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "PKInt32.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "PKInt64.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "PKString.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SuperBike.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "XmlTest1.cs"
+                    RelPath = "Vehicle.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -223,8 +223,10 @@ namespace Sooda.Schema
         [NonSerialized]
         public TableInfoCollection UnifiedTables;
 
-        [NonSerialized]
-        public ClassInfoCollection Subclasses;
+        public ClassInfoCollection GetSubclassesForSchema(SchemaInfo schema)
+        {
+            return schema.GetSubclasses(this);
+        }
 
         internal void ResolveInheritance(SchemaInfo schema) 
         {
@@ -235,14 +237,6 @@ namespace Sooda.Schema
             else 
             {
                 InheritsFromClass = null;
-            }
-        }
-
-        internal void CalculateSubclasses() 
-        {
-            for (ClassInfo ci = InheritsFromClass; ci != null; ci = ci.InheritsFromClass) 
-            {
-                ci.Subclasses.Add(this);
             }
         }
 

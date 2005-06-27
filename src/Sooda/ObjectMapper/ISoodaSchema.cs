@@ -48,5 +48,6 @@ namespace Sooda.ObjectMapper
     public interface ISoodaSchema
     {
         ISoodaObjectFactory[] GetFactories();
+        SchemaInfo Schema { get; }
     }
 }

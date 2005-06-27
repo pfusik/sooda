@@ -154,7 +154,7 @@ namespace Sooda.ObjectMapper {
 
         internal void Serialize(XmlWriter writer, SerializeOptions options) {
             writer.WriteStartElement("relation");
-            writer.WriteAttributeString("type", GetType().FullName);
+            writer.WriteAttributeString("type", GetType().AssemblyQualifiedName);
             writer.WriteAttributeString("tupleCount", count.ToString());
             for (int i = 0; i < count; ++i) {
                 string modeString = null;

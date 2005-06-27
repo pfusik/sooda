@@ -4,7 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.UnitTests.Objects", "
 		{D1076BB4-3E1B-43D3-B176-DBE89B3C413B} = {D1076BB4-3E1B-43D3-B176-DBE89B3C413B}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda", "..\src\Library\Sooda.csproj", "{FCC9B644-9093-41F6-8F0D-F98F22474CB5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda", "..\src\Sooda\Sooda.csproj", "{FCC9B644-9093-41F6-8F0D-F98F22474CB5}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
@@ -12,12 +12,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.UnitTests.TestCases",
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaStubGen", "..\src\Tools\SoodaStubGen\SoodaStubGen.csproj", "{D1076BB4-3E1B-43D3-B176-DBE89B3C413B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaStubGen", "..\src\SoodaStubGen\SoodaStubGen.csproj", "{D1076BB4-3E1B-43D3-B176-DBE89B3C413B}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTest", "ConsoleTest\ConsoleTest.csproj", "{24930E59-3AF2-4F6B-87C2-06CB66EEA190}"
 	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.UnitTests.BaseObjects", "BaseObjects\Sooda.UnitTests.BaseObjects.csproj", "{A1D122ED-CF84-4EF0-A138-72922DD50409}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D1076BB4-3E1B-43D3-B176-DBE89B3C413B} = {D1076BB4-3E1B-43D3-B176-DBE89B3C413B}
 	EndProjectSection
 EndProject
 Global
@@ -46,6 +51,10 @@ Global
 		{24930E59-3AF2-4F6B-87C2-06CB66EEA190}.Debug.Build.0 = Debug|.NET
 		{24930E59-3AF2-4F6B-87C2-06CB66EEA190}.Release.ActiveCfg = Release|.NET
 		{24930E59-3AF2-4F6B-87C2-06CB66EEA190}.Release.Build.0 = Release|.NET
+		{A1D122ED-CF84-4EF0-A138-72922DD50409}.Debug.ActiveCfg = Debug|.NET
+		{A1D122ED-CF84-4EF0-A138-72922DD50409}.Debug.Build.0 = Debug|.NET
+		{A1D122ED-CF84-4EF0-A138-72922DD50409}.Release.ActiveCfg = Release|.NET
+		{A1D122ED-CF84-4EF0-A138-72922DD50409}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

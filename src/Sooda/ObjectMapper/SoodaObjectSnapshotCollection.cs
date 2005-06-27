@@ -124,7 +124,7 @@ namespace Sooda.ObjectMapper {
                 SoodaDataSource ds = transaction.OpenDataSource(classInfo.GetDataSource());
                 TableInfo[] loadedTables;
 
-                using (IDataReader reader = ds.LoadObjectList(classInfo, whereClause, orderBy, out loadedTables)) {
+                using (IDataReader reader = ds.LoadObjectList(t.Schema, classInfo, whereClause, orderBy, out loadedTables)) {
                     while (reader.Read()) {
                         SoodaObject obj = SoodaObject.GetRefFromRecordHelper(transaction, factory, reader, 0, loadedTables, 0);
 

@@ -173,7 +173,9 @@ namespace Sooda.Sql
                 if (_updateCommand.CommandText != "")
                 {
                     LogCommand(_updateCommand);
+                    Console.WriteLine("Executing.");
                     _updateCommand.ExecuteNonQuery();
+                    Console.WriteLine("Finished.");
                     _updateCommand.Parameters.Clear();
                     _updateCommand.CommandText = "";
                 }
@@ -269,7 +271,7 @@ namespace Sooda.Sql
             }
         }
 
-        public override IDataReader LoadObjectList(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, out TableInfo[] tables) 
+        public override IDataReader LoadObjectList(SchemaInfo schemaInfo, ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, out TableInfo[] tables) 
         {
             try
             {
@@ -301,7 +303,7 @@ namespace Sooda.Sql
                 //queryExpression.O
 
                 StringWriter sw = new StringWriter();
-                SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, classInfo.Schema, SqlBuilder);
+                SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, schemaInfo, SqlBuilder);
                 converter.ConvertQuery(queryExpression);
 
                 string query = sw.ToString();
@@ -383,7 +385,7 @@ namespace Sooda.Sql
             }
         }
 
-        public override IDataReader LoadRefObjectList(RelationInfo relationInfo, int masterColumn, object masterValue, out TableInfo[] tables) 
+        public override IDataReader LoadRefObjectList(SchemaInfo schema, RelationInfo relationInfo, int masterColumn, object masterValue, out TableInfo[] tables) 
         {
             try 
             {
@@ -528,7 +530,7 @@ namespace Sooda.Sql
                 {
                     txt.AppendFormat(" {0}={1}", par.ParameterName, par.Value);
                 }
-                txt.Append(" ]");
+                txt.AppendFormat(" ] {0}", Connection.GetHashCode());
                 txt.AppendFormat(" DataSource: {0}", this.Name);
 
                 sqllogger.Debug(txt.ToString());

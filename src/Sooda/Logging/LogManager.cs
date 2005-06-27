@@ -78,8 +78,6 @@ namespace Sooda.Logging
             }
             catch (Exception ex)
             {
-                Console.WriteLine("EX: {0}", ex);
-                Console.ReadLine();
                 _implementation = new NullLoggingImplementation();
             }
             finally
