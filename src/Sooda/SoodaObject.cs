@@ -554,9 +554,11 @@ namespace Sooda
             for (i = tableIndex; i < tables.Length; ++i)
             {
                 TableInfo table = tables[i];
+                logger.Debug("Loading data from table {0}. Number of fields: {1} Record pos: {2} Table index {3}.", table.NameToken, table.Fields.Count, recordPos, tableIndex);
 
                 if (table.OrdinalInClass == 0 && !first) 
                 {
+                    logger.Debug("Found table 0 of another object. Exiting.");
                     break;
                 }
 
@@ -565,15 +567,23 @@ namespace Sooda
                     // don't load primary keys
                     if (!field.IsPrimaryKey) 
                     {
-                        SoodaFieldHandler handler = GetFieldHandler(field.ClassUnifiedOrdinal);
-                        int ordinal = field.ClassUnifiedOrdinal;
-
-                        if (!_fieldData[ordinal].IsDirty) 
+                        try
                         {
-                            if (reader.IsDBNull(recordPos))
-                                _fieldValues.SetFieldValue(ordinal, null);
-                            else
-                                _fieldValues.SetFieldValue(ordinal, handler.RawRead(reader, recordPos));
+                            SoodaFieldHandler handler = GetFieldHandler(field.ClassUnifiedOrdinal);
+                            int ordinal = field.ClassUnifiedOrdinal;
+
+                            if (!_fieldData[ordinal].IsDirty) 
+                            {
+                                if (reader.IsDBNull(recordPos))
+                                    _fieldValues.SetFieldValue(ordinal, null);
+                                else
+                                    _fieldValues.SetFieldValue(ordinal, handler.RawRead(reader, recordPos));
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.Error("Error while reading field {0}.{1}: {2}", table.NameToken, field.Name, ex);
+                            throw ex;
                         }
                     }
                     recordPos++;
@@ -588,6 +598,7 @@ namespace Sooda
                 FromCache = true;
             }
 
+            // if we've started with a first table and there are more to be processed
             if (tableIndex == 0 && i != tables.Length)
             {
                 logger.Debug("Materializing extra objects...");
@@ -685,6 +696,10 @@ namespace Sooda
                 };
                 using (record) 
                 {
+                    for (int i = 0; i < loadedTables.Length; ++i)
+                    {
+                        logger.Debug("loadedTables[{0}] = {1}", i, loadedTables[i].NameToken);
+                    }
                     LoadDataFromRecord(record, 0, loadedTables, 0);
                 }
 
@@ -693,7 +708,7 @@ namespace Sooda
             {
                 GetTransaction().UnregisterObject(this);
                 logger.Error("Exception in LoadDataWithKey({0}): {1}", GetObjectKeyString(), ex);
-                throw;
+                throw ex;
             }
         }
 
@@ -1018,7 +1033,15 @@ namespace Sooda
             if (pkSize == 1)
             {
                 int pkFieldOrdinal = factory.GetClassInfo().GetFirstPrimaryKeyField().OrdinalInTable;
-                keyValue = factory.GetPrimaryKeyFieldHandler().RawRead(record, firstColumnIndex + pkFieldOrdinal);
+                try
+                {
+                    keyValue = factory.GetPrimaryKeyFieldHandler().RawRead(record, firstColumnIndex + pkFieldOrdinal);
+                }
+                catch (Exception ex)
+                {
+                    logger.Error("Error while reading field {0}.{1}: {2}", factory.GetClassInfo().Name, firstColumnIndex + pkFieldOrdinal, ex);
+                    throw ex;
+                }
             }
             else
             {

@@ -595,11 +595,10 @@ namespace Sooda.Sql
 
                     foreach (TableInfo ti in it.classInfo.UnifiedTables)
                     {
+                        additional.Add(ti);
+
                         foreach (FieldInfo fi in ti.Fields) 
                         {
-                            if (!additional.Contains(ti))
-                                additional.Add(ti);
-
                             // TODO - this relies on the fact that path expressions
                             // are never reconstructed or broken. We simply share previous prefix
                             // perhaps it's cleaner to Clone() the expression here
@@ -653,7 +652,7 @@ namespace Sooda.Sql
 
                 string query = sw.ToString();
 
-                // logger.Debug("Loading statement for table {0}: {1}", tableInfo.NameToken, query);
+                logger.Debug("Loading statement for table {0}: {1}", tableInfo.NameToken, query);
 
                 cacheLoadingSelectStatement[tableInfo] = query;
                 cacheLoadedTables[tableInfo] = additional.ToArray(typeof(TableInfo));
