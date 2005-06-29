@@ -84,7 +84,7 @@ namespace Sooda.Xml {
         {
         }
 
-        public override void SaveObjectChanges(Sooda.SoodaObject obj) 
+        public override void SaveObjectChanges(Sooda.SoodaObject obj, bool isPrecommit) 
         {
             // TODO:  Add XmlDataSource.SaveObjectChanges implementation
         }

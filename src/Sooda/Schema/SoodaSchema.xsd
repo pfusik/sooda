@@ -54,6 +54,7 @@
 		<xsd:attribute name="keygen" use="optional" />
 		<xsd:attribute name="lastModifiedField" use="optional" />
 		<xsd:attribute name="inheritFrom" type="xsd:string" use="optional" />
+		<xsd:attribute name="defaultPrecommitValue" type="xsd:string" use="optional" />
 		<xsd:attribute name="subclassSelectorField" type="xsd:string" use="optional" />
 		<xsd:attribute name="subclassSelectorValue" type="xsd:string" use="optional" />
 		<xsd:attribute name="canDelete" use="optional" type="xsd:boolean" default="false" />
@@ -92,9 +93,6 @@
 		<xsd:attribute name="key" use="required" />
 	</xsd:complexType>
 	<xsd:complexType name="FieldInfo">
-	    <xsd:sequence>
-	        <xsd:element name="subfield" type="FieldInfo" minOccurs="0" maxOccurs="unbounded" />
-	    </xsd:sequence>
 		<xsd:attribute name="name" use="required" />
 		<xsd:attribute name="dbcolumn" use="optional" />
 		<xsd:attribute name="type" type="sooda:FieldDataType" use="required" />
@@ -108,6 +106,7 @@
 		<xsd:attribute name="alwaysTrigger" use="optional" type="xsd:boolean" default="false" />
 		<xsd:attribute name="wrapperType" use="optional" type="xsd:string" />
 		<xsd:attribute name="primaryKey" use="optional" type="xsd:boolean" default="false" />
+		<xsd:attribute name="precommitValue" type="xsd:string" use="optional" />
         <xsd:anyAttribute processContents="lax" />
 	</xsd:complexType>
 	<xsd:simpleType name="FieldDataType">

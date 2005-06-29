@@ -728,7 +728,7 @@ namespace Sooda
 
             try 
             {
-                ds.SaveObjectChanges(this);
+                ds.SaveObjectChanges(this, GetTransaction().IsPrecommit);
             } 
             catch (Exception e) 
             {

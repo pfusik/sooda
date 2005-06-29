@@ -213,7 +213,7 @@ namespace Sooda.Sql
             }
         }
 
-        public override void SaveObjectChanges(SoodaObject obj) 
+        public override void SaveObjectChanges(SoodaObject obj, bool isPrecommit) 
         {
             if (obj.IsMarkedForDelete())
             {
@@ -222,7 +222,7 @@ namespace Sooda.Sql
             }
             if (obj.IsInsertMode() && !obj.InsertedIntoDatabase) 
             {
-                DoInserts(obj);
+                DoInserts(obj, isPrecommit);
                 obj.InsertedIntoDatabase = true;
             } 
             else 
@@ -412,15 +412,15 @@ namespace Sooda.Sql
             }
         }
 
-        void DoInserts(SoodaObject obj) 
+        void DoInserts(SoodaObject obj, bool isPrecommit) 
         {
             foreach (TableInfo table in obj.GetClassInfo().MergedTables) 
             {
-                DoInsertsForTable(obj, table);
+                DoInsertsForTable(obj, table, isPrecommit);
             }
         }
 
-        void DoInsertsForTable(SoodaObject obj, TableInfo table) 
+        void DoInsertsForTable(SoodaObject obj, TableInfo table, bool isPrecommit)
         {
             ClassInfo info = obj.GetClassInfo();
             StringBuilder builder = new StringBuilder(500);
@@ -444,6 +444,27 @@ namespace Sooda.Sql
                     builder.Append(",");
 
                 object val = obj.GetDBFieldValue(table.Fields[i].ClassUnifiedOrdinal);
+                if (val == null && !table.Fields[i].IsNullable)
+                {
+                    if (isPrecommit)
+                    {
+                        if (table.Fields[i].PrecommitTypedValue != null)
+                        {
+                            val = table.Fields[i].PrecommitTypedValue;
+                            if (logger.IsDebugEnabled)
+                            {
+                                logger.Debug("Using precommit value of {0} for {1}.{2}", val, table.NameToken, table.Fields[i].Name);
+                            }
+                        }
+                        else
+                        {
+                            throw new SoodaDatabaseException(obj.GetObjectKeyString() + "." + table.Fields[i].Name + " is null on precommit and no 'precommitValue' has been defined for it.");
+                        }
+                    }
+                    else
+                        throw new SoodaDatabaseException(obj.GetObjectKeyString() + "." + table.Fields[i].Name + " cannot be null on commit.");
+                }
+
                 builder.Append('{');
                 int fieldnum = par.Add(val);
                 builder.Append(fieldnum);

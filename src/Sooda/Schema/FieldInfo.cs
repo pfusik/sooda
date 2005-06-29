@@ -38,49 +38,56 @@ using System.Collections.Specialized;
 
 namespace Sooda.Schema {
 
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd")]
+    [XmlTypeAttribute(Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd")]
     [Serializable]
     public class FieldInfo : ICloneable {
-        [System.Xml.Serialization.XmlAttributeAttribute("name")]
+        [XmlAttribute("name")]
         public string Name;
 
         private string dbcolumn;
 
-        [System.Xml.Serialization.XmlAttributeAttribute("type")]
+        [XmlAttribute("type")]
         public FieldDataType DataType;
 
-        [System.Xml.Serialization.XmlAttributeAttribute("size")]
+        [XmlAttribute("size")]
         [System.ComponentModel.DefaultValueAttribute( -1)]
         public int Size = -1;
 
-        [System.Xml.Serialization.XmlAttributeAttribute("precision")]
+        [XmlAttribute("precision")]
         [System.ComponentModel.DefaultValueAttribute( -1)]
         public int Precision = -1;
 
-        [System.Xml.Serialization.XmlAttributeAttribute("references")]
+        [XmlAttribute("references")]
         public string References;
 
-        [System.Xml.Serialization.XmlAttributeAttribute("primaryKey")]
+        [XmlAttribute("precommitValue")]
+        public string PrecommitValue;
+
+        [XmlIgnore]
+        [NonSerialized]
+        public object PrecommitTypedValue;
+
+        [XmlAttribute("primaryKey")]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool IsPrimaryKey = false;
 
-        [System.Xml.Serialization.XmlAttributeAttribute("nullable")]
+        [XmlAttribute("nullable")]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool IsNullable = false;
 
-        [System.Xml.Serialization.XmlAttributeAttribute("forceTrigger")]
+        [XmlAttribute("forceTrigger")]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool ForceTrigger = false;
 
-        [System.Xml.Serialization.XmlAttributeAttribute("alwaysTrigger")]
+        [XmlAttribute("alwaysTrigger")]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool AlwaysTrigger = false;
 
-        [System.Xml.Serialization.XmlAttributeAttribute("onDelete")]
+        [XmlAttribute("onDelete")]
         [System.ComponentModel.DefaultValueAttribute(DeleteAction.Nothing)]
         public DeleteAction DeleteAction = DeleteAction.Nothing;
 
-        [System.Xml.Serialization.XmlAnyAttribute()]
+        [XmlAnyAttribute()]
         [NonSerialized]
         public System.Xml.XmlAttribute[] Extensions;
 
@@ -92,10 +99,10 @@ namespace Sooda.Schema {
         [DefaultValue(0)]
         public int PrefetchLevel = 0;
 
-        [System.Xml.Serialization.XmlAttributeAttribute("wrapperType")]
+        [XmlAttribute("wrapperType")]
         public string WrapperTypeName;
 
-        [System.Xml.Serialization.XmlAttributeAttribute("dbcolumn")]
+        [XmlAttribute("dbcolumn")]
         public string DBColumnName
         {
             get {
@@ -179,10 +186,10 @@ namespace Sooda.Schema {
         internal void Resolve(TableInfo parentTable, string parentName, int ordinal) {
             this.Table = parentTable;
             this.OrdinalInTable = ordinal;
-            if (DataType == FieldDataType.String) {
-                if (Size <= 0)
-                    throw new Exception("Field " + parentName + "." + Name + " must have a valid size");
-            }
+        }
+
+        internal void ResolvePrecommitValues() 
+        {
         }
     }
 }

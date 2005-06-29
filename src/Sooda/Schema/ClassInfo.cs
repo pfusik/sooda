@@ -70,6 +70,9 @@ namespace Sooda.Schema
         [NonSerialized]
         public System.Xml.XmlAttribute[] Extensions;
 
+        [System.Xml.Serialization.XmlAttributeAttribute("defaultPrecommitValue")]
+        public string DefaultPrecommitValue;
+
         [System.Xml.Serialization.XmlAttributeAttribute("name")]
         public string Name
         {
@@ -477,6 +480,26 @@ namespace Sooda.Schema
                     {
                         throw new Exception("Class " + Name + " refers to nonexisting class " + fi.References);
                     }
+                }
+            }
+        }
+
+        internal void ResolvePrecommitValues() 
+        {
+            foreach (FieldInfo fi in UnifiedFields) 
+            {
+                string pcv = fi.PrecommitValue;
+                if (pcv == null && fi.ReferencedClass != null)
+                    pcv = fi.ReferencedClass.DefaultPrecommitValue;
+
+                if (pcv == null)
+                {
+                    fi.PrecommitTypedValue = null;
+                }
+                else
+                {
+                    fi.PrecommitTypedValue = Convert.ChangeType(fi.PrecommitValue, FieldDataTypeHelper.GetClrType(fi.DataType));
+                    Console.WriteLine("{0}.{1} precommit {2}", this.Name, fi.Name, fi.PrecommitTypedValue);
                 }
             }
         }

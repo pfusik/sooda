@@ -148,6 +148,11 @@ namespace Sooda.Schema
                 ci.ResolveCollections(this);
             }
 
+            foreach (ClassInfo ci in Classes) 
+            {
+                ci.ResolvePrecommitValues();
+            }
+
             if (Relations != null) 
             {
                 foreach (RelationInfo ri in Relations) 

@@ -81,6 +81,7 @@ namespace Sooda
         private Assembly _assembly;
         private SchemaInfo _schema;
         private bool _savingObjects = false;
+        private bool _isPrecommit = false;
 
         public static Assembly DefaultObjectsAssembly = null;
 
@@ -444,10 +445,11 @@ namespace Sooda
             transactionLogger.Debug("<<< TraverseAndDelete({0})", obj.GetObjectKeyString());
         }
 
-        internal void SaveObjectChanges() 
+        internal void SaveObjectChanges(bool isPrecommit) 
         {
             try
             {
+                _isPrecommit = isPrecommit;
                 foreach (SoodaDataSource source in _dataSources)
                 {
                     source.BeginSaveChanges();
@@ -564,7 +566,7 @@ namespace Sooda
             _postCommitQueue = new SoodaObjectCollection();
             // TODO - prealloc
 
-            SaveObjectChanges();
+            SaveObjectChanges(false);
 
             // commit all transactions on all data sources
 
@@ -1037,6 +1039,11 @@ namespace Sooda
                 _persistentValues[obj] = dict;
             }
             dict[name] = value;
+        }
+
+        internal bool IsPrecommit
+        {
+            get { return _isPrecommit; }
         }
     }
 }
