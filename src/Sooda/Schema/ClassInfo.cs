@@ -499,7 +499,7 @@ namespace Sooda.Schema
                 else
                 {
                     fi.PrecommitTypedValue = Convert.ChangeType(fi.PrecommitValue, FieldDataTypeHelper.GetClrType(fi.DataType));
-                    Console.WriteLine("{0}.{1} precommit {2}", this.Name, fi.Name, fi.PrecommitTypedValue);
+                    // Console.WriteLine("{0}.{1} precommit {2}", this.Name, fi.Name, fi.PrecommitTypedValue);
                 }
             }
         }
