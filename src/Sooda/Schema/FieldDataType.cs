@@ -87,7 +87,7 @@ namespace Sooda.Schema
                     new FieldDataLookup(FieldDataType.BooleanAsInteger, typeof(bool), typeof(System.Data.SqlTypes.SqlBoolean), false, false, "Sooda.ObjectMapper.FieldHandlers.BooleanAsIntegerFieldHandler", 0),
                     new FieldDataLookup(FieldDataType.Integer, typeof(System.Int32), typeof(System.Data.SqlTypes.SqlInt32), false, false, "Sooda.ObjectMapper.FieldHandlers.Int32FieldHandler", 0),
                     new FieldDataLookup(FieldDataType.Long, typeof(System.Int64), typeof(System.Data.SqlTypes.SqlInt64), false, false, "Sooda.ObjectMapper.FieldHandlers.Int64FieldHandler", 0),
-                    new FieldDataLookup(FieldDataType.DateTime, typeof(System.DateTime), typeof(System.Data.SqlTypes.SqlDateTime), false, false, "Sooda.ObjectMapper.FieldHandlers.DateTimeFieldHandler", DateTime.Parse("2005/01/01", CultureInfo.InvariantCulture)),
+                    new FieldDataLookup(FieldDataType.DateTime, typeof(System.DateTime), typeof(System.Data.SqlTypes.SqlDateTime), false, false, "Sooda.ObjectMapper.FieldHandlers.DateTimeFieldHandler", DateTime.Parse("1980/01/01", CultureInfo.InvariantCulture)),
                     new FieldDataLookup(FieldDataType.Decimal, typeof(System.Decimal), typeof(System.Data.SqlTypes.SqlDecimal), false, false, "Sooda.ObjectMapper.FieldHandlers.DecimalFieldHandler", (decimal)0),
                     new FieldDataLookup(FieldDataType.Double, typeof(System.Double), typeof(System.Data.SqlTypes.SqlDouble), true, true, "Sooda.ObjectMapper.FieldHandlers.DoubleFieldHandler", (double)0),
                     new FieldDataLookup(FieldDataType.Float, typeof(System.Single), typeof(System.Data.SqlTypes.SqlSingle), true, true, "Sooda.ObjectMapper.FieldHandlers.FloatFieldHandler", (float)0),
