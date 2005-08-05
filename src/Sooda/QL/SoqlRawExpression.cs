@@ -52,8 +52,10 @@ namespace Sooda.QL {
             visitor.Visit(this);
         }
 
-        public override SoqlExpressionType GetExpressionType() {
-            return new SoqlExpressionType(typeof(void));
+        public override object Evaluate(ISoqlEvaluateContext context)
+        {
+            throw new NotSupportedException("Evaluate() not supported for RAW expressions.");
         }
+
     }
 }

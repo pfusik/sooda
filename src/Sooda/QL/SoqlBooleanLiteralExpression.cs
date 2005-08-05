@@ -56,8 +56,10 @@ namespace Sooda.QL {
             return this.Value;
         }
 
-        public override SoqlExpressionType GetExpressionType() {
-            return new SoqlExpressionType(typeof(bool));
+        public override object Evaluate(ISoqlEvaluateContext context)
+        {
+            return Value;
         }
+
     }
 }

@@ -32,42 +32,12 @@
 // 
 
 using System;
-using System.IO;
-using System.Text;
-using System.Collections;
-using System.Collections.Specialized;
 
-namespace Sooda.QL {
-    public class SoqlQueryExpression : SoqlExpression {
-        public bool Distinct = false;
-        public int TopCount = -1;
-
-        public SoqlExpressionCollection SelectExpressions = new SoqlExpressionCollection();
-        public StringCollection SelectAliases = new StringCollection();
-
-        public StringCollection From = new StringCollection();
-        public StringCollection FromAliases = new StringCollection();
-        public ArrayList FromJoins = new ArrayList();
-
-        public SoqlBooleanExpression WhereClause = null;
-        public SoqlBooleanExpression Having = null;
-        public StringCollection WhereJoins = new StringCollection();
-
-        public SoqlExpressionCollection GroupByExpressions = new SoqlExpressionCollection();
-        public SoqlExpressionCollection OrderByExpressions = new SoqlExpressionCollection();
-        public StringCollection OrderByOrder = new StringCollection();
-
-        public SoqlQueryExpression() {}
-
-        // visitor pattern
-        public override void Accept(ISoqlVisitor visitor) {
-            visitor.Visit(this);
-        }
-
-        public override object Evaluate(ISoqlEvaluateContext context)
-        {
-            throw new NotImplementedException();
-        }
-
+namespace Sooda.QL 
+{
+    public interface ISoqlEvaluateContext
+    {
+        object GetRootObject();
+        object GetParameter(int position);
     }
 }

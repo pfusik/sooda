@@ -409,6 +409,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ObjectMapper\SoodaObjectListSnapshot.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ObjectMapper\SoodaObjectManyToManyCollection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -420,11 +425,6 @@
                 />
                 <File
                     RelPath = "ObjectMapper\SoodaObjectRefFieldIterator.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\SoodaObjectSnapshotCollection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -528,7 +528,17 @@
                     AutoGen = "True"
                 />
                 <File
+                    RelPath = "QL\GetInvolvedClassesVisitor.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "QL\ISoqlConstantExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\ISoqlEvaluateContext.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -604,11 +614,6 @@
                 />
                 <File
                     RelPath = "QL\SoqlCountPathExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlDecimalLiteralExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -32,6 +32,7 @@
 // 
 
 using System;
+using System.Collections;
 using System.IO;
 
 using System.Xml.Serialization;
@@ -53,12 +54,6 @@ namespace Sooda.QL {
             visitor.Visit(this);
         }
 
-        public override SoqlExpressionType GetExpressionType() {
-            SoqlExpressionType et = new SoqlExpressionType();
-
-            return et;
-        }
-
         public void WriteDefaultSelectAlias(TextWriter output) {
             if (this.Path != null) {
                 this.Path.WriteDefaultSelectAlias(output);
@@ -66,6 +61,25 @@ namespace Sooda.QL {
             }
             output.Write(CollectionName);
             output.Write("_Count");
+        }
+
+        public override object Evaluate(ISoqlEvaluateContext context)
+        {
+            object val;
+            
+            if (this.Path != null)
+            {
+                val = this.Path.Evaluate(context);
+            }
+            else
+            {
+                val = context.GetRootObject();
+            }
+            if (val == null)
+                return null;
+
+            IList sol = (IList)val.GetType().GetProperty(CollectionName).GetValue(val, null);
+            return sol.Count;
         }
     }
 }

@@ -32,32 +32,50 @@
 // 
 
 using System;
+using System.Diagnostics;
+
+using Sooda.ObjectMapper;
+using Sooda.QL;
 using System.IO;
+using Sooda.Schema;
+using Sooda.UnitTests.Objects;
 
-using System.Xml.Serialization;
+using NUnit.Framework;
 
-namespace Sooda.QL {
-    public class SoqlDecimalLiteralExpression : SoqlExpression, ISoqlConstantExpression {
-        [XmlAttribute("decimalVal")]
-        public decimal val;
+namespace Sooda.UnitTests.TestCases.Soql {
+    [TestFixture]
+    public class GetInvolvedClassTest {
+        private void AssertInvolved(string rootClassName, string expression, params string[] expectedClassNames)
+        {
+            SoqlExpression expr = SoqlParser.ParseExpression(expression);
+            ClassInfo rootClass = _DatabaseSchema.GetSchema().FindClassByName(rootClassName);
+            GetInvolvedClassesVisitor visitor = new GetInvolvedClassesVisitor(rootClass);
+            expr.Accept(visitor);
 
-        public SoqlDecimalLiteralExpression() {}
-
-        public SoqlDecimalLiteralExpression(decimal val) {
-            this.val = val;
+            foreach (string s in expectedClassNames)
+            {
+                bool found = false;
+                foreach (ClassInfo ci in visitor.Results)
+                {
+                    if (ci.Name == s)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                Assert.IsTrue(found, "Class " + s + " was not returned by GetInvolvedClasses on " + expression);
+            }
+            Assert.AreEqual(expectedClassNames.Length, visitor.Results.Count, "Extra involved classes returned by GetInvolvedClasses on " + expression);
         }
 
-        // visitor pattern
-        public override void Accept(ISoqlVisitor visitor) {
-            visitor.Visit(this);
-        }
+        public void Test1()
+        {
+            AssertInvolved("Contact", "Name", "Contact");
+            AssertInvolved("Contact", "PrimaryGroup.Name", "Contact", "Group");
+            AssertInvolved("Contact", "Name like PrimaryGroup.Name", "Contact", "Group");
 
-        public object GetConstantValue() {
-            return this.val;
-        }
-
-        public override SoqlExpressionType GetExpressionType() {
-            return new SoqlExpressionType(typeof(decimal));
+            AssertInvolved("Contact", "1");
+            AssertInvolved("Contact", "{0}");
         }
     }
 }

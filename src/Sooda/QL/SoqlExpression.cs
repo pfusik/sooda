@@ -35,6 +35,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
+using Sooda.Schema;
 
 namespace Sooda.QL {
     [XmlInclude(typeof(SoqlPathExpression))]
@@ -52,20 +53,24 @@ namespace Sooda.QL {
     [XmlInclude(typeof(SoqlBooleanInExpression))]
     [XmlInclude(typeof(SoqlParameterLiteralExpression))]
     [XmlInclude(typeof(SoqlBooleanLiteralExpression))]
-    [XmlInclude(typeof(SoqlDecimalLiteralExpression))]
     [XmlInclude(typeof(SoqlFunctionCallExpression))]
     [XmlInclude(typeof(SoqlAsteriskExpression))]
     [XmlInclude(typeof(SoqlNullLiteral))]
     public abstract class SoqlExpression {
-        public abstract SoqlExpressionType GetExpressionType();
-
         public virtual SoqlExpression Simplify() {
             return this;
         }
 
         // visitor pattern
         public abstract void Accept(ISoqlVisitor visitor);
+        public abstract object Evaluate(ISoqlEvaluateContext context);
 
-        // public virtual void ConvertToSql(SoqlToSqlContext context) { }
+        public override string ToString()
+        {
+            StringWriter sw = new StringWriter();
+            SoqlPrettyPrinter pp = new SoqlPrettyPrinter(sw);
+            this.Accept(pp);
+            return sw.ToString();
+        }
     }
 }

@@ -52,8 +52,9 @@ namespace Sooda.QL {
             visitor.Visit(this);
         }
 
-        public override SoqlExpressionType GetExpressionType() {
-            throw new NotImplementedException();
+        public override object Evaluate(ISoqlEvaluateContext context)
+        {
+            return context.GetParameter(this.ParameterPosition);
         }
     }
 }

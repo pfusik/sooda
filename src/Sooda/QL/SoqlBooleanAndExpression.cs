@@ -84,11 +84,29 @@ namespace Sooda.QL {
             if (cp2 != null && (bool)cp2.GetConstantValue() == true)
                 return Left;
 
+            // cannot simplify anymore
             return this;
         }
 
-        public override SoqlExpressionType GetExpressionType() {
-            return new SoqlExpressionType(typeof(bool));
+        public override object Evaluate(ISoqlEvaluateContext context)
+        {
+            object val1 = Left.Evaluate(context);
+            if (val1 == null)
+                return null;
+
+            bool bval1 = (bool)val1;
+            if (!bval1)
+                return false;
+
+            object val2 = Right.Evaluate(context);
+            if (val2 == null)
+                return null;
+
+            bool bval2 = (bool)val2;
+            if (!bval2)
+                return false;
+
+            return true;
         }
     }
 }

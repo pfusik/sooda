@@ -71,344 +71,134 @@ namespace Sooda.QL {
             ISoqlConstantExpression cp1 = par1 as ISoqlConstantExpression;
             ISoqlConstantExpression cp2 = par2 as ISoqlConstantExpression;
 
-            if (cp1 != null && cp2 != null) {
+            if (cp1 != null && cp2 != null) 
+            {
                 object v1 = cp1.GetConstantValue();
                 object v2 = cp2.GetConstantValue();
 
-                if (v1.GetType() == v2.GetType()) {
-                    if (v1 is System.Int32) {
-                        int i1 = (int)v1;
-                        int i2 = (int)v2;
-
-                        switch (op) {
-                        case SoqlRelationalOperator.Equal:
-                            return new SoqlBooleanLiteralExpression(i1 == i2);
-
-                        case SoqlRelationalOperator.NotEqual:
-                            return new SoqlBooleanLiteralExpression(i1 != i2);
-
-                        case SoqlRelationalOperator.Less:
-                            return new SoqlBooleanLiteralExpression(i1 < i2);
-
-                        case SoqlRelationalOperator.Greater:
-                            return new SoqlBooleanLiteralExpression(i1 > i2);
-
-                        case SoqlRelationalOperator.LessOrEqual:
-                            return new SoqlBooleanLiteralExpression(i1 <= i2);
-
-                        case SoqlRelationalOperator.GreaterOrEqual:
-                            return new SoqlBooleanLiteralExpression(i1 >= i2);
-
-                        default:
-                            throw new NotImplementedException();
-                        }
-                    }
-                    if (v1 is System.String) {
-                        string s1 = (string)v1;
-                        string s2 = (string)v2;
-
-                        switch (op) {
-                        case SoqlRelationalOperator.Equal:
-                            return new SoqlBooleanLiteralExpression(s1 == s2);
-
-                        case SoqlRelationalOperator.NotEqual:
-                            return new SoqlBooleanLiteralExpression(s1 != s2);
-
-                        case SoqlRelationalOperator.Less:
-                            return new SoqlBooleanLiteralExpression(String.Compare(s1, s2) < 0);
-
-                        case SoqlRelationalOperator.Greater:
-                            return new SoqlBooleanLiteralExpression(String.Compare(s1, s2) > 0);
-
-                        case SoqlRelationalOperator.LessOrEqual:
-                            return new SoqlBooleanLiteralExpression(String.Compare(s1, s2) <= 0);
-
-                        case SoqlRelationalOperator.GreaterOrEqual:
-                            return new SoqlBooleanLiteralExpression(String.Compare(s1, s2) >= 0);
-
-                        default:
-                            throw new NotImplementedException();
-                        }
-                    }
-                }
+                object result = Compare(v1, v2, op);
+                if (result == null)
+                    return new SoqlNullLiteral();
+                else
+                    return new SoqlBooleanLiteralExpression((bool)result);
             }
             return this;
         }
 
-        public static object Compare(object v1, object v2, SoqlRelationalOperator op) {
-            if (v1 == null || v2 == null)
-                return false;
+        private static void PromoteTypes(ref object val1, ref object val2)
+        {
+            if (val1.GetType() == val2.GetType())
+                return;
 
-            if (v1 is DateTime || v2 is DateTime) {
-                DateTime d1 = Convert.ToDateTime(v1, CultureInfo.InvariantCulture);
-                DateTime d2 = Convert.ToDateTime(v2, CultureInfo.InvariantCulture);
-
-                switch (op) {
-                case SoqlRelationalOperator.Equal:
-                    return d1 == d2;
-
-                case SoqlRelationalOperator.NotEqual:
-                    return d1 != d2;
-
-                case SoqlRelationalOperator.Less:
-                    return d1 < d2;
-
-                case SoqlRelationalOperator.Greater:
-                    return d1 > d2;
-
-                case SoqlRelationalOperator.LessOrEqual:
-                    return d1 <= d2;
-
-                case SoqlRelationalOperator.GreaterOrEqual:
-                    return d1 >= d2;
-
-                case SoqlRelationalOperator.Like:
-                    throw new NotSupportedException("like is not supported for datetime");
-
-                default:
-                    throw new NotImplementedException();
-                }
+            if (val1 is DateTime || val2 is DateTime)
+            {
+                val1 = Convert.ToDateTime(val1);
+                val2 = Convert.ToDateTime(val2);
+                return;
             }
 
-            if (v1 is Single || v2 is Single || v1 is Double || v2 is Double) {
-                Double d1 = Convert.ToDouble(v1, CultureInfo.InvariantCulture);
-                Double d2 = Convert.ToDouble(v2, CultureInfo.InvariantCulture);
-
-                switch (op) {
-                case SoqlRelationalOperator.Equal:
-                    return d1 == d2;
-
-                case SoqlRelationalOperator.NotEqual:
-                    return d1 != d2;
-
-                case SoqlRelationalOperator.Less:
-                    return d1 < d2;
-
-                case SoqlRelationalOperator.Greater:
-                    return d1 > d2;
-
-                case SoqlRelationalOperator.LessOrEqual:
-                    return d1 <= d2;
-
-                case SoqlRelationalOperator.GreaterOrEqual:
-                    return d1 >= d2;
-
-                case SoqlRelationalOperator.Like:
-                    throw new NotSupportedException("like is not supported for floating point");
-
-                default:
-                    throw new NotImplementedException();
-                }
+            if (val1 is string || val2 is string)
+            {
+                val1 = Convert.ToString(val1);
+                val2 = Convert.ToString(val2);
+                return;
+            }
+            if (val1 is double || val2 is double)
+            {
+                val1 = Convert.ToDouble(val1);
+                val2 = Convert.ToDouble(val2);
+                return;
             }
 
-            if (v1 is Decimal || v2 is Decimal) {
-                Decimal d1 = Convert.ToDecimal(v1, CultureInfo.InvariantCulture);
-                Decimal d2 = Convert.ToDecimal(v2, CultureInfo.InvariantCulture);
-
-                switch (op) {
-                case SoqlRelationalOperator.Equal:
-                    return d1 == d2;
-
-                case SoqlRelationalOperator.NotEqual:
-                    return d1 != d2;
-
-                case SoqlRelationalOperator.Less:
-                    return d1 < d2;
-
-                case SoqlRelationalOperator.Greater:
-                    return d1 > d2;
-
-                case SoqlRelationalOperator.LessOrEqual:
-                    return d1 <= d2;
-
-                case SoqlRelationalOperator.GreaterOrEqual:
-                    return d1 >= d2;
-
-                case SoqlRelationalOperator.Like:
-                    throw new NotSupportedException("like is not supported for Decimal");
-
-                default:
-                    throw new NotImplementedException();
-                }
+            if (val1 is float || val2 is float)
+            {
+                val1 = Convert.ToSingle(val1);
+                val2 = Convert.ToSingle(val2);
+                return;
+            }
+            if (val1 is decimal || val2 is decimal)
+            {
+                val1 = Convert.ToDecimal(val1);
+                val2 = Convert.ToDecimal(val2);
+                return;
+            }
+            if (val1 is long || val2 is long)
+            {
+                val1 = Convert.ToInt64(val1);
+                val2 = Convert.ToInt64(val2);
+                return;
+            }
+            if (val1 is int || val2 is int)
+            {
+                val1 = Convert.ToInt32(val1);
+                val2 = Convert.ToInt32(val2);
+                return;
             }
 
-            if (v1 is Int32 || v2 is Int32 || v1 is Int16 || v2 is Int16 || v1 is SByte || v2 is SByte) {
-                Int32 d1 = Convert.ToInt32(v1, CultureInfo.InvariantCulture);
-                Int32 d2 = Convert.ToInt32(v2, CultureInfo.InvariantCulture);
-
-                switch (op) {
-                case SoqlRelationalOperator.Equal:
-                    return d1 == d2;
-
-                case SoqlRelationalOperator.NotEqual:
-                    return d1 != d2;
-
-                case SoqlRelationalOperator.Less:
-                    return d1 < d2;
-
-                case SoqlRelationalOperator.Greater:
-                    return d1 > d2;
-
-                case SoqlRelationalOperator.LessOrEqual:
-                    return d1 <= d2;
-
-                case SoqlRelationalOperator.GreaterOrEqual:
-                    return d1 >= d2;
-
-                case SoqlRelationalOperator.Like:
-                    throw new NotSupportedException("like is not supported for Int32");
-
-                default:
-                    throw new NotImplementedException();
-                }
+            if (val1 is short || val2 is short)
+            {
+                val1 = Convert.ToInt16(val1);
+                val2 = Convert.ToInt16(val2);
+                return;
             }
-
-            if (v1 is Boolean || v2 is Boolean) {
-                Boolean d1 = Convert.ToBoolean(v1, CultureInfo.InvariantCulture);
-                Boolean d2 = Convert.ToBoolean(v2, CultureInfo.InvariantCulture);
-
-                switch (op) {
-                case SoqlRelationalOperator.Equal:
-                    return d1 == d2;
-
-                case SoqlRelationalOperator.NotEqual:
-                    return d1 != d2;
-
-                default:
-                    throw new NotSupportedException("Operator " + op + " is not supported for Boolean");
-                }
+            if (val1 is sbyte || val2 is sbyte)
+            {
+                val1 = Convert.ToSByte(val1);
+                val2 = Convert.ToSByte(val2);
+                return;
             }
-
-            if (v1 is String || v2 is String) {
-                String d1 = v1.ToString();
-                String d2 = v2.ToString();
-
-                switch (op) {
-                case SoqlRelationalOperator.Equal:
-                    return String.Compare(d1, d2, true) == 0;
-
-                case SoqlRelationalOperator.NotEqual:
-                    return String.Compare(d1, d2, true) != 0;
-
-                case SoqlRelationalOperator.Less:
-                    return String.Compare(d1, d2, true) < 0;
-
-                case SoqlRelationalOperator.Greater:
-                    return String.Compare(d1, d2, true) > 0;
-
-                case SoqlRelationalOperator.LessOrEqual:
-                    return String.Compare(d1, d2, true) <= 0;
-
-                case SoqlRelationalOperator.GreaterOrEqual:
-                    return String.Compare(d1, d2, true) >= 0;
-
-                case SoqlRelationalOperator.Like:
-                    return SoqlUtils.Like(d1, d2);
-
-                default:
-                    throw new NotImplementedException();
-                }
+            if (val1 is bool || val2 is bool)
+            {
+                val1 = Convert.ToBoolean(val1);
+                val2 = Convert.ToBoolean(val2);
+                return;
             }
-
-            if (v1 is UInt32 || v2 is UInt32 || v1 is UInt16 || v2 is UInt16 || v1 is Byte || v2 is Byte) {
-                UInt32 d1 = Convert.ToUInt32(v1, CultureInfo.InvariantCulture);
-                UInt32 d2 = Convert.ToUInt32(v2, CultureInfo.InvariantCulture);
-
-                switch (op) {
-                case SoqlRelationalOperator.Equal:
-                    return d1 == d2;
-
-                case SoqlRelationalOperator.NotEqual:
-                    return d1 != d2;
-
-                case SoqlRelationalOperator.Less:
-                    return d1 < d2;
-
-                case SoqlRelationalOperator.Greater:
-                    return d1 > d2;
-
-                case SoqlRelationalOperator.LessOrEqual:
-                    return d1 <= d2;
-
-                case SoqlRelationalOperator.GreaterOrEqual:
-                    return d1 >= d2;
-
-                case SoqlRelationalOperator.Like:
-                    throw new NotSupportedException("like is not supported for UInt32");
-
-                default:
-                    throw new NotImplementedException();
-                }
-            }
-
-            if (v1 is Int64 || v2 is Int64) {
-                Int64 d1 = Convert.ToInt64(v1, CultureInfo.InvariantCulture);
-                Int64 d2 = Convert.ToInt64(v2, CultureInfo.InvariantCulture);
-
-                switch (op) {
-                case SoqlRelationalOperator.Equal:
-                    return d1 == d2;
-
-                case SoqlRelationalOperator.NotEqual:
-                    return d1 != d2;
-
-                case SoqlRelationalOperator.Less:
-                    return d1 < d2;
-
-                case SoqlRelationalOperator.Greater:
-                    return d1 > d2;
-
-                case SoqlRelationalOperator.LessOrEqual:
-                    return d1 <= d2;
-
-                case SoqlRelationalOperator.GreaterOrEqual:
-                    return d1 >= d2;
-
-                case SoqlRelationalOperator.Like:
-                    throw new NotSupportedException("like is not supported for int64");
-
-                default:
-                    throw new NotImplementedException();
-                }
-            }
-
-            if (v1 is UInt64 || v2 is UInt64) {
-                UInt64 d1 = Convert.ToUInt64(v1, CultureInfo.InvariantCulture);
-                UInt64 d2 = Convert.ToUInt64(v2, CultureInfo.InvariantCulture);
-
-                switch (op) {
-                case SoqlRelationalOperator.Equal:
-                    return d1 == d2;
-
-                case SoqlRelationalOperator.NotEqual:
-                    return d1 != d2;
-
-                case SoqlRelationalOperator.Less:
-                    return d1 < d2;
-
-                case SoqlRelationalOperator.Greater:
-                    return d1 > d2;
-
-                case SoqlRelationalOperator.LessOrEqual:
-                    return d1 <= d2;
-
-                case SoqlRelationalOperator.GreaterOrEqual:
-                    return d1 >= d2;
-
-                case SoqlRelationalOperator.Like:
-                    throw new NotSupportedException("like is not supported for uint64");
-
-                default:
-                    throw new NotImplementedException();
-                }
-            }
-
-            IComparable comparable = v1 as IComparable;
-            throw new NotSupportedException("Comparing objects of types: " + v1.GetType() + " and " + v2.GetType() + " is not supported");
+            throw new Exception("Cannot promote types " + val1.GetType().Name + " and " + val2.GetType().Name + " to one type.");
         }
 
-        public override SoqlExpressionType GetExpressionType() {
-            return new SoqlExpressionType (typeof(bool));
+        public static object Compare(object v1, object v2, SoqlRelationalOperator op) {
+            if (v1 == null || v2 == null)
+                return null;
+
+            IComparer comparer = Comparer.Default;
+            PromoteTypes(ref v1, ref v2);
+            switch (op)
+            {
+                case SoqlRelationalOperator.Equal:
+                    return comparer.Compare(v1, v2) == 0;
+
+                case SoqlRelationalOperator.NotEqual:
+                    return comparer.Compare(v1, v2) != 0;
+
+                case SoqlRelationalOperator.Greater:
+                    return comparer.Compare(v1, v2) > 0;
+
+                case SoqlRelationalOperator.GreaterOrEqual:
+                    return comparer.Compare(v1, v2) >= 0;
+
+                case SoqlRelationalOperator.LessOrEqual:
+                    return comparer.Compare(v1, v2) <= 0;
+
+                case SoqlRelationalOperator.Less:
+                    return comparer.Compare(v1, v2) < 0;
+
+                case SoqlRelationalOperator.Like:
+                    string s1 = Convert.ToString(v1);
+                    string s2 = Convert.ToString(v2);
+
+                    return SoqlUtils.Like(s1, s2);
+
+                default:
+                    throw new NotSupportedException("Relational operator " + op + " is not supported.");
+            }
+        }
+
+        public override object Evaluate(ISoqlEvaluateContext context)
+        {
+            object v1 = par1.Evaluate(context);
+            object v2 = par2.Evaluate(context);
+
+            return Compare(v1, v2, op);
         }
     }
 }

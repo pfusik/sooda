@@ -49,8 +49,10 @@ namespace Sooda.QL {
             return DBNull.Value;
         }
 
-        public override SoqlExpressionType GetExpressionType() {
-            return new SoqlExpressionType(typeof(DBNull));
+        public override object Evaluate(ISoqlEvaluateContext context)
+        {
+            return null;
         }
+
     }
 }

@@ -37,52 +37,67 @@ using System.Xml;
 
 using Sooda.QL;
 
-namespace Sooda {
-    public class SoodaWhereClause {
+namespace Sooda 
+{
+    public class SoodaWhereClause
+    {
         private SoqlBooleanExpression whereExpression;
         private object[] parameters = null;
 
         public SoodaWhereClause() : this((string)null, null) {}
         public SoodaWhereClause(string whereText) : this(whereText, null) {}
-        public SoodaWhereClause(string whereText, params object[] par) {
+        public SoodaWhereClause(string whereText, params object[] par) 
+        {
             this.Parameters = par;
-            if (whereText != null) {
+            if (whereText != null) 
+            {
                 this.WhereExpression = SoqlParser.ParseWhereClause(whereText);
-            } else {
+            } 
+            else 
+            {
                 this.WhereExpression = null;
             }
         }
-        public SoodaWhereClause(SoqlBooleanExpression whereExpression, object[] par) {
+        public SoodaWhereClause(SoqlBooleanExpression whereExpression, object[] par) 
+        {
             this.Parameters = par;
             this.WhereExpression = whereExpression;
         }
 
         public SoqlBooleanExpression WhereExpression
         {
-            get {
+            get 
+            {
                 return whereExpression;
             }
-            set {
+            set 
+            {
                 whereExpression = value;
             }
         }
 
         public object[] Parameters
         {
-            get {
+            get 
+            {
                 return this.parameters;
             }
-            set {
-                if (value != null && value.Length != 0) {
+            set 
+            {
+                if (value != null && value.Length != 0) 
+                {
                     this.parameters = value;
-                } else {
+                } 
+                else 
+                {
                     this.parameters = null;
                 }
             }
         }
 
 
-        public SoodaWhereClause Append(SoodaWhereClause other) {
+        public SoodaWhereClause Append(SoodaWhereClause other) 
+        {
             if (other.WhereExpression == null)
                 return this;
             if (this.WhereExpression == null)
@@ -96,10 +111,48 @@ namespace Sooda {
                 throw new SoodaException("You cannot merge two where clauses when they both have parameters");
 
             return new SoodaWhereClause(new SoqlBooleanAndExpression(
-                                            this.WhereExpression, other.WhereExpression), newParams);
+                this.WhereExpression, other.WhereExpression), newParams);
+        }
+
+        public bool Matches(SoodaObject obj, bool throwOnUnknown)
+        {
+            if (this.WhereExpression == null)
+                return true;
+
+            EvaluateContext context = new EvaluateContext(this, obj);
+            object val = this.WhereExpression.Evaluate(context);
+            if (val == null && throwOnUnknown)
+                throw new SoqlException("Cannot evaluate expression '" + this.whereExpression.ToString() + " ' in memory.");
+                
+            if (val is bool)
+                return (bool)val;
+            else
+                return false;
         }
 
         public static readonly SoodaWhereClause Unrestricted = new SoodaWhereClause(null);
+
+        class EvaluateContext : ISoqlEvaluateContext
+        {
+            private SoodaWhereClause _whereClause;
+            private SoodaObject _rootObject;
+
+            public EvaluateContext(SoodaWhereClause whereClause, SoodaObject rootObject)
+            {
+                _whereClause = whereClause;
+                _rootObject = rootObject;
+            }
+
+            public object GetRootObject()
+            {
+                return _rootObject;
+            }
+
+            public object GetParameter(int position)
+            {
+                return _whereClause.Parameters[position];
+            }
+        }
     }
 }
 

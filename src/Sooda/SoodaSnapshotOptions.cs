@@ -60,6 +60,15 @@ namespace Sooda {
         /// </summary>
         NoDatabase = 2,
 
+        /// <summary>
+        /// Don't precommit modified objects
+        /// </summary>
         NoWriteObjects = 4,
+
+        /// <summary>
+        /// Verify objects loaded from the database whether they actually match the 
+        /// where clause.
+        /// </summary>
+        VerifyAfterLoad = 8,
     }
 }

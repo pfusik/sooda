@@ -36,5 +36,7 @@ using System.IO;
 using System.Collections;
 
 namespace Sooda.QL {
-    public abstract class SoqlBooleanExpression : SoqlExpression {}
+    public abstract class SoqlBooleanExpression : SoqlExpression
+    {
+    }
 }

@@ -34,6 +34,7 @@
 using System;
 using System.Text;
 using System.Collections;
+using System.Globalization;
 
 using Sooda.QL;
 
@@ -137,9 +138,16 @@ namespace Sooda.QL {
             };
 
             if (tokenizer.IsNumber()) {
-                SoqlExpression e = new SoqlLiteralExpression(Int32.Parse((string)tokenizer.TokenValue));
+                string numberString = (string)tokenizer.TokenValue;
                 tokenizer.GetNextToken();
-                return e;
+                if (numberString.IndexOf('.') >= 0)
+                {
+                    return new SoqlLiteralExpression(Double.Parse(numberString, CultureInfo.InvariantCulture));
+                }
+                else
+                {
+                    return new SoqlLiteralExpression(Int32.Parse(numberString, CultureInfo.InvariantCulture));
+                }
             }
 
             if (tokenizer.TokenType == SoqlTokenType.String) {

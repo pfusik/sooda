@@ -71,7 +71,9 @@ namespace Sooda
         private Queue _precommitQueue = null;
         private Queue _deleteQueue = null;
         private SoodaObjectCollection _postCommitQueue = null;
+        private SoodaObjectCollection _dirtyObjects = new SoodaObjectCollection();
         private StringToSoodaObjectCollectionAssociation _objectsByClass = new StringToSoodaObjectCollectionAssociation();
+        private StringToSoodaObjectCollectionAssociation _dirtyObjectsByClass = new StringToSoodaObjectCollectionAssociation();
         private StringToObjectToSoodaObjectAssociation _objectDictByClass = new StringToObjectToSoodaObjectAssociation();
 
         private SoodaDataSourceCollection _dataSources = new SoodaDataSourceCollection();
@@ -135,7 +137,7 @@ namespace Sooda
         {
             try
             {
-                transactionLogger.Debug("Disposing transaction");
+                // transactionLogger.Debug("Disposing transaction");
                 if (disposing) 
                 {
                     foreach (SoodaDataSource source in _dataSources) 
@@ -151,7 +153,7 @@ namespace Sooda
                     } 
                     System.Threading.Thread.SetData(g_activeTransactionDataStoreSlot, previousTransaction);
                 }
-                transactionLogger.Debug("Disposed.");
+                // transactionLogger.Debug("Disposed.");
             }
             catch (Exception ex)
             {
@@ -188,17 +190,16 @@ namespace Sooda
             return _objectsByClass[className];
         }
 
+        public SoodaObjectCollection GetDirtyObjectsByClassName(string className) 
+        {
+            return _dirtyObjectsByClass[className];
+        }
+
         public SoodaObjectCollection DirtyObjects
         {
             get 
             {
-                SoodaObjectCollection dirty = new SoodaObjectCollection();
-                foreach (SoodaObject o in _objectList) 
-                {
-                    if (o.IsObjectDirty())
-                        dirty.Add(o);
-                }
-                return dirty;
+                return _dirtyObjects;
             }
         }
 
@@ -239,11 +240,18 @@ namespace Sooda
             // Console.WriteLine("Registering object {0}...", o.GetObjectKey());
 
             object pkValue = o.GetPrimaryKeyValue();
-            AddObjectWithKey(o.GetClassInfo().Name, pkValue, o);
             // Console.WriteLine("Adding key: " + o.GetObjectKey() + " of type " + o.GetType());
-            for (ClassInfo ci = o.GetClassInfo().InheritsFromClass; ci != null; ci = ci.InheritsFromClass) 
+            for (ClassInfo ci = o.GetClassInfo(); ci != null; ci = ci.InheritsFromClass) 
             {
                 AddObjectWithKey(ci.Name, pkValue, o);
+
+                SoodaObjectCollection al = _objectsByClass[ci.Name];
+                if (al == null) 
+                {
+                    al = new SoodaObjectCollection();
+                    _objectsByClass[ci.Name] = al;
+                }
+                al.Add(o);
             }
 
             _objectList.Add(o);
@@ -251,14 +259,22 @@ namespace Sooda
             if (_precommitQueue != null)
                 _precommitQueue.Enqueue(o);
 
-            SoodaObjectCollection al = _objectsByClass[o.GetClassInfo().Name];
-            if (al == null) 
-            {
-                al = new SoodaObjectCollection();
-                _objectsByClass[o.GetClassInfo().Name] = al;
-            }
+        }
 
-            al.Add(o);
+        protected internal void RegisterDirtyObject(SoodaObject o) 
+        {
+            transactionLogger.Debug("RegisterDirtyObject({0})", o.GetObjectKeyString());
+            _dirtyObjects.Add(o);
+            for (ClassInfo ci = o.GetClassInfo(); ci != null; ci = ci.InheritsFromClass) 
+            {
+                SoodaObjectCollection al = _dirtyObjectsByClass[ci.Name];
+                if (al == null) 
+                {
+                    al = new SoodaObjectCollection();
+                    _dirtyObjectsByClass[ci.Name] = al;
+                }
+                al.Add(o);
+            }
         }
 
         protected internal bool IsRegistered(SoodaObject o) 
@@ -336,13 +352,10 @@ namespace Sooda
 
         void CallPrecommits() 
         {
-            foreach (SoodaObject o in _objectList) 
+            foreach (SoodaObject o in _dirtyObjects) 
             {
-                if (o.IsObjectDirty()) 
-                {
-                    _precommitQueue.Enqueue(o);
-                };
-            };
+                _precommitQueue.Enqueue(o);
+            }
 
             while (_precommitQueue.Count > 0) 
             {
@@ -445,10 +458,13 @@ namespace Sooda
             transactionLogger.Debug("<<< TraverseAndDelete({0})", obj.GetObjectKeyString());
         }
 
-        internal void SaveObjectChanges(bool isPrecommit) 
+        internal void SaveObjectChanges(bool isPrecommit, SoodaObjectCollection objectsToPrecommit)
         {
             try
             {
+                if (objectsToPrecommit == null)
+                    objectsToPrecommit = _dirtyObjects;
+
                 _isPrecommit = isPrecommit;
                 foreach (SoodaDataSource source in _dataSources)
                 {
@@ -459,7 +475,7 @@ namespace Sooda
 
                 SoodaObjectCollection objectDeleteList = new SoodaObjectCollection();
 
-                foreach (SoodaObject o in _objectList) 
+                foreach (SoodaObject o in objectsToPrecommit)
                 {
                     o.VisitedOnCommit = false;
                     if (o.IsMarkedForDelete())
@@ -469,7 +485,7 @@ namespace Sooda
                     }
                 }
 
-                foreach (SoodaObject o in _objectList) 
+                foreach (SoodaObject o in objectsToPrecommit)
                 {
                     if (!o.VisitedOnCommit) 
                     {
@@ -525,6 +541,8 @@ namespace Sooda
 
         private void Reset() 
         {
+            _dirtyObjects.Clear();
+            _dirtyObjectsByClass.Clear();
             _objectDictByClass.Clear();
             _objectList.Clear();
             _objectsByClass.Clear();
@@ -545,13 +563,13 @@ namespace Sooda
 
         private void CheckCommitConditions() 
         {
-            foreach (SoodaObject o in _objectList) 
+            foreach (SoodaObject o in _dirtyObjects) 
             {
                 if (o.IsObjectDirty() || o.IsInsertMode())
                     o.CheckForNulls();
             }
 
-            foreach (SoodaObject o in _objectList) 
+            foreach (SoodaObject o in _dirtyObjects) 
             {
                 o.CheckAssertions();
             }
@@ -559,14 +577,14 @@ namespace Sooda
 
         public void Commit() 
         {
-            _precommitQueue = new Queue(_objectList.Count);
+            _precommitQueue = new Queue(_dirtyObjects.Count);
             CallPrecommits();
             CheckCommitConditions();
 
             _postCommitQueue = new SoodaObjectCollection();
             // TODO - prealloc
 
-            SaveObjectChanges(false);
+            SaveObjectChanges(false, _dirtyObjects);
 
             // commit all transactions on all data sources
 
@@ -586,19 +604,13 @@ namespace Sooda
 
             CallPostcommits();
 
-            foreach (SoodaObject o in _objectList) 
+            foreach (SoodaObject o in _dirtyObjects) 
             {
                 o.ResetObjectDirty();
             }
 
-            foreach (SoodaObject o in _objectList) 
-            {
-                if (o.CanBeCached() && o.IsAnyDataLoaded() && !o.FromCache) 
-                {
-                    SoodaCache.AddObject(o.GetClassInfo().Name, o.GetPrimaryKeyValue(), o.GetCacheEntry());
-                    o.FromCache = true;
-                }
-            }
+            _dirtyObjects.Clear();
+            _dirtyObjectsByClass.Clear();
         }
 
         private void _Reset() 

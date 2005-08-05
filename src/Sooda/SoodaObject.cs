@@ -423,8 +423,12 @@ namespace Sooda
 
         internal void SetObjectDirty() 
         {
+            if (IsObjectDirty())
+                return;
+
             _flags |= SoodaObjectFlags.Dirty;
             _flags &= ~SoodaObjectFlags.WrittenIntoDatabase;
+            GetTransaction().RegisterDirtyObject(this);
         }
 
         internal void ResetObjectDirty() 

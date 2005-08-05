@@ -81,10 +81,6 @@ namespace Sooda.QL {
             this.PropertyName = propertyName;
         }
 
-        public override SoqlExpressionType GetExpressionType() {
-            throw new NotImplementedException();
-        }
-
         public void WriteDefaultSelectAlias(TextWriter output) {
             if (Left != null) {
                 Left.WriteDefaultSelectAlias(output);
@@ -95,6 +91,52 @@ namespace Sooda.QL {
 
         public override void Accept(ISoqlVisitor visitor) {
             visitor.Visit(this);
+        }
+
+        internal ClassInfo GetAndAddClassInfo(ClassInfo rootClass, ClassInfoCollection result)
+        {
+            ClassInfo leftClass;
+
+            if (Left == null)
+            {
+                leftClass = rootClass;
+                if (!result.Contains(rootClass))
+                    result.Add(rootClass);
+            }
+            else
+            {
+                leftClass = Left.GetAndAddClassInfo(rootClass, result);
+            }
+
+            FieldInfo field = leftClass.FindFieldByName(PropertyName);
+            if (field == null)
+                throw new Exception("Field " + PropertyName + " not found in " + leftClass.Name);
+
+            if (field.ReferencedClass != null)
+            {
+                if (!result.Contains(field.ReferencedClass))
+                    result.Add(field.ReferencedClass);
+            }
+            return field.ReferencedClass;
+        }
+
+        public override object Evaluate(ISoqlEvaluateContext context)
+        {
+            object val;
+
+            if (this.Left == null)
+            {
+                val = context.GetRootObject();
+            }
+            else
+            {
+                val = this.Left.Evaluate(context);
+            }
+
+            if (val == null)
+                return null;
+            
+            return val.GetType().GetProperty(PropertyName).GetValue(val, null);
         }
     }
 }

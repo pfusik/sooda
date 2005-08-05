@@ -51,18 +51,28 @@ namespace Sooda.QL {
             visitor.Visit(this);
         }
 
-        public override SoqlExpressionType GetExpressionType() {
-            SoqlExpressionType et = new SoqlExpressionType();
-
-            return et;
-        }
-
         public void WriteDefaultSelectAlias(TextWriter output) {
             if (this.Path != null) {
                 this.Path.WriteDefaultSelectAlias(output);
                 output.Write("_");
             }
             output.Write("SoodaClass");
+        }
+
+        public override object Evaluate(ISoqlEvaluateContext context)
+        {
+            object val;
+
+            if (this.Path != null)
+                val = this.Path.Evaluate(context);
+            else
+                val = context.GetRootObject();
+
+            if (val == null)
+                return null;
+
+            SoodaObject so = (SoodaObject)val;
+            return so.GetClassInfo().Name;
         }
     }
 }

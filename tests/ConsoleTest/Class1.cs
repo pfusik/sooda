@@ -64,8 +64,8 @@ namespace ConsoleTest
             try
             {
                 Sooda.Logging.LogManager.Implementation = new Sooda.Logging.ConsoleLoggingImplementation();
-                Sooda.UnitTests.TestCases.ObjectMapper.PrecommitTest t = new Sooda.UnitTests.TestCases.ObjectMapper.PrecommitTest();
-                t.Test1();
+                Sooda.UnitTests.TestCases.ObjectMapper.PrecommitTest pt = new Sooda.UnitTests.TestCases.ObjectMapper.PrecommitTest();
+                pt.Test2();
             }
             catch (Exception ex)
             {

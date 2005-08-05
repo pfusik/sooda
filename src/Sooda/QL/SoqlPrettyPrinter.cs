@@ -173,10 +173,6 @@ namespace Sooda.QL {
             Output.Write(")");
         }
 
-        public virtual void Visit(SoqlDecimalLiteralExpression v) {
-            Output.Write(v.val);
-        }
-
         public virtual void Visit(SoqlExistsExpression v) {
             Output.Write("exists (");
             Output.WriteLine();

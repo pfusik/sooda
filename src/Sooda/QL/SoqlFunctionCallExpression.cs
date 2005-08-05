@@ -70,9 +70,9 @@ namespace Sooda.QL {
             visitor.Visit(this);
         }
 
-        public override SoqlExpressionType GetExpressionType() {
+        public override object Evaluate(ISoqlEvaluateContext context)
+        {
             throw new NotImplementedException();
-            //return new SoqlExpressionType(typeof(DBNull));
         }
     }
 }

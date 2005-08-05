@@ -103,26 +103,6 @@ namespace Sooda.UnitTests.TestCases.Soql {
         }
 
         [Test]
-        public void TestUInt8() {
-            CheckNumberPair((byte)1, (byte)2);
-        }
-
-        [Test]
-        public void TestUInt16() {
-            CheckNumberPair((ushort)1, (ushort)2);
-        }
-
-        [Test]
-        public void TestUInt32() {
-            CheckNumberPair((uint)1, (uint)2);
-        }
-
-        [Test]
-        public void TestUInt64() {
-            CheckNumberPair((ulong)1, (ulong)2);
-        }
-
-        [Test]
         public void TestDecimal() {
             CheckNumberPair((decimal)1.3, (decimal)1.4);
         }
@@ -169,11 +149,6 @@ namespace Sooda.UnitTests.TestCases.Soql {
         [Test]
         public void TestInt32AndInt16() {
             CheckNumberPair(1, 2, (short)1, (short)2);
-        }
-
-        [Test]
-        public void TestUInt64AndInt8() {
-            CheckNumberPair((ulong)1, (ulong)2, (sbyte)1, (sbyte)2);
         }
 
         [Test]

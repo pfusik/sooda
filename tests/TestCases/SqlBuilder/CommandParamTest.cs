@@ -40,12 +40,16 @@ using Sooda.UnitTests.Objects;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.SqlBuilder {
+namespace Sooda.UnitTests.TestCases.SqlBuilder 
+{
     [TestFixture]
-    public class CommandParamTest {
+    public class CommandParamTest 
+    {
         [Test]
-        public void ParameterDirectionTest() {
-            using(IDbCommand cmd = new System.Data.SqlClient.SqlCommand()) {
+        public void ParameterDirectionTest() 
+        {
+            using(IDbCommand cmd = new System.Data.SqlClient.SqlCommand()) 
+            {
                 ISqlBuilder bld = new SqlServerBuilder();
                 String sql = "exec sp_Test({0}, {1:i}, {2:o}, {3:io}, {4:i}, {5}, {6}, {7}, {8}, {9}, {10:i}, {11:io})";
                 Object[] param = new Object[]{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
@@ -61,8 +65,10 @@ namespace Sooda.UnitTests.TestCases.SqlBuilder {
 
         [Test]
         [ExpectedException(typeof(ArgumentException))]
-        public void ParameterDirectionFailTest() {
-            using(IDbCommand cmd = new System.Data.SqlClient.SqlCommand()) {
+        public void ParameterDirectionFailTest() 
+        {
+            using(IDbCommand cmd = new System.Data.SqlClient.SqlCommand()) 
+            {
                 ISqlBuilder bld = new SqlServerBuilder();
                 String sql = "exec sp_Test({0:})";
                 Object[] param = new Object[]{ 0, 1, 2, 3 };

@@ -33,8 +33,10 @@
 
 using System;
 
-namespace Sooda.QL {
-    public interface ISoqlVisitor {
+namespace Sooda.QL 
+{
+    public interface ISoqlVisitor 
+    {
         void Visit(SoqlBinaryExpression v);
         void Visit(SoqlBooleanAndExpression v);
         void Visit(SoqlBooleanInExpression v);
@@ -43,7 +45,6 @@ namespace Sooda.QL {
         void Visit(SoqlBooleanNegationExpression v);
         void Visit(SoqlBooleanOrExpression v);
         void Visit(SoqlBooleanRelationalExpression v);
-        void Visit(SoqlDecimalLiteralExpression v);
         void Visit(SoqlExistsExpression v);
         void Visit(SoqlFunctionCallExpression v);
         void Visit(SoqlContainsExpression v);

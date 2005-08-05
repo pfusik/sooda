@@ -36,7 +36,7 @@ using System.IO;
 using System.Collections;
 
 namespace Sooda.QL {
-    public class SoqlUnaryNegationExpression : SoqlBooleanExpression {
+    public class SoqlUnaryNegationExpression : SoqlExpression {
         public SoqlExpression par;
 
         public SoqlUnaryNegationExpression() {}
@@ -55,9 +55,30 @@ namespace Sooda.QL {
             return this;
         }
 
-        public override SoqlExpressionType GetExpressionType() {
-            return par.GetExpressionType();
+        public override object Evaluate(ISoqlEvaluateContext context)
+        {
+            object val = par.Evaluate(context);
+            if (val == null)
+                return null;
+
+            if (val is double)
+                return -(double)val;
+            if (val is float)
+                return -(float)val;
+            if (val is decimal)
+                return -(decimal)val;
+            if (val is long)
+                return -(long)val;
+            if (val is int)
+                return -(int)val;
+            if (val is short)
+                return -(short)val;
+            if (val is sbyte)
+                return -(sbyte)val;
+
+            throw new NotSupportedException("Unary negation is not supported on " + val.GetType().Name);
         }
+
     }
 
 }

@@ -60,7 +60,120 @@ namespace Sooda.QL {
             visitor.Visit(this);
         }
 
-        public override SoqlExpression Simplify() {
+        private static object CalcValue(SoqlBinaryOperator op, object val1, object val2)
+        {
+            if (val1 == null || val2 == null)
+                return null;
+
+            //
+            // the type precedence is based on SQL2000 "Data Type Precedence"
+            // help topic
+            //
+
+            switch (op)
+            {
+                case SoqlBinaryOperator.Add:
+                    if (val1 is double || val2 is double)
+                        return Convert.ToDouble(val1) + Convert.ToDouble(val2);
+                    if (val1 is float || val2 is float)
+                        return Convert.ToSingle(val1) + Convert.ToSingle(val2);
+                    if (val1 is decimal || val2 is decimal)
+                        return Convert.ToDecimal(val1) + Convert.ToDecimal(val2);
+                    if (val1 is long || val2 is long)
+                        return Convert.ToInt64(val1) + Convert.ToInt64(val2);
+                    if (val1 is int || val2 is int)
+                        return Convert.ToInt32(val1) + Convert.ToInt32(val2);
+                    if (val1 is short || val2 is short)
+                        return Convert.ToInt16(val1) + Convert.ToInt16(val2);
+                    if (val1 is sbyte || val2 is sbyte)
+                        return Convert.ToSByte(val1) + Convert.ToSByte(val2);
+                    if (val1 is string || val2 is string)
+                        return Convert.ToString(val1) + Convert.ToString(val2);
+                    throw new NotSupportedException("Addition not supported for arguments of type " + val1.GetType().Name + " and " + val2.GetType().Name);
+
+                case SoqlBinaryOperator.Sub:
+                    if (val1 is double || val2 is double)
+                        return Convert.ToDouble(val1) - Convert.ToDouble(val2);
+                    if (val1 is float || val2 is float)
+                        return Convert.ToSingle(val1) - Convert.ToSingle(val2);
+                    if (val1 is decimal || val2 is decimal)
+                        return Convert.ToDecimal(val1) - Convert.ToDecimal(val2);
+                    if (val1 is long || val2 is long)
+                        return Convert.ToInt64(val1) - Convert.ToInt64(val2);
+                    if (val1 is int || val2 is int)
+                        return Convert.ToInt32(val1) - Convert.ToInt32(val2);
+                    if (val1 is short || val2 is short)
+                        return Convert.ToInt16(val1) - Convert.ToInt16(val2);
+                    if (val1 is sbyte || val2 is sbyte)
+                        return Convert.ToSByte(val1) - Convert.ToSByte(val2);
+                    throw new NotSupportedException("Subtraction not supported for arguments of type " + val1.GetType().Name + " and " + val2.GetType().Name);
+
+                case SoqlBinaryOperator.Mul:
+                    if (val1 is double || val2 is double)
+                        return Convert.ToDouble(val1) * Convert.ToDouble(val2);
+                    if (val1 is float || val2 is float)
+                        return Convert.ToSingle(val1) * Convert.ToSingle(val2);
+                    if (val1 is decimal || val2 is decimal)
+                        return Convert.ToDecimal(val1) * Convert.ToDecimal(val2);
+                    if (val1 is long || val2 is long)
+                        return Convert.ToInt64(val1) * Convert.ToInt64(val2);
+                    if (val1 is int || val2 is int)
+                        return Convert.ToInt32(val1) * Convert.ToInt32(val2);
+                    if (val1 is short || val2 is short)
+                        return Convert.ToInt16(val1) * Convert.ToInt16(val2);
+                    if (val1 is sbyte || val2 is sbyte)
+                        return Convert.ToSByte(val1) * Convert.ToSByte(val2);
+                    throw new NotSupportedException("Multiplication not supported for arguments of type " + val1.GetType().Name + " and " + val2.GetType().Name);
+
+                case SoqlBinaryOperator.Div:
+                    if (val1 is double || val2 is double)
+                        return Convert.ToDouble(val1) / Convert.ToDouble(val2);
+                    if (val1 is float || val2 is float)
+                        return Convert.ToSingle(val1) / Convert.ToSingle(val2);
+                    if (val1 is decimal || val2 is decimal)
+                        return Convert.ToDecimal(val1) / Convert.ToDecimal(val2);
+                    if (val1 is long || val2 is long)
+                        return Convert.ToInt64(val1) / Convert.ToInt64(val2);
+                    if (val1 is int || val2 is int)
+                        return Convert.ToInt32(val1) / Convert.ToInt32(val2);
+                    if (val1 is short || val2 is short)
+                        return Convert.ToInt16(val1) / Convert.ToInt16(val2);
+                    if (val1 is sbyte || val2 is sbyte)
+                        return Convert.ToSByte(val1) / Convert.ToSByte(val2);
+                    throw new NotSupportedException("Division not supported for arguments of type " + val1.GetType().Name + " and " + val2.GetType().Name);
+
+                case SoqlBinaryOperator.Mod:
+                    if (val1 is double || val2 is double)
+                        return Convert.ToDouble(val1) % Convert.ToDouble(val2);
+                    if (val1 is float || val2 is float)
+                        return Convert.ToSingle(val1) % Convert.ToSingle(val2);
+                    if (val1 is decimal || val2 is decimal)
+                        return Convert.ToDecimal(val1) % Convert.ToDecimal(val2);
+                    if (val1 is long || val2 is long)
+                        return Convert.ToInt64(val1) % Convert.ToInt64(val2);
+                    if (val1 is int || val2 is int)
+                        return Convert.ToInt32(val1) % Convert.ToInt32(val2);
+                    if (val1 is short || val2 is short)
+                        return Convert.ToInt16(val1) % Convert.ToInt16(val2);
+                    if (val1 is sbyte || val2 is sbyte)
+                        return Convert.ToSByte(val1) % Convert.ToSByte(val2);
+                    throw new NotSupportedException("Modulus not supported for arguments of type " + val1.GetType().Name + " and " + val2.GetType().Name);
+
+                default:
+                    throw new NotSupportedException("Binary operator " + op + " is not supported.");
+            }
+        }
+
+        public override object Evaluate(ISoqlEvaluateContext context)
+        {
+            object val1 = par1.Evaluate(context);
+            object val2 = par2.Evaluate(context);
+
+            return CalcValue(op, val1, val2);
+        }
+
+        public override SoqlExpression Simplify() 
+        {
             par1 = par1.Simplify();
             par2 = par2.Simplify();
 
@@ -70,48 +183,14 @@ namespace Sooda.QL {
                 object v1 = cp1.GetConstantValue();
                 object v2 = cp2.GetConstantValue();
 
-                if (v1.GetType() == v2.GetType()) {
-                    if (v1.GetType() == typeof(int)) {
-                        switch (op) {
-                        case SoqlBinaryOperator.Add:
-                            return new SoqlLiteralExpression((int)v1 + (int)v2);
-
-                        case SoqlBinaryOperator.Sub:
-                            return new SoqlLiteralExpression((int)v1 - (int)v2);
-
-                        case SoqlBinaryOperator.Mul:
-                            return new SoqlLiteralExpression((int)v1 * (int)v2);
-
-                        case SoqlBinaryOperator.Div:
-                            return new SoqlLiteralExpression((int)v1 / (int)v2);
-
-                        case SoqlBinaryOperator.Mod:
-                            return new SoqlLiteralExpression((int)v1 % (int)v2);
-
-                        default:
-                            throw new NotImplementedException();
-                        };
-                    }
-
-                    if (v1.GetType() == typeof(string)) {
-                        switch (op) {
-                        case SoqlBinaryOperator.Add:
-                            return new SoqlLiteralExpression((string)v1 + (string)v2);
-
-                        default:
-                            throw new NotImplementedException();
-                        }
-                    }
-
-                    // TODO - add more constant folding
-                }
-            };
+                object newValue = CalcValue(op, v1, v2);
+                if (newValue != null)
+                    return new SoqlLiteralExpression(newValue);
+                else
+                    return new SoqlNullLiteral();
+            }
 
             return this;
-        }
-
-        public override SoqlExpressionType GetExpressionType() {
-            throw new NotImplementedException();
         }
     }
 }

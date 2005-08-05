@@ -41,16 +41,21 @@ using Sooda.UnitTests.BaseObjects;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.ObjectMapper {
+namespace Sooda.UnitTests.TestCases.ObjectMapper 
+{
     [TestFixture]
-    public class PrecommitTest {
+    public class PrecommitTest 
+    {
         [Test]
-        public void Test1() {
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) {
+        public void Test1() 
+        {
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) 
+            {
                 testDataSource.Open();
                 SoodaCache.Clear();
 
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction()) 
+                {
                     tran.RegisterDataSource(testDataSource);
 
                     // create new uncommitted object
@@ -80,6 +85,62 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
 
                     Console.WriteLine("Comitting...");
                     tran.Commit();
+                }
+
+                SoodaCache.Dump(Console.Out);
+            }
+        }
+
+        [Test]
+        public void Test2() 
+        {
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) 
+            {
+                testDataSource.Open();
+                SoodaCache.Clear();
+
+                using (SoodaTransaction tran = new SoodaTransaction()) 
+                {
+                    tran.RegisterDataSource(testDataSource);
+
+                    // create new uncommitted object
+                    Contact nc = new Contact();
+
+                    Console.WriteLine("Precommitting...");
+
+                    // force precommit
+                    // the 'type' field precommits as 'Customer'
+                    ContactList cl = Contact.GetList(new SoodaWhereClause("Type={0} and ContactId={1}", "Customer", nc.ContactId));
+                    
+                    // we get one record
+                    Assert.AreEqual(1, cl.Count, "#1");
+
+                    // force precommit
+                    // the 'type' field precommits as 'Customer'
+                    ContactList cl2 = Contact.GetList(new SoodaWhereClause("Type={0} and ContactId={1}", "Customer", nc.ContactId), SoodaSnapshotOptions.VerifyAfterLoad);
+
+                    // we use SoodaSnapshotOptions.Verify to check in-memory
+                    // values after the load
+                    Assert.AreEqual(0, cl2.Count, "#2");
+
+                    nc.Type = ContactType.Customer;
+
+                    // force precommit
+                    ContactList cl3 = Contact.GetList(new SoodaWhereClause("Type={0} and ContactId={1}", "Customer", nc.ContactId), SoodaSnapshotOptions.VerifyAfterLoad);
+
+                    // we use SoodaSnapshotOptions.Verify to check in-memory
+                    // values after the load
+                    Assert.AreEqual(1, cl3.Count, "#3");
+
+                    nc.Type = ContactType.Employee;
+
+                    ContactList cl4 = Contact.GetList(new SoodaWhereClause("Type={0} and ContactId={1}", "Customer", nc.ContactId), SoodaSnapshotOptions.VerifyAfterLoad);
+
+                    // we use SoodaSnapshotOptions.Verify to check in-memory
+                    // values after the load
+                    Assert.AreEqual(0, cl4.Count, "#4");
+                   
+                    // tran.Commit();
                 }
 
                 SoodaCache.Dump(Console.Out);

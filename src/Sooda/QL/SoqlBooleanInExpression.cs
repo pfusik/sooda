@@ -37,8 +37,10 @@ using System.Collections;
 
 using System.Xml.Serialization;
 
-namespace Sooda.QL {
-    public class SoqlBooleanInExpression : SoqlBooleanExpression {
+namespace Sooda.QL 
+{
+    public class SoqlBooleanInExpression : SoqlBooleanExpression 
+    {
         public SoqlExpression Left;
 
         [XmlArray("in")]
@@ -46,22 +48,25 @@ namespace Sooda.QL {
         public SoqlExpressionCollection Right;
 
         public SoqlBooleanInExpression() {}
-        public SoqlBooleanInExpression(SoqlExpression lhs, SoqlExpressionCollection rhs) {
+        public SoqlBooleanInExpression(SoqlExpression lhs, SoqlExpressionCollection rhs) 
+        {
             this.Left = lhs;
             this.Right = rhs;
         }
 
         // visitor pattern
-        public override void Accept(ISoqlVisitor visitor) {
+        public override void Accept(ISoqlVisitor visitor) 
+        {
             visitor.Visit(this);
         }
 
-        public override SoqlExpression Simplify() {
+        public override SoqlExpression Simplify() 
+        {
             SoqlExpression lhsExpression = Left.Simplify();
-            ArrayList newRhs = new ArrayList();
             SoqlBooleanExpression retVal = null;
 
-            for (int i = 0; i < Right.Count; ++i) {
+            for (int i = 0; i < Right.Count; ++i) 
+            {
                 SoqlExpression e = (SoqlExpression)Right[i];
                 SoqlBooleanRelationalExpression bre =
                     new SoqlBooleanRelationalExpression(lhsExpression, e, SoqlRelationalOperator.Equal);
@@ -70,14 +75,15 @@ namespace Sooda.QL {
                     retVal = bre;
                 else
                     retVal = new SoqlBooleanOrExpression(retVal, bre);
-                //newRhs.Add(e.Simplify());
             }
 
             return retVal.Simplify();
         }
 
-        public override SoqlExpressionType GetExpressionType() {
-            return new SoqlExpressionType(typeof(bool));
+        public override object Evaluate(ISoqlEvaluateContext context)
+        {
+            // this should be evaluated on 
+            return Simplify().Evaluate(context);
         }
     }
 }
