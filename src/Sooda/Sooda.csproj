@@ -808,6 +808,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Schema\PrecommitValueInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Schema\PrecommitValueInfoCollection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Schema\RelationInfo.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

@@ -2,14 +2,20 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sooda="http://sooda.sourceforge.net/schemas/DBSchema.xsd" elementFormDefault="qualified" targetNamespace="http://sooda.sourceforge.net/schemas/DBSchema.xsd" xmlns="http://sooda.sourceforge.net/schemas/DBSchema.xsd">
 	<xsd:element name="schema" type="sooda:SchemaInfo"></xsd:element>
 	<xsd:complexType name="SchemaInfo">
-		<xsd:sequence>
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
 		    <xsd:element name="namespace" type="xsd:string" minOccurs="0" maxOccurs="1" />
 		    <xsd:element name="assembly" type="xsd:string" minOccurs="0" maxOccurs="1" />
 		    <xsd:element name="include" type="sooda:IncludeInfo" minOccurs="0" maxOccurs="unbounded" />
 			<xsd:element name="datasource" type="sooda:DataSourceInfo" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="defaultPrecommitValues" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
+		    <xsd:element name="precommitValue" type="sooda:PrecommitValueInfo" minOccurs="0" maxOccurs="unbounded" />
 			<xsd:element name="class" type="sooda:ClassInfo" minOccurs="1" maxOccurs="unbounded" />
 			<xsd:element name="relation" type="sooda:RelationInfo" minOccurs="0" maxOccurs="unbounded" />
-		</xsd:sequence>
+		</xsd:choice>
+	</xsd:complexType>
+	<xsd:complexType name="PrecommitValueInfo">
+		<xsd:attribute name="type" type="sooda:FieldDataType" use="required" />
+		<xsd:attribute name="value" type="xsd:string" use="required" />
 	</xsd:complexType>
 	<xsd:complexType name="IncludeInfo">
 		<xsd:attribute name="schema" type="xsd:string" use="required" />

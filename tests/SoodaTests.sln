@@ -56,6 +56,10 @@ Global
 		{A1D122ED-CF84-4EF0-A138-72922DD50409}.Release.ActiveCfg = Release|.NET
 		{A1D122ED-CF84-4EF0-A138-72922DD50409}.Release.Build.0 = Release|.NET
 	EndGlobalSection
+	GlobalSection(SolutionItems) = postSolution
+		DBSchema.xml = DBSchema.xml
+		DBSchemaBase.xml = DBSchemaBase.xml
+	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
 	GlobalSection(ExtensibilityAddIns) = postSolution

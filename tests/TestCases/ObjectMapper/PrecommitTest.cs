@@ -32,46 +32,58 @@
 // 
 
 using System;
-using System.IO;
+using System.Diagnostics;
 using System.Data;
-using System.Runtime.InteropServices;
-using System.Runtime.Remoting;
-using System.Threading;
 
-using Sooda;
-using Sooda.Schema;
-using Sooda.UnitTests.TestCases;
-using Sooda.QL;
 using Sooda.ObjectMapper;
 using Sooda.UnitTests.Objects;
+using Sooda.UnitTests.BaseObjects;
 
-using System.Collections;
-using System.Xml;
-using System.Xml.Serialization;
+using NUnit.Framework;
 
-using System.Security.Principal;
-using System.Security.Permissions;
+namespace Sooda.UnitTests.TestCases.ObjectMapper {
+    [TestFixture]
+    public class PrecommitTest {
+        [Test]
+        public void Test1() {
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) {
+                testDataSource.Open();
+                SoodaCache.Clear();
 
-[assembly: SoodaStubAssembly(typeof(Sooda.UnitTests.Objects._DatabaseSchema))]
-[assembly: SoodaConfig(XmlConfigFileName = "sooda.config.xml")]
+                using (SoodaTransaction tran = new SoodaTransaction()) {
+                    tran.RegisterDataSource(testDataSource);
 
-namespace ConsoleTest 
-{
-    class Class1 
-    {
-        static void Main(string[] args) 
-        {
-            try
-            {
-                Sooda.Logging.LogManager.Implementation = new Sooda.Logging.ConsoleLoggingImplementation();
-                Sooda.UnitTests.TestCases.ObjectMapper.PrecommitTest t = new Sooda.UnitTests.TestCases.ObjectMapper.PrecommitTest();
-                t.Test1();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
+                    // create new uncommitted object
+                    Contact nc = new Contact();
+
+                    Console.WriteLine("Precommitting...");
+
+                    // force precommit
+                    // the 'type' field precommits as 'Employee'
+                    ContactList cl = Contact.GetList(SoodaWhereClause.Unrestricted);
+
+                    // update name
+
+                    Console.WriteLine("Precommitting again...");
+                    nc.Name = "name1";
+
+                    // force precommit again
+                    cl = Contact.GetList(SoodaWhereClause.Unrestricted);
+
+                    Console.WriteLine("Precommitting again (2)...");
+
+                    nc.Type = ContactType.Customer;
+                    // force precommit again
+                    cl = Contact.GetList(SoodaWhereClause.Unrestricted);
+
+                    // this should do nothing
+
+                    Console.WriteLine("Comitting...");
+                    tran.Commit();
+                }
+
+                SoodaCache.Dump(Console.Out);
             }
         }
     }
 }
-

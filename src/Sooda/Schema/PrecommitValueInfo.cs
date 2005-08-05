@@ -32,46 +32,35 @@
 // 
 
 using System;
-using System.IO;
-using System.Data;
-using System.Runtime.InteropServices;
-using System.Runtime.Remoting;
-using System.Threading;
 
-using Sooda;
-using Sooda.Schema;
-using Sooda.UnitTests.TestCases;
-using Sooda.QL;
-using Sooda.ObjectMapper;
-using Sooda.UnitTests.Objects;
+namespace Sooda.Schema {
+    using System.Xml.Serialization;
 
-using System.Collections;
-using System.Xml;
-using System.Xml.Serialization;
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd")]
+    [Serializable]
+    public class PrecommitValueInfo {
+        [XmlAttribute("dataType")]
+        public FieldDataType DataType;
 
-using System.Security.Principal;
-using System.Security.Permissions;
+        [XmlAttribute("value")]
+        public string ValueText;
 
-[assembly: SoodaStubAssembly(typeof(Sooda.UnitTests.Objects._DatabaseSchema))]
-[assembly: SoodaConfig(XmlConfigFileName = "sooda.config.xml")]
+        private bool _haveValue = false;
+        private object _value = null;
 
-namespace ConsoleTest 
-{
-    class Class1 
-    {
-        static void Main(string[] args) 
+        public object Value
         {
-            try
-            {
-                Sooda.Logging.LogManager.Implementation = new Sooda.Logging.ConsoleLoggingImplementation();
-                Sooda.UnitTests.TestCases.ObjectMapper.PrecommitTest t = new Sooda.UnitTests.TestCases.ObjectMapper.PrecommitTest();
-                t.Test1();
+            get 
+            { 
+                if (!_haveValue)
+                    _value = CalculateValue();
+                return _value;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
+        }
+
+        private object CalculateValue()
+        {
+            return null;
         }
     }
 }
-

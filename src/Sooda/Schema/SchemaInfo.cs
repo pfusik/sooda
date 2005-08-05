@@ -61,6 +61,13 @@ namespace Sooda.Schema
         [XmlElement("class", typeof(ClassInfo))]
         public ClassInfoCollection Classes = new ClassInfoCollection();
 
+        [XmlElement("defaultPrecommitValues")]
+        [System.ComponentModel.DefaultValue(true)]
+        public bool DefaultPrecommitValues = true;
+
+        [XmlElement("precommitValue", typeof(PrecommitValueInfo))]
+        public PrecommitValueInfoCollection PrecommitValues = new PrecommitValueInfoCollection();
+
         [XmlIgnore]
         public ClassInfoCollection LocalClasses;
 
@@ -312,6 +319,21 @@ namespace Sooda.Schema
 
                 this.DataSources = newDataSources;
             }
+        }
+
+        public object GetDefaultPrecommitValueForDataType(FieldDataType dataType)
+        {
+            if (PrecommitValues != null)
+            {
+                for (int i = 0; i < PrecommitValues.Count; ++i)
+                    if (dataType == PrecommitValues[i].DataType)
+                        return PrecommitValues[i].Value;
+            }
+            if (DefaultPrecommitValues)
+            {
+                return FieldDataTypeHelper.GetDefaultPrecommitValue(dataType);
+            }
+            return null;
         }
     }
 }

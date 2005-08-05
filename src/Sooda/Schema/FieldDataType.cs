@@ -31,11 +31,12 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
+using System;
+using System.Xml.Serialization;
+using System.Globalization;
+
 namespace Sooda.Schema 
 {
-    using System;
-    using System.Xml.Serialization;
-
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd")]
     public enum FieldDataType
     {
@@ -63,8 +64,9 @@ namespace Sooda.Schema
         public readonly string defaultWrapperTypeName;
         public readonly bool needsSize;
         public readonly bool needsPrecision;
+        public readonly object defaultPrecommitValue;
 
-        public FieldDataLookup(FieldDataType fieldDataType, Type clrRawType, Type clrSqlType, bool needsSize, bool needsPrecision, string defaultWrapperTypeName) 
+        public FieldDataLookup(FieldDataType fieldDataType, Type clrRawType, Type clrSqlType, bool needsSize, bool needsPrecision, string defaultWrapperTypeName, object defaultPrecommitValue) 
         {
             this.fieldDataType = fieldDataType;
             this.clrRawType = clrRawType;
@@ -72,6 +74,7 @@ namespace Sooda.Schema
             this.needsSize = needsSize;
             this.needsPrecision = needsPrecision;
             this.defaultWrapperTypeName = defaultWrapperTypeName;
+            this.defaultPrecommitValue = defaultPrecommitValue;
         }
     }
 
@@ -79,19 +82,19 @@ namespace Sooda.Schema
     {
         private static FieldDataLookup[] lookupTable = new FieldDataLookup[]
                 {
-                    new FieldDataLookup(FieldDataType.Blob, typeof(byte[]), typeof(System.Data.SqlTypes.SqlBinary), true, false, "Sooda.ObjectMapper.FieldHandlers.BlobFieldHandler"),
-                    new FieldDataLookup(FieldDataType.Boolean, typeof(bool), typeof(System.Data.SqlTypes.SqlBoolean), false, false, "Sooda.ObjectMapper.FieldHandlers.BooleanFieldHandler"),
-                    new FieldDataLookup(FieldDataType.BooleanAsInteger, typeof(bool), typeof(System.Data.SqlTypes.SqlBoolean), false, false, "Sooda.ObjectMapper.FieldHandlers.BooleanAsIntegerFieldHandler"),
-                    new FieldDataLookup(FieldDataType.Integer, typeof(System.Int32), typeof(System.Data.SqlTypes.SqlInt32), false, false, "Sooda.ObjectMapper.FieldHandlers.Int32FieldHandler"),
-                    new FieldDataLookup(FieldDataType.Long, typeof(System.Int64), typeof(System.Data.SqlTypes.SqlInt64), false, false, "Sooda.ObjectMapper.FieldHandlers.Int64FieldHandler"),
-                    new FieldDataLookup(FieldDataType.DateTime, typeof(System.DateTime), typeof(System.Data.SqlTypes.SqlDateTime), false, false, "Sooda.ObjectMapper.FieldHandlers.DateTimeFieldHandler"),
-                    new FieldDataLookup(FieldDataType.Decimal, typeof(System.Decimal), typeof(System.Data.SqlTypes.SqlDecimal), false, false, "Sooda.ObjectMapper.FieldHandlers.DecimalFieldHandler"),
-                    new FieldDataLookup(FieldDataType.Double, typeof(System.Double), typeof(System.Data.SqlTypes.SqlDouble), true, true, "Sooda.ObjectMapper.FieldHandlers.DoubleFieldHandler"),
-                    new FieldDataLookup(FieldDataType.Float, typeof(System.Single), typeof(System.Data.SqlTypes.SqlSingle), true, true, "Sooda.ObjectMapper.FieldHandlers.FloatFieldHandler"),
-                    new FieldDataLookup(FieldDataType.String, typeof(System.String), typeof(System.Data.SqlTypes.SqlString), true, false, "Sooda.ObjectMapper.FieldHandlers.StringFieldHandler"),
-                    new FieldDataLookup(FieldDataType.Guid, typeof(System.Guid), typeof(System.Data.SqlTypes.SqlGuid), true, false, "Sooda.ObjectMapper.FieldHandlers.GuidFieldHandler"),
-                    new FieldDataLookup(FieldDataType.Image, typeof(System.Drawing.Image), null, false, false, "Sooda.ObjectMapper.FieldHandlers.ImageFieldHandler"),
-                    new FieldDataLookup(FieldDataType.TimeSpan, typeof(System.TimeSpan), null, false, false, "Sooda.ObjectMapper.FieldHandlers.TimeSpanFieldHandler"),
+                    new FieldDataLookup(FieldDataType.Blob, typeof(byte[]), typeof(System.Data.SqlTypes.SqlBinary), true, false, "Sooda.ObjectMapper.FieldHandlers.BlobFieldHandler", null),
+                    new FieldDataLookup(FieldDataType.Boolean, typeof(bool), typeof(System.Data.SqlTypes.SqlBoolean), false, false, "Sooda.ObjectMapper.FieldHandlers.BooleanFieldHandler", false),
+                    new FieldDataLookup(FieldDataType.BooleanAsInteger, typeof(bool), typeof(System.Data.SqlTypes.SqlBoolean), false, false, "Sooda.ObjectMapper.FieldHandlers.BooleanAsIntegerFieldHandler", 0),
+                    new FieldDataLookup(FieldDataType.Integer, typeof(System.Int32), typeof(System.Data.SqlTypes.SqlInt32), false, false, "Sooda.ObjectMapper.FieldHandlers.Int32FieldHandler", 0),
+                    new FieldDataLookup(FieldDataType.Long, typeof(System.Int64), typeof(System.Data.SqlTypes.SqlInt64), false, false, "Sooda.ObjectMapper.FieldHandlers.Int64FieldHandler", 0),
+                    new FieldDataLookup(FieldDataType.DateTime, typeof(System.DateTime), typeof(System.Data.SqlTypes.SqlDateTime), false, false, "Sooda.ObjectMapper.FieldHandlers.DateTimeFieldHandler", DateTime.Parse("2005/01/01", CultureInfo.InvariantCulture)),
+                    new FieldDataLookup(FieldDataType.Decimal, typeof(System.Decimal), typeof(System.Data.SqlTypes.SqlDecimal), false, false, "Sooda.ObjectMapper.FieldHandlers.DecimalFieldHandler", (decimal)0),
+                    new FieldDataLookup(FieldDataType.Double, typeof(System.Double), typeof(System.Data.SqlTypes.SqlDouble), true, true, "Sooda.ObjectMapper.FieldHandlers.DoubleFieldHandler", (double)0),
+                    new FieldDataLookup(FieldDataType.Float, typeof(System.Single), typeof(System.Data.SqlTypes.SqlSingle), true, true, "Sooda.ObjectMapper.FieldHandlers.FloatFieldHandler", (float)0),
+                    new FieldDataLookup(FieldDataType.String, typeof(System.String), typeof(System.Data.SqlTypes.SqlString), true, false, "Sooda.ObjectMapper.FieldHandlers.StringFieldHandler", (string)""),
+                    new FieldDataLookup(FieldDataType.Guid, typeof(System.Guid), typeof(System.Data.SqlTypes.SqlGuid), true, false, "Sooda.ObjectMapper.FieldHandlers.GuidFieldHandler", Guid.Empty),
+                    new FieldDataLookup(FieldDataType.Image, typeof(System.Drawing.Image), null, false, false, "Sooda.ObjectMapper.FieldHandlers.ImageFieldHandler", 0),
+                    new FieldDataLookup(FieldDataType.TimeSpan, typeof(System.TimeSpan), null, false, false, "Sooda.ObjectMapper.FieldHandlers.TimeSpanFieldHandler", 0),
         };
 
         public static Type GetClrType(FieldDataType t) 
@@ -110,6 +113,15 @@ namespace Sooda.Schema
                     return lookup.defaultWrapperTypeName;
 
             throw new NotSupportedException("Data type " + t + " not supported (yet!)");
+        }
+
+        public static object GetDefaultPrecommitValue(FieldDataType t) 
+        {
+            foreach (FieldDataLookup lookup in lookupTable)
+                if (lookup.fieldDataType == t)
+                    return lookup.defaultPrecommitValue;
+
+            return null;
         }
 
         public static Type GetSqlType(FieldDataType t) 

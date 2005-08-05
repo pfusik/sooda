@@ -494,12 +494,11 @@ namespace Sooda.Schema
 
                 if (pcv == null)
                 {
-                    fi.PrecommitTypedValue = null;
+                     fi.PrecommitTypedValue = Schema.GetDefaultPrecommitValueForDataType(fi.DataType);
                 }
                 else
                 {
-                    fi.PrecommitTypedValue = Convert.ChangeType(fi.PrecommitValue, FieldDataTypeHelper.GetClrType(fi.DataType));
-                    // Console.WriteLine("{0}.{1} precommit {2}", this.Name, fi.Name, fi.PrecommitTypedValue);
+                    fi.PrecommitTypedValue = Convert.ChangeType(pcv, FieldDataTypeHelper.GetClrType(fi.DataType));
                 }
             }
         }

@@ -17,7 +17,7 @@
         <const name="Customer" key="3" />
     </class>
 
-    <class name="ContactType" cached="true" precacheAll="false">
+    <class name="ContactType" cached="true" precacheAll="false" defaultPrecommitValue="Customer">
         <table name="ContactType">
             <field name="Code" dbcolumn="code" type="String" size="16" primaryKey="true" />
             <field name="Description" dbcolumn="description" type="String" size="64" nullable="true" />

@@ -299,7 +299,7 @@
         </nunit2>
     </target>
 
-    <target name="Sooda.UnitTests.BaseObjects" depends="Sooda">
+    <target name="Sooda.UnitTests.BaseObjects" depends="Sooda, SoodaStubGen-mini">
         <exec program="${sooda.dir}/SoodaStubGen.exe" useruntimeengine="true" workingdir="tests" 
             commandline="--project vs --rebuild-if-changed --nullable-as sqltype -s DBSchemaBase.xml -n Sooda.UnitTests.BaseObjects -o BaseObjects" />
 
@@ -318,7 +318,7 @@
         </csc>
     </target>
 
-    <target name="Sooda.UnitTests.Objects" depends="Sooda, Sooda.UnitTests.BaseObjects">
+    <target name="Sooda.UnitTests.Objects" depends="Sooda, SoodaStubGen-mini, Sooda.UnitTests.BaseObjects">
         <exec program="${sooda.dir}/SoodaStubGen.exe" useruntimeengine="true" workingdir="tests" 
             commandline="--project vs --rebuild-if-changed --nullable-as sqltype -s DBSchema.xml -n Sooda.UnitTests.Objects -o UnitTestObjects" />
 

@@ -554,7 +554,7 @@ namespace Sooda
             for (i = tableIndex; i < tables.Length; ++i)
             {
                 TableInfo table = tables[i];
-                logger.Debug("Loading data from table {0}. Number of fields: {1} Record pos: {2} Table index {3}.", table.NameToken, table.Fields.Count, recordPos, tableIndex);
+                // logger.Debug("Loading data from table {0}. Number of fields: {1} Record pos: {2} Table index {3}.", table.NameToken, table.Fields.Count, recordPos, tableIndex);
 
                 if (table.OrdinalInClass == 0 && !first) 
                 {
@@ -728,6 +728,7 @@ namespace Sooda
 
             try 
             {
+                EnsureFieldsInited();
                 ds.SaveObjectChanges(this, GetTransaction().IsPrecommit);
             } 
             catch (Exception e) 
