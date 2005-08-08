@@ -37,10 +37,7 @@ namespace Sooda.Schema {
 
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd")]
     [Serializable]
-    public class CollectionManyToManyInfo {
-
-        [System.Xml.Serialization.XmlAttributeAttribute("name")]
-        public string Name;
+    public class CollectionManyToManyInfo : CollectionBaseInfo {
 
         [System.Xml.Serialization.XmlAttributeAttribute("relation")]
         public string Relation;

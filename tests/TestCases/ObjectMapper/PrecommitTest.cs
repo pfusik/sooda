@@ -64,7 +64,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
                     Console.WriteLine("Precommitting...");
 
                     // force precommit
-                    // the 'type' field precommits as 'Employee'
+                    // the 'type' field precommits as 'Customer'
                     ContactList cl = Contact.GetList(SoodaWhereClause.Unrestricted);
 
                     // update name

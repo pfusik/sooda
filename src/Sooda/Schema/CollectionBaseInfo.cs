@@ -40,46 +40,8 @@ namespace Sooda.Schema
     /// <remarks/>
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd")]
     [Serializable]
-    public class CollectionOnetoManyInfo : CollectionBaseInfo {
-        [System.Xml.Serialization.XmlAttributeAttribute("class")]
-        public string ClassName;
-
-        [NonSerialized]
-        [XmlIgnore]
-        public ClassInfo Class;
-
-        [System.Xml.Serialization.XmlAttributeAttribute("foreignField")]
-        public string ForeignFieldName;
-
-        [NonSerialized]
-        [XmlIgnore]
-        public FieldInfo ForeignField2;
-
-        public string ForeignColumn
-        {
-            get {
-                return ForeignField2.DBColumnName;
-            }
-        }
-
-        [System.Xml.Serialization.XmlAttributeAttribute("where")]
-        public string Where;
-
-        private DeleteAction deleteAction = DeleteAction.Nothing;
-
-        [System.Xml.Serialization.XmlAttributeAttribute("onDelete")]
-        [System.ComponentModel.DefaultValue(DeleteAction.Nothing)]
-        public DeleteAction OnDelete
-        {
-            get {
-                return deleteAction;
-            }
-            set {
-                deleteAction = value;
-            }
-        }
-        [XmlAttribute("prefetch")]
-        [DefaultValue(0)]
-        public int PrefetchLevel = 0;
-    }
+    public class CollectionBaseInfo {
+        [System.Xml.Serialization.XmlAttributeAttribute("name")]
+        public string Name;
+   }
 }

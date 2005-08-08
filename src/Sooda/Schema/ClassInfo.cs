@@ -61,6 +61,14 @@ namespace Sooda.Schema
         [System.Xml.Serialization.XmlElementAttribute("collectionManyToMany")]
         public CollectionManyToManyInfo[] CollectionsNtoN;
 
+        [XmlIgnore]
+        [NonSerialized]
+        public CollectionBaseInfoCollection UnifiedCollections = new CollectionBaseInfoCollection();
+
+        [XmlIgnore]
+        [NonSerialized]
+        public CollectionBaseInfoCollection LocalCollections = new CollectionBaseInfoCollection();
+
         [System.Xml.Serialization.XmlElementAttribute("const")]
         public ConstantInfo[] Constants;
 
@@ -336,6 +344,31 @@ namespace Sooda.Schema
                     {
                         SubclassSelectorFieldName = ci.SubclassSelectorFieldName;
                         break;
+                    }
+                }
+            }
+
+            UnifiedCollections = new CollectionBaseInfoCollection();
+            LocalCollections = new CollectionBaseInfoCollection();
+            for (ClassInfo ci = this; ci != null; ci = ci.InheritsFromClass)
+            {
+                if (ci.Collections1toN != null)
+                {
+                    foreach (CollectionOnetoManyInfo c in ci.Collections1toN)
+                    {
+                        UnifiedCollections.Add(c);
+                        if (ci == this)
+                            LocalCollections.Add(c);
+                    }
+                }
+
+                if (ci.CollectionsNtoN != null)
+                {
+                    foreach (CollectionManyToManyInfo c in ci.CollectionsNtoN)
+                    {
+                        UnifiedCollections.Add(c);
+                        if (ci == this)
+                            LocalCollections.Add(c);
                     }
                 }
             }
