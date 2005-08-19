@@ -360,6 +360,21 @@
             </summary>
             <param name="minLevel">The minimal logging level.</param>
         </member>
+        <member name="M:NLog.Config.SimpleConfigurator.ConfigureForTargetLogging(NLog.Target)">
+            <summary>
+            Configures NLog for to log to the specified target so that all messages 
+            above and including the <see cref="F:NLog.LogLevel.Info"/> level are output.
+            </summary>
+            <param name="target">The target to log all messages to.</param>
+        </member>
+        <member name="M:NLog.Config.SimpleConfigurator.ConfigureForTargetLogging(NLog.Target,NLog.LogLevel)">
+            <summary>
+            Configures NLog for to log to the specified target so that all messages 
+            above and including the specified level are output.
+            </summary>
+            <param name="target">The target to log all messages to.</param>
+            <param name="minLevel">The minimal logging level.</param>
+        </member>
         <member name="M:NLog.Config.SimpleConfigurator.ConfigureForFileLogging(System.String)">
             <summary>
             Configures NLog for file logging so that all messages above and including
@@ -2182,6 +2197,11 @@
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
             <param name="ev">Logging event.</param>
         </member>
+        <member name="P:NLog.LayoutRenderers.LoggerNameLayoutRenderer.ShortName">
+            <summary>
+            Render short logger name (the part after the trailing dot character).
+            </summary>
+        </member>
         <member name="T:NLog.LayoutRenderers.LongDateLayoutRenderer">
             <summary>
             The date and time in a long, sortable format yyyy-MM-dd HH:mm:ss.mmm
@@ -2389,7 +2409,7 @@
         </member>
         <member name="T:NLog.LayoutRenderers.PerformanceCounterLayoutRenderer">
             <summary>
-            The performance counter. (NOT OPERATIONAL YET)
+            The performance counter.
             </summary>
         </member>
         <member name="M:NLog.LayoutRenderers.PerformanceCounterLayoutRenderer.GetEstimatedBufferSize(NLog.LogEventInfo)">
@@ -2404,6 +2424,11 @@
             expensive to calculate this function should return a rough estimate
             that's big enough in most cases, but not too big, in order to conserve memory.
             </remarks>
+        </member>
+        <member name="M:NLog.LayoutRenderers.PerformanceCounterLayoutRenderer.InvalidatePerformanceCounter">
+            <summary>
+            Closes currently open performance counter (if any).
+            </summary>
         </member>
         <member name="M:NLog.LayoutRenderers.PerformanceCounterLayoutRenderer.Append(System.Text.StringBuilder,NLog.LogEventInfo)">
             <summary>
@@ -2425,6 +2450,11 @@
         <member name="P:NLog.LayoutRenderers.PerformanceCounterLayoutRenderer.Instance">
             <summary>
             Name of the performance counter instance (e.g. _Global_).
+            </summary>
+        </member>
+        <member name="P:NLog.LayoutRenderers.PerformanceCounterLayoutRenderer.MachineName">
+            <summary>
+            Name of the machine to read the performance counter from.
             </summary>
         </member>
         <member name="T:NLog.LayoutRenderers.ProcessTimeLayoutRenderer">
@@ -2600,9 +2630,35 @@
             <summary>
             Writes logging messages to the ASP.NET trace.
             </summary>
-            <remarks>
-            Resulting log entries can be viewed by navigating to http://server/path/Trace.axd
-            </remarks>
+            <example>
+            <p>To set up the ASP.NET Trace target in the <a href="config.html">configuration file</a>, put
+            the following in <c>web.nlog</c> file in your web application directory.
+            </p>
+            <xml src="examples/targets/ASPNetTrace/web.nlog" />
+            <p>
+            This assumes just one target and a single rule. More configuration
+            options are described <a href="config.html">here</a>.
+            </p>
+            <p>
+            To configure the target programmatically, put the following
+            piece of code in your <c>Application_OnStart()</c> handler in Global.asax.cs 
+            or some other place that gets executed at the very beginning of your code:
+            </p>
+            <cs src="examples/targets/ASPNetTrace/Global.asax.cs" />
+            <p>
+            Fully working C# project can be found in the <c>Examples/Targets/ASPNetTrace</c>
+            directory along with usage instructions.
+            </p>
+            Resulting log entries can be viewed by navigating to http://server/path/Trace.axd.
+            <br/>
+            <b>HTTP Request List:</b><br/>
+            <img src="examples/targets/ASPNetTrace/ASPNetTraceOutput1.gif" />
+            <p/>
+            <b>HTTP Request Details:</b>
+            <br/>
+            <img src="examples/targets/ASPNetTrace/ASPNetTraceOutput2.gif" />
+            <p/>
+            </example>
         </member>
         <member name="T:NLog.Target">
             <summary>
@@ -2679,24 +2735,50 @@
             Base class for targets that support asynchronous operation.
             </summary>
         </member>
-        <member name="M:NLog.Targets.AsyncTarget.Flush">
+        <member name="M:NLog.Targets.AsyncTarget.StartLazyWriterThread">
             <summary>
-            Waits for the asynchronous thread to finish writing messages.
+            Starts the lazy writer thread which periodically writes
+            queued log messages.
             </summary>
         </member>
-        <member name="P:NLog.Targets.AsyncTarget.LoggingThread">
+        <member name="M:NLog.Targets.AsyncTarget.StopLazyWriterThread">
+            <summary>
+            Starts the lazy writer thread.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.AsyncTarget.Flush">
+            <summary>
+            Waits for the lazy writer thread to finish writing messages.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.AsyncTarget.LazyWriterThreadProc">
+            <summary>
+            Lazy writer thread method. To be overridden in inheriting classes.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.AsyncTarget.LazyWriterThreadStopRequested">
+            <summary>
+            Checks whether lazy writer thread is requested to stop.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.AsyncTarget.RequestQueue">
+            <summary>
+            The queue of lazy writer thread requests.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.AsyncTarget.LazyWriterThread">
             <summary>
             The thread that is used to write log messages.
             </summary>
         </member>
         <member name="P:NLog.Targets.AsyncTarget.Async">
             <summary>
-            Process log requests in a separate thread. (EXPERIMENTAL)
+            Process log requests in a separate thread.
             </summary>
         </member>
         <member name="P:NLog.Targets.AsyncTarget.OverflowAction">
             <summary>
-            The action to be taken when the background thread request queue count
+            The action to be taken when the lazy writer thread request queue count
             exceeds the set limit.
             </summary>
             <remarks>
@@ -2707,7 +2789,7 @@
         </member>
         <member name="P:NLog.Targets.AsyncTarget.QueueLimit">
             <summary>
-            The limit on the number of requests in the background thread request queue.
+            The limit on the number of requests in the lazy writer thread request queue.
             </summary>
         </member>
         <member name="T:NLog.Targets.ChainsawTarget">
@@ -2739,6 +2821,12 @@
             rendered logging event over the network optionally concatenating it with a newline character.
             </summary>
             <param name="ev">The logging event.</param>
+        </member>
+        <member name="M:NLog.Targets.NetworkTarget.LazyWriterThreadProc">
+            <summary>
+            Periodically writes network messages to network destinations 
+            in a separate thread.
+            </summary>
         </member>
         <member name="P:NLog.Targets.NetworkTarget.Address">
             <summary>
@@ -2829,6 +2917,21 @@
             <summary>
             Writes logging messages to the console.
             </summary>
+            <example>
+            <p>
+            To set up the target in the <a href="config.html">configuration file</a>, 
+            use the following syntax:
+            </p>
+            <xml src="examples/targets/Console/ConsoleTarget.nlog" />
+            <p>
+            This assumes just one target and a single rule. More configuration
+            options are described <a href="config.html">here</a>.
+            </p>
+            <p>
+            To set up the log target programmatically use code like this:
+            </p>
+            <cs src="examples/targets/Console/ConsoleTarget.cs" />
+            </example>
         </member>
         <member name="M:NLog.Targets.ConsoleTarget.Append(NLog.LogEventInfo)">
             <summary>
@@ -2847,6 +2950,24 @@
             <summary>
             Writes logging messages to the database using an ADO.NET provider.
             </summary>
+            <example>
+            <para>
+            The configuration is dependent on the database type, because
+            there are differnet methods of specifying connection string, SQL
+            command and command parameters.
+            </para>
+            <para>MS SQL Server using System.Data.SqlClient:</para>
+            <xml src="examples/targets/Database/DatabaseTarget-mssql.nlog" height="450" />
+            
+            <para>Oracle using System.Data.OracleClient:</para>
+            <xml src="examples/targets/Database/DatabaseTarget-oracle-native.nlog" height="350" />
+            
+            <para>Oracle using System.Data.OleDbClient:</para>
+            <xml src="examples/targets/Database/DatabaseTarget-oracle-oledb.nlog" height="350" />
+            
+            <para>To set up the log target programmatically use code like this (an equivalent of MSSQL configuration):</para>
+            <cs src="examples/targets/Database/DatabaseTarget.cs" height="630" />
+            </example>
         </member>
         <member name="M:NLog.Targets.DatabaseTarget.#ctor">
             <summary>
@@ -2861,6 +2982,14 @@
             layouts and executes the command.
             </summary>
             <param name="ev">The logging event.</param>
+        </member>
+        <member name="M:NLog.Targets.DatabaseTarget.NeedsStackTrace">
+            <summary>
+            Determines whether stack trace information should be gathered
+            during log event processing. It calls <see cref="M:NLog.Layout.NeedsStackTrace"/> on
+            all parameters.
+            </summary>
+            <returns>0 - don't include stack trace<br/>1 - include stack trace without source file information<br/>2 - include full stack trace</returns>
         </member>
         <member name="P:NLog.Targets.DatabaseTarget.DBProvider">
             <summary>
@@ -2982,6 +3111,14 @@
             <summary>
             Creates a new instance of <see cref="T:NLog.Targets.DatabaseParameterInfo"/>.
             </summary>
+        </member>
+        <member name="M:NLog.Targets.DatabaseParameterInfo.NeedsStackTrace">
+            <summary>
+            Determines whether stack trace information should be gathered
+            during log event processing. It calls <see cref="M:NLog.Layout.NeedsStackTrace"/> on
+            Layout and FileName parameters.
+            </summary>
+            <returns>0 - don't include stack trace<br/>1 - include stack trace without source file information<br/>2 - include full stack trace</returns>
         </member>
         <member name="P:NLog.Targets.DatabaseParameterInfo.Name">
             <summary>
@@ -3156,8 +3293,24 @@
         </member>
         <member name="T:NLog.Targets.DebugTarget">
             <summary>
-            Counts logging messages but does not output them anywhere.
+            Counts logging messages but does not output them anywhere. Provides 
+            the counter of logged messages and remembers the latest one.
             </summary>
+            <example>
+            <p>
+            To set up the target in the <a href="config.html">configuration file</a>, 
+            use the following syntax:
+            </p>
+            <xml src="examples/targets/Debug/DebugTarget.nlog" />
+            <p>
+            This assumes just one target and a single rule. More configuration
+            options are described <a href="config.html">here</a>.
+            </p>
+            <p>
+            To set up the log target programmatically use code like this:
+            </p>
+            <cs src="examples/targets/Debug/DebugTarget.cs" />
+            </example>
         </member>
         <member name="M:NLog.Targets.DebugTarget.Append(NLog.LogEventInfo)">
             <summary>
@@ -3175,10 +3328,74 @@
             The last message rendered by this target.
             </summary>
         </member>
+        <member name="T:NLog.Targets.DebuggerTarget">
+            <summary>
+            Writes logging messages to the attached managed debugger (for example Visual Studio .NET or DbgCLR).
+            </summary>
+            <example>
+            <p>
+            To set up the target in the <a href="config.html">configuration file</a>, 
+            use the following syntax:
+            </p>
+            <xml src="examples/targets/Debugger/DebuggerTarget.nlog" />
+            <p>
+            This assumes just one target and a single rule. More configuration
+            options are described <a href="config.html">here</a>.
+            </p>
+            <p>
+            To set up the log target programmatically use code like this:
+            </p>
+            <cs src="examples/targets/Debugger/DebuggerTarget.cs" />
+            </example>
+        </member>
+        <member name="M:NLog.Targets.DebuggerTarget.Append(NLog.LogEventInfo)">
+            <summary>
+            Writes the specified logging event to the attached debugger.
+            </summary>
+            <param name="ev">The logging event.</param>
+        </member>
         <member name="T:NLog.Targets.FileTarget">
             <summary>
             Writes logging messages to one or more files.
             </summary>
+            <example>
+            <p>
+            To set up the target in the <a href="config.html">configuration file</a>, 
+            use the following syntax:
+            </p>
+            <xml src="examples/targets/File/FileTarget.nlog" />
+            <p>
+            You can use a single target to write to multiple files. The following
+            example writes each log message to a file named after its log level, so
+            it will create:
+            <c>Trace.log</c>, <c>Debug.log</c>, <c>Info.log</c>, <c>Warn.log</c>, 
+            <c>Error.log</c>, <c>Fatal.log</c>
+            </p>
+            <xml src="examples/targets/File/FileTargetMultiple.nlog" />
+            <p>
+            The file names can be quite complex for the most demanding scenarios. This
+            example shows a way to create separate files for each day, user and log level.
+            As you can see, the possibilities are endless.
+            </p>
+            <xml src="examples/targets/File/FileTargetMultiple2.nlog" />
+            <p>
+            Depending on your usage scenario it may be useful to switch the
+            target into asynchronous mode. This way all your log messages
+            will be written in a separate thread so your main thread can finish
+            your work more quickly. Asynchronous logging is recommended
+            for multi-threaded server applications which run for a long time and
+            is not recommended for quickly-finishing command line applications.
+            </p>
+            <xml src="examples/targets/File/FileTargetAsync.nlog" />
+            <p>
+            The above examples assume just one target and a single rule. 
+            More configuration options are described <a href="config.html">here</a>.
+            </p>
+            <p>
+            To set up the log target programmatically use code like this:
+            </p>
+            <cs src="examples/targets/File/FileTarget.cs" />
+            </example>
         </member>
         <member name="M:NLog.Targets.FileTarget.NeedsStackTrace">
             <summary>
@@ -3199,6 +3416,28 @@
             <summary>
             Closes the file.
             </summary>
+        </member>
+        <member name="M:NLog.Targets.FileTarget.WriteToFile(System.IO.StreamWriter,System.String)">
+            <summary>
+            Writes the specified text to the specified file.
+            </summary>
+            <param name="file">file to write to</param>
+            <param name="text">text to be written</param>
+            <remarks>
+            You can override this method to additional things before
+            the text is actually written to the file. For example this
+            is a way to add encryption support.
+            </remarks>
+        </member>
+        <member name="M:NLog.Targets.FileTarget.LazyWriterThreadProc">
+            <summary>
+            Writes log messages to files in a separate thread.
+            </summary>
+            <remarks>
+            This method fetches a number of requests as a batch, sorts
+            them by the file name (to minimize the number of open and close calls)
+            and writes messages to the files.
+            </remarks>
         </member>
         <member name="P:NLog.Targets.FileTarget.FileName">
             <summary>
@@ -3292,6 +3531,21 @@
             <summary>
             Writes logging messages to an ArrayList in memory for programmatic retrieval.
             </summary>
+            <example>
+            <p>
+            To set up the target in the <a href="config.html">configuration file</a>, 
+            use the following syntax:
+            </p>
+            <xml src="examples/targets/Memory/MemoryTarget.nlog" />
+            <p>
+            This assumes just one target and a single rule. More configuration
+            options are described <a href="config.html">here</a>.
+            </p>
+            <p>
+            To set up the log target programmatically use code like this:
+            </p>
+            <cs src="examples/targets/Memory/MemoryTarget.cs" />
+            </example>
         </member>
         <member name="M:NLog.Targets.MemoryTarget.Append(NLog.LogEventInfo)">
             <summary>
@@ -3308,6 +3562,25 @@
             <summary>
             Pops up logging messages as message boxes.
             </summary>
+            <example>
+            <p>
+            To set up the target in the <a href="config.html">configuration file</a>, 
+            use the following syntax:
+            </p>
+            <xml src="examples/targets/MessageBox/MessageBoxTarget.nlog" />
+            <p>
+            This assumes just one target and a single rule. More configuration
+            options are described <a href="config.html">here</a>.
+            </p>
+            <p>
+            The result is a message box:
+            </p>
+            <img src="examples/targets/MessageBox/MessageBoxTarget.gif" />
+            <p>
+            To set up the log target programmatically use code like this:
+            </p>
+            <cs src="examples/targets/MessageBox/MessageBoxTarget.cs" />
+            </example>
         </member>
         <member name="M:NLog.Targets.MessageBoxTarget.#ctor">
             <summary>
@@ -4273,6 +4546,11 @@
         <member name="P:NLog.LogEventInfo.LoggerName">
             <summary>
             Gets the logger name.
+            </summary>
+        </member>
+        <member name="P:NLog.LogEventInfo.LoggerShortName">
+            <summary>
+            Gets the logger short name.
             </summary>
         </member>
         <member name="P:NLog.LogEventInfo.Message">

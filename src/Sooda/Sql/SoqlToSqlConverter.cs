@@ -38,6 +38,7 @@ using System.Collections.Specialized;
 using Sooda.Schema;
 using Sooda.QL;
 
+using Sooda.Logging;
 
 namespace Sooda.Sql 
 {
@@ -47,6 +48,7 @@ namespace Sooda.Sql
     public class SoqlToSqlConverter : SoqlPrettyPrinter 
     {
         private ISqlBuilder _builder;
+        private Logger logger = LogManager.GetLogger("Sooda.Sql.SoqlToSqlConverter");
 
         public SoqlToSqlConverter(TextWriter output, SchemaInfo schema, ISqlBuilder builder) : base(output) 
         {
@@ -104,7 +106,7 @@ namespace Sooda.Sql
             for (currentToken = startingToken; currentToken != null; currentToken = currentToken.Next) 
             {
                 lastTableAlias = GetTableAliasForExpressionPrefix(p);
-                // Console.WriteLine("Container: {0} Prop: {1}", currentContainer.Name, currentToken.PropertyName);
+                logger.Trace("Container: {0} Prop: {1} {2} {3}", currentContainer.Name, currentToken.PropertyName, currentContainer.GetType().FullName, currentToken.GetType().FullName);
 
                 FieldInfo fi = currentContainer.FindFieldByName(currentToken.PropertyName);
                 if (fi == null) 

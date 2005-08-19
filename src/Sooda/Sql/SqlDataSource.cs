@@ -304,9 +304,11 @@ namespace Sooda.Sql
 
                 StringWriter sw = new StringWriter();
                 SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, schemaInfo, SqlBuilder);
+                logger.Trace("Converting {0}", queryExpression);
                 converter.ConvertQuery(queryExpression);
-
                 string query = sw.ToString();
+
+                logger.Trace("Converted as {0}", query);
 
                 IDbCommand cmd = Connection.CreateCommand();
 

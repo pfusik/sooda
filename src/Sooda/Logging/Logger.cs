@@ -37,6 +37,11 @@ namespace Sooda.Logging
 {
 	public abstract class Logger
 	{
+        public abstract bool IsTraceEnabled { get; }
+        public abstract void Trace(IFormatProvider fp, string format, params object[] par);
+        public abstract void Trace(string format, params object[] par);
+        public abstract void Trace(string message);
+
         public abstract bool IsDebugEnabled { get; }
         public abstract void Debug(IFormatProvider fp, string format, params object[] par);
         public abstract void Debug(string format, params object[] par);

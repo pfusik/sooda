@@ -13,6 +13,32 @@ namespace log4netwrapper
             _logger = logger;
         }
 
+        // log4net has no trace so we map Trace to Debug
+
+        #region Trace
+
+        public override bool IsTraceEnabled 
+        {
+            get { return _logger.IsDebugEnabled; }
+        }
+
+        public override void Trace(IFormatProvider fp, string format, params object[] par)
+        {
+            _logger.DebugFormat(fp, format, par);
+        }
+
+        public override void Trace(string format, params object[] par)
+        {
+            _logger.DebugFormat(format, par);
+        }
+
+        public override void Trace(string message)
+        {
+            _logger.Debug(message);
+        }
+
+        #endregion
+
         #region Debug
 
         public override bool IsDebugEnabled 

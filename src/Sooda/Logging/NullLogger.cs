@@ -47,6 +47,11 @@ namespace Sooda.Logging
             get { return _theInstance; }
         }
 
+        public override bool IsTraceEnabled { get {return false; } }
+        public override void Trace(IFormatProvider fp, string format, params object[] par) { }
+        public override void Trace(string format, params object[] par) { }
+        public override void Trace(string message) { }
+
         public override bool IsDebugEnabled { get {return false; } }
         public override void Debug(IFormatProvider fp, string format, params object[] par) { }
         public override void Debug(string format, params object[] par) { }

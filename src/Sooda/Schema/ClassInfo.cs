@@ -179,6 +179,8 @@ namespace Sooda.Schema
                         return i;
                 }
             }
+            if (InheritsFromClass != null)
+                return InheritsFromClass.FindCollectionOneToMany(collectionName);
             return null;
         }
 
@@ -192,6 +194,8 @@ namespace Sooda.Schema
                         return i;
                 }
             }
+            if (InheritsFromClass != null)
+                return InheritsFromClass.FindCollectionManyToMany(collectionName);
             return null;
         }
 

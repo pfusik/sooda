@@ -945,6 +945,13 @@ namespace Sooda
 
         protected void SetRefFieldValue(int tableNumber, string fieldName, int fieldOrdinal, SoodaObject newValue, ref SoodaObject refcache, ISoodaObjectFactory factory) 
         {
+            if (newValue != null)
+            {
+                // transaction check
+                if (newValue.GetTransaction() != this.GetTransaction())
+                    throw new SoodaException("Attempted to assign object " + newValue.GetObjectKeyString() + " from another transaction to " + this.GetObjectKeyString() + "." + fieldName);
+            }
+
             EnsureFieldsInited();
             EnsureDataLoaded(tableNumber);
             CopyOnWrite();

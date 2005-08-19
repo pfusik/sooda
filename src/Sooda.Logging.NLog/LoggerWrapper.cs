@@ -13,6 +13,30 @@ namespace NLog
             _logger = logger;
         }
 
+        #region Trace
+
+        public override bool IsTraceEnabled 
+        {
+            get { return _logger.IsTraceEnabled; }
+        }
+
+        public override void Trace(IFormatProvider fp, string format, params object[] par)
+        {
+            _logger.Trace(fp, format, par);
+        }
+
+        public override void Trace(string format, params object[] par)
+        {
+            _logger.Trace(format, par);
+        }
+
+        public override void Trace(string message)
+        {
+            _logger.Debug(message);
+        }
+
+        #endregion
+
         #region Debug
 
         public override bool IsDebugEnabled 
