@@ -6,6 +6,35 @@
     <p>More to come. FAQ contributions are <link href="mailinglist">are welcome</link>.</p>
 
     <faq-answers>
+        <faq id="keygen" title="I'm getting 'Invalid Object Name KeyGen' exception">
+            Sooda needs a way to generate primary keys for objects long before they are committed to the
+            database. There's a special table that manages the keys. It's called KeyGen and the declaration is:
+            <pre>create table dbo.KeyGen (
+	key_name varchar(64) primary key not null,
+	key_value int not null
+)
+go</pre>
+After you create this table and grant the database user the correct permissions, your problems should be gone.
+        </faq>
+        <faq id="objectsassembly" title="I'm getting 'ObjectsAssembly has not been set for this SoodaTransaction.' exception. What should I do?">
+            You're getting this exception because you've not told Sooda where to look for the assembly that contains
+            objects factories. There are 3 ways to fix it:
+
+            <ol>
+                <li>Specify the assembly on per-call basis by passing it as the argument to SoodaTransaction constructor. Simply do:</li>
+                <pre>SoodaTransaction t =
+        new SoodaTransaction(typeof(Name.Space._DatabaseSchema).Assembly))</pre>
+                <li>Specify the assembly once, at the beginning of your program by setting the SoodaTransaction.DefaultObjectsAssembly property:</li>
+                <pre>static void Main()
+{
+    SoodaTransaction.DefaultObjectsAssembly =
+        typeof(Name.Space._DatabaseSchema).Assembly);
+}</pre>
+                <li>Use assembly-level attributes to configure ObjectsAssembly. Simply add this line somewhere in
+                    your code outside any class declarations:</li>
+                <pre>[assembly: SoodaStubAssembly(typeof(Name.Space._DatabaseSchema))]</pre>
+            </ol>
+        </faq>
         <faq id="configuration" title="I've developed my own configuration mechanism. Can I get Sooda to use it?">
             Yes you can. See <link href="technical-config">here</link> for the full answer.
         </faq>

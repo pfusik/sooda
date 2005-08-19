@@ -114,6 +114,9 @@ namespace Sooda
             if (ObjectsAssembly == null)
                 ObjectsAssembly = DefaultObjectsAssembly;
 
+            if (ObjectsAssembly == null)
+                throw new SoodaException(@"ObjectsAssembly has not been set for this SoodaTransaction. See http://www.sooda.org/en/faq.html#objectsassembly for more information.");
+
             this.transactionOptions = options;
             if ((options & TransactionOptions.Implicit) != 0) 
             {
