@@ -347,53 +347,12 @@ td.hostedby
     font-size: 12px;
 }
 
-.csharp .k
-{
-    color: #0000ff;
-}
-
-.csharp .c
-{
-    color: #008000;
-    font-style: italic;
-}
-
-.csharp .s
-{
-    color: #c00000;
-}
-
-.csharp .r
-{
-    color: #400000;
-}
-
-.jscript .k
-{
-    color: #0000ff;
-}
-
-.jscript .c
-{
-    color: #008000;
-    font-style: italic;
-}
-
-.jscript .s
-{
-    color: #400000;
-}
-
-.jscript .r
-{
-    color: #400000;
-}
-
 code
 {
     color: #0000ff;
-    font-weight: bold;
-    font-size: 12px;
+    font-weight: normal;
+    font-size: 11px;
+    font-family: Courier New;
 }
 
 code.commandline

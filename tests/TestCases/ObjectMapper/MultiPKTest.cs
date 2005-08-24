@@ -127,6 +127,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
                     mk.Value = 44;
                     mk.Value2 = 55;
                     mk.Value3 = 66;
+                    Console.WriteLine(tran.Serialize());
                     tran.Commit();
                 }
 

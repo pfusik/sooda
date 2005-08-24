@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="windows-1250" ?>
+<?xml-stylesheet type="text/xsl" href="../style.xsl" ?>
+<content lang="en" id="examples">
+<h1>Examples</h1>
+        Sooda provides an easy-to-use and convenient way to manipulate objects and relations stored in relational databases.
+        It's best to demonstrate this with some examples:
+        <h3>Accessing object attributes</h3>
+        All database entities are mapped to .NET objects, where table columns are mapped to object properties.
+        With this approach, object access becomes very easy, as shown in the following example:
+
+        <cs src="examples/web/sample1.cs" />
+
+        <h3>Easy-to-use relations</h3>
+        Database relations (both "<i>one to many</i>" and "<i>many to many</i>") 
+        are mapped as collections implementing <span class="type">ICollection</span> interface 
+        and providing type-safe wrappers.
+
+        This makes performing all basic operations simple and intuitive. All standard collection methods
+        are available, namely <span class="keyword">Add</span>, <span class="keyword">Remove</span>, 
+        <span class="keyword">Contains</span>, iterating with <span class="keyword">foreach()</span> and indexers.
+
+        <cs src="examples/web/sample2.cs" />
+
+        <h3>Inheritance and polymorphism</h3>
+
+        It's possible to store map a complex C#/VB.NET class hierarchy with inheritance and access objects
+        in a polymorphic manner.
+
+        <cs src="examples/web/sample3.cs" />
+        <h3>Query language</h3>
+
+        Sooda provides an advanced query language called Soql (Sooda Object Query Language).
+        You can use Soql to specify conditions to be used for object matching. This is similar to the
+        <span class="keyword">where</span> clause in SQL. Soql fully supports all Sooda features, like 
+        inheritance one-to-many and many-to-many relations, as well as path expressions of arbitrary length.
+
+        <cs src="examples/web/sample4.cs" />
+        
+        <h3>Schema definition</h3>
+
+        Sooda uses an XML-based schema definition. You provide an XML document that describes
+		the mapping between the database (tables, columns, relations) and CLI world (classes, 
+		properties, collections). By writing an appropriate schema you can use features like 
+		column-renaming, lazy-loading, split-classes, inheritance, collections, enumerations 
+        and so on.
+
+        <xml src="examples/web/sample5.xml" />
+</content>
+

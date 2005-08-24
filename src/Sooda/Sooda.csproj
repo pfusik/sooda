@@ -409,6 +409,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ObjectMapper\SoodaObjectImpl.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ObjectMapper\SoodaObjectListSnapshot.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -734,6 +739,16 @@
                 />
                 <File
                     RelPath = "Schema\Collection1toNInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Schema\CollectionBaseInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Schema\CollectionBaseInfoCollection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

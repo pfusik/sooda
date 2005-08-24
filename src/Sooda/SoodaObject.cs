@@ -58,10 +58,10 @@ namespace Sooda
         // instance fields - initialized in InitRawObject()
 
         [CLSCompliant(false)]
-        protected SoodaFieldData[] _fieldData;
+        internal SoodaFieldData[] _fieldData;
 
         [CLSCompliant(false)]
-        protected SoodaObjectFieldValues _fieldValues;
+        internal SoodaObjectFieldValues _fieldValues;
         private int _dataLoadedMask;
         private SoodaTransaction _transaction;
         private SoodaObjectFlags _flags;
@@ -232,11 +232,6 @@ namespace Sooda
             }
         }
 
-        protected virtual SoodaObjectFieldValues InitFieldValues() 
-        { 
-            throw new NotImplementedException();
-        }
-
         private void PropagatePrimaryKeyToFields()
         {
             Sooda.Schema.FieldInfo[] primaryKeys = GetClassInfo().GetPrimaryKeyFields();
@@ -269,7 +264,7 @@ namespace Sooda
 
             int fieldCount = ci.UnifiedFields.Count;
             _fieldData = new SoodaFieldData[fieldCount];
-            _fieldValues = InitFieldValues();
+            _fieldValues = new SoodaObjectArrayFieldValues(fieldCount);
 
             // primary key was set before the fields - propagate the value
             // back to the field(s)
@@ -304,7 +299,7 @@ namespace Sooda
             }
         }
 
-        protected internal void SetUpdateMode(object primaryKeyValue) 
+        internal void SetUpdateMode(object primaryKeyValue) 
         {
             InsertMode = false;
             SetPrimaryKeyValue(primaryKeyValue);
@@ -378,12 +373,12 @@ namespace Sooda
             return _fieldData[fieldNumber].IsDirty;
         }
 
-        protected internal virtual SoodaFieldHandler GetFieldHandler(int ordinal) 
+        protected virtual SoodaFieldHandler GetFieldHandler(int ordinal) 
         {
             throw new NotImplementedException();
         }
 
-        protected SoodaFieldHandler GetFieldHandler(string name) 
+        internal SoodaFieldHandler GetFieldHandler(string name) 
         {
             ClassInfo info = this.GetClassInfo();
             Sooda.Schema.FieldInfo fi = this.GetClassInfo().FindFieldByName(name);
@@ -426,6 +421,7 @@ namespace Sooda
             if (IsObjectDirty())
                 return;
 
+            EnsureFieldsInited();
             _flags |= SoodaObjectFlags.Dirty;
             _flags &= ~SoodaObjectFlags.WrittenIntoDatabase;
             GetTransaction().RegisterDirtyObject(this);
@@ -471,6 +467,8 @@ namespace Sooda
             ((SoodaTuple)_primaryKeyValue).SetValue(valueOrdinal, keyValue);
             if (IsPrimaryKeyReadyForRegistration(_primaryKeyValue))
             {
+                if (_fieldData != null) 
+                    PropagatePrimaryKeyToFields();
                 if (IsRegisteredInTransaction())
                 {
                     throw new SoodaException("Cannot set primary key value more than once.");
@@ -529,7 +527,8 @@ namespace Sooda
         {
             _dataLoadedMask = 0;
         }
-        protected internal bool IsDataLoaded(int tableNumber) 
+
+        internal bool IsDataLoaded(int tableNumber) 
         {
             return (_dataLoadedMask & (1 << tableNumber)) != 0;
         }
@@ -635,13 +634,13 @@ namespace Sooda
             return tables.Length;
         }
 
-        protected void EnsureFieldsInited() 
+        internal void EnsureFieldsInited() 
         {
             if (_fieldData == null)
                 InitFieldData();
         }
 
-        protected void EnsureDataLoaded(int tableNumber) 
+        internal void EnsureDataLoaded(int tableNumber) 
         {
             if (!IsDataLoaded(tableNumber)) 
             {
@@ -654,7 +653,7 @@ namespace Sooda
             }
         }
 
-        protected internal void LoadAllData() 
+        internal void LoadAllData() 
         {
 #warning FIXME: Optimize!
             for (int i = 0; i < GetClassInfo().UnifiedTables.Count; ++i) 
@@ -768,10 +767,40 @@ namespace Sooda
             }
         }
 
+        private void SerializePrimaryKey(XmlWriter xw)
+        {
+            foreach (Sooda.Schema.FieldInfo fi in GetClassInfo().UnifiedFields) 
+            {
+                if (!fi.IsPrimaryKey)
+                    continue;
+
+                SoodaFieldHandler field = GetFieldHandler(fi.ClassUnifiedOrdinal);
+                string s = fi.Name;
+
+                xw.WriteStartElement("key");
+                xw.WriteAttributeString("ordinal", fi.ClassUnifiedOrdinal.ToString());
+                field.Serialize(_fieldValues.GetBoxedFieldValue(fi.ClassUnifiedOrdinal), xw);
+                xw.WriteEndElement();
+            }
+        }
+
+        // create an empty object just to make sure that the deserialization
+        // will find it before any references are used.
+        // 
+        internal void PreSerialize(XmlWriter xw, SerializeOptions options) 
+        {
+            if (!IsInsertMode())
+                return;
+            xw.WriteStartElement("object");
+            xw.WriteAttributeString("mode", "insert");
+            xw.WriteAttributeString("class", GetClassInfo().Name);
+            SerializePrimaryKey(xw);
+            xw.WriteEndElement();
+        }
         internal void Serialize(XmlWriter xw, SerializeOptions options) 
         {
             xw.WriteStartElement("object");
-            xw.WriteAttributeString("mode", (IsInsertMode()) ? "insert" : "update");
+            xw.WriteAttributeString("mode", "update");
             xw.WriteAttributeString("class", GetClassInfo().Name);
             if (!IsObjectDirty())
                 xw.WriteAttributeString("dirty", "false");
@@ -787,19 +816,7 @@ namespace Sooda
                     LoadAllData();
             };
 
-            foreach (Sooda.Schema.FieldInfo fi in GetClassInfo().UnifiedFields) 
-            {
-                if (!fi.IsPrimaryKey)
-                    continue;
-
-                SoodaFieldHandler field = GetFieldHandler(fi.ClassUnifiedOrdinal);
-                string s = fi.Name;
-
-                xw.WriteStartElement("key");
-                xw.WriteAttributeString("ordinal", fi.ClassUnifiedOrdinal.ToString());
-                field.Serialize(_fieldValues.GetBoxedFieldValue(fi.ClassUnifiedOrdinal), xw);
-                xw.WriteEndElement();
-            }
+            SerializePrimaryKey(xw);
 
             foreach (Sooda.Schema.FieldInfo fi in GetClassInfo().UnifiedFields) 
             {
@@ -902,7 +919,7 @@ namespace Sooda
             }
         }
 
-        protected void SetPlainFieldValue(int tableNumber, string fieldName, int fieldOrdinal, object newValue) 
+        internal void SetPlainFieldValue(int tableNumber, string fieldName, int fieldOrdinal, object newValue) 
         {
             EnsureFieldsInited();
 
@@ -943,7 +960,7 @@ namespace Sooda
             }
         }
 
-        protected void SetRefFieldValue(int tableNumber, string fieldName, int fieldOrdinal, SoodaObject newValue, ref SoodaObject refcache, ISoodaObjectFactory factory) 
+        internal void SetRefFieldValue(int tableNumber, string fieldName, int fieldOrdinal, SoodaObject newValue, ref SoodaObject refcache, ISoodaObjectFactory factory) 
         {
             if (newValue != null)
             {
@@ -960,7 +977,7 @@ namespace Sooda
             {
                 SoodaObject oldValue = null;
                 
-                RefCache.GetOrCreateObject(ref oldValue, _fieldValues, fieldOrdinal, GetTransaction(), factory);
+                SoodaObjectImpl.GetRefFieldValue(ref oldValue, this, tableNumber, fieldOrdinal, GetTransaction(), factory);
                 if (Object.Equals(oldValue, newValue))
                     return;
                 object[] triggerArgs = new object[] { oldValue, newValue };

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="windows-1250" ?>
+<common>
+    <navigation>
+        <nav href="index" label="Introduction" />
+        <nav href="status" label="Current Status" />
+        <nav href="tutorial" label="Tutorial" />
+        <nav href="examples" label="Examples" />
+        <nav href="documentation" label="Documentation" />
+        <nav href="screenshots" label="Screenshots" />
+        <nav href="download" label="Download" />
+        <nav href="development" label="Development" />
+        <nav href="mailinglist" label="Mailing Lists" />
+        <nav href="technical" label="Technical" />
+        <nav href="faq" label="FAQ" />
+        <nav href="blog" label="Blog" />
+        <!-- <nav href="links" label="Links" /> -->
+    </navigation>
+</common>

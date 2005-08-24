@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="windows-1250" ?>
+<?xml-stylesheet type="text/xsl" href="../style.xsl" ?>
+<content lang="en" id="tutorial">
+    <h1>Tutorial</h1>
+    <p>
+        This document describes steps necessary to use Sooda in your project. You'll need 
+        Visual Studio.NET 2003 and a SQL Server 2000 installation with the sample Northwind
+        database. We'll be using a slightly modified version of the database called "Soodawind"
+        that's available along with the tutorial in <code>examples/Soodawind</code> directory.
+    </p>
+    <ol>
+        <li><a href="#downloading">Downloading and installing Sooda</a></li>
+        <li><a href="#wizard">Running Sooda application wizard</a></li>
+        <li><a href="#database">Creating a database</a></li>
+        <li><a href="#mapping">Creating a simple mapping schema</a></li>
+        <li><a href="#config">Configuring database connection</a></li>
+        <li><a href="#stubgen">Generating stubs</a></li>
+        <li><a href="#using">Using Sooda</a></li>
+    </ol>
+    <h4>Downloading and installing Sooda<a name="downloading" /></h4>
+    <p>
+        To download Sooda, go to the <a href="http://sourceforge.net/project/showfiles.php?group_id=71422">SourceForge download section</a>. Pick up the latest version, download and run the executable (*.exe).
+        On the options page, make sure that <b>VC# .NET 2003 Wizards</b> and <b>Add bin directory to PATH</b> options are checked or you won't be able to
+        proceed with this tutorial.
+    </p>
+    <h4>Running Sooda application wizard<a name="wizard" /></h4>
+    <p>
+        Sooda comes with three application wizards that are available from VS.NET <code>New Project</code> option:
+    </p>
+    <ul>
+        <li>Sooda Class Library</li>
+        <li>Sooda Console Application</li>
+        <li>Sooda Windows Application</li>
+    </ul>
+    <p>
+        We'll be creating a simple console application. Let's name the project <code>SoodaTutorial</code> and click OK:
+    </p>
+    <img src="screenshots/tutorial_wizard.gif" />
+    <p>
+        The wizard creates the following application files:
+    </p> 
+    <ul>
+        <li><code>SoodaSchema.xml</code> - which defines the mapping between database tables and objects</li>
+        <li><code>App.config</code> - which sets up the database connection type and connection string</li>
+        <li><code>AssemblyInfo.cs</code> - which defines assembly-level attributes</li>
+        <li><code>ReadMe.txt</code> - which contains description of the project</li>
+    </ul>
+    <p>
+        It also sets up the project build events so that the SoodaStubGen utility is invoked before each build.
+        Because SoodaStubGen has been added to the PATH variable it can be executed without specifying a full path.
+        If you've decided not to select "Add to PATH" option during install you may want to adjust your project 
+        <code>Pre-Build Event</code> to point it to the location of your SoodaStubGen.exe.
+    </p>
+    <h4>Creating a database<a name="database" /></h4>
+    <p>
+        To create a database, make sure that your SQL Server is installed on localhost and that you
+        have administrative trusted access to it. After that just run: <code>examples/Soodawind/install_database.bat</code>.
+        In case of any errors, you may want to run <code>database.sql</code> script by hand.
+
+    </p>
+    <h4>Creating a simple mapping schema<a name="mapping" /></h4>
+    <p>
+        We now need to create a mapping schema that describes the corespondence between
+        database tables and .NET classes. The following file describes a partial mapping of Soodawind database tables
+        to objects. The contents of this file should go to <code>SoodaSchema.xml</code>.
+    </p>
+    <xml src="examples/Soodawind/Soodawind.Objects/SoodaSchema.xml" />
+    <h4>Configuring database connection<a name="config" /></h4>
+    <p>
+        It's now time to configure the database connection parameters. Open <code>App.config</code> file that wizard
+        has created for you and modify it accordingly by changing the <code>default.connectionString</code> and/or <code>default.connectionType</code>:
+    </p>
+    <xml src="examples/web/App.config" />
+    <h4>Generating stubs<a name="stubgen" /></h4>
+    <p>
+        It's now time to generate the class stubs and compile your project. Thanks to the pre-build event mentioned
+        above it requires just a project re-build. SoodaStubGen will take care of creating and configuring all
+        the project items. 
+    </p>
+    <p>
+        <b>IMPORTANT: </b> The first time you rebuild your stubs you'll be asked whether to reload project
+        that has been been externally modified. Do so and <b><u>rebuild your project again</u></b>. This is needed because of some
+        VS.NET file caching issues. Note that you need to to this only when you add new classes to your 
+        project not when you add or modify their members.
+    </p>
+    <p>
+        Once everything is done you should have a project that uses Sooda. It just does nothing, but that's what we're going
+        to take care of next.
+    </p>
+    <h4>Using Sooda<a name="using" /></h4>
+    <p>
+        Each Sooda class that you define has some built-in functionality which we're going to discuss here. To begin with
+        you need to know the primary requirement: all Sooda object manipulation must be done within a transaction 
+        or <code>SoodaTransaction</code> to be precise. There's a common idiom for this purpose. Just use the 
+        <code>using</code> statement:
+    </p>
+    <cs src="examples/web/sample6.cs" />
+    <p>
+        To load objects from the database just use <code>Load</code> static method and pass it the primary key value.
+        To access the columns, just access the object's properties. The following sample loads the Category object
+        where primary key is equal to 1 and displays its Name (which comes from the Categories.CategoryName column):
+    </p>
+    <cs src="examples/web/sample7.cs" />
+    <p>
+        To update the values of the properties, just set them and when you're ready call <code>Commit()</code> on
+        the transaction. That's all. Sooda will detect changes made to all objects within transaction and update
+        them all at once.
+    </p>
+    <cs src="examples/web/sample8.cs" />
+    <p>
+        Once we have the new class, we may want to try to use it on a new feature called many-to-one relationship:
+        the <code>Category</code> field is a reference so it returns an instance of an Sooda object of type <code>Category</code>.
+        Therefore it's perfectly legal to write the following code which displays the details of a product:
+    </p>
+    <cs src="examples/web/sample9.cs" />
+    <p>
+        That was easy. Now, consider the opposite side of the relation: each category has a list of its <code>Product</code>s.
+        This can be easily done in Sooda. Notice the line:
+    </p>
+    <x><collectionOneToMany name="ProductsInThisCategory" class="Product" foreignField="Category" /></x>
+    <p>
+        This declares a new collection. The following sample demonstratest possible uses for a collection:
+    </p>
+    <cs src="examples/web/sample10.cs" />
+    <p>
+        It's now time to look at way the objects can be searched in the database.
+        It can be done by using className<code>.GetList()</code> which returns a className<code>List</code> object.
+        The returned value is a collection which has the same properties as the collections mentioned above.
+    </p>
+    <p>
+        To specify search condition use <code>SoodaWhereClause</code> object, to specify sorting order use
+        <code>SoodaOrderBy</code> and to specify additional options use <code>SoodaSnapshotOptions</code>.
+    </p>
+    <p>
+        <code>SoodaWhereClause</code> specifies a SQL-like condition that may include object-oriented extensions and positional
+        parameters. The language is called SOQL and is designed to be natural. For example:
+    </p>
+    <cs src="examples/web/sample11.cs" />
+    <p>
+        More examples will be provided in the <link href="documentation">documentation</link> section in the future. You may
+        want to check <link href="examples">examples</link> section.
+    </p>
+    <p>
+        If you have any questions regarding Sooda usage, join the <link href="mailinglist">mailing list</link>.
+    </p>
+</content> 

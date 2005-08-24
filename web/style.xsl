@@ -1,44 +1,34 @@
 <?xml version="1.0" encoding="windows-1250" ?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-
-    <xsl:variable name="result_lang" select="/*[position()=1]/@lang" />
-    <xsl:variable name="common_file" select="concat('common.', $result_lang, '.xml')" />
-    <xsl:variable name="page_id" select="/*[position()=1]/@id" />
-    <xsl:variable name="common" select="document($common_file)" />
     <xsl:param name="file_extension">xml</xsl:param>
     <xsl:param name="sourceforge">0</xsl:param>
+    <xsl:param name="mode">web</xsl:param>
+
+    <xsl:variable name="common_file" select="concat($mode, 'menu.xml')" />
+    <xsl:variable name="page_id" select="/*[position()=1]/@id" />
+    <xsl:variable name="common" select="document($common_file)" />
 
     <xsl:output method="xml" indent="no" />
 
     <xsl:template match="/">
         <html>
             <head>
-                <link rel="stylesheet" href="../style.css" type="text/css" />
+                <link rel="stylesheet" href="style.css" type="text/css" />
                 <title>Sooda</title>
             </head>
             <body width="100%">
                 <table align="center" class="page" cellpadding="0" cellspacing="0">
                     <tr>
-                        <td class="header" colspan="2"><img src="../titlebanner.jpg" /></td>
+                        <td class="header" colspan="2"><img src="titlebanner.jpg" /></td>
                     </tr>
-                    <xsl:if test="$result_lang = 'pl'">
-                        <tr>
-                            <td colspan="2" align="left" class="content">
-                                <xsl:variable name="new_url">../en/<xsl:value-of select="$page_id" />.<xsl:value-of select="$file_extension" /></xsl:variable>
-                                This page is available in English only. Click <a href="{$new_url}">here</a> to view it.
-                            </td>
-                        </tr>
-                    </xsl:if>
-                    <xsl:if test="$result_lang != 'pl'">
-                        <tr>
-                            <td valign="top" class="controls">
-                                <xsl:call-template name="controls" />
-                            </td>
-                            <td valign="top" align="left" class="content">
-                                <xsl:apply-templates select="content" />
-                            </td>
-                        </tr>
-                    </xsl:if>
+                    <tr>
+                        <td valign="top" class="controls">
+                            <xsl:call-template name="controls" />
+                        </td>
+                        <td valign="top" align="left" class="content">
+                            <xsl:apply-templates select="content" />
+                        </td>
+                    </tr>
                     <tr>
                         <td class="hostedby">
                             <xsl:if test="$sourceforge='1'">
@@ -91,20 +81,6 @@
         </xsl:choose>
     </xsl:template>
 
-    <xsl:template match="cs">
-        <pre class="csharp-example">
-            <xsl:copy-of select="document(concat(@src,'.html'))" />
-        </pre>
-        <!-- <a href="{@src}">Download this sample</a><br/> -->
-    </xsl:template>
-
-    <xsl:template match="js">
-        <pre class="jscript-example">
-            <xsl:copy-of select="document(concat(@src,'.html'))" />
-        </pre>
-        <!-- <a href="{@src}">Download this sample</a><br/> -->
-    </xsl:template>
-
     <xsl:template match="link">
         <a href="{@href}.{$file_extension}"><xsl:apply-templates /></a>
     </xsl:template>
@@ -119,20 +95,7 @@
         </code>
     </xsl:template>
 
-    <xsl:template match="xml-example[@src]">
-        <pre class="xml-example">
-            <xsl:apply-templates mode="xml-example" select="document(concat(@src,''))" />
-        <p/>
-        </pre>
-        <!-- <a href="{@src}">Download this sample</a><br/> -->
-    </xsl:template>
-
-    <xsl:template match="xml-example">
-        <pre class="xml-example">
-            <xsl:apply-templates mode="xml-example" />
-        <p/>
-        </pre>
-    </xsl:template>
+    <xsl:include href="syntax.xsl" />
 
     <xsl:template match="*" mode="xml-example">
         <xsl:choose>

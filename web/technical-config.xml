@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="windows-1250" ?>
+<?xml-stylesheet type="text/xsl" href="../style.xsl" ?>
+<content lang="en" id="technical">
+    <h1>Integrating Sooda with external configuration mechanisms</h1>
+    <p>
+        Sooda lets you do this. 
+        Just create a class that implements <code>Sooda.Config.ISoodaConfigProvider</code> and tell Sooda to use
+        it. The easiest way is to put the full name of the type in <code>App.config</code>
+        in <code>sooda.config</code> parameter.:
+    </p>
+    <xml-example src="samples/customconfig.xml" />
+    <p>
+        An alternative would be to attach the <code>SoodaConfigAttribute</code> to your entry assembly (*.exe):
+        and specifying the <code>ProviderType</code>. Note that this doesn't work with web applications because
+        they don't have the entry assembly defined.
+    </p>
+    <cs src="samples/customconfig.cs" />
+    <p>
+        Or you can explicitly set the config provider somewhere near the beginning of your program:
+    </p>
+    <cs src="samples/customconfig2.cs" />
+</content>
+

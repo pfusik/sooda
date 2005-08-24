@@ -384,8 +384,7 @@ namespace Sooda
         {
             if (fieldValue != null) 
             {
-                RefCache.TryGetObject(ref refcache, fieldValue, theObject.GetTransaction(), factory);
-                SoodaObject obj = refcache;
+                SoodaObject obj = SoodaObjectImpl.TryGetRefFieldValue(ref refcache, fieldValue, theObject.GetTransaction(), factory);
                 if (obj != null && (object)obj != (object)theObject) 
                 {
                     if (obj.IsInsertMode())
@@ -409,8 +408,7 @@ namespace Sooda
             //transactionLogger.Debug("MarkDeleteReferences: {0}.{1}", theObject.GetObjectKeyString(), fieldName);
             if (fieldValue != null) 
             {
-                RefCache.TryGetObject(ref refcache, fieldValue, theObject.GetTransaction(), factory);
-                SoodaObject obj = refcache;
+                SoodaObject obj = SoodaObjectImpl.TryGetRefFieldValue(ref refcache, fieldValue, theObject.GetTransaction(), factory);
                 // transactionLogger.Debug("Pointing at: {0}", (obj != null) ? obj.GetObjectKeyString() : "null");
                 if (obj != null && (object)obj != (object)theObject && obj.IsMarkedForDelete()) 
                 {
@@ -827,6 +825,11 @@ namespace Sooda
                 orderedObjects = new SoodaObjectCollection((SoodaObject[])al.ToArray(typeof(SoodaObject)));
             }
 
+            foreach (SoodaObject o in orderedObjects) 
+            {
+                if (o.IsObjectDirty() || ((options & SerializeOptions.IncludeNonDirtyObjects) != 0))
+                    o.PreSerialize(xw, options);
+            }
             foreach (SoodaObject o in orderedObjects) 
             {
                 if (o.IsObjectDirty() || ((options & SerializeOptions.IncludeNonDirtyObjects) != 0))

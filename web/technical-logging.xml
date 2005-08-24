@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="windows-1250" ?>
+<?xml-stylesheet type="text/xsl" href="../style.xsl" ?>
+<content lang="en" id="technical">
+    <h1>Logging in Sooda</h1>
+    <p>
+        Sooda 0.7 used to use <a href="http://nlog.sourceforge.net/">NLog</a> to output logging messages. 
+        This introduced a static dependency requiring you
+        to deploy NLog.dll along with Sooda.dll. Some users prefer to use 
+        <a href="http://logging.apache.org/log4net">log4net</a> and others don't use any form of logging (which is a BAD THING).
+    </p>
+    <p>
+        Sooda 0.75 changes this behaviour by introducing pluggable logging modules and includes ready-to-use modules
+        for NLog 0.5 beta 1 and log4net 1.2.9 and a simple console logger for those of you who just want to 
+        check the internals of Sooda.
+    </p>
+    <p>
+        So how do you tell Sooda to use a particular logger? There are 2 ways: declarative and programmatic. The first
+        one requires nothing but putting the <code>sooda.logging</code> setting in your <code>App.config</code> file 
+        (or any other configuration mechanism allowed by Sooda).
+    </p>
+    <p>
+        The following are possible values of this parameter:
+        <ul>
+            <li><code>null</code> - disables Sooda logging (this is the default)</li>
+            <li><code>console</code> - enables logging to the console</li>
+            <li><code>nlog</code> - enables logging through NLog. <code>Sooda.Logging.NLog.dll</code> and <code>NLog.dll</code> must be deployed for this to be used and you must configure NLog accordingly.</li>
+            <li><code>log4net</code> - enables logging through log4net <code>Sooda.Logging.log4net.dll</code> and <code>log4net.dll</code> must be deployed for this to be used and you must configure log4net accordingly.</li>
+            <li>typeName - enables logging through the specified logging implementation which must implement
+                the <code>Sooda.Logging.ILoggingImplementation</code> interface. typeName must be
+                a fully qualified name of the type including the assembly specification and (optionally)
+                full strong name information</li>
+        </ul>
+    </p>
+    <p>
+        Programmatically, just create an instance of a class that implements <code>ILoggingImplementation</code>
+        and assign it to <code>Sooda.Logging.LogManager.Implementation</code>:
+    </p>
+    <cs src="samples/customlogging.cs" />
+</content>
+

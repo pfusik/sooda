@@ -44,25 +44,24 @@ Section "Library and Tools"
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
   File License.txt
-  File src\Library\Schema\SoodaSchema.xsd
+  File src\Sooda\Schema\SoodaSchema.xsd
 
   SetOutPath $INSTDIR\bin
   ; Put file there
-  File ${SOODA_BINARIES}\NLog.dll
-  File ${SOODA_BINARIES}\Sooda.dll
-  File ${SOODA_BINARIES}\SoodaStubGen.exe
-  File ${SOODA_BINARIES}\SoodaSchemaTool.exe
-  File ${SOODA_BINARIES}\SoodaCompileStubs.exe
-  File ${SOODA_BINARIES}\Sooda*.pdb
+  File build\${BUILDSUBDIR}\bin\NLog.dll
+  File build\${BUILDSUBDIR}\bin\Sooda.dll
+  File build\${BUILDSUBDIR}\bin\SoodaStubGen.exe
+  File build\${BUILDSUBDIR}\bin\SoodaSchemaTool.exe
+  File build\${BUILDSUBDIR}\bin\SoodaCompileStubs.exe
+  File build\${BUILDSUBDIR}\bin\Sooda*.pdb
 
   SetOutPath $INSTDIR\docs
-
-;  File ..\..\docs\ClassRef.chm
+  File build\${BUILDSUBDIR}\help\Sooda.chm
 
   CreateDirectory "$SMPROGRAMS\Sooda ${SOODA_VERSION}"
   CreateShortCut  "$SMPROGRAMS\Sooda ${SOODA_VERSION}\Uninstall.lnk" "$INSTDIR\Uninstall.exe" ""
-;  CreateShortCut  "$SMPROGRAMS\Sooda\Class Library Reference.lnk" "$INSTDIR\Docs\ClassRef.chm" ""
-  CreateShortCut  "$SMPROGRAMS\Sooda ${SOODA_VERSION}\View Class Library and Tools License.lnk" "$INSTDIR\License.txt" ""
+  CreateShortCut  "$SMPROGRAMS\Sooda\Sooda Class Library Reference.lnk" "$INSTDIR\Doc\Sooda.chm" ""
+  CreateShortCut  "$SMPROGRAMS\Sooda ${SOODA_VERSION}\View Sooda License.lnk" "$INSTDIR\License.txt" ""
 
   WriteRegStr HKCU "Software\Microsoft\VisualStudio\7.1\AssemblyFolders\Sooda${SOODA_VERSION}" "" "$INSTDIR\Bin"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Sooda${SOODA_VERSION}" "" ""
@@ -78,9 +77,9 @@ Section "Sooda Query Analyzer"
   File SoodaQuery_License.txt
 
   SetOutPath $INSTDIR\bin
-  File ${SOODA_BINARIES}\ICSharpCode.TextEditor.dll
-  File ${SOODA_BINARIES}\SoodaQuery.exe
-  File ${SOODA_BINARIES}\SoodaQuery.exe.manifest
+  File build\${BUILDSUBDIR}\bin\ICSharpCode.TextEditor.dll
+  File build\${BUILDSUBDIR}\bin\SoodaQuery.exe
+  File build\${BUILDSUBDIR}\bin\SoodaQuery.exe.manifest
 
   CreateDirectory "$SMPROGRAMS\Sooda ${SOODA_VERSION}"
   CreateShortCut  "$SMPROGRAMS\Sooda ${SOODA_VERSION}\View Sooda Query Analyzer License.lnk" "$INSTDIR\SoodaQuery_License.txt" ""
@@ -90,8 +89,8 @@ SectionEnd
 
 Section "Examples"
   SectionIn 1
-  SetOutPath $INSTDIR
-  File /r /x _svn examples
+  SetOutPath $INSTDIR\examples
+  File /r /x _svn examples\*.*
   CreateShortCut  "$SMPROGRAMS\Sooda ${SOODA_VERSION}\Examples.lnk" "$INSTDIR\examples" ""
 SectionEnd
 
@@ -117,7 +116,7 @@ Section "Documentation"
   IfErrors novsnet
   DetailPrint "Visual Studio .NET 2003 installed in $0"
   SetOutPath "$0\Packages\schemas\xml"
-  File src\Library\Schema\SoodaSchema.xsd
+  File src\Sooda\Schema\SoodaSchema.xsd
   Return
 novsnet:
   MessageBox MB_OK "Visual Studio .NET 2003 was not found. Schema not installed."

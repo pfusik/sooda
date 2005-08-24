@@ -64,8 +64,9 @@ namespace ConsoleTest
             try
             {
                 Sooda.Logging.LogManager.Implementation = new Sooda.Logging.ConsoleLoggingImplementation();
-                Sooda.UnitTests.TestCases.ObjectMapper.PrecommitTest pt = new Sooda.UnitTests.TestCases.ObjectMapper.PrecommitTest();
-                pt.Test2();
+                System.Windows.Forms.Application.Run(new Form1());
+                Sooda.UnitTests.TestCases.ObjectMapper.MultiPKTest pt = new Sooda.UnitTests.TestCases.ObjectMapper.MultiPKTest();
+                pt.InsertTest();
             }
             catch (Exception ex)
             {

@@ -26,14 +26,6 @@ begin
     return typeref(${ClassName}_Factory).TheClassInfo
 end
 
-
-method InitFieldValues()
-    attributes Assembly,Family,Override
-    returns Sooda.SoodaObjectFieldValues
-begin
-    return new SoodaObjectArrayFieldValues(${ClassUnifiedFieldCount})
-end
-
 method GetFieldHandler(System.Int32 ordinal)
     attributes Assembly,Family,Override
     returns Sooda.ObjectMapper.SoodaFieldHandler
@@ -139,7 +131,7 @@ method Load(SoodaTransaction tran, ${PrimaryKeyFormalParameters})
     returns ${ClassName}
 begin
     var ${ClassName} retVal = typeref(${ClassName}_Stub).GetRef(arg(tran), ${PrimaryKeyActualParameters});
-    call var(retVal).LoadAllData();
+    call typeref(Sooda.ObjectMapper.SoodaObjectImpl).LoadAllData(var(retVal));
     return var(retVal)
 end
 

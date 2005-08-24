@@ -301,41 +301,38 @@ namespace Sooda.StubGen
         private CodeExpression GetFieldValueExpression(FieldInfo fi) 
         {
             return new CodeMethodInvokeExpression(
-                new CodeFieldReferenceExpression(
-                new CodeThisReferenceExpression(),
-                "_fieldValues"),
+                new CodeTypeReferenceExpression(typeof(Sooda.ObjectMapper.SoodaObjectImpl)),
                 "GetBoxedFieldValue",
+                new CodeThisReferenceExpression(),
+                new CodePrimitiveExpression(fi.Table.OrdinalInClass),
                 new CodePrimitiveExpression(fi.ClassUnifiedOrdinal));
         }
 
         private CodeExpression GetFieldIsDirtyExpression(FieldInfo fi) 
         {
-            return new CodePropertyReferenceExpression(GetFieldDataExpression(fi), "IsDirty");
-        }
-
-        private CodeExpression GetFieldDataExpression(FieldInfo fi) 
-        {
-            return new CodeArrayIndexerExpression(
-                new CodeFieldReferenceExpression(
+            return new CodeMethodInvokeExpression(
+                new CodeTypeReferenceExpression(typeof(Sooda.ObjectMapper.SoodaObjectImpl)),
+                "IsFieldDirty",
                 new CodeThisReferenceExpression(),
-                "_fieldData"),
+                new CodePrimitiveExpression(fi.Table.OrdinalInClass),
                 new CodePrimitiveExpression(fi.ClassUnifiedOrdinal));
         }
 
         private CodeExpression GetFieldIsNullExpression(FieldInfo fi) 
         {
             return new CodeMethodInvokeExpression(
-                new CodeFieldReferenceExpression(
+                new CodeTypeReferenceExpression(typeof(Sooda.ObjectMapper.SoodaObjectImpl)),
+                "IsFieldNull", 
                 new CodeThisReferenceExpression(),
-                "_fieldValues"),
-                "IsNull",
-                new CodePrimitiveExpression(fi.ClassUnifiedOrdinal));
+                new CodePrimitiveExpression(fi.Table.OrdinalInClass),
+                new CodePrimitiveExpression(fi.ClassUnifiedOrdinal)
+                );
         }
 
         private CodeMemberProperty _IsNull(FieldInfo fi) 
         {
             CodeMemberProperty prop = new CodeMemberProperty();
-            prop.Name = "_IsNull_" + fi.Name;
+            prop.Name = fi.Name + "_IsNull";
             prop.Attributes = MemberAttributes.Final | MemberAttributes.Public;
             prop.Type = new CodeTypeReference(typeof(bool));
 
@@ -503,28 +500,19 @@ namespace Sooda.StubGen
                             }));
                 }
 
-                int tableNumber = fi.Table.OrdinalInClass;
-
-                prop.GetStatements.Add(
-                    new CodeExpressionStatement(
-                    new CodeMethodInvokeExpression(
-                    new CodeThisReferenceExpression(), "EnsureDataLoaded", new CodePrimitiveExpression(tableNumber))));
-
                 if (fi.References != null) 
                 {
                     prop.GetStatements.Add(
-                        new CodeExpressionStatement(
-                        new CodeMethodInvokeExpression(new CodeTypeReferenceExpression("Sooda.ObjectMapper.RefCache"), "GetOrCreateObject",
+                        new CodeMethodReturnStatement(
+                        new CodeCastExpression(fi.References,
+                        new CodeMethodInvokeExpression(new CodeTypeReferenceExpression(typeof(Sooda.ObjectMapper.SoodaObjectImpl)), "GetRefFieldValue",
                         new CodeDirectionExpression(FieldDirection.Ref, new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), "_refCache_" + fi.Name)),
-                        new CodeFieldReferenceExpression(This, "_fieldValues"),
+                        new CodeThisReferenceExpression(),
+                        new CodePrimitiveExpression(fi.Table.OrdinalInClass),
                         new CodePrimitiveExpression(fi.ClassUnifiedOrdinal),
                         new CodeMethodInvokeExpression(new CodeThisReferenceExpression(), "GetTransaction"),
                         new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(fi.References + "_Factory"), "TheFactory")
-                        )));
-
-                    prop.GetStatements.Add(
-                        new CodeMethodReturnStatement(
-                        new CodeCastExpression(fi.References, new CodeFieldReferenceExpression(This, "_refCache_" + fi.Name))));
+                        ))));
 
                     if (!classInfo.ReadOnly) 
                     {
@@ -532,9 +520,10 @@ namespace Sooda.StubGen
                             new CodeExpressionStatement(
 
                             new CodeMethodInvokeExpression(
-                            new CodeThisReferenceExpression(), "SetRefFieldValue",
+                            new CodeTypeReferenceExpression(typeof(Sooda.ObjectMapper.SoodaObjectImpl)), "SetRefFieldValue",
 
                             // parameters
+                            new CodeThisReferenceExpression(),
                             new CodePrimitiveExpression(fi.Table.OrdinalInClass),
                             new CodePrimitiveExpression(fi.Name),
                             new CodePrimitiveExpression(fi.ClassUnifiedOrdinal),
@@ -578,9 +567,10 @@ namespace Sooda.StubGen
                         CodeStatement whenNull =
                             new CodeExpressionStatement(
                             new CodeMethodInvokeExpression(
-                            new CodeThisReferenceExpression(), "SetPlainFieldValue",
+                            new CodeTypeReferenceExpression(typeof(Sooda.ObjectMapper.SoodaObjectImpl)), "SetPlainFieldValue",
 
                             // parameters
+                            new CodeThisReferenceExpression(),
                             new CodePrimitiveExpression(fi.Table.OrdinalInClass),
                             new CodePrimitiveExpression(fi.Name),
                             new CodePrimitiveExpression(fi.ClassUnifiedOrdinal),
@@ -590,9 +580,11 @@ namespace Sooda.StubGen
                         CodeStatement whenNotNull =
                             new CodeExpressionStatement(
                             new CodeMethodInvokeExpression(
-                            new CodeThisReferenceExpression(), "SetPlainFieldValue",
+                            new CodeTypeReferenceExpression(typeof(Sooda.ObjectMapper.SoodaObjectImpl)),
+                            "SetPlainFieldValue",
 
                             // parameters
+                            new CodeThisReferenceExpression(),
                             new CodePrimitiveExpression(fi.Table.OrdinalInClass),
                             new CodePrimitiveExpression(fi.Name),
                             new CodePrimitiveExpression(fi.ClassUnifiedOrdinal),
@@ -628,9 +620,10 @@ namespace Sooda.StubGen
                         CodeStatement setStat =
                             new CodeExpressionStatement(
                             new CodeMethodInvokeExpression(
-                            null, "SetPlainFieldValue",
+                            new CodeTypeReferenceExpression(typeof(Sooda.ObjectMapper.SoodaObjectImpl)), "SetPlainFieldValue",
 
                             // parameters
+                            new CodeThisReferenceExpression(),
                             new CodePrimitiveExpression(fi.Table.OrdinalInClass),
                             new CodePrimitiveExpression(fi.Name),
                             new CodePrimitiveExpression(fi.ClassUnifiedOrdinal),
@@ -819,9 +812,9 @@ namespace Sooda.StubGen
             method.Statements.Add(
                 new CodeConditionStatement(
                 new CodeBinaryOperatorExpression(
-                new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), "_fieldData"),
-                CodeBinaryOperatorType.IdentityEquality,
-                new CodePrimitiveExpression(null)), new CodeMethodReturnStatement()));
+                new CodeMethodInvokeExpression(new CodeThisReferenceExpression(), "IsObjectDirty"),
+                CodeBinaryOperatorType.ValueEquality,
+                new CodePrimitiveExpression(false)), new CodeMethodReturnStatement()));
 
             method.Statements.Add(
                 new CodeExpressionStatement(

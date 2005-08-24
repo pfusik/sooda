@@ -293,45 +293,6 @@ namespace Sooda.StubGen
                 }
             }
 
-#if A
-            ctd.Members.Add(gen.Method_InitFieldValues());
-            ctd.Members.Add(gen.Method_GetFieldHandler());
-            if (gen.KeyGen != "none") 
-            {
-                if (ci.InheritsFromClass == null) 
-                {
-                    ctd.Members.Add(gen.Method_GetKeyGenerator());
-                }
-                ctd.Members.Add(gen.Method_InitNewObject());
-            }
-
-            bool[] boolTable = { false, true };
-
-            for (int withTransaction = 0; withTransaction <= 1; withTransaction++) 
-            {
-                for (int withOrderBy = 0; withOrderBy <= 1; withOrderBy++) 
-                {
-                    for (int withOptions = 0; withOptions <= 1; withOptions++) 
-                    {
-                        ctd.Members.Add(gen.Method_GetList(
-                            boolTable[withTransaction],
-                            boolTable[withOrderBy],
-                            boolTable[withOptions]));
-                    }
-                }
-            }
-
-            ctd.Members.Add(gen.Method_DoGetList());
-            ctd.Members.Add(gen.Method_Load1());
-            ctd.Members.Add(gen.Method_Load2());
-            ctd.Members.Add(gen.Method_GetRefFromRecord());
-            ctd.Members.Add(gen.Method_Get1());
-            ctd.Members.Add(gen.Method_TryGet1());
-
-            ctd.Members.Add(gen.Method_NormalGet());
-            ctd.Members.Add(gen.Method_NormalTryGet());
-            //ctd.Members.Add(gen.Method_SetPrimaryKeyValue());
-#endif
             CodeMemberMethod m = gen.Method_IterateOuterReferences();
             if (m != null)
                 ctd.Members.Add(m);
