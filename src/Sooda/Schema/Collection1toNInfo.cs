@@ -81,5 +81,10 @@ namespace Sooda.Schema
         [XmlAttribute("prefetch")]
         [DefaultValue(0)]
         public int PrefetchLevel = 0;
+        
+        public override ClassInfo GetItemClass()
+        {
+            return Class;
+        }
     }
 }

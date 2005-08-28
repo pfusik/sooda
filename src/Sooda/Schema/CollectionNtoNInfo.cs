@@ -54,5 +54,10 @@ namespace Sooda.Schema {
         internal void Resolve(SchemaInfo schemaInfo) {
             relationInfo = schemaInfo.FindRelationByName(Relation);
         }
+        
+        public override ClassInfo GetItemClass()
+        {
+            return relationInfo.Table.Fields[MasterField].ReferencedClass;
+        }
     }
 }

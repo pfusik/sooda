@@ -35,10 +35,8 @@ using System;
 
 namespace Sooda.Schema {
     public interface IFieldContainer {
-        string Name { get
-                          ;
-                        }
-            bool ContainsField(string name);
+        string Name { get; }
+        bool ContainsField(string name);
         int ContainsCollection(string name);
         FieldInfo FindFieldByName(string name);
         FieldInfoCollection GetAllFields();

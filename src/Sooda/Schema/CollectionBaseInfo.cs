@@ -40,8 +40,10 @@ namespace Sooda.Schema
     /// <remarks/>
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd")]
     [Serializable]
-    public class CollectionBaseInfo {
+    public abstract class CollectionBaseInfo {
         [System.Xml.Serialization.XmlAttributeAttribute("name")]
         public string Name;
+
+        public abstract ClassInfo GetItemClass();
    }
 }
