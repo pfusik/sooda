@@ -90,6 +90,16 @@ namespace Sooda.QL {
             if (val1.GetType() == val2.GetType())
                 return;
 
+            if (val1 is SoodaObject)
+            {
+                val1 = ((SoodaObject)val1).GetPrimaryKeyValue();
+            }
+
+            if (val2 is SoodaObject)
+            {
+                val2 = ((SoodaObject)val2).GetPrimaryKeyValue();
+            }
+
             if (val1 is DateTime || val2 is DateTime)
             {
                 val1 = Convert.ToDateTime(val1);
