@@ -172,10 +172,7 @@ namespace Sooda.Sql
             {
                 if (_updateCommand.CommandText != "")
                 {
-                    LogCommand(_updateCommand);
-                    Console.WriteLine("Executing.");
-                    _updateCommand.ExecuteNonQuery();
-                    Console.WriteLine("Finished.");
+                    TimedExecuteNonQuery(_updateCommand);
                     _updateCommand.Parameters.Clear();
                     _updateCommand.CommandText = "";
                 }
@@ -240,8 +237,7 @@ namespace Sooda.Sql
                 cmd.Transaction = this.Transaction;
 
             SqlBuilder.BuildCommandWithParameters(cmd, false, GetLoadingSelectStatement(classInfo, classInfo.UnifiedTables[tableNumber], out loadedTables), SoodaTuple.GetValuesArray(keyVal));
-            LogCommand(cmd);
-            IDataReader reader = cmd.ExecuteReader();
+            IDataReader reader = TimedExecuteReader(cmd);
             if (reader.Read())
                 return reader;
             else 
@@ -316,10 +312,9 @@ namespace Sooda.Sql
                     cmd.Transaction = this.Transaction;
 
                 SqlBuilder.BuildCommandWithParameters(cmd, false, query, whereClause.Parameters);
-                LogCommand(cmd);
 
                 tables = (TableInfo[])tablesArrayList.ToArray(typeof(TableInfo));
-                return cmd.ExecuteReader();
+                return TimedExecuteReader(cmd);
             }
             catch (Exception ex)
             {
@@ -357,8 +352,7 @@ namespace Sooda.Sql
                     cmd.Transaction = this.Transaction;
 
                 SqlBuilder.BuildCommandWithParameters(cmd, false, queryText, parameters);
-                LogCommand(cmd);
-                return cmd.ExecuteReader();
+                return TimedExecuteReader(cmd);
             }
             catch (Exception ex)
             {
@@ -377,8 +371,7 @@ namespace Sooda.Sql
                     cmd.Transaction = this.Transaction;
 
                 SqlBuilder.BuildCommandWithParameters(cmd, false, queryText, parameters);
-                LogCommand(cmd);
-                return cmd.ExecuteNonQuery();
+                return TimedExecuteNonQuery(cmd);
             }
             catch (Exception ex)
             {
@@ -404,8 +397,7 @@ namespace Sooda.Sql
                     cmd.Transaction = this.Transaction;
 
                 SqlBuilder.BuildCommandWithParameters(cmd, false, query, new object[] { masterValue });
-                LogCommand(cmd);
-                return cmd.ExecuteReader();
+                return TimedExecuteReader(cmd);
             }
             catch (Exception ex)
             {
@@ -542,7 +534,7 @@ namespace Sooda.Sql
             }
         }
 
-        private void LogCommand(IDbCommand cmd) 
+        private string LogCommand(IDbCommand cmd) 
         {
             if (sqllogger.IsDebugEnabled)
             {
@@ -555,8 +547,11 @@ namespace Sooda.Sql
                 }
                 txt.AppendFormat(" ] {0}", Connection.GetHashCode());
                 txt.AppendFormat(" DataSource: {0}", this.Name);
-
-                sqllogger.Debug(txt.ToString());
+                return txt.ToString();
+            }
+            else
+            {
+                return "";
             }
         }
 
@@ -568,7 +563,7 @@ namespace Sooda.Sql
                     cmd.Transaction = this.Transaction;
 
                 cmd.CommandText = sql;
-                cmd.ExecuteNonQuery();
+                TimedExecuteNonQuery(cmd);
             }
         }
 
@@ -735,6 +730,40 @@ namespace Sooda.Sql
                 {
                     baseTable.Fields.Add(fi);
                 }
+            }
+        }
+
+        private IDataReader TimedExecuteReader(IDbCommand cmd)
+        {
+            DateTime dt0 = DateTime.Now;
+
+            try
+            {
+                sqllogger.Trace("Executing query: {0}", LogCommand(cmd));
+                IDataReader retval = cmd.ExecuteReader();
+                return retval;
+            }
+            finally
+            {
+                DateTime dt1 = DateTime.Now;
+                sqllogger.Trace("Query took {0} milliseconds", (dt1 - dt0).TotalMilliseconds);
+            }
+        }
+
+        private int TimedExecuteNonQuery(IDbCommand cmd)
+        {
+            DateTime dt0 = DateTime.Now;
+
+            try
+            {
+                sqllogger.Trace("Executing non-query: {0}", LogCommand(cmd));
+                int retval = cmd.ExecuteNonQuery();
+                return retval;
+            }
+            finally
+            {
+                DateTime dt1 = DateTime.Now;
+                sqllogger.Trace("Non-query took {0} milliseconds", (dt1 - dt0).TotalMilliseconds);
             }
         }
 
