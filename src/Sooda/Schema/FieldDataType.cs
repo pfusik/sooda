@@ -103,7 +103,7 @@ namespace Sooda.Schema
                 if (lookup.fieldDataType == t)
                     return lookup.clrRawType;
 
-            throw new NotSupportedException("Data type " + t + " not supported (yet!)");
+            throw new SoodaSchemaException("Data type " + t + " not supported (yet!)");
         }
 
         public static string GetDefaultWrapperTypeName(FieldDataType t) 
@@ -112,7 +112,7 @@ namespace Sooda.Schema
                 if (lookup.fieldDataType == t)
                     return lookup.defaultWrapperTypeName;
 
-            throw new NotSupportedException("Data type " + t + " not supported (yet!)");
+            throw new SoodaSchemaException("Data type " + t + " not supported (yet!)");
         }
 
         public static object GetDefaultPrecommitValue(FieldDataType t) 
@@ -130,7 +130,7 @@ namespace Sooda.Schema
                 if (lookup.fieldDataType == t)
                     return lookup.clrSqlType;
 
-            throw new NotSupportedException("Data type " + t + " not supported (yet!)");
+            throw new SoodaSchemaException("Data type " + t + " not supported (yet!)");
         }
 
         public static FieldDataType FromCLRType(Type t) 
@@ -139,7 +139,7 @@ namespace Sooda.Schema
                 if (lookup.clrRawType == t)
                     return lookup.fieldDataType;
 
-            throw new NotSupportedException("Data type " + t.FullName + " not supported (yet!)");
+            throw new SoodaSchemaException("Data type " + t.FullName + " not supported (yet!)");
         }
 
         public static bool NeedsSize(FieldDataType t) 
@@ -148,7 +148,7 @@ namespace Sooda.Schema
                 if (lookup.fieldDataType == t)
                     return lookup.needsSize;
 
-            throw new NotSupportedException("Data type " + t + " not supported (yet!)");
+            throw new SoodaSchemaException("Data type " + t + " not supported (yet!)");
         }
     }
 }

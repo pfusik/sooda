@@ -85,7 +85,7 @@ namespace Sooda.Schema {
 
         public void AddField(FieldInfo fi) {
             if (ContainsField(fi.Name))
-                throw new Exception("Cannot add FieldInfo twice");
+                throw new SoodaSchemaException("Cannot add FieldInfo twice");
 
             if (Fields == null)
                 Fields = new FieldInfoCollection();
@@ -130,8 +130,15 @@ namespace Sooda.Schema {
 
         internal void Resolve(string name) {
             int ordinal = 0;
+            int pkCount = 0;
             foreach (FieldInfo fi in Fields) {
                 fi.Resolve(this, name, ordinal++);
+                if (fi.IsPrimaryKey)
+                    pkCount++;
+            }
+            if (pkCount == 0)
+            {
+                throw new SoodaSchemaException("Table '" + NameToken + "' doesn't have a primary key. If you declare a <class> that's based on more than one <table>, you need to have a primary key in each <table>. The primary key can be shared.");
             }
         }
 

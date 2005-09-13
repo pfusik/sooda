@@ -239,7 +239,7 @@ namespace Sooda.Schema
                 if (dsi.Name == name)
                     return dsi;
             }
-            throw new Exception("Data source " + name + " not found. Available data sources: " + GetAvailableDataSources());
+            throw new SoodaSchemaException("Data source " + name + " not found. Available data sources: " + GetAvailableDataSources());
         }
 
         private string GetAvailableDataSources()

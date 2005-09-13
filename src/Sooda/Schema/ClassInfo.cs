@@ -296,7 +296,7 @@ namespace Sooda.Schema
 
             if (UnifiedTables.Count > 30) 
             {
-                throw new Exception("Class " + Name + " is invalid, because it's base on more than 30 tables. ");
+                throw new SoodaSchemaException("Class " + Name + " is invalid, because it's base on more than 30 tables. ");
             }
             // Console.WriteLine("<<< End of FlattenTables for {0}", Name);
         }
@@ -398,18 +398,18 @@ namespace Sooda.Schema
             {
                 SubclassSelectorField = FindFieldByName(SubclassSelectorFieldName);
                 if (SubclassSelectorField == null)
-                    throw new SoodaException("subclassSelectorField points to invalid field name " + SubclassSelectorFieldName + " in " + Name);
+                    throw new SoodaSchemaException("subclassSelectorField points to invalid field name " + SubclassSelectorFieldName + " in " + Name);
             } 
             else if (InheritFrom != null) 
             {
-                throw new Exception("Must use subclassSelectorFieldName when defining inherited class");
+                throw new SoodaSchemaException("Must use subclassSelectorFieldName when defining inherited class");
             }
             if (SubclassSelectorStringValue != null) 
             {
                 // TODO - allow other types based on the field type
                 //
                 if (SubclassSelectorField == null)
-                    throw new SoodaException("subclassSelectorField is invalid");
+                    throw new SoodaSchemaException("subclassSelectorField is invalid");
                 switch (SubclassSelectorField.DataType) 
                 {
                     case FieldDataType.Integer:
@@ -421,7 +421,7 @@ namespace Sooda.Schema
                         break;
 
                     default:
-                        throw new NotSupportedException("Field data type not supported for subclassSelectorValue: " + SubclassSelectorField.DataType);
+                        throw new SoodaSchemaException("Field data type not supported for subclassSelectorValue: " + SubclassSelectorField.DataType);
                 }
             }
 
@@ -460,7 +460,7 @@ namespace Sooda.Schema
                     if (mt.ContainsField(fi.Name)) 
                     {
                         if (!fi.IsPrimaryKey)
-                            throw new Exception("Duplicate field found for one table!");
+                            throw new SoodaSchemaException("Duplicate field found for one table!");
                         continue;
                     }
 
@@ -486,12 +486,12 @@ namespace Sooda.Schema
                 {
                     ClassInfo ci = schema.FindClassByName(cinfo.ClassName);
                     if (ci == null)
-                        throw new Exception("Collection " + Name + "." + cinfo.Name + " cannot find class " + cinfo.ClassName);
+                        throw new SoodaSchemaException("Collection " + Name + "." + cinfo.Name + " cannot find class " + cinfo.ClassName);
 
                     FieldInfo fi = ci.FindFieldByName(cinfo.ForeignFieldName);
 
                     if (fi == null)
-                        throw new Exception("Collection " + Name + "." + cinfo.Name + " cannot find field " + cinfo.ClassName + "." + cinfo.ForeignFieldName);
+                        throw new SoodaSchemaException("Collection " + Name + "." + cinfo.Name + " cannot find field " + cinfo.ClassName + "." + cinfo.ForeignFieldName);
 
                     fi.AddBackRefCollection(cinfo.Name);
                     cinfo.ForeignField2 = fi;
@@ -515,7 +515,7 @@ namespace Sooda.Schema
                     } 
                     else 
                     {
-                        throw new Exception("Class " + Name + " refers to nonexisting class " + fi.References);
+                        throw new SoodaSchemaException("Class " + Name + " refers to nonexisting class " + fi.References);
                     }
                 }
             }

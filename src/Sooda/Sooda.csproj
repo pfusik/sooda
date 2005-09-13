@@ -867,6 +867,11 @@
                     BuildAction = "None"
                 />
                 <File
+                    RelPath = "Schema\SoodaSchemaException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Schema\TableInfo.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

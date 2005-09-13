@@ -1065,6 +1065,11 @@ namespace Sooda.StubGen
                 Console.WriteLine("Saved.");
                 return 0;
             } 
+            catch (SoodaSchemaException e) 
+            {
+                Console.WriteLine("SCHEMA ERROR: {0}", e.Message);
+                return 1;
+            } 
             catch (ApplicationException e) 
             {
                 Console.WriteLine("EXCEPTION: {0}", e);

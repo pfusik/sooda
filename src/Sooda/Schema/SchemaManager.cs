@@ -56,7 +56,7 @@ namespace Sooda.Schema {
                     return ass.GetManifestResourceStream(name);
                 };
             }
-            throw new InvalidProgramException("SoodaSchema not embedded in Sooda assembly");
+            throw new SoodaSchemaException("SoodaSchema not embedded in Sooda assembly");
         }
 
         public static XmlReader GetSchemaXsdStreamXmlReader() {
