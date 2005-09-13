@@ -38,7 +38,7 @@ namespace Sooda {
     /// Specifies options for serializing transactions and objects to XML.
     /// </summary>
     [Flags]
-    public enum SerializeOptions
+    public enum SoodaSerializeOptions
     {
         /// <summary>
         /// Serialize dirty fields only.

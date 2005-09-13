@@ -51,7 +51,7 @@ using Sooda.Logging;
 namespace Sooda 
 {
     [Flags]
-    public enum TransactionOptions
+    public enum SoodaTransactionOptions
     {
         NoImplicit = 0x0000,
         Implicit = 0x0001,
@@ -64,7 +64,7 @@ namespace Sooda
 
         private SoodaTransaction previousTransaction;
 
-        private TransactionOptions transactionOptions;
+        private SoodaTransactionOptions transactionOptions;
         private TypeToSoodaRelationTableAssociation _relationTables = new TypeToSoodaRelationTableAssociation();
         //private KeyToSoodaObjectMap _objects = new KeyToSoodaObjectMap();
         private SoodaObjectCollection _objectList = new SoodaObjectCollection ();
@@ -89,15 +89,15 @@ namespace Sooda
 
         #region Constructors, Dispose & Finalizer
 
-        public SoodaTransaction() : this(null, TransactionOptions.Implicit, Assembly.GetCallingAssembly()) {}
+        public SoodaTransaction() : this(null, SoodaTransactionOptions.Implicit, Assembly.GetCallingAssembly()) {}
 
-        public SoodaTransaction(Assembly objectsAssembly) : this(objectsAssembly, TransactionOptions.Implicit, Assembly.GetCallingAssembly()) {}
+        public SoodaTransaction(Assembly objectsAssembly) : this(objectsAssembly, SoodaTransactionOptions.Implicit, Assembly.GetCallingAssembly()) {}
 
-        public SoodaTransaction(TransactionOptions options) : this(null, options, Assembly.GetCallingAssembly()) {}
+        public SoodaTransaction(SoodaTransactionOptions options) : this(null, options, Assembly.GetCallingAssembly()) {}
 
-        public SoodaTransaction(Assembly objectsAssembly, TransactionOptions options) : this(objectsAssembly, options, Assembly.GetCallingAssembly()) {}
+        public SoodaTransaction(Assembly objectsAssembly, SoodaTransactionOptions options) : this(objectsAssembly, options, Assembly.GetCallingAssembly()) {}
 
-        private SoodaTransaction(Assembly objectsAssembly, TransactionOptions options, Assembly callingAssembly) 
+        private SoodaTransaction(Assembly objectsAssembly, SoodaTransactionOptions options, Assembly callingAssembly) 
         {
             if (objectsAssembly != null)
                 ObjectsAssembly = objectsAssembly;
@@ -118,7 +118,7 @@ namespace Sooda
                 throw new SoodaException(@"ObjectsAssembly has not been set for this SoodaTransaction. See http://www.sooda.org/en/faq.html#objectsassembly for more information.");
 
             this.transactionOptions = options;
-            if ((options & TransactionOptions.Implicit) != 0) 
+            if ((options & SoodaTransactionOptions.Implicit) != 0) 
             {
                 previousTransaction = (SoodaTransaction)System.Threading.Thread.GetData(g_activeTransactionDataStoreSlot);
                 System.Threading.Thread.SetData(g_activeTransactionDataStoreSlot, this);
@@ -148,7 +148,7 @@ namespace Sooda
                         source.Close();
                     }
                 };
-                if ((transactionOptions & TransactionOptions.Implicit) != 0) 
+                if ((transactionOptions & SoodaTransactionOptions.Implicit) != 0) 
                 {
                     if (System.Threading.Thread.GetData(g_activeTransactionDataStoreSlot) != this) 
                     {
@@ -774,18 +774,18 @@ namespace Sooda
         public string Serialize() 
         {
             StringWriter sw = new StringWriter();
-            Serialize(sw, SerializeOptions.DirtyOnly);
+            Serialize(sw, SoodaSerializeOptions.DirtyOnly);
             return sw.ToString();
         }
 
-        public string Serialize(SerializeOptions opt) 
+        public string Serialize(SoodaSerializeOptions opt) 
         {
             StringWriter sw = new StringWriter();
             Serialize(sw, opt);
             return sw.ToString();
         }
 
-        public void Serialize(TextWriter tw, SerializeOptions options) 
+        public void Serialize(TextWriter tw, SoodaSerializeOptions options) 
         {
             XmlTextWriter xtw = new XmlTextWriter(tw);
 
@@ -812,13 +812,13 @@ namespace Sooda
             }
         }
 
-        public void Serialize(XmlWriter xw, SerializeOptions options) 
+        public void Serialize(XmlWriter xw, SoodaSerializeOptions options) 
         {
             xw.WriteStartElement("transaction");
 
             SoodaObjectCollection orderedObjects = _objectList;
 
-            if ((options & SerializeOptions.Canonical) != 0) 
+            if ((options & SoodaSerializeOptions.Canonical) != 0) 
             {
                 ArrayList al = new ArrayList(orderedObjects);
                 al.Sort(new KeyStringComparer());
@@ -827,12 +827,12 @@ namespace Sooda
 
             foreach (SoodaObject o in orderedObjects) 
             {
-                if (o.IsObjectDirty() || ((options & SerializeOptions.IncludeNonDirtyObjects) != 0))
+                if (o.IsObjectDirty() || ((options & SoodaSerializeOptions.IncludeNonDirtyObjects) != 0))
                     o.PreSerialize(xw, options);
             }
             foreach (SoodaObject o in orderedObjects) 
             {
-                if (o.IsObjectDirty() || ((options & SerializeOptions.IncludeNonDirtyObjects) != 0))
+                if (o.IsObjectDirty() || ((options & SoodaSerializeOptions.IncludeNonDirtyObjects) != 0))
                     o.Serialize(xw, options);
             }
             // serialize N-N relation tables

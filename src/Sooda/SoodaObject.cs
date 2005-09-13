@@ -787,7 +787,7 @@ namespace Sooda
         // create an empty object just to make sure that the deserialization
         // will find it before any references are used.
         // 
-        internal void PreSerialize(XmlWriter xw, SerializeOptions options) 
+        internal void PreSerialize(XmlWriter xw, SoodaSerializeOptions options) 
         {
             if (!IsInsertMode())
                 return;
@@ -797,7 +797,7 @@ namespace Sooda
             SerializePrimaryKey(xw);
             xw.WriteEndElement();
         }
-        internal void Serialize(XmlWriter xw, SerializeOptions options) 
+        internal void Serialize(XmlWriter xw, SoodaSerializeOptions options) 
         {
             xw.WriteStartElement("object");
             xw.WriteAttributeString("mode", "update");
@@ -810,7 +810,7 @@ namespace Sooda
             logger.Trace("Serializing " + GetObjectKeyString() + "...");
             EnsureFieldsInited();
 
-            if ((options & SerializeOptions.IncludeNonDirtyFields) != 0) 
+            if ((options & SoodaSerializeOptions.IncludeNonDirtyFields) != 0) 
             {
                 if (!IsAllDataLoaded())
                     LoadAllData();
@@ -833,7 +833,7 @@ namespace Sooda
                     field.Serialize(_fieldValues.GetBoxedFieldValue(fi.ClassUnifiedOrdinal), xw);
                     xw.WriteEndElement();
                 } 
-                else if ((options & SerializeOptions.IncludeNonDirtyFields) != 0) 
+                else if ((options & SoodaSerializeOptions.IncludeNonDirtyFields) != 0) 
                 {
                     xw.WriteStartElement("field");
                     xw.WriteAttributeString("name", s);
@@ -842,7 +842,7 @@ namespace Sooda
                     xw.WriteEndElement();
                 };
             }
-            if ((options & SerializeOptions.IncludeDebugInfo) != 0) 
+            if ((options & SoodaSerializeOptions.IncludeDebugInfo) != 0) 
             {
                 xw.WriteStartElement("debug");
                 xw.WriteAttributeString("transaction", (_transaction != null) ? "notnull" : "null");
