@@ -76,6 +76,14 @@ begin
     return new ${ClassName}List(base.Filter(arg(f)))
 end
 
+method Filter(SoodaWhereClause whereClause)
+    attributes Public,Final,New
+    returns ${ClassName}List
+    implements ${ClassName}List
+begin
+    return new ${ClassName}List(base.Filter(arg(whereClause)))
+end
+
 method GetSnapshot()
     returns ${ClassName}List
     attributes Public,Final,New

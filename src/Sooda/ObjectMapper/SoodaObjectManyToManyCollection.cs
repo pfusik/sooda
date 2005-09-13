@@ -317,6 +317,10 @@ namespace Sooda.ObjectMapper {
             return new SoodaObjectListSnapshot(this, filter);
         }
 
+        public ISoodaObjectList Filter(SoodaWhereClause whereClause) {
+            return new SoodaObjectListSnapshot(this, whereClause);
+        }
+
         public ISoodaObjectList Sort(IComparer comparer) {
             return new SoodaObjectListSnapshot(this, comparer);
         }

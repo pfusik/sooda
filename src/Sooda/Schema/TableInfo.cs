@@ -128,7 +128,7 @@ namespace Sooda.Schema {
             };
         }
 
-        internal void Resolve(string name) {
+        internal void Resolve(string name, bool isInRelation) {
             int ordinal = 0;
             int pkCount = 0;
             foreach (FieldInfo fi in Fields) {
@@ -136,7 +136,7 @@ namespace Sooda.Schema {
                 if (fi.IsPrimaryKey)
                     pkCount++;
             }
-            if (pkCount == 0)
+            if (pkCount == 0 && !isInRelation)
             {
                 throw new SoodaSchemaException("Table '" + NameToken + "' doesn't have a primary key. If you declare a <class> that's based on more than one <table>, you need to have a primary key in each <table>. The primary key can be shared.");
             }

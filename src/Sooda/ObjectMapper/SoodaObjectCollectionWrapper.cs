@@ -135,6 +135,10 @@ namespace Sooda.ObjectMapper {
             return _theList.GetSnapshot();
         }
 
+        public ISoodaObjectList Filter(SoodaWhereClause whereClause) {
+            return _theList.Filter(whereClause);
+        }
+
         public ISoodaObjectList Filter(SoodaObjectFilter filter) {
             return _theList.Filter(filter);
         }

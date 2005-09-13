@@ -81,7 +81,7 @@ namespace Sooda.Schema {
         internal void Resolve(SchemaInfo schemaInfo) {
             parentSchema = schemaInfo;
 
-            Table.Resolve(this.Name);
+            Table.Resolve(this.Name, true);
             Table.Rehash();
 
             Table.Fields[0].ReferencedClass = schemaInfo.FindClassByName(Table.Fields[0].References);

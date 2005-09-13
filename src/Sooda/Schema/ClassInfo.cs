@@ -291,7 +291,7 @@ namespace Sooda.Schema
                 t.NameToken = this.Name + "#" + t.OrdinalInClass;
                 t.Rehash();
                 t.OwnerClass = this;
-                t.Resolve(this.Name);
+                t.Resolve(this.Name, false);
             }
 
             if (UnifiedTables.Count > 30) 

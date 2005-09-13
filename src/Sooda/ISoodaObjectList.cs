@@ -43,6 +43,7 @@ namespace Sooda {
         ISoodaObjectList SelectLast(int n);
         ISoodaObjectList SelectRange(int from, int to);
         ISoodaObjectList Filter(SoodaObjectFilter filter);
+        ISoodaObjectList Filter(SoodaWhereClause whereClause);
         ISoodaObjectList Sort(IComparer comparer);
 
     }

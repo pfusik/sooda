@@ -64,6 +64,15 @@ namespace Sooda.ObjectMapper
             }
         }
 
+        public SoodaObjectListSnapshot(IList list, SoodaWhereClause whereClause) 
+        {
+            foreach (SoodaObject o in list) 
+            {
+                if (whereClause.Matches(o, true))
+                    AddObjectToSnapshot(o);
+            }
+        }
+
         public SoodaObjectListSnapshot(IList list, int first, int length) 
         {
             this.classInfo = null;
@@ -315,6 +324,11 @@ namespace Sooda.ObjectMapper
         public ISoodaObjectList Filter(SoodaObjectFilter filter) 
         {
             return new SoodaObjectListSnapshot(this, filter);
+        }
+
+        public ISoodaObjectList Filter(SoodaWhereClause whereClause)
+        {
+            return new SoodaObjectListSnapshot(this, whereClause);
         }
 
         public ISoodaObjectList Sort(IComparer comparer) 
