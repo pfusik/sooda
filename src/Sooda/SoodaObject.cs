@@ -310,7 +310,7 @@ namespace Sooda
                 SoodaCacheEntry cachedData = SoodaCache.FindObjectData(GetClassInfo().Name, primaryKeyValue);
                 if (cachedData != null) 
                 {
-                    logger.Debug("Initializing object {0}({1}) from cache: {2}", this.GetType().Name, primaryKeyValue, cachedData);
+                    logger.Trace("Initializing object {0}({1}) from cache: {2}", this.GetType().Name, primaryKeyValue, cachedData);
                     _fieldValues = cachedData.Data;
                     _fieldData = new SoodaFieldData[_fieldValues.Length];
                     _dataLoadedMask = cachedData.DataLoadedMask;
@@ -318,7 +318,7 @@ namespace Sooda
                 } 
                 else 
                 {
-                    logger.Debug("Object {0}({1}) not in cache. Creating uninitialized object.", this.GetType().Name, primaryKeyValue, cachedData);
+                    logger.Trace("Object {0}({1}) not in cache. Creating uninitialized object.", this.GetType().Name, primaryKeyValue, cachedData);
                 }
             }
         }
@@ -561,7 +561,7 @@ namespace Sooda
 
                 if (table.OrdinalInClass == 0 && !first) 
                 {
-                    logger.Debug("Found table 0 of another object. Exiting.");
+                    logger.Trace("Found table 0 of another object. Exiting.");
                     break;
                 }
 
@@ -604,17 +604,17 @@ namespace Sooda
             // if we've started with a first table and there are more to be processed
             if (tableIndex == 0 && i != tables.Length)
             {
-                logger.Debug("Materializing extra objects...");
+                logger.Trace("Materializing extra objects...");
                 for (; i < tables.Length; ++i)
                 {
                     if (tables[i].OrdinalInClass == 0)
                     {
-                        logger.Debug("Materializing {0} at {1}", tables[i].NameToken, recordPos);
+                        logger.Trace("Materializing {0} at {1}", tables[i].NameToken, recordPos);
 
                         int pkOrdinal = tables[i].OwnerClass.GetFirstPrimaryKeyField().OrdinalInTable;
                         if (reader.IsDBNull(recordPos + pkOrdinal))
                         {
-                            logger.Debug("Object is null. Skipping.");
+                            logger.Trace("Object is null. Skipping.");
                         }
                         else
                         {
@@ -628,7 +628,7 @@ namespace Sooda
                     }
                     recordPos += tables[i].Fields.Count;
                 }
-                logger.Debug("Finished materializing extra objects.");
+                logger.Trace("Finished materializing extra objects.");
             }
 
             return tables.Length;
@@ -680,9 +680,9 @@ namespace Sooda
 
         protected void LoadDataWithKey(object keyVal, int tableNumber) 
         {
-            if (logger.IsDebugEnabled) 
+            if (logger.IsTraceEnabled) 
             {
-                logger.Debug("Loading data for {0}({1}) from table #{2}", GetClassInfo().Name, keyVal, tableNumber);
+                logger.Trace("Loading data for {0}({1}) from table #{2}", GetClassInfo().Name, keyVal, tableNumber);
             };
 
             try 
@@ -693,7 +693,7 @@ namespace Sooda
                 IDataReader record = ds.LoadObjectTable(this, keyVal, tableNumber, out loadedTables);
                 if (record == null) 
                 {
-                    logger.Debug("LoadObjectTable() failed for {0}", GetObjectKeyString());
+                    logger.Error("LoadObjectTable() failed for {0}", GetObjectKeyString());
                     GetTransaction().UnregisterObject(this);
                     throw new SoodaObjectNotFoundException(String.Format("Object {0} not found in the database", GetObjectKeyString()));
                 };
@@ -701,7 +701,7 @@ namespace Sooda
                 {
                     for (int i = 0; i < loadedTables.Length; ++i)
                     {
-                        logger.Debug("loadedTables[{0}] = {1}", i, loadedTables[i].NameToken);
+                        logger.Trace("loadedTables[{0}] = {1}", i, loadedTables[i].NameToken);
                     }
                     LoadDataFromRecord(record, 0, loadedTables, 0);
                 }
@@ -807,7 +807,7 @@ namespace Sooda
             if (PostCommitForced)
                 xw.WriteAttributeString("forcepostcommit", "true");
 
-            logger.Debug("Serializing " + GetObjectKeyString() + "...");
+            logger.Trace("Serializing " + GetObjectKeyString() + "...");
             EnsureFieldsInited();
 
             if ((options & SerializeOptions.IncludeNonDirtyFields) != 0) 

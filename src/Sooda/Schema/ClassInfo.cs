@@ -288,7 +288,7 @@ namespace Sooda.Schema
             {
                 // Console.WriteLine("Setting OrdinalInClass for {0}.{1} to {2}", Name, t.DBTableName, ordinalInClass);
                 t.OrdinalInClass = ordinalInClass++;
-                t.NameToken = this.Name + "_" + t.OrdinalInClass;
+                t.NameToken = this.Name + "#" + t.OrdinalInClass;
                 t.Rehash();
                 t.OwnerClass = this;
                 t.Resolve(this.Name);
