@@ -160,7 +160,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                         if (!quiet)
                             Console.WriteLine("before serialization, member: {0}", c.Name);
                     }
-                    serialized = tran.Serialize(SerializeOptions.IncludeNonDirtyFields | SerializeOptions.IncludeNonDirtyObjects | SerializeOptions.Canonical);
+                    serialized = tran.Serialize(SoodaSerializeOptions.IncludeNonDirtyFields | SoodaSerializeOptions.IncludeNonDirtyObjects | SoodaSerializeOptions.Canonical);
                     //serialized = tran.Serialize();
                     if (!quiet)
                         Console.WriteLine("Serialized as\n{0}", serialized);
@@ -169,7 +169,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                 using (SoodaTransaction tran = new SoodaTransaction()) {
                     tran.RegisterDataSource(testDataSource);
                     tran.Deserialize(serialized);
-                    string serialized2 = tran.Serialize(SerializeOptions.IncludeNonDirtyFields | SerializeOptions.IncludeNonDirtyObjects | SerializeOptions.Canonical);
+                    string serialized2 = tran.Serialize(SoodaSerializeOptions.IncludeNonDirtyFields | SoodaSerializeOptions.IncludeNonDirtyObjects | SoodaSerializeOptions.Canonical);
                     //string serialized2 = tran.Serialize();
                     if (serialized == serialized2) {
                         if (!quiet)

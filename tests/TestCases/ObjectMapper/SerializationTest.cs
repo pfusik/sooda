@@ -60,12 +60,12 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                 g1.Manager = c1;
                 g2.Manager = c2;
 
-                ser1 = tran.Serialize(SerializeOptions.Canonical);
+                ser1 = tran.Serialize(SoodaSerializeOptions.Canonical);
             }
             using (SoodaTransaction tran = new SoodaTransaction()) {
                 tran.Deserialize(ser1);
 
-                ser2 = tran.Serialize(SerializeOptions.Canonical);
+                ser2 = tran.Serialize(SoodaSerializeOptions.Canonical);
                 Console.WriteLine("ser1 {0}", ser1);
                 Console.WriteLine("ser2 {0}", ser2);
                 Assert.AreEqual(ser1, ser2, "Serialization is stable");
@@ -131,7 +131,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                         if (!quiet)
                             Console.WriteLine("before serialization, member: {0}", c.Name);
                     }
-                    serialized = tran.Serialize(SerializeOptions.IncludeNonDirtyFields | SerializeOptions.IncludeNonDirtyObjects | SerializeOptions.Canonical);
+                    serialized = tran.Serialize(SoodaSerializeOptions.IncludeNonDirtyFields | SoodaSerializeOptions.IncludeNonDirtyObjects | SoodaSerializeOptions.Canonical);
                     //serialized = tran.Serialize();
                     if (!quiet)
                         Console.WriteLine("Serialized as\n{0}", serialized);
@@ -142,7 +142,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     tran.Deserialize(serialized);
 
                     Console.WriteLine(ContactType.Employee.Description);
-                    string serialized2 = tran.Serialize(SerializeOptions.IncludeNonDirtyFields | SerializeOptions.IncludeNonDirtyObjects | SerializeOptions.Canonical);
+                    string serialized2 = tran.Serialize(SoodaSerializeOptions.IncludeNonDirtyFields | SoodaSerializeOptions.IncludeNonDirtyObjects | SoodaSerializeOptions.Canonical);
                     //string serialized2 = tran.Serialize();
                     if (serialized == serialized2) {
                         if (!quiet)

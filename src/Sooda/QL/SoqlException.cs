@@ -69,6 +69,7 @@ using System;
 using System.Runtime.Serialization;
 
 namespace Sooda.QL {
+    [Serializable]
     public class SoqlException : SoodaException {
         private int _p0;
         private int _p1;

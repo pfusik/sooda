@@ -68,14 +68,14 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     foreach (SoodaObject r in Contact.Mary.Roles) {
                         Console.WriteLine("Before serialization mary has role: {0}", r.GetObjectKeyString());
                     }
-                    serialized = tran.Serialize(SerializeOptions.IncludeNonDirtyFields | SerializeOptions.IncludeNonDirtyObjects);
+                    serialized = tran.Serialize(SoodaSerializeOptions.IncludeNonDirtyFields | SoodaSerializeOptions.IncludeNonDirtyObjects);
                 }
                 Console.WriteLine("serialized: {0}", serialized);
 
                 using (SoodaTransaction tran = new SoodaTransaction()) {
                     tran.RegisterDataSource(testDataSource);
                     tran.Deserialize(serialized);
-                    string serialized2 = tran.Serialize(SerializeOptions.IncludeNonDirtyFields | SerializeOptions.IncludeNonDirtyObjects);
+                    string serialized2 = tran.Serialize(SoodaSerializeOptions.IncludeNonDirtyFields | SoodaSerializeOptions.IncludeNonDirtyObjects);
                     if (serialized == serialized2) {
                         Console.WriteLine("Serialization is stable");
                     } else {
@@ -107,14 +107,14 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     Contact.Mary.Roles.Remove(Role.Customer);
                     Assert.IsTrue(!Role.Customer.Members.Contains(Contact.Mary));
 
-                    serialized = tran.Serialize(SerializeOptions.IncludeNonDirtyFields | SerializeOptions.IncludeNonDirtyObjects);
+                    serialized = tran.Serialize(SoodaSerializeOptions.IncludeNonDirtyFields | SoodaSerializeOptions.IncludeNonDirtyObjects);
                 }
                 Console.WriteLine("serialized: {0}", serialized);
 
                 using (SoodaTransaction tran = new SoodaTransaction()) {
                     tran.RegisterDataSource(testDataSource);
                     tran.Deserialize(serialized);
-                    string serialized2 = tran.Serialize(SerializeOptions.IncludeNonDirtyFields | SerializeOptions.IncludeNonDirtyObjects);
+                    string serialized2 = tran.Serialize(SoodaSerializeOptions.IncludeNonDirtyFields | SoodaSerializeOptions.IncludeNonDirtyObjects);
                     if (serialized == serialized2) {
                         Console.WriteLine("Serialization is stable");
                     } else {
