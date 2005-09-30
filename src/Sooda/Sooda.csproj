@@ -698,12 +698,12 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "QL\SoqlStringCastExpression.cs"
+                    RelPath = "QL\SoqlTokenizer.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "QL\SoqlTokenizer.cs"
+                    RelPath = "QL\SoqlTypedWrapperExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -714,6 +714,51 @@
                 />
                 <File
                     RelPath = "QL\SoqlUtils.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\TypedWrappers\SoqlBooleanWrapperExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\TypedWrappers\SoqlDateTimeWrapperExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\TypedWrappers\SoqlDecimalWrapperExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\TypedWrappers\SoqlDoubleWrapperExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\TypedWrappers\SoqlInt16WrapperExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\TypedWrappers\SoqlInt32WrapperExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\TypedWrappers\SoqlInt64WrapperExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\TypedWrappers\SoqlSingleWrapperExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\TypedWrappers\SoqlStringWrapperExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

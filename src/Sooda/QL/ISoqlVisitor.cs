@@ -33,6 +33,8 @@
 
 using System;
 
+using Sooda.QL.TypedWrappers;
+
 namespace Sooda.QL 
 {
     public interface ISoqlVisitor 
@@ -58,5 +60,7 @@ namespace Sooda.QL
         void Visit(SoqlQueryExpression v);
         void Visit(SoqlUnaryNegationExpression v);
         void Visit(SoqlRawExpression v);
+        void Visit(SoqlTypedWrapperExpression v);
+        void Visit(SoqlBooleanWrapperExpression v);
     }
 }

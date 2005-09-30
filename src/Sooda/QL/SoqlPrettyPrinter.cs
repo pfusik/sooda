@@ -37,14 +37,26 @@ using System.Collections.Specialized;
 
 using Sooda.Schema;
 using Sooda.QL;
+using Sooda.QL.TypedWrappers;
 
-namespace Sooda.QL {
+namespace Sooda.QL 
+{
     /// <summary>
     /// Summary description for SoqlPrettyPrinter.
     /// </summary>
     public class SoqlPrettyPrinter : ISoqlVisitor {
         public SoqlPrettyPrinter(TextWriter output) {
             Output = output;
+        }
+
+        public virtual void Visit(SoqlTypedWrapperExpression v)
+        {
+            v.InnerExpression.Accept(this);
+        }
+
+        public virtual void Visit(SoqlBooleanWrapperExpression v)
+        {
+            v.InnerExpression.Accept(this);
         }
 
         public virtual void Visit(SoqlBinaryExpression v) {

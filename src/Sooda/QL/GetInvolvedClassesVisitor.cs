@@ -1,6 +1,8 @@
 using System;
 using Sooda.Schema;
 
+using Sooda.QL.TypedWrappers;
+
 namespace Sooda.QL
 {
 	/// <summary>
@@ -24,6 +26,16 @@ namespace Sooda.QL
         public ClassInfoCollection Results
         {
             get { return _result; }
+        }
+
+        void Sooda.QL.ISoqlVisitor.Visit(SoqlTypedWrapperExpression v)
+        {
+            v.InnerExpression.Accept(this);
+        }
+
+        void Sooda.QL.ISoqlVisitor.Visit(SoqlBooleanWrapperExpression v)
+        {
+            v.InnerExpression.Accept(this);
         }
 
         void Sooda.QL.ISoqlVisitor.Visit(SoqlBinaryExpression v)

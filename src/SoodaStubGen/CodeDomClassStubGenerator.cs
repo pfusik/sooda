@@ -47,13 +47,13 @@ namespace Sooda.StubGen
     public class CodeDomClassStubGenerator : CodeDomHelpers 
     {
         private ClassInfo classInfo;
-        private string OutNamespace;
+        private StubGenOptions options;
         public readonly string KeyGen;
 
-        public CodeDomClassStubGenerator(ClassInfo ci, string outNamespace) 
+        public CodeDomClassStubGenerator(ClassInfo ci, StubGenOptions options) 
         {
             this.classInfo = ci;
-            this.OutNamespace = outNamespace;
+            this.options = options;
             string keyGen = "none";
 
             if (!ci.ReadOnly && ci.GetPrimaryKeyFields().Length == 1) 
@@ -104,7 +104,7 @@ namespace Sooda.StubGen
                         new CodePrimitiveExpression(GetRootClass(classInfo).Name),
                         new CodeMethodInvokeExpression(
                         new CodeMethodInvokeExpression(
-                        new CodeTypeReferenceExpression(OutNamespace + "." + "_DatabaseSchema"), "GetSchema"),
+                        new CodeTypeReferenceExpression(options.OutputNamespace + "." + "_DatabaseSchema"), "GetSchema"),
                         "GetDataSourceInfo",
                         new CodePrimitiveExpression(classInfo.GetSafeDataSourceName())));
                     break;
@@ -113,7 +113,7 @@ namespace Sooda.StubGen
                         new CodePrimitiveExpression(GetRootClass(classInfo).Name),
                         new CodeMethodInvokeExpression(
                         new CodeMethodInvokeExpression(
-                        new CodeTypeReferenceExpression(OutNamespace + "." + "_DatabaseSchema"), "GetSchema"),
+                        new CodeTypeReferenceExpression(options.OutputNamespace + "." + "_DatabaseSchema"), "GetSchema"),
                         "GetDataSourceInfo",
                         new CodePrimitiveExpression(classInfo.GetSafeDataSourceName())));
                     break;
@@ -125,7 +125,7 @@ namespace Sooda.StubGen
             return field;
         }
 
-        public CodeMemberMethod Method_BeforeCollectionUpdate(FieldInfo fi, string OutNamespace) 
+        public CodeMemberMethod Method_BeforeCollectionUpdate(FieldInfo fi) 
         {
             CodeMemberMethod method = new CodeMemberMethod();
             method.Name = "BeforeCollectionUpdate_" + fi.Name;
@@ -143,7 +143,7 @@ namespace Sooda.StubGen
                                                 new CodeExpressionStatement(
                                                 new CodeMethodInvokeExpression(
                                                 new CodeCastExpression(typeof(Sooda.ObjectMapper.ISoodaObjectListInternal),
-                                                new CodePropertyReferenceExpression(new CodeCastExpression(fi.References, Arg("oldValue")), s)), "InternalRemove", new CodeCastExpression(OutNamespace + "." + classInfo.Name, new CodeThisReferenceExpression()))
+                                                new CodePropertyReferenceExpression(new CodeCastExpression(fi.References, Arg("oldValue")), s)), "InternalRemove", new CodeCastExpression(options.OutputNamespace + "." + classInfo.Name, new CodeThisReferenceExpression()))
                                                 )
                                             },
                         new CodeStatement[] {
@@ -155,7 +155,7 @@ namespace Sooda.StubGen
             return method;
         }
 
-        public CodeMemberMethod Method_AfterCollectionUpdate(FieldInfo fi, string OutNamespace) 
+        public CodeMemberMethod Method_AfterCollectionUpdate(FieldInfo fi) 
         {
             CodeMemberMethod method = new CodeMemberMethod();
             method.Name = "AfterCollectionUpdate_" + fi.Name;
@@ -172,7 +172,7 @@ namespace Sooda.StubGen
                                                 new CodeExpressionStatement(
                                                 new CodeMethodInvokeExpression(
                                                 new CodeCastExpression(typeof(Sooda.ObjectMapper.ISoodaObjectListInternal),
-                                                new CodePropertyReferenceExpression(new CodeCastExpression(fi.References, Arg("newValue")), s)), "InternalAdd", new CodeCastExpression(OutNamespace + "." + classInfo.Name, new CodeThisReferenceExpression()))
+                                                new CodePropertyReferenceExpression(new CodeCastExpression(fi.References, Arg("newValue")), s)), "InternalAdd", new CodeCastExpression(options.OutputNamespace + "." + classInfo.Name, new CodeThisReferenceExpression()))
                                                 )
                                             },
                         new CodeStatement[] {
@@ -354,7 +354,8 @@ namespace Sooda.StubGen
 
             return method;
         }
-        public void GenerateProperties(CodeTypeDeclaration ctd, ClassInfo ci, string OutNamespace, StubGenOptions options) 
+
+        public void GenerateProperties(CodeTypeDeclaration ctd, ClassInfo ci) 
         {
             CodeMemberProperty prop;
 
@@ -654,7 +655,7 @@ namespace Sooda.StubGen
                             {
                                 new CodeAssignStatement(
                                 new CodeFieldReferenceExpression(This, "_collectionCache_" + coli.Name),
-                                new CodeObjectCreateExpression(new CodeTypeReference(OutNamespace + "." + coli.ClassName + "List"),
+                                new CodeObjectCreateExpression(new CodeTypeReference(options.OutputNamespace + "." + coli.ClassName + "List"),
                                 new CodeObjectCreateExpression(new CodeTypeReference(typeof(Sooda.ObjectMapper.SoodaObjectOneToManyCollection)),
                                 new CodeExpression[] {
                                                          new CodeMethodInvokeExpression(This, "GetTransaction"),
@@ -696,7 +697,7 @@ namespace Sooda.StubGen
                     };
 
                     string relationTargetClass = slaveField.References;
-                    string relationHelperClass = OutNamespace + ".Stubs." + collectionClassName;
+                    string relationHelperClass = options.OutputNamespace + ".Stubs." + collectionClassName;
 
                     prop = new CodeMemberProperty();
                     prop.Name = coli.Name;
@@ -732,7 +733,7 @@ namespace Sooda.StubGen
             }
         }
 
-        public void GenerateFields(CodeTypeDeclaration ctd, ClassInfo ci, string OutNamespace) 
+        public void GenerateFields(CodeTypeDeclaration ctd, ClassInfo ci) 
         {
             CodeMemberField field;
             CodeTypeReference fieldArrayType = new CodeTypeReference(
@@ -752,7 +753,7 @@ namespace Sooda.StubGen
             {
                 foreach (CollectionOnetoManyInfo coli in classInfo.Collections1toN) 
                 {
-                    field = new CodeMemberField(OutNamespace + "." + coli.ClassName + "List", "_collectionCache_" + coli.Name);
+                    field = new CodeMemberField(options.OutputNamespace + "." + coli.ClassName + "List", "_collectionCache_" + coli.Name);
                     field.Attributes = MemberAttributes.Assembly;
                     field.InitExpression = new CodePrimitiveExpression(null);
                     ctd.Members.Add(field);
@@ -791,7 +792,7 @@ namespace Sooda.StubGen
                         collectionClassName = relationInfo.Name + "_L_List";
                     };
 
-                    field = new CodeMemberField(OutNamespace + "." + relationInfo.Table.Fields[coli.MasterField].ReferencedClass.Name + "List", "_collectionCache_" + coli.Name);
+                    field = new CodeMemberField(options.OutputNamespace + "." + relationInfo.Table.Fields[coli.MasterField].ReferencedClass.Name + "List", "_collectionCache_" + coli.Name);
                     field.Attributes = MemberAttributes.Private;
                     field.InitExpression = new CodePrimitiveExpression(null);
                     ctd.Members.Add(field);

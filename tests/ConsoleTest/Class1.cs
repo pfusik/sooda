@@ -61,17 +61,7 @@ namespace ConsoleTest
     {
         static void Main(string[] args) 
         {
-            try
-            {
-                Sooda.Logging.LogManager.Implementation = new Sooda.Logging.ConsoleLoggingImplementation();
-                System.Windows.Forms.Application.Run(new Form1());
-                Sooda.UnitTests.TestCases.ObjectMapper.MultiPKTest pt = new Sooda.UnitTests.TestCases.ObjectMapper.MultiPKTest();
-                pt.InsertTest();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
+            Sooda.Logging.LogManager.Implementation = new Sooda.Logging.ConsoleLoggingImplementation();
         }
     }
 }

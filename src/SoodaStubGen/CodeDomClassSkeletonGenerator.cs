@@ -44,9 +44,11 @@ using Sooda.Schema;
 namespace Sooda.StubGen {
     public class CodeDomClassSkeletonGenerator : CodeDomHelpers {
         private ClassInfo classInfo;
+        private StubGenOptions options;
 
-        public CodeDomClassSkeletonGenerator(ClassInfo ci) {
+        public CodeDomClassSkeletonGenerator(ClassInfo ci, StubGenOptions options) {
             this.classInfo = ci;
+            this.options = options;
         }
 
         public CodeConstructor Constructor_Raw() {

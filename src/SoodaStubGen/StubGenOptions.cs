@@ -41,7 +41,8 @@ using System.CodeDom.Compiler;
 
 using Sooda.Schema;
 
-namespace Sooda.StubGen {
+namespace Sooda.StubGen 
+{
     public enum PrimitiveRepresentation
     {
         Boxed,
@@ -49,38 +50,17 @@ namespace Sooda.StubGen {
         Raw,
     }
 
-    public class StubGenOptions {
-        private bool _withIndexers = true;
-
-        public bool WithIndexers
-        {
-            get {
-                return _withIndexers;
-            }
-            set {
-                _withIndexers = value;
-            }
-        }
-
-        private bool _nullPropagation = false;
-
-        public bool NullPropagation
-        {
-            get {
-                return _nullPropagation;
-            }
-            set {
-                _nullPropagation = value;
-            }
-        }
-
+    public class StubGenOptions 
+    {
+        public bool WithIndexers;
+        public bool NullPropagation = false;
         public PrimitiveRepresentation NullableRepresentation = PrimitiveRepresentation.SqlType;
         public PrimitiveRepresentation NotNullRepresentation = PrimitiveRepresentation.Raw;
         public string BaseClassName = null;
-
+        public string OutputNamespace;
         public bool IsVB = false;   // to correct some VB codedom bugs
-
-        //public PrimitiveRepresentation NullableRepresentation = PrimitiveRepresentation.SqlType;
-        //public PrimitiveRepresentation NotNullRepresentation = PrimitiveRepresentation.SqlType;
+        public bool WithTypedQueryWrappers = false;
+        public bool SeparateStubs = false;
+        public string Language = "c#";
     }
 }
