@@ -33,5 +33,44 @@
 
 using System;
 using System.IO;
+using System.Xml;
+using System.Xml.Serialization;
+using Sooda.Schema;
 
-namespace Sooda.QL {}
+namespace Sooda.QL.TypedWrappers 
+{
+    public class SoqlBooleanWrapperExpression : SoqlBooleanExpression 
+    {
+        private SoqlExpression _innerExpression;
+
+        public SoqlBooleanWrapperExpression()
+        {
+        }
+
+        public SoqlBooleanWrapperExpression(SoqlExpression innerExpression)
+        {
+            _innerExpression = innerExpression;
+        }
+
+        public SoqlExpression InnerExpression
+        {
+            get { return _innerExpression; }
+            set { _innerExpression = value; }
+        }
+
+        public virtual SoqlExpression Simplify() 
+        {
+            return this;
+        }
+
+        public override object Evaluate(ISoqlEvaluateContext context)
+        {
+            return InnerExpression.Evaluate(context);
+        }
+
+        public override void Accept(ISoqlVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
+    }
+}
