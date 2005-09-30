@@ -492,7 +492,20 @@ namespace Sooda.StubGen.CDIL
 
             ExpectKeyword("method");
             string methodName = EatKeyword();
-            method.Name = methodName;
+            switch (methodName)
+            {
+                case "op_Equality":
+                    method.Name = "operator ==";
+                    break;
+
+                case "op_Inequality":
+                    method.Name = "operator !=";
+                    break;
+
+                default:
+                    method.Name = methodName;
+                    break;
+            }
             Expect(CDILToken.LeftParen);
             while (TokenType != CDILToken.RightParen && TokenType != CDILToken.EOF)
             {

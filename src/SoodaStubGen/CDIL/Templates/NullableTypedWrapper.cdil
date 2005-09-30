@@ -1,0 +1,16 @@
+class ${ClassName}NullablePathExpression
+    extends ${ClassName}PathExpression
+
+constructor()
+    attributes Public
+begin
+end
+
+constructor(Sooda.QL.SoqlPathExpression left, System.String name)
+    attributes Public
+    baseArg(arg(left))
+    baseArg(arg(name))
+begin
+end
+
+end

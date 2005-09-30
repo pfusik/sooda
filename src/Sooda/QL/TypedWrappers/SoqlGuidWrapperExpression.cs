@@ -42,31 +42,31 @@ using Sooda.QL;
 
 namespace Sooda.QL.TypedWrappers
 {
-    public class SoqlStringWrapperExpression : SoqlTypedWrapperExpression 
+    public class SoqlGuidWrapperExpression : SoqlTypedWrapperExpression 
     {
-        public SoqlStringWrapperExpression()
+        public SoqlGuidWrapperExpression()
         {
         }
 
-        public SoqlStringWrapperExpression(SoqlExpression innerExpression) : base(innerExpression) { }
+        public SoqlGuidWrapperExpression(SoqlExpression innerExpression) : base(innerExpression) { }
 
-        public static implicit operator SoqlStringWrapperExpression(String v)
+        public static implicit operator SoqlGuidWrapperExpression(Guid v)
         {
-            return new SoqlStringWrapperExpression(new SoqlLiteralExpression(v));
+            return new SoqlGuidWrapperExpression(new SoqlLiteralExpression(v));
         }
 
-        public static implicit operator SoqlStringWrapperExpression(SoqlParameterLiteralExpression v)
+        public static implicit operator SoqlGuidWrapperExpression(SoqlParameterLiteralExpression v)
         {
-            return new SoqlStringWrapperExpression(v);
+            return new SoqlGuidWrapperExpression(v);
         }
 
-        public static SoqlBooleanExpression operator ==(SoqlStringWrapperExpression left, SoqlStringWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.Equal); }
-        public static SoqlBooleanExpression operator !=(SoqlStringWrapperExpression left, SoqlStringWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.NotEqual); }
+        public static SoqlBooleanExpression operator ==(SoqlGuidWrapperExpression left, SoqlGuidWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.Equal); }
+        public static SoqlBooleanExpression operator !=(SoqlGuidWrapperExpression left, SoqlGuidWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.NotEqual); }
         
-        public SoqlBooleanExpression In(params SoqlStringWrapperExpression[] inExpressions)
+        public SoqlBooleanExpression In(params SoqlGuidWrapperExpression[] inExpressions)
         {
             SoqlExpressionCollection rhs = new SoqlExpressionCollection();
-            foreach (SoqlStringWrapperExpression e in inExpressions)
+            foreach (SoqlGuidWrapperExpression e in inExpressions)
             {
                 rhs.Add(e);
             }
@@ -75,11 +75,6 @@ namespace Sooda.QL.TypedWrappers
 
         public override bool Equals(object o) { return Object.ReferenceEquals(this, o); }
         public override int GetHashCode() { return base.GetHashCode(); }
-        public static SoqlBooleanExpression operator <=(SoqlStringWrapperExpression left, SoqlStringWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.LessOrEqual); }
-        public static SoqlBooleanExpression operator >=(SoqlStringWrapperExpression left, SoqlStringWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.GreaterOrEqual); }
-        public static SoqlBooleanExpression operator <(SoqlStringWrapperExpression left, SoqlStringWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.Less); }
-        public static SoqlBooleanExpression operator >(SoqlStringWrapperExpression left, SoqlStringWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.Greater); }
-        public SoqlBooleanExpression Like(SoqlStringWrapperExpression likeExpression) { return new Sooda.QL.SoqlBooleanRelationalExpression(this, likeExpression, Sooda.QL.SoqlRelationalOperator.Like); }
     }
 
 }

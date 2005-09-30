@@ -106,7 +106,7 @@ namespace Sooda.Sql
             for (currentToken = startingToken; currentToken != null; currentToken = currentToken.Next) 
             {
                 lastTableAlias = GetTableAliasForExpressionPrefix(p);
-                logger.Trace("Container: {0} Prop: {1} {2} {3}", currentContainer.Name, currentToken.PropertyName, currentContainer.GetType().FullName, currentToken.GetType().FullName);
+                // logger.Trace("Container: {0} Prop: {1} {2} {3}", currentContainer.Name, currentToken.PropertyName, currentContainer.GetType().FullName, currentToken.GetType().FullName);
 
                 FieldInfo fi = currentContainer.FindFieldByName(currentToken.PropertyName);
                 if (fi == null) 

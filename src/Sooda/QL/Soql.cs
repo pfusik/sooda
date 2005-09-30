@@ -33,34 +33,16 @@
 
 using System;
 using System.IO;
-using System.Collections;
 
-namespace Sooda.QL {
-    public abstract class SoqlBooleanExpression : SoqlExpression
+using System.Xml.Serialization;
+
+namespace Sooda.QL 
+{
+    public class Soql
     {
-        public SoqlBooleanExpression And(SoqlBooleanExpression expr)
+        public static SoqlParameterLiteralExpression Param(int parameterPos)
         {
-            return new SoqlBooleanAndExpression(this, expr);
-        }
-
-        public SoqlBooleanExpression Or(SoqlBooleanExpression expr)
-        {
-            return new SoqlBooleanOrExpression(this, expr);
-        }
-
-        public static SoqlBooleanExpression operator &(SoqlBooleanExpression left, SoqlBooleanExpression right)
-        {
-            return left.And(right);
-        }
-
-        public static SoqlBooleanExpression operator |(SoqlBooleanExpression left, SoqlBooleanExpression right)
-        {
-            return left.Or(right);
-        }
-
-        public static SoqlBooleanExpression operator !(SoqlBooleanExpression expr) 
-        {
-            return new SoqlBooleanNegationExpression(expr); 
+            return new SoqlParameterLiteralExpression(parameterPos);
         }
     }
 }

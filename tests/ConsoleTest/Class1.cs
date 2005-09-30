@@ -52,6 +52,9 @@ using System.Xml.Serialization;
 using System.Security.Principal;
 using System.Security.Permissions;
 
+using Sooda.UnitTests.BaseObjects;
+using Sooda.UnitTests.BaseObjects.TypedQueries;
+
 [assembly: SoodaStubAssembly(typeof(Sooda.UnitTests.Objects._DatabaseSchema))]
 [assembly: SoodaConfig(XmlConfigFileName = "sooda.config.xml")]
 
@@ -62,6 +65,21 @@ namespace ConsoleTest
         static void Main(string[] args) 
         {
             Sooda.Logging.LogManager.Implementation = new Sooda.Logging.ConsoleLoggingImplementation();
+            SoqlExpression expr = ContactField.PrimaryGroup.Manager.PrimaryGroup.Manager.PrimaryGroup.Manager.Name;
+
+            using (SoodaTransaction t = new SoodaTransaction())
+            {
+                Contact.GetList(new SoodaWhereClause(
+                    (ContactField.Name == "Mary Manager") & 
+                    (ContactField.Name.In("a", ContactField.PrimaryGroup.Manager.Name)) &
+                    (ContactField.LastSalary < Soql.Param(0)) &
+                    (ContactField.LastSalary.IsNotNull()) &
+                    (!ContactField.Name.Like("Ala %")) &
+                    (ContactField.PrimaryGroup.Manager.Name == "Mary Manager"), 0));
+            }
+            
+            Console.WriteLine((ContactField.PrimaryGroup.Manager == 3) & (ContactField.PrimaryGroup.Manager == 3));
+            //Console.WriteLine("expr: {0}", expr);
         }
     }
 }

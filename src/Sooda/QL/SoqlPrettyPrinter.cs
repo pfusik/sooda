@@ -125,15 +125,15 @@ namespace Sooda.QL
         }
 
         public virtual void Visit(SoqlBooleanNegationExpression v) {
-            Output.Write("not (");
+            Output.Write("(not (");
             v.par.Accept(this);
-            Output.Write(")");
+            Output.Write("))");
         }
 
         public virtual void Visit(SoqlUnaryNegationExpression v) {
-            Output.Write("-(");
+            Output.Write("(-(");
             v.par.Accept(this);
-            Output.Write(")");
+            Output.Write("))");
         }
 
         public virtual void Visit(SoqlBooleanOrExpression v) {

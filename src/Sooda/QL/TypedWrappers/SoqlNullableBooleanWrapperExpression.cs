@@ -33,34 +33,15 @@
 
 using System;
 using System.IO;
-using System.Collections;
+using System.Xml;
+using System.Xml.Serialization;
+using Sooda.Schema;
 
-namespace Sooda.QL {
-    public abstract class SoqlBooleanExpression : SoqlExpression
+namespace Sooda.QL.TypedWrappers 
+{
+    public class SoqlNullableBooleanWrapperExpression : SoqlBooleanWrapperExpression
     {
-        public SoqlBooleanExpression And(SoqlBooleanExpression expr)
-        {
-            return new SoqlBooleanAndExpression(this, expr);
-        }
-
-        public SoqlBooleanExpression Or(SoqlBooleanExpression expr)
-        {
-            return new SoqlBooleanOrExpression(this, expr);
-        }
-
-        public static SoqlBooleanExpression operator &(SoqlBooleanExpression left, SoqlBooleanExpression right)
-        {
-            return left.And(right);
-        }
-
-        public static SoqlBooleanExpression operator |(SoqlBooleanExpression left, SoqlBooleanExpression right)
-        {
-            return left.Or(right);
-        }
-
-        public static SoqlBooleanExpression operator !(SoqlBooleanExpression expr) 
-        {
-            return new SoqlBooleanNegationExpression(expr); 
-        }
+        public SoqlNullableBooleanWrapperExpression() { }
+        public SoqlNullableBooleanWrapperExpression(SoqlExpression innerExpression) : base(innerExpression) { }
     }
 }

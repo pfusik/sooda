@@ -298,8 +298,6 @@ namespace Sooda.StubGen
             CodeMemberMethod m = gen.Method_IterateOuterReferences();
             if (m != null)
                 ctd.Members.Add(m);
-
-            CDILParserTest(ctd);
         }
 
         public void GenerateClassFactory(CodeNamespace nspace, ClassInfo ci) 
@@ -358,7 +356,6 @@ namespace Sooda.StubGen
             factoryClass.Members.Add(cctor);
 
             nspace.Types.Add(factoryClass);
-            CDILParserTest(factoryClass);
         }
 
         public void GenerateClassSkeleton(CodeNamespace nspace, ClassInfo ci, bool useChainedConstructorCall, bool fakeSkeleton) 
@@ -379,7 +376,6 @@ namespace Sooda.StubGen
             {
                 ctd.Members.Add(gen.Method_InitObject());
             }
-            CDILParserTest(ctd);
         }
 
         private void OutputFactories(CodeArrayCreateExpression cace, string ns, SchemaInfo schema)
@@ -423,7 +419,6 @@ namespace Sooda.StubGen
 
             CodeTypeDeclaration listWrapperClass = CDILParser.ParseClass(CDILTemplate.Get("ListWrapper.cdil"), context);
             nspace.Types.Add(listWrapperClass);
-            CDILParserTest(listWrapperClass);
         }
 
         public void GenerateRelationStub(CodeNamespace nspace, RelationInfo ri) 
@@ -463,7 +458,6 @@ namespace Sooda.StubGen
                 new CodePrimitiveExpression(ri.Name));
 
             ctd.Members.Add(field);
-            CDILParserTest(ctd);
 
             //public class RELATION_NAME_L_List : RELATION_NAME_Rel_List, LEFT_COLUMN_REF_TYPEList, ISoodaObjectList
 
@@ -562,6 +556,90 @@ namespace Sooda.StubGen
         {
             StubGen stubGen = new StubGen();
             return stubGen.Run(args);
+        }
+
+        private void GenerateTypedPublicQueryWrappers(CodeNamespace ns, ClassInfo classInfo)
+        {
+            CDILContext context = new CDILContext();
+            context["ClassName"] = classInfo.Name;
+
+            CodeTypeDeclaration ctd = CDILParser.ParseClass(CDILTemplate.Get("ClassField.cdil"), context);
+            ns.Types.Add(ctd);
+
+            foreach (FieldInfo fi in classInfo.UnifiedFields)
+            {
+                CodeMemberProperty prop = new CodeMemberProperty();
+
+                prop.Name = fi.Name;
+                prop.Attributes = MemberAttributes.Public | MemberAttributes.Static;
+                string fullWrapperTypeName;
+                string optionalNullable = "";
+                if (fi.IsNullable)
+                    optionalNullable = "Nullable";
+
+                if (fi.ReferencedClass == null)
+                {
+                    string rawTypeName = Sooda.Schema.FieldDataTypeHelper.GetClrType(fi.DataType).Name;
+                    fullWrapperTypeName = "Sooda.QL.TypedWrappers.Soql" + optionalNullable + rawTypeName + "WrapperExpression";
+                    prop.GetStatements.Add(new CodeMethodReturnStatement(
+                        new CodeObjectCreateExpression(fullWrapperTypeName, 
+                        new CodeObjectCreateExpression("Sooda.QL.SoqlPathExpression", new CodePrimitiveExpression(fi.Name)))));
+                }
+                else
+                {
+                    fullWrapperTypeName = fi.ReferencedClass.Name + optionalNullable + "PathExpression";
+                    prop.GetStatements.Add(new CodeMethodReturnStatement(
+                        new CodeObjectCreateExpression(fullWrapperTypeName, 
+                        new CodePrimitiveExpression(null), new CodePrimitiveExpression(fi.Name))));
+                }
+
+                prop.Type = new CodeTypeReference(fullWrapperTypeName);
+                ctd.Members.Add(prop);
+            }
+        }
+
+        private void GenerateTypedInternalQueryWrappers(CodeNamespace ns, ClassInfo classInfo)
+        {
+            CDILContext context = new CDILContext();
+            context["ClassName"] = classInfo.Name;
+            context["PrimaryKeyType"] = FieldDataTypeHelper.GetClrType(classInfo.GetFirstPrimaryKeyField().DataType).FullName;
+
+            CodeTypeDeclaration ctd = CDILParser.ParseClass(CDILTemplate.Get("TypedWrapper.cdil"), context);
+            ns.Types.Add(ctd);
+
+            foreach (FieldInfo fi in classInfo.UnifiedFields)
+            {
+                CodeMemberProperty prop = new CodeMemberProperty();
+
+                prop.Name = fi.Name;
+                prop.Attributes = MemberAttributes.Public;
+                string fullWrapperTypeName;
+                string optionalNullable = "";
+                if (fi.IsNullable)
+                    optionalNullable = "Nullable";
+
+                if (fi.ReferencedClass == null)
+                {
+                    string rawTypeName = Sooda.Schema.FieldDataTypeHelper.GetClrType(fi.DataType).Name;
+                    fullWrapperTypeName = "Sooda.QL.TypedWrappers.Soql" + optionalNullable + rawTypeName + "WrapperExpression";
+                    prop.GetStatements.Add(new CodeMethodReturnStatement(
+                        new CodeObjectCreateExpression(fullWrapperTypeName, 
+                        new CodeObjectCreateExpression("Sooda.QL.SoqlPathExpression", new CodeThisReferenceExpression(), new CodePrimitiveExpression(fi.Name)))));
+                }
+                else
+                {
+                    fullWrapperTypeName = fi.ReferencedClass.Name + optionalNullable + "PathExpression";
+                    prop.GetStatements.Add(new CodeMethodReturnStatement(
+                        new CodeObjectCreateExpression(fullWrapperTypeName, 
+                        new CodeThisReferenceExpression(), new CodePrimitiveExpression(fi.Name))));
+                }
+
+                prop.Type = new CodeTypeReference(fullWrapperTypeName);
+                ctd.Members.Add(prop);
+            }
+
+            CodeTypeDeclaration nullablectd = CDILParser.ParseClass(CDILTemplate.Get("NullableTypedWrapper.cdil"), context);
+            ns.Types.Add(nullablectd);
         }
 
         public int Run(string[] args)
@@ -1052,6 +1130,22 @@ namespace Sooda.StubGen
                     {
                         GenerateRelationStub(nspace, ri);
                     }
+
+                    Console.WriteLine("    * typed query wrappers (internal)");
+                    foreach (ClassInfo ci in schema.LocalClasses) 
+                    {
+                        GenerateTypedInternalQueryWrappers(nspace, ci);
+                    }
+
+                    nspace = CreateTypedQueriesNamespace(schema);
+                    ccu.Namespaces.Add(nspace);
+
+                    Console.WriteLine("    * typed query wrappers");
+                    foreach (ClassInfo ci in schema.LocalClasses) 
+                    {
+                        GenerateTypedPublicQueryWrappers(nspace, ci);
+                    }
+
                     Console.WriteLine("Writing code...");
                     codeGenerator.GenerateCodeFromCompileUnit(ccu, tw, codeGeneratorOptions);
                     Console.WriteLine("Done.");
@@ -1150,6 +1244,31 @@ namespace Sooda.StubGen
                 nspace.Imports.Add(new CodeNamespaceImport(ii.Namespace + (stubsSubnamespace ? ".Stubs" : "")));
                 AddImportsFromIncludedSchema(nspace, ii.Schema.Includes, stubsSubnamespace);
             }
+        }
+
+        void AddTypedQueryImportsFromIncludedSchema(CodeNamespace nspace, IncludeInfoCollection includes)
+        {
+            if (includes == null)
+                return;
+
+            foreach (IncludeInfo ii in includes)
+            {
+                nspace.Imports.Add(new CodeNamespaceImport(ii.Namespace + ".TypedQueries"));
+                AddTypedQueryImportsFromIncludedSchema(nspace, ii.Schema.Includes);
+            }
+        }
+
+        CodeNamespace CreateTypedQueriesNamespace(SchemaInfo schema) 
+        {
+            CodeNamespace nspace = new CodeNamespace(options.OutputNamespace + ".TypedQueries");
+            nspace.Imports.Add(new CodeNamespaceImport("System"));
+            nspace.Imports.Add(new CodeNamespaceImport("System.Collections"));
+            nspace.Imports.Add(new CodeNamespaceImport("System.Diagnostics"));
+            nspace.Imports.Add(new CodeNamespaceImport("System.Data"));
+            nspace.Imports.Add(new CodeNamespaceImport("Sooda"));
+            nspace.Imports.Add(new CodeNamespaceImport(options.OutputNamespace + ".Stubs"));
+            AddImportsFromIncludedSchema(nspace, schema.Includes, false);
+            return nspace;
         }
 
         CodeNamespace CreateBaseNamespace(SchemaInfo schema) 

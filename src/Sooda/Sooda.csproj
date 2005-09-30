@@ -558,6 +558,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "QL\Soql.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "QL\SoqlAsteriskExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -718,6 +723,10 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "QL\TypedWrappers\makewrappers.pl"
+                    BuildAction = "None"
+                />
+                <File
                     RelPath = "QL\TypedWrappers\SoqlBooleanWrapperExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -738,6 +747,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "QL\TypedWrappers\SoqlGuidWrapperExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "QL\TypedWrappers\SoqlInt16WrapperExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -749,6 +763,56 @@
                 />
                 <File
                     RelPath = "QL\TypedWrappers\SoqlInt64WrapperExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\TypedWrappers\SoqlNullableBooleanWrapperExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\TypedWrappers\SoqlNullableDateTimeWrapperExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\TypedWrappers\SoqlNullableDecimalWrapperExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\TypedWrappers\SoqlNullableDoubleWrapperExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\TypedWrappers\SoqlNullableGuidWrapperExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\TypedWrappers\SoqlNullableInt16WrapperExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\TypedWrappers\SoqlNullableInt32WrapperExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\TypedWrappers\SoqlNullableInt64WrapperExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\TypedWrappers\SoqlNullableSingleWrapperExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\TypedWrappers\SoqlNullableStringWrapperExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

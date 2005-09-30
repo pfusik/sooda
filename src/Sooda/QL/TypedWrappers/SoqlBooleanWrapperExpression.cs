@@ -72,5 +72,21 @@ namespace Sooda.QL.TypedWrappers
         {
             visitor.Visit(this);
         }
+
+        public static implicit operator SoqlBooleanWrapperExpression(bool v)
+        {
+            return new SoqlBooleanWrapperExpression(new SoqlLiteralExpression(v));
+        }
+
+        public static implicit operator SoqlBooleanWrapperExpression(SoqlParameterLiteralExpression v)
+        {
+            return new SoqlBooleanWrapperExpression(v);
+        }
+
+        public static SoqlBooleanExpression operator ==(SoqlBooleanWrapperExpression left, SoqlBooleanWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.Equal); }
+        public static SoqlBooleanExpression operator !=(SoqlBooleanWrapperExpression left, SoqlBooleanWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.NotEqual); }
+
+        public override bool Equals(object o) { return Object.ReferenceEquals(this, o); }
+        public override int GetHashCode() { return base.GetHashCode(); }
     }
 }

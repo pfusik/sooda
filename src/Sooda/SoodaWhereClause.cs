@@ -58,7 +58,13 @@ namespace Sooda
                 this.WhereExpression = null;
             }
         }
-        public SoodaWhereClause(SoqlBooleanExpression whereExpression, object[] par) 
+
+        public SoodaWhereClause(SoqlBooleanExpression whereExpression) 
+        {
+            this.WhereExpression = whereExpression;
+        }
+
+        public SoodaWhereClause(SoqlBooleanExpression whereExpression, params object[] par) 
         {
             this.Parameters = par;
             this.WhereExpression = whereExpression;
@@ -130,7 +136,7 @@ namespace Sooda
                 return false;
         }
 
-        public static readonly SoodaWhereClause Unrestricted = new SoodaWhereClause(null);
+        public static readonly SoodaWhereClause Unrestricted = new SoodaWhereClause((string)null);
 
         class EvaluateContext : ISoqlEvaluateContext
         {
