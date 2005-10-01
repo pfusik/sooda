@@ -79,6 +79,7 @@ namespace Sooda.QL.TypedWrappers
         public static SoqlBooleanExpression operator >=(SoqlStringWrapperExpression left, SoqlStringWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.GreaterOrEqual); }
         public static SoqlBooleanExpression operator <(SoqlStringWrapperExpression left, SoqlStringWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.Less); }
         public static SoqlBooleanExpression operator >(SoqlStringWrapperExpression left, SoqlStringWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.Greater); }
+        public static SoqlStringWrapperExpression operator +(SoqlStringWrapperExpression left, SoqlStringWrapperExpression right) { return new SoqlStringWrapperExpression(new Sooda.QL.SoqlBinaryExpression(left, right, Sooda.QL.SoqlBinaryOperator.Add)); }
         public SoqlBooleanExpression Like(SoqlStringWrapperExpression likeExpression) { return new Sooda.QL.SoqlBooleanRelationalExpression(this, likeExpression, Sooda.QL.SoqlRelationalOperator.Like); }
     }
 

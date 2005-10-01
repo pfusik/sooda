@@ -79,6 +79,11 @@ namespace Sooda.QL.TypedWrappers
         public static SoqlBooleanExpression operator >=(SoqlInt32WrapperExpression left, SoqlInt32WrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.GreaterOrEqual); }
         public static SoqlBooleanExpression operator <(SoqlInt32WrapperExpression left, SoqlInt32WrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.Less); }
         public static SoqlBooleanExpression operator >(SoqlInt32WrapperExpression left, SoqlInt32WrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.Greater); }
+        public static SoqlInt32WrapperExpression operator +(SoqlInt32WrapperExpression left, SoqlInt32WrapperExpression right) { return new SoqlInt32WrapperExpression(new Sooda.QL.SoqlBinaryExpression(left, right, Sooda.QL.SoqlBinaryOperator.Add)); }
+        public static SoqlInt32WrapperExpression operator -(SoqlInt32WrapperExpression left, SoqlInt32WrapperExpression right) { return new SoqlInt32WrapperExpression(new Sooda.QL.SoqlBinaryExpression(left, right, Sooda.QL.SoqlBinaryOperator.Sub)); }
+        public static SoqlInt32WrapperExpression operator *(SoqlInt32WrapperExpression left, SoqlInt32WrapperExpression right) { return new SoqlInt32WrapperExpression(new Sooda.QL.SoqlBinaryExpression(left, right, Sooda.QL.SoqlBinaryOperator.Mul)); }
+        public static SoqlInt32WrapperExpression operator /(SoqlInt32WrapperExpression left, SoqlInt32WrapperExpression right) { return new SoqlInt32WrapperExpression(new Sooda.QL.SoqlBinaryExpression(left, right, Sooda.QL.SoqlBinaryOperator.Div)); }
+        public static SoqlInt32WrapperExpression operator %(SoqlInt32WrapperExpression left, SoqlInt32WrapperExpression right) { return new SoqlInt32WrapperExpression(new Sooda.QL.SoqlBinaryExpression(left, right, Sooda.QL.SoqlBinaryOperator.Mod)); }
     }
 
 }

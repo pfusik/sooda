@@ -74,6 +74,7 @@ namespace ConsoleTest
                     (ContactField.Name.In("a", ContactField.PrimaryGroup.Manager.Name)) &
                     (ContactField.LastSalary < Soql.Param(0)) &
                     (ContactField.LastSalary.IsNotNull()) &
+                    (ContactField.LastSalary * 2 < 10) &
                     (!ContactField.Name.Like("Ala %")) &
                     (ContactField.PrimaryGroup.Manager.Name == "Mary Manager"), 0));
             }

@@ -1,5 +1,12 @@
 @types=('DateTime','Decimal','Double','Guid','Int16','Int32','Int64','Single','String');
 
+$arithmetic{'Decimal'} = 1;
+$arithmetic{'Double'} = 1;
+$arithmetic{'Int16'} = 1;
+$arithmetic{'Int32'} = 1;
+$arithmetic{'Int64'} = 1;
+$arithmetic{'Single'} = 1;
+
 for $rawtype (@types)
 {
     open(OUT, ">Soql${rawtype}WrapperExpression.cs");
@@ -92,9 +99,20 @@ EOT
         public static SoqlBooleanExpression operator >(Soql${rawtype}WrapperExpression left, Soql${rawtype}WrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.Greater); }
 EOT
     }
+    if ($arithmetic{$rawtype}) 
+    {
+        print OUT <<EOT ;
+        public static Soql${rawtype}WrapperExpression operator +(Soql${rawtype}WrapperExpression left, Soql${rawtype}WrapperExpression right) { return new Soql${rawtype}WrapperExpression(new Sooda.QL.SoqlBinaryExpression(left, right, Sooda.QL.SoqlBinaryOperator.Add)); }
+        public static Soql${rawtype}WrapperExpression operator -(Soql${rawtype}WrapperExpression left, Soql${rawtype}WrapperExpression right) { return new Soql${rawtype}WrapperExpression(new Sooda.QL.SoqlBinaryExpression(left, right, Sooda.QL.SoqlBinaryOperator.Sub)); }
+        public static Soql${rawtype}WrapperExpression operator *(Soql${rawtype}WrapperExpression left, Soql${rawtype}WrapperExpression right) { return new Soql${rawtype}WrapperExpression(new Sooda.QL.SoqlBinaryExpression(left, right, Sooda.QL.SoqlBinaryOperator.Mul)); }
+        public static Soql${rawtype}WrapperExpression operator /(Soql${rawtype}WrapperExpression left, Soql${rawtype}WrapperExpression right) { return new Soql${rawtype}WrapperExpression(new Sooda.QL.SoqlBinaryExpression(left, right, Sooda.QL.SoqlBinaryOperator.Div)); }
+        public static Soql${rawtype}WrapperExpression operator %(Soql${rawtype}WrapperExpression left, Soql${rawtype}WrapperExpression right) { return new Soql${rawtype}WrapperExpression(new Sooda.QL.SoqlBinaryExpression(left, right, Sooda.QL.SoqlBinaryOperator.Mod)); }
+EOT
+    }
     if ($rawtype eq "String")
     {
         print OUT <<EOT ;
+        public static Soql${rawtype}WrapperExpression operator +(Soql${rawtype}WrapperExpression left, Soql${rawtype}WrapperExpression right) { return new Soql${rawtype}WrapperExpression(new Sooda.QL.SoqlBinaryExpression(left, right, Sooda.QL.SoqlBinaryOperator.Add)); }
         public SoqlBooleanExpression Like(SoqlStringWrapperExpression likeExpression) { return new Sooda.QL.SoqlBooleanRelationalExpression(this, likeExpression, Sooda.QL.SoqlRelationalOperator.Like); }
 EOT
 

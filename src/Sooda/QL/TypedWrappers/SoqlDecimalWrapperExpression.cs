@@ -79,6 +79,11 @@ namespace Sooda.QL.TypedWrappers
         public static SoqlBooleanExpression operator >=(SoqlDecimalWrapperExpression left, SoqlDecimalWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.GreaterOrEqual); }
         public static SoqlBooleanExpression operator <(SoqlDecimalWrapperExpression left, SoqlDecimalWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.Less); }
         public static SoqlBooleanExpression operator >(SoqlDecimalWrapperExpression left, SoqlDecimalWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.Greater); }
+        public static SoqlDecimalWrapperExpression operator +(SoqlDecimalWrapperExpression left, SoqlDecimalWrapperExpression right) { return new SoqlDecimalWrapperExpression(new Sooda.QL.SoqlBinaryExpression(left, right, Sooda.QL.SoqlBinaryOperator.Add)); }
+        public static SoqlDecimalWrapperExpression operator -(SoqlDecimalWrapperExpression left, SoqlDecimalWrapperExpression right) { return new SoqlDecimalWrapperExpression(new Sooda.QL.SoqlBinaryExpression(left, right, Sooda.QL.SoqlBinaryOperator.Sub)); }
+        public static SoqlDecimalWrapperExpression operator *(SoqlDecimalWrapperExpression left, SoqlDecimalWrapperExpression right) { return new SoqlDecimalWrapperExpression(new Sooda.QL.SoqlBinaryExpression(left, right, Sooda.QL.SoqlBinaryOperator.Mul)); }
+        public static SoqlDecimalWrapperExpression operator /(SoqlDecimalWrapperExpression left, SoqlDecimalWrapperExpression right) { return new SoqlDecimalWrapperExpression(new Sooda.QL.SoqlBinaryExpression(left, right, Sooda.QL.SoqlBinaryOperator.Div)); }
+        public static SoqlDecimalWrapperExpression operator %(SoqlDecimalWrapperExpression left, SoqlDecimalWrapperExpression right) { return new SoqlDecimalWrapperExpression(new Sooda.QL.SoqlBinaryExpression(left, right, Sooda.QL.SoqlBinaryOperator.Mod)); }
     }
 
 }
