@@ -60,63 +60,119 @@ method GetList(SoodaWhereClause where)
     attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
     returns ${ClassName}List
 begin
-    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, arg(where), typeref(SoodaOrderBy).Unsorted$, typeref(SoodaSnapshotOptions).Default$)
+    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, arg(where), typeref(SoodaOrderBy).Unsorted$, -1, typeref(SoodaSnapshotOptions).Default$)
 end
 
 method GetList(SoodaWhereClause where, SoodaSnapshotOptions options)
     attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
     returns ${ClassName}List
 begin
-    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, arg(where), typeref(SoodaOrderBy).Unsorted$, arg(options))
+    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, arg(where), typeref(SoodaOrderBy).Unsorted$, -1, arg(options))
 end
 
 method GetList(SoodaWhereClause where, SoodaOrderBy orderBy)
     attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
     returns ${ClassName}List
 begin
-    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, arg(where), arg(orderBy), typeref(SoodaSnapshotOptions).Default$)
+    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, arg(where), arg(orderBy), -1, typeref(SoodaSnapshotOptions).Default$)
 end
 
 method GetList(SoodaWhereClause where, SoodaOrderBy orderBy, SoodaSnapshotOptions options)
     attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
     returns ${ClassName}List
 begin
-    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, arg(where), arg(orderBy), arg(options))
+    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, arg(where), arg(orderBy), -1, arg(options))
 end
 
 method GetList(SoodaTransaction tran, SoodaWhereClause where)
     attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
     returns ${ClassName}List
 begin
-    return defaultscope.DoGetList(arg(tran), arg(where), typeref(SoodaOrderBy).Unsorted$, typeref(SoodaSnapshotOptions).Default$)
+    return defaultscope.DoGetList(arg(tran), arg(where), typeref(SoodaOrderBy).Unsorted$, -1, typeref(SoodaSnapshotOptions).Default$)
 end
 
 method GetList(SoodaTransaction tran, SoodaWhereClause where, SoodaSnapshotOptions options)
     attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
     returns ${ClassName}List
 begin
-    return defaultscope.DoGetList(arg(tran), arg(where), typeref(SoodaOrderBy).Unsorted$, arg(options))
+    return defaultscope.DoGetList(arg(tran), arg(where), typeref(SoodaOrderBy).Unsorted$, -1, arg(options))
 end
 
 method GetList(SoodaTransaction tran, SoodaWhereClause where, SoodaOrderBy orderBy)
     attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
     returns ${ClassName}List
 begin
-    return defaultscope.DoGetList(arg(tran), arg(where), arg(orderBy), typeref(SoodaSnapshotOptions).Default$)
+    return defaultscope.DoGetList(arg(tran), arg(where), arg(orderBy), -1, typeref(SoodaSnapshotOptions).Default$)
 end
 
 method GetList(SoodaTransaction tran, SoodaWhereClause where, SoodaOrderBy orderBy, SoodaSnapshotOptions options)
     attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
     returns ${ClassName}List
 begin
-    return defaultscope.DoGetList(arg(tran), arg(where), arg(orderBy), arg(options))
+    return defaultscope.DoGetList(arg(tran), arg(where), arg(orderBy), -1, arg(options))
 end
 
-method DoGetList(SoodaTransaction tran, SoodaWhereClause whereClause, SoodaOrderBy orderByClause, SoodaSnapshotOptions options)
+method GetList(SoodaWhereClause where, System.Int32 topCount)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, arg(where), typeref(SoodaOrderBy).Unsorted$, arg(topCount), typeref(SoodaSnapshotOptions).Default$)
+end
+
+method GetList(SoodaWhereClause where, System.Int32 topCount, SoodaSnapshotOptions options)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, arg(where), typeref(SoodaOrderBy).Unsorted$, arg(topCount), arg(options))
+end
+
+method GetList(SoodaWhereClause where, SoodaOrderBy orderBy, System.Int32 topCount)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, arg(where), arg(orderBy), arg(topCount), typeref(SoodaSnapshotOptions).Default$)
+end
+
+method GetList(SoodaWhereClause where, SoodaOrderBy orderBy, System.Int32 topCount, SoodaSnapshotOptions options)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, arg(where), arg(orderBy), arg(topCount), arg(options))
+end
+
+method GetList(SoodaTransaction tran, SoodaWhereClause where, System.Int32 topCount)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(arg(tran), arg(where), typeref(SoodaOrderBy).Unsorted$, arg(topCount), typeref(SoodaSnapshotOptions).Default$)
+end
+
+method GetList(SoodaTransaction tran, SoodaWhereClause where, System.Int32 topCount, SoodaSnapshotOptions options)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(arg(tran), arg(where), typeref(SoodaOrderBy).Unsorted$, arg(topCount), arg(options))
+end
+
+method GetList(SoodaTransaction tran, SoodaWhereClause where, SoodaOrderBy orderBy, System.Int32 topCount)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(arg(tran), arg(where), arg(orderBy), arg(topCount), typeref(SoodaSnapshotOptions).Default$)
+end
+
+method GetList(SoodaTransaction tran, SoodaWhereClause where, SoodaOrderBy orderBy, System.Int32 topCount, SoodaSnapshotOptions options)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(arg(tran), arg(where), arg(orderBy), arg(topCount), arg(options))
+end
+
+method DoGetList(SoodaTransaction tran, SoodaWhereClause whereClause, SoodaOrderBy orderByClause, System.Int32 topCount, SoodaSnapshotOptions options)
     attributes Abstract,Assembly,Static,Private,Overloaded,Final
     returns ${ClassName}List
 begin
-    return new ${ClassName}List(new Sooda.ObjectMapper.SoodaObjectListSnapshot(arg(tran), arg(whereClause), arg(orderByClause), arg(options), typeref(${ClassName}_Factory).TheClassInfo$))
+    return new ${ClassName}List(new Sooda.ObjectMapper.SoodaObjectListSnapshot(arg(tran), arg(whereClause), arg(orderByClause), arg(topCount), arg(options), typeref(${ClassName}_Factory).TheClassInfo$))
 end
 
 method Load(${PrimaryKeyFormalParameters})

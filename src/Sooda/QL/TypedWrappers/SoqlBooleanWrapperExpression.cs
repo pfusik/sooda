@@ -58,7 +58,7 @@ namespace Sooda.QL.TypedWrappers
             set { _innerExpression = value; }
         }
 
-        public virtual SoqlExpression Simplify() 
+        public override SoqlExpression Simplify() 
         {
             return this;
         }

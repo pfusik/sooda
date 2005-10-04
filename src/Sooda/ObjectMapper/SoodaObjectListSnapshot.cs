@@ -131,7 +131,7 @@ namespace Sooda.ObjectMapper
             items.Add(o);
         }
 
-        public SoodaObjectListSnapshot(SoodaTransaction t, SoodaWhereClause whereClause, SoodaOrderBy orderBy, SoodaSnapshotOptions options, ClassInfo ci)
+        public SoodaObjectListSnapshot(SoodaTransaction t, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount, SoodaSnapshotOptions options, ClassInfo ci)
         {
             this.classInfo = ci;
 
@@ -163,10 +163,10 @@ namespace Sooda.ObjectMapper
                 t.SaveObjectChanges(true, objectsToPrecommit);
             }
 
-            LoadList(t, whereClause, orderBy, options);
+            LoadList(t, whereClause, orderBy, topCount, options);
         }
 
-        private void LoadList(SoodaTransaction t, SoodaWhereClause whereClause, SoodaOrderBy orderBy, SoodaSnapshotOptions options) 
+        private void LoadList(SoodaTransaction t, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount, SoodaSnapshotOptions options) 
         {
             SoodaTransaction transaction = t;
 
@@ -177,7 +177,7 @@ namespace Sooda.ObjectMapper
                 SoodaDataSource ds = transaction.OpenDataSource(classInfo.GetDataSource());
                 TableInfo[] loadedTables;
 
-                using (IDataReader reader = ds.LoadObjectList(t.Schema, classInfo, whereClause, orderBy, out loadedTables)) 
+                using (IDataReader reader = ds.LoadObjectList(t.Schema, classInfo, whereClause, orderBy, topCount, out loadedTables)) 
                 {
                     while (reader.Read()) 
                     {

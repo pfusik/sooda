@@ -267,12 +267,13 @@ namespace Sooda.Sql
             }
         }
 
-        public override IDataReader LoadObjectList(SchemaInfo schemaInfo, ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, out TableInfo[] tables) 
+        public override IDataReader LoadObjectList(SchemaInfo schemaInfo, ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount, out TableInfo[] tables) 
         {
             try
             {
                 ArrayList tablesArrayList = new ArrayList(classInfo.UnifiedTables.Count);
                 SoqlQueryExpression queryExpression = new SoqlQueryExpression();
+                queryExpression.TopCount = topCount;
                 queryExpression.From.Add(classInfo.Name);
                 queryExpression.FromAliases.Add("obj");
                 foreach (TableInfo ti in classInfo.UnifiedTables)

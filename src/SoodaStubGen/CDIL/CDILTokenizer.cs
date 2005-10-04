@@ -100,8 +100,11 @@ namespace Sooda.StubGen.CDIL
                 _tokenValue = text;
                 return;
             }
-            if (Char.IsNumber(ch))
+            if (Char.IsNumber(ch) || ch == '-')
             {
+                bool minus = ch == '-';
+                if (minus) ReadChar();
+                
                 string text = "";
                 while ((p = PeekChar()) != -1 && Char.IsNumber((char)p))
                 {
@@ -109,8 +112,9 @@ namespace Sooda.StubGen.CDIL
                     ReadChar();
                     text += ch;
                 }
+                if (text.Length == 0) throw BuildException("Number expected after -: " + ch);
                 _tokenType = CDILToken.Integer;
-                _tokenValue = Convert.ToInt32(text);
+                _tokenValue = minus ? -Convert.ToInt32(text) : Convert.ToInt32(text);
                 return;
             }
             if (ch == '(')

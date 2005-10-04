@@ -165,7 +165,7 @@ namespace Sooda.ObjectMapper {
             if (additionalWhereClause != null)
                 whereClause = whereClause.Append(additionalWhereClause);
 
-            using (IDataReader reader = ds.LoadObjectList(transaction.Schema, classInfo, whereClause, null, out loadedTables)) {
+            using (IDataReader reader = ds.LoadObjectList(transaction.Schema, classInfo, whereClause, null, -1, out loadedTables)) {
                 while (reader.Read()) {
                     SoodaObject obj = SoodaObject.GetRefFromRecordHelper(transaction, factory, reader, 0, loadedTables, 0);
 
