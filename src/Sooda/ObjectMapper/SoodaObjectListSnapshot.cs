@@ -106,7 +106,7 @@ namespace Sooda.ObjectMapper
         public SoodaObjectListSnapshot(SoodaTransaction tran, SoodaObjectFilter filter, ClassInfo ci) 
         {
             this.classInfo = ci;
-            SoodaObjectCollection al = tran.GetObjectsByClassName(ci.Name);
+            WeakSoodaObjectCollection al = tran.GetObjectsByClassName(ci.Name);
 
             if (al != null) 
             {
@@ -114,7 +114,17 @@ namespace Sooda.ObjectMapper
                 // the filter expression may materialize new objects
                 // during checking. This way we avoid "collection modified" exception
 
-                foreach (SoodaObject obj in al.Clone()) 
+                SoodaObjectCollection clonedArray = new SoodaObjectCollection();
+                foreach (WeakSoodaObject wr in al)
+                {
+                    SoodaObject obj = wr.TargetSoodaObject;
+                    if (obj != null)
+                    {
+                        clonedArray.Add(obj);
+                    }
+                }
+
+                foreach (SoodaObject obj in clonedArray) 
                 {
                     if (filter(obj)) 
                     {
@@ -147,10 +157,15 @@ namespace Sooda.ObjectMapper
                     objectsToPrecommit = new SoodaObjectCollection();
                     foreach (ClassInfo involvedClass in gic.Results)
                     {
-                        SoodaObjectCollection dirtyObjects = t.GetDirtyObjectsByClassName(involvedClass.Name);
+                        WeakSoodaObjectCollection dirtyObjects = t.GetDirtyObjectsByClassName(involvedClass.Name);
                         if (dirtyObjects != null)
                         {
-                            objectsToPrecommit.AddRange(dirtyObjects);
+                            foreach (WeakSoodaObject wr in dirtyObjects)
+                            {
+                                SoodaObject o = wr.TargetSoodaObject;
+                                if (o != null)
+                                    objectsToPrecommit.Add(o);
+                            }
                         }
                     }
                 }
@@ -166,7 +181,7 @@ namespace Sooda.ObjectMapper
             LoadList(t, whereClause, orderBy, topCount, options);
         }
 
-        private void LoadList(SoodaTransaction t, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount, SoodaSnapshotOptions options) 
+        private void LoadList(SoodaTransaction t, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount, SoodaSnapshotOptions options)
         {
             SoodaTransaction transaction = t;
 

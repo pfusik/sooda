@@ -34,12 +34,14 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Sooda {
+namespace Sooda 
+{
     [Serializable]
-    public class SoodaConfigException : SoodaException {
+    public class SoodaConfigException : SoodaException 
+    {
         public SoodaConfigException() {}
         public SoodaConfigException(string message) : base(message) {}
         public SoodaConfigException(string message, Exception inner) : base(message, inner) {}
-		protected SoodaConfigException(SerializationInfo info, StreamingContext context) : base(info, context) {}
+        protected SoodaConfigException(SerializationInfo info, StreamingContext context) : base(info, context) {}
     }
 }

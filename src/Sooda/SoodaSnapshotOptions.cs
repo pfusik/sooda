@@ -41,7 +41,7 @@ namespace Sooda {
     public enum SoodaSnapshotOptions
     {
         /// <summary>
-        /// Use default options - load data from database, apply changes made within transaction. SoodaWhereClause clause specified as Soql;
+        /// Use default options - load data from database, apply changes made within transaction.
         /// </summary>
         Default = 0,
 
@@ -70,5 +70,10 @@ namespace Sooda {
         /// where clause.
         /// </summary>
         VerifyAfterLoad = 8,
+
+        /// <summary>
+        /// Load only the primary key values
+        /// </summary>
+        KeysOnly = 16,
     }
 }

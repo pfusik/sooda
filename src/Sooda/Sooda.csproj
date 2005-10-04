@@ -229,6 +229,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Collections\ObjectToWeakSoodaObjectAssociation.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Collections\SoodaDataSourceCollection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -264,6 +269,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Collections\StringToObjectToWeakSoodaObjectAssociation.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Collections\StringToSoodaObjectCollectionAssociation.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -274,12 +284,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Collections\StringToWeakSoodaObjectCollectionAssociation.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Collections\TypeToISoodaObjectFactoryAssociation.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Collections\TypeToSoodaRelationTableAssociation.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Collections\WeakSoodaObjectCollection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -435,6 +455,11 @@
                 />
                 <File
                     RelPath = "ObjectMapper\SoodaRelationTable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ObjectMapper\WeakSoodaObject.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

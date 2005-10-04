@@ -67,14 +67,16 @@ namespace Sooda
         private SoodaTransactionOptions transactionOptions;
         private TypeToSoodaRelationTableAssociation _relationTables = new TypeToSoodaRelationTableAssociation();
         //private KeyToSoodaObjectMap _objects = new KeyToSoodaObjectMap();
-        private SoodaObjectCollection _objectList = new SoodaObjectCollection ();
+        private bool _useWeakReferences = false;
+        private WeakSoodaObjectCollection _objectList = new WeakSoodaObjectCollection();
         private Queue _precommitQueue = null;
         private Queue _deleteQueue = null;
         private SoodaObjectCollection _postCommitQueue = null;
         private SoodaObjectCollection _dirtyObjects = new SoodaObjectCollection();
-        private StringToSoodaObjectCollectionAssociation _objectsByClass = new StringToSoodaObjectCollectionAssociation();
-        private StringToSoodaObjectCollectionAssociation _dirtyObjectsByClass = new StringToSoodaObjectCollectionAssociation();
-        private StringToObjectToSoodaObjectAssociation _objectDictByClass = new StringToObjectToSoodaObjectAssociation();
+        private SoodaObjectCollection _strongReferences = new SoodaObjectCollection();
+        private StringToWeakSoodaObjectCollectionAssociation _objectsByClass = new StringToWeakSoodaObjectCollectionAssociation();
+        private StringToWeakSoodaObjectCollectionAssociation _dirtyObjectsByClass = new StringToWeakSoodaObjectCollectionAssociation();
+        private StringToObjectToWeakSoodaObjectAssociation _objectDictByClass = new StringToObjectToWeakSoodaObjectAssociation();
 
         private SoodaDataSourceCollection _dataSources = new SoodaDataSourceCollection();
         private StringToISoodaObjectFactoryAssociation factoryForClassName = new StringToISoodaObjectFactoryAssociation();
@@ -167,6 +169,12 @@ namespace Sooda
 
         #endregion
 
+        public bool UseWeakReferences
+        {
+            get { return _useWeakReferences; }
+            set { _useWeakReferences = value; }
+        }
+
         public static SoodaTransaction ActiveTransaction
         {
             [DebuggerStepThrough]
@@ -183,35 +191,27 @@ namespace Sooda
             }
         }
 
-        public SoodaObjectCollection GetObjects() 
-        {
-            return _objectList;
-        }
-
-        public SoodaObjectCollection GetObjectsByClassName(string className) 
+        internal WeakSoodaObjectCollection GetObjectsByClassName(string className) 
         {
             return _objectsByClass[className];
         }
 
-        public SoodaObjectCollection GetDirtyObjectsByClassName(string className) 
+        internal WeakSoodaObjectCollection GetDirtyObjectsByClassName(string className) 
         {
             return _dirtyObjectsByClass[className];
         }
 
         public SoodaObjectCollection DirtyObjects
         {
-            get 
-            {
-                return _dirtyObjects;
-            }
+            get { return _dirtyObjects; }
         }
 
-        private ObjectToSoodaObjectAssociation GetObjectDictionaryForClass(string className) 
+        private ObjectToWeakSoodaObjectAssociation GetObjectDictionaryForClass(string className) 
         {
-            ObjectToSoodaObjectAssociation dict = _objectDictByClass[className];
+            ObjectToWeakSoodaObjectAssociation dict = _objectDictByClass[className];
             if (dict == null) 
             {
-                dict = new ObjectToSoodaObjectAssociation();
+                dict = new ObjectToWeakSoodaObjectAssociation();
                 _objectDictByClass[className] = dict;
             }
             return dict;
@@ -220,7 +220,7 @@ namespace Sooda
         private void AddObjectWithKey(string className, object keyValue, SoodaObject obj) 
         {
             // Console.WriteLine("AddObjectWithKey('{0}',{1})", className, keyValue);
-            GetObjectDictionaryForClass(className).Add(keyValue, obj);
+            GetObjectDictionaryForClass(className)[keyValue] = new WeakSoodaObject(obj);
         }
 
         private void UnregisterObjectWithKey(string className, object keyValue) 
@@ -230,12 +230,15 @@ namespace Sooda
 
         internal bool ExistsObjectWithKey(string className, object keyValue) 
         {
-            return GetObjectDictionaryForClass(className).Contains(keyValue);
+            return FindObjectWithKey(className, keyValue) != null;
         }
 
         private SoodaObject FindObjectWithKey(string className, object keyValue) 
         {
-            return GetObjectDictionaryForClass(className)[keyValue];
+            WeakSoodaObject wo = GetObjectDictionaryForClass(className)[keyValue];
+            if (wo == null)
+                return null;
+            return wo.TargetSoodaObject;
         }
 
         protected internal void RegisterObject(SoodaObject o) 
@@ -248,16 +251,19 @@ namespace Sooda
             {
                 AddObjectWithKey(ci.Name, pkValue, o);
 
-                SoodaObjectCollection al = _objectsByClass[ci.Name];
+                WeakSoodaObjectCollection al = _objectsByClass[ci.Name];
                 if (al == null) 
                 {
-                    al = new SoodaObjectCollection();
+                    al = new WeakSoodaObjectCollection();
                     _objectsByClass[ci.Name] = al;
                 }
-                al.Add(o);
+                al.Add(new WeakSoodaObject(o));
             }
 
-            _objectList.Add(o);
+            if (!UseWeakReferences)
+                _strongReferences.Add(o);
+
+            _objectList.Add(new WeakSoodaObject(o));
 
             if (_precommitQueue != null)
                 _precommitQueue.Enqueue(o);
@@ -270,19 +276,19 @@ namespace Sooda
             _dirtyObjects.Add(o);
             for (ClassInfo ci = o.GetClassInfo(); ci != null; ci = ci.InheritsFromClass) 
             {
-                SoodaObjectCollection al = _dirtyObjectsByClass[ci.Name];
+                WeakSoodaObjectCollection al = _dirtyObjectsByClass[ci.Name];
                 if (al == null) 
                 {
-                    al = new SoodaObjectCollection();
+                    al = new WeakSoodaObjectCollection();
                     _dirtyObjectsByClass[ci.Name] = al;
                 }
-                al.Add(o);
+                al.Add(new WeakSoodaObject(o));
             }
         }
 
         protected internal bool IsRegistered(SoodaObject o) 
         {
-            ObjectToSoodaObjectAssociation classDict = _objectDictByClass[o.GetClassInfo().Name];
+            ObjectToWeakSoodaObjectAssociation classDict = _objectDictByClass[o.GetClassInfo().Name];
             object pkValue = o.GetPrimaryKeyValue();
 
             if (ExistsObjectWithKey(o.GetClassInfo().Name, pkValue)) 
@@ -295,9 +301,22 @@ namespace Sooda
             }
         }
 
+        private void RemoveWeakSoodaObjectFromCollection(WeakSoodaObjectCollection collection, SoodaObject o)
+        {
+            for (int i = 0; i < collection.Count; ++i)
+            {
+                SoodaObject obj = collection[i].TargetSoodaObject;
+                if (obj == o)
+                {
+                    collection.RemoveAt(i);
+                    break;
+                }
+            }
+        }
+
         protected internal void UnregisterObject(SoodaObject o) 
         {
-            ObjectToSoodaObjectAssociation classDict = _objectDictByClass[o.GetClassInfo().Name];
+            ObjectToWeakSoodaObjectAssociation classDict = _objectDictByClass[o.GetClassInfo().Name];
             object pkValue = o.GetPrimaryKeyValue();
 
             if (ExistsObjectWithKey(o.GetClassInfo().Name, pkValue)) 
@@ -307,12 +326,12 @@ namespace Sooda
                 {
                     UnregisterObjectWithKey(ci.Name, pkValue);
                 }
-                _objectList.Remove(o);
+                RemoveWeakSoodaObjectFromCollection(_objectList, o);
 
-                SoodaObjectCollection al = _objectsByClass[o.GetClassInfo().Name];
+                WeakSoodaObjectCollection al = _objectsByClass[o.GetClassInfo().Name];
                 if (al != null) 
                 {
-                    al.Remove(o);
+                    RemoveWeakSoodaObjectFromCollection(al, o);
                 }
             }
         }
@@ -816,7 +835,13 @@ namespace Sooda
         {
             xw.WriteStartElement("transaction");
 
-            SoodaObjectCollection orderedObjects = _objectList;
+            SoodaObjectCollection orderedObjects = new SoodaObjectCollection();
+            foreach (WeakSoodaObject wr in _objectList)
+            {
+                SoodaObject obj = wr.TargetSoodaObject;
+                if (obj != null)
+                    orderedObjects.Add(obj);
+            }
 
             if ((options & SoodaSerializeOptions.Canonical) != 0) 
             {
@@ -979,9 +1004,13 @@ namespace Sooda
                 }
             };
 
-            foreach (SoodaObject ob in _objectList) 
+            foreach (WeakSoodaObject wr in _objectList) 
             {
-                ob.AfterDeserialize();
+                SoodaObject ob = wr.TargetSoodaObject;
+                if (ob != null)
+                {
+                    ob.AfterDeserialize();
+                }
             }
         }
 

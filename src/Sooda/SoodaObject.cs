@@ -213,6 +213,12 @@ namespace Sooda
             ;
         }
 
+#if TEST_SOODA_GC
+        ~SoodaObject()
+        {
+            Console.WriteLine("Finalizer {0}", GetObjectKeyString());
+        }
+#endif
         protected SoodaObject(SoodaConstructor c) 
         {
             // do nothing - we delay all the initialization

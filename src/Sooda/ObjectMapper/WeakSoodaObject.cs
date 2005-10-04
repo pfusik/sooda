@@ -32,40 +32,35 @@
 // 
 
 using System;
+using System.Diagnostics;
+using System.Data;
+using System.Text;
+using System.Collections;
 using System.Reflection;
+using System.Xml;
+using System.IO;
+using System.Globalization;
+using System.Collections.Specialized;
 
-namespace Sooda 
+using Sooda.Schema;
+using Sooda.ObjectMapper;
+
+using Sooda.Collections;
+
+using Sooda.Logging;
+
+namespace Sooda.ObjectMapper
 {
-    [AttributeUsage(AttributeTargets.Assembly)]
-    public sealed class SoodaConfigAttribute : Attribute 
+    public class WeakSoodaObject : WeakReference
     {
-        private string configFileName = null;
-        private Type configProviderType = null;
-
-        public SoodaConfigAttribute() {}
-
-        public string XmlConfigFileName
-        {
-            get 
-            {
-                return configFileName;
-            }
-            set 
-            {
-                configFileName = value;
-            }
+        public WeakSoodaObject(SoodaObject target) : base(target)
+        { 
         }
 
-        public Type ProviderType
+
+        public SoodaObject TargetSoodaObject
         {
-            get 
-            {
-                return configProviderType;
-            }
-            set 
-            {
-                configProviderType = value;
-            }
+            get { return base.Target as SoodaObject; }
         }
     }
 }

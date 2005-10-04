@@ -42,8 +42,10 @@ using Sooda.Collections;
 
 using Sooda.Schema;
 
-namespace Sooda.ObjectMapper {
-    public class SoodaObjectManyToManyCollection : IList, ISoodaObjectList {
+namespace Sooda.ObjectMapper 
+{
+    public class SoodaObjectManyToManyCollection : IList, ISoodaObjectList 
+    {
         protected SoodaTransaction transaction;
         protected SoodaObjectToInt32Association items = null;
         protected SoodaObjectCollection itemsArray = null;
@@ -53,7 +55,8 @@ namespace Sooda.ObjectMapper {
         protected Sooda.Schema.RelationInfo relationInfo;
         private SoodaRelationTable relationTable = null;
 
-        public SoodaObjectManyToManyCollection(SoodaTransaction transaction, int masterColumn, object masterValue, Type relationType, Sooda.Schema.RelationInfo relationInfo) {
+        public SoodaObjectManyToManyCollection(SoodaTransaction transaction, int masterColumn, object masterValue, Type relationType, Sooda.Schema.RelationInfo relationInfo) 
+        {
             this.relationInfo = relationInfo;
             this.transaction = transaction;
             this.masterValue = masterValue;
@@ -61,7 +64,8 @@ namespace Sooda.ObjectMapper {
             this.relationType = relationType;
         }
 
-        public SoodaObject GetItem(int pos) {
+        public SoodaObject GetItem(int pos) 
+        {
             if (itemsArray == null)
                 LoadData();
             return itemsArray[pos];
@@ -69,58 +73,72 @@ namespace Sooda.ObjectMapper {
 
         public int Length
         {
-            get {
+            get 
+            {
                 if (itemsArray == null)
                     LoadData();
                 return itemsArray.Count;
             }
         }
 
-        public int Add(SoodaObject obj) {
-            if (masterColumn == 0) {
+        public int Add(SoodaObject obj) 
+        {
+            if (masterColumn == 0) 
+            {
                 SoodaRelationTable rel = this.GetSoodaRelationTable();
                 rel.Add(obj.GetPrimaryKeyValue(), this.masterValue);
                 return this.InternalAdd(obj);
-            } else {
+            } 
+            else 
+            {
                 SoodaRelationTable rel = this.GetSoodaRelationTable();
                 rel.Add(this.masterValue, obj.GetPrimaryKeyValue());
                 return this.InternalAdd(obj);
             }
         }
 
-        public void Remove(SoodaObject obj) {
-            if (masterColumn == 0) {
+        public void Remove(SoodaObject obj) 
+        {
+            if (masterColumn == 0) 
+            {
                 SoodaRelationTable rel = this.GetSoodaRelationTable();
                 rel.Remove(obj.GetPrimaryKeyValue(), this.masterValue);
                 this.InternalRemove(obj);
-            } else {
+            } 
+            else 
+            {
                 SoodaRelationTable rel = this.GetSoodaRelationTable();
                 rel.Remove(this.masterValue, obj.GetPrimaryKeyValue());
                 this.InternalRemove(obj);
             }
         }
 
-        public bool Contains(SoodaObject obj) {
+        public bool Contains(SoodaObject obj) 
+        {
             return InternalContains(obj);
         }
 
-        public IEnumerator GetEnumerator() {
+        public IEnumerator GetEnumerator() 
+        {
             if (itemsArray == null)
                 LoadData();
             return ((IEnumerable)itemsArray).GetEnumerator();
         }
 
-        protected int InternalAdd(SoodaObject obj) {
+        protected int InternalAdd(SoodaObject obj) 
+        {
             if (itemsArray == null)
                 return -1;
-            if (!items.Contains(obj)) {
+            if (!items.Contains(obj)) 
+            {
                 int pos = itemsArray.Add(obj);
                 items.Add(obj, pos);
             }
             return -1;
         }
 
-        protected void InternalRemove(SoodaObject obj) {
+        protected void InternalRemove(SoodaObject obj) 
+        {
             if (itemsArray == null)
                 return ;
 
@@ -129,7 +147,8 @@ namespace Sooda.ObjectMapper {
             int pos = items[obj];
 
             SoodaObject lastObj = itemsArray[itemsArray.Count - 1];
-            if (lastObj != obj) {
+            if (lastObj != obj) 
+            {
                 itemsArray[pos] = lastObj;
                 items[lastObj] = pos;
             }
@@ -137,18 +156,22 @@ namespace Sooda.ObjectMapper {
             items.Remove(obj);
         }
 
-        public bool InternalContains(SoodaObject obj) {
+        public bool InternalContains(SoodaObject obj) 
+        {
             if (itemsArray == null)
                 LoadData();
             return items.Contains(obj);
         }
 
-        protected void LoadDataFromReader(ISoodaObjectFactory factory, IDataReader reader, TableInfo[] loadedTables) {
+        protected void LoadDataFromReader(ISoodaObjectFactory factory, IDataReader reader, TableInfo[] loadedTables) 
+        {
             items = new SoodaObjectToInt32Association();
             itemsArray = new SoodaObjectCollection();
 
-            using (reader) {
-                while (reader.Read()) {
+            using (reader) 
+            {
+                while (reader.Read()) 
+                {
                     SoodaObject obj = SoodaObject.GetRefFromRecordHelper(transaction, factory, reader, 0, loadedTables, 0);
 
                     InternalAdd(obj);
@@ -156,21 +179,27 @@ namespace Sooda.ObjectMapper {
             }
         }
 
-        protected SoodaRelationTable GetSoodaRelationTable() {
-            if (relationTable == null) {
+        protected SoodaRelationTable GetSoodaRelationTable() 
+        {
+            if (relationTable == null) 
+            {
                 relationTable = transaction.GetRelationTable(relationType);
             };
             return relationTable;
         }
 
-        void OnTupleChanged(object sender, SoodaRelationTupleChangedArgs args) {
+        void OnTupleChanged(object sender, SoodaRelationTupleChangedArgs args) 
+        {
             ClassInfo classInfo = (masterColumn == 0) ? relationInfo.GetRef1ClassInfo() : relationInfo.GetRef2ClassInfo();
             ISoodaObjectFactory factory = transaction.GetFactory(classInfo);
             SoodaObject obj;
 
-            if (masterColumn == 0) {
+            if (masterColumn == 0) 
+            {
                 obj = factory.GetRef(transaction, args.Left);
-            } else {
+            } 
+            else 
+            {
                 obj = factory.GetRef(transaction, args.Right);
             }
 
@@ -180,7 +209,8 @@ namespace Sooda.ObjectMapper {
                 InternalRemove(obj);
         }
 
-        protected void LoadData() {
+        protected void LoadData() 
+        {
             SoodaDataSource ds = transaction.OpenDataSource(relationInfo.GetDataSource());
             TableInfo[] loadedTables;
             ClassInfo classInfo = (masterColumn == 0) ? relationInfo.GetRef1ClassInfo() : relationInfo.GetRef2ClassInfo();
@@ -190,28 +220,42 @@ namespace Sooda.ObjectMapper {
             LoadDataFromReader(factory, reader, loadedTables);
             SoodaRelationTable rel = GetSoodaRelationTable();
             rel.OnTupleChanged += new SoodaRelationTupleChanged(this.OnTupleChanged);
-            if (rel.TupleCount != 0) {
+            if (rel.TupleCount != 0) 
+            {
                 SoodaRelationTable.Tuple[] tuples = rel.Tuples;
                 int count = rel.TupleCount;
 
-                if (masterColumn == 1) {
-                    for (int i = 0; i < count; ++i) {
-                        if (tuples[i].ref1.Equals(masterValue)) {
+                if (masterColumn == 1) 
+                {
+                    for (int i = 0; i < count; ++i) 
+                    {
+                        if (tuples[i].ref1.Equals(masterValue)) 
+                        {
                             SoodaObject obj = factory.GetRef(transaction, tuples[i].ref2);
-                            if (tuples[i].tupleMode > 0) {
+                            if (tuples[i].tupleMode > 0) 
+                            {
                                 InternalAdd(obj);
-                            } else {
+                            } 
+                            else 
+                            {
                                 InternalRemove(obj);
                             };
                         };
                     }
-                } else {
-                    for (int i = 0; i < count; ++i) {
-                        if (tuples[i].ref2.Equals(masterValue)) {
+                } 
+                else 
+                {
+                    for (int i = 0; i < count; ++i) 
+                    {
+                        if (tuples[i].ref2.Equals(masterValue)) 
+                        {
                             SoodaObject obj = factory.GetRef(transaction, tuples[i].ref1);
-                            if (tuples[i].tupleMode > 0) {
+                            if (tuples[i].tupleMode > 0) 
+                            {
                                 InternalAdd(obj);
-                            } else {
+                            } 
+                            else 
+                            {
                                 InternalRemove(obj);
                             };
                         };
@@ -222,106 +266,128 @@ namespace Sooda.ObjectMapper {
 
         public bool IsReadOnly
         {
-            get {
+            get 
+            {
                 return true;
             }
         }
 
         object IList.this[int index]
         {
-            get {
+            get 
+            {
                 return GetItem(index);
             }
-            set {
+            set 
+            {
                 throw new NotSupportedException();
             }
         }
 
-        public void RemoveAt(int index) {
+        public void RemoveAt(int index) 
+        {
             Remove(GetItem(index));
         }
 
-        public void Insert(int index, object value) {
+        public void Insert(int index, object value) 
+        {
             throw new NotSupportedException();
         }
 
-        public void Clear() {
+        public void Clear() 
+        {
             throw new NotSupportedException();
         }
 
-        public int IndexOf(object value) {
+        public int IndexOf(object value) 
+        {
             throw new NotSupportedException();
         }
 
         public bool IsFixedSize
         {
-            get {
+            get 
+            {
                 return false;
             }
         }
 
-        int IList.Add(object o) {
+        int IList.Add(object o) 
+        {
             return Add((SoodaObject)o);
         }
 
-        void IList.Remove(object o) {
+        void IList.Remove(object o) 
+        {
             Remove((SoodaObject)o);
         }
 
-        bool IList.Contains(object o) {
+        bool IList.Contains(object o) 
+        {
             return Contains((SoodaObject)o);
         }
 
         public bool IsSynchronized
         {
-            get {
+            get 
+            {
                 return false;
             }
         }
 
         public int Count
         {
-            get {
+            get 
+            {
                 return this.Length;
             }
         }
 
-        public void CopyTo(Array array, int index) {
+        public void CopyTo(Array array, int index) 
+        {
             throw new NotImplementedException();
         }
 
         public object SyncRoot
         {
-            get {
+            get 
+            {
                 return this;
             }
         }
 
-        public ISoodaObjectList GetSnapshot() {
+        public ISoodaObjectList GetSnapshot() 
+        {
             return new SoodaObjectListSnapshot(this);
         }
 
-        public ISoodaObjectList SelectFirst(int n) {
+        public ISoodaObjectList SelectFirst(int n) 
+        {
             return new SoodaObjectListSnapshot(this, 0, n);
         }
 
-        public ISoodaObjectList SelectLast(int n) {
+        public ISoodaObjectList SelectLast(int n) 
+        {
             return new SoodaObjectListSnapshot(this, this.Length - n, n);
         }
 
-        public ISoodaObjectList SelectRange(int from, int to) {
+        public ISoodaObjectList SelectRange(int from, int to) 
+        {
             return new SoodaObjectListSnapshot(this, from, to - from);
         }
 
-        public ISoodaObjectList Filter(SoodaObjectFilter filter) {
+        public ISoodaObjectList Filter(SoodaObjectFilter filter) 
+        {
             return new SoodaObjectListSnapshot(this, filter);
         }
 
-        public ISoodaObjectList Filter(SoodaWhereClause whereClause) {
+        public ISoodaObjectList Filter(SoodaWhereClause whereClause) 
+        {
             return new SoodaObjectListSnapshot(this, whereClause);
         }
 
-        public ISoodaObjectList Sort(IComparer comparer) {
+        public ISoodaObjectList Sort(IComparer comparer) 
+        {
             return new SoodaObjectListSnapshot(this, comparer);
         }
     }

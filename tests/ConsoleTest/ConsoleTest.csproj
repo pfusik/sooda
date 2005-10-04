@@ -114,6 +114,12 @@
                     AssemblyName = "System.Windows.Forms"
                     HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Windows.Forms.dll"
                 />
+                <Reference
+                    Name = "MemProfiler"
+                    AssemblyName = "MemProfiler"
+                    HintPath = "C:\Program Files\SciTech\NetMemProfiler2\Redist\MemProfiler.dll"
+                    AssemblyFolderKey = "hklm\dn\.net memory profiler api"
+                />
             </References>
         </Build>
         <Files>
