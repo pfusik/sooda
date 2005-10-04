@@ -536,23 +536,16 @@ namespace Sooda.Sql
 
         private string LogCommand(IDbCommand cmd) 
         {
-            if (sqllogger.IsDebugEnabled)
+            StringBuilder txt = new StringBuilder();
+            txt.Append(cmd.CommandText);
+            txt.Append(" [");
+            foreach (IDataParameter par in cmd.Parameters) 
             {
-                StringBuilder txt = new StringBuilder();
-                txt.Append(cmd.CommandText);
-                txt.Append(" [");
-                foreach (IDataParameter par in cmd.Parameters) 
-                {
-                    txt.AppendFormat(" {0}={1}", par.ParameterName, par.Value);
-                }
-                txt.AppendFormat(" ] {0}", Connection.GetHashCode());
-                txt.AppendFormat(" DataSource: {0}", this.Name);
-                return txt.ToString();
+                txt.AppendFormat(" {0}={1}", par.ParameterName, par.Value);
             }
-            else
-            {
-                return "";
-            }
+            txt.AppendFormat(" ] {0}", Connection.GetHashCode());
+            txt.AppendFormat(" DataSource: {0}", this.Name);
+            return txt.ToString();
         }
 
         public void ExecuteRaw(string sql) 
@@ -739,9 +732,19 @@ namespace Sooda.Sql
 
             try
             {
-                sqllogger.Trace("Executing query: {0}", LogCommand(cmd));
+                //cmd.CommandText = "aaa";
+                if (sqllogger.IsTraceEnabled)
+                {
+                    sqllogger.Trace("Executing query: {0}", LogCommand(cmd));
+                }
                 IDataReader retval = cmd.ExecuteReader();
                 return retval;
+            }
+            catch (Exception ex)
+            {
+                if (sqllogger.IsErrorEnabled)
+                    sqllogger.Error("Error while executing: {0}\nException: {1}", LogCommand(cmd), ex);
+                throw ex;
             }
             finally
             {
@@ -756,9 +759,20 @@ namespace Sooda.Sql
 
             try
             {
-                sqllogger.Trace("Executing non-query: {0}", LogCommand(cmd));
+                if (sqllogger.IsTraceEnabled)
+                {
+                    sqllogger.Trace("Executing non-query: {0}", LogCommand(cmd));
+                }
                 int retval = cmd.ExecuteNonQuery();
                 return retval;
+            }
+            catch (Exception ex)
+            {
+                if (sqllogger.IsErrorEnabled)
+                {
+                    sqllogger.Error("Error while executing: {0}\nException: {1}", LogCommand(cmd), ex);
+                }
+                throw ex;
             }
             finally
             {
