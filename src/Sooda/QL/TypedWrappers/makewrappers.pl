@@ -1,4 +1,4 @@
-@types=('DateTime','Decimal','Double','Guid','Int16','Int32','Int64','Single','String');
+@types=('DateTime','TimeSpan','Decimal','Double','Guid','Int16','Int32','Int64','Single','String');
 
 $arithmetic{'Decimal'} = 1;
 $arithmetic{'Double'} = 1;
