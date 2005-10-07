@@ -1,6 +1,11 @@
 class ${ClassName}List
     extends Sooda.ObjectMapper.SoodaObjectCollectionWrapper
 
+constructor()
+    attributes Public
+begin
+end
+
 constructor(ISoodaObjectList list)
     attributes Public
     baseArg(arg(list))

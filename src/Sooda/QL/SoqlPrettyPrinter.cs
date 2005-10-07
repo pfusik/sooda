@@ -209,11 +209,18 @@ namespace Sooda.QL
             Output.Write(")");
         }
 
-        public virtual void Visit(SoqlLiteralExpression v) {
+        public virtual void Visit(SoqlLiteralExpression v)
+        {
             if (v.literalValue is String)
             {
                 Output.Write("'");
-                Output.Write(v.literalValue);
+                Output.Write(((string)v.literalValue).Replace("'","''"));
+                Output.Write("'");
+            }
+            else if (v.literalValue is DateTime)
+            {
+                Output.Write("'");
+                Output.Write(((DateTime)v.literalValue).ToString("yyyyMMdd HH:mm:ss"));
                 Output.Write("'");
             }
             else

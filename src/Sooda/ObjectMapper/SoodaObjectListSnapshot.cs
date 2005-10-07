@@ -47,6 +47,10 @@ namespace Sooda.ObjectMapper
 {
     public class SoodaObjectListSnapshot : ISoodaObjectList 
     {
+        public SoodaObjectListSnapshot()
+        {
+        }
+
         public SoodaObjectListSnapshot(IList list) 
         {
             foreach (SoodaObject o in list) 
@@ -133,8 +137,6 @@ namespace Sooda.ObjectMapper
                 }
             }
         }
-
-        protected SoodaObjectListSnapshot() {}
 
         protected void AddObjectToSnapshot(SoodaObject o) 
         {

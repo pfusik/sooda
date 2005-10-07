@@ -55,6 +55,34 @@ begin
     return new Sooda.QL.SoqlBooleanRelationalExpression(arg(left), new Sooda.QL.SoqlLiteralExpression(arg(right)), typeref(Sooda.QL.SoqlRelationalOperator).NotEqual);
 end
 
+method op_Equality(${ClassName} left, ${ClassName}PathExpression right)
+    attributes Public,Static
+    returns Sooda.QL.SoqlBooleanRelationalExpression
+begin
+    return new Sooda.QL.SoqlBooleanRelationalExpression(new Sooda.QL.SoqlLiteralExpression(arg(left).GetPrimaryKeyValue()), arg(right), typeref(Sooda.QL.SoqlRelationalOperator).Equal);
+end
+
+method op_Inequality(${ClassName} left, ${ClassName}PathExpression right)
+    attributes Public,Static
+    returns Sooda.QL.SoqlBooleanRelationalExpression
+begin
+    return new Sooda.QL.SoqlBooleanRelationalExpression(new Sooda.QL.SoqlLiteralExpression(arg(left).GetPrimaryKeyValue()), arg(right), typeref(Sooda.QL.SoqlRelationalOperator).NotEqual);
+end
+
+method op_Equality(${ClassName}PathExpression left, ${ClassName} right)
+    attributes Public,Static
+    returns Sooda.QL.SoqlBooleanRelationalExpression
+begin
+    return new Sooda.QL.SoqlBooleanRelationalExpression(arg(left), new Sooda.QL.SoqlLiteralExpression(arg(right).GetPrimaryKeyValue()), typeref(Sooda.QL.SoqlRelationalOperator).Equal);
+end
+
+method op_Inequality(${ClassName}PathExpression left, ${ClassName} right)
+    attributes Public,Static
+    returns Sooda.QL.SoqlBooleanRelationalExpression
+begin
+    return new Sooda.QL.SoqlBooleanRelationalExpression(arg(left), new Sooda.QL.SoqlLiteralExpression(arg(right).GetPrimaryKeyValue()), typeref(Sooda.QL.SoqlRelationalOperator).NotEqual);
+end
+
 method Equals(System.Object o)
     attributes Public,Override
     returns System.Boolean

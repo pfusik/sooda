@@ -164,6 +164,25 @@ namespace Sooda.Sql
             ReplaceEmbeddedSoql(v.Text);
         }
 
+        public override void Visit(SoqlLiteralExpression v) {
+            if (v.literalValue is String)
+            {
+                Output.Write("'");
+                Output.Write(((string)v.literalValue).Replace("'","''"));
+                Output.Write("'");
+            }
+            else if (v.literalValue is DateTime)
+            {
+                Output.Write("'");
+                Output.Write(((DateTime)v.literalValue).ToString("yyyyMMdd HH:mm:ss"));
+                Output.Write("'");
+            }
+            else
+            {
+                Output.Write(v.literalValue);
+            }
+        }
+
         public override void Visit(SoqlBooleanLiteralExpression v) 
         {
             if (v.Value) 

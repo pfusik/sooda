@@ -356,6 +356,11 @@ namespace Sooda
             _dataSources.Add(dataSource);
         }
 
+        public SoodaDataSource OpenDataSource(string name) 
+        {
+            return OpenDataSource(Schema.GetDataSourceInfo(name));
+        }
+
         public SoodaDataSource OpenDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo) 
         {
             for (int i = 0; i < _dataSources.Count; ++i)

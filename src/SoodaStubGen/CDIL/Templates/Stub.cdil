@@ -175,6 +175,118 @@ begin
     return new ${ClassName}List(new Sooda.ObjectMapper.SoodaObjectListSnapshot(arg(tran), arg(whereClause), arg(orderByClause), arg(topCount), arg(options), typeref(${ClassName}_Factory).TheClassInfo$))
 end
 
+method GetList(Sooda.QL.SoqlBooleanExpression filterExpression)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, new SoodaWhereClause(arg(filterExpression)), typeref(SoodaOrderBy).Unsorted$, -1, typeref(SoodaSnapshotOptions).Default$)
+end
+
+method GetList(Sooda.QL.SoqlBooleanExpression filterExpression, SoodaSnapshotOptions options)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, new SoodaWhereClause(arg(filterExpression)), typeref(SoodaOrderBy).Unsorted$, -1, arg(options))
+end
+
+method GetList(Sooda.QL.SoqlBooleanExpression filterExpression, SoodaOrderBy orderBy)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, new SoodaWhereClause(arg(filterExpression)), arg(orderBy), -1, typeref(SoodaSnapshotOptions).Default$)
+end
+
+method GetList(Sooda.QL.SoqlBooleanExpression filterExpression, SoodaOrderBy orderBy, SoodaSnapshotOptions options)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, new SoodaWhereClause(arg(filterExpression)), arg(orderBy), -1, arg(options))
+end
+
+method GetList(SoodaTransaction tran, Sooda.QL.SoqlBooleanExpression filterExpression)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(arg(tran), new SoodaWhereClause(arg(filterExpression)), typeref(SoodaOrderBy).Unsorted$, -1, typeref(SoodaSnapshotOptions).Default$)
+end
+
+method GetList(SoodaTransaction tran, Sooda.QL.SoqlBooleanExpression filterExpression, SoodaSnapshotOptions options)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(arg(tran), new SoodaWhereClause(arg(filterExpression)), typeref(SoodaOrderBy).Unsorted$, -1, arg(options))
+end
+
+method GetList(SoodaTransaction tran, Sooda.QL.SoqlBooleanExpression filterExpression, SoodaOrderBy orderBy)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(arg(tran), new SoodaWhereClause(arg(filterExpression)), arg(orderBy), -1, typeref(SoodaSnapshotOptions).Default$)
+end
+
+method GetList(SoodaTransaction tran, Sooda.QL.SoqlBooleanExpression filterExpression, SoodaOrderBy orderBy, SoodaSnapshotOptions options)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(arg(tran), new SoodaWhereClause(arg(filterExpression)), arg(orderBy), -1, arg(options))
+end
+
+method GetList(Sooda.QL.SoqlBooleanExpression filterExpression, System.Int32 topCount)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, new SoodaWhereClause(arg(filterExpression)), typeref(SoodaOrderBy).Unsorted$, arg(topCount), typeref(SoodaSnapshotOptions).Default$)
+end
+
+method GetList(Sooda.QL.SoqlBooleanExpression filterExpression, System.Int32 topCount, SoodaSnapshotOptions options)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, new SoodaWhereClause(arg(filterExpression)), typeref(SoodaOrderBy).Unsorted$, arg(topCount), arg(options))
+end
+
+method GetList(Sooda.QL.SoqlBooleanExpression filterExpression, SoodaOrderBy orderBy, System.Int32 topCount)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, new SoodaWhereClause(arg(filterExpression)), arg(orderBy), arg(topCount), typeref(SoodaSnapshotOptions).Default$)
+end
+
+method GetList(Sooda.QL.SoqlBooleanExpression filterExpression, SoodaOrderBy orderBy, System.Int32 topCount, SoodaSnapshotOptions options)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, new SoodaWhereClause(arg(filterExpression)), arg(orderBy), arg(topCount), arg(options))
+end
+
+method GetList(SoodaTransaction tran, Sooda.QL.SoqlBooleanExpression filterExpression, System.Int32 topCount)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(arg(tran), new SoodaWhereClause(arg(filterExpression)), typeref(SoodaOrderBy).Unsorted$, arg(topCount), typeref(SoodaSnapshotOptions).Default$)
+end
+
+method GetList(SoodaTransaction tran, Sooda.QL.SoqlBooleanExpression filterExpression, System.Int32 topCount, SoodaSnapshotOptions options)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(arg(tran), new SoodaWhereClause(arg(filterExpression)), typeref(SoodaOrderBy).Unsorted$, arg(topCount), arg(options))
+end
+
+method GetList(SoodaTransaction tran, Sooda.QL.SoqlBooleanExpression filterExpression, SoodaOrderBy orderBy, System.Int32 topCount)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(arg(tran), new SoodaWhereClause(arg(filterExpression)), arg(orderBy), arg(topCount), typeref(SoodaSnapshotOptions).Default$)
+end
+
+method GetList(SoodaTransaction tran, Sooda.QL.SoqlBooleanExpression filterExpression, SoodaOrderBy orderBy, System.Int32 topCount, SoodaSnapshotOptions options)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(arg(tran), new SoodaWhereClause(arg(filterExpression)), arg(orderBy), arg(topCount), arg(options))
+end
+
 method Load(${PrimaryKeyFormalParameters})
     attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
     returns ${ClassName}

@@ -45,6 +45,10 @@ namespace Sooda.ObjectMapper {
     public class SoodaObjectCollectionWrapper : ISoodaObjectList, ISoodaObjectListInternal {
         private ISoodaObjectList _theList;
 
+        protected SoodaObjectCollectionWrapper() {
+            _theList = new SoodaObjectListSnapshot();
+        }
+
         protected SoodaObjectCollectionWrapper(ISoodaObjectList list) {
             _theList = list;
         }
