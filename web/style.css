@@ -3,6 +3,7 @@ html, body
     margin-right: 4px;
     margin-left: 4px;
     margin-top: 2px;
+    margin: 0px;
     background: white;
     color: black;
     font-family: Verdana;
@@ -13,7 +14,7 @@ html, body
 h1
 {
     font-size: 150%;
-}
+}                 
 
 h2
 {
@@ -23,7 +24,7 @@ h2
 
 td.nav
 {
-    font-family: Trebuchet MS, Arial, Helv;
+    font-family: Tahoma, Trebuchet MS, Arial, Helv;
     font-size: 16px;
     font-style: normal;
     padding: 3px;
@@ -31,19 +32,19 @@ td.nav
 
 a:link
 {
-    color: #5b5b0e;
+    color: #0000c0;
     background-color: inherit;
 }
 
 a:visited
 {
-    color: #5b5b0e;
+    color: #0000c0;
     background-color: inherit;
 }
 
 a:hover
 {
-    color: black;
+    color: blue;
     background-color: inherit;
 }
 
@@ -150,7 +151,7 @@ span.xmlcomment
 a.nav
 {
     display: block;
-    font-family: Trebuchet MS, Arial, Helv;
+    font-family: Tahoma, Trebuchet MS, Arial, Helv;
     font-style: normal;
     font-weight: normal;
     font-size: 17px;
@@ -160,7 +161,6 @@ a.nav
     text-decoration: none;
     padding-left: 4px;
     padding-right: 4px;
-    width: 160px;
 }
 
 a.nav:visited
@@ -170,22 +170,19 @@ a.nav:visited
 
 a.nav:hover
 {
-    color: red;
+    color: white;
 }
 
 a.nav_selected
 {
     display: block;
-    font-family: Trebuchet MS, Arial, Helv;
+    font-family: Tahoma, Trebuchet MS, Arial, Helv;
     font-style: normal;
-    font-weight: normal;
-    font-size: 17px;
-    color: #205080;
-    background-color: white;
-    border: 1px dotted #c0c0c0;
+    font-weight: bold;
+    font-size: 19px;
+    color: white;
     padding-left: 4px;
     padding-right: 4px;
-    width: 160px;
     cursor: pointer; cursor: hand;
     text-decoration: none;
 }
@@ -197,7 +194,7 @@ a.nav_selected:visited
 
 a.nav_selected:hover
 {
-    color: red;
+    color: white;
 }
 
 tr.nav_normal
@@ -237,21 +234,24 @@ img.thinborder
 
 td.header
 {
-    border-bottom: 1px solid black;
     margin-bottom: 0px;
     height: 80px;
+    overflow: hidden;
+    background-color: #5290EE;
 }
 
 td.content
 {
-    font-family: Trebuchet MS;
+    font-family: Tahoma, Trebuchet MS, Helv, Arial;
     font-size: 12px;
-    padding: 4px;
-    width: 620px;
+    padding: 16px;
     text-align: left;
     background-color: #f8f8ff;
     padding-top: 16px;
     padding-bottom: 16px;
+    border-left: 1px solid #c0c0ff;
+    border-top: 1px solid #c0c0ff;
+    width: 100%;
 }
 
 td.controls
@@ -259,13 +259,16 @@ td.controls
     padding: 6px;
     width: 180px;
     padding-top: 16px;
-    background-color: #f8f8ff;
+    background-color: #9FC1F5;
+    background-color: #5290EE;
+    text-align: right;
+    background-image: url(sooda_nav.jpg);
+    background-repeat: no-repeat;
 }
 
 table.page
 {
-    width: 800px;
-    border: 1px solid #404060;
+    width: 100%;
 }
 
 tr.spacer
@@ -291,31 +294,31 @@ td.hostedby
 }
 
 .table table {
-    border: 1px solid #c0c0c0;
+    border: 1px solid #5A9CF0;
     border-collapse: collapse;
     font-size: 13px;
 }
 
 .table td {
-    border: 1px solid #c0c0c0;
+    border: 1px solid #5A9CF0;
     margin: 0px;
     background-color: white;
 }
 
 .table th {
-    border: 1px solid #c0c0c0;
-    background-color: #efe8e8;
+    border: 1px solid #125BB6;
+    background-color: #9AC3F6;
     margin: 0px;
 }
 
 .smalltable table {
-    border: 1px solid #c0c0c0;
+    border: 1px solid #125BB6;
     border-collapse: collapse;
     font-size: 12px;
 }
 
 .smalltable td {
-    border: 1px solid #c0c0c0;
+    border: 1px solid #125BB6;
     margin: 0px;
     background-color: white;
     vertical-align: top;
@@ -323,7 +326,7 @@ td.hostedby
 
 .smalltable th {
     border: 1px solid #c0c0c0;
-    background-color: #efe8e8;
+    background-color: #9AC3F6;
     margin: 0px;
 }
 

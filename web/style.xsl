@@ -17,21 +17,27 @@
                 <title>Sooda</title>
             </head>
             <body width="100%">
-                <table align="center" class="page" cellpadding="0" cellspacing="0">
+                <table class="page" cellpadding="0" cellspacing="0" style="table-layout: fixed">
+                    <col width="20%" />
+                    <col width="80%" />
                     <tr>
-                        <td class="header" colspan="2"><img src="titlebanner.jpg" /></td>
+                        <td class="header" colspan="2"><img src="sooda.jpg" /></td>
                     </tr>
                     <tr>
-                        <td valign="top" class="controls">
+                        <td valign="top" class="controls" rowspan="2">
                             <xsl:call-template name="controls" />
-                        </td>
-                        <td valign="top" align="left" class="content">
-                            <xsl:apply-templates select="content" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="hostedby">
-                            <xsl:if test="$sourceforge='1'">
+
+                            <table>
+                                <tr>
+                                    <td>
+                                        <a href="http://www.cenqua.com/clover.net"><img src="http://www.cenqua.com/images/cloverednet1.gif" width="89" height="33" border="0" alt="Code Coverage by Clover.NET"/></a>
+                                    </td>
+                                </tr>
+                                <xsl:if test="$sourceforge='1'">
+                                    <tr><td>
+                                            <a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=71422&amp;type=1" width="88" height="31" border="0" alt="SourceForge.net Logo" /></a>
+                                    </td></tr>
+                                    <tr><td>
                                 <!-- Start of StatCounter Code -->
                                 <script type="text/javascript" language="javascript">
                                     var sc_project=575055; 
@@ -41,10 +47,15 @@
 
                                 <script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><a href="http://www.statcounter.com/" target="_blank"><img  src="http://c5.statcounter.com/counter.php?sc_project=575055&amp;amp;java=0&amp;amp;security=e249d6a5" alt="free web stats" border="0" /></a> </noscript>
                                 <!-- End of StatCounter Code -->
-                                <br/>
-                                <a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=71422&amp;type=1" width="88" height="31" border="0" alt="SourceForge.net Logo" /></a>
+                                    </td></tr>
                             </xsl:if>
-                        </td>                                                                         
+                        </table>
+                        </td>
+                        <td valign="top" align="left" class="content">
+                            <xsl:apply-templates select="content" />
+                        </td>
+                    </tr>
+                    <tr>
                         <td class="copyright">Copyright (c) 2003-2005 by Jaros³aw Kowalski <img width="1" height="1"><xsl:attribute name="src">http://jaak.sav.net/transpixel.gif</xsl:attribute></img></td>
                     </tr>
                 </table>
@@ -68,17 +79,17 @@
 
     <xsl:template match="navigation">
         <xsl:apply-templates select="nav" />
-        <p/>
-        <a href="http://www.cenqua.com/clover.net"><img src="http://www.cenqua.com/images/cloverednet1.gif" width="89" height="33" border="0" alt="Code Coverage by Clover.NET"/></a>
     </xsl:template>
     
     <xsl:template match="nav">
+        <nobr>
         <xsl:choose>
             <xsl:when test="$page_id = @href"><a class="nav_selected"><xsl:value-of select="@label" /></a></xsl:when>
             <xsl:otherwise>
                 <a class="nav"><xsl:attribute name="href"><xsl:value-of select="@href" />.<xsl:value-of select="$file_extension" /></xsl:attribute><xsl:value-of select="@label" /></a>
             </xsl:otherwise>
         </xsl:choose>
+    </nobr>
     </xsl:template>
 
     <xsl:template match="link">
