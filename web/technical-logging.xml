@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="windows-1250" ?>
-<?xml-stylesheet type="text/xsl" href="../style.xsl" ?>
-<content lang="en" id="technical">
+<?xml-stylesheet type="text/xsl" href="style.xsl" ?>
+<content lang="en" id="technical" subid="technical-logging">
     <h1>Logging in Sooda</h1>
     <p>
         Sooda 0.7 used to use <a href="http://nlog.sourceforge.net/">NLog</a> to output logging messages. 

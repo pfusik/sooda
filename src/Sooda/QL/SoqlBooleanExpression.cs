@@ -48,6 +48,21 @@ namespace Sooda.QL {
             return new SoqlBooleanOrExpression(this, expr);
         }
 
+        public static bool operator true(SoqlBooleanExpression expr)
+        {
+            return false; // never true to disable short-circuit evaluation of a || b
+        }
+
+        public static bool operator false(SoqlBooleanExpression expr)
+        {
+            return false; // never false to disable short-circuit evaluation of a && b
+        }
+
+        public static implicit operator SoqlBooleanExpression(bool v)
+        {
+            return new SoqlBooleanLiteralExpression(v);
+        }
+
         public static SoqlBooleanExpression operator &(SoqlBooleanExpression left, SoqlBooleanExpression right)
         {
             return left.And(right);
@@ -56,6 +71,38 @@ namespace Sooda.QL {
         public static SoqlBooleanExpression operator |(SoqlBooleanExpression left, SoqlBooleanExpression right)
         {
             return left.Or(right);
+        }
+
+        public static SoqlBooleanExpression operator &(SoqlBooleanExpression left, bool right)
+        {
+            if (right)
+                return left;
+            else
+                return SoqlBooleanLiteralExpression.False;
+        }
+
+        public static SoqlBooleanExpression operator |(SoqlBooleanExpression left, bool right)
+        {
+            if (right)
+                return SoqlBooleanLiteralExpression.True;
+            else
+                return left;
+        }
+
+        public static SoqlBooleanExpression operator &(bool left, SoqlBooleanExpression right)
+        {
+            if (left)
+                return right;
+            else
+                return SoqlBooleanLiteralExpression.False;
+        }
+
+        public static SoqlBooleanExpression operator |(bool left, SoqlBooleanExpression right)
+        {
+            if (left)
+                return SoqlBooleanLiteralExpression.True;
+            else
+                return right;
         }
 
         public static SoqlBooleanExpression operator !(SoqlBooleanExpression expr) 

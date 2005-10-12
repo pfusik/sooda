@@ -1,5 +1,5 @@
-class ${ClassName}NullablePathExpression
-    extends ${ClassName}PathExpression
+class ${ClassName}NullableWrapperExpression
+    extends ${ClassName}WrapperExpression
 
 constructor()
     attributes Public

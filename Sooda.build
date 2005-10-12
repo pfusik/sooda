@@ -609,6 +609,7 @@
                 <if test="${not file.uptodate}">
                     <echo message="Syntax-highlighting ${filename}" />
                     <exec program="${prettyprinter.exe}" commandline='-l csharp -i "${filename}" -o "${filename}.html" -s syntax.css' />
+                    <exec program="${prettyprinter.exe}" commandline='-l csharp -m xml -i "${filename}" -o "${filename}.xhtml" -s style.css' />
                 </if>
             </do>
         </foreach>
@@ -633,6 +634,7 @@
                 <if test="${not file.uptodate}">
                     <echo message="Syntax-highlighting ${filename}" />
                     <exec program="${prettyprinter.exe}" commandline='-l xml -i "${filename}" -o "${filename}.html" -s syntax.css' />
+                    <exec program="${prettyprinter.exe}" commandline='-l xml -m xml -i "${filename}" -o "${filename}.xhtml" -s style.css' />
                 </if>
             </do>
         </foreach>
@@ -644,6 +646,7 @@
                 <exclude name="helpmenu.xml" />
             </infiles>
             <parameters>
+                <parameter name="external-base" value="${path::combine(nant.project.basedir,webbuild.dir)}" />
                 <parameter name="file_extension" value="html" />
                 <parameter name="sourceforge" value="${web.sourceforge}" />
                 <parameter name="mode" value="${web.buildmode}" />

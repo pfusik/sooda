@@ -61,5 +61,15 @@ namespace Sooda.QL {
             return Value;
         }
 
+        public static SoqlBooleanLiteralExpression True
+        {
+            get { return new SoqlBooleanLiteralExpression(true); }
+        }
+
+        public static SoqlBooleanLiteralExpression False
+        {
+            get { return new SoqlBooleanLiteralExpression(false); }
+        }
+
     }
 }

@@ -757,6 +757,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "QL\TypedWrappers\SoqlCollectionWrapperExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "QL\TypedWrappers\SoqlDateTimeWrapperExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

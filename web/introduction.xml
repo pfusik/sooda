@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="windows-1250" ?>
 <?xml-stylesheet type="text/xsl" href="style.xsl" ?>
-<content lang="en" id="index">
+<content lang="en" id="introduction">
     <h1>Introduction</h1>
     <p>
         <b>Sooda</b> (Simple Object-Oriented Data Access) is an Object-To-Relational Mapping software for the <a href="http://msdn.microsoft.com/net">.NET</a> environment.

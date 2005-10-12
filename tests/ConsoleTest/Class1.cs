@@ -70,31 +70,21 @@ namespace ConsoleTest
         }
         static void Main(string[] args) 
         {
-            Sooda.Logging.LogManager.Implementation = new Sooda.Logging.ConsoleLoggingImplementation();
-            SoqlExpression expr = ContactField.PrimaryGroup.Manager.PrimaryGroup.Manager.PrimaryGroup.Manager.Name;
+            // Sooda.Logging.LogManager.Implementation = new Sooda.Logging.ConsoleLoggingImplementation();
 
             using (SoodaTransaction t = new SoodaTransaction())
             {
-                Console.WriteLine("Loading...");
-                //MemSnapShot snapshot0 =  MemProfiler.FullSnapShot("before");
-                Contact.GetList(SoodaWhereClause.Unrestricted);
-                Contact.GetRef(53).Name = Contact.GetRef(53).Name + "a";
-                //MemSnapShot snapshot1 =  MemProfiler.FullSnapShot("after");
-                Console.WriteLine("Loaded...");
-                //Console.ReadLine();
-                Console.WriteLine("GC");
-                GC.Collect(2);
-                GC.WaitForPendingFinalizers();
-                Console.WriteLine("GC Done.");
-                //System.Threading.Thread.Sleep(1000);
-                Console.WriteLine("Loading...");
-                Contact.GetRef(53);
-                Console.WriteLine("Loaded...");
+                foreach (Contact c in Contact.GetList(
+                    ContactField.Name == "Mary Manager" ||
+                    (ContactField.PrimaryGroup.Members.ContainsContactWhere(
+                    ContactField.Name == "Zdzichu Pierdziszewski" 
+                    && ContactField.LastSalary > 100)
+                    )))
+                {
+                    Console.WriteLine("nazwisko: {0}", c.Name);
+                    Console.WriteLine("kierownik grupy: {0}", c.PrimaryGroup.Manager.Name);
+                }
             }
-            
-            Console.WriteLine((ContactField.PrimaryGroup.Manager == 3) & (ContactField.PrimaryGroup.Manager == 3));
-            GC.WaitForPendingFinalizers();
-            //Console.WriteLine("expr: {0}", expr);
         }
     }
 }

@@ -587,7 +587,7 @@ namespace Sooda.StubGen
                 }
                 else
                 {
-                    fullWrapperTypeName = fi.ReferencedClass.Name + optionalNullable + "PathExpression";
+                    fullWrapperTypeName = fi.ReferencedClass.Name + optionalNullable + "WrapperExpression";
                     prop.GetStatements.Add(new CodeMethodReturnStatement(
                         new CodeObjectCreateExpression(fullWrapperTypeName, 
                         new CodePrimitiveExpression(null), new CodePrimitiveExpression(fi.Name))));
@@ -604,8 +604,30 @@ namespace Sooda.StubGen
             context["ClassName"] = classInfo.Name;
             context["PrimaryKeyType"] = FieldDataTypeHelper.GetClrType(classInfo.GetFirstPrimaryKeyField().DataType).FullName;
 
-            CodeTypeDeclaration ctd = CDILParser.ParseClass(CDILTemplate.Get("TypedWrapper.cdil"), context);
+            CodeTypeDeclaration ctd = CDILParser.ParseClass(CDILTemplate.Get("TypedCollectionWrapper.cdil"), context);
             ns.Types.Add(ctd);
+
+            context = new CDILContext();
+            context["ClassName"] = classInfo.Name;
+            context["PrimaryKeyType"] = FieldDataTypeHelper.GetClrType(classInfo.GetFirstPrimaryKeyField().DataType).FullName;
+
+            ctd = CDILParser.ParseClass(CDILTemplate.Get("TypedWrapper.cdil"), context);
+            ns.Types.Add(ctd);
+
+            foreach (CollectionBaseInfo coll in classInfo.UnifiedCollections)
+            {
+                CodeMemberProperty prop = new CodeMemberProperty();
+
+                prop.Name = coll.Name;
+                prop.Attributes = MemberAttributes.Public;
+                prop.Type = new CodeTypeReference(coll.GetItemClass().Name + "CollectionExpression");
+                prop.GetStatements.Add(
+                    new CodeMethodReturnStatement(
+                    new CodeObjectCreateExpression(prop.Type, new CodeThisReferenceExpression(), new CodePrimitiveExpression(coll.Name))
+                    ));
+
+                ctd.Members.Add(prop);
+            }
 
             foreach (FieldInfo fi in classInfo.UnifiedFields)
             {
@@ -628,7 +650,7 @@ namespace Sooda.StubGen
                 }
                 else
                 {
-                    fullWrapperTypeName = fi.ReferencedClass.Name + optionalNullable + "PathExpression";
+                    fullWrapperTypeName = fi.ReferencedClass.Name + optionalNullable + "WrapperExpression";
                     prop.GetStatements.Add(new CodeMethodReturnStatement(
                         new CodeObjectCreateExpression(fullWrapperTypeName, 
                         new CodeThisReferenceExpression(), new CodePrimitiveExpression(fi.Name))));

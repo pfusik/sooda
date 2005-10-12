@@ -22,12 +22,20 @@ h2
     font-size: 120%;
 }
 
+td.nav_selected
+{
+    font-family: Tahoma, Trebuchet MS, Arial, Helv;
+    font-size: 16px;
+    font-style: normal;
+    text-align: right;
+}
+
 td.nav
 {
     font-family: Tahoma, Trebuchet MS, Arial, Helv;
     font-size: 16px;
     font-style: normal;
-    padding: 3px;
+    text-align: right;
 }
 
 a:link
@@ -84,16 +92,6 @@ li
 {
     /* font-weight: bold; */
     color: black;
-}
-
-pre.csharp
-{
-    font-family: Courier New;
-    font-size: 11px;
-    padding: 4px;
-    font-color: #606060;
-    background-color: #f0f0f0;
-    border: 1px solid #e0e0e0;
 }
 
 span.keyword
@@ -159,8 +157,8 @@ a.nav
     margin: 1px;
     cursor: pointer; cursor: hand;
     text-decoration: none;
-    padding-left: 4px;
-    padding-right: 4px;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 a.nav:visited
@@ -181,15 +179,15 @@ a.nav_selected
     font-weight: bold;
     font-size: 19px;
     color: white;
-    padding-left: 4px;
-    padding-right: 4px;
+    padding-left: 20px;
+    padding-right: 20px;
     cursor: pointer; cursor: hand;
     text-decoration: none;
 }
 
 a.nav_selected:visited
 {
-    color: black;
+    color: white;
 }
 
 a.nav_selected:hover
@@ -197,25 +195,73 @@ a.nav_selected:hover
     color: white;
 }
 
-tr.nav_normal
+a.subnav
 {
-    background-color: white;
-    color: #202040;
+    display: block;
+    font-family: Tahoma, Trebuchet MS, Arial, Helv;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    color: #000080;
+    margin: 1px;
     cursor: pointer; cursor: hand;
+    text-decoration: none;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 2px;
+    padding-bottom: 2px;
 }
 
-tr.nav_hilite
+a.subnav:visited
 {
-    background-color: #f0f0e0;
-    color: #008000;
-    cursor: pointer; cursor: hand;
+    color: #000080;
 }
 
-tr.nav_selected
+a.subnav:hover
 {
-    background-color: #000080;
     color: white;
+}
+
+a.subnav_selected
+{
+    display: block;
+    font-family: Tahoma, Trebuchet MS, Arial, Helv;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 14px;
+    color: white;
+    padding-left: 20px;
+    padding-right: 20px;
     cursor: pointer; cursor: hand;
+    text-decoration: none;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+a.subnav_selected:visited
+{
+    color: white;
+}
+
+a.subnav_selected:hover
+{
+    color: white;
+}
+
+table.submenu
+{
+}
+
+table.submenu td
+{
+    text-align: right;
+    padding: 0px;
+    margin: 0px;
+}
+
+tr.subnav
+{
+    background-color: #4280dE;
 }
 
 td.titledesc
@@ -232,7 +278,7 @@ img.thinborder
     border: 1px solid #404040;
 }
 
-td.header
+#header
 {
     margin-bottom: 0px;
     height: 80px;
@@ -240,30 +286,35 @@ td.header
     background-color: #5290EE;
 }
 
-td.content
+#content
 {
+    position: absolute;
+    top: 90px;
+    left: 190px;
+    right: 10px;
     font-family: Tahoma, Trebuchet MS, Helv, Arial;
     font-size: 12px;
-    padding: 16px;
     text-align: left;
-    background-color: #f8f8ff;
-    padding-top: 16px;
-    padding-bottom: 16px;
-    border-left: 1px solid #c0c0ff;
-    border-top: 1px solid #c0c0ff;
-    width: 100%;
+    /* background-color: #f8f8ff; */
 }
 
-td.controls
+#controls
 {
-    padding: 6px;
+    left: 0px;
+    top: 100px;
     width: 180px;
-    padding-top: 16px;
-    background-color: #9FC1F5;
-    background-color: #5290EE;
+    padding-top: 10px;
     text-align: right;
+    border-right: 1px solid #c0c0ff;
     background-image: url(sooda_nav.jpg);
     background-repeat: no-repeat;
+    height: 100%;
+}
+
+@media print
+{
+    #controls { display: none; }
+    #content { left: 0px; border: none; }
 }
 
 table.page
@@ -279,11 +330,12 @@ tr.spacer
 
 td.copyright
 {
-    background-color: #f8f8ff;
-    padding: 4px;
+    background-color: #5290EE;
+    padding: 16px;
     font-size: 11px;
     text-align: center;
-    font-family: Trebuchet MS, Arial, Helv;
+    color: #e0e0e0;
+    font-family: Tahoma, Trebuchet MS, Arial, Helv;
 }
 
 
@@ -377,4 +429,20 @@ code.commandline
     color: #000040;
     font-weight: bold;
     font-size: 13px;
+}
+
+table.navbuttons
+{
+    width: 100%;
+}
+
+table.navbuttons td
+{
+    padding-right: 20px;
+    text-align: right;
+}
+
+table.navtable
+{
+    width: 100%;
 }

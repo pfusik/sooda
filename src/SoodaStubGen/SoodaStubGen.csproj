@@ -230,6 +230,10 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "CDIL\Templates\TypedCollectionWrapper.cdil"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "CDIL\Templates\TypedWrapper.cdil"
                     BuildAction = "EmbeddedResource"
                 />

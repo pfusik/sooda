@@ -5,22 +5,37 @@ html, body.example
     background-color: #fffff8;
 }
 
+div.sourcecode
+{
+    border: 1px solid #e0e0e0;
+    padding: 10px;
+    background-color: #fffff0;
+    width: 100%;
+}
+
 pre.csharp
 {
-    font-family: Courier New;
+    font-family: Tahoma;
     font-size: 11px;
-    padding: 4px;
     font-color: #606060;
-    background-color: #fffff8;
+    /* border: 1px solid #e0e0e0; */
+    white-space: -moz-pre-wrap;  /* Mozilla, supported since 1999 */
+    white-space: -pre-wrap;      /* Opera 4 - 6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    white-space: pre-wrap;       /* CSS3 - Text module (Candidate Recommendation) */
+    word-wrap: break-word;       /* IE 5.5+ */
 }
 
 pre.xml
 {
-    font-family: Courier New;
+    font-family: Tahoma;
     font-size: 11px;
-    padding: 4px;
     font-color: #606060;
-    background-color: #fffff8;
+    white-space: -moz-pre-wrap;  /* Mozilla, supported since 1999 */
+    white-space: -pre-wrap;      /* Opera 4 - 6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    white-space: pre-wrap;       /* CSS3 - Text module (Candidate Recommendation) */
+    word-wrap: break-word;       /* IE 5.5+ */
 }
 
 .csharp .k
@@ -31,7 +46,6 @@ pre.xml
 .csharp .c
 {
     color: #008000;
-    font-style: italic;
 }
 
 .csharp .s
@@ -52,7 +66,6 @@ pre.xml
 .jscript .c
 {
     color: #008000;
-    font-style: italic;
 }
 
 .jscript .s
@@ -88,10 +101,34 @@ pre.xml
 .xml .c
 {
     color: #008000;
-    font-style: italic;
 }
 
 .xml .x
 {
     color: #A0A000;
+}
+
+@media print
+{
+    .downloadlink { display: none; }
+    pre.xml
+    { 
+        overflow: hidden; 
+        font-size: 10px;
+        word-wrap: break-word;
+    }
+    pre.csharp
+    {
+        overflow: hidden; 
+        font-size: 10px;
+        word-wrap: break-word;
+    }
+}
+
+table.embeddedsource
+{
+}
+
+.downloadlink
+{
 }

@@ -1,4 +1,4 @@
-class ${ClassName}PathExpression
+class ${ClassName}WrapperExpression
     extends Sooda.QL.SoqlPathExpression
 
 constructor()
@@ -13,70 +13,70 @@ constructor(Sooda.QL.SoqlPathExpression left, System.String name)
 begin
 end
 
-method op_Equality(${ClassName}PathExpression left, ${ClassName}PathExpression right)
+method op_Equality(${ClassName}WrapperExpression left, ${ClassName}WrapperExpression right)
     attributes Public,Static
     returns Sooda.QL.SoqlBooleanRelationalExpression
 begin
     return new Sooda.QL.SoqlBooleanRelationalExpression(arg(left), arg(right), typeref(Sooda.QL.SoqlRelationalOperator).Equal);
 end
 
-method op_Inequality(${ClassName}PathExpression left, ${ClassName}PathExpression right)
+method op_Inequality(${ClassName}WrapperExpression left, ${ClassName}WrapperExpression right)
     attributes Public,Static
     returns Sooda.QL.SoqlBooleanRelationalExpression
 begin
     return new Sooda.QL.SoqlBooleanRelationalExpression(arg(left), arg(right), typeref(Sooda.QL.SoqlRelationalOperator).NotEqual);
 end
 
-method op_Equality(${PrimaryKeyType} left, ${ClassName}PathExpression right)
+method op_Equality(${PrimaryKeyType} left, ${ClassName}WrapperExpression right)
     attributes Public,Static
     returns Sooda.QL.SoqlBooleanRelationalExpression
 begin
     return new Sooda.QL.SoqlBooleanRelationalExpression(new Sooda.QL.SoqlLiteralExpression(arg(left)), arg(right), typeref(Sooda.QL.SoqlRelationalOperator).Equal);
 end
 
-method op_Inequality(${PrimaryKeyType} left, ${ClassName}PathExpression right)
+method op_Inequality(${PrimaryKeyType} left, ${ClassName}WrapperExpression right)
     attributes Public,Static
     returns Sooda.QL.SoqlBooleanRelationalExpression
 begin
     return new Sooda.QL.SoqlBooleanRelationalExpression(new Sooda.QL.SoqlLiteralExpression(arg(left)), arg(right), typeref(Sooda.QL.SoqlRelationalOperator).NotEqual);
 end
 
-method op_Equality(${ClassName}PathExpression left, ${PrimaryKeyType} right)
+method op_Equality(${ClassName}WrapperExpression left, ${PrimaryKeyType} right)
     attributes Public,Static
     returns Sooda.QL.SoqlBooleanRelationalExpression
 begin
     return new Sooda.QL.SoqlBooleanRelationalExpression(arg(left), new Sooda.QL.SoqlLiteralExpression(arg(right)), typeref(Sooda.QL.SoqlRelationalOperator).Equal);
 end
 
-method op_Inequality(${ClassName}PathExpression left, ${PrimaryKeyType} right)
+method op_Inequality(${ClassName}WrapperExpression left, ${PrimaryKeyType} right)
     attributes Public,Static
     returns Sooda.QL.SoqlBooleanRelationalExpression
 begin
     return new Sooda.QL.SoqlBooleanRelationalExpression(arg(left), new Sooda.QL.SoqlLiteralExpression(arg(right)), typeref(Sooda.QL.SoqlRelationalOperator).NotEqual);
 end
 
-method op_Equality(${ClassName} left, ${ClassName}PathExpression right)
+method op_Equality(${ClassName} left, ${ClassName}WrapperExpression right)
     attributes Public,Static
     returns Sooda.QL.SoqlBooleanRelationalExpression
 begin
     return new Sooda.QL.SoqlBooleanRelationalExpression(new Sooda.QL.SoqlLiteralExpression(arg(left).GetPrimaryKeyValue()), arg(right), typeref(Sooda.QL.SoqlRelationalOperator).Equal);
 end
 
-method op_Inequality(${ClassName} left, ${ClassName}PathExpression right)
+method op_Inequality(${ClassName} left, ${ClassName}WrapperExpression right)
     attributes Public,Static
     returns Sooda.QL.SoqlBooleanRelationalExpression
 begin
     return new Sooda.QL.SoqlBooleanRelationalExpression(new Sooda.QL.SoqlLiteralExpression(arg(left).GetPrimaryKeyValue()), arg(right), typeref(Sooda.QL.SoqlRelationalOperator).NotEqual);
 end
 
-method op_Equality(${ClassName}PathExpression left, ${ClassName} right)
+method op_Equality(${ClassName}WrapperExpression left, ${ClassName} right)
     attributes Public,Static
     returns Sooda.QL.SoqlBooleanRelationalExpression
 begin
     return new Sooda.QL.SoqlBooleanRelationalExpression(arg(left), new Sooda.QL.SoqlLiteralExpression(arg(right).GetPrimaryKeyValue()), typeref(Sooda.QL.SoqlRelationalOperator).Equal);
 end
 
-method op_Inequality(${ClassName}PathExpression left, ${ClassName} right)
+method op_Inequality(${ClassName}WrapperExpression left, ${ClassName} right)
     attributes Public,Static
     returns Sooda.QL.SoqlBooleanRelationalExpression
 begin

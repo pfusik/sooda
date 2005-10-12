@@ -52,7 +52,7 @@ namespace Sooda.QL
             _innerExpression = innerExpression;
         }
 
-        public SoqlExpression InnerExpression
+        internal SoqlExpression InnerExpression
         {
             get { return _innerExpression; }
             set { _innerExpression = value; }

@@ -1,50 +1,21 @@
 <?xml version="1.0" encoding="windows-1250" ?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 
-    <xsl:template name="external-iframe">
-        <p/>
-        <a href="{@src}.html" style="display:none">A</a>
-        <script language="JavaScript">
-        function enlarge_iframe_<xsl:value-of select="generate-id(.)" />()
-        {
-            try
-            {
-                var f = document.getElementById('<xsl:value-of select="generate-id(.)" />');
-                var f2 = window.frames[f.name];
-                var h;
-                if (!document.all)
-                {
-                    h = f2.document.body.offsetHeight + 15;
-                }
-                else
-                {
-                    h = f2.document.body.scrollHeight + 15;
-                }
-                // alert('enlarge_iframe_' + f.name + " h = " + h);
-                f.style.height = h + "px";
-            }
-            catch (e)
-            {
-                alert(e.description);
-            }
-        }
-        </script>
+    <xsl:param name="external-base">../build/net-1.1-debug/web/</xsl:param>
 
-        <table cellpadding="0" cellspacing="0" style="width: 95%;" border="0">
+    <xsl:template name="external-iframe">
+        <table cellpadding="0" cellspacing="0" style="width: 98%; table-layout: fixed" border="0" class="embeddedsource">
             <tr>
-                <td valign="bottom">
-                    <iframe src="{@src}.html" onload='enlarge_iframe_{generate-id(.)}()'>
-                        <xsl:attribute name="style">width: 100%; height: 200px; border: 1px solid #c0c0c0</xsl:attribute>
-                        <xsl:attribute name="id"><xsl:value-of select="generate-id(.)" /></xsl:attribute>
-                        <xsl:attribute name="name"><xsl:value-of select="generate-id(.)" /></xsl:attribute>
-                    </iframe>
+                <td>
+                    <div class="sourcecode">
+                        <xsl:copy-of select="document(concat($external-base,'/',@src,'.xhtml'))" />
+                    </div>
                 </td>
             </tr>
-            <tr>
-                <td style="font-size: 12px"><a href="{@src}">Download this file</a></td>
+            <tr class="downloadlink">
+                <td valign="top" style="font-size: 12px"><a href="{@src}">Download this file</a></td>
             </tr>
         </table>
-        <p/>
     </xsl:template>
 
     <xsl:template match="cs[@src]">

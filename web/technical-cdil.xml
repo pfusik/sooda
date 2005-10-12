@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="windows-1250" ?>
-<?xml-stylesheet type="text/xsl" href="../style.xsl" ?>
-<content lang="en" id="technical">
+<?xml-stylesheet type="text/xsl" href="style.xsl" ?>
+<content lang="en" id="technical" subid="technical-cdil">
     <h1>CodeDOM Intermediate Language</h1>
     <p>
         SoodaStubGen tool uses CodeDOM to generate stub code in various languages.
@@ -93,8 +93,8 @@
                 <td colspan="2">Expressions</td>
             </tr>
             <tr>
-                <td>die = new CodeMethodInvokeExpression();<br/>die.TargetObject = new CodePropertyReferenceExpression(new CodeThisReferenceExpression(), "del");<br/>die.Parameters.Add(...);</td>
-                <td>this.method(...)</td>
+                <td>del = new CodeMethodInvokeExpression();<br/>del.TargetObject = new CodePropertyReferenceExpression(new CodeThisReferenceExpression(), "del");<br/>del.Parameters.Add(...);</td>
+                <td>this.del.method(...)</td>
             </tr>
             <tr>
                 <td>new CodeThisReferenceExpression()</td>
@@ -113,7 +113,7 @@
                 <td><b>arg</b>(aaa)</td>
             </tr>
             <tr>
-                <td>die = new CodeDelegateInvokeExpression();<br/>die.TargetObject = new CodePropertyReferenceExpression(new CodeThisReferenceExpression(), "del");<br/>die.Parameters.Add(...);</td>
+                <td>del = new CodeDelegateInvokeExpression();<br/>del.TargetObject = new CodePropertyReferenceExpression(new CodeThisReferenceExpression(), "del");<br/>del.Parameters.Add(...);</td>
                 <td><b>delegatecall</b>(this.del)(...)</td>
             </tr>
             <tr>
