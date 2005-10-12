@@ -1,0 +1,32 @@
+class ${ClassName}CollectionExpression
+    extends Sooda.QL.TypedWrappers.SoqlCollectionWrapperExpression
+
+constructor(Sooda.QL.SoqlPathExpression left, System.String name)
+    attributes Public
+    baseArg(arg(left))
+    baseArg(arg(name))
+begin
+end
+
+method Contains(${ClassName}WrapperExpression item)
+    attributes Public
+    returns Sooda.QL.TypedWrappers.SoqlBooleanWrapperExpression
+begin
+    return this.ContainsImpl(arg(item));
+end
+
+method Contains(${PrimaryKeyType} item)
+    attributes Public
+    returns Sooda.QL.TypedWrappers.SoqlBooleanWrapperExpression
+begin
+    return this.ContainsImpl(new Sooda.QL.SoqlLiteralExpression(arg(item)));
+end
+
+method Contains${ClassName}Where(Sooda.QL.SoqlBooleanExpression whereClause)
+    attributes Public
+    returns Sooda.QL.TypedWrappers.SoqlBooleanWrapperExpression
+begin
+    return this.ContainsExprImpl('${ClassName}',arg(whereClause));
+end
+
+end
