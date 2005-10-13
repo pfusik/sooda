@@ -586,7 +586,7 @@ namespace Sooda
             }
         }
 
-        private void CheckCommitConditions() 
+        public void CheckCommitConditions() 
         {
             foreach (SoodaObject o in _dirtyObjects) 
             {

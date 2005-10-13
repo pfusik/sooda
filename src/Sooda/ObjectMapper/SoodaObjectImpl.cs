@@ -64,5 +64,23 @@ namespace Sooda.ObjectMapper
         {
             theObject.SetRefFieldValue(tableNumber, fieldName, fieldOrdinal, newValue, ref refcache, factory);
         }
+
+        public static SoodaObject SelectSingleObject(Sooda.QL.SoqlBooleanExpression expr, ISoodaObjectList list)
+        {
+            if (list.Count == 0)
+                return null;
+            if (list.Count > 1)
+                throw new SoodaObjectNotFoundException("Not a unique match: '" + expr + "'");
+            return list.GetItem(0);
+        }
+
+        public static SoodaObject SelectSingleObject(Sooda.SoodaWhereClause expr, ISoodaObjectList list)
+        {
+            if (list.Count == 0)
+                return null;
+            if (list.Count > 1)
+                throw new SoodaObjectNotFoundException("Not a unique match: '" + expr + "'");
+            return list.GetItem(0);
+        }
     }
 }

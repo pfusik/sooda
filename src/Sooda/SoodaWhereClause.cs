@@ -136,6 +136,11 @@ namespace Sooda
                 return false;
         }
 
+        public override string ToString()
+        {
+            return (this.WhereExpression != null) ? this.WhereExpression.ToString() : "";
+        }
+
         public static readonly SoodaWhereClause Unrestricted = new SoodaWhereClause((string)null);
 
         class EvaluateContext : ISoqlEvaluateContext
