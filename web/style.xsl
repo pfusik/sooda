@@ -16,7 +16,7 @@
     <xsl:template match="/">
         <html>
             <head>
-                <link rel="stylesheet" href="style.css" type="text/css" />
+                <link rel="stylesheet" href="style2.css" type="text/css" />
                 <link rel="stylesheet" href="syntax.css" type="text/css" />
                 <title>Sooda</title>
             </head>
