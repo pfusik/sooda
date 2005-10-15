@@ -38,7 +38,7 @@ using System.ComponentModel;
 namespace Sooda.Schema 
 {
     /// <remarks/>
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [Serializable]
     public abstract class CollectionBaseInfo {
         [System.Xml.Serialization.XmlAttributeAttribute("name")]

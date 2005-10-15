@@ -36,7 +36,7 @@ using System.Xml.Serialization;
 
 namespace Sooda.Schema {
     /// <remarks/>
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [Serializable]
     public class IndexFieldInfo {
 

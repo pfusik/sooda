@@ -16,7 +16,7 @@
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
                 OutputType = "Library"
-                PreBuildEvent = "$(SolutionDir)..\src\SoodaStubGen\bin\$(ConfigurationName)\SoodaStubGen.exe --rebuild-if-changed --nullable-as sqltype --project vs -s $(SolutionDir)DBSchema.xml -n Sooda.UnitTests.Objects -o $(SolutionDir)UnitTestObjects&#xd;&#xa;"
+                PreBuildEvent = "$(SolutionDir)..\src\SoodaCodeGenerator\bin\$(ConfigurationName)\SoodaCodeGenerator.exe $(ProjectDir)Sooda.UnitTests.Objects.soodaproject"
                 PostBuildEvent = ""
                 RootNamespace = "Sooda.UnitTests.Objects"
                 RunPostBuildEvent = "OnBuildSuccess"
@@ -181,6 +181,10 @@
                     RelPath = "PKString.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Sooda.UnitTests.Objects.soodaproject"
+                    BuildAction = "None"
                 />
                 <File
                     RelPath = "SuperBike.cs"

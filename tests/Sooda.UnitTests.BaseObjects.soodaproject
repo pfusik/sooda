@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sooda-project xmlns="http://www.sooda.org/schemas/SoodaProject.xsd">
+    <schema-file>DBSchemaBase.xml</schema-file>
+    <language>c#</language>
+    <output-namespace>Sooda.UnitTests.BaseObjects</output-namespace>
+    <output-path>BaseObjects</output-path>
+    <nullable-representation>SqlType</nullable-representation>
+    <not-null-representation>Raw</not-null-representation>
+    <with-indexers>false</with-indexers>
+    <with-typed-queries>false</with-typed-queries>
+    <embedded-schema-type>Binary</embedded-schema-type>
+    <external-projects>
+        <project type="vs2003" />
+    </external-projects>
+</sooda-project>

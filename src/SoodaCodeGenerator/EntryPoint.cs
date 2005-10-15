@@ -1,0 +1,211 @@
+using System;
+using System.IO;
+using System.Xml;
+using System.Xml.Serialization;
+
+using Sooda.CodeGen;
+
+namespace SoodaCodeGenerator
+{
+	public class EntryPoint
+	{
+        private static int Usage() 
+        {
+            Console.WriteLine("Usage: StubGen [project]");
+            Console.WriteLine("SoodaWhereClause project can be (*) - required option:");
+            Console.WriteLine();
+            Console.WriteLine("        --lang csharp    - (default) generate C# code");
+#if !NO_VB
+
+            Console.WriteLine("        --lang vb        - generate VB.NET code");
+#endif
+#if !NO_JSCRIPT
+
+            Console.WriteLine("        --lang js        - generate JS.NET code (broken)");
+#endif
+
+            Console.WriteLine("        --lang <type>    - generate code using the specified CodeDOM codeProvider");
+            Console.WriteLine();
+            Console.WriteLine("        --project vs2003 - (default) generate VS.NET 2003 project file (.??proj)");
+            Console.WriteLine("        --project null   - generate no project file");
+            Console.WriteLine("        --project <type> - generate project file using custom type");
+            Console.WriteLine();
+            Console.WriteLine("    (*) --schema filename.xml - generate code from the specified schema");
+            Console.WriteLine("    (*) --namespace <ns>      - specify the namespace to use");
+            Console.WriteLine("    (*) --output <path>       - specify the output directory for files");
+            Console.WriteLine("        --assembly <name>     - specify the name of resulting assembly");
+            Console.WriteLine("        --base-class <name>   - specify the name of stub base class (SoodaObject)");
+            Console.WriteLine("        --projectfile <name>  - use <name> instead of default project file name");
+            Console.WriteLine("        --rewrite-skeletons   - force overwrite of skeleton classes");
+            Console.WriteLine("        --rewrite-project     - force overwrite of project file");
+            Console.WriteLine("        --separate-stubs      - ");
+            Console.WriteLine("        --schema-embed-xml    - embed schema as an XML file");
+            Console.WriteLine("        --schema-embed-bin    - embed schema as an BIN file");
+            Console.WriteLine("        --help                - display this help");
+            Console.WriteLine();
+            Console.WriteLine("        --null-progagation    - enable null propagation");
+            Console.WriteLine("        --no-null-progagation - disable null propagation (default)");
+            Console.WriteLine("        --nullable-as [boxed | sqltype | raw ] (default = boxed)");
+            Console.WriteLine("        --not-null-as [boxed | sqltype | raw ] (default = raw)");
+            Console.WriteLine("                         - specify the way primitive values are handled");
+            Console.WriteLine();
+            return 1;
+        }
+
+        public static int Main(string[] args)
+        {
+            try
+            {
+                Sooda.CodeGen.SoodaProject project = new SoodaProject();
+                Sooda.CodeGen.CodeGenerator generator = new CodeGenerator(project, new ConsoleCodeGeneratorOutput());
+
+                string writeProjectTo = null;
+
+                for (int i = 0; i < args.Length; ++i) 
+                {
+                    switch (args[i]) 
+                    {
+                        case "/?":
+                        case "-?":
+                        case "--help":
+                        case "-h":
+                            return Usage();
+
+                            // generator options (this run only)
+
+                        case "--rebuild-if-changed":
+                            generator.RebuildIfChanged = true;
+                            break;
+
+                        case "--force-rebuild":
+                            generator.RebuildIfChanged = false;
+                            break;
+
+                        case "-l":
+                        case "--lang":
+                            project.Language = args[++i];
+                            break;
+
+                        case "-p":
+                        case "--project":
+                            string projectType = args[++i];
+                            ExternalProjectInfo projectInfo = new ExternalProjectInfo(projectType);
+                            project.ExternalProjects.Add(projectInfo);
+                            break;
+
+                        case "--separate-stubs":
+                            project.SeparateStubs = true;
+                            break;
+
+                        case "--merged-stubs":
+                            project.SeparateStubs = false;
+                            break;
+
+                        case "--schema-embed-xml":
+                            project.EmbedSchema = EmbedSchema.Xml;
+                            break;
+
+                        case "--schema-embed-bin":
+                            project.EmbedSchema = EmbedSchema.Binary;
+                            break;
+
+                        case "--nullable-as":
+                            project.NullableRepresentation = (PrimitiveRepresentation)Enum.Parse(typeof(PrimitiveRepresentation), args[++i], true);
+                            break;
+
+                        case "--not-null-as":
+                            project.NotNullRepresentation = (PrimitiveRepresentation)Enum.Parse(typeof(PrimitiveRepresentation), args[++i], true);
+                            break;
+
+                        case "-s":
+                        case "--schema":
+                            project.SchemaFile = args[++i];
+                            break;
+
+                        case "-a":
+                        case "--assembly-name":
+                            project.AssemblyName = args[++i];
+                            break;
+
+                        case "-bc":
+                        case "--base-class":
+                            project.BaseClassName = args[++i];
+                            break;
+
+                        case "--null-propagation":
+                            project.NullPropagation = true;
+                            break;
+
+                        case "--no-null-propagation":
+                            project.NullPropagation = false;
+                            break;
+
+                        case "--rewrite-skeletons":
+                            generator.RewriteSkeletons = true;
+                            break;
+
+                        case "--rewrite-projects":
+                        case "--rewrite-project":
+                            generator.RewriteProjects = true;
+                            break;
+
+                        case "-n":
+                        case "-ns":
+                        case "--namespace":
+                            project.OutputNamespace = args[++i];
+                            break;
+
+                        case "-o":
+                        case "-out":
+                        case "--output":
+                            project.OutputPath = args[++i];
+                            break;
+
+                        case "--write-project":
+                            writeProjectTo = args[++i];
+                            break;
+
+                        default:
+                            if (args[i].EndsWith(".soodaproject"))
+                            {
+                                string fullPath = Path.GetFullPath(args[i]);
+                                Console.WriteLine("Loading project from file '{0}'...", fullPath);
+                                Environment.CurrentDirectory = Path.GetDirectoryName(fullPath);
+                                generator.Project = SoodaProject.LoadFrom(fullPath);
+                                //XmlSerializer ser = new XmlSerializer(typeof(SoodaProject));
+                                //ser.Serialize(Console.Out, project);
+                                //Console.WriteLine("OUT: {0}", project.OutputPath);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Unknown option '{0}'", args[i]);
+                                return Usage();
+                            }
+                            break;
+                    }
+                };
+
+                if (writeProjectTo != null)
+                {
+                    project.WriteTo(writeProjectTo);
+                }
+
+                generator.Run();
+
+                return 0;
+            }
+            catch (SoodaCodeGenException ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+                if (ex.InnerException != null)
+                    Console.WriteLine(ex.InnerException);
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex);
+                return 1;
+            }
+        }
+	}
+}

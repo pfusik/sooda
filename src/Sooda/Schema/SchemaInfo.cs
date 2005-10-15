@@ -41,8 +41,8 @@ namespace Sooda.Schema
     using System.Runtime.Serialization;
     using System.Text;
 
-    [XmlType(Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd")]
-    [XmlRoot("schema", Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd", IsNullable = false)]
+    [XmlType(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
+    [XmlRoot("schema", Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd", IsNullable = false)]
     [Serializable]
     public class SchemaInfo 
     {

@@ -1,7 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.UnitTests.Objects", "UnitTestObjects\Sooda.UnitTests.Objects.csproj", "{3574E1EF-2272-4474-85D9-0718B3D452E3}"
 	ProjectSection(ProjectDependencies) = postProject
-		{D1076BB4-3E1B-43D3-B176-DBE89B3C413B} = {D1076BB4-3E1B-43D3-B176-DBE89B3C413B}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda", "..\src\Sooda\Sooda.csproj", "{FCC9B644-9093-41F6-8F0D-F98F22474CB5}"
@@ -12,17 +11,24 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.UnitTests.TestCases",
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaStubGen", "..\src\SoodaStubGen\SoodaStubGen.csproj", "{D1076BB4-3E1B-43D3-B176-DBE89B3C413B}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTest", "ConsoleTest\ConsoleTest.csproj", "{24930E59-3AF2-4F6B-87C2-06CB66EEA190}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.UnitTests.BaseObjects", "BaseObjects\Sooda.UnitTests.BaseObjects.csproj", "{A1D122ED-CF84-4EF0-A138-72922DD50409}"
 	ProjectSection(ProjectDependencies) = postProject
-		{D1076BB4-3E1B-43D3-B176-DBE89B3C413B} = {D1076BB4-3E1B-43D3-B176-DBE89B3C413B}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.CodeGen", "..\src\Sooda.CodeGen\Sooda.CodeGen.csproj", "{0D67237B-4FBA-4BD9-95C3-24B5F427D014}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.NAnt.Tasks", "..\src\Sooda.NAnt.Tasks\Sooda.NAnt.Tasks.csproj", "{6CEC3AFB-2F26-4128-81CE-D93373874AF8}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaCodeGenerator", "..\src\SoodaCodeGenerator\SoodaCodeGenerator.csproj", "{5F89F8D0-39BC-49F8-92E3-3A7F5F3FF55F}"
+	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
 Global
@@ -43,10 +49,6 @@ Global
 		{2DB9451B-8E35-45C3-94E6-32026E9DE8D1}.Debug.Build.0 = Debug|.NET
 		{2DB9451B-8E35-45C3-94E6-32026E9DE8D1}.Release.ActiveCfg = Release|.NET
 		{2DB9451B-8E35-45C3-94E6-32026E9DE8D1}.Release.Build.0 = Release|.NET
-		{D1076BB4-3E1B-43D3-B176-DBE89B3C413B}.Debug.ActiveCfg = Debug|.NET
-		{D1076BB4-3E1B-43D3-B176-DBE89B3C413B}.Debug.Build.0 = Debug|.NET
-		{D1076BB4-3E1B-43D3-B176-DBE89B3C413B}.Release.ActiveCfg = Release|.NET
-		{D1076BB4-3E1B-43D3-B176-DBE89B3C413B}.Release.Build.0 = Release|.NET
 		{24930E59-3AF2-4F6B-87C2-06CB66EEA190}.Debug.ActiveCfg = Debug|.NET
 		{24930E59-3AF2-4F6B-87C2-06CB66EEA190}.Debug.Build.0 = Debug|.NET
 		{24930E59-3AF2-4F6B-87C2-06CB66EEA190}.Release.ActiveCfg = Release|.NET
@@ -55,10 +57,23 @@ Global
 		{A1D122ED-CF84-4EF0-A138-72922DD50409}.Debug.Build.0 = Debug|.NET
 		{A1D122ED-CF84-4EF0-A138-72922DD50409}.Release.ActiveCfg = Release|.NET
 		{A1D122ED-CF84-4EF0-A138-72922DD50409}.Release.Build.0 = Release|.NET
+		{0D67237B-4FBA-4BD9-95C3-24B5F427D014}.Debug.ActiveCfg = Debug|.NET
+		{0D67237B-4FBA-4BD9-95C3-24B5F427D014}.Debug.Build.0 = Debug|.NET
+		{0D67237B-4FBA-4BD9-95C3-24B5F427D014}.Release.ActiveCfg = Release|.NET
+		{0D67237B-4FBA-4BD9-95C3-24B5F427D014}.Release.Build.0 = Release|.NET
+		{6CEC3AFB-2F26-4128-81CE-D93373874AF8}.Debug.ActiveCfg = Debug|.NET
+		{6CEC3AFB-2F26-4128-81CE-D93373874AF8}.Debug.Build.0 = Debug|.NET
+		{6CEC3AFB-2F26-4128-81CE-D93373874AF8}.Release.ActiveCfg = Release|.NET
+		{6CEC3AFB-2F26-4128-81CE-D93373874AF8}.Release.Build.0 = Release|.NET
+		{5F89F8D0-39BC-49F8-92E3-3A7F5F3FF55F}.Debug.ActiveCfg = Debug|.NET
+		{5F89F8D0-39BC-49F8-92E3-3A7F5F3FF55F}.Debug.Build.0 = Debug|.NET
+		{5F89F8D0-39BC-49F8-92E3-3A7F5F3FF55F}.Release.ActiveCfg = Release|.NET
+		{5F89F8D0-39BC-49F8-92E3-3A7F5F3FF55F}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(SolutionItems) = postSolution
 		DBSchema.xml = DBSchema.xml
 		DBSchemaBase.xml = DBSchemaBase.xml
+		..\LICENSE.txt = ..\LICENSE.txt
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

@@ -213,19 +213,21 @@ namespace Sooda
             ;
         }
 
-#if TEST_SOODA_GC
         ~SoodaObject()
         {
             Console.WriteLine("Finalizer {0}", GetObjectKeyString());
         }
-#endif
+
         protected SoodaObject(SoodaConstructor c) 
         {
+            GC.SuppressFinalize(this);
             // do nothing - we delay all the initialization
         }
 
         protected SoodaObject(SoodaTransaction tran) 
         {
+            GC.SuppressFinalize(this);
+
             InitRawObject(tran);
             InsertMode = true;
             SetAllDataLoaded();

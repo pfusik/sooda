@@ -62,7 +62,7 @@ namespace Sooda {
                 {
                     try {
                         string typeName = System.Configuration.ConfigurationSettings.AppSettings["sooda.config"];
-                        Console.WriteLine("typeName: {0}", typeName);
+                        // Console.WriteLine("typeName: {0}", typeName);
                         if (typeName == "xmlconfig")
                         {
                             string xmlconfigfile = System.Configuration.ConfigurationSettings.AppSettings["sooda.xmlconfigfile"];

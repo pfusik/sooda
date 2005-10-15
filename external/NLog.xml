@@ -80,7 +80,7 @@
             </summary>
             <returns>A new instance of <see cref="T:NLog.Config.LoggingConfiguration"/> that represents the updated configuration.</returns>
         </member>
-        <member name="M:NLog.Config.LoggingConfiguration.FlushAllTargets">
+        <member name="M:NLog.Config.LoggingConfiguration.FlushAllTargets(System.TimeSpan)">
             <summary>
             Flushes any pending log messages on all appenders.
             </summary>
@@ -651,13 +651,18 @@
             </summary>
             <param name="o">The item to be queued.</param>
         </member>
-        <member name="M:NLog.Internal.AsyncRequestQueue.DequeueBatch(System.Collections.IList,System.Int32)">
+        <member name="M:NLog.Internal.AsyncRequestQueue.DequeueBatch(System.Int32)">
             <summary>
             Dequeues a maximum of <c>count</c> items from the queue
-            and adds them to the specified <see cref="T:System.Collections.IList"/>.
+            and adds returns the <see cref="T:System.Collections.ArrayList"/> containing them.
             </summary>
-            <param name="target">The list to add the items to.</param>
             <param name="count">Maximum number of items to be dequeued.</param>
+        </member>
+        <member name="M:NLog.Internal.AsyncRequestQueue.BatchProcessed(System.Collections.ArrayList)">
+            <summary>
+            Notifies the queue that the request batch has been processed.
+            </summary>
+            <param name="batch">The batch.</param>
         </member>
         <member name="M:NLog.Internal.AsyncRequestQueue.Clear">
             <summary>
@@ -685,6 +690,11 @@
             Number of requests currently in the queue.
             </summary>
         </member>
+        <member name="P:NLog.Internal.AsyncRequestQueue.UnprocessedRequestCount">
+            <summary>
+            Number of requests currently being processed (in the queue + batched)
+            </summary>
+        </member>
         <member name="T:NLog.Internal.AsyncRequestQueue.OverflowAction">
             <summary>
             The action to be taken when the queue overflows
@@ -705,88 +715,16 @@
             Block until there's more room in the queue.
             </summary>
         </member>
-        <member name="T:NLog.Internal.LayoutRendererDictionary">
+        <member name="T:NLog.ExtensionUtils">
             <summary>
-            A dictionary with keys of type string and values of type LayoutRenderer
+            A class that loads and manages NLog extension assemblies.
             </summary>
         </member>
-        <member name="M:NLog.Internal.LayoutRendererDictionary.#ctor">
+        <member name="M:NLog.ExtensionUtils.GetExtensionAssemblies">
             <summary>
-            Initializes a new empty instance of the LayoutRendererDictionary class
+            Gets the list of loaded NLog extension assemblies.
             </summary>
-        </member>
-        <member name="M:NLog.Internal.LayoutRendererDictionary.Add(System.String,NLog.LayoutRenderer)">
-            <summary>
-            Adds an element with the specified key and value to this LayoutRendererDictionary.
-            </summary>
-            <param name="key">
-            The string key of the element to add.
-            </param>
-            <param name="value">
-            The LayoutRenderer value of the element to add.
-            </param>
-        </member>
-        <member name="M:NLog.Internal.LayoutRendererDictionary.Contains(System.String)">
-            <summary>
-            Determines whether this LayoutRendererDictionary contains a specific key.
-            </summary>
-            <param name="key">
-            The string key to locate in this LayoutRendererDictionary.
-            </param>
-            <returns>
-            true if this LayoutRendererDictionary contains an element with the specified key;
-            otherwise, false.
-            </returns>
-        </member>
-        <member name="M:NLog.Internal.LayoutRendererDictionary.ContainsKey(System.String)">
-            <summary>
-            Determines whether this LayoutRendererDictionary contains a specific key.
-            </summary>
-            <param name="key">
-            The string key to locate in this LayoutRendererDictionary.
-            </param>
-            <returns>
-            true if this LayoutRendererDictionary contains an element with the specified key;
-            otherwise, false.
-            </returns>
-        </member>
-        <member name="M:NLog.Internal.LayoutRendererDictionary.ContainsValue(NLog.LayoutRenderer)">
-            <summary>
-            Determines whether this LayoutRendererDictionary contains a specific value.
-            </summary>
-            <param name="value">
-            The LayoutRenderer value to locate in this LayoutRendererDictionary.
-            </param>
-            <returns>
-            true if this LayoutRendererDictionary contains an element with the specified value;
-            otherwise, false.
-            </returns>
-        </member>
-        <member name="M:NLog.Internal.LayoutRendererDictionary.Remove(System.String)">
-            <summary>
-            Removes the element with the specified key from this LayoutRendererDictionary.
-            </summary>
-            <param name="key">
-            The string key of the element to remove.
-            </param>
-        </member>
-        <member name="P:NLog.Internal.LayoutRendererDictionary.Item(System.String)">
-            <summary>
-            Gets or sets the LayoutRenderer associated with the given string
-            </summary>
-            <param name="key">
-            The string whose value to get or set.
-            </param>
-        </member>
-        <member name="P:NLog.Internal.LayoutRendererDictionary.Keys">
-            <summary>
-            Gets a collection containing the keys in this LayoutRendererDictionary.
-            </summary>
-        </member>
-        <member name="P:NLog.Internal.LayoutRendererDictionary.Values">
-            <summary>
-            Gets a collection containing the values in this LayoutRendererDictionary.
-            </summary>
+            <returns>An <see cref="T:System.Collections.ArrayList"/> containing all NLog extension assemblies that have been loaded.</returns>
         </member>
         <member name="T:NLog.Internal.FilterDictionary">
             <summary>
@@ -1142,6 +1080,123 @@
         <member name="P:NLog.Internal.InternalLogger.IsFatalEnabled">
             <summary>
             Returns true when internal log level includes Fatal messages
+            </summary>
+        </member>
+        <member name="T:NLog.Internal.LayoutRendererDictionary">
+            <summary>
+            A dictionary with keys of type string and values of type LayoutRenderer
+            </summary>
+        </member>
+        <member name="M:NLog.Internal.LayoutRendererDictionary.#ctor">
+            <summary>
+            Initializes a new empty instance of the LayoutRendererDictionary class
+            </summary>
+        </member>
+        <member name="M:NLog.Internal.LayoutRendererDictionary.Add(System.String,NLog.LayoutRenderer)">
+            <summary>
+            Adds an element with the specified key and value to this LayoutRendererDictionary.
+            </summary>
+            <param name="key">
+            The string key of the element to add.
+            </param>
+            <param name="value">
+            The LayoutRenderer value of the element to add.
+            </param>
+        </member>
+        <member name="M:NLog.Internal.LayoutRendererDictionary.Contains(System.String)">
+            <summary>
+            Determines whether this LayoutRendererDictionary contains a specific key.
+            </summary>
+            <param name="key">
+            The string key to locate in this LayoutRendererDictionary.
+            </param>
+            <returns>
+            true if this LayoutRendererDictionary contains an element with the specified key;
+            otherwise, false.
+            </returns>
+        </member>
+        <member name="M:NLog.Internal.LayoutRendererDictionary.ContainsKey(System.String)">
+            <summary>
+            Determines whether this LayoutRendererDictionary contains a specific key.
+            </summary>
+            <param name="key">
+            The string key to locate in this LayoutRendererDictionary.
+            </param>
+            <returns>
+            true if this LayoutRendererDictionary contains an element with the specified key;
+            otherwise, false.
+            </returns>
+        </member>
+        <member name="M:NLog.Internal.LayoutRendererDictionary.ContainsValue(NLog.LayoutRenderer)">
+            <summary>
+            Determines whether this LayoutRendererDictionary contains a specific value.
+            </summary>
+            <param name="value">
+            The LayoutRenderer value to locate in this LayoutRendererDictionary.
+            </param>
+            <returns>
+            true if this LayoutRendererDictionary contains an element with the specified value;
+            otherwise, false.
+            </returns>
+        </member>
+        <member name="M:NLog.Internal.LayoutRendererDictionary.Remove(System.String)">
+            <summary>
+            Removes the element with the specified key from this LayoutRendererDictionary.
+            </summary>
+            <param name="key">
+            The string key of the element to remove.
+            </param>
+        </member>
+        <member name="P:NLog.Internal.LayoutRendererDictionary.Item(System.String)">
+            <summary>
+            Gets or sets the LayoutRenderer associated with the given string
+            </summary>
+            <param name="key">
+            The string whose value to get or set.
+            </param>
+        </member>
+        <member name="P:NLog.Internal.LayoutRendererDictionary.Keys">
+            <summary>
+            Gets a collection containing the keys in this LayoutRendererDictionary.
+            </summary>
+        </member>
+        <member name="P:NLog.Internal.LayoutRendererDictionary.Values">
+            <summary>
+            Gets a collection containing the values in this LayoutRendererDictionary.
+            </summary>
+        </member>
+        <member name="T:NLog.Internal.LogEventInfoBuffer">
+            <summary>
+            A cyclick buffer of <see cref="T:NLog.LogEventInfo"/> object.
+            </summary>
+        </member>
+        <member name="M:NLog.Internal.LogEventInfoBuffer.#ctor(System.Int32,System.Boolean,System.Int32)">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Internal.LogEventInfoBuffer"/>, sets the buffer size and grow options.
+            </summary>
+            <param name="size">Buffer size.</param>
+            <param name="growAsNeeded">Whether buffer should grow as it becomes full.</param>
+            <param name="growLimit">The maximum number of items that the buffer can grow to.</param>
+        </member>
+        <member name="M:NLog.Internal.LogEventInfoBuffer.Append(NLog.LogEventInfo)">
+            <summary>
+            Adds the specified log event to the buffer.
+            </summary>
+            <param name="e">Log event</param>
+            <returns>The number of items in the buffer.</returns>
+        </member>
+        <member name="M:NLog.Internal.LogEventInfoBuffer.GetEventsAndClear">
+            <summary>
+            Gets the array of events accumulated in the buffer and clears the buffer as one atomic operation.
+            </summary>
+            <returns>An array of <see cref="T:NLog.LogEventInfo"/> objects that have been accumulated in the buffer.</returns>
+            <remarks>
+            In case there are no items in the buffer, the function returns an empty array.
+            </remarks>
+        </member>
+        <member name="P:NLog.Internal.LogEventInfoBuffer.Size">
+            <summary>
+            Gets the number of items in the array.
             </summary>
         </member>
         <member name="T:NLog.Internal.LoggerDictionary">
@@ -1625,7 +1680,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -1641,12 +1696,22 @@
             </summary>
             <returns>0 - don't include stack trace<br/>1 - include stack trace without source file information<br/>2 - include full stack trace</returns>
         </member>
+        <member name="M:NLog.LayoutRenderer.IsVolatile">
+            <summary>
+            Determines whether the layout renderer is volatile.
+            </summary>
+            <returns>A boolean indicating whether the layout renderer is volatile.</returns>
+            <remarks>
+            Volatile layout renderers are dependent on information not contained 
+            in <see cref="T:NLog.LogEventInfo"/> (such as thread-specific data, MDC data, NDC data).
+            </remarks>
+        </member>
         <member name="M:NLog.LayoutRenderer.Append(System.Text.StringBuilder,NLog.LogEventInfo)">
             <summary>
             Renders the specified environmental information and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="M:NLog.LayoutRenderer.NeedPadding">
             <summary>
@@ -1714,7 +1779,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -1727,7 +1792,7 @@
             Renders the specified ASP.NET Application variable and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="P:NLog.LayoutRenderers.ASPNETApplicationValueLayoutRenderer.Variable">
             <summary>
@@ -1744,7 +1809,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -1757,7 +1822,7 @@
             Renders the specified ASP.NET Request variable and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="P:NLog.LayoutRenderers.ASPNETRequestValueLayoutRenderer.Item">
             <summary>
@@ -1794,7 +1859,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -1807,7 +1872,7 @@
             Renders the specified ASP.NET Session value and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="P:NLog.LayoutRenderers.ASPNETSessionValueLayoutRenderer.Variable">
             <summary>
@@ -1824,7 +1889,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -1837,7 +1902,7 @@
             Renders the application base directory and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="P:NLog.LayoutRenderers.BaseDirLayoutRenderer.File">
             <summary>
@@ -1859,7 +1924,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -1878,7 +1943,7 @@
             Renders the call site and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="P:NLog.LayoutRenderers.CallSiteLayoutRenderer.ClassName">
             <summary>
@@ -1905,7 +1970,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -1918,7 +1983,7 @@
             Renders the specified counter value and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="P:NLog.LayoutRenderers.CounterLayoutRenderer.Value">
             <summary>
@@ -1945,7 +2010,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -1958,7 +2023,7 @@
             Renders the current date and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="P:NLog.LayoutRenderers.DateLayoutRenderer.Format">
             <summary>
@@ -1975,7 +2040,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -1988,7 +2053,7 @@
             Renders the specified environment variable and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="P:NLog.LayoutRenderers.EnvironmentLayoutRenderer.Variable">
             <summary>
@@ -2011,7 +2076,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -2024,7 +2089,7 @@
             Renders the specified exception information and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="P:NLog.LayoutRenderers.ExceptionLayoutRenderer.Format">
             <summary>
@@ -2048,7 +2113,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -2061,7 +2126,7 @@
             Renders a newly generated GUID string and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="P:NLog.LayoutRenderers.GuidLayoutRenderer.Format">
             <summary>
@@ -2078,7 +2143,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -2091,7 +2156,7 @@
             Renders the specified identity information and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="P:NLog.LayoutRenderers.IdentityLayoutRenderer.Separator">
             <summary>
@@ -2124,7 +2189,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -2137,7 +2202,7 @@
             Renders the current log level and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="T:NLog.LayoutRenderers.LiteralLayoutRenderer">
             <summary>
@@ -2157,7 +2222,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -2170,7 +2235,47 @@
             Renders the specified string literal and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
+        </member>
+        <member name="T:NLog.LayoutRenderers.Log4JXmlEventLayoutRenderer">
+            <summary>
+            XML event description compatible with log4j, Chainsaw and NLogViewer
+            </summary>
+        </member>
+        <member name="P:NLog.LayoutRenderers.Log4JXmlEventLayoutRenderer.IncludeNLogData">
+            <summary>
+            Include NLog-specific extensions to log4j schema.
+            </summary>
+        </member>
+        <member name="P:NLog.LayoutRenderers.Log4JXmlEventLayoutRenderer.IndentXml">
+            <summary>
+            Whether the XML should use spaces for indentation.
+            </summary>
+        </member>
+        <member name="P:NLog.LayoutRenderers.Log4JXmlEventLayoutRenderer.AppInfo">
+            <summary>
+            The AppInfo field. By default it's the friendly name of the current AppDomain.
+            </summary>
+        </member>
+        <member name="P:NLog.LayoutRenderers.Log4JXmlEventLayoutRenderer.IncludeCallSite">
+            <summary>
+            Include call site (class and method name) in the information sent over the network.
+            </summary>
+        </member>
+        <member name="P:NLog.LayoutRenderers.Log4JXmlEventLayoutRenderer.IncludeSourceInfo">
+            <summary>
+            Include source info (file name and line number) in the information sent over the network.
+            </summary>
+        </member>
+        <member name="P:NLog.LayoutRenderers.Log4JXmlEventLayoutRenderer.IncludeMDC">
+            <summary>
+            Include MDC dictionary in the information sent over the network.
+            </summary>
+        </member>
+        <member name="P:NLog.LayoutRenderers.Log4JXmlEventLayoutRenderer.IncludeNDC">
+            <summary>
+            Include NDC stack.
+            </summary>
         </member>
         <member name="T:NLog.LayoutRenderers.LoggerNameLayoutRenderer">
             <summary>
@@ -2182,7 +2287,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -2195,7 +2300,7 @@
             Renders the logger name and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="P:NLog.LayoutRenderers.LoggerNameLayoutRenderer.ShortName">
             <summary>
@@ -2212,7 +2317,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -2225,7 +2330,7 @@
             Renders the date in the long format (yyyy-MM-dd HH:mm:ss.mmm) and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="T:NLog.LayoutRenderers.MachineNameLayoutRenderer">
             <summary>
@@ -2237,7 +2342,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -2250,7 +2355,7 @@
             Renders the machine name and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="T:NLog.LayoutRenderers.MDCLayoutRenderer">
             <summary>
@@ -2262,7 +2367,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -2275,7 +2380,7 @@
             Renders the specified MDC item and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="P:NLog.LayoutRenderers.MDCLayoutRenderer.Item">
             <summary>
@@ -2292,7 +2397,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -2305,7 +2410,7 @@
             Renders the log message including any positional parameters and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="T:NLog.LayoutRenderers.NDCLayoutRenderer">
             <summary>
@@ -2317,7 +2422,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -2330,7 +2435,7 @@
             Renders the specified NDC item and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="P:NLog.LayoutRenderers.NDCLayoutRenderer.TopFrames">
             <summary>
@@ -2357,7 +2462,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -2370,7 +2475,7 @@
             Renders the specified string literal and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="T:NLog.LayoutRenderers.NLogDirLayoutRenderer">
             <summary>
@@ -2382,7 +2487,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -2395,7 +2500,7 @@
             Renders the directory where NLog is located and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="P:NLog.LayoutRenderers.NLogDirLayoutRenderer.File">
             <summary>
@@ -2417,7 +2522,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -2435,7 +2540,7 @@
             Renders the specified environment variable and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="P:NLog.LayoutRenderers.PerformanceCounterLayoutRenderer.Category">
             <summary>
@@ -2467,7 +2572,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -2480,7 +2585,7 @@
             Renders the current process running time and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="T:NLog.LayoutRenderers.ShortDateLayoutRenderer">
             <summary>
@@ -2492,7 +2597,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -2505,7 +2610,7 @@
             Renders the current short date string (yyyy-MM-dd) and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="T:NLog.LayoutRenderers.StackTraceLayoutRenderer">
             <summary>
@@ -2517,7 +2622,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -2536,7 +2641,7 @@
             Renders the call site and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="P:NLog.LayoutRenderers.StackTraceLayoutRenderer.Format">
             <summary>
@@ -2561,7 +2666,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -2574,7 +2679,7 @@
             Renders the current thread identifier and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="T:NLog.LayoutRenderers.ThreadNameLayoutRenderer">
             <summary>
@@ -2586,7 +2691,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -2599,7 +2704,7 @@
             Renders the current thread name and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="T:NLog.LayoutRenderers.TicksLayoutRenderer">
             <summary>
@@ -2611,7 +2716,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             If the exact number is not known or
@@ -2624,7 +2729,577 @@
             Renders the ticks value of current time and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
+        </member>
+        <member name="T:NLog.Targets.Compound.CompoundTargetBase">
+            <summary>
+            A base class for targets which wrap other (multiple) targets
+            and provide various forms of target routing.
+            </summary>
+        </member>
+        <member name="T:NLog.Target">
+            <summary>
+            Represents logging target.
+            </summary>
+        </member>
+        <member name="M:NLog.Target.#ctor">
+            <summary>
+            Creates a new instance of the logging target and initializes
+            default layout.
+            </summary>
+            <remarks>
+            The default value of the layout is: <code>${longdate}|${level:uppercase=true}|${logger}|${message}</code>
+            </remarks>
+        </member>
+        <member name="M:NLog.Target.GetLayouts">
+            <summary>
+            Gets the collection of <see cref="P:NLog.Target.Layout"/> objects that are used
+            by this target.
+            </summary>
+            <returns>A <see cref="T:NLog.LayoutCollection"/> object which is a typed collection
+            of <see cref="P:NLog.Target.Layout"/> objects. The collection is cached and accumulated 
+            by calling <see cref="M:NLog.Target.PopulateLayouts(NLog.LayoutCollection)"/>.</returns>
+        </member>
+        <member name="M:NLog.Target.Write(NLog.LogEventInfo)">
+            <summary>
+            Writes logging event to the log target. Must be overridden in inheriting
+            classes.
+            </summary>
+            <param name="logEvent">Logging event to be written out.</param>
+        </member>
+        <member name="M:NLog.Target.Write(NLog.LogEventInfo[])">
+            <summary>
+            Writes an array of logging events to the log target. By default it iterates on all
+            events and passes them to "Append" method. Inheriting classes can use this method to
+            optimize batch writes.
+            </summary>
+            <param name="logEvents">Logging events to be written out.</param>
+        </member>
+        <member name="M:NLog.Target.NeedsStackTrace">
+            <summary>
+            Determines whether stack trace information should be gathered
+            during log event processing. By default it calls <see cref="M:NLog.Layout.NeedsStackTrace"/> on
+            the result of <see cref="M:NLog.Target.GetLayouts"/>.
+            </summary>
+            <returns>0 - don't include stack trace<br/>1 - include stack trace without source file information<br/>2 - include full stack trace</returns>
+        </member>
+        <member name="M:NLog.Target.ToString">
+            <summary>
+            Returns the text representation of the object. Used for diagnostics.
+            </summary>
+            <returns>A string that describes the target.</returns>
+        </member>
+        <member name="M:NLog.Target.Flush">
+            <summary>
+            Flush any pending log messages (in case of asynchronous targets).
+            </summary>
+        </member>
+        <member name="M:NLog.Target.Flush(System.TimeSpan)">
+            <summary>
+            Flush any pending log messages (in case of asynchronous targets).
+            </summary>
+            <param name="timeout">Maximum time to allow for the flush. Any messages after that time will be discarded.</param>
+        </member>
+        <member name="M:NLog.Target.Flush(System.Int32)">
+            <summary>
+            Flush any pending log messages (in case of asynchronous targets).
+            </summary>
+            <param name="timeoutMilliseconds">Maximum time to allow for the flush. Any messages after that time will be discarded.</param>
+        </member>
+        <member name="M:NLog.Target.Close">
+            <summary>
+            Closes the target and releases any unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:NLog.Target.PrecalculateVolatileLayouts(NLog.LogEventInfo)">
+            <summary>
+            Calls the <see cref="M:NLog.Layout.Precalculate(NLog.LogEventInfo)"/> on each volatile layout
+            used by this target.
+            </summary>
+            <param name="logEvent">The log event.</param>
+            <remarks>
+            A layout is volatile if it contains at least one <see cref="P:NLog.Target.Layout"/> for 
+            which <see cref="M:NLog.LayoutRenderer.IsVolatile"/> returns true.
+            </remarks>
+        </member>
+        <member name="M:NLog.Target.PopulateLayouts(NLog.LayoutCollection)">
+            <summary>
+            Adds all layouts used by this target to the specified collection.
+            </summary>
+            <param name="layouts">The collection to add layouts to.</param>
+        </member>
+        <member name="M:NLog.Target.Initialize">
+            <summary>
+            Initializes the target. Can be used by inheriting classes
+            to initialize logging.
+            </summary>
+        </member>
+        <member name="P:NLog.Target.Name">
+            <summary>
+            The name of the target.
+            </summary>
+        </member>
+        <member name="P:NLog.Target.Layout">
+            <summary>
+            The text to be rendered.
+            </summary>
+        </member>
+        <member name="P:NLog.Target.CompiledLayout">
+            <summary>
+            The compiled layout to be rendered.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Compound.CompoundTargetBase.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Targets.Compound.CompoundTargetBase"/>.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Compound.CompoundTargetBase.#ctor(NLog.Target[])">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Targets.Compound.CompoundTargetBase"/> and
+            initializes the <see cref="P:NLog.Targets.Compound.CompoundTargetBase.Targets"/> collection to the provided
+            list of <see cref="T:NLog.Target"/> objects.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Compound.CompoundTargetBase.PopulateLayouts(NLog.LayoutCollection)">
+            <summary>
+            Adds all layouts used by this target and sub-targets.
+            </summary>
+            <param name="layouts">The collection to add layouts to.</param>
+        </member>
+        <member name="M:NLog.Targets.Compound.CompoundTargetBase.Initialize">
+            <summary>
+            Initializes the target by initializing all sub-targets.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Compound.CompoundTargetBase.Close">
+            <summary>
+            Closes the target by closing all sub-targets.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.Compound.CompoundTargetBase.Targets">
+            <summary>
+            A collection of targets managed by this compound target.
+            </summary>
+        </member>
+        <member name="T:NLog.Targets.Compound.FallbackTarget">
+            <summary>
+            A compound target that provides fallback-on-error functionality.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Compound.FallbackTarget.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Targets.Compound.FallbackTarget"/>.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Compound.FallbackTarget.#ctor(NLog.Target[])">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Targets.Compound.FallbackTarget"/> and sets
+            the targets to be used.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Compound.FallbackTarget.Write(NLog.LogEventInfo)">
+            <summary>
+            Forwards the log event to the sub-targets until one of them succeeds.
+            </summary>
+            <param name="logEvent">The log event.</param>
+            <remarks>
+            The method remembers the last-known-successful target 
+            and starts the iteration from it.
+            If <see cref="P:NLog.Targets.Compound.FallbackTarget.ReturnToFirstOnSuccess"/> is set, the method
+            resets the target to the first target 
+            stored in <see cref="N:NLog.Targets"/>.
+            </remarks>
+        </member>
+        <member name="P:NLog.Targets.Compound.FallbackTarget.ReturnToFirstOnSuccess">
+            <summary>
+            Whether to return to the first target after any successful write.
+            </summary>
+        </member>
+        <member name="T:NLog.Targets.Compound.RandomizeTarget">
+            <summary>
+            A compound target writes to a randomly-chosen target among the sub-targets.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Compound.RandomizeTarget.#ctor">
+            <summary>
+            Creates an instance of <see cref="T:NLog.Targets.Compound.RandomizeTarget"/>.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Compound.RandomizeTarget.#ctor(NLog.Target[])">
+            <summary>
+            Creates an instance of <see cref="T:NLog.Targets.Compound.RandomizeTarget"/> and
+            initializes the <see cref="N:NLog.Targets"/> collection with the
+            specified list of <see cref="T:NLog.Target"/> objects.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Compound.RandomizeTarget.Write(NLog.LogEventInfo)">
+            <summary>
+            Forwards the log event to one of the sub-targets. 
+            The sub-target is randomly chosen.
+            </summary>
+            <param name="logEvent">The log event.</param>
+        </member>
+        <member name="T:NLog.Targets.Compound.RoundRobinTarget">
+            <summary>
+            A compound target that forwards writes to the sub-targets in a
+            round-robin fashion.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Compound.RoundRobinTarget.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Targets.Compound.RoundRobinTarget"/>.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Compound.RoundRobinTarget.#ctor(NLog.Target[])">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Targets.Compound.RoundRobinTarget"/> and initializes
+            the <see cref="N:NLog.Targets"/> collection to the provided
+            array of <see cref="T:NLog.Target"/> objects.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Compound.RoundRobinTarget.Write(NLog.LogEventInfo)">
+            <summary>
+            Forwards the write to one of the targets from 
+            the <see cref="N:NLog.Targets"/> collection.
+            </summary>
+            <param name="logEvent">The log event.</param>
+            <remarks>
+            The writes are routed in a round-robin fashion.
+            The first log event goes to the first target, the second
+            one goes to the second target and so on looping to the
+            first target when there are no more targets available.
+            In general request N goes to Targets[N % Targets.Count].
+            </remarks>
+        </member>
+        <member name="T:NLog.Targets.Compound.SplitTarget">
+            <summary>
+            A compound target that writes logging events to all attached
+            sub-targets.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Compound.SplitTarget.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Targets.Compound.SplitTarget"/>.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Compound.SplitTarget.#ctor(NLog.Target[])">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Targets.Compound.SplitTarget"/> and
+            initializes the <see cref="N:NLog.Targets"/> collection to the
+            provided array of <see cref="T:NLog.Target"/> objects.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Compound.SplitTarget.Write(NLog.LogEventInfo)">
+            <summary>
+            Forwards the specified log event to all sub-targets.
+            </summary>
+            <param name="logEvent">The log event.</param>
+        </member>
+        <member name="T:NLog.Targets.Wrappers.RequestBuffering.ASPNetRequestBufferingTarget">
+            <summary>
+            A request buffering target that uses ASP.NET HttpContext as its storage.
+            </summary>
+        </member>
+        <member name="T:NLog.Targets.Wrappers.RequestBuffering.RequestBufferingTargetBase">
+            <summary>
+            A base class for creating smart per-request buffering target wrappers.
+            The wrappers gather all log events making up the each request and 
+            forwarding the events depending on the request status. 
+            Request is usually a HTTP request but can be any logical transaction.
+            </summary>
+        </member>
+        <member name="T:NLog.Targets.Wrappers.WrapperTargetBase">
+            <summary>
+            Base class for targets wrap other (single) targets.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.WrapperTargetBase.PopulateLayouts(NLog.LayoutCollection)">
+            <summary>
+            Adds all layouts used by this target to the specified collection.
+            </summary>
+            <param name="layouts">The collection to add layouts to.</param>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.WrapperTargetBase.Close">
+            <summary>
+            Closes the target by forwarding the call to the <see cref="P:NLog.Targets.Wrappers.WrapperTargetBase.WrappedTarget"/> object.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.WrapperTargetBase.NeedsStackTrace">
+            <summary>
+            Forwards the call to <see cref="P:NLog.Targets.Wrappers.WrapperTargetBase.WrappedTarget"/>.NeedsStackTrace().
+            </summary>
+            <returns>The value of forwarded call</returns>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.WrapperTargetBase.Initialize">
+            <summary>
+            Initializes the target by forwarding the call 
+            to <see cref="M:NLog.Target.Initialize"/> to the <see cref="P:NLog.Targets.Wrappers.WrapperTargetBase.WrappedTarget"/>.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.Wrappers.WrapperTargetBase.WrappedTarget">
+            <summary>
+            The target that this target wraps.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.RequestBuffering.RequestBufferingTargetBase.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Targets.Wrappers.RequestBuffering.RequestBufferingTargetBase"/>.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.RequestBuffering.RequestBufferingTargetBase.PopulateLayouts(NLog.LayoutCollection)">
+            <summary>
+            Adds all layouts used by this target to the specified collection.
+            </summary>
+            <param name="layouts">The collection to add layouts to.</param>
+        </member>
+        <member name="P:NLog.Targets.Wrappers.RequestBuffering.RequestBufferingTargetBase.BufferSize">
+            <summary>
+            The number of log events to be buffered.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.Wrappers.RequestBuffering.RequestBufferingTargetBase.GrowBufferAsNeeded">
+            <summary>
+            Grow the buffer when it gets full.
+            </summary>
+            <remarks>
+            true causes the buffer to expand until <see cref="P:NLog.Targets.Wrappers.RequestBuffering.RequestBufferingTargetBase.BufferGrowLimit"/> is hit,
+            false causes the buffer to never expand and lose the earliest entries in case of overflow.
+            </remarks>
+        </member>
+        <member name="P:NLog.Targets.Wrappers.RequestBuffering.RequestBufferingTargetBase.BufferGrowLimit">
+            <summary>
+            The maximum number of log events that the buffer can keep.
+            </summary>
+        </member>
+        <member name="T:NLog.Targets.Wrappers.RequestBuffering.GlobalRequestBufferingTarget">
+            <summary>
+            A request buffering target that uses a global variable for its storage.
+            </summary>
+        </member>
+        <member name="T:NLog.Targets.Wrappers.RequestBuffering.ThreadRequestBufferingTarget">
+            <summary>
+            A request buffering target that uses a thread-local variable for its storage.
+            </summary>
+        </member>
+        <member name="T:NLog.Targets.Wrappers.AsyncTargetWrapper">
+            <summary>
+            A target wrapper that provides asynchronous, buffered execution of target writes.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.AsyncTargetWrapper.Initialize">
+            <summary>
+            Initializes the target by starting the lazy writer thread.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.AsyncTargetWrapper.Close">
+            <summary>
+            Closes the target by stopping the lazy writer thread.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.AsyncTargetWrapper.Write(NLog.LogEventInfo)">
+            <summary>
+            Adds the log event to asynchronous queue to be processed by 
+            the lazy writer thread.
+            </summary>
+            <param name="logEvent">The log event.</param>
+            <remarks>
+            The <see cref="M:NLog.Target.PrecalculateVolatileLayouts(NLog.LogEventInfo)"/> is called
+            to ensure that the log event can be processed in another thread.
+            </remarks>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.AsyncTargetWrapper.StartLazyWriterThread">
+            <summary>
+            Starts the lazy writer thread which periodically writes
+            queued log messages.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.AsyncTargetWrapper.StopLazyWriterThread">
+            <summary>
+            Starts the lazy writer thread.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.AsyncTargetWrapper.Flush(System.TimeSpan)">
+            <summary>
+            Waits for the lazy writer thread to finish writing messages.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.Wrappers.AsyncTargetWrapper.BatchSize">
+            <summary>
+            The number of log events that should be processed in a batch
+            by the lazy writer thread.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.Wrappers.AsyncTargetWrapper.TimeToSleepBetweenBatches">
+            <summary>
+            The time in milliseconds to sleep between batches.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.Wrappers.AsyncTargetWrapper.LazyWriterThreadStopRequested">
+            <summary>
+            Checks whether lazy writer thread is requested to stop.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.Wrappers.AsyncTargetWrapper.RequestQueue">
+            <summary>
+            The queue of lazy writer thread requests.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.Wrappers.AsyncTargetWrapper.LazyWriterThread">
+            <summary>
+            The thread that is used to write log messages.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.Wrappers.AsyncTargetWrapper.OverflowAction">
+            <summary>
+            The action to be taken when the lazy writer thread request queue count
+            exceeds the set limit.
+            </summary>
+            <remarks>
+            Can be <c>none</c> - do nothing, add another request to the queue
+            <c>discard</c> - discard the request, <c>block</c> - block the logging
+            thread to give the processing thread more time.
+            </remarks>
+        </member>
+        <member name="P:NLog.Targets.Wrappers.AsyncTargetWrapper.QueueLimit">
+            <summary>
+            The limit on the number of requests in the lazy writer thread request queue.
+            </summary>
+        </member>
+        <member name="T:NLog.Targets.Wrappers.AutoFlushTargetWrapper">
+            <summary>
+            A target wrapper that causes a flush after each write on a wrapped target.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.AutoFlushTargetWrapper.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Targets.Wrappers.AutoFlushTargetWrapper"/>.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.AutoFlushTargetWrapper.#ctor(NLog.Target)">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Targets.Wrappers.AutoFlushTargetWrapper"/> 
+            and initializes the <see cref="P:NLog.Targets.Wrappers.WrapperTargetBase.WrappedTarget"/> to the specified <see cref="T:NLog.Target"/> value.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.AutoFlushTargetWrapper.Write(NLog.LogEventInfo)">
+            <summary>
+            Forwards the call to the <see cref="P:NLog.Targets.Wrappers.WrapperTargetBase.WrappedTarget"/>.Write()
+            and calls <see cref="M:NLog.Target.Flush"/> on it.
+            </summary>
+            <param name="logEvent"></param>
+        </member>
+        <member name="T:NLog.Targets.Wrappers.BufferingTargetWrapper">
+            <summary>
+            A target that buffers log events and sends them in batches to the wrapped target.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.BufferingTargetWrapper.#ctor">
+            <summary>
+            Creates a new instance of the <see cref="T:NLog.Targets.Wrappers.BufferingTargetWrapper"/> and initializes <see cref="P:NLog.Targets.Wrappers.BufferingTargetWrapper.BufferSize"/> to 100.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.BufferingTargetWrapper.#ctor(NLog.Target)">
+            <summary>
+            Creates a new instance of the <see cref="T:NLog.Targets.Wrappers.BufferingTargetWrapper"/>, initializes <see cref="P:NLog.Targets.Wrappers.BufferingTargetWrapper.BufferSize"/> to 100 and
+            sets the <see cref="P:NLog.Targets.Wrappers.WrapperTargetBase.WrappedTarget"/> to the specified value.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.BufferingTargetWrapper.#ctor(NLog.Target,System.Int32)">
+            <summary>
+            Creates a new instance of the <see cref="T:NLog.Targets.Wrappers.BufferingTargetWrapper"/>, initializes <see cref="P:NLog.Targets.Wrappers.BufferingTargetWrapper.BufferSize"/> and
+            the <see cref="P:NLog.Targets.Wrappers.WrapperTargetBase.WrappedTarget"/> to the specified values.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.BufferingTargetWrapper.Write(NLog.LogEventInfo)">
+            <summary>
+            Adds the specified log event to the buffer and flushes
+            the buffer in case the buffer gets full.
+            </summary>
+            <param name="logEvent">The log event.</param>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.BufferingTargetWrapper.Flush(System.TimeSpan)">
+            <summary>
+            Flushes pending events in the buffer (if any).
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.BufferingTargetWrapper.Close">
+            <summary>
+            Closes the target by flushing pending events in the buffer (if any).
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.Wrappers.BufferingTargetWrapper.BufferSize">
+            <summary>
+            Number of log events to be buffered.
+            </summary>
+        </member>
+        <member name="T:NLog.Targets.Wrappers.RepeatTargetWrapper">
+            <summary>
+            A target wrapper that repeats each log event the specified number of times.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.RepeatTargetWrapper.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Targets.Wrappers.RepeatTargetWrapper"/>.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.RepeatTargetWrapper.#ctor(NLog.Target,System.Int32)">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Targets.Wrappers.RepeatTargetWrapper"/>,
+            initializes the <see cref="P:NLog.Targets.Wrappers.WrapperTargetBase.WrappedTarget"/> to the specified <see cref="T:NLog.Target"/> value and
+            sets the <see cref="P:NLog.Targets.Wrappers.RepeatTargetWrapper.RepeatCount"/>,
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.RepeatTargetWrapper.Write(NLog.LogEventInfo)">
+            <summary>
+            Forwards the log message to the <see cref="P:NLog.Targets.Wrappers.WrapperTargetBase.WrappedTarget"/> by calling the <see cref="M:NLog.Target.Write(NLog.LogEventInfo)"/> method <see cref="P:NLog.Targets.Wrappers.RepeatTargetWrapper.RepeatCount"/> times.
+            </summary>
+            <param name="logEvent">The log event.</param>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.RepeatTargetWrapper.Write(NLog.LogEventInfo[])">
+            <summary>
+            Forwards the array of log events to the <see cref="P:NLog.Targets.Wrappers.WrapperTargetBase.WrappedTarget"/> by calling the <see cref="M:NLog.Target.Write(NLog.LogEventInfo)"/> method <see cref="P:NLog.Targets.Wrappers.RepeatTargetWrapper.RepeatCount"/> times.
+            </summary>
+            <param name="logEvents">The array of log events.</param>
+        </member>
+        <member name="P:NLog.Targets.Wrappers.RepeatTargetWrapper.RepeatCount">
+            <summary>
+            The number of times to repeat each log message.
+            </summary>
+        </member>
+        <member name="T:NLog.Targets.Wrappers.RetryTargetWrapper">
+            <summary>
+            A target wrapper that causes retries on wrapped target errors.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.RetryTargetWrapper.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Targets.Wrappers.RetryTargetWrapper"/>.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.RetryTargetWrapper.#ctor(NLog.Target,System.Int32,System.Int32)">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Targets.Wrappers.RetryTargetWrapper"/> and 
+            initializes the <see cref="P:NLog.Targets.Wrappers.WrapperTargetBase.WrappedTarget"/>
+            <see cref="P:NLog.Targets.Wrappers.RetryTargetWrapper.RetryCount"/> and <see cref="P:NLog.Targets.Wrappers.RetryTargetWrapper.RetryDelayMilliseconds"/>
+            properties.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.RetryTargetWrapper.Write(NLog.LogEventInfo)">
+            <summary>
+            Writes the specified log event to the wrapped target, retrying and pausing in case of an error.
+            </summary>
+            <param name="logEvent">The log event.</param>
+        </member>
+        <member name="P:NLog.Targets.Wrappers.RetryTargetWrapper.RetryCount">
+            <summary>
+            Number of retries that should be attempted on the wrapped target in case of a failure.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.Wrappers.RetryTargetWrapper.RetryDelayMilliseconds">
+            <summary>
+            The time to wait between retries in milliseconds.
+            </summary>
         </member>
         <member name="T:NLog.Targets.ASPNetTraceTarget">
             <summary>
@@ -2660,67 +3335,7 @@
             <p/>
             </example>
         </member>
-        <member name="T:NLog.Target">
-            <summary>
-            Represents logging target.
-            </summary>
-        </member>
-        <member name="M:NLog.Target.#ctor">
-            <summary>
-            Creates a new instance of the logging target and initializes
-            default layout.
-            </summary>
-            <remarks>
-            The default value of the layout is: <code>${longdate}|${level:uppercase=true}|${logger}|${message}</code>
-            </remarks>
-        </member>
-        <member name="M:NLog.Target.Append(NLog.LogEventInfo)">
-            <summary>
-            Writes logging event to the log target. Must be overridden in inheriting
-            classes.
-            </summary>
-            <param name="ev">Logging event to be written out.</param>
-        </member>
-        <member name="M:NLog.Target.NeedsStackTrace">
-            <summary>
-            Determines whether stack trace information should be gathered
-            during log event processing. By default it calls <see cref="M:NLog.Layout.NeedsStackTrace"/> on
-            <see cref="P:NLog.Target.CompiledLayout"/>.
-            </summary>
-            <returns>0 - don't include stack trace<br/>1 - include stack trace without source file information<br/>2 - include full stack trace</returns>
-        </member>
-        <member name="M:NLog.Target.ToString">
-            <summary>
-            Returns the text representation of the object. Used for diagnostics.
-            </summary>
-            <returns>A string that describes the target.</returns>
-        </member>
-        <member name="M:NLog.Target.Flush">
-            <summary>
-            Flush any pending log messages (in case of asynchronous targets).
-            </summary>
-        </member>
-        <member name="M:NLog.Target.Close">
-            <summary>
-            Closes the target and releases any unmanaged resources.
-            </summary>
-        </member>
-        <member name="P:NLog.Target.Name">
-            <summary>
-            The name of the target.
-            </summary>
-        </member>
-        <member name="P:NLog.Target.Layout">
-            <summary>
-            The text to be rendered.
-            </summary>
-        </member>
-        <member name="P:NLog.Target.CompiledLayout">
-            <summary>
-            The compiled layout to be rendered.
-            </summary>
-        </member>
-        <member name="M:NLog.Targets.ASPNetTraceTarget.Append(NLog.LogEventInfo)">
+        <member name="M:NLog.Targets.ASPNetTraceTarget.Write(NLog.LogEventInfo)">
             <summary>
             Writes the specified logging event to the ASP.NET Trace facility. Log entries
             can then be viewed by navigating to http://server/path/Trace.axd
@@ -2728,69 +3343,7 @@
             <see cref="M:System.Web.TraceContext.Warn(System.String)"/> method, otherwise it uses
             <see cref="M:System.Web.TraceContext.Write(System.String)"/> method.
             </summary>
-            <param name="ev">The logging event.</param>
-        </member>
-        <member name="T:NLog.Targets.AsyncTarget">
-            <summary>
-            Base class for targets that support asynchronous operation.
-            </summary>
-        </member>
-        <member name="M:NLog.Targets.AsyncTarget.StartLazyWriterThread">
-            <summary>
-            Starts the lazy writer thread which periodically writes
-            queued log messages.
-            </summary>
-        </member>
-        <member name="M:NLog.Targets.AsyncTarget.StopLazyWriterThread">
-            <summary>
-            Starts the lazy writer thread.
-            </summary>
-        </member>
-        <member name="M:NLog.Targets.AsyncTarget.Flush">
-            <summary>
-            Waits for the lazy writer thread to finish writing messages.
-            </summary>
-        </member>
-        <member name="M:NLog.Targets.AsyncTarget.LazyWriterThreadProc">
-            <summary>
-            Lazy writer thread method. To be overridden in inheriting classes.
-            </summary>
-        </member>
-        <member name="P:NLog.Targets.AsyncTarget.LazyWriterThreadStopRequested">
-            <summary>
-            Checks whether lazy writer thread is requested to stop.
-            </summary>
-        </member>
-        <member name="P:NLog.Targets.AsyncTarget.RequestQueue">
-            <summary>
-            The queue of lazy writer thread requests.
-            </summary>
-        </member>
-        <member name="P:NLog.Targets.AsyncTarget.LazyWriterThread">
-            <summary>
-            The thread that is used to write log messages.
-            </summary>
-        </member>
-        <member name="P:NLog.Targets.AsyncTarget.Async">
-            <summary>
-            Process log requests in a separate thread.
-            </summary>
-        </member>
-        <member name="P:NLog.Targets.AsyncTarget.OverflowAction">
-            <summary>
-            The action to be taken when the lazy writer thread request queue count
-            exceeds the set limit.
-            </summary>
-            <remarks>
-            Can be <c>none</c> - do nothing, add another request to the queue
-            <c>discard</c> - discard the request, <c>block</c> - block the logging
-            thread to give the processing thread more time.
-            </remarks>
-        </member>
-        <member name="P:NLog.Targets.AsyncTarget.QueueLimit">
-            <summary>
-            The limit on the number of requests in the lazy writer thread request queue.
-            </summary>
+            <param name="logEvent">The logging event.</param>
         </member>
         <member name="T:NLog.Targets.ChainsawTarget">
             <summary>
@@ -2805,7 +3358,7 @@
         </member>
         <member name="T:NLog.Targets.NetworkTarget">
             <summary>
-            Sends logging messages over network.
+            Sends logging messages over the network.
             </summary>
         </member>
         <member name="M:NLog.Targets.NetworkTarget.NetworkSend(System.String,System.String)">
@@ -2815,18 +3368,12 @@
             <param name="address">The address. Can be tcp://host:port, udp://host:port, http://host:port or https://host:port</param>
             <param name="text">The text to be sent.</param>
         </member>
-        <member name="M:NLog.Targets.NetworkTarget.Append(NLog.LogEventInfo)">
+        <member name="M:NLog.Targets.NetworkTarget.Write(NLog.LogEventInfo)">
             <summary>
             Sends the 
             rendered logging event over the network optionally concatenating it with a newline character.
             </summary>
-            <param name="ev">The logging event.</param>
-        </member>
-        <member name="M:NLog.Targets.NetworkTarget.LazyWriterThreadProc">
-            <summary>
-            Periodically writes network messages to network destinations 
-            in a separate thread.
-            </summary>
+            <param name="logEvent">The logging event.</param>
         </member>
         <member name="P:NLog.Targets.NetworkTarget.Address">
             <summary>
@@ -2848,21 +3395,17 @@
             Append newline at the end of log message.
             </summary>
         </member>
-        <member name="T:NLog.Targets.NetworkTarget.NetworkWriteRequest">
-            <summary>
-            Represents a single async request to write to a network place.
-            </summary>
-        </member>
-        <member name="F:NLog.Targets.NLogViewerTarget.IncludeNLogData">
-            <summary>
-            Include NLog-specific extensions to log4j schema.
-            </summary>
-        </member>
         <member name="M:NLog.Targets.NLogViewerTarget.#ctor">
             <summary>
             Creates a new instance of the <see cref="T:NLog.Targets.NLogViewerTarget"/> 
             and initializes default property values.
             </summary>
+        </member>
+        <member name="M:NLog.Targets.NLogViewerTarget.PopulateLayouts(NLog.LayoutCollection)">
+            <summary>
+            Adds all layouts used by this target to the specified collection.
+            </summary>
+            <param name="layouts">The collection to add layouts to.</param>
         </member>
         <member name="M:NLog.Targets.NLogViewerTarget.NeedsStackTrace">
             <summary>
@@ -2870,11 +3413,16 @@
             </summary>
             <returns>2 - when IncludeSourceInfo is set, 1 when IncludeCallSite is set, 0 otherwise</returns>
         </member>
-        <member name="M:NLog.Targets.NLogViewerTarget.Append(NLog.LogEventInfo)">
+        <member name="M:NLog.Targets.NLogViewerTarget.Write(NLog.LogEventInfo)">
             <summary>
             Constructs an XML packet including the logging event information and sends it over the network.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
+        </member>
+        <member name="P:NLog.Targets.NLogViewerTarget.IncludeNLogData">
+            <summary>
+            Include NLog-specific extensions to log4j schema.
+            </summary>
         </member>
         <member name="P:NLog.Targets.NLogViewerTarget.AppInfo">
             <summary>
@@ -2933,13 +3481,13 @@
             <cs src="examples/targets/Console/ConsoleTarget.cs" />
             </example>
         </member>
-        <member name="M:NLog.Targets.ConsoleTarget.Append(NLog.LogEventInfo)">
+        <member name="M:NLog.Targets.ConsoleTarget.Write(NLog.LogEventInfo)">
             <summary>
             Writes the specified logging event to the console <see cref="P:System.Console.Out"/> or
             <see cref="P:System.Console.Error"/> depending on the value of the
             <see cref="P:NLog.Targets.ConsoleTarget.Error"/> flag.
             </summary>
-            <param name="ev">The logging event.</param>
+            <param name="logEvent">The logging event.</param>
         </member>
         <member name="P:NLog.Targets.ConsoleTarget.Error">
             <summary>
@@ -2975,21 +3523,19 @@
             the default values of some properties;
             </summary>
         </member>
-        <member name="M:NLog.Targets.DatabaseTarget.Append(NLog.LogEventInfo)">
+        <member name="M:NLog.Targets.DatabaseTarget.Write(NLog.LogEventInfo)">
             <summary>
             Writes the specified logging event to the database. It creates
             a new database command, prepares parameters for it by calculating
             layouts and executes the command.
             </summary>
-            <param name="ev">The logging event.</param>
+            <param name="logEvent">The logging event.</param>
         </member>
-        <member name="M:NLog.Targets.DatabaseTarget.NeedsStackTrace">
+        <member name="M:NLog.Targets.DatabaseTarget.PopulateLayouts(NLog.LayoutCollection)">
             <summary>
-            Determines whether stack trace information should be gathered
-            during log event processing. It calls <see cref="M:NLog.Layout.NeedsStackTrace"/> on
-            all parameters.
+            Adds all layouts used by this target to the specified collection.
             </summary>
-            <returns>0 - don't include stack trace<br/>1 - include stack trace without source file information<br/>2 - include full stack trace</returns>
+            <param name="layouts">The collection to add layouts to.</param>
         </member>
         <member name="P:NLog.Targets.DatabaseTarget.DBProvider">
             <summary>
@@ -3111,14 +3657,6 @@
             <summary>
             Creates a new instance of <see cref="T:NLog.Targets.DatabaseParameterInfo"/>.
             </summary>
-        </member>
-        <member name="M:NLog.Targets.DatabaseParameterInfo.NeedsStackTrace">
-            <summary>
-            Determines whether stack trace information should be gathered
-            during log event processing. It calls <see cref="M:NLog.Layout.NeedsStackTrace"/> on
-            Layout and FileName parameters.
-            </summary>
-            <returns>0 - don't include stack trace<br/>1 - include stack trace without source file information<br/>2 - include full stack trace</returns>
         </member>
         <member name="P:NLog.Targets.DatabaseParameterInfo.Name">
             <summary>
@@ -3312,11 +3850,11 @@
             <cs src="examples/targets/Debug/DebugTarget.cs" />
             </example>
         </member>
-        <member name="M:NLog.Targets.DebugTarget.Append(NLog.LogEventInfo)">
+        <member name="M:NLog.Targets.DebugTarget.Write(NLog.LogEventInfo)">
             <summary>
             Increases the number of messages.
             </summary>
-            <param name="ev">The logging event.</param>
+            <param name="logEvent">The logging event.</param>
         </member>
         <member name="P:NLog.Targets.DebugTarget.Counter">
             <summary>
@@ -3348,11 +3886,11 @@
             <cs src="examples/targets/Debugger/DebuggerTarget.cs" />
             </example>
         </member>
-        <member name="M:NLog.Targets.DebuggerTarget.Append(NLog.LogEventInfo)">
+        <member name="M:NLog.Targets.DebuggerTarget.Write(NLog.LogEventInfo)">
             <summary>
             Writes the specified logging event to the attached debugger.
             </summary>
-            <param name="ev">The logging event.</param>
+            <param name="logEvent">The logging event.</param>
         </member>
         <member name="T:NLog.Targets.FileTarget">
             <summary>
@@ -3397,25 +3935,40 @@
             <cs src="examples/targets/File/FileTarget.cs" />
             </example>
         </member>
-        <member name="M:NLog.Targets.FileTarget.NeedsStackTrace">
+        <member name="M:NLog.Targets.FileTarget.#ctor">
             <summary>
-            Determines whether stack trace information should be gathered
-            during log event processing. It calls <see cref="M:NLog.Layout.NeedsStackTrace"/> on
-            Layout and FileName parameters.
+            Creates a new instance of <see cref="T:NLog.Targets.FileTarget"/>.
             </summary>
-            <returns>0 - don't include stack trace<br/>1 - include stack trace without source file information<br/>2 - include full stack trace</returns>
         </member>
-        <member name="M:NLog.Targets.FileTarget.Append(NLog.LogEventInfo)">
+        <member name="M:NLog.Targets.FileTarget.PopulateLayouts(NLog.LayoutCollection)">
+            <summary>
+            Adds all layouts used by this target to the specified collection.
+            </summary>
+            <param name="layouts">The collection to add layouts to.</param>
+        </member>
+        <member name="M:NLog.Targets.FileTarget.Write(NLog.LogEventInfo)">
             <summary>
             Writes the specified logging event to a file specified in the FileName 
             parameter.
             </summary>
-            <param name="ev">The logging event.</param>
+            <param name="logEvent">The logging event.</param>
         </member>
         <member name="M:NLog.Targets.FileTarget.Close">
             <summary>
             Closes the file.
             </summary>
+        </member>
+        <member name="M:NLog.Targets.FileTarget.Write(NLog.LogEventInfo[])">
+            <summary>
+            Writes the specified array of logging events to a file specified in the FileName 
+            parameter.
+            </summary>
+            <param name="logEvents">An array of <see cref="T:NLog.LogEventInfo"/> objects.</param>
+            <remarks>
+            This function makes use of the fact that the events are batched by sorting 
+            the requests by filename. This optimizes the number of open/close calls
+            and can help improve performance.
+            </remarks>
         </member>
         <member name="M:NLog.Targets.FileTarget.WriteToFile(System.IO.StreamWriter,System.String)">
             <summary>
@@ -3427,16 +3980,6 @@
             You can override this method to additional things before
             the text is actually written to the file. For example this
             is a way to add encryption support.
-            </remarks>
-        </member>
-        <member name="M:NLog.Targets.FileTarget.LazyWriterThreadProc">
-            <summary>
-            Writes log messages to files in a separate thread.
-            </summary>
-            <remarks>
-            This method fetches a number of requests as a batch, sorts
-            them by the file name (to minimize the number of open and close calls)
-            and writes messages to the files.
             </remarks>
         </member>
         <member name="P:NLog.Targets.FileTarget.FileName">
@@ -3522,9 +4065,143 @@
             and so on.
             </example>
         </member>
-        <member name="T:NLog.Targets.FileTarget.FileWriteRequest">
+        <member name="T:NLog.Targets.MailTarget">
             <summary>
-            Represents a single request to write to a file.
+            Sends logging messages by email using SMTP protocol.
+            </summary>
+            <example>
+            <p>
+            To set up the target in the <a href="config.html">configuration file</a>, 
+            use the following syntax:
+            </p>
+            <xml src="examples/targets/Mail/MailTarget.nlog" />
+            <p>
+            This assumes just one target and a single rule. More configuration
+            options are described <a href="config.html">here</a>.
+            </p>
+            <p>
+            To set up the log target programmatically use code like this:
+            </p>
+            <cs src="examples/targets/Mail/MailTarget.cs" />
+            <p>
+            Mail target works best when used with BufferingWrapper target
+            which lets you send multiple logging messages in single mail
+            </p>
+            <p>
+            To set up the buffered mail target in the <a href="config.html">configuration file</a>, 
+            use the following syntax:
+            </p>
+            <xml src="examples/targets/Mail/BufferedMailTarget.nlog" />
+            <p>
+            To set up the buffered mail target programmatically use code like this:
+            </p>
+            <cs src="examples/targets/Mail/BufferedMailTarget.cs" />
+            </example>
+        </member>
+        <member name="M:NLog.Targets.MailTarget.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Targets.MailTarget"/>.
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.MailTarget.PopulateLayouts(NLog.LayoutCollection)">
+            <summary>
+            Adds all layouts used by this target to the specified collection.
+            </summary>
+            <param name="layouts">The collection to add layouts to.</param>
+        </member>
+        <member name="M:NLog.Targets.MailTarget.Write(NLog.LogEventInfo)">
+            <summary>
+            Renders the logging event message and adds it to the internal ArrayList of log messages.
+            </summary>
+            <param name="logEvent">The logging event.</param>
+        </member>
+        <member name="M:NLog.Targets.MailTarget.Write(NLog.LogEventInfo[])">
+            <summary>
+            Renders an array logging events.
+            </summary>
+            <param name="events">Array of logging events.</param>
+        </member>
+        <member name="P:NLog.Targets.MailTarget.From">
+            <summary>
+            Sender's email address (e.g. joe@domain.com)
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.MailTarget.To">
+            <summary>
+            Recipients' email addresses separated by semicolons (e.g. john@domain.com;jane@domain.com)
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.MailTarget.CC">
+            <summary>
+            CC email addresses separated by semicolons (e.g. john@domain.com;jane@domain.com)
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.MailTarget.BCC">
+            <summary>
+            BCC email addresses separated by semicolons (e.g. john@domain.com;jane@domain.com)
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.MailTarget.Subject">
+            <summary>
+            Mail subject.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.MailTarget.Header">
+            <summary>
+            Header of the mail message body.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.MailTarget.Footer">
+            <summary>
+            Footer of the mail message body.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.MailTarget.Body">
+            <summary>
+            Mail message body (repeated for each log message send in one mail)
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.MailTarget.Encoding">
+            <summary>
+            Encoding to be used for sending e-mail.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.MailTarget.HTML">
+            <summary>
+            Send message as HTML instead of plain text.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.MailTarget.SMTPServer">
+            <summary>
+            SMTP Server to be used for sending.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.MailTarget.SMTPAuthentication">
+            <summary>
+            SMTP Authentication mode.
+            </summary>
+            <remarks>
+            Possible values are:
+            <ul>
+            <li><b>none</b> - no authentication</li>
+            <li><b>basic</b> - SMTPUsername and SMTPPassword are used to provide the credentials</li>
+            <li><b>ntlm</b> - integrated Windows authentication</li>
+            </ul>
+            </remarks>
+        </member>
+        <member name="P:NLog.Targets.MailTarget.SMTPUsername">
+            <summary>
+            The username used to connect to SMTP server (used when SMTPAuthentication is set to "basic").
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.MailTarget.SMTPPassword">
+            <summary>
+            The password used to authenticate against SMTP server (used when SMTPAuthentication is set to "basic").
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.MailTarget.SMTPPort">
+            <summary>
+            The port that SMTP Server is listening on.
             </summary>
         </member>
         <member name="T:NLog.Targets.MemoryTarget">
@@ -3547,11 +4224,11 @@
             <cs src="examples/targets/Memory/MemoryTarget.cs" />
             </example>
         </member>
-        <member name="M:NLog.Targets.MemoryTarget.Append(NLog.LogEventInfo)">
+        <member name="M:NLog.Targets.MemoryTarget.Write(NLog.LogEventInfo)">
             <summary>
             Renders the logging event message and adds it to the internal ArrayList of log messages.
             </summary>
-            <param name="ev">The logging event.</param>
+            <param name="logEvent">The logging event.</param>
         </member>
         <member name="P:NLog.Targets.MemoryTarget.Logs">
             <summary>
@@ -3587,12 +4264,25 @@
             Creates a new instance of the <see cref="T:NLog.Targets.MessageBoxTarget"/>.
             </summary>
         </member>
-        <member name="M:NLog.Targets.MessageBoxTarget.Append(NLog.LogEventInfo)">
+        <member name="M:NLog.Targets.MessageBoxTarget.PopulateLayouts(NLog.LayoutCollection)">
+            <summary>
+            Adds all layouts used by this target to the specified collection.
+            </summary>
+            <param name="layouts">The collection to add layouts to.</param>
+        </member>
+        <member name="M:NLog.Targets.MessageBoxTarget.Write(NLog.LogEventInfo)">
             <summary>
             Displays the message box with the log message and caption specified in the Caption
             parameter.
             </summary>
-            <param name="ev">The logging event.</param>
+            <param name="logEvent">The logging event.</param>
+        </member>
+        <member name="M:NLog.Targets.MessageBoxTarget.Write(NLog.LogEventInfo[])">
+            <summary>
+            Displays the message box with the array of rendered logs messages and caption specified in the Caption
+            parameter.
+            </summary>
+            <param name="logEvents">The array of logging events.</param>
         </member>
         <member name="P:NLog.Targets.MessageBoxTarget.Caption">
             <summary>
@@ -3610,11 +4300,11 @@
             Manages parameters and type coercion.
             </summary>
         </member>
-        <member name="M:NLog.Targets.MethodCallTargetBase.Append(NLog.LogEventInfo)">
+        <member name="M:NLog.Targets.MethodCallTargetBase.Write(NLog.LogEventInfo)">
             <summary>
             Prepares an array of parameters to be passed based on the logging event and calls DoInvoke()
             </summary>
-            <param name="ev">The logging event.</param>
+            <param name="logEvent">The logging event.</param>
         </member>
         <member name="M:NLog.Targets.MethodCallTargetBase.DoInvoke(System.Object[])">
             <summary>
@@ -3622,13 +4312,11 @@
             </summary>
             <param name="parameters">Method call parameters</param>
         </member>
-        <member name="M:NLog.Targets.MethodCallTargetBase.NeedsStackTrace">
+        <member name="M:NLog.Targets.MethodCallTargetBase.PopulateLayouts(NLog.LayoutCollection)">
             <summary>
-            Determines whether stack trace information should be gathered
-            during log event processing. It calls <see cref="M:NLog.Layout.NeedsStackTrace"/> on
-            all parameters.
+            Adds all layouts used by this target to the specified collection.
             </summary>
-            <returns>0 - don't include stack trace<br/>1 - include stack trace without source file information<br/>2 - include full stack trace</returns>
+            <param name="layouts">The collection to add layouts to.</param>
         </member>
         <member name="P:NLog.Targets.MethodCallTargetBase.Parameters">
             <summary>
@@ -3661,14 +4349,6 @@
             Constructs a new instance of <see cref="T:NLog.Targets.MethodCallParameter"/> and sets
             the type to String.
             </summary>
-        </member>
-        <member name="M:NLog.Targets.MethodCallParameter.NeedsStackTrace">
-            <summary>
-            Determines whether stack trace information should be gathered
-            during log event processing. It calls <see cref="M:NLog.Layout.NeedsStackTrace"/> on
-            Layout and FileName parameters.
-            </summary>
-            <returns>0 - don't include stack trace<br/>1 - include stack trace without source file information<br/>2 - include full stack trace</returns>
         </member>
         <member name="P:NLog.Targets.MethodCallParameter.Type">
             <summary>
@@ -3836,14 +4516,6 @@
             Creates a new instance of <see cref="T:NLog.Targets.NLogViewerParameterInfo"/>.
             </summary>
         </member>
-        <member name="M:NLog.Targets.NLogViewerParameterInfo.NeedsStackTrace">
-            <summary>
-            Determines whether stack trace information should be gathered
-            during log event processing. It calls <see cref="M:NLog.Layout.NeedsStackTrace"/> on
-            Layout and FileName parameters.
-            </summary>
-            <returns>0 - don't include stack trace<br/>1 - include stack trace without source file information<br/>2 - include full stack trace</returns>
-        </member>
         <member name="P:NLog.Targets.NLogViewerParameterInfo.Name">
             <summary>
             Viewer parameter name.
@@ -4005,12 +4677,12 @@
             Discards logging messages optionally forcing the layouts to be calculated. Used mainly for debugging and benchmarking.
             </summary>
         </member>
-        <member name="M:NLog.Targets.NullTarget.Append(NLog.LogEventInfo)">
+        <member name="M:NLog.Targets.NullTarget.Write(NLog.LogEventInfo)">
             <summary>
             Does nothing. Optionally it calculates the layout text but
             discards the results.
             </summary>
-            <param name="ev">The logging event.</param>
+            <param name="logEvent">The logging event.</param>
         </member>
         <member name="P:NLog.Targets.NullTarget.FormatMessage">
             <summary>
@@ -4022,14 +4694,14 @@
             Sends logging messages through System.Diagnostics.Trace
             </summary>
         </member>
-        <member name="M:NLog.Targets.TraceTarget.Append(NLog.LogEventInfo)">
+        <member name="M:NLog.Targets.TraceTarget.Write(NLog.LogEventInfo)">
             <summary>
             Writes the specified logging event to the <see cref="T:System.Diagnostics.Trace"/> facility.
             If the log level is greater than or equal to <see cref="F:NLog.LogLevel.Error"/> it uses the
             <see cref="M:System.Diagnostics.Trace.Fail(System.String)"/> method, otherwise it uses
             <see cref="M:System.Diagnostics.Trace.Write(System.String)"/> method.
             </summary>
-            <param name="ev">The logging event.</param>
+            <param name="logEvent">The logging event.</param>
         </member>
         <member name="T:NLog.FilterAttribute">
             <summary>
@@ -4267,7 +4939,7 @@
             Renders the layout for the specified logging event by invoking layout renderers
             that make up the event.
             </summary>
-            <param name="ev">The logging event.</param>
+            <param name="logEvent">The logging event.</param>
             <returns>The rendered layout.</returns>
         </member>
         <member name="M:NLog.Layout.NeedsStackTrace">
@@ -4277,9 +4949,174 @@
             </summary>
             <returns>0 - don't include stack trace<br/>1 - include stack trace without source file information<br/>2 - include full stack trace</returns>
         </member>
+        <member name="M:NLog.Layout.IsVolatile">
+            <summary>
+            Returns the value indicating whether this layout includes any volatile 
+            layout renderers.
+            </summary>
+            <returns><see langword="true"/> when the layout includes at least 
+            one volatile renderer, <see langword="false"/> otherwise.</returns>
+            <remarks>
+            Volatile layout renderers are dependent on information not contained 
+            in <see cref="T:NLog.LogEventInfo"/> (such as thread-specific data, MDC data, NDC data).
+            </remarks>
+        </member>
+        <member name="M:NLog.Layout.Precalculate(NLog.LogEventInfo)">
+            <summary>
+            Precalculates the layout for the specified log event and stores the result
+            in per-log event cache.
+            </summary>
+            <param name="logEvent">The log event.</param>
+            <remarks>
+            Calling this method enables you to store the log event in a buffer
+            and/or potentially evaluate it in another thread even though the 
+            layout may contain thread-dependent renderer.
+            </remarks>
+        </member>
         <member name="P:NLog.Layout.Text">
             <summary>
             The layout text
+            </summary>
+        </member>
+        <member name="T:NLog.LayoutCollection">
+            <summary>
+            A collection of elements of type Layout
+            </summary>
+        </member>
+        <member name="M:NLog.LayoutCollection.#ctor">
+            <summary>
+            Initializes a new empty instance of the LayoutCollection class.
+            </summary>
+        </member>
+        <member name="M:NLog.LayoutCollection.#ctor(NLog.Layout[])">
+            <summary>
+            Initializes a new instance of the LayoutCollection class, containing elements
+            copied from an array.
+            </summary>
+            <param name="items">
+            The array whose elements are to be added to the new LayoutCollection.
+            </param>
+        </member>
+        <member name="M:NLog.LayoutCollection.#ctor(NLog.LayoutCollection)">
+            <summary>
+            Initializes a new instance of the LayoutCollection class, containing elements
+            copied from another instance of LayoutCollection
+            </summary>
+            <param name="items">
+            The LayoutCollection whose elements are to be added to the new LayoutCollection.
+            </param>
+        </member>
+        <member name="M:NLog.LayoutCollection.AddRange(NLog.Layout[])">
+            <summary>
+            Adds the elements of an array to the end of this LayoutCollection.
+            </summary>
+            <param name="items">
+            The array whose elements are to be added to the end of this LayoutCollection.
+            </param>
+        </member>
+        <member name="M:NLog.LayoutCollection.AddRange(NLog.LayoutCollection)">
+            <summary>
+            Adds the elements of another LayoutCollection to the end of this LayoutCollection.
+            </summary>
+            <param name="items">
+            The LayoutCollection whose elements are to be added to the end of this LayoutCollection.
+            </param>
+        </member>
+        <member name="M:NLog.LayoutCollection.Add(NLog.Layout)">
+            <summary>
+            Adds an instance of type Layout to the end of this LayoutCollection.
+            </summary>
+            <param name="value">
+            The Layout to be added to the end of this LayoutCollection.
+            </param>
+        </member>
+        <member name="M:NLog.LayoutCollection.Contains(NLog.Layout)">
+            <summary>
+            Determines whether a specfic Layout value is in this LayoutCollection.
+            </summary>
+            <param name="value">
+            The Layout value to locate in this LayoutCollection.
+            </param>
+            <returns>
+            true if value is found in this LayoutCollection;
+            false otherwise.
+            </returns>
+        </member>
+        <member name="M:NLog.LayoutCollection.IndexOf(NLog.Layout)">
+            <summary>
+            Return the zero-based index of the first occurrence of a specific value
+            in this LayoutCollection
+            </summary>
+            <param name="value">
+            The Layout value to locate in the LayoutCollection.
+            </param>
+            <returns>
+            The zero-based index of the first occurrence of the _ELEMENT value if found;
+            -1 otherwise.
+            </returns>
+        </member>
+        <member name="M:NLog.LayoutCollection.Insert(System.Int32,NLog.Layout)">
+            <summary>
+            Inserts an element into the LayoutCollection at the specified index
+            </summary>
+            <param name="index">
+            The index at which the Layout is to be inserted.
+            </param>
+            <param name="value">
+            The Layout to insert.
+            </param>
+        </member>
+        <member name="M:NLog.LayoutCollection.Remove(NLog.Layout)">
+            <summary>
+            Removes the first occurrence of a specific Layout from this LayoutCollection.
+            </summary>
+            <param name="value">
+            The Layout value to remove from this LayoutCollection.
+            </param>
+        </member>
+        <member name="M:NLog.LayoutCollection.GetEnumerator">
+            <summary>
+            Returns an enumerator that can iterate through the elements of this LayoutCollection.
+            </summary>
+            <returns>
+            An object that implements System.Collections.IEnumerator.
+            </returns>        
+        </member>
+        <member name="P:NLog.LayoutCollection.Item(System.Int32)">
+            <summary>
+            Gets or sets the Layout at the given index in this LayoutCollection.
+            </summary>
+        </member>
+        <member name="T:NLog.LayoutCollection.Enumerator">
+            <summary>
+            Type-specific enumeration class, used by LayoutCollection.GetEnumerator.
+            </summary>
+        </member>
+        <member name="M:NLog.LayoutCollection.Enumerator.#ctor(NLog.LayoutCollection)">
+            <summary>
+            
+            </summary>
+            <param name="collection"></param>
+        </member>
+        <member name="M:NLog.LayoutCollection.Enumerator.MoveNext">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NLog.LayoutCollection.Enumerator.Reset">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NLog.LayoutCollection.Enumerator.Current">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NLog.LayoutCollection.Enumerator.System#Collections#IEnumerator#Current">
+            <summary>
+            
             </summary>
         </member>
         <member name="T:NLog.LayoutRendererAttribute">
@@ -4303,6 +5140,12 @@
             <summary>
             Marks the specified layout renderer as ignoring padding (used mostly for
             documentation generation).
+            </summary>
+        </member>
+        <member name="P:NLog.LayoutRendererAttribute.UsingLogEventInfo">
+            <summary>
+            Marks the specified layout renderer as relying purely on the contents
+            of <see cref="T:NLog.LogEventInfo"/> only and not on any other information (such as thread-
             </summary>
         </member>
         <member name="T:NLog.LayoutRendererCollection">
@@ -4574,6 +5417,12 @@
             <summary>
             Renders the logging message by invoking <see cref="M:System.String.Format(System.String,System.Object)"/> on
             a <see cref="P:NLog.LogEventInfo.Message"/>, <see cref="P:NLog.LogEventInfo.Parameters"/> and <see cref="P:NLog.LogEventInfo.FormatProvider"/>.
+            </summary>
+        </member>
+        <member name="P:NLog.LogEventInfo.SequenceID">
+            <summary>
+            The unique identifier of log event which is automatically generated
+            and monotonously increasing.
             </summary>
         </member>
         <member name="T:NLog.Logger">
@@ -6500,6 +7349,23 @@
             to ensure that all loggers have been properly configured.
             </summary>
         </member>
+        <member name="M:NLog.LogManager.Flush">
+            <summary>
+            Flush any pending log messages (in case of asynchronous targets).
+            </summary>
+        </member>
+        <member name="M:NLog.LogManager.Flush(System.TimeSpan)">
+            <summary>
+            Flush any pending log messages (in case of asynchronous targets).
+            </summary>
+            <param name="timeout">Maximum time to allow for the flush. Any messages after that time will be discarded.</param>
+        </member>
+        <member name="M:NLog.LogManager.Flush(System.Int32)">
+            <summary>
+            Flush any pending log messages (in case of asynchronous targets).
+            </summary>
+            <param name="timeoutMilliseconds">Maximum time to allow for the flush. Any messages after that time will be discarded.</param>
+        </member>
         <member name="M:NLog.LogManager.DisableLogging">
             <summary>Decreases the log enable counter and if it reaches -1 
             the logs are disabled.</summary>
@@ -6800,7 +7666,7 @@
         </member>
         <member name="M:NLog.TargetFactory.Reset">
             <summary>
-            Removes all targets and reloads them from NLog assembly.
+            Removes all targets and reloads them from NLog assembly and default extension assemblies.
             </summary>
         </member>
         <member name="M:NLog.TargetFactory.AddTargetsFromAssembly(System.Reflection.Assembly,System.String)">

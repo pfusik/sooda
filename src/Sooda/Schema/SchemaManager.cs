@@ -45,7 +45,7 @@ namespace Sooda.Schema {
         public static string NamespaceURI
         {
             get {
-                return "http://sooda.sourceforge.net/schemas/DBSchema.xsd";
+                return "http://www.sooda.org/schemas/SoodaSchema.xsd";
             }
         }
 

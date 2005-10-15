@@ -15,6 +15,7 @@
         <nav href="http://trac.sav.net/sooda/" noext="true" label="Report a Bug" />
 
         <nav href="documentation" label="Documentation">
+            <subnav href="howitworks" label="How it works" />
             <subnav href="tools" label="Tools" />
             <subnav href="classes" label="Class Libraries" />
         </nav>

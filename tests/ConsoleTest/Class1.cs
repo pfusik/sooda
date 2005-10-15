@@ -70,7 +70,7 @@ namespace ConsoleTest
         }
         static void Main(string[] args) 
         {
-            // Sooda.Logging.LogManager.Implementation = new Sooda.Logging.ConsoleLoggingImplementation();
+            Sooda.Logging.LogManager.Implementation = new Sooda.Logging.ConsoleLoggingImplementation();
 
             using (SoodaTransaction t = new SoodaTransaction())
             {

@@ -38,7 +38,7 @@ using System.Collections.Specialized;
 
 namespace Sooda.Schema {
 
-    [XmlTypeAttribute(Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd")]
+    [XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [Serializable]
     public class FieldInfo : ICloneable {
         [XmlAttribute("name")]

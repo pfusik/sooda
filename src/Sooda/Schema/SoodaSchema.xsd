@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sooda="http://sooda.sourceforge.net/schemas/DBSchema.xsd" elementFormDefault="qualified" targetNamespace="http://sooda.sourceforge.net/schemas/DBSchema.xsd" xmlns="http://sooda.sourceforge.net/schemas/DBSchema.xsd">
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sooda="http://www.sooda.org/schemas/SoodaSchema.xsd" elementFormDefault="qualified" targetNamespace="http://www.sooda.org/schemas/SoodaSchema.xsd" xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
 	<xsd:element name="schema" type="sooda:SchemaInfo"></xsd:element>
 	<xsd:complexType name="SchemaInfo">
 		<xsd:choice minOccurs="0" maxOccurs="unbounded">

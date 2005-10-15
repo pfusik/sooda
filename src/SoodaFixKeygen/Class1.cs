@@ -12,7 +12,7 @@ namespace SoodaFixKeygen
         {
             if (args.Length < 2)
             {
-                Console.WriteLine("Usage: SoodaFixKeyGen [schemafilename] [output_sql]");
+                Console.WriteLine("Usage: SoodaFixKeyGen [project.SchemaFilename] [output_sql]");
                 return 1;
             }
             SchemaInfo schemaInfo;

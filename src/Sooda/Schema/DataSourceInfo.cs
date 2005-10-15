@@ -40,7 +40,7 @@ using Sooda;
 
 namespace Sooda.Schema 
 {
-    [XmlType(Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd")]
+    [XmlType(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [Serializable]
     public class DataSourceInfo 
     {

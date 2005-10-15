@@ -35,7 +35,7 @@ namespace Sooda.Schema {
     using System;
     using System.Xml.Serialization;
 
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     public enum CachingMode
     {
         None,

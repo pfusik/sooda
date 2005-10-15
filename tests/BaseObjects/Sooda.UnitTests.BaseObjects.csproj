@@ -16,7 +16,7 @@
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
                 OutputType = "Library"
-                PreBuildEvent = "$(SolutionDir)..\src\SoodaStubGen\bin\$(ConfigurationName)\SoodaStubGen.exe --rebuild-if-changed --nullable-as sqltype --project vs -s $(SolutionDir)DBSchemaBase.xml -n Sooda.UnitTests.BaseObjects -o $(SolutionDir)BaseObjects"
+                PreBuildEvent = "$(SolutionDir)..\src\SoodaCodeGenerator\bin\$(ConfigurationName)\SoodaCodeGenerator.exe $(ProjectDir)Sooda.UnitTests.BaseObjects.soodaproject"
                 PostBuildEvent = ""
                 RootNamespace = ""
                 RunPostBuildEvent = "OnBuildSuccess"
@@ -141,6 +141,10 @@
                     RelPath = "Role.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Sooda.UnitTests.BaseObjects.soodaproject"
+                    BuildAction = "None"
                 />
                 <File
                     RelPath = "Vehicle.cs"

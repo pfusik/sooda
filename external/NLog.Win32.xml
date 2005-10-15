@@ -14,7 +14,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             Because ASP target uses COM Interop which is quite expensive, this method always returns 64.
@@ -25,7 +25,7 @@
             Renders the specified ASP Application variable and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="P:NLog.Win32.LayoutRenderers.ASPApplicationValueLayoutRenderer.Variable">
             <summary>
@@ -42,7 +42,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             Because ASP target uses COM Interop which is quite expensive, this method always returns 64.
@@ -53,7 +53,7 @@
             Renders the specified ASP Request variable and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="P:NLog.Win32.LayoutRenderers.ASPRequestValueLayoutRenderer.Item">
             <summary>
@@ -90,7 +90,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             Because ASP target uses COM Interop which is quite expensive, this method always returns 64.
@@ -101,7 +101,7 @@
             Renders the specified ASP Session variable and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event.</param>
+            <param name="logEvent">Logging event.</param>
         </member>
         <member name="P:NLog.Win32.LayoutRenderers.ASPSessionValueLayoutRenderer.Variable">
             <summary>
@@ -118,7 +118,7 @@
             Returns the estimated number of characters that are needed to
             hold the rendered value for the specified logging event.
             </summary>
-            <param name="ev">Logging event information.</param>
+            <param name="logEvent">Logging event information.</param>
             <returns>The number of characters.</returns>
             <remarks>
             This function always returns 32.
@@ -130,7 +130,7 @@
             the passed <see cref="T:System.Text.StringBuilder"/>.
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
-            <param name="ev">Logging event. Ignored.</param>
+            <param name="logEvent">Logging event. Ignored.</param>
         </member>
         <member name="P:NLog.Win32.LayoutRenderers.RegistryLayoutRenderer.Value">
             <summary>
@@ -156,16 +156,51 @@
             </ul>
             </remarks>
         </member>
+        <member name="T:NLog.Win32.LayoutRenderers.WindowsIdentityLayoutRenderer">
+            <summary>
+            Thread Windows identity information (username)
+            </summary>
+        </member>
+        <member name="M:NLog.Win32.LayoutRenderers.WindowsIdentityLayoutRenderer.GetEstimatedBufferSize(NLog.LogEventInfo)">
+            <summary>
+            Returns the estimated number of characters that are needed to
+            hold the rendered value for the specified logging event.
+            </summary>
+            <param name="logEvent">Logging event information.</param>
+            <returns>The number of characters.</returns>
+            <remarks>
+            If the exact number is not known or
+            expensive to calculate this function should return a rough estimate
+            that's big enough in most cases, but not too big, in order to conserve memory.
+            </remarks>
+        </member>
+        <member name="M:NLog.Win32.LayoutRenderers.WindowsIdentityLayoutRenderer.Append(System.Text.StringBuilder,NLog.LogEventInfo)">
+            <summary>
+            Renders the current thread windows identity information and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
+            </summary>
+            <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
+            <param name="logEvent">Logging event.</param>
+        </member>
+        <member name="P:NLog.Win32.LayoutRenderers.WindowsIdentityLayoutRenderer.Domain">
+            <summary>
+            Whether domain name should be included.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.LayoutRenderers.WindowsIdentityLayoutRenderer.UserName">
+            <summary>
+            Whether username should be included.
+            </summary>
+        </member>
         <member name="T:NLog.Win32.Targets.ASPResponseTarget">
             <summary>
             Outputs logging messages through the ASP Response object.
             </summary>
         </member>
-        <member name="M:NLog.Win32.Targets.ASPResponseTarget.Append(NLog.LogEventInfo)">
+        <member name="M:NLog.Win32.Targets.ASPResponseTarget.Write(NLog.LogEventInfo)">
             <summary>
             Outputs the rendered logging event through the <c>OutputDebugString()</c> Win32 API.
             </summary>
-            <param name="ev">The logging event.</param>
+            <param name="logEvent">The logging event.</param>
         </member>
         <member name="P:NLog.Win32.Targets.ASPResponseTarget.AddComments">
             <summary>
@@ -202,11 +237,11 @@
             Creates a new instance of <see cref="T:NLog.Win32.Targets.EventLogTarget"/> and 
             </summary>
         </member>
-        <member name="M:NLog.Win32.Targets.EventLogTarget.Append(NLog.LogEventInfo)">
+        <member name="M:NLog.Win32.Targets.EventLogTarget.Write(NLog.LogEventInfo)">
             <summary>
             Writes the specified logging event to the event log. 
             </summary>
-            <param name="ev">The logging event.</param>
+            <param name="logEvent">The logging event.</param>
         </member>
         <member name="P:NLog.Win32.Targets.EventLogTarget.MachineName">
             <summary>
@@ -251,26 +286,24 @@
             <cs src="examples/targets/MSMQ/MSMQTarget.cs" />
             </example>
         </member>
-        <member name="M:NLog.Win32.Targets.MSMQTarget.NeedsStackTrace">
+        <member name="M:NLog.Win32.Targets.MSMQTarget.PopulateLayouts(NLog.LayoutCollection)">
             <summary>
-            Determines whether stack trace information should be gathered
-            during log event processing. It calls <see cref="M:NLog.Layout.NeedsStackTrace"/> on
-            Layout, Queue and Label parameters.
+            Adds all layouts used by this target to the specified collection.
             </summary>
-            <returns>0 - don't include stack trace<br/>1 - include stack trace without source file information<br/>2 - include full stack trace</returns>
+            <param name="layouts">The collection to add layouts to.</param>
         </member>
-        <member name="M:NLog.Win32.Targets.MSMQTarget.Append(NLog.LogEventInfo)">
+        <member name="M:NLog.Win32.Targets.MSMQTarget.Write(NLog.LogEventInfo)">
             <summary>
             Writes the specified logging event to a queue specified in the Queue 
             parameter.
             </summary>
-            <param name="ev">The logging event.</param>
+            <param name="logEvent">The logging event.</param>
         </member>
         <member name="M:NLog.Win32.Targets.MSMQTarget.PrepareMessage(NLog.LogEventInfo)">
             <summary>
             Prepares a message to be sent to the message queue.
             </summary>
-            <param name="ev">The log event to be used when calculating label and text to be written.</param>
+            <param name="logEvent">The log event to be used when calculating label and text to be written.</param>
             <returns>The message to be sent</returns>
             <remarks>
             You may override this method in inheriting classes
@@ -320,11 +353,11 @@
             Outputs logging messages through the <c>OutputDebugString()</c> Win32 API.
             </summary>
         </member>
-        <member name="M:NLog.Win32.Targets.OutputDebugStringTarget.Append(NLog.LogEventInfo)">
+        <member name="M:NLog.Win32.Targets.OutputDebugStringTarget.Write(NLog.LogEventInfo)">
             <summary>
             Outputs the rendered logging event through the <c>OutputDebugString()</c> Win32 API.
             </summary>
-            <param name="ev">The logging event.</param>
+            <param name="logEvent">The logging event.</param>
         </member>
         <member name="M:NLog.Win32.Targets.OutputDebugStringTarget.OutputDebugString(System.String)">
             <summary>

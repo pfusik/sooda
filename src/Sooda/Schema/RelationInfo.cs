@@ -36,7 +36,7 @@ using System;
 namespace Sooda.Schema {
     using System.Xml.Serialization;
 
-    [XmlType(Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd")]
+    [XmlType(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [Serializable]
     public class RelationInfo : IFieldContainer {
         [XmlAttribute("datasource")]

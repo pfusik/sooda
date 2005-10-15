@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="../DBSchema.xsl" ?>
-<schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://sooda.sourceforge.net/schemas/DBSchema.xsd">
+<schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
     <datasource name="default" type="Sooda.Sql.SqlDataSource" />
     <datasource name="xmldata1" type="Sooda.Xml.XmlDataSource" />
 

@@ -37,7 +37,7 @@ namespace Sooda.Schema {
     using System.Data;
     using System.Collections;
 
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://sooda.sourceforge.net/schemas/DBSchema.xsd")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [Serializable]
     public class TableInfo {
         [System.Xml.Serialization.XmlElementAttribute("field")]
