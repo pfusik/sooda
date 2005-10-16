@@ -35,6 +35,7 @@ using System;
 using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
+using System.Reflection;
 
 using System.CodeDom;
 using System.CodeDom.Compiler;
@@ -83,6 +84,23 @@ namespace Sooda.CodeGen
     [XmlRoot("sooda-project",Namespace="http://www.sooda.org/schemas/SoodaProject.xsd")]
     public class SoodaProject
     {
+        public static string NamespaceURI = "http://www.sooda.org/schemas/SoodaProject.xsd";
+
+        public static Stream GetSoodaProjectXsdStream() {
+            Assembly ass = typeof(SoodaProject).Assembly;
+            foreach (string name in ass.GetManifestResourceNames()) {
+                if (name.EndsWith(".SoodaProject.xsd")) {
+                    return ass.GetManifestResourceStream(name);
+                };
+            }
+            throw new SoodaSchemaException("SoodaProject.xsd not embedded in Sooda.CodeGen assembly");
+        }
+
+        public static XmlReader GetSoodaProjectXsdStreamXmlReader() {
+            return new XmlTextReader(GetSoodaProjectXsdStream());
+        }
+
+
         [XmlElement("schema-file")]
         public string SchemaFile;
 
@@ -184,8 +202,18 @@ namespace Sooda.CodeGen
 
         public static SoodaProject LoadFrom(XmlTextReader reader)
         {
+#if SOODA_NO_VALIDATING_READER
             XmlSerializer ser = new XmlSerializer(typeof(SoodaProject));
-            return (SoodaProject)ser.Deserialize(reader);
+            SoodaProject project = (SoodaProject)ser.Deserialize(reader);
+#else
+
+            XmlValidatingReader validatingReader = new XmlValidatingReader(reader);
+            validatingReader.Schemas.Add(NamespaceURI, GetSoodaProjectXsdStreamXmlReader());
+
+            XmlSerializer ser = new XmlSerializer(typeof(SoodaProject));
+            SoodaProject project = (SoodaProject)ser.Deserialize(validatingReader);
+#endif
+            return project;
         }
     }
 }

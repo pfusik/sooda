@@ -19,6 +19,7 @@ namespace Sooda.NAnt.Tasks
         #region Private Instance Fields
 
         private FileInfo _projectFile;
+        private bool _rebuild = false;
 
         #endregion Private Instance Fields
 
@@ -35,6 +36,13 @@ namespace Sooda.NAnt.Tasks
             set { _projectFile = value; }
         }
 
+        [TaskAttribute("rebuild")]
+        public bool Rebuild
+        {
+            get { return _rebuild; } 
+            set { _rebuild = value; }
+        }
+
         #endregion
 
         #region Override implementation of Task
@@ -44,6 +52,8 @@ namespace Sooda.NAnt.Tasks
             Log(Level.Verbose, "Loading Sooda project from '{0}'", _projectFile.FullName);
             SoodaProject project = SoodaProject.LoadFrom(_projectFile.FullName);
             CodeGenerator generator = new CodeGenerator(project, this);
+            if (Rebuild)
+                generator.RebuildIfChanged = false;
 
             string oldDirectory = Environment.CurrentDirectory;
             try

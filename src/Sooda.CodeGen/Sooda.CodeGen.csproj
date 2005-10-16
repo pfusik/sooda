@@ -159,6 +159,10 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SoodaProject.xsd"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "VScsprojProjectFile.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

@@ -24,7 +24,7 @@
 
     <property name="clover.enabled" value="false" />
     <property name="clover.home" value="C:\Program Files\Cenqua\Clover.NET" />
-    <property name="boo.home" value="c:\apps\boo\bin" />
+    <property name="boo.home" value="d:\Work\Boo\build" />
 
     <property name="sources" value="src" />
     
@@ -36,8 +36,8 @@
     <target name="build-mono-1.0" depends="build-common, minitools" />
 
     <target name="build-common" depends="configure, libraries" />
-    <target name="tools" depends="SoodaCodeGenerator, SoodaQuery, SoodaSchemaTool, SoodaFixKeygen, SoodaCompileStubs" />
-    <target name="minitools" depends="SoodaCodeGenerator, SoodaCompileStubs" />
+    <target name="tools" depends="SoodaStubGen, SoodaQuery, SoodaSchemaTool, SoodaFixKeygen, SoodaCompileStubs" />
+    <target name="minitools" depends="SoodaStubGen, SoodaCompileStubs" />
 
     <target name="libraries" depends="Sooda, Sooda.Logging.NLog, Sooda.Logging.log4net" />
 
@@ -68,11 +68,6 @@
 
     <target name="configure-net-1.0">
         <property name="sooda.define" value="${sooda.define},SOODA_NO_ODBC" />
-    </target>
-
-    <target name="linuxtoolwrappers">
-        <exec workingdir="${sooda.dir}" program="${nant.project.basedir}/tools/makewrapper ${sooda.dir}/StubGen" />
-        <exec workingdir="${sooda.dir}" program="${nant.project.basedir}/tools/makewrapper ${sooda.dir}/DBTool" />
     </target>
 
     <target name="release">
@@ -153,21 +148,22 @@
                 <include name="Template/*.vbproj" />
                 <include name="Template/*.build" />
                 <include name="CDIL/Templates/**/*" />
+                <include name="SoodaProject.xsd" />
             </resources>
         </csc>
     </target>
 
-    <target name="SoodaCodeGenerator" depends="configure, Sooda, Sooda.CodeGen">
-        <csc target="exe" output="${sooda.dir}/SoodaCodeGenerator.exe" debug="${sooda.debug}" define="${sooda.define},NO_VB,NO_JSCRIPT">
+    <target name="SoodaStubGen" depends="configure, Sooda, Sooda.CodeGen">
+        <csc target="exe" output="${sooda.dir}/SoodaStubGen.exe" debug="${sooda.debug}" define="${sooda.define},NO_VB,NO_JSCRIPT">
             <references>                                  
                 <include name="${sooda.dir}/Sooda.dll" />
                 <include name="${sooda.dir}/Sooda.CodeGen.dll" />
             </references>
-            <sources basedir="src/SoodaCodeGenerator">
+            <sources basedir="src/SoodaStubGen">
                 <include name="**/*.cs" />
             </sources>
         </csc>
-        <copy file="src/SoodaCodeGenerator/App.config" tofile="${sooda.dir}/SoodaCodeGenerator.exe.config" />
+        <copy file="src/SoodaStubGen/App.config" tofile="${sooda.dir}/SoodaStubGen.exe.config" />
     </target>
 
     <target name="SoodaCompileStubs" depends="configure, Sooda">
@@ -316,8 +312,8 @@
         <loadtasks assembly="${sooda.dir}/Sooda.NAnt.Tasks.dll" />
     </target>
 
-    <target name="Sooda.UnitTests.BaseObjects" depends="Sooda, Sooda.NAnt.Tasks, SoodaCodeGenerator">
-        <sooda-generate-code project="tests/Sooda.UnitTests.BaseObjects.soodaproject" verbose="true" />
+    <target name="Sooda.UnitTests.BaseObjects" depends="Sooda, Sooda.NAnt.Tasks, SoodaStubGen">
+        <sooda-generate-code project="tests/BaseObjects/Sooda.UnitTests.BaseObjects.soodaproject" verbose="true" />
 
         <csc target="library" output="${sooda.dir}/Sooda.UnitTests.BaseObjects.dll" debug="true">
             <references>                                  
@@ -334,9 +330,8 @@
         </csc>
     </target>
 
-    <target name="Sooda.UnitTests.BaseObjects.Boo" depends="Sooda, SoodaCodeGenerator">
-        <exec program="${sooda.dir}/SoodaCodeGenerator.exe" useruntimeengine="true" workingdir="tests" 
-            commandline='--project null --lang "Boo.Lang.CodeDom.BooCodeProvider, Boo.Lang.CodeDom" --rebuild-if-changed --nullable-as sqltype -s DBSchemaBase.xml -n Sooda.UnitTests.BaseObjects.Boo -o BaseObjects.Boo' />
+    <target name="Sooda.UnitTests.BaseObjects.Boo" depends="Sooda, Sooda.NAnt.Tasks">
+        <sooda-generate-code project="tests/BaseObjects.Boo/Sooda.UnitTests.BaseObjects.Boo.soodaproject" verbose="true" />
 
         <loadtasks assembly="${boo.home}\Boo.Nant.Tasks.dll" />
         <booc target="library" output="${sooda.dir}/Sooda.UnitTests.BaseObjects.Boo.dll" debug="true">
@@ -351,8 +346,8 @@
         </booc>
     </target>
 
-    <target name="Sooda.UnitTests.Objects" depends="Sooda, SoodaCodeGenerator, Sooda.UnitTests.BaseObjects">
-        <sooda-generate-code project="tests/Sooda.UnitTests.Objects.soodaproject" verbose="true" />
+    <target name="Sooda.UnitTests.Objects" depends="Sooda, SoodaStubGen, Sooda.UnitTests.BaseObjects">
+        <sooda-generate-code project="tests/UnitTestObjects/Sooda.UnitTests.Objects.soodaproject" verbose="true" />
 
         <csc target="library" output="${sooda.dir}/Sooda.UnitTests.Objects.dll" debug="true">
             <references>                                  

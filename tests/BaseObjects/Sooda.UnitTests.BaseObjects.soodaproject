@@ -10,6 +10,6 @@
     <with-typed-queries>false</with-typed-queries>
     <embedded-schema-type>Binary</embedded-schema-type>
     <external-projects>
-        <project type="vs2003" />
+        <project type="vs" />
     </external-projects>
 </sooda-project>

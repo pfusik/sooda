@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://www.sooda.org/schemas/SoodaProject.xsd" elementFormDefault="qualified" targetNamespace="http://www.sooda.org/schemas/SoodaProject.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="sooda-project" nillable="true" type="tns:SoodaProject" />
+  <xs:complexType name="SoodaProject">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="schema-file" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="language" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="output-assembly" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="output-namespace" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="output-path" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="nullable-representation" type="tns:PrimitiveRepresentation" />
+      <xs:element minOccurs="1" maxOccurs="1" name="not-null-representation" type="tns:PrimitiveRepresentation" />
+      <xs:element minOccurs="0" maxOccurs="1" default="true" name="with-indexers" type="xs:boolean" />
+      <xs:element minOccurs="0" maxOccurs="1" default="false" name="null-propagation" type="xs:boolean" />
+      <xs:element minOccurs="0" maxOccurs="1" name="base-class-name" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="with-typed-queries" type="xs:boolean" />
+      <xs:element minOccurs="0" maxOccurs="1" default="false" name="stubs-compiled-separately" type="xs:boolean" />
+      <xs:element minOccurs="1" maxOccurs="1" name="embedded-schema-type" type="tns:EmbedSchema" />
+      <xs:element minOccurs="0" maxOccurs="1" name="external-projects" type="tns:ArrayOfExternalProjectInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="PrimitiveRepresentation">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Boxed" />
+      <xs:enumeration value="SqlType" />
+      <xs:enumeration value="Raw" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="EmbedSchema">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Xml" />
+      <xs:enumeration value="Binary" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="ArrayOfExternalProjectInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="project" nillable="true" type="tns:ExternalProjectInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ExternalProjectInfo">
+    <xs:attribute name="type" type="xs:string" />
+    <xs:attribute name="file" type="xs:string" />
+  </xs:complexType>
+</xs:schema>
