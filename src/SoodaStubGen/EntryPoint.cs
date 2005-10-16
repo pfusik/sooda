@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 
 using Sooda.CodeGen;
 
-namespace SoodaCodeGenerator
+namespace SoodaStubGen
 {
 	public class EntryPoint
 	{

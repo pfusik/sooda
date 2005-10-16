@@ -16,7 +16,7 @@
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
                 OutputType = "Library"
-                PreBuildEvent = "$(SolutionDir)..\src\SoodaCodeGenerator\bin\$(ConfigurationName)\SoodaCodeGenerator.exe $(ProjectDir)Sooda.UnitTests.BaseObjects.soodaproject"
+                PreBuildEvent = "$(SolutionDir)..\src\SoodaStubGen\bin\$(ConfigurationName)\SoodaStubGen.exe $(ProjectDir)Sooda.UnitTests.BaseObjects.soodaproject"
                 PostBuildEvent = ""
                 RootNamespace = ""
                 RunPostBuildEvent = "OnBuildSuccess"

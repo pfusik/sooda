@@ -9,7 +9,7 @@
             <Settings
                 ApplicationIcon = "App.ico"
                 AssemblyKeyContainerName = ""
-                AssemblyName = "SoodaCodeGenerator"
+                AssemblyName = "SoodaStubGen"
                 AssemblyOriginatorKeyFile = ""
                 DefaultClientScript = "JScript"
                 DefaultHTMLPageLayout = "Grid"
@@ -18,7 +18,7 @@
                 OutputType = "Exe"
                 PreBuildEvent = ""
                 PostBuildEvent = ""
-                RootNamespace = "SoodaCodeGenerator"
+                RootNamespace = "SoodaStubGen"
                 RunPostBuildEvent = "OnBuildSuccess"
                 StartupObject = ""
             >

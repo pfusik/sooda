@@ -1,7 +1,7 @@
 using System;
 using Sooda.CodeGen;
 
-namespace SoodaCodeGenerator
+namespace SoodaStubGen
 {
 	public class ConsoleCodeGeneratorOutput : ICodeGeneratorOutput
 	{

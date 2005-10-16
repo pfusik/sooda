@@ -7,7 +7,7 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 using Microsoft.CSharp;
 
-namespace SoodaPrecompile
+namespace SoodaCompileStubs
 {
 	class EntryPoint
 	{

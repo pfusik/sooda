@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaFixKeygen", "src\Sooda
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaPrecompile", "src\SoodaPrecompile\SoodaPrecompile.csproj", "{7DACB842-1C46-4145-B02D-91E7C3CD4276}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaCompileStubs", "src\SoodaCompileStubs\SoodaCompileStubs.csproj", "{7DACB842-1C46-4145-B02D-91E7C3CD4276}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
@@ -35,7 +35,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.NAnt.Tasks", "src\Soo
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaCodeGenerator", "src\SoodaCodeGenerator\SoodaCodeGenerator.csproj", "{5F89F8D0-39BC-49F8-92E3-3A7F5F3FF55F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaStubGen", "src\SoodaStubGen\SoodaStubGen.csproj", "{5F89F8D0-39BC-49F8-92E3-3A7F5F3FF55F}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
