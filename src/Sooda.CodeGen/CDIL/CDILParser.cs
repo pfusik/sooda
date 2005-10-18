@@ -509,9 +509,21 @@ namespace Sooda.CodeGen.CDIL
             Expect(CDILToken.LeftParen);
             while (TokenType != CDILToken.RightParen && TokenType != CDILToken.EOF)
             {
+                bool varargs = false;
+                
+                if (IsKeyword("params"))
+                {
+                    varargs = true;
+                    GetNextToken();
+                }
+                    
                 CodeTypeReference typeName = ParseType();
                 string varName = EatKeyword();
-                method.Parameters.Add(new CodeParameterDeclarationExpression(typeName, varName));
+                CodeParameterDeclarationExpression cpd = new CodeParameterDeclarationExpression(typeName, varName);
+                if (varargs)
+                    cpd.CustomAttributes.Add(new CodeAttributeDeclaration("System.ParamArrayAttribute"));
+                method.Parameters.Add(cpd);
+
                 if (TokenType == CDILToken.Comma)
                     GetNextToken();
             }

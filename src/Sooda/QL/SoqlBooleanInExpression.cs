@@ -53,6 +53,28 @@ namespace Sooda.QL
             this.Left = lhs;
             this.Right = rhs;
         }
+        public SoqlBooleanInExpression(SoqlExpression lhs, IEnumerable rhs) 
+        {
+            this.Left = lhs;
+            this.Right = new SoqlExpressionCollection();
+            foreach (object expr in rhs)
+            {
+                if (expr is SoqlExpression)
+                {
+                    this.Right.Add((SoqlExpression)expr);
+                    continue;
+                }
+
+                if (expr is SoodaObject)
+                {
+                    this.Right.Add(new SoqlLiteralExpression(((SoodaObject)expr).GetPrimaryKeyValue()));
+                    continue;
+                }
+
+                this.Right.Add(new SoqlLiteralExpression(expr));
+            }
+        }
+
 
         // visitor pattern
         public override void Accept(ISoqlVisitor visitor) 

@@ -68,6 +68,7 @@ namespace ConsoleTest
         {
             Console.WriteLine("Class1 finalizer");
         }
+
         static void Main(string[] args) 
         {
             Sooda.Logging.LogManager.Implementation = new Sooda.Logging.ConsoleLoggingImplementation();

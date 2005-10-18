@@ -651,6 +651,9 @@ namespace Sooda.CodeGen
 
         public void Run()
         {
+            CodeCompileUnit ccu;
+            CodeNamespace nspace;
+
             try 
             {
                 if (Project.SchemaFile == null)
@@ -755,7 +758,10 @@ namespace Sooda.CodeGen
                 codeGeneratorOptions.ElseOnClosing = false;
 
                 Output.Verbose("Loading schema file {0}...", Project.SchemaFile);
-                SchemaInfo schema = SchemaManager.ReadAndValidateSchema(new XmlTextReader(Project.SchemaFile), Path.GetDirectoryName(Project.SchemaFile));
+                SchemaInfo schema = SchemaManager.ReadAndValidateSchema(
+                    new XmlTextReader(Project.SchemaFile), 
+                    Path.GetDirectoryName(Project.SchemaFile)
+                    );
 
                 Output.Verbose("Loaded {0} classes, {1} relations...", schema.LocalClasses.Count, schema.Relations.Count);
 
@@ -790,8 +796,7 @@ namespace Sooda.CodeGen
 
                         using (TextWriter tw = new StringWriter()) 
                         {
-                            CodeCompileUnit ccu = new CodeCompileUnit();
-                            CodeNamespace nspace;
+                            ccu = new CodeCompileUnit();
 
                             nspace = CreateBaseNamespace(schema);
                             ccu.Namespaces.Add(nspace);
@@ -837,8 +842,7 @@ namespace Sooda.CodeGen
                     Output.Verbose("Generating code for {0}...", fname);
                     // fake skeletons for first compilation only
 
-                    CodeCompileUnit ccu = new CodeCompileUnit();
-                    CodeNamespace nspace;
+                    ccu = new CodeCompileUnit();
 
                     nspace = CreateBaseNamespace(schema);
                     ccu.Namespaces.Add(nspace);
@@ -938,64 +942,70 @@ namespace Sooda.CodeGen
 
                 Output.Verbose("Generating code...");
                 Output.Verbose("{0}", fname);
-                using (TextWriter tw = new StreamWriter(fname)) 
+                ccu = new CodeCompileUnit();
+                CodeAttributeDeclaration cad = new CodeAttributeDeclaration("Sooda.SoodaObjectsAssembly");
+                cad.Arguments.Add(new CodeAttributeArgument(new CodeTypeOfExpression(Project.OutputNamespace +  "._DatabaseSchema")));
+                ccu.AssemblyCustomAttributes.Add(cad);
+
+                nspace = CreateBaseNamespace(schema);
+                ccu.Namespaces.Add(nspace);
+
+                Output.Verbose("    * list wrappers");
+                foreach (ClassInfo ci in schema.LocalClasses) 
                 {
-                    CodeCompileUnit ccu = new CodeCompileUnit();
-                    CodeAttributeDeclaration cad = new CodeAttributeDeclaration("Sooda.SoodaObjectsAssembly");
-                    cad.Arguments.Add(new CodeAttributeArgument(new CodeTypeOfExpression(Project.OutputNamespace +  "._DatabaseSchema")));
-                    ccu.AssemblyCustomAttributes.Add(cad);
+                    GenerateListWrapper(nspace, ci);
+                }
+                Output.Verbose("    * database schema");
+                GenerateDatabaseSchema(nspace, schema);
 
-                    CodeNamespace nspace;
+                // stubs namespace
+                nspace = CreateStubsNamespace(schema);
+                ccu.Namespaces.Add(nspace);
 
-                    nspace = CreateBaseNamespace(schema);
-                    ccu.Namespaces.Add(nspace);
+                Output.Verbose("    * class stubs");
+                foreach (ClassInfo ci in schema.LocalClasses) 
+                {
+                    GenerateClassStub(nspace, ci, false);
+                }
+                Output.Verbose("    * class factories");
+                foreach (ClassInfo ci in schema.LocalClasses) 
+                {
+                    GenerateClassFactory(nspace, ci);
+                }
+                Output.Verbose("    * N-N relation stubs");
+                foreach (RelationInfo ri in schema.LocalRelations) 
+                {
+                    GenerateRelationStub(nspace, ri);
+                }
 
-                    Output.Verbose("    * list wrappers");
-                    foreach (ClassInfo ci in schema.LocalClasses) 
-                    {
-                        GenerateListWrapper(nspace, ci);
-                    }
-                    Output.Verbose("    * database schema");
-                    GenerateDatabaseSchema(nspace, schema);
+                Output.Verbose("    * typed query wrappers (internal)");
+                foreach (ClassInfo ci in schema.LocalClasses) 
+                {
+                    GenerateTypedInternalQueryWrappers(nspace, ci);
+                }
 
-                    // stubs namespace
-                    nspace = CreateStubsNamespace(schema);
-                    ccu.Namespaces.Add(nspace);
+                nspace = CreateTypedQueriesNamespace(schema);
+                ccu.Namespaces.Add(nspace);
 
-                    Output.Verbose("    * class stubs");
-                    foreach (ClassInfo ci in schema.LocalClasses) 
-                    {
-                        GenerateClassStub(nspace, ci, false);
-                    }
-                    Output.Verbose("    * class factories");
-                    foreach (ClassInfo ci in schema.LocalClasses) 
-                    {
-                        GenerateClassFactory(nspace, ci);
-                    }
-                    Output.Verbose("    * N-N relation stubs");
-                    foreach (RelationInfo ri in schema.LocalRelations) 
-                    {
-                        GenerateRelationStub(nspace, ri);
-                    }
+                Output.Verbose("    * typed query wrappers");
+                foreach (ClassInfo ci in schema.LocalClasses) 
+                {
+                    GenerateTypedPublicQueryWrappers(nspace, ci);
+                }
 
-                    Output.Verbose("    * typed query wrappers (internal)");
-                    foreach (ClassInfo ci in schema.LocalClasses) 
-                    {
-                        GenerateTypedInternalQueryWrappers(nspace, ci);
-                    }
-
-                    nspace = CreateTypedQueriesNamespace(schema);
-                    ccu.Namespaces.Add(nspace);
-
-                    Output.Verbose("    * typed query wrappers");
-                    foreach (ClassInfo ci in schema.LocalClasses) 
-                    {
-                        GenerateTypedPublicQueryWrappers(nspace, ci);
-                    }
-
+                using (StringWriter sw = new StringWriter())
+                {
                     Output.Verbose("Writing code...");
-                    codeGenerator.GenerateCodeFromCompileUnit(ccu, tw, codeGeneratorOptions);
+                    codeGenerator.GenerateCodeFromCompileUnit(ccu, sw, codeGeneratorOptions);
                     Output.Verbose("Done.");
+
+                    string resultString = sw.ToString();
+                    resultString = resultString.Replace("[System.ParamArrayAttribute()] ", "params ");
+
+                    using (TextWriter tw = new StreamWriter(fname)) 
+                    {
+                        tw.Write(resultString);
+                    }
                 }
 
                 fname = "_FakeSkeleton." + codeProvider.FileExtension;

@@ -13,6 +13,27 @@ constructor(Sooda.QL.SoqlPathExpression left, System.String name)
 begin
 end
 
+method In(params arrayof(${ClassName}WrapperExpression) items)
+    attributes Public
+    returns Sooda.QL.SoqlBooleanExpression
+begin
+    return new Sooda.QL.SoqlBooleanInExpression(this, arg(items));
+end
+
+method In(params arrayof(${ClassName}) items)
+    attributes Public
+    returns Sooda.QL.SoqlBooleanExpression
+begin
+    return new Sooda.QL.SoqlBooleanInExpression(this, arg(items));
+end
+
+method In(params arrayof(${PrimaryKeyType}) items)
+    attributes Public
+    returns Sooda.QL.SoqlBooleanExpression
+begin
+    return new Sooda.QL.SoqlBooleanInExpression(this, arg(items));
+end
+
 method op_Equality(${ClassName}WrapperExpression left, ${ClassName}WrapperExpression right)
     attributes Public,Static
     returns Sooda.QL.SoqlBooleanRelationalExpression
