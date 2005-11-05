@@ -5,14 +5,6 @@ html, body.example
     background-color: #fffff8;
 }
 
-div.sourcecode
-{
-    border: 1px solid #e0e0e0;
-    padding: 10px;
-    background-color: #fffff0;
-    width: 100%;
-}
-
 pre.csharp
 {
     font-family: Tahoma;
@@ -24,6 +16,8 @@ pre.csharp
     white-space: -o-pre-wrap;    /* Opera 7 */
     white-space: pre-wrap;       /* CSS3 - Text module (Candidate Recommendation) */
     word-wrap: break-word;       /* IE 5.5+ */
+    padding: 8px;
+
 }
 
 pre.xml
@@ -36,6 +30,7 @@ pre.xml
     white-space: -o-pre-wrap;    /* Opera 7 */
     white-space: pre-wrap;       /* CSS3 - Text module (Candidate Recommendation) */
     word-wrap: break-word;       /* IE 5.5+ */
+    padding: 8px;
 }
 
 .csharp .k
@@ -127,6 +122,22 @@ pre.xml
 
 table.embeddedsource
 {
+    table-layout: fixed;
+}
+
+div.embeddedsource
+{
+    position: relative;
+}
+
+div.sourcecode
+{
+    border-left: 1px solid #c0c0c0;
+    border-top: 1px solid #c0c0c0;
+    border-right: 1px solid #c0c0c0;
+    border-bottom: 1px solid #c0c0c0;
+    background-color: #fffff8;
+    width: 100%;
 }
 
 .downloadlink

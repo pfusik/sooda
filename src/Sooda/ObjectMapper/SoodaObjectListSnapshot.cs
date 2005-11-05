@@ -192,22 +192,37 @@ namespace Sooda.ObjectMapper
             if ((options & SoodaSnapshotOptions.NoDatabase) == 0) 
             {
                 SoodaDataSource ds = transaction.OpenDataSource(classInfo.GetDataSource());
-                TableInfo[] loadedTables;
 
-                using (IDataReader reader = ds.LoadObjectList(t.Schema, classInfo, whereClause, orderBy, topCount, out loadedTables)) 
+                if ((options & SoodaSnapshotOptions.KeysOnly) != 0)
                 {
-                    while (reader.Read()) 
+                    using (IDataReader reader = ds.LoadMatchingPrimaryKeys(t.Schema, classInfo, whereClause, orderBy, topCount)) 
                     {
-                        SoodaObject obj = SoodaObject.GetRefFromRecordHelper(transaction, factory, reader, 0, loadedTables, 0);
-                        if ((options & SoodaSnapshotOptions.VerifyAfterLoad) != 0)
+                        while (reader.Read()) 
                         {
-                            if (whereClause != null && !whereClause.Matches(obj, false))
-                            {
-                                // don't add the object
-                                continue;
-                            }
+                            SoodaObject obj = SoodaObject.GetRefFromKeyRecordHelper(transaction, factory, reader);
+                            items.Add(obj);
                         }
-                        items.Add(obj);
+                    }
+                }
+                else
+                {
+                    TableInfo[] loadedTables;
+
+                    using (IDataReader reader = ds.LoadObjectList(t.Schema, classInfo, whereClause, orderBy, topCount, out loadedTables)) 
+                    {
+                        while (reader.Read()) 
+                        {
+                            SoodaObject obj = SoodaObject.GetRefFromRecordHelper(transaction, factory, reader, 0, loadedTables, 0);
+                            if ((options & SoodaSnapshotOptions.VerifyAfterLoad) != 0)
+                            {
+                                if (whereClause != null && !whereClause.Matches(obj, false))
+                                {
+                                    // don't add the object
+                                    continue;
+                                }
+                            }
+                            items.Add(obj);
+                        }
                     }
                 }
             }

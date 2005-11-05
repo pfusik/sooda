@@ -69,6 +69,7 @@ namespace Sooda.QL {
         {
             StringWriter sw = new StringWriter();
             SoqlPrettyPrinter pp = new SoqlPrettyPrinter(sw);
+            pp.IndentOutput = false;
             this.Accept(pp);
             return sw.ToString();
         }

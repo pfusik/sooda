@@ -75,7 +75,7 @@ namespace Sooda.QL.TypedWrappers
 
         public static implicit operator SoqlBooleanWrapperExpression(bool v)
         {
-            return new SoqlBooleanWrapperExpression(new SoqlLiteralExpression(v));
+            return new SoqlBooleanWrapperExpression(new SoqlBooleanLiteralExpression(v));
         }
 
         public static implicit operator SoqlBooleanWrapperExpression(SoqlParameterLiteralExpression v)

@@ -97,7 +97,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
 
                     g.Members.Add(c1 = new Contact());
                     c1.Name = "Nancy Newcomer";
-                    c1.Active = 1;
+                    c1.Active = true;
                     c1.Type = ContactType.Employee;
                     Assert.AreEqual(g.Members.Count, 4);
 

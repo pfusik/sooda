@@ -36,6 +36,7 @@ using System.IO;
 using System.Collections.Specialized;
 
 using Sooda.Schema;
+using Sooda.QL.TypedWrappers;
 using Sooda.QL;
 
 using Sooda.Logging;
@@ -49,6 +50,8 @@ namespace Sooda.Sql
     {
         private ISqlBuilder _builder;
         private Logger logger = LogManager.GetLogger("Sooda.Sql.SoqlToSqlConverter");
+
+        public bool DisableBooleanExpansion = false;
 
         public SoqlToSqlConverter(TextWriter output, SchemaInfo schema, ISqlBuilder builder) : base(output) 
         {
@@ -185,15 +188,50 @@ namespace Sooda.Sql
 
         public override void Visit(SoqlBooleanLiteralExpression v) 
         {
-            if (v.Value) 
+            if (DisableBooleanExpansion)
             {
-                Output.Write("(1=1)");
-            } 
-            else 
+                if (v.Value) 
+                {
+                    Output.Write("1");
+                } 
+                else 
+                {
+                    Output.Write("0");
+                }
+            }
+            else
             {
-                Output.Write("(1=0)");
+                if (v.Value) 
+                {
+                    Output.Write("(1=1)");
+                } 
+                else 
+                {
+                    Output.Write("(0=1)");
+                }
             }
         }
+
+        public override void Visit(Sooda.QL.TypedWrappers.SoqlBooleanWrapperExpression v)
+        {
+            if (DisableBooleanExpansion)
+            {
+                base.Visit(v);
+                return;
+            }
+
+            if (v.InnerExpression is SoqlBooleanExpression)
+            {
+                base.Visit (v);
+            }
+            else
+            {
+                Output.Write("(");
+                base.Visit(v);
+                Output.Write(" <> 0)");
+            }
+        }
+
 
         public override void Visit(SoqlAsteriskExpression v) 
         {
@@ -224,9 +262,16 @@ namespace Sooda.Sql
             {
                 if (!first) 
                 {
-                    Output.WriteLine(",");
-                    WriteIndentString();
-                    Output.Write("         ");
+                    if (IndentOutput)
+                    {
+                        Output.WriteLine(",");
+                        WriteIndentString();
+                        Output.Write("         ");
+                    }
+                    else
+                    {
+                        Output.Write(",");
+                    }
                 }
                 if (fi.Table.OrdinalInClass > 0) 
                 {
@@ -390,7 +435,9 @@ namespace Sooda.Sql
                 Output.Write(currentClass.GetFirstPrimaryKeyField().DBColumnName);
                 Output.Write(" and ");
                 Output.Write(col1n.Class.GetFirstPrimaryKeyField().DBColumnName);
-                Output.WriteLine(" in (");
+                Output.Write(" in (");
+                if (IndentOutput)
+                    Output.WriteLine();
 
                 v.Expr.Accept(this);
 
@@ -414,7 +461,9 @@ namespace Sooda.Sql
                 Output.Write(currentClass.GetFirstPrimaryKeyField().DBColumnName);
                 Output.Write(" and ");
                 Output.Write(ri.Table.Fields[colnn.MasterField].DBColumnName);
-                Output.WriteLine(" in (");
+                Output.Write(" in (");
+                if (IndentOutput)
+                    Output.WriteLine();
 
                 v.Expr.Accept(this);
 
@@ -478,7 +527,14 @@ namespace Sooda.Sql
                 try 
                 {
                     WriteIndentString();
-                    Output.Write("select   ");
+                    if (IndentOutput)
+                    {
+                        Output.Write("select   ");
+                    }
+                    else
+                    {
+                        Output.Write("select ");
+                    }
 
                     if (v.TopCount != -1) 
                     {
@@ -515,9 +571,16 @@ namespace Sooda.Sql
                         {
                             if (i > 0) 
                             {
-                                Output.WriteLine(",");
-                                WriteIndentString();
-                                Output.Write("         ");
+                                if (IndentOutput)
+                                {
+                                    Output.WriteLine(",");
+                                    WriteIndentString();
+                                    Output.Write("         ");
+                                }
+                                else
+                                {
+                                    Output.Write(",");
+                                }
                             }
                             v.SelectExpressions[i].Accept(this);
                             if (v.SelectAliases[i].Length > 0) 
@@ -566,9 +629,16 @@ namespace Sooda.Sql
                     }
                     if (limitedWhere != null || v.WhereJoins.Count > 0)
                     {
-                        Output.WriteLine();
-                        WriteIndentString();
-                        Output.Write("where    ");
+                        if (IndentOutput)
+                        {
+                            Output.WriteLine();
+                            WriteIndentString();
+                            Output.Write("where    ");
+                        }
+                        else
+                        {
+                            Output.Write(" where ");
+                        }
                         limitedWhere.Accept(this);
                         bool first = true;
                         if (limitedWhere != null)
@@ -583,8 +653,15 @@ namespace Sooda.Sql
                     }
                     if (v.GroupByExpressions != null && v.GroupByExpressions.Count > 0) 
                     {
-                        Output.WriteLine();
-                        WriteIndentString();
+                        if (IndentOutput)
+                        {
+                            Output.WriteLine();
+                            WriteIndentString();
+                        }
+                        else
+                        {
+                            Output.Write(" ");
+                        }
                         Output.Write("group by ");
                         for (int i = 0; i < v.GroupByExpressions.Count; ++i) 
                         {
@@ -595,15 +672,29 @@ namespace Sooda.Sql
                     }
                     if (v.Having != null) 
                     {
-                        Output.WriteLine();
-                        WriteIndentString();
+                        if (IndentOutput)
+                        {
+                            Output.WriteLine();
+                            WriteIndentString();
+                        }
+                        else
+                        {
+                            Output.Write(" ");
+                        }
                         Output.Write("having   ");
                         v.Having.Accept(this);
                     }
                     if (v.OrderByExpressions != null && v.OrderByExpressions.Count > 0) 
                     {
-                        Output.WriteLine();
-                        WriteIndentString();
+                        if (IndentOutput)
+                        {
+                            Output.WriteLine();
+                            WriteIndentString();
+                        }
+                        else
+                        {
+                            Output.Write(" ");
+                        }
                         Output.Write("order by ");
                         for (int i = 0; i < v.OrderByExpressions.Count; ++i) 
                         {
@@ -625,18 +716,33 @@ namespace Sooda.Sql
                     }
                     Output = oldOutput;
 
-                    // output FROM here
 
-                    Output.WriteLine();
-                    WriteIndentString();
-                    Output.Write("from     ");
+                    if (IndentOutput)
+                    {
+                        // output FROM here
+
+                        Output.WriteLine();
+                        WriteIndentString();
+                        Output.Write("from     ");
+                    }
+                    else
+                    {
+                        Output.Write(" from ");
+                    }
                     for (int i = 0; i < v.From.Count; ++i) 
                     {
                         if (i > 0) 
                         {
-                            Output.WriteLine(",");
-                            WriteIndentString();
-                            Output.Write("         ");
+                            if (IndentOutput)
+                            {
+                                Output.WriteLine(",");
+                                WriteIndentString();
+                                Output.Write("         ");
+                            }
+                            else
+                            {
+                                Output.Write(",");
+                            }
                         }
 
                         Output.Write(FindContainerByName(v.From[i]).GetAllFields()[0].Table.DBTableName);
@@ -970,5 +1076,17 @@ namespace Sooda.Sql
             expr.Accept(this);
         }
 
+        public override void Visit(SoqlBooleanRelationalExpression v)
+        {
+            // by default booleans expand to "b <> 0"
+            // in relational expressions they expand to "b"
+            // this is a dirty hack - will be fixed when we support
+            // proper boolean-to-any-type mapping
+
+            bool old = DisableBooleanExpansion;
+            DisableBooleanExpansion = true;
+            base.Visit(v);
+            DisableBooleanExpansion = old;
+        }
     }
 }

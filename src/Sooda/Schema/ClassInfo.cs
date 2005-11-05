@@ -45,6 +45,8 @@ namespace Sooda.Schema
     [Serializable]
     public class ClassInfo : IFieldContainer 
     {
+        private static Logging.Logger logger = Logging.LogManager.GetLogger("Sooda.Schema.ClassInfo");
+
         [XmlAttribute("datasource")]
         public string DataSourceName;
 
@@ -502,21 +504,25 @@ namespace Sooda.Schema
 
         internal void ResolveReferences(SchemaInfo schema) 
         {
+            // logger.Debug("ResolveReferences({0})", this.Name);
             foreach (FieldInfo fi in UnifiedFields) 
             {
+                // logger.Debug("unifiedField: {0}", fi.Name);
                 if (fi.References != null) 
                 {
                     ClassInfo ci = schema.FindClassByName(fi.References);
                     fi.ReferencedClass = ci;
+                }
+            }
 
-                    if (ci != null) 
-                    {
-                        ci.OuterReferences.Add(fi);
-                    } 
-                    else 
-                    {
-                        throw new SoodaSchemaException("Class " + Name + " refers to nonexisting class " + fi.References);
-                    }
+            foreach (FieldInfo fi in LocalFields) 
+            {
+                fi.ParentClass = this;
+                // logger.Debug("localField: {0}", fi.Name);
+                if (fi.ReferencedClass != null) 
+                {
+                    // logger.Debug("Is a reference to {0} with ondelete = {1}", fi.ReferencedClass.Name, fi.DeleteAction);
+                    fi.ReferencedClass.OuterReferences.Add(fi);
                 }
             }
         }

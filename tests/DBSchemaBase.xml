@@ -34,7 +34,7 @@
             <field name="PrimaryGroup" dbcolumn="primary_group" type="Integer" references="Group" nullable="true" onDelete="Cascade" />
             <field name="Type" dbcolumn="type" type="String" size="16" references="ContactType" />
             <field name="Name" dbcolumn="name" type="String" size="64" nullable="false" />
-            <field name="Active" dbcolumn="active" type="Integer" />
+            <field name="Active" dbcolumn="active" type="BooleanAsInteger" />
         </table>
         <table name="Contact">
             <field name="ContactId" dbcolumn="id" type="Integer" primaryKey="true" />

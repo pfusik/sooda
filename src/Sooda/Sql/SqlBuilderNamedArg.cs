@@ -34,12 +34,41 @@
 using System;
 using System.IO;
 using System.Data;
+using System.Globalization;
 using System.Collections;
 
 namespace Sooda.Sql 
 {
     public abstract class SqlBuilderNamedArg : SqlBuilderBase 
     {
+        private void SetParameterFromValue(IDbCommand command, IDbDataParameter p, object v)
+        {
+            p.Direction = ParameterDirection.Input;
+
+            string parName = GetNameForParameter(command.Parameters.Count);
+            p.ParameterName = parName;
+            SetDbTypeFromValue(p, v);
+
+            // HACK
+            if (v is System.Drawing.Image) 
+            {
+                System.Drawing.Image img = (System.Drawing.Image)v;
+
+                MemoryStream ms = new MemoryStream();
+                img.Save(ms, img.RawFormat);
+
+                p.Value = ms.GetBuffer();
+            } 
+            else if (v is TimeSpan)
+            {
+                p.Value = (int)(((TimeSpan)v).TotalSeconds);
+            }
+            else
+            {
+                p.Value = v;
+            }
+        }
+        
         public override void BuildCommandWithParameters(System.Data.IDbCommand command, bool append, string query, object[] par) 
         {
             if (append)
@@ -55,12 +84,6 @@ namespace Sooda.Sql
                 command.Parameters.Clear();
             }
 
-            if (par == null || par.Length == 0) 
-            {
-                command.CommandText += query;
-                return ;
-            };
-
             int startingParamNumber = command.Parameters.Count;
 
             System.Text.StringBuilder sb = new System.Text.StringBuilder(query.Length * 2);
@@ -70,7 +93,7 @@ namespace Sooda.Sql
             {
                 char c = query[i];
 
-                if (c == '\'')  // we leave strings untouched
+                if (c == '\'')  // locate the string
                 {
                     int stringStartPos = i;
                     int stringEndPos = -1;
@@ -97,10 +120,25 @@ namespace Sooda.Sql
                         throw new ArgumentException("Query has unbalanced quotes");
                     }
 
-                    sb.Append(query, stringStartPos, stringEndPos - stringStartPos + 1);
-
+                    string stringValue = query.Substring(stringStartPos + 1, stringEndPos - stringStartPos - 1);
+                    // replace double quotes with single quotes
+                    stringValue = stringValue.Replace("''", "'");
+                    IDbDataParameter p = command.CreateParameter();
+                    
+                    if (stringEndPos + 1 < query.Length && query[stringEndPos + 1] == 'D')
+                    {
+                        // datetime literal
+                        SetParameterFromValue(command, p, DateTime.ParseExact(stringValue, "yyyyMMddHH:mm:ss", CultureInfo.InvariantCulture));
+                        stringEndPos++;
+                    }
+                    else
+                    {
+                        SetParameterFromValue(command, p, stringValue);
+                    }
+                    command.Parameters.Add(p);
+                    sb.Append(p.ParameterName);
+                    
                     i = stringEndPos;
-                    // string starts from i and ends at j INCLUSIVE
                 } 
                 else if (c == '{') 
                 {
@@ -121,26 +159,6 @@ namespace Sooda.Sql
                         i += 3;
                     };
                     bool bIn = true, bOut = false;
-                    if (query[i] == ':') 
-                    {
-                        bIn = false;
-                        i++;
-                        while (query[i] != '}') 
-                        {
-                            if (Char.ToUpper(query[i]) == 'I') 
-                            {
-                                bIn = true;
-                                i++;
-                            } 
-                            else if (Char.ToUpper(query[i]) == 'O') 
-                            {
-                                bOut = true;
-                                i++;
-                            } 
-                            else
-                                throw new ArgumentException("Unknown modifier for parameter " + paramNumber);
-                        }
-                    }
 
                     object v = par[paramNumber];
 
@@ -165,47 +183,8 @@ namespace Sooda.Sql
                         if (parameterObjects[paramNumber] == null)
                         {
                             IDbDataParameter p = command.CreateParameter();
+                            SetParameterFromValue(command, p, v);
                             parameterObjects[paramNumber] = p;
-                            if (bIn) 
-                            {
-                                p.Direction = ParameterDirection.Input;
-                                if (bOut)
-                                    p.Direction = ParameterDirection.InputOutput;
-                            } 
-                            else if (bOut)
-                                p.Direction = ParameterDirection.Output;
-                            else
-                                throw new ArgumentException("Direction not specified for parameter " + paramNumber);
-
-                            string parName = GetNameForParameter(command.Parameters.Count);
-                            p.ParameterName = parName;
-                            if (v is Type) 
-                            {
-                                SetDbTypeFromClrType(p, (Type)v);
-                            } 
-                            else 
-                            {
-                                SetDbTypeFromClrType(p, v.GetType());
-
-                                // HACK
-                                if (v is System.Drawing.Image) 
-                                {
-                                    System.Drawing.Image img = (System.Drawing.Image)v;
-
-                                    MemoryStream ms = new MemoryStream();
-                                    img.Save(ms, img.RawFormat);
-
-                                    p.Value = ms.GetBuffer();
-                                } 
-                                else if (v is TimeSpan)
-                                {
-                                    p.Value = (int)(((TimeSpan)v).TotalSeconds);
-                                }
-                                else
-                                {
-                                    p.Value = v;
-                                }
-                            }
                             command.Parameters.Add(p);
                         }
                         sb.Append(((IDbDataParameter)parameterObjects[paramNumber]).ParameterName);

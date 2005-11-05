@@ -83,7 +83,7 @@ namespace Sooda.Schema {
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool AlwaysTrigger = false;
 
-        [XmlAttribute("onDelete")]
+        [XmlAttribute("ondelete")]
         [System.ComponentModel.DefaultValueAttribute(DeleteAction.Nothing)]
         public DeleteAction DeleteAction = DeleteAction.Nothing;
 
@@ -144,6 +144,14 @@ namespace Sooda.Schema {
         [NonSerialized]
         public ClassInfo ReferencedClass;
 
+        [XmlIgnore]
+        [NonSerialized]
+        public ClassInfo ParentClass;
+
+        [XmlIgnore]
+        [NonSerialized]
+        public RelationInfo ParentRelation;
+
         public FieldInfo DoClone() {
             FieldInfo fi = new FieldInfo();
 
@@ -191,5 +199,11 @@ namespace Sooda.Schema {
         internal void ResolvePrecommitValues() 
         {
         }
+
+        public override string ToString()
+        {
+            return String.Format("{0}.{1} ({2} ref {3})", ParentClass != null ? "class " + ParentClass.Name : "???", Name, DataType, References);
+        }
+
     }
 }

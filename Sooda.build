@@ -551,7 +551,12 @@
     </target>
 
     <target name="doc" depends="configure, build, website, helpwebsite">
-        <copy file="${nant.project.basedir}/web/syntax.xsl" tofile="build/${buildsubdir}/syntax.xsl" />
+        <copy file="${nant.project.basedir}/web/syntax.xsl" tofile="build/${buildsubdir}/syntax.xsl" overwrite="true" />
+        <xmlpoke file="build/${buildsubdir}/syntax.xsl" xpath="//xsl:param[@name='external-base']" value="file://${webbuild.dir}">
+            <namespaces>
+                <namespace prefix="xsl" uri="http://www.w3.org/1999/XSL/Transform" />
+            </namespaces>
+        </xmlpoke>
         <copy file="${nant.project.basedir}/Sooda-${framework::get-target-framework()}.ndoc" tofile="build/${buildsubdir}/Sooda.ndoc" />
         <copy todir="build/${buildsubdir}/help/examples">
             <fileset basedir="build/${buildsubdir}/helpweb/examples">

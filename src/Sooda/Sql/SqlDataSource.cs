@@ -58,6 +58,7 @@ namespace Sooda.Sql
         public bool DisableTransactions = false;
         private IDbCommand _updateCommand = null;
         public bool SupportsUpdateBatch = false;
+        public bool StripWhitespaceInLogs = false;
 
         public SqlDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo) : base(dataSourceInfo) {}
 
@@ -69,6 +70,9 @@ namespace Sooda.Sql
 
             if (GetParameter("disableTransactions", false) != null)
                 this.DisableTransactions = true;
+
+            if (GetParameter("stripWhitespaceInLogs", false) != null)
+                this.StripWhitespaceInLogs = true;
 
             string dialect = GetParameter("sqlDialect", false);
             if (dialect == null)
@@ -267,6 +271,60 @@ namespace Sooda.Sql
             }
         }
 
+        public override IDataReader LoadMatchingPrimaryKeys(SchemaInfo schemaInfo, ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount)
+        {
+            try
+            {
+                SoqlQueryExpression queryExpression = new SoqlQueryExpression();
+                foreach (FieldInfo fi in classInfo.GetPrimaryKeyFields())
+                {
+                    queryExpression.SelectExpressions.Add(new SoqlPathExpression(fi.Name));
+                    queryExpression.SelectAliases.Add("");
+
+                }
+                if (schemaInfo.GetSubclasses(classInfo).Count > 0)
+                {
+                    queryExpression.SelectExpressions.Add(new SoqlPathExpression(classInfo.SubclassSelectorField.Name));
+                    queryExpression.SelectAliases.Add("");
+                }
+                queryExpression.TopCount = topCount;
+                queryExpression.From.Add(classInfo.Name);
+                queryExpression.FromAliases.Add("obj");
+                if (whereClause != null && whereClause.WhereExpression != null) 
+                {
+                    queryExpression.WhereClause = whereClause.WhereExpression;
+                }
+
+                if (orderBy != null) 
+                {
+                    SoqlParser.ParseOrderBy(queryExpression, "order by " + orderBy.ToString());
+                }
+
+                StringWriter sw = new StringWriter();
+                SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, schemaInfo, SqlBuilder);
+                converter.IndentOutput = false;
+                logger.Trace("Converting {0}", queryExpression);
+                converter.ConvertQuery(queryExpression);
+                string query = sw.ToString();
+
+                logger.Trace("Converted as {0}", query);
+
+                IDbCommand cmd = Connection.CreateCommand();
+
+                if (!DisableTransactions)
+                    cmd.Transaction = this.Transaction;
+
+                SqlBuilder.BuildCommandWithParameters(cmd, false, query, whereClause.Parameters);
+
+                return TimedExecuteReader(cmd);
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Exception in LoadMatchingPrimaryKeys: {0}", ex);
+                throw;
+            }
+        }
+
         public override IDataReader LoadObjectList(SchemaInfo schemaInfo, ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount, out TableInfo[] tables) 
         {
             try
@@ -301,6 +359,7 @@ namespace Sooda.Sql
 
                 StringWriter sw = new StringWriter();
                 SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, schemaInfo, SqlBuilder);
+                converter.IndentOutput = false;
                 logger.Trace("Converting {0}", queryExpression);
                 converter.ConvertQuery(queryExpression);
                 string query = sw.ToString();
@@ -330,6 +389,7 @@ namespace Sooda.Sql
             {
                 StringWriter sw = new StringWriter();
                 SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, schema, SqlBuilder);
+                converter.IndentOutput = false;
                 converter.ConvertQuery(query);
 
                 string queryText = sw.ToString();
@@ -535,10 +595,18 @@ namespace Sooda.Sql
             }
         }
 
+        string StripWhitespace(string s)
+        {
+            if (!StripWhitespaceInLogs)
+                return s;
+
+            return s.Replace("\n", " ").Replace("  "," ").Replace("  "," ").Replace("  "," ").Replace("  "," ");
+        }
+
         private string LogCommand(IDbCommand cmd) 
         {
             StringBuilder txt = new StringBuilder();
-            txt.Append(cmd.CommandText);
+            txt.Append(StripWhitespace(cmd.CommandText));
             txt.Append(" [");
             foreach (IDataParameter par in cmd.Parameters) 
             {
@@ -660,11 +728,12 @@ namespace Sooda.Sql
 
                 StringWriter sw = new StringWriter();
                 SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, tableInfo.OwnerClass.Schema, SqlBuilder);
+                converter.IndentOutput = false;
                 converter.ConvertQuery(queryExpression);
 
                 string query = sw.ToString();
 
-                logger.Debug("Loading statement for table {0}: {1}", tableInfo.NameToken, query);
+                // logger.Debug("Loading statement for table {0}: {1}", tableInfo.NameToken, query);
 
                 cacheLoadingSelectStatement[tableInfo] = query;
                 cacheLoadedTables[tableInfo] = additional.ToArray(typeof(TableInfo));
@@ -686,6 +755,7 @@ namespace Sooda.Sql
 
                 StringWriter sw = new StringWriter();
                 SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, relationInfo.Schema, SqlBuilder);
+                converter.IndentOutput = false;
                 converter.ConvertQuery(SoqlParser.ParseQuery(soqlQuery));
                 string sqlQuery = sw.ToString();
 

@@ -893,6 +893,7 @@ namespace Sooda
             // state data for just-being-read object
 
             bool objectForcePostCommit = false;
+            bool objectDelete = false;
             string objectClassName;
             string objectMode = null;
             object[] objectPrimaryKey = null;
@@ -934,6 +935,7 @@ namespace Sooda
                             objectForcePostCommit = false;
                             objectClassName = reader.GetAttribute("class");
                             objectMode = reader.GetAttribute("mode");
+                            objectDelete = false;
                             objectFactory = GetFactory(objectClassName);
                             objectClassInfo = objectFactory.GetClassInfo();
                             objectTotalKeyCounter = objectClassInfo.GetPrimaryKeyFields().Length;
@@ -941,6 +943,8 @@ namespace Sooda
                                 objectPrimaryKey = new object[objectTotalKeyCounter];
                             if (reader.GetAttribute("forcepostcommit") != null)
                                 objectForcePostCommit = true;
+                            if (reader.GetAttribute("delete") != null)
+                                objectDelete = true;
                             break;
 
                         case "key":
@@ -971,6 +975,11 @@ namespace Sooda
                                 if (objectForcePostCommit)
                                     currentObject.ForcePostCommit();
                                 currentObject.DisableTriggers = true;
+                                if (objectDelete)
+                                {
+                                    currentObject.DeleteMarker = true;
+                                    currentObject.SetObjectDirty();
+                                }
                             }
                             break;
 

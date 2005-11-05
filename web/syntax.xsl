@@ -1,21 +1,17 @@
 <?xml version="1.0" encoding="windows-1250" ?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 
-    <xsl:param name="external-base">../build/net-1.1-debug/web/</xsl:param>
+    <xsl:param name="external-base">../build/net-1.1-debug/web</xsl:param>
 
     <xsl:template name="external-iframe">
-        <table cellpadding="0" cellspacing="0" style="width: 98%; table-layout: fixed" border="0" class="embeddedsource">
-            <tr>
-                <td>
-                    <div class="sourcecode">
-                        <xsl:copy-of select="document(concat($external-base,'/',@src,'.xhtml'))" />
-                    </div>
-                </td>
-            </tr>
-            <tr class="downloadlink">
-                <td valign="top" style="font-size: 12px"><a href="{@src}">Download this file</a></td>
-            </tr>
-        </table>
+        <div class="embeddedsource">
+            <div class="sourcecode">
+                <xsl:copy-of select="document(concat($external-base,'/',@src,'.xhtml'))" />
+            </div>
+            <div class="downloadlink">
+                <a href="{@src}">Download this file</a>
+            </div>
+        </div>
     </xsl:template>
 
     <xsl:template match="cs[@src]">
@@ -84,5 +80,9 @@
     
     <xsl:template match="cs[@src]" mode="slashdoc">
         <xsl:call-template name="external-iframe" />
+    </xsl:template>
+
+    <xsl:template match="ndoc" mode="header-section">
+        <link rel="stylesheet" type="text/css" href="syntax.css" />
     </xsl:template>
 </xsl:stylesheet>

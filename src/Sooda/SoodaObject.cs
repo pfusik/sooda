@@ -46,6 +46,7 @@ using Sooda.Schema;
 using Sooda.ObjectMapper;
 
 using Sooda.Collections;
+using Sooda.QL;
 
 using Sooda.Logging;
 
@@ -186,7 +187,7 @@ namespace Sooda
             return new SoodaCacheEntry(_dataLoadedMask, _fieldValues);
         }
 
-        private bool DeleteMarker
+        internal bool DeleteMarker
         {
             get 
             {
@@ -215,7 +216,7 @@ namespace Sooda
 
         ~SoodaObject()
         {
-            Console.WriteLine("Finalizer {0}", GetObjectKeyString());
+            logger.Trace("Finalizer for {0}", GetObjectKeyString());
         }
 
         protected SoodaObject(SoodaConstructor c) 
@@ -347,12 +348,12 @@ namespace Sooda
         protected virtual void BeforeFieldUpdate(string name, object oldVal, object newVal) { }
         protected virtual void AfterFieldUpdate(string name, object oldVal, object newVal) { }
 
-        public void MarkForDelete() 
+        public void MarkForDelete()
         {
-            MarkForDelete(true);
+            MarkForDelete(true, true);
         }
 
-        public void MarkForDelete(bool delete) 
+        public void MarkForDelete(bool delete, bool recurse)
         {
             if (DeleteMarker != delete) 
             {
@@ -360,6 +361,50 @@ namespace Sooda
                 if (delete) 
                 {
                     GetTransaction().AddToDeleteQueue(this);
+                }
+                if (recurse)
+                {
+                    logger.Trace("Marking outer references for delete...");
+                    for (ClassInfo ci = this.GetClassInfo(); ci != null; ci = ci.InheritsFromClass)
+                    {
+                        logger.Trace("Looking for references to {0}[{1}]", ci.Name, GetPrimaryKeyValue());
+                        foreach (Sooda.Schema.FieldInfo fi in ci.OuterReferences)
+                        {
+                            logger.Trace("{0} Delete action: {1}", fi, fi.DeleteAction);
+                            if (fi.DeleteAction == DeleteAction.Nothing)
+                                continue;
+
+                            ISoodaObjectFactory factory = GetTransaction().GetFactory(fi.ParentClass);
+
+                            SoqlBooleanExpression whereExpression = 
+                                new SoqlBooleanRelationalExpression(
+                                new SoqlPathExpression(fi.Name), 
+                                new SoqlLiteralExpression(GetPrimaryKeyValue()),
+                                SoqlRelationalOperator.Equal);
+                                
+                            SoodaWhereClause whereClause = new SoodaWhereClause(whereExpression);
+                            IList referencingList = factory.GetList(GetTransaction(), whereClause, null, SoodaSnapshotOptions.KeysOnly);
+                            if (fi.DeleteAction == DeleteAction.Cascade)
+                            {
+                                foreach (SoodaObject o in referencingList)
+                                {
+                                    o.MarkForDelete(delete, recurse);
+                                }
+                            }
+                            if (fi.DeleteAction == DeleteAction.Nullify)
+                            {
+                                PropertyInfo pi = GetTransaction().GetFactory(fi.ParentClass).TheType.GetProperty(fi.Name);
+
+                                foreach (SoodaObject o in referencingList)
+                                {
+                                    pi.SetValue(o, null, null);
+                                }
+                            }
+                            // logger.Trace("Referencing object {0}", o.GetObjectKeyString());
+
+                            // logger.Trace("Found {0} objects.", referencingList.Count);
+                        }
+                    }
                 }
                 SetObjectDirty();
             }
@@ -812,6 +857,9 @@ namespace Sooda
             xw.WriteAttributeString("class", GetClassInfo().Name);
             if (!IsObjectDirty())
                 xw.WriteAttributeString("dirty", "false");
+            if (IsMarkedForDelete())
+                xw.WriteAttributeString("delete", "true");
+
             if (PostCommitForced)
                 xw.WriteAttributeString("forcepostcommit", "true");
 
@@ -1156,6 +1204,96 @@ namespace Sooda
             retVal.InsertMode = false;
             retVal.SetPrimaryKeyValue(keyValue);
             retVal.LoadDataFromRecord(record, firstColumnIndex, loadedTables, tableIndex);
+            return retVal;
+        }
+
+        public static SoodaObject GetRefFromKeyRecordHelper(SoodaTransaction tran, ISoodaObjectFactory factory, IDataRecord record)
+        {
+            object keyValue;
+            int pkSize = factory.GetClassInfo().GetPrimaryKeyFields().Length;
+
+#warning REFACTOR ME - Merge GetRefFromKeyRecordHelper with GetRefFromRecordHelper
+
+            if (pkSize == 1)
+            {
+                try
+                {
+                    keyValue = factory.GetPrimaryKeyFieldHandler().RawRead(record, 0);
+                }
+                catch (Exception ex)
+                {
+                    logger.Error("Error while reading field {0}.{1}: {2}", factory.GetClassInfo().Name, 0, ex);
+                    throw ex;
+                }
+            }
+            else
+            {
+                object[] pkParts = new object[pkSize];
+                int currentPkPart = 0;
+                foreach (Sooda.Schema.FieldInfo fi in factory.GetClassInfo().GetPrimaryKeyFields())
+                {
+                    SoodaFieldHandler handler = factory.GetFieldHandler(currentPkPart);
+                    pkParts[currentPkPart++] = handler.RawRead(record, currentPkPart);
+                }
+                keyValue = new SoodaTuple(pkParts);
+                //logger.Debug("Tuple: {0}", keyValue);
+            }
+
+            SoodaObject retVal = factory.TryGet(tran, keyValue);
+            if ((retVal != null)) 
+            {
+                return retVal;
+            }
+
+            ClassInfoCollection subclasses = tran.Schema.GetSubclasses(factory.GetClassInfo()); 
+
+            if (subclasses.Count > 0) 
+            {
+                // more complex case - we have to determine the actual factory to be
+                // used for object creation
+
+                // we have the selector field value as the last one in the record
+
+                int selectorFieldOrdinal = record.FieldCount - 1;
+                object selectorActualValue = record.GetValue(selectorFieldOrdinal);
+                IComparer comparer = Comparer.DefaultInvariant;
+                if (selectorActualValue is string)
+                    comparer = CaseInsensitiveComparer.DefaultInvariant;
+                    
+                if (0 != comparer.Compare(selectorActualValue, factory.GetClassInfo().SubclassSelectorValue))
+                {
+                    ISoodaObjectFactory newFactory = null;
+
+                    if (!factory.GetClassInfo().DisableTypeCache) 
+                    {
+                        newFactory = SoodaTransaction.SoodaObjectFactoryCache.FindObjectFactory(factory.GetClassInfo().Name, keyValue);
+                    }
+                    if (newFactory == null) 
+                    {
+                        foreach (ClassInfo ci in subclasses) 
+                        {
+                            if (0 == comparer.Compare(selectorActualValue, ci.SubclassSelectorValue))
+                            {
+                                newFactory = tran.GetFactory(ci);
+                                break;
+                            }
+                        }
+                        if (newFactory != null) 
+                        {
+                            SoodaTransaction.SoodaObjectFactoryCache.SetObjectFactory(factory.GetClassInfo().Name, keyValue, newFactory);
+                        }
+                    }
+
+                    if (newFactory == null)
+                        throw new Exception("Cannot determine subclass. Selector actual value: " + selectorActualValue + " base class: " + factory.GetClassInfo().Name);
+
+                    factory = newFactory;
+                }
+            }
+
+            retVal = factory.GetRawObject(tran);
+            retVal.InsertMode = false;
+            retVal.SetPrimaryKeyValue(keyValue);
             return retVal;
         }
 

@@ -103,8 +103,8 @@ namespace Sooda.Sql {
 
 		public abstract void BuildCommandWithParameters(IDbCommand command, bool append, string query, object[] par);
 
-		protected virtual bool SetDbTypeFromClrType(IDbDataParameter parameter, Type clrType) {
-			object o = paramTypes[clrType];
+		protected virtual bool SetDbTypeFromValue(IDbDataParameter parameter, object value) {
+			object o = paramTypes[value.GetType()];
 			if (o == null)
 				return false;
 			parameter.DbType = (DbType)o;

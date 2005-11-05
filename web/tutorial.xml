@@ -12,6 +12,7 @@
         <li><a href="#downloading">Downloading and installing Sooda</a></li>
         <li><a href="#wizard">Running Sooda application wizard</a></li>
         <li><a href="#database">Creating a database</a></li>
+        <li><a href="#project">Adjusting stub generation settings</a></li>
         <li><a href="#mapping">Creating a simple mapping schema</a></li>
         <li><a href="#config">Configuring database connection</a></li>
         <li><a href="#stubgen">Generating stubs</a></li>
@@ -58,6 +59,8 @@
         In case of any errors, you may want to run <code>database.sql</code> script by hand.
 
     </p>
+    <h4>Adjusting stub generation settings<a name="project" /></h4>
+    <!-- <xml src="examples/Soodawind/Soodawind.Objects/SoodaProject.xml" /> -->
     <h4>Creating a simple mapping schema<a name="mapping" /></h4>
     <p>
         We now need to create a mapping schema that describes the corespondence between

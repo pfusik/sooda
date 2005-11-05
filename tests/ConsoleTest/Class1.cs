@@ -75,11 +75,19 @@ namespace ConsoleTest
 
             using (SoodaTransaction t = new SoodaTransaction())
             {
+                Console.WriteLine();
+
+
                 foreach (Contact c in Contact.GetList(
+                    ContactField.Active == true &&
+                    SoqlParser.ParseBooleanExpression("Active = true") &&
+                    SoqlParser.ParseBooleanExpression("Active = false") &&
+                    //!ContactField.Active &&
+                    (
                     ContactField.Name == "Mary Manager" ||
                     (ContactField.PrimaryGroup.Members.ContainsContactWhere(
                     ContactField.Name == "Zdzichu Pierdziszewski" 
-                    && ContactField.LastSalary > 100)
+                    && ContactField.LastSalary > 100))
                     )))
                 {
                     Console.WriteLine("nazwisko: {0}", c.Name);

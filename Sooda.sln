@@ -39,6 +39,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaStubGen", "src\SoodaSt
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "web\Web.csproj", "{2D11C6FF-FF8C-4517-8546-C81C621CFF7C}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -85,6 +89,9 @@ Global
 		{5F89F8D0-39BC-49F8-92E3-3A7F5F3FF55F}.Debug.Build.0 = Debug|.NET
 		{5F89F8D0-39BC-49F8-92E3-3A7F5F3FF55F}.Release.ActiveCfg = Release|.NET
 		{5F89F8D0-39BC-49F8-92E3-3A7F5F3FF55F}.Release.Build.0 = Release|.NET
+		{2D11C6FF-FF8C-4517-8546-C81C621CFF7C}.Debug.ActiveCfg = Debug|.NET
+		{2D11C6FF-FF8C-4517-8546-C81C621CFF7C}.Release.ActiveCfg = Release|.NET
+		{2D11C6FF-FF8C-4517-8546-C81C621CFF7C}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
