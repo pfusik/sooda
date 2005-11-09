@@ -92,7 +92,7 @@ namespace Sooda.Sql {
                 if (fi.References != null) {
                     xtw.Write("alter table {0} add constraint FK_{0}_{1} foreign key ({2}) references {3}({4})", 
                             tableInfo.DBTableName, fi.DBColumnName, fi.DBColumnName,
-                            fi.ReferencedClass.LocalTables[0].DBTableName, fi.ReferencedClass.GetFirstPrimaryKeyField().DBColumnName
+                            fi.ReferencedClass.UnifiedTables[0].DBTableName, fi.ReferencedClass.GetFirstPrimaryKeyField().DBColumnName
                             );
                     xtw.Write(GetDDLCommandTerminator());
                 }
