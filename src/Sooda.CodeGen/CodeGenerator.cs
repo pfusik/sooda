@@ -1079,6 +1079,20 @@ namespace Sooda.CodeGen
                         throw new Exception("Visual Studio Project not supported for '" + codeProvider.FileExtension + "' files");
                 }
             }
+            if (projectType == "vs2005") 
+            {
+                switch (codeProvider.FileExtension) 
+                {
+                    case "cs":
+                        return new VS2005csprojProjectFile();
+
+                    case "vb":
+                        return new VS2005vbprojProjectFile();
+
+                    default:
+                        throw new Exception("Visual Studio 2005 Project not supported for '" + codeProvider.FileExtension + "' files");
+                }
+            }
             if (projectType == "null") 
             {
                 return new NullProjectFile();
