@@ -1,4 +1,4 @@
-// 
+//
 // Copyright (c) 2002-2005 Jaroslaw Kowalski <jkowalski@users.sourceforge.net>
 // 
 // All rights reserved.
@@ -53,6 +53,8 @@ namespace Sooda.Schema {
 
         internal void Resolve(SchemaInfo schemaInfo) {
             relationInfo = schemaInfo.FindRelationByName(Relation);
+            if(relationInfo == null)
+                throw new SoodaSchemaException("Relation " + this.Name + " not found.");
         }
         
         public override ClassInfo GetItemClass()

@@ -1,4 +1,4 @@
-// 
+//
 // Copyright (c) 2002-2005 Jaroslaw Kowalski <jkowalski@users.sourceforge.net>
 // 
 // All rights reserved.
@@ -85,7 +85,11 @@ namespace Sooda.Schema {
             Table.Rehash();
 
             Table.Fields[0].ReferencedClass = schemaInfo.FindClassByName(Table.Fields[0].References);
+            if (Table.Fields[0].ReferencedClass == null)
+                throw new SoodaSchemaException("Class " + Table.Fields[0].References + " not found in " + this.Name + "." + Table.Fields[0].Name);
             Table.Fields[1].ReferencedClass = schemaInfo.FindClassByName(Table.Fields[1].References);
+            if (Table.Fields[1].ReferencedClass == null)
+                throw new SoodaSchemaException("Class " + Table.Fields[1].References + " not found in " + this.Name + "." + Table.Fields[1].Name);
         }
 
         public DataSourceInfo GetDataSource() {
