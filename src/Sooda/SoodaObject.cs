@@ -49,6 +49,7 @@ using Sooda.Collections;
 using Sooda.QL;
 
 using Sooda.Logging;
+using Sooda.Caching;
 
 namespace Sooda 
 {
@@ -67,7 +68,6 @@ namespace Sooda
         private SoodaTransaction _transaction;
         private SoodaObjectFlags _flags;
         private object _primaryKeyValue;
-        internal SoodaObjectCollection OuterDeleteReferences;
 
         public bool DisableTriggers
         {
@@ -216,7 +216,7 @@ namespace Sooda
 
         ~SoodaObject()
         {
-            logger.Trace("Finalizer for {0}", GetObjectKeyString());
+            // logger.Trace("Finalizer for {0}", GetObjectKeyString());
         }
 
         protected SoodaObject(SoodaConstructor c) 
@@ -227,7 +227,9 @@ namespace Sooda
 
         protected SoodaObject(SoodaTransaction tran) 
         {
-            GC.SuppressFinalize(this);
+			GC.SuppressFinalize(this);
+			tran.Statistics.RegisterObjectInsert();
+			SoodaStatistics.Global.RegisterObjectInsert();
 
             InitRawObject(tran);
             InsertMode = true;
@@ -274,6 +276,8 @@ namespace Sooda
             int fieldCount = ci.UnifiedFields.Count;
             _fieldData = new SoodaFieldData[fieldCount];
             _fieldValues = new SoodaObjectArrayFieldValues(fieldCount);
+			GetTransaction().Statistics.RegisterFieldsInited();
+			SoodaStatistics.Global.RegisterFieldsInited();
 
             // primary key was set before the fields - propagate the value
             // back to the field(s)
@@ -319,7 +323,13 @@ namespace Sooda
                 SoodaCacheEntry cachedData = SoodaCache.FindObjectData(GetClassInfo().Name, primaryKeyValue);
                 if (cachedData != null) 
                 {
-                    logger.Trace("Initializing object {0}({1}) from cache: {2}", this.GetType().Name, primaryKeyValue, cachedData);
+					GetTransaction().Statistics.RegisterCacheHit();
+					SoodaStatistics.Global.RegisterCacheHit();
+
+					if (logger.IsTraceEnabled)
+					{
+						logger.Trace("Initializing object {0}({1}) from cache: {2}", this.GetType().Name, primaryKeyValue, cachedData);
+					}
                     _fieldValues = cachedData.Data;
                     _fieldData = new SoodaFieldData[_fieldValues.Length];
                     _dataLoadedMask = cachedData.DataLoadedMask;
@@ -327,7 +337,12 @@ namespace Sooda
                 } 
                 else 
                 {
-                    logger.Trace("Object {0}({1}) not in cache. Creating uninitialized object.", this.GetType().Name, primaryKeyValue, cachedData);
+					GetTransaction().Statistics.RegisterCacheMiss();
+					SoodaStatistics.Global.RegisterCacheMiss();
+					if (logger.IsTraceEnabled)
+					{
+						logger.Trace("Object {0}({1}) not in cache. Creating uninitialized object.", this.GetType().Name, primaryKeyValue, cachedData);
+					}
                 }
             }
         }
@@ -355,19 +370,51 @@ namespace Sooda
 
         public void MarkForDelete(bool delete, bool recurse)
         {
+            try
+            {
+                int oldDeletePosition = GetTransaction().DeletedObjects.Count;
+                MarkForDelete(delete, recurse, true);
+                int newDeletePosition = GetTransaction().DeletedObjects.Count;
+                if (newDeletePosition != oldDeletePosition)
+                {
+                    GetTransaction()._savingObjects = true;
+
+                    foreach (SoodaDataSource source in GetTransaction()._dataSources)
+                    {
+                        source.BeginSaveChanges();
+                    }
+                    for (int i = oldDeletePosition; i < newDeletePosition; ++i)
+                    {
+                        // logger.Debug("Actually deleting {0}", GetTransaction().DeletedObjects[i].GetObjectKeyString());
+                        GetTransaction().DeletedObjects[i].CommitObjectChanges();
+                        GetTransaction().DeletedObjects[i].SetObjectDirty();
+                    }
+                    foreach (SoodaDataSource source in GetTransaction()._dataSources) 
+                    {
+                        source.FinishSaveChanges();
+                    }
+                }
+            }
+            finally
+            {
+                GetTransaction()._savingObjects = false;
+            }
+        }
+
+        public void MarkForDelete(bool delete, bool recurse, bool savingChanges)
+        {
             if (DeleteMarker != delete) 
             {
                 DeleteMarker = delete;
-                if (delete) 
-                {
-                    GetTransaction().AddToDeleteQueue(this);
-                }
+
                 if (recurse)
                 {
-                    logger.Trace("Marking outer references for delete...");
+                    if (logger.IsTraceEnabled)
+                    {
+                        logger.Trace("Marking outer references of {0} for delete...", GetObjectKeyString());
+                    }
                     for (ClassInfo ci = this.GetClassInfo(); ci != null; ci = ci.InheritsFromClass)
                     {
-                        logger.Trace("Looking for references to {0}[{1}]", ci.Name, GetPrimaryKeyValue());
                         foreach (Sooda.Schema.FieldInfo fi in ci.OuterReferences)
                         {
                             logger.Trace("{0} Delete action: {1}", fi, fi.DeleteAction);
@@ -383,12 +430,13 @@ namespace Sooda
                                 SoqlRelationalOperator.Equal);
                                 
                             SoodaWhereClause whereClause = new SoodaWhereClause(whereExpression);
+                            // logger.Debug("loading list where: {0}", whereExpression);
                             IList referencingList = factory.GetList(GetTransaction(), whereClause, null, SoodaSnapshotOptions.KeysOnly);
                             if (fi.DeleteAction == DeleteAction.Cascade)
                             {
                                 foreach (SoodaObject o in referencingList)
                                 {
-                                    o.MarkForDelete(delete, recurse);
+                                    o.MarkForDelete(delete, recurse, savingChanges);
                                 }
                             }
                             if (fi.DeleteAction == DeleteAction.Nullify)
@@ -400,13 +448,10 @@ namespace Sooda
                                     pi.SetValue(o, null, null);
                                 }
                             }
-                            // logger.Trace("Referencing object {0}", o.GetObjectKeyString());
-
-                            // logger.Trace("Found {0} objects.", referencingList.Count);
                         }
                     }
                 }
-                SetObjectDirty();
+                GetTransaction().DeletedObjects.Add(this);
             }
         }
 
@@ -614,7 +659,7 @@ namespace Sooda
 
                 if (table.OrdinalInClass == 0 && !first) 
                 {
-                    logger.Trace("Found table 0 of another object. Exiting.");
+                    // logger.Trace("Found table 0 of another object. Exiting.");
                     break;
                 }
 
@@ -657,17 +702,20 @@ namespace Sooda
             // if we've started with a first table and there are more to be processed
             if (tableIndex == 0 && i != tables.Length)
             {
-                logger.Trace("Materializing extra objects...");
+                // logger.Trace("Materializing extra objects...");
                 for (; i < tables.Length; ++i)
                 {
                     if (tables[i].OrdinalInClass == 0)
                     {
-                        logger.Trace("Materializing {0} at {1}", tables[i].NameToken, recordPos);
+						GetTransaction().Statistics.RegisterExtraMaterialization();
+						SoodaStatistics.Global.RegisterExtraMaterialization();
+
+                        // logger.Trace("Materializing {0} at {1}", tables[i].NameToken, recordPos);
 
                         int pkOrdinal = tables[i].OwnerClass.GetFirstPrimaryKeyField().OrdinalInTable;
                         if (reader.IsDBNull(recordPos + pkOrdinal))
                         {
-                            logger.Trace("Object is null. Skipping.");
+                            // logger.Trace("Object is null. Skipping.");
                         }
                         else
                         {
@@ -681,7 +729,7 @@ namespace Sooda
                     }
                     recordPos += tables[i].Fields.Count;
                 }
-                logger.Trace("Finished materializing extra objects.");
+                // logger.Trace("Finished materializing extra objects.");
             }
 
             return tables.Length;
@@ -752,10 +800,12 @@ namespace Sooda
                 };
                 using (record) 
                 {
+                    /*
                     for (int i = 0; i < loadedTables.Length; ++i)
                     {
                         logger.Trace("loadedTables[{0}] = {1}", i, loadedTables[i].NameToken);
                     }
+                    */
                     LoadDataFromRecord(record, 0, loadedTables, 0);
                 }
 
@@ -786,6 +836,7 @@ namespace Sooda
             {
                 EnsureFieldsInited();
                 ds.SaveObjectChanges(this, GetTransaction().IsPrecommit);
+				SoodaCache.InvalidateObject(GetClassInfo().Name, GetPrimaryKeyValue());
             } 
             catch (Exception e) 
             {
@@ -842,23 +893,25 @@ namespace Sooda
         // 
         internal void PreSerialize(XmlWriter xw, SoodaSerializeOptions options) 
         {
-            if (!IsInsertMode())
+            if (!IsInsertMode() && !IsMarkedForDelete())
                 return;
             xw.WriteStartElement("object");
-            xw.WriteAttributeString("mode", "insert");
+            xw.WriteAttributeString("mode", IsMarkedForDelete() ? "update" : "insert");
             xw.WriteAttributeString("class", GetClassInfo().Name);
+            if (IsMarkedForDelete())
+                xw.WriteAttributeString("delete", "true");
             SerializePrimaryKey(xw);
             xw.WriteEndElement();
         }
         internal void Serialize(XmlWriter xw, SoodaSerializeOptions options) 
         {
+            if (IsMarkedForDelete())
+                return;
             xw.WriteStartElement("object");
             xw.WriteAttributeString("mode", "update");
             xw.WriteAttributeString("class", GetClassInfo().Name);
             if (!IsObjectDirty())
                 xw.WriteAttributeString("dirty", "false");
-            if (IsMarkedForDelete())
-                xw.WriteAttributeString("delete", "true");
 
             if (PostCommitForced)
                 xw.WriteAttributeString("forcepostcommit", "true");
@@ -1201,7 +1254,9 @@ namespace Sooda
             }
 
             retVal = factory.GetRawObject(tran);
-            retVal.InsertMode = false;
+			tran.Statistics.RegisterObjectUpdate();
+			SoodaStatistics.Global.RegisterObjectUpdate();
+			retVal.InsertMode = false;
             retVal.SetPrimaryKeyValue(keyValue);
             retVal.LoadDataFromRecord(record, firstColumnIndex, loadedTables, tableIndex);
             return retVal;
@@ -1292,7 +1347,9 @@ namespace Sooda
             }
 
             retVal = factory.GetRawObject(tran);
-            retVal.InsertMode = false;
+			tran.Statistics.RegisterObjectUpdate();
+			SoodaStatistics.Global.RegisterObjectUpdate();
+			retVal.InsertMode = false;
             retVal.SetPrimaryKeyValue(keyValue);
             return retVal;
         }
@@ -1362,7 +1419,9 @@ namespace Sooda
             }
 
             retVal = factory.GetRawObject(tran);
-            if (factory.GetClassInfo().ReadOnly) 
+			tran.Statistics.RegisterObjectUpdate();
+			SoodaStatistics.Global.RegisterObjectUpdate();
+			if (factory.GetClassInfo().ReadOnly) 
             {
                 retVal.LoadReadOnlyObject(keyValue);
             } 

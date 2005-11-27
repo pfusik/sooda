@@ -32,59 +32,83 @@
 // 
 
 using System;
-using System.Diagnostics;
-using System.Data;
+using System.IO;
+using System.Xml;
+using System.Collections;
+using System.Reflection;
+using System.Text;
+using System.Globalization;
 
-using Sooda.ObjectMapper;
-using Sooda.UnitTests.Objects;
-using Sooda.UnitTests.BaseObjects;
-using Sooda.Caching;
-
-using NUnit.Framework;
-
-namespace Sooda.UnitTests.TestCases.ObjectMapper 
+namespace Sooda.Caching 
 {
-	[TestFixture]
-	public class CacheTest 
+	public class SoodaCacheEntry 
 	{
-		[Test]
-		public void Test1() 
+		private int _dataLoadedMask;
+		private SoodaObjectFieldValues _data;
+		private DateTime _timestamp;
+
+		public SoodaCacheEntry(int dataLoadedMask, SoodaObjectFieldValues data) 
 		{
-			using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) 
+			_dataLoadedMask = dataLoadedMask;
+			_data = data;
+			_timestamp = DateTime.Now;
+		}
+
+		public SoodaObjectFieldValues Data
+		{
+			get 
 			{
-				testDataSource.Open();
-				SoodaCache.Clear();
-
-				using (SoodaTransaction tran = new SoodaTransaction()) 
-				{
-					tran.RegisterDataSource(testDataSource);
-
-					Console.WriteLine(Contact.Mary.Name);
-					Console.WriteLine(Contact.Mary.Type.Description);
-
-					foreach (Contact c in Contact.Mary.PrimaryGroup.Members) 
-					{
-						Console.WriteLine(c.Name);
-					}
-					tran.Commit();
-				}
-
-				using (SoodaTransaction tran = new SoodaTransaction()) 
-				{
-					tran.RegisterDataSource(testDataSource);
-
-					foreach (Contact c in Contact.Mary.PrimaryGroup.Members) 
-					{
-						Console.WriteLine(c.Name);
-					}
-
-					Console.WriteLine(Contact.Mary.Name);
-					Console.WriteLine(Contact.Mary.Type.Description);
-					tran.Commit();
-				}
-
-				SoodaCache.Dump(Console.Out);
+				return _data;
 			}
+		}
+
+		public int DataLoadedMask
+		{
+			get 
+			{
+				return _dataLoadedMask;
+			}
+		}
+
+		public DateTime TimeStamp
+		{
+			get 
+			{
+				return _timestamp;
+			}
+		}
+
+		public TimeSpan Age
+		{
+			get 
+			{
+				return DateTime.Now - TimeStamp;
+			}
+		}
+
+		public override string ToString() 
+		{
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < Data.Length; ++i)
+			{
+				object o = Data.GetBoxedFieldValue(i);
+				if (sb.Length != 0)
+					sb.Append(",");
+
+				if (o == null)
+					sb.Append("null");
+				else if (o is string) 
+				{
+					sb.Append("'");
+					sb.Append((string)o);
+					sb.Append("'");
+				} 
+				else 
+				{
+					sb.Append(Convert.ToString(o, CultureInfo.InvariantCulture));
+				}
+			}
+			return String.Format("Mask: [{0}] Data: [{1}]", DataLoadedMask, sb.ToString());
 		}
 	}
 }

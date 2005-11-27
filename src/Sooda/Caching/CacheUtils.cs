@@ -32,59 +32,30 @@
 // 
 
 using System;
-using System.Diagnostics;
-using System.Data;
+using System.IO;
+using System.Xml;
+using System.Text;
+using System.Globalization;
+using System.Collections;
+using System.Reflection;
 
-using Sooda.ObjectMapper;
-using Sooda.UnitTests.Objects;
-using Sooda.UnitTests.BaseObjects;
-using Sooda.Caching;
+using Sooda.Logging;
+using Sooda.Schema;
+using Sooda;
+using Sooda.QL;
 
-using NUnit.Framework;
-
-namespace Sooda.UnitTests.TestCases.ObjectMapper 
+namespace Sooda.Caching 
 {
-	[TestFixture]
-	public class CacheTest 
+	internal class CacheUtils 
 	{
-		[Test]
-		public void Test1() 
+		public static IList ConvertSoodaObjectListToKeyList(IList list)
 		{
-			using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) 
+			object[] keys = new object[list.Count];
+			for (int i = 0; i < list.Count; ++i)
 			{
-				testDataSource.Open();
-				SoodaCache.Clear();
-
-				using (SoodaTransaction tran = new SoodaTransaction()) 
-				{
-					tran.RegisterDataSource(testDataSource);
-
-					Console.WriteLine(Contact.Mary.Name);
-					Console.WriteLine(Contact.Mary.Type.Description);
-
-					foreach (Contact c in Contact.Mary.PrimaryGroup.Members) 
-					{
-						Console.WriteLine(c.Name);
-					}
-					tran.Commit();
-				}
-
-				using (SoodaTransaction tran = new SoodaTransaction()) 
-				{
-					tran.RegisterDataSource(testDataSource);
-
-					foreach (Contact c in Contact.Mary.PrimaryGroup.Members) 
-					{
-						Console.WriteLine(c.Name);
-					}
-
-					Console.WriteLine(Contact.Mary.Name);
-					Console.WriteLine(Contact.Mary.Type.Description);
-					tran.Commit();
-				}
-
-				SoodaCache.Dump(Console.Out);
+				keys[i] = ((SoodaObject)list[i]).GetPrimaryKeyValue();
 			}
+			return keys;
 		}
 	}
 }

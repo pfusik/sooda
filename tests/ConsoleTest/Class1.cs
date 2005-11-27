@@ -48,14 +48,13 @@ using Sooda.UnitTests.Objects;
 using System.Collections;
 using System.Xml;
 using System.Xml.Serialization;
+using Sooda.Caching;
 
 using System.Security.Principal;
 using System.Security.Permissions;
 
 using Sooda.UnitTests.BaseObjects;
 using Sooda.UnitTests.BaseObjects.TypedQueries;
-
-using SciTech.NetMemProfiler;
 
 [assembly: SoodaStubAssembly(typeof(Sooda.UnitTests.Objects._DatabaseSchema))]
 [assembly: SoodaConfig(XmlConfigFileName = "sooda.config.xml")]
@@ -71,12 +70,37 @@ namespace ConsoleTest
 
         static void Main(string[] args) 
         {
-            Sooda.Logging.LogManager.Implementation = new Sooda.Logging.ConsoleLoggingImplementation();
+            // Sooda.Logging.LogManager.Implementation = new Sooda.Logging.ConsoleLoggingImplementation();
+
+			using (SoodaTransaction t = new SoodaTransaction())
+			{
+				Group g = Group.Load(11);
+				g.Members.Remove(Contact.Ed);
+				t.Commit();
+			}
+
+			using (SoodaTransaction t = new SoodaTransaction())
+			{
+				Group g = Group.Load(11);
+				Console.WriteLine(g.Members.Count);
+			}
+
+			Console.WriteLine("--------------------");
+			using (SoodaTransaction t = new SoodaTransaction())
+			{
+				Group g = Group.Load(11);
+				Console.WriteLine(g.Members.Count);
+				g.Members.Add(Contact.Ed);
+				Console.WriteLine(g.Members.Count);
+				t.Commit();
+			}
+			return;
+
 
             using (SoodaTransaction t = new SoodaTransaction())
             {
+				SoodaCache.Enabled = true;
                 Console.WriteLine();
-
 
                 foreach (Contact c in Contact.GetList(
                     ContactField.Active == true &&
@@ -93,7 +117,11 @@ namespace ConsoleTest
                     Console.WriteLine("nazwisko: {0}", c.Name);
                     Console.WriteLine("kierownik grupy: {0}", c.PrimaryGroup.Manager.Name);
                 }
+				Console.WriteLine("Stats:\n{0}", t.Statistics);
+				Console.WriteLine("Global stats:\n{0}", SoodaStatistics.Global);
+
             }
+
         }
     }
 }

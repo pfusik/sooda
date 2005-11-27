@@ -31,6 +31,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaStubGen", "..\src\Sood
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.Logging.NLog", "..\src\Sooda.Logging.NLog\Sooda.Logging.NLog.csproj", "{A6A3FE85-9F3D-4A3D-B8E6-B24771CB3F62}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -69,6 +73,10 @@ Global
 		{5F89F8D0-39BC-49F8-92E3-3A7F5F3FF55F}.Debug.Build.0 = Debug|.NET
 		{5F89F8D0-39BC-49F8-92E3-3A7F5F3FF55F}.Release.ActiveCfg = Release|.NET
 		{5F89F8D0-39BC-49F8-92E3-3A7F5F3FF55F}.Release.Build.0 = Release|.NET
+		{A6A3FE85-9F3D-4A3D-B8E6-B24771CB3F62}.Debug.ActiveCfg = Debug|.NET
+		{A6A3FE85-9F3D-4A3D-B8E6-B24771CB3F62}.Debug.Build.0 = Debug|.NET
+		{A6A3FE85-9F3D-4A3D-B8E6-B24771CB3F62}.Release.ActiveCfg = Release|.NET
+		{A6A3FE85-9F3D-4A3D-B8E6-B24771CB3F62}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(SolutionItems) = postSolution
 		DBSchema.xml = DBSchema.xml

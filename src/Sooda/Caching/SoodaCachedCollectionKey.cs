@@ -34,70 +34,71 @@
 using System;
 using System.IO;
 using System.Xml;
-using System.Collections;
-using System.Reflection;
 using System.Text;
 using System.Globalization;
+using System.Collections;
+using System.Reflection;
 
-namespace Sooda.ObjectMapper {
-    public class SoodaCacheEntry {
-        private int _dataLoadedMask;
-        private SoodaObjectFieldValues _data;
-        private DateTime _timestamp;
+using Sooda.Logging;
+using Sooda.Schema;
+using Sooda;
+using Sooda.QL;
 
-        public SoodaCacheEntry(int dataLoadedMask, SoodaObjectFieldValues data) {
-            _dataLoadedMask = dataLoadedMask;
-            _data = data;
-            _timestamp = DateTime.Now;
-        }
+namespace Sooda.Caching 
+{
+	public class SoodaCachedCollectionKey
+	{
+		private ClassInfo _classInfo;
+		private string _fieldName;
+		private object _matchingFieldValue;
 
-        public SoodaObjectFieldValues Data
-        {
-            get {
-                return _data;
-            }
-        }
+		public SoodaCachedCollectionKey()
+		{
+		}
 
-        public int DataLoadedMask
-        {
-            get {
-                return _dataLoadedMask;
-            }
-        }
+		public SoodaCachedCollectionKey(ClassInfo classInfo, string fieldName, object matchingFieldValue)
+		{
+			_classInfo = classInfo;
+			_fieldName = fieldName;
+			_matchingFieldValue = matchingFieldValue;
+		}
 
-        public DateTime TimeStamp
-        {
-            get {
-                return _timestamp;
-            }
-        }
+		public ClassInfo ClassInfo
+		{
+			get { return _classInfo; }
+			set { _classInfo = value; }
+		}
 
-        public TimeSpan Age
-        {
-            get {
-                return DateTime.Now - TimeStamp;
-            }
-        }
+		public string FieldName
+		{
+			get { return _fieldName; }
+			set { _fieldName = value; }
+		}
 
-        public override string ToString() {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < Data.Length; ++i)
-            {
-                object o = Data.GetBoxedFieldValue(i);
-                if (sb.Length != 0)
-                    sb.Append(",");
+		public object MatchingFieldValue
+		{
+			get { return _matchingFieldValue; }
+			set { _matchingFieldValue = value; }
+		}
 
-                if (o == null)
-                    sb.Append("null");
-                else if (o is string) {
-                    sb.Append("'");
-                    sb.Append((string)o);
-                    sb.Append("'");
-                } else {
-                    sb.Append(Convert.ToString(o, CultureInfo.InvariantCulture));
-                }
-            }
-            return String.Format("Mask: [{0}] Data: [{1}]", DataLoadedMask, sb.ToString());
-        }
-    }
+		public override bool Equals(object obj)
+		{
+			SoodaCachedCollectionKey otherKey = obj as SoodaCachedCollectionKey;
+			if (otherKey == null)
+				return false;
+
+			return (ClassInfo == otherKey.ClassInfo) && (FieldName == otherKey.FieldName) && (MatchingFieldValue.Equals(otherKey.MatchingFieldValue));
+		}
+
+		public override int GetHashCode()
+		{
+			return ClassInfo.Name.GetHashCode() ^ FieldName.GetHashCode() ^ MatchingFieldValue.GetHashCode();
+		}
+
+		public override string ToString()
+		{
+			return "[" + ClassInfo.Name + " where " + FieldName + "=" + MatchingFieldValue + "]";
+		}
+
+	}
 }

@@ -82,7 +82,15 @@ namespace Sooda {
             }
         }
 
-        public abstract bool IsOpen { get; }
+		private SoodaStatistics _statistics;
+
+		public SoodaStatistics Statistics
+		{
+			get { return _statistics; }
+			set { _statistics = value; }
+		}
+
+		public abstract bool IsOpen { get; }
         public abstract void Rollback();
         public abstract void Commit();
         public abstract void Open();
@@ -96,7 +104,7 @@ namespace Sooda {
         public abstract IDataReader LoadObjectTable(SoodaObject obj, object keyValue, int tableNumber, out TableInfo[] tables);
         public abstract void MakeTuple(string tableName, string leftColumn, string rightColumn, object leftVal, object rightVal, int mode);
         public abstract IDataReader LoadMatchingPrimaryKeys(SchemaInfo schemaInfo, ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount);
-        public abstract IDataReader LoadObjectList(SchemaInfo schemaInfo, ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount, out TableInfo[] tables);
+        public abstract IDataReader LoadObjectList(SchemaInfo schemaInfo, ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount, SoodaSnapshotOptions options, out TableInfo[] tables);
         public abstract IDataReader LoadRefObjectList(SchemaInfo schemaInfo, RelationInfo relationInfo, int masterColumn, object masterValue, out TableInfo[] tables);
         public abstract IDataReader ExecuteQuery(Sooda.QL.SoqlQueryExpression query, SchemaInfo schema, params object[] parameters);
         public abstract IDataReader ExecuteRawQuery(string queryText, params object[] parameters);

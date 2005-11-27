@@ -61,6 +61,7 @@ namespace Sooda.Sql
 
         private IFieldContainer GenerateTableJoins(SoqlPathExpression expr, out string p, out string firstTableAlias) 
         {
+            // logger.Debug("GenerateTableJoins({0})", expr);
             IFieldContainer currentContainer;
             SoqlPathExpression e;
 
@@ -128,7 +129,15 @@ namespace Sooda.Sql
                     continue;
                 };
 
-                AddRefJoin(firstTableAlias, p, lastTableAlias, fi);
+                if (fi.Table.OrdinalInClass > 0) 
+                {
+                    string extPrefix = AddPrimaryKeyJoin(firstTableAlias, (ClassInfo)currentContainer, lastTableAlias, fi);
+                    AddRefJoin(firstTableAlias, p, extPrefix, fi);
+                }
+                else
+                {
+                    AddRefJoin(firstTableAlias, p, lastTableAlias, fi);
+                }
                 currentContainer = fi.ReferencedClass;
             }
 
@@ -167,23 +176,28 @@ namespace Sooda.Sql
             ReplaceEmbeddedSoql(v.Text);
         }
 
-        public override void Visit(SoqlLiteralExpression v) {
-            if (v.literalValue is String)
+        public void OutputLiteral(object literalValue)
+        {
+            if (literalValue is String)
             {
                 Output.Write("'");
-                Output.Write(((string)v.literalValue).Replace("'","''"));
+                Output.Write(((string)literalValue).Replace("'","''"));
                 Output.Write("'");
             }
-            else if (v.literalValue is DateTime)
+            else if (literalValue is DateTime)
             {
                 Output.Write("'");
-                Output.Write(((DateTime)v.literalValue).ToString("yyyyMMdd HH:mm:ss"));
+                Output.Write(((DateTime)literalValue).ToString("yyyyMMdd HH:mm:ss"));
                 Output.Write("'");
             }
             else
             {
-                Output.Write(v.literalValue);
+                Output.Write(literalValue);
             }
+        }
+
+        public override void Visit(SoqlLiteralExpression v) {
+            OutputLiteral(v.literalValue);
         }
 
         public override void Visit(SoqlBooleanLiteralExpression v) 
@@ -476,6 +490,37 @@ namespace Sooda.Sql
 
         public override void Visit(SoqlPathExpression v) 
         {
+            if (v.Left != null && v.Left.Left == null)
+            {
+                string firstToken = v.Left.PropertyName;
+                string secondToken = v.PropertyName;
+
+                ClassInfo ci = Schema.FindClassByName(firstToken);
+                if (ci != null)
+                {
+                    if (ci.Constants != null)
+                    {
+                        foreach (ConstantInfo constInfo in ci.Constants)
+                        {
+                            if (constInfo.Name == secondToken)
+                            {
+                                if (ci.GetFirstPrimaryKeyField().DataType == FieldDataType.Integer)
+                                {
+                                    OutputLiteral(Convert.ToInt32(constInfo.Key));
+                                }
+                                else if (ci.GetFirstPrimaryKeyField().DataType == FieldDataType.String)
+                                {
+                                    OutputLiteral(constInfo.Key);
+                                }
+                                else
+                                    throw new NotSupportedException("Constant of type: " + ci.GetFirstPrimaryKeyField().DataType + " not supported in SOQL");
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+
             IFieldContainer currentContainer;
             string firstTableAlias;
             string p;
@@ -917,6 +962,7 @@ namespace Sooda.Sql
 
         public string AddPrimaryKeyJoin(string fromTableAlias, ClassInfo classInfo, string rootPrefix, FieldInfo fieldToReach) 
         {
+            // logger.Debug("AddPrimaryKeyJoin({0},{1},{2},{3})", fromTableAlias, classInfo.Name, rootPrefix, fieldToReach);
             if (fieldToReach.Table.DBTableName == classInfo.UnifiedTables[0].DBTableName)
                 return rootPrefix;
 
@@ -973,6 +1019,7 @@ namespace Sooda.Sql
 
         public void AddRefJoin(string fromTableAlias, string newPrefix, string lastTableAlias, FieldInfo field) 
         {
+            // logger.Debug("AddRefJoin({0},{1},{2},{3})", fromTableAlias, newPrefix, lastTableAlias, field);
             if (ExpressionPrefixToTableAlias.ContainsKey(newPrefix))
                 return ;
 

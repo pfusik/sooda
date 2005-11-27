@@ -163,6 +163,21 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "VS2005csprojProjectFile.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "VS2005ProjectFileBase.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "VS2005vbprojProjectFile.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "VScsprojProjectFile.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

@@ -64,7 +64,7 @@
             <field name="Name" dbcolumn="name" type="String" size="64" nullable="true" />
         </table>
 
-        <collectionOneToMany name="Members" class="Contact" foreignField="PrimaryGroup" />
+        <collectionOneToMany name="Members" class="Contact" foreignField="PrimaryGroup" cache="true" />
         <collectionOneToMany name="Managers" class="Contact" foreignField="PrimaryGroup" where="Type='Employee'" />
     </class>
 

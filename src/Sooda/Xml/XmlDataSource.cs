@@ -68,7 +68,7 @@ namespace Sooda.Xml {
             return null;
         }
 
-        public override IDataReader LoadObjectList(SchemaInfo schema, Sooda.Schema.ClassInfo classInfo, Sooda.SoodaWhereClause whereClause, Sooda.SoodaOrderBy orderBy, int topCount, out TableInfo[] tables) 
+        public override IDataReader LoadObjectList(SchemaInfo schema, Sooda.Schema.ClassInfo classInfo, Sooda.SoodaWhereClause whereClause, Sooda.SoodaOrderBy orderBy, int topCount, SoodaSnapshotOptions options, out TableInfo[] tables) 
         {
             tables = null;
             // TODO:  Add XmlDataSource.LoadObjectList implementation

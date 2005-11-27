@@ -65,6 +65,10 @@ namespace Sooda.Schema
         [System.Xml.Serialization.XmlAttributeAttribute("where")]
         public string Where;
 
+		[XmlAttribute("cache")]
+		[DefaultValue(false)]
+		public bool Cache = false;
+
         private DeleteAction deleteAction = DeleteAction.Nothing;
 
         [System.Xml.Serialization.XmlAttributeAttribute("onDelete")]

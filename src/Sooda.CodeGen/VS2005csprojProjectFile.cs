@@ -38,7 +38,7 @@ namespace Sooda.CodeGen
 {
     public class VS2005csprojProjectFile : VS2005ProjectFileBase 
     {
-        public VS2005csprojProjectFile() : base(".csproj", "Sooda.CodeGen.Template.Template80.csproj") {}
+        public VS2005csprojProjectFile() : base(".csproj", "Sooda.CodeGen.Templates.vs2005.CSharp.csproj") {}
         public override void CreateNew(string outputNamespace, string assemblyName) 
         {
             base.CreateNew(outputNamespace, assemblyName);

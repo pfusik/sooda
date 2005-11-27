@@ -42,6 +42,7 @@ using System.Xml;
 using Sooda.Schema;
 using Sooda;
 using Sooda.QL;
+using Sooda.Utils;
 
 using Sooda.Logging;
 
@@ -59,7 +60,7 @@ namespace Sooda.Sql
         private IDbCommand _updateCommand = null;
         public bool SupportsUpdateBatch = false;
         public bool StripWhitespaceInLogs = false;
-
+        
         public SqlDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo) : base(dataSourceInfo) {}
 
         public override void Open() 
@@ -325,10 +326,12 @@ namespace Sooda.Sql
             }
         }
 
-        public override IDataReader LoadObjectList(SchemaInfo schemaInfo, ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount, out TableInfo[] tables) 
+        public override IDataReader LoadObjectList(SchemaInfo schemaInfo, ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount, SoodaSnapshotOptions options, out TableInfo[] tables) 
         {
             try
             {
+                Queue queue = new Queue();
+
                 ArrayList tablesArrayList = new ArrayList(classInfo.UnifiedTables.Count);
                 SoqlQueryExpression queryExpression = new SoqlQueryExpression();
                 queryExpression.TopCount = topCount;
@@ -339,12 +342,52 @@ namespace Sooda.Sql
                     tablesArrayList.Add(ti);
                     foreach (FieldInfo fi in ti.Fields)
                     {
-                        queryExpression.SelectExpressions.Add(new SoqlPathExpression("obj", fi.Name));
+                        SoqlPathExpression pathExpr = new SoqlPathExpression("obj", fi.Name);
+                        queryExpression.SelectExpressions.Add(pathExpr);
                         queryExpression.SelectAliases.Add("");
+
+                        if (fi.ReferencedClass != null && fi.PrefetchLevel > 0 && ((options & SoodaSnapshotOptions.PrefetchRelated) != 0))  
+                        {
+                            _QueueItem item = new _QueueItem();
+                            item.classInfo = fi.ReferencedClass;
+                            item.level = fi.PrefetchLevel;
+                            item.prefix = pathExpr;
+                            queue.Enqueue(item);
+                        }
                     }
-                    // just load the first table - temporary
-                    break;
                 }
+
+                while (queue.Count > 0) 
+                {
+                    _QueueItem it = (_QueueItem)queue.Dequeue();
+
+                    foreach (TableInfo ti in it.classInfo.UnifiedTables)
+                    {
+                        tablesArrayList.Add(ti);
+
+                        foreach (FieldInfo fi in ti.Fields) 
+                        {
+                            // TODO - this relies on the fact that path expressions
+                            // are never reconstructed or broken. We simply share previous prefix
+                            // perhaps it's cleaner to Clone() the expression here
+
+                            SoqlPathExpression extendedExpression = new SoqlPathExpression(it.prefix, fi.Name);
+
+                            queryExpression.SelectExpressions.Add(extendedExpression);
+                            queryExpression.SelectAliases.Add("");
+
+                            if (it.level >= 1 && fi.PrefetchLevel > 0 && fi.ReferencedClass != null) 
+                            {
+                                _QueueItem newItem = new _QueueItem();
+                                newItem.classInfo = fi.ReferencedClass;
+                                newItem.prefix = extendedExpression;
+                                newItem.level = it.level - 1;
+                                queue.Enqueue(newItem);
+                            }
+                        }
+                    }
+                }
+
                 if (whereClause != null && whereClause.WhereExpression != null) 
                 {
                     queryExpression.WhereClause = whereClause.WhereExpression;
@@ -354,8 +397,6 @@ namespace Sooda.Sql
                 {
                     SoqlParser.ParseOrderBy(queryExpression, "order by " + orderBy.ToString());
                 }
-
-                //queryExpression.O
 
                 StringWriter sw = new StringWriter();
                 SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, schemaInfo, SqlBuilder);
@@ -799,7 +840,7 @@ namespace Sooda.Sql
 
         private IDataReader TimedExecuteReader(IDbCommand cmd)
         {
-            DateTime dt0 = DateTime.Now;
+			StopWatch sw = StopWatch.Create();
 
             try
             {
@@ -808,25 +849,34 @@ namespace Sooda.Sql
                 {
                     sqllogger.Trace("Executing query: {0}", LogCommand(cmd));
                 }
+				sw.Start();
                 IDataReader retval = cmd.ExecuteReader();
+				sw.Stop();
                 return retval;
             }
             catch (Exception ex)
             {
-                if (sqllogger.IsErrorEnabled)
+				sw.Stop();
+				if (sqllogger.IsErrorEnabled)
                     sqllogger.Error("Error while executing: {0}\nException: {1}", LogCommand(cmd), ex);
                 throw ex;
             }
             finally
             {
-                DateTime dt1 = DateTime.Now;
-                sqllogger.Trace("Query took {0} milliseconds", (dt1 - dt0).TotalMilliseconds);
+                double timeInSeconds = sw.Seconds;
+
+                if (Statistics != null)
+                    Statistics.RegisterQueryTime(timeInSeconds);
+
+                SoodaStatistics.Global.RegisterQueryTime(timeInSeconds);
+
+                sqllogger.Trace("Query took {0} s.", timeInSeconds);
             }
         }
 
         private int TimedExecuteNonQuery(IDbCommand cmd)
         {
-            DateTime dt0 = DateTime.Now;
+            StopWatch sw = StopWatch.Create();
 
             try
             {
@@ -834,12 +884,15 @@ namespace Sooda.Sql
                 {
                     sqllogger.Trace("Executing non-query: {0}", LogCommand(cmd));
                 }
-                int retval = cmd.ExecuteNonQuery();
+				sw.Start();
+				int retval = cmd.ExecuteNonQuery();
+				sw.Stop();
                 return retval;
             }
             catch (Exception ex)
             {
-                if (sqllogger.IsErrorEnabled)
+				sw.Stop();
+				if (sqllogger.IsErrorEnabled)
                 {
                     sqllogger.Error("Error while executing: {0}\nException: {1}", LogCommand(cmd), ex);
                 }
@@ -847,9 +900,15 @@ namespace Sooda.Sql
             }
             finally
             {
-                DateTime dt1 = DateTime.Now;
-                sqllogger.Trace("Non-query took {0} milliseconds", (dt1 - dt0).TotalMilliseconds);
-            }
+				double timeInSeconds = sw.Seconds;
+
+				if (Statistics != null)
+					Statistics.RegisterQueryTime(timeInSeconds);
+
+				SoodaStatistics.Global.RegisterQueryTime(timeInSeconds);
+
+				sqllogger.Trace("Non-query took {0} s.", timeInSeconds);
+			}
         }
 
         public virtual void GenerateDdlForSchema(SchemaInfo schema, TextWriter tw) 

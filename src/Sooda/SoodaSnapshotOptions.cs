@@ -72,8 +72,24 @@ namespace Sooda {
         VerifyAfterLoad = 8,
 
         /// <summary>
-        /// Load only the primary key values
+        /// Load only the primary key values. Objects will be materialized
+        /// but fields other than primary keys will require a database query.
         /// </summary>
         KeysOnly = 16,
+
+		/// <summary>
+		/// Load the collection items from cache if possible.
+		/// </summary>
+		LoadFromCache = 32,
+
+		/// <summary>
+		/// Store the collection in cache after loading from the database.
+		/// </summary>
+		StoreInCache = 64,
+
+        /// <summary>
+        /// Use prefetch definition from the schema to load related objects automatically
+        /// </summary>
+        PrefetchRelated = 128
     }
 }

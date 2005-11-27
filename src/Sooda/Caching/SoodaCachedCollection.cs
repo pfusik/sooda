@@ -32,58 +32,42 @@
 // 
 
 using System;
-using System.Diagnostics;
-using System.Data;
+using System.IO;
+using System.Xml;
+using System.Text;
+using System.Globalization;
+using System.Collections;
+using System.Reflection;
 
-using Sooda.ObjectMapper;
-using Sooda.UnitTests.Objects;
-using Sooda.UnitTests.BaseObjects;
-using Sooda.Caching;
+using Sooda.Logging;
+using Sooda.Schema;
+using Sooda;
+using Sooda.QL;
 
-using NUnit.Framework;
-
-namespace Sooda.UnitTests.TestCases.ObjectMapper 
+namespace Sooda.Caching 
 {
-	[TestFixture]
-	public class CacheTest 
+	public class SoodaCachedCollection
 	{
-		[Test]
-		public void Test1() 
+		private IList _primaryKeys;
+		private DateTime _lastAccessTime;
+
+		public SoodaCachedCollection(IList primaryKeys)
 		{
-			using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) 
+			_lastAccessTime = DateTime.Now;
+			_primaryKeys = primaryKeys;
+		}
+
+		public DateTime LastAccessTime
+		{
+			get { return _lastAccessTime; }
+		}
+
+		public IList PrimaryKeys
+		{
+			get 
 			{
-				testDataSource.Open();
-				SoodaCache.Clear();
-
-				using (SoodaTransaction tran = new SoodaTransaction()) 
-				{
-					tran.RegisterDataSource(testDataSource);
-
-					Console.WriteLine(Contact.Mary.Name);
-					Console.WriteLine(Contact.Mary.Type.Description);
-
-					foreach (Contact c in Contact.Mary.PrimaryGroup.Members) 
-					{
-						Console.WriteLine(c.Name);
-					}
-					tran.Commit();
-				}
-
-				using (SoodaTransaction tran = new SoodaTransaction()) 
-				{
-					tran.RegisterDataSource(testDataSource);
-
-					foreach (Contact c in Contact.Mary.PrimaryGroup.Members) 
-					{
-						Console.WriteLine(c.Name);
-					}
-
-					Console.WriteLine(Contact.Mary.Name);
-					Console.WriteLine(Contact.Mary.Type.Description);
-					tran.Commit();
-				}
-
-				SoodaCache.Dump(Console.Out);
+				_lastAccessTime = DateTime.Now;
+				return _primaryKeys; 
 			}
 		}
 	}

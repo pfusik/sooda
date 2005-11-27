@@ -68,9 +68,11 @@ namespace Sooda
         private TypeToSoodaRelationTableAssociation _relationTables = new TypeToSoodaRelationTableAssociation();
         //private KeyToSoodaObjectMap _objects = new KeyToSoodaObjectMap();
         private bool _useWeakReferences = false;
+        private SoodaStatistics _statistics = new SoodaStatistics();
         private WeakSoodaObjectCollection _objectList = new WeakSoodaObjectCollection();
         private Queue _precommitQueue = null;
-        private Queue _deleteQueue = null;
+        private SoodaObjectCollection _deletedObjects = new SoodaObjectCollection();
+        private Hashtable _precommittedClass = new Hashtable();
         private SoodaObjectCollection _postCommitQueue = null;
         private SoodaObjectCollection _dirtyObjects = new SoodaObjectCollection();
         private SoodaObjectCollection _strongReferences = new SoodaObjectCollection();
@@ -78,18 +80,18 @@ namespace Sooda
         private StringToWeakSoodaObjectCollectionAssociation _dirtyObjectsByClass = new StringToWeakSoodaObjectCollectionAssociation();
         private StringToObjectToWeakSoodaObjectAssociation _objectDictByClass = new StringToObjectToWeakSoodaObjectAssociation();
 
-        private SoodaDataSourceCollection _dataSources = new SoodaDataSourceCollection();
+        internal SoodaDataSourceCollection _dataSources = new SoodaDataSourceCollection();
         private StringToISoodaObjectFactoryAssociation factoryForClassName = new StringToISoodaObjectFactoryAssociation();
         private TypeToISoodaObjectFactoryAssociation factoryForType = new TypeToISoodaObjectFactoryAssociation();
         private SoodaObjectToNameValueCollectionAssociation _persistentValues = new SoodaObjectToNameValueCollectionAssociation();
         private Assembly _assembly;
         private SchemaInfo _schema;
-        private bool _savingObjects = false;
+        internal bool _savingObjects = false;
         private bool _isPrecommit = false;
 
         public static Assembly DefaultObjectsAssembly = null;
 
-        #region Constructors, Dispose & Finalizer
+#region Constructors, Dispose & Finalizer
 
         public SoodaTransaction() : this(null, SoodaTransactionOptions.Implicit, Assembly.GetCallingAssembly()) {}
 
@@ -158,6 +160,7 @@ namespace Sooda
                     } 
                     System.Threading.Thread.SetData(g_activeTransactionDataStoreSlot, previousTransaction);
                 }
+                transactionLogger.Debug("Transaction stats:\n\n{0}", Statistics);
                 // transactionLogger.Debug("Disposed.");
             }
             catch (Exception ex)
@@ -167,7 +170,7 @@ namespace Sooda
             }
         }
 
-        #endregion
+#endregion
 
         public bool UseWeakReferences
         {
@@ -178,17 +181,17 @@ namespace Sooda
         public static SoodaTransaction ActiveTransaction
         {
             [DebuggerStepThrough]
-            get 
-            {
-                SoodaTransaction retVal = (SoodaTransaction)System.Threading.Thread.GetData(g_activeTransactionDataStoreSlot);
-
-                if (retVal == null) 
+                get 
                 {
-                    throw new InvalidOperationException("There's no implicit transaction currently active. Either use explicit transactions or create a new implicit one.");
-                }
+                    SoodaTransaction retVal = (SoodaTransaction)System.Threading.Thread.GetData(g_activeTransactionDataStoreSlot);
 
-                return retVal;
-            }
+                    if (retVal == null) 
+                    {
+                        throw new InvalidOperationException("There's no implicit transaction currently active. Either use explicit transactions or create a new implicit one.");
+                    }
+
+                    return retVal;
+                }
         }
 
         internal WeakSoodaObjectCollection GetObjectsByClassName(string className) 
@@ -371,6 +374,7 @@ namespace Sooda
 
             SoodaDataSource ds = (SoodaDataSource)dataSourceInfo.CreateDataSource();
             _dataSources.Add(ds);
+            ds.Statistics = this.Statistics;
             ds.Open();
             if (_savingObjects)
                 ds.BeginSaveChanges();
@@ -387,9 +391,13 @@ namespace Sooda
             while (_precommitQueue.Count > 0) 
             {
                 SoodaObject o = (SoodaObject)_precommitQueue.Dequeue();
-                if (o.IsObjectDirty()) 
+                if (!o.IsMarkedForDelete())
                 {
-                    o.PreCommit();
+                    if (o.IsObjectDirty()) 
+                    {
+                        _precommittedClass[o.GetClassInfo()] = true;
+                        o.PreCommit();
+                    }
                 }
             }
 
@@ -398,9 +406,9 @@ namespace Sooda
 
         void CallPostcommits() 
         {
-            foreach (SoodaObject o in _postCommitQueue) 
+            for (int i = 0; i < _postCommitQueue.Count; ++i)
             {
-                o.PostCommit();
+                _postCommitQueue[i].PostCommit();
             }
         }
 
@@ -427,22 +435,7 @@ namespace Sooda
             };
         }
 
-        protected static internal void MarkDeleteReferences(SoodaObject theObject, string fieldName, object fieldValue, bool isDirty, ref SoodaObject refcache, ISoodaObjectFactory factory, object context) 
-        {
-            //transactionLogger.Debug("MarkDeleteReferences: {0}.{1}", theObject.GetObjectKeyString(), fieldName);
-            if (fieldValue != null) 
-            {
-                SoodaObject obj = SoodaObjectImpl.TryGetRefFieldValue(ref refcache, fieldValue, theObject.GetTransaction(), factory);
-                // transactionLogger.Debug("Pointing at: {0}", (obj != null) ? obj.GetObjectKeyString() : "null");
-                if (obj != null && (object)obj != (object)theObject && obj.IsMarkedForDelete()) 
-                {
-                    obj.OuterDeleteReferences.Add(theObject);
-                }
-            };
-        }
-
         private static SoodaObjectRefFieldIterator saveOuterReferencesIterator = new SoodaObjectRefFieldIterator(SoodaTransaction.SaveOuterReferences);
-        private static SoodaObjectRefFieldIterator MarkDeleteReferencesIterator = new SoodaObjectRefFieldIterator(SoodaTransaction.MarkDeleteReferences);
 
         static void SaveObjectChanges(SoodaObject o) 
         {
@@ -466,23 +459,6 @@ namespace Sooda
             }
         }
 
-        private void TraverseAndDelete(SoodaObject obj)
-        {
-            transactionLogger.Debug(">>> TraverseAndDelete({0})", obj.GetObjectKeyString());
-            //if (obj.VisitedOnCommit)
-            //throw new SoodaException("Cyclic reference between deleted objects.");
-
-            obj.VisitedOnCommit = true;
-            for (int i = 0; i < obj.OuterDeleteReferences.Count; ++i)
-            {
-                if (!obj.OuterDeleteReferences[i].VisitedOnCommit)
-                    TraverseAndDelete(obj.OuterDeleteReferences[i]);
-            }
-            obj.OuterDeleteReferences.Clear();
-            obj.CommitObjectChanges();
-            transactionLogger.Debug("<<< TraverseAndDelete({0})", obj.GetObjectKeyString());
-        }
-
         internal void SaveObjectChanges(bool isPrecommit, SoodaObjectCollection objectsToPrecommit)
         {
             try
@@ -498,21 +474,9 @@ namespace Sooda
 
                 _savingObjects = true;
 
-                SoodaObjectCollection objectDeleteList = new SoodaObjectCollection();
-
                 foreach (SoodaObject o in objectsToPrecommit)
                 {
-                    o.VisitedOnCommit = false;
-                    if (o.IsMarkedForDelete())
-                    {
-                        transactionLogger.Debug("Object {0} is marked for deletion. Adding to delete list.", o.GetObjectKeyString());
-                        objectDeleteList.Add(o);
-                    }
-                }
-
-                foreach (SoodaObject o in objectsToPrecommit)
-                {
-                    if (!o.VisitedOnCommit) 
+                    if (!o.VisitedOnCommit && !o.IsMarkedForDelete()) 
                     {
                         SaveObjectChanges(o);
                     }
@@ -523,33 +487,6 @@ namespace Sooda
                     foreach (SoodaRelationTable rel in _relationTables.Values) 
                     {
                         rel.SaveTuples(this);
-                    }
-                }
-
-                if (objectDeleteList.Count > 0)
-                {
-                    foreach (SoodaObject o in objectDeleteList)
-                    {
-                        //
-                        // load all data - this is needed to ensure that IterateOuterReferences works...
-                        // ideally this wouldn't be needed.
-                        //
-
-                        o.LoadAllData();
-                        o.OuterDeleteReferences = new SoodaObjectCollection();
-                        o.VisitedOnCommit = false;
-                    }
-
-                    foreach (SoodaObject o in objectDeleteList)
-                    {
-                        o.IterateOuterReferences(MarkDeleteReferencesIterator, objectDeleteList);
-                    }
-
-                    foreach (SoodaObject o in objectDeleteList)
-                    {
-                        transactionLogger.Debug("Object to delete: {0}. Del ref count: {1}", o.GetObjectKeyString(), o.OuterDeleteReferences.Count);
-                        if (!o.VisitedOnCommit)
-                            TraverseAndDelete(o);
                     }
                 }
 
@@ -613,12 +550,6 @@ namespace Sooda
 
             // commit all transactions on all data sources
 
-            foreach (SoodaDataSource source in _dataSources) 
-            {
-                source.Commit();
-                // source.Rollback();
-            }
-
             if (_relationTables != null) 
             {
                 foreach (SoodaRelationTable rel in _relationTables.Values) 
@@ -626,6 +557,14 @@ namespace Sooda
                     rel.Commit();
                 }
             }
+
+            foreach (SoodaDataSource source in _dataSources) 
+            {
+                source.Commit();
+                // source.Rollback();
+            }
+
+            _precommittedClass.Clear();
 
             CallPostcommits();
 
@@ -644,6 +583,7 @@ namespace Sooda
             _objectsByClass.Clear();
             _precommitQueue.Clear();
             _relationTables.Clear();
+            _precommittedClass.Clear();
         }
 
         private static object[] relationTableConstructorArguments = new object[0] { };
@@ -783,12 +723,6 @@ namespace Sooda
             return factoryForClassName[classInfo.Name];
         }
 
-        internal void AddToDeleteQueue(SoodaObject o) 
-        {
-            if (_deleteQueue != null)
-                _deleteQueue.Enqueue(o);
-        }
-
         internal void AddToPostCommitQueue(SoodaObject o) 
         {
             if (_postCommitQueue != null)
@@ -855,10 +789,17 @@ namespace Sooda
                 orderedObjects = new SoodaObjectCollection((SoodaObject[])al.ToArray(typeof(SoodaObject)));
             }
 
+            foreach (SoodaObject o in DeletedObjects) 
+            {
+                o.PreSerialize(xw, options);
+            }
             foreach (SoodaObject o in orderedObjects) 
             {
-                if (o.IsObjectDirty() || ((options & SoodaSerializeOptions.IncludeNonDirtyObjects) != 0))
-                    o.PreSerialize(xw, options);
+                if (!o.IsMarkedForDelete())
+                {
+                    if (o.IsObjectDirty() || ((options & SoodaSerializeOptions.IncludeNonDirtyObjects) != 0))
+                        o.PreSerialize(xw, options);
+                }
             }
             foreach (SoodaObject o in orderedObjects) 
             {
@@ -902,34 +843,45 @@ namespace Sooda
             int objectKeyCounter = 0;
             int objectTotalKeyCounter = 0;
 
-            while (reader.Read()) 
+            try
             {
-                if (reader.NodeType == XmlNodeType.Element && !inDebug) 
+                _savingObjects = true;
+
+                // in case we get any "deleteobject" which require us to delete the objects 
+                // within transaction
+                foreach (SoodaDataSource source in _dataSources)
                 {
-                    switch (reader.Name) 
+                    source.BeginSaveChanges();
+                }
+
+                while (reader.Read()) 
+                {
+                    if (reader.NodeType == XmlNodeType.Element && !inDebug) 
                     {
-                        case "field":
-                            if (currentObject == null)
-                                throw new Exception("Field without an object during deserialization!");
+                        switch (reader.Name) 
+                        {
+                            case "field":
+                                if (currentObject == null)
+                                    throw new Exception("Field without an object during deserialization!");
 
                             currentObject.DeserializeField(reader);
                             break;
 
-                        case "persistent":
-                            if (currentObject == null)
-                                throw new Exception("Field without an object during deserialization!");
+                            case "persistent":
+                                if (currentObject == null)
+                                    throw new Exception("Field without an object during deserialization!");
 
                             currentObject.DeserializePersistentField(reader);
                             break;
 
-                        case "object":
-                            if (currentObject != null) 
-                            {
-                                // end deserialization
+                            case "object":
+                                if (currentObject != null) 
+                                {
+                                    // end deserialization
 
-                                currentObject.DisableTriggers = false;
-                                currentObject = null;
-                            };
+                                    currentObject.DisableTriggers = false;
+                                    currentObject = null;
+                                };
 
                             objectKeyCounter = 0;
                             objectForcePostCommit = false;
@@ -947,8 +899,8 @@ namespace Sooda
                                 objectDelete = true;
                             break;
 
-                        case "key":
-                            int ordinal = Convert.ToInt32(reader.GetAttribute("ordinal"));
+                            case "key":
+                                int ordinal = Convert.ToInt32(reader.GetAttribute("ordinal"));
                             object val = objectFactory.GetFieldHandler(ordinal).RawDeserialize(reader.GetAttribute("value"));
 
                             if (objectTotalKeyCounter > 1)
@@ -977,53 +929,65 @@ namespace Sooda
                                 currentObject.DisableTriggers = true;
                                 if (objectDelete)
                                 {
+                                    DeletedObjects.Add(currentObject);
                                     currentObject.DeleteMarker = true;
+                                    currentObject.CommitObjectChanges();
                                     currentObject.SetObjectDirty();
                                 }
                             }
                             break;
 
-                        case "transaction":
+                            case "transaction":
+                                break;
+
+                            case "relation":
+                                currentRelation = GetRelationFromXml(reader);
                             break;
 
-                        case "relation":
-                            currentRelation = GetRelationFromXml(reader);
+                            case "tuple":
+                                currentRelation.DeserializeTuple(reader);
                             break;
 
-                        case "tuple":
-                            currentRelation.DeserializeTuple(reader);
+                            case "debug":
+                                if (!reader.IsEmptyElement) 
+                                {
+                                    inDebug = true;
+                                }
                             break;
 
-                        case "debug":
-                            if (!reader.IsEmptyElement) 
-                            {
-                                inDebug = true;
-                            }
-                            break;
-
-                        default:
+                            default:
                             throw new NotImplementedException("Element not implemented in deserialization: " + reader.Name);
-                    }
-                } 
-                else if (reader.NodeType == XmlNodeType.EndElement) 
-                {
-                    if (reader.Name == "debug") 
-                    {
-                        inDebug = false;
+                        }
                     } 
-                    else if (reader.Name == "object") 
+                    else if (reader.NodeType == XmlNodeType.EndElement) 
                     {
-                        currentObject.DisableTriggers = false;
+                        if (reader.Name == "debug") 
+                        {
+                            inDebug = false;
+                        } 
+                        else if (reader.Name == "object") 
+                        {
+                            currentObject.DisableTriggers = false;
+                        }
+                    }
+                };
+
+                foreach (WeakSoodaObject wr in _objectList) 
+                {
+                    SoodaObject ob = wr.TargetSoodaObject;
+                    if (ob != null)
+                    {
+                        ob.AfterDeserialize();
                     }
                 }
-            };
-
-            foreach (WeakSoodaObject wr in _objectList) 
+            }
+            finally
             {
-                SoodaObject ob = wr.TargetSoodaObject;
-                if (ob != null)
+                _savingObjects = false;
+
+                foreach (SoodaDataSource source in _dataSources) 
                 {
-                    ob.AfterDeserialize();
+                    source.FinishSaveChanges();
                 }
             }
         }
@@ -1056,7 +1020,9 @@ namespace Sooda
                 {
                     transactionLogger.Debug("Object not found. Getting new raw object.");
                     retVal = factory.GetRawObject(this);
-                    retVal.SetPrimaryKeyValue(pkValue);
+					Statistics.RegisterObjectUpdate();
+					SoodaStatistics.Global.RegisterObjectUpdate();
+					retVal.SetPrimaryKeyValue(pkValue);
                     retVal.SetInsertMode();
                 }
             } 
@@ -1105,6 +1071,21 @@ namespace Sooda
         internal bool IsPrecommit
         {
             get { return _isPrecommit; }
+        }
+
+        public SoodaStatistics Statistics
+        {
+            get { return _statistics; }
+        }
+
+		internal bool HasBeenPrecommitted(ClassInfo ci)
+		{
+			return _precommittedClass.Contains(ci);
+		}
+
+        public SoodaObjectCollection DeletedObjects
+        {
+            get { return _deletedObjects; }
         }
     }
 }

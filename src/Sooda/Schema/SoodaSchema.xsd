@@ -39,12 +39,14 @@
 	</xsd:complexType>
 	<xsd:complexType name="TableInfo">
 		<xsd:sequence>
+		    <xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
 			<xsd:element name="field" type="sooda:FieldInfo" minOccurs="1" maxOccurs="unbounded" />
 		</xsd:sequence>
 		<xsd:attribute name="name" use="required" />
 	</xsd:complexType>
 	<xsd:complexType name="ClassInfo">
 		<xsd:sequence>
+		    <xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
 		    <xsd:element name="table" type="sooda:TableInfo" minOccurs="0" maxOccurs="unbounded" />
 			<xsd:element name="index" type="sooda:IndexInfo" minOccurs="0" maxOccurs="unbounded" />
 			<xsd:element name="collectionOneToMany" type="sooda:CollectionOnetoManyInfo" minOccurs="0" maxOccurs="unbounded" />
@@ -82,13 +84,20 @@
 		<xsd:attribute name="name" use="required" />
 	</xsd:complexType>
 	<xsd:complexType name="CollectionOnetoManyInfo">
+        <xsd:sequence>
+		    <xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
+        </xsd:sequence>
 		<xsd:attribute name="name" use="required" />
 		<xsd:attribute name="class" use="required" />
 		<xsd:attribute name="foreignField" use="optional" />
 		<xsd:attribute name="where" use="optional" />
 		<xsd:attribute name="prefetch" use="optional" type="xsd:int" default="0" />
+		<xsd:attribute name="cache" use="optional" type="xsd:boolean" default="false" />
 	</xsd:complexType>
 	<xsd:complexType name="CollectionManyToManyInfo">
+        <xsd:sequence>
+		    <xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
+        </xsd:sequence>
 		<xsd:attribute name="name" use="required" />
 		<xsd:attribute name="relation" use="required" />
 		<xsd:attribute name="masterField" type="xsd:int" use="required" />
@@ -99,6 +108,9 @@
 		<xsd:attribute name="key" use="required" />
 	</xsd:complexType>
 	<xsd:complexType name="FieldInfo">
+        <xsd:sequence>
+		    <xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
+        </xsd:sequence>
 		<xsd:attribute name="name" use="required" />
 		<xsd:attribute name="dbcolumn" use="optional" />
 		<xsd:attribute name="type" type="sooda:FieldDataType" use="required" />

@@ -663,6 +663,7 @@ namespace Sooda.CodeGen
                                                          new CodePrimitiveExpression(coli.ForeignFieldName),
                                                          new CodeFieldReferenceExpression(new CodeTypeReferenceExpression(coli.ClassName + "_Factory"), "TheClassInfo"),
                                                          new CodeFieldReferenceExpression(null, "_collectionWhere_" + coli.Name),
+														 new CodePrimitiveExpression(coli.Cache)
                             }))
                                 ),
                     }, new CodeStatement[] { }));

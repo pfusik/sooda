@@ -115,10 +115,9 @@
                     HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Windows.Forms.dll"
                 />
                 <Reference
-                    Name = "MemProfiler"
-                    AssemblyName = "MemProfiler"
-                    HintPath = "C:\Program Files\SciTech\NetMemProfiler2\Redist\MemProfiler.dll"
-                    AssemblyFolderKey = "hklm\dn\.net memory profiler api"
+                    Name = "Sooda.Logging.NLog"
+                    Project = "{A6A3FE85-9F3D-4A3D-B8E6-B24771CB3F62}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
             </References>
         </Build>

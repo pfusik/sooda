@@ -129,6 +129,8 @@ namespace Sooda.Config {
             } else {
                 logger.Debug("Config override file " + newFileName + " not found");
             }
+
+			OverrideFromAppConfig();
         }
 
         public string GetMachineName() {
@@ -200,5 +202,13 @@ namespace Sooda.Config {
 
             throw new SoodaConfigException("Config file not found in " + fileName + " and " + maxParentDirectories + " parent directories");
         }
+
+		private void OverrideFromAppConfig()
+		{
+			foreach (string s in ConfigurationSettings.AppSettings.Keys)
+			{
+				dataDictionary[s] = ConfigurationSettings.AppSettings[s];
+			}
+		}
     }
 }

@@ -38,6 +38,7 @@ using System.Data;
 using Sooda.ObjectMapper;
 using Sooda.UnitTests.Objects;
 using Sooda.UnitTests.BaseObjects;
+using Sooda.Caching;
 
 using NUnit.Framework;
 

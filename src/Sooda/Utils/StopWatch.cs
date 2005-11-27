@@ -1,5 +1,6 @@
 // 
-// Copyright (c) 2002-2005 Jaroslaw Kowalski <jkowalski@users.sourceforge.net>
+// Copyright (c) 2004,2005 Jaroslaw Kowalski <jkowalski@users.sourceforge.net>
+// 
 // 
 // All rights reserved.
 // 
@@ -14,7 +15,7 @@
 //   this list of conditions and the following disclaimer in the documentation
 //   and/or other materials provided with the distribution. 
 // 
-// * Neither the name of Jaroslaw Kowalski nor the names of its 
+// * Neither the name of the Jaroslaw Kowalski nor the names of its 
 //   contributors may be used to endorse or promote products derived from this
 //   software without specific prior written permission. 
 // 
@@ -32,59 +33,23 @@
 // 
 
 using System;
-using System.Diagnostics;
-using System.Data;
+using System.Threading;
+using System.Globalization;
+using System.IO;
+using System.Xml;
+using System.Runtime.InteropServices;
 
-using Sooda.ObjectMapper;
-using Sooda.UnitTests.Objects;
-using Sooda.UnitTests.BaseObjects;
-using Sooda.Caching;
-
-using NUnit.Framework;
-
-namespace Sooda.UnitTests.TestCases.ObjectMapper 
+namespace Sooda.Utils
 {
-	[TestFixture]
-	public class CacheTest 
-	{
-		[Test]
-		public void Test1() 
-		{
-			using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) 
-			{
-				testDataSource.Open();
-				SoodaCache.Clear();
+    public abstract class StopWatch
+    {
+        public static StopWatch Create()
+        {
+            return new QPCStopWatch();
+        }
 
-				using (SoodaTransaction tran = new SoodaTransaction()) 
-				{
-					tran.RegisterDataSource(testDataSource);
-
-					Console.WriteLine(Contact.Mary.Name);
-					Console.WriteLine(Contact.Mary.Type.Description);
-
-					foreach (Contact c in Contact.Mary.PrimaryGroup.Members) 
-					{
-						Console.WriteLine(c.Name);
-					}
-					tran.Commit();
-				}
-
-				using (SoodaTransaction tran = new SoodaTransaction()) 
-				{
-					tran.RegisterDataSource(testDataSource);
-
-					foreach (Contact c in Contact.Mary.PrimaryGroup.Members) 
-					{
-						Console.WriteLine(c.Name);
-					}
-
-					Console.WriteLine(Contact.Mary.Name);
-					Console.WriteLine(Contact.Mary.Type.Description);
-					tran.Commit();
-				}
-
-				SoodaCache.Dump(Console.Out);
-			}
-		}
-	}
+        public abstract void Start();
+        public abstract void Stop();
+        public abstract double Seconds { get; }
+   }
 }

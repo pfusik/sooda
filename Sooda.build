@@ -144,9 +144,7 @@
                 <include name="**/*.cs" />
             </sources>
             <resources basedir="src/Sooda.CodeGen" prefix="Sooda.CodeGen" dynamicprefix="true">
-                <include name="Template/*.csproj" />
-                <include name="Template/*.vbproj" />
-                <include name="Template/*.build" />
+                <include name="Templates/**/*" />
                 <include name="CDIL/Templates/**/*" />
                 <include name="SoodaProject.xsd" />
             </resources>

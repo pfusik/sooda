@@ -199,6 +199,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SoodaStatistics.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SoodaStubAssemblyAttribute.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -215,6 +220,36 @@
                 />
                 <File
                     RelPath = "SoodaWhereClause.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Caching\CacheUtils.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Caching\SoodaCache.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Caching\SoodaCachedCollection.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Caching\SoodaCachedCollectionHash.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Caching\SoodaCachedCollectionKey.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Caching\SoodaCacheEntry.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -385,16 +420,6 @@
                 />
                 <File
                     RelPath = "ObjectMapper\SchemaLoader.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\SoodaCache.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\SoodaCacheEntry.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1082,6 +1107,16 @@
                 />
                 <File
                     RelPath = "Sql\SqlTopSupportMode.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Utils\QPCStopWatch.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Utils\StopWatch.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

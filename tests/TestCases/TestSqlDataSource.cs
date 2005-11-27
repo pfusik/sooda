@@ -33,38 +33,44 @@
 
 using System;
 
+using Sooda.Caching;
 using Sooda.UnitTests.Objects;
 
-namespace Sooda.UnitTests.TestCases {
-    public class TestSqlDataSource : Sooda.Sql.SqlDataSource, IDisposable {
-        public TestSqlDataSource(string name) : base(_DatabaseSchema.GetSchema().GetDataSourceInfo(name)) {}
+namespace Sooda.UnitTests.TestCases 
+{
+	public class TestSqlDataSource : Sooda.Sql.SqlDataSource, IDisposable 
+	{
+		public TestSqlDataSource(string name) : base(_DatabaseSchema.GetSchema().GetDataSourceInfo(name)) {}
 
-        public override void Close() {
-            Console.WriteLine("TestSqlDataSource.Close({0})", Name);
-        }
+		public override void Close() 
+		{
+			Console.WriteLine("TestSqlDataSource.Close({0})", Name);
+		}
 
-        public override void Commit() {
-            Console.WriteLine("TestSqlDataSource.Commit()");
-            // do nothing
-        }
+		public override void Commit() 
+		{
+			Console.WriteLine("TestSqlDataSource.Commit()");
+			// do nothing
+		}
 
-        public override void Rollback() {
-            throw new NotSupportedException("Rollback not supported here!");
-            // do nothing
-        }
+		public override void Rollback() 
+		{
+			throw new NotSupportedException("Rollback not supported here!");
+			// do nothing
+		}
 
-        public override void Open()
-        {
-            Console.WriteLine("Opening: {0}", this.Name);
-            base.Open();
-        }
+		public override void Open()
+		{
+			Console.WriteLine("Opening: {0}", this.Name);
+			base.Open();
+		}
 
 
-        public new void Dispose() 
-        {
-            Console.WriteLine("TestSqlDataSource.Dispose!");
-            base.Close();
-            Sooda.ObjectMapper.SoodaCache.Clear();
-        }
-    }
+		public new void Dispose() 
+		{
+			Console.WriteLine("TestSqlDataSource.Dispose!");
+			base.Close();
+			SoodaCache.Clear();
+		}
+	}
 }
