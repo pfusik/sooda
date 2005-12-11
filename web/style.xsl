@@ -24,10 +24,8 @@
                 <div id="header" colspan="2"><img src="sooda.jpg" /></div>
                 <div id="controls">
                     <xsl:call-template name="controls" />
-
                     <p/>
-
-                    <table align="left" cellpadding="1" cellspacing="0" class="navbuttons">
+                    <table align="left" cellpadding="1" cellspacing="0" class="navbuttons" style="width:100%">
                         <tr>
                             <td>
                                 <a href="http://www.cenqua.com/clover.net"><img src="http://www.cenqua.com/images/cloverednet1.gif" width="89" height="33" border="0" alt="Code Coverage by Clover.NET"/></a>
@@ -54,6 +52,25 @@
                 <div id="content">
                     <xsl:apply-templates select="content" />
                     <!-- <p class="copyright">Copyright (c) 2003-2005 by Jaros³aw Kowalski <img width="1" height="1"><xsl:attribute name="src">http://jaak.sav.net/transpixel.gif</xsl:attribute></img></p> -->
+                </div>
+                <div id="googleads">
+                    <script type="text/javascript"><xsl:comment>
+google_ad_client = "pub-2535373996863248";
+google_ad_width = 120;
+google_ad_height = 600;
+google_ad_format = "120x600_as";
+google_ad_type = "text_image";
+google_ad_channel ="";
+google_color_border = "5290ee";
+google_color_bg = "FFFFFF";
+google_color_link = "0000FF";
+google_color_url = "008000";
+google_color_text = "000000";
+//</xsl:comment></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+                    
                 </div>
             </body>
         </html>

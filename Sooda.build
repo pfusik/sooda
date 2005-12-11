@@ -10,11 +10,12 @@
     <property name="ndoc.console.exe" value="C:\Program Files\NDoc 1.3\bin\net\1.1\ndocconsole.exe" />
     <property name="prettyprinter.exe" value="tools/PrettyPrinter.exe" />
 
-    <property name="scp.program" value="scp" />
-    <property name="scp.args" value="" />
-    <property name="ssh.program" value="ssh" />
-    <property name="ssh.args" value="" />
-    <property name="ssh.server" value="jkowalski@sooda.sourceforge.net" />
+    <property name="scp.program" value="pscp" />
+    <property name="ssh.program" value="plink" />
+    <property name="ssh.server" value="jaak@sav.net" />
+    <property name="scp.args" value="-q -batch" />
+    <property name="ssh.args" value="-batch" />
+    <property name="webserver.deploy.dir" value="web/www.sooda.org/html" />
 
     <property name="sooda.csc.args" value="/nowarn:1591" />
     <property name="sooda.external" value="${nant.project.basedir}/external" unless="${property::exists('sooda.external')}" />
@@ -524,8 +525,8 @@
         <echo message="Uploading web.zip and tools/web_install.sh to ${ssh.server}..." />
         <exec program="${scp.program}" commandline="${scp.args} web.zip tools/web_install.sh ${ssh.server}:." workingdir="." />
         <echo message="Spawning web_install.sh..." />
-        <exec program="${ssh.program}" commandline="${ssh.args} ${ssh.server} dos2unix web_install.sh &amp;&amp; /bin/bash web_install.sh&quot;" workingdir="." />
-        <delete file="web.zip" />
+        <exec program="${ssh.program}" commandline="${ssh.args} ${ssh.server} dos2unix web_install.sh &amp;&amp; /bin/bash web_install.sh ${webserver.deploy.dir}" workingdir="." />
+        <!-- <delete file="web.zip" /> -->
     </target>
 
     <target name="install-wizard-vs2003">
@@ -579,7 +580,7 @@
     <target name="website" depends="configure">
         <property name="webbuild.dir" value="${web.dir}" />
         <property name="web.buildmode" value="web" />
-        <property name="web.sourceforge" value="1" />
+        <property name="web.sourceforge" value="0" />
         <call target="buildwebsite" />
         <copy file="${web.dir}/introduction.html" tofile="${web.dir}/index.html" />
     </target>
@@ -601,6 +602,7 @@
                 <include name="*.png" />
                 <include name="*.jpg" />
                 <include name="*.gif" />
+                <include name="screenshots/**" />
             </fileset>
         </copy>
 

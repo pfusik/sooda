@@ -8,7 +8,6 @@ html, body
     color: black;
     font-family: Verdana;
     font-size: 70%;
-    overflow-y: scroll;
 }
 
 h1
@@ -176,7 +175,7 @@ a.nav_selected
     display: block;
     font-family: Tahoma, Trebuchet MS, Arial, Helv;
     font-style: normal;
-    font-weight: bold;
+    font-weight: normal;
     font-size: 19px;
     color: white;
     padding-left: 20px;
@@ -250,6 +249,7 @@ a.subnav_selected:hover
 
 table.submenu
 {
+    width: 180px;
 }
 
 table.submenu td
@@ -291,7 +291,7 @@ img.thinborder
     position: absolute;
     top: 90px;
     left: 190px;
-    right: 10px;
+    right: 150px;
     font-family: Tahoma, Trebuchet MS, Helv, Arial;
     font-size: 12px;
     text-align: left;
@@ -446,3 +446,12 @@ table.navtable
 {
     width: 100%;
 }
+
+
+#googleads
+{
+    position: absolute;
+    top: 90px;
+    right: 10px;
+}
+

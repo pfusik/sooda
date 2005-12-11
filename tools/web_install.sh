@@ -3,7 +3,7 @@
 # this file will be uploaded to sourceforge.net every time 
 # new website is deployed
 
-HTML_DIR=/home/groups/s/so/sooda/htdocs
+HTML_DIR=$1
 
 umask 002
 echo Installing web.zip...

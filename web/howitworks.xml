@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="windows-1250" ?>
+<?xml-stylesheet type="text/xsl" href="style.xsl" ?>
+<content lang="en" id="documentation" subid="howitworks">
+
+    <h1>How Sooda works?</h1>
+    <p>
+        Sooda is an O/R mapper which is based on code generation. You provide 
+        it with a simple XML file which describes the mapping between .NET classes
+        and database tables and Sooda generates the appropriate classes for you.
+        The generated classes implement the required persistence functionality and expose
+        a strongly-typed API which you can use to create, load, save, delete and query 
+        your objects.
+    </p>
+
+    <h5>Code generation process described</h5>
+    <p>
+    </p>
+</content>
+
