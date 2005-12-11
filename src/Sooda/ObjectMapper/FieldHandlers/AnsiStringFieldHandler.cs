@@ -34,47 +34,32 @@
 using System;
 using System.Data;
 using System.Xml;
-using System.IO;
-
-using System.Drawing;
 
 namespace Sooda.ObjectMapper.FieldHandlers {
-    public class ImageFieldHandler : SoodaFieldHandler {
-        public ImageFieldHandler(bool nullable) : base(nullable) {}
+    public class AnsiStringFieldHandler : SoodaFieldHandler {
+        public AnsiStringFieldHandler(bool nullable) : base(nullable) {}
 
         protected override string TypeName
         {
             get {
-                return "image";
+                return "ansistring";
             }
         }
 
-        public Image GetNotNullValue(object val) {
-            // TEGO testu nie ma!!!!
-            // if (val == null)
-            //    throw new InvalidOperationException("Attempt to read a non-null value that isn't set yet");
-            return (Image) val;
+        public System.Data.SqlTypes.SqlString GetSqlNullableValue(object fieldValue) {
+            if (fieldValue == null)
+                return System.Data.SqlTypes.SqlString.Null;
+            else
+                return new System.Data.SqlTypes.SqlString((String)fieldValue);
+        }
+
+        public string GetNotNullValue(object val) {
+            if (val == null)
+                throw new InvalidOperationException("Attempt to read a non-null value that isn't set yet");
+            return (string)val;
         }
 
         public override object RawRead(IDataRecord record, int pos) {
-            return GetFromReader(record, pos);
-        }
-
-        public static Image GetFromReader(IDataRecord record, int pos) {
-            long n = record.GetBytes(pos, 0, null, 0, 0);
-            if (n <= 0)
-                return null;
-
-            byte[] buf = new byte[n];
-            record.GetBytes(pos, 0, buf, 0, buf.Length);
-
-            // tu nie moe by using() - http://support.microsoft.com/?id=814675
-
-            MemoryStream ms = new MemoryStream(buf);
-            return Image.FromStream(ms);
-        }
-
-        public static object GetBoxedFromReader(IDataRecord record, int pos) {
             return GetFromReader(record, pos);
         }
 
@@ -86,45 +71,43 @@ namespace Sooda.ObjectMapper.FieldHandlers {
             return DeserializeFromString(s);
         }
 
-        public static string SerializeToString(object obj) {
-            Image img = (Image)obj;
-            // tu nie moe by using() - http://support.microsoft.com/?id=814675
-            MemoryStream ms = new MemoryStream();
-            img.Save(ms, img.RawFormat);
+        public static String GetFromReader(IDataRecord record, int pos) {
+            return record.GetString(pos);
+        }
 
-            byte[] d = ms.GetBuffer();
-            return System.Convert.ToBase64String(d);
+        public static object GetBoxedFromReader(IDataRecord record, int pos) {
+            object v = record.GetValue(pos);
+            if (!(v is string))
+                throw new SoodaDatabaseException();
+            return v;
+        }
+
+        public static string SerializeToString(object o) {
+            return (string)o;
         }
 
         public static object DeserializeFromString(string s) {
-            byte[] data = Convert.FromBase64String(s);
-            MemoryStream ms = new MemoryStream(data);
-            return Image.FromStream(ms);
+            return s;
         }
 
-        private static object _zeroValue = null;
+        private static object _zeroValue = String.Empty;
         public override object ZeroValue() {
             return _zeroValue;
         }
 
         public override Type GetFieldType() {
-            return typeof(Image);
+            return typeof(String);
         }
 
 		public override Type GetSqlType()
 		{
-			return null;
+			return typeof(System.Data.SqlTypes.SqlString);
 		}
 
 		public override void SetupDBParameter(IDbDataParameter parameter, object value)
 		{
-			System.Drawing.Image img = (System.Drawing.Image)value;
-
-			MemoryStream ms = new MemoryStream();
-			img.Save(ms, img.RawFormat);
-
-			parameter.DbType = DbType.Binary;
-			parameter.Value = ms.GetBuffer();
+			parameter.Value = value;
+			parameter.DbType = DbType.AnsiString;
 		}
 	}
 }

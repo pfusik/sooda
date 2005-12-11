@@ -37,38 +37,29 @@ using System.IO;
 using System.Xml.Serialization;
 using Sooda.Schema;
 
-namespace Sooda.QL {
-    public class SoqlParameterLiteralExpression : SoqlExpression, ILiteralModifiers {
-        [XmlAttribute("position")]
-        public readonly int ParameterPosition;
-        private SoqlLiteralValueModifiers _modifiers = null;
+namespace Sooda.QL
+{
+    public class SoqlLiteralValueModifiers
+    {
+        private FieldDataType _dataTypeOverride;
 
-        public SoqlParameterLiteralExpression() {}
+        public readonly static SoqlLiteralValueModifiers AnsiString = new SoqlLiteralValueModifiers(FieldDataType.AnsiString);
 
-        public SoqlParameterLiteralExpression(int parameterPos) {
-            this.ParameterPosition = parameterPos;
-        }
-
-        public SoqlParameterLiteralExpression(int parameterPos, SoqlLiteralValueModifiers modifiers) {
-            this.ParameterPosition = parameterPos;
-            this.Modifiers = modifiers;
-        }
-
-        public SoqlLiteralValueModifiers Modifiers
+        public SoqlLiteralValueModifiers() {}
+        public SoqlLiteralValueModifiers(FieldDataType dataType)
         {
-            get { return _modifiers; }
-            set { _modifiers = value; }
+            _dataTypeOverride = dataType;
         }
 
-        // visitor pattern
-        public override void Accept(ISoqlVisitor visitor) {
-            visitor.Visit(this);
-        }
-
-        public override object Evaluate(ISoqlEvaluateContext context)
+        public FieldDataType DataTypeOverride
         {
-            return context.GetParameter(this.ParameterPosition);
+            get { return _dataTypeOverride; }
+            set { _dataTypeOverride = value; }
         }
 
+        public override string ToString()
+        {
+            return DataTypeOverride.ToString();
+        }
     }
 }

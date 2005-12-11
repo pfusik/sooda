@@ -33,42 +33,12 @@
 
 using System;
 using System.IO;
-
+using System.Xml;
 using System.Xml.Serialization;
-using Sooda.Schema;
 
 namespace Sooda.QL {
-    public class SoqlParameterLiteralExpression : SoqlExpression, ILiteralModifiers {
-        [XmlAttribute("position")]
-        public readonly int ParameterPosition;
-        private SoqlLiteralValueModifiers _modifiers = null;
-
-        public SoqlParameterLiteralExpression() {}
-
-        public SoqlParameterLiteralExpression(int parameterPos) {
-            this.ParameterPosition = parameterPos;
-        }
-
-        public SoqlParameterLiteralExpression(int parameterPos, SoqlLiteralValueModifiers modifiers) {
-            this.ParameterPosition = parameterPos;
-            this.Modifiers = modifiers;
-        }
-
-        public SoqlLiteralValueModifiers Modifiers
-        {
-            get { return _modifiers; }
-            set { _modifiers = value; }
-        }
-
-        // visitor pattern
-        public override void Accept(ISoqlVisitor visitor) {
-            visitor.Visit(this);
-        }
-
-        public override object Evaluate(ISoqlEvaluateContext context)
-        {
-            return context.GetParameter(this.ParameterPosition);
-        }
-
+    public interface ILiteralModifiers
+    {
+        SoqlLiteralValueModifiers Modifiers { get; }
     }
 }

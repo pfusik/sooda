@@ -176,19 +176,26 @@ namespace Sooda.Sql
             ReplaceEmbeddedSoql(v.Text);
         }
 
-        public void OutputLiteral(object literalValue)
+        public void OutputLiteral(object literalValue, SoqlLiteralValueModifiers modifier)
         {
             if (literalValue is String)
             {
                 Output.Write("'");
                 Output.Write(((string)literalValue).Replace("'","''"));
                 Output.Write("'");
+                if (modifier != null)
+                {
+                    if (modifier.DataTypeOverride == FieldDataType.AnsiString)
+                    {
+                        Output.Write("A");
+                    }
+                }
             }
             else if (literalValue is DateTime)
             {
                 Output.Write("'");
-                Output.Write(((DateTime)literalValue).ToString("yyyyMMdd HH:mm:ss"));
-                Output.Write("'");
+                Output.Write(((DateTime)literalValue).ToString("yyyyMMddHH:mm:ss"));
+                Output.Write("'D");
             }
             else
             {
@@ -197,7 +204,7 @@ namespace Sooda.Sql
         }
 
         public override void Visit(SoqlLiteralExpression v) {
-            OutputLiteral(v.literalValue);
+            OutputLiteral(v.LiteralValue, v.Modifiers);
         }
 
         public override void Visit(SoqlBooleanLiteralExpression v) 
@@ -488,7 +495,7 @@ namespace Sooda.Sql
             throw new Exception("Unknown collection " + v.CollectionName + " in " + currentClass.Name);
         }
 
-        public override void Visit(SoqlPathExpression v) 
+        private FieldInfo VisitAndGetFieldInfo(SoqlPathExpression v, bool doOutput) 
         {
             if (v.Left != null && v.Left.Left == null)
             {
@@ -506,15 +513,19 @@ namespace Sooda.Sql
                             {
                                 if (ci.GetFirstPrimaryKeyField().DataType == FieldDataType.Integer)
                                 {
-                                    OutputLiteral(Convert.ToInt32(constInfo.Key));
+                                    OutputLiteral(Convert.ToInt32(constInfo.Key), null);
                                 }
                                 else if (ci.GetFirstPrimaryKeyField().DataType == FieldDataType.String)
                                 {
-                                    OutputLiteral(constInfo.Key);
+                                    OutputLiteral(constInfo.Key, null);
+                                }
+                                else if (ci.GetFirstPrimaryKeyField().DataType == FieldDataType.AnsiString)
+                                {
+                                    OutputLiteral(constInfo.Key, SoqlLiteralValueModifiers.AnsiString);
                                 }
                                 else
                                     throw new NotSupportedException("Constant of type: " + ci.GetFirstPrimaryKeyField().DataType + " not supported in SOQL");
-                                return;
+                                return null;
                             }
                         }
                     }
@@ -541,17 +552,27 @@ namespace Sooda.Sql
             {
                 throw new Exception(String.Format("{0} not found in {1}", v.PropertyName, currentContainer.Name));
             }
-            if (fi.Table.OrdinalInClass > 0) 
+            
+            if (doOutput)
             {
-                string extPrefix = AddPrimaryKeyJoin(firstTableAlias, (ClassInfo)currentContainer, GetTableAliasForExpressionPrefix(p), fi);
-                Output.Write(extPrefix);
-            } 
-            else 
-            {
-                Output.Write(GetTableAliasForExpressionPrefix(p));
+                if (fi.Table.OrdinalInClass > 0) 
+                {
+                    string extPrefix = AddPrimaryKeyJoin(firstTableAlias, (ClassInfo)currentContainer, GetTableAliasForExpressionPrefix(p), fi);
+                    Output.Write(extPrefix);
+                } 
+                else 
+                {
+                    Output.Write(GetTableAliasForExpressionPrefix(p));
+                }
+                Output.Write(".");
+                Output.Write(fi.DBColumnName);
             }
-            Output.Write(".");
-            Output.Write(fi.DBColumnName);
+            return fi;
+        }
+
+        public override void Visit(SoqlPathExpression v) 
+        {
+            VisitAndGetFieldInfo(v, true);
         }
 
         public override void Visit(SoqlQueryExpression v) 
@@ -1123,17 +1144,136 @@ namespace Sooda.Sql
             expr.Accept(this);
         }
 
+        private void OutputModifiedLiteral(SoqlExpression expr, FieldInfo fieldInfo)
+        {
+			if (expr is SoqlLiteralExpression)
+			{
+				SoqlLiteralExpression e = (SoqlLiteralExpression)expr;
+                
+				Output.Write("{L:");
+				Output.Write(fieldInfo.DataType.ToString());
+				Output.Write(":");
+
+				string serializedValue = fieldInfo.GetFieldHandler().RawSerialize(e.LiteralValue).Replace("\\", "\\\\").Replace("}", "\\}");
+
+				Output.Write(serializedValue);
+				Output.Write("}");
+			}
+			else if (expr is SoqlParameterLiteralExpression)
+			{
+				SoqlParameterLiteralExpression e = (SoqlParameterLiteralExpression)expr;
+                
+				Output.Write("{");
+				Output.Write(e.ParameterPosition);
+				Output.Write(":");
+				Output.Write(fieldInfo.DataType.ToString());
+				Output.Write("}");
+			}
+			else if (expr is SoqlBooleanLiteralExpression)
+			{
+				SoqlBooleanLiteralExpression e = (SoqlBooleanLiteralExpression)expr;
+                
+				Output.Write("{L:");
+				Output.Write(fieldInfo.DataType.ToString());
+				Output.Write(":");
+
+				string serializedValue = fieldInfo.GetFieldHandler().RawSerialize(e.Value).Replace("\\", "\\\\").Replace("}", "\\}");
+
+				Output.Write(serializedValue);
+				Output.Write("}");
+			}
+			else
+			{
+				throw new ArgumentException("Not supported literal expression type: " + expr.GetType().FullName);
+			}
+        }
+
+		private SoqlExpression UnwrapExpression(SoqlExpression expr)
+		{
+			if (expr is SoqlTypedWrapperExpression)
+				return UnwrapExpression(((SoqlTypedWrapperExpression)expr).InnerExpression);
+			else if (expr is SoqlBooleanWrapperExpression)
+				return UnwrapExpression(((SoqlBooleanWrapperExpression)expr).InnerExpression);
+			else
+				return expr;
+		}
+
         public override void Visit(SoqlBooleanRelationalExpression v)
         {
+            //
+            // this is to support type coercions. Whenever we have
+            //
+            // path.expression OPERATOR literal 
+            // or
+            // path.expression OPERATOR parametrized literal
+            // 
+            // we may want to change the Modifiers of the literal to reflect the actual type of
+            // the property being compared with.
+            //
+            // Unfortunately MSSQL crawls without this when comparing varchar() columns 
+            // against nvarchar() parameter values.
+            //
+           
+            bool oldBooleanExpansion;
+			SoqlExpression unwrappedPar1 = UnwrapExpression(v.par1);
+			SoqlExpression unwrappedPar2 = UnwrapExpression(v.par2);
+
+            bool anyLiteral = unwrappedPar1 is ILiteralModifiers || unwrappedPar2 is ILiteralModifiers;
+            if (anyLiteral)
+            {
+                bool anyPath = unwrappedPar1 is SoqlPathExpression || unwrappedPar2 is SoqlPathExpression;
+
+                if (anyPath)
+                {
+                    FieldInfo pathFieldInfo;
+
+                    if (unwrappedPar1 is SoqlPathExpression)
+                    {
+                        pathFieldInfo = VisitAndGetFieldInfo((SoqlPathExpression)unwrappedPar1, false);
+                    }
+                    else
+                    {
+                        pathFieldInfo = VisitAndGetFieldInfo((SoqlPathExpression)unwrappedPar2, false);
+                    }
+
+                    if (pathFieldInfo != null)
+                    {
+                        oldBooleanExpansion = DisableBooleanExpansion;
+                        DisableBooleanExpansion = true;
+                        Output.Write("(");
+                        if (unwrappedPar1 is ILiteralModifiers)
+                        {
+                            OutputModifiedLiteral(unwrappedPar1, pathFieldInfo);
+                        }
+                        else
+                        {
+                            v.par1.Accept(this);
+                        }
+                        OutputRelationalOperator(v.op);
+                        if (unwrappedPar2 is ILiteralModifiers)
+                        {
+                            OutputModifiedLiteral(unwrappedPar2, pathFieldInfo);
+                        }
+                        else
+                        {
+                            v.par2.Accept(this);
+                        }
+                        Output.Write(")");
+                        DisableBooleanExpansion = oldBooleanExpansion;
+                        return;
+                    }
+                }
+            }
+                           
             // by default booleans expand to "b <> 0"
             // in relational expressions they expand to "b"
             // this is a dirty hack - will be fixed when we support
             // proper boolean-to-any-type mapping
 
-            bool old = DisableBooleanExpansion;
+            oldBooleanExpansion = DisableBooleanExpansion;
             DisableBooleanExpansion = true;
             base.Visit(v);
-            DisableBooleanExpansion = old;
+            DisableBooleanExpansion = oldBooleanExpansion;
         }
     }
 }

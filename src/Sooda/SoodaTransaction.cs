@@ -482,11 +482,14 @@ namespace Sooda
                     }
                 }
 
-                if (_relationTables != null) 
+                if (!isPrecommit)
                 {
-                    foreach (SoodaRelationTable rel in _relationTables.Values) 
+                    if (_relationTables != null) 
                     {
-                        rel.SaveTuples(this);
+                        foreach (SoodaRelationTable rel in _relationTables.Values) 
+                        {
+                            rel.SaveTuples(this);
+                        }
                     }
                 }
 

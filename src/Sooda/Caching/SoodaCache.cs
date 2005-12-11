@@ -163,11 +163,11 @@ namespace Sooda.Caching
 
 				if (bre.par1 is SoqlLiteralExpression)
 				{
-					value = ((SoqlLiteralExpression)bre.par1).literalValue;
+					value = ((SoqlLiteralExpression)bre.par1).LiteralValue;
 				}
 				else if (bre.par2 is SoqlLiteralExpression)
 				{
-					value = ((SoqlLiteralExpression)bre.par2).literalValue;
+					value = ((SoqlLiteralExpression)bre.par2).LiteralValue;
 				}
 				else if (bre.par1 is SoqlParameterLiteralExpression)
 				{

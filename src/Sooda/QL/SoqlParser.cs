@@ -37,6 +37,7 @@ using System.Collections;
 using System.Globalization;
 
 using Sooda.QL;
+using Sooda.Schema;
 
 namespace Sooda.QL {
     public class SoqlParser {
@@ -160,8 +161,18 @@ namespace Sooda.QL {
                 tokenizer.GetNextToken();
                 int val = Int32.Parse((string)tokenizer.TokenValue);
                 tokenizer.GetNextToken();
-                tokenizer.Expect(SoqlTokenType.RightCurlyBrace);
-                return new SoqlParameterLiteralExpression(val);
+                if (tokenizer.TokenType == SoqlTokenType.Colon)
+                {
+                    tokenizer.GetNextToken();
+                    SoqlLiteralValueModifiers modifiers = ParseLiteralValueModifiers();
+                    tokenizer.Expect(SoqlTokenType.RightCurlyBrace);
+                    return new SoqlParameterLiteralExpression(val, modifiers);
+                }
+                else
+                {
+                    tokenizer.Expect(SoqlTokenType.RightCurlyBrace);
+                    return new SoqlParameterLiteralExpression(val);
+                }
             }
 
             if (tokenizer.TokenType == SoqlTokenType.Asterisk) {
@@ -525,6 +536,24 @@ namespace Sooda.QL {
             return e;
         }
 
+        private SoqlLiteralValueModifiers ParseLiteralValueModifiers()
+        {
+            SoqlLiteralValueModifiers retVal = new SoqlLiteralValueModifiers();
+
+            string typeName = tokenizer.EatKeyword();
+            FieldDataType typeOverride = (FieldDataType)FieldDataType.Parse(typeof(FieldDataType),typeName);
+            retVal.DataTypeOverride = typeOverride;
+            return retVal;
+        }
+
+        public static SoqlLiteralValueModifiers ParseLiteralValueModifiers(string expr)
+        {
+            SoqlParser parser = new SoqlParser(expr);
+            SoqlLiteralValueModifiers e = parser.ParseLiteralValueModifiers();
+            if (!parser.tokenizer.IsEOF())
+                throw new SoqlException("Unexpected token: " + parser.tokenizer.TokenValue, parser.tokenizer.TokenPosition);
+            return e;
+        }
         public static SoqlExpression ParseExpression(string expr) {
             SoqlParser parser = new SoqlParser(expr);
             SoqlExpression e = parser.ParseExpression();

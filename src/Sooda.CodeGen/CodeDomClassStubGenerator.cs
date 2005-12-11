@@ -248,14 +248,14 @@ namespace Sooda.CodeGen
                     return new CodeTypeReference(typeof(object));
 
                 case PrimitiveRepresentation.SqlType:
-                    Type t = FieldDataTypeHelper.GetSqlType(fi.DataType);
+                    Type t = fi.GetFieldHandler().GetSqlType();
                     if (t == null)
-                        return new CodeTypeReference(FieldDataTypeHelper.GetClrType(fi.DataType));
+                        return new CodeTypeReference(fi.GetFieldHandler().GetFieldType());
                     else
                         return new CodeTypeReference(t);
 
                 case PrimitiveRepresentation.Raw:
-                    return new CodeTypeReference(FieldDataTypeHelper.GetClrType(fi.DataType));
+                    return new CodeTypeReference(fi.GetFieldHandler().GetFieldType());
 
                 default:
                     throw new NotImplementedException("Unknown PrimitiveRepresentation: " + rep);
@@ -396,7 +396,7 @@ namespace Sooda.CodeGen
                 PrimitiveRepresentation actualNullableRepresentation = options.NullableRepresentation;
                 PrimitiveRepresentation actualNotNullRepresentation = options.NotNullRepresentation;
 
-                if (FieldDataTypeHelper.GetSqlType(fi.DataType) == null) 
+                if (fi.GetFieldHandler().GetSqlType() == null) 
                 {
                     if (actualNotNullRepresentation == PrimitiveRepresentation.SqlType)
                         actualNotNullRepresentation = PrimitiveRepresentation.Raw;
@@ -483,7 +483,7 @@ namespace Sooda.CodeGen
                     if (fi.References == null && actualNullableRepresentation == PrimitiveRepresentation.SqlType) 
                     {
                         retVal = new CodePropertyReferenceExpression(
-                            new CodeTypeReferenceExpression(FieldDataTypeHelper.GetSqlType(fi.DataType)), "Null");
+                            new CodeTypeReferenceExpression(fi.GetFieldHandler().GetSqlType()), "Null");
                     }
 
                     prop.GetStatements.Add(

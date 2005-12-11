@@ -71,6 +71,7 @@ namespace Sooda.QL {
         QuestionMark,
         And,
         Or,
+        Colon,
 
         LastPunct,
         Invalid,
@@ -260,6 +261,7 @@ namespace Sooda.QL {
                 new CharToTokenType(',', SoqlTokenType.Comma),
                 new CharToTokenType('!', SoqlTokenType.Not),
                 new CharToTokenType('?', SoqlTokenType.QuestionMark),
+                new CharToTokenType(':', SoqlTokenType.Colon),
             };
 
         static SoqlTokenType[] charIndexToTokenType = new SoqlTokenType[128];

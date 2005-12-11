@@ -57,7 +57,7 @@ namespace Sooda.ObjectMapper.FieldHandlers {
 
         public Double GetNotNullValue(object val) {
             if (val == null)
-                throw new InvalidOperationException("Attempt to read a non-null value that isn't set yes");
+                throw new InvalidOperationException("Attempt to read a non-null value that isn't set yet");
             return (Double)val;
         }
 
@@ -100,5 +100,16 @@ namespace Sooda.ObjectMapper.FieldHandlers {
         public override Type GetFieldType() {
             return typeof(Double);
         }
-    }
+
+		public override Type GetSqlType()
+		{
+			return typeof(System.Data.SqlTypes.SqlDouble);
+		}
+
+		public override void SetupDBParameter(IDbDataParameter parameter, object value)
+		{
+			parameter.DbType = DbType.Double;
+			parameter.Value = value;
+		}
+	}
 }

@@ -70,57 +70,14 @@ namespace ConsoleTest
 
         static void Main(string[] args) 
         {
-            // Sooda.Logging.LogManager.Implementation = new Sooda.Logging.ConsoleLoggingImplementation();
+            Sooda.Logging.LogManager.Implementation = new Sooda.Logging.ConsoleLoggingImplementation();
 
 			using (SoodaTransaction t = new SoodaTransaction())
 			{
-				Group g = Group.Load(11);
-				g.Members.Remove(Contact.Ed);
-				t.Commit();
+				//Group.LoadSingleObject(GroupField.Manager.Name == "Mary M}anager");
+				Contact.GetList(ContactField.Name == ContactField.Name);
+				Contact.GetList(new SoodaWhereClause(ContactField.Name == Soql.Param(0), "ala"));
 			}
-
-			using (SoodaTransaction t = new SoodaTransaction())
-			{
-				Group g = Group.Load(11);
-				Console.WriteLine(g.Members.Count);
-			}
-
-			Console.WriteLine("--------------------");
-			using (SoodaTransaction t = new SoodaTransaction())
-			{
-				Group g = Group.Load(11);
-				Console.WriteLine(g.Members.Count);
-				g.Members.Add(Contact.Ed);
-				Console.WriteLine(g.Members.Count);
-				t.Commit();
-			}
-			return;
-
-
-            using (SoodaTransaction t = new SoodaTransaction())
-            {
-				SoodaCache.Enabled = true;
-                Console.WriteLine();
-
-                foreach (Contact c in Contact.GetList(
-                    ContactField.Active == true &&
-                    SoqlParser.ParseBooleanExpression("Active = true") &&
-                    SoqlParser.ParseBooleanExpression("Active = false") &&
-                    //!ContactField.Active &&
-                    (
-                    ContactField.Name == "Mary Manager" ||
-                    (ContactField.PrimaryGroup.Members.ContainsContactWhere(
-                    ContactField.Name == "Zdzichu Pierdziszewski" 
-                    && ContactField.LastSalary > 100))
-                    )))
-                {
-                    Console.WriteLine("nazwisko: {0}", c.Name);
-                    Console.WriteLine("kierownik grupy: {0}", c.PrimaryGroup.Manager.Name);
-                }
-				Console.WriteLine("Stats:\n{0}", t.Statistics);
-				Console.WriteLine("Global stats:\n{0}", SoodaStatistics.Global);
-
-            }
 
         }
     }

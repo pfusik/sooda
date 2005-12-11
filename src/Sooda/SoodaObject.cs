@@ -460,9 +460,9 @@ namespace Sooda
             return DeleteMarker;
         }
 
-        internal object GetDBFieldValue(int fieldNumber) 
+        internal object GetFieldValue(int fieldNumber) 
         {
-            return GetFieldHandler(fieldNumber).GetDBFieldValue(_fieldValues.GetBoxedFieldValue(fieldNumber));
+            return _fieldValues.GetBoxedFieldValue(fieldNumber);
         }
 
         public bool IsFieldDirty(int fieldNumber) 

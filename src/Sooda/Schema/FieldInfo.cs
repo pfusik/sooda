@@ -36,6 +36,9 @@ using System.Xml.Serialization;
 using System.ComponentModel;
 using System.Collections.Specialized;
 
+using Sooda.ObjectMapper;
+using Sooda.ObjectMapper.FieldHandlers;
+
 namespace Sooda.Schema {
 
     [XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
@@ -98,9 +101,6 @@ namespace Sooda.Schema {
         [XmlAttribute("prefetch")]
         [DefaultValue(0)]
         public int PrefetchLevel = 0;
-
-        [XmlAttribute("wrapperType")]
-        public string WrapperTypeName;
 
         [XmlAttribute("dbcolumn")]
         public string DBColumnName
@@ -184,14 +184,13 @@ namespace Sooda.Schema {
             backRefCollections.Add(c);
         }
 
-        public string GetWrapperTypeName() {
-            if (WrapperTypeName != null)
-                return WrapperTypeName;
-            else
-                return FieldDataTypeHelper.GetDefaultWrapperTypeName(DataType);
-        }
+		public SoodaFieldHandler GetFieldHandler() 
+		{
+			return FieldHandlerFactory.GetFieldHandler(DataType);
+		}
 
-        internal void Resolve(TableInfo parentTable, string parentName, int ordinal) {
+		internal void Resolve(TableInfo parentTable, string parentName, int ordinal) 
+		{
             this.Table = parentTable;
             this.OrdinalInTable = ordinal;
         }

@@ -31,16 +31,20 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
+using Sooda.ObjectMapper;
+using System;
+using System.Collections;
+using System.Xml.Serialization;
+using System.Runtime.Serialization;
+using System.Text;
+
+using Sooda.ObjectMapper;
+using Sooda.ObjectMapper.FieldHandlers;
+
 [assembly: System.CLSCompliant(true)]
 
 namespace Sooda.Schema 
 {
-    using System;
-    using System.Collections;
-    using System.Xml.Serialization;
-    using System.Runtime.Serialization;
-    using System.Text;
-
     [XmlType(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [XmlRoot("schema", Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd", IsNullable = false)]
     [Serializable]
@@ -331,7 +335,7 @@ namespace Sooda.Schema
             }
             if (DefaultPrecommitValues)
             {
-                return FieldDataTypeHelper.GetDefaultPrecommitValue(dataType);
+                return FieldHandlerFactory.GetFieldHandler(dataType).DefaultPrecommitValue();
             }
             return null;
         }

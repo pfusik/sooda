@@ -34,6 +34,7 @@
 using System;
 using System.Data;
 using System.Xml;
+using System.Data.SqlTypes;
 
 namespace Sooda.ObjectMapper.FieldHandlers {
     public class BooleanAsIntegerFieldHandler : SoodaFieldHandler {
@@ -99,13 +100,17 @@ namespace Sooda.ObjectMapper.FieldHandlers {
             return typeof(bool);
         }
 
-        public override object GetDBFieldValue(object val) {
-            if (val == null)
-                return null;
-            if ((bool)val)
-                return _boxed1;
-            else
-                return _boxed0;
-        }
+		public override Type GetSqlType()
+		{
+			return typeof(SqlBoolean);
+		}
+
+		public override void SetupDBParameter(IDbDataParameter parameter, object value)
+		{
+			parameter.DbType = DbType.Int32;
+			parameter.Value = ((bool)value) ? 1 : 0;
+		}
+
+
     }
 }

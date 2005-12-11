@@ -122,7 +122,6 @@
 		<xsd:attribute name="nullable" type="xsd:boolean" use="optional" default="false" />
 		<xsd:attribute name="forceTrigger" use="optional" type="xsd:boolean" default="false" />
 		<xsd:attribute name="alwaysTrigger" use="optional" type="xsd:boolean" default="false" />
-		<xsd:attribute name="wrapperType" use="optional" type="xsd:string" />
 		<xsd:attribute name="primaryKey" use="optional" type="xsd:boolean" default="false" />
 		<xsd:attribute name="precommitValue" type="xsd:string" use="optional" />
         <xsd:anyAttribute processContents="lax" />
@@ -144,6 +143,7 @@
 			<xsd:enumeration value="Image" />
 			<xsd:enumeration value="TimeSpan" />
 			<xsd:enumeration value="Compound" />
+			<xsd:enumeration value="AnsiString" />
     	</xsd:restriction>
 	</xsd:simpleType>
 	<xsd:simpleType name="ClassCardinality">

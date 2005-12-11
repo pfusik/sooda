@@ -98,5 +98,16 @@ namespace Sooda.ObjectMapper.FieldHandlers {
         public override Type GetFieldType() {
             return typeof(bool);
         }
-    }
+	
+		public override Type GetSqlType()
+		{
+			return typeof(System.Data.SqlTypes.SqlBoolean);
+		}
+
+		public override void SetupDBParameter(IDbDataParameter parameter, object value)
+		{
+			parameter.DbType = DbType.Boolean;
+			parameter.Value = value;
+		}
+	}
 }

@@ -37,9 +37,11 @@ using System.IO;
 using System.Xml.Serialization;
 
 namespace Sooda.QL {
-    public class SoqlBooleanLiteralExpression : SoqlBooleanExpression, ISoqlConstantExpression {
+    public class SoqlBooleanLiteralExpression : SoqlBooleanExpression, ISoqlConstantExpression, ILiteralModifiers {
         [XmlAttribute("boolValue")]
         public bool Value;
+
+		private SoqlLiteralValueModifiers _modifiers = null;
 
         public SoqlBooleanLiteralExpression() {}
 
@@ -47,8 +49,15 @@ namespace Sooda.QL {
             this.Value = val;
         }
 
-        // visitor pattern
-        public override void Accept(ISoqlVisitor visitor) {
+		public SoqlLiteralValueModifiers Modifiers
+		{
+			get { return _modifiers; }
+			set { _modifiers = value; }
+		}
+
+		// visitor pattern
+        public override void Accept(ISoqlVisitor visitor) 
+		{
             visitor.Visit(this);
         }
 

@@ -57,7 +57,7 @@ namespace Sooda.ObjectMapper.FieldHandlers {
 
         public Int64 GetNotNullValue(object val) {
             if (val == null)
-                throw new InvalidOperationException("Attempt to read a non-null value that isn't set yes");
+                throw new InvalidOperationException("Attempt to read a non-null value that isn't set yet");
             return (Int64)val;
         }
 
@@ -101,5 +101,16 @@ namespace Sooda.ObjectMapper.FieldHandlers {
         public override Type GetFieldType() {
             return typeof(Int64);
         }
-    }
+
+		public override Type GetSqlType()
+		{
+			return typeof(System.Data.SqlTypes.SqlInt64);
+		}
+
+		public override void SetupDBParameter(IDbDataParameter parameter, object value)
+		{
+			parameter.DbType = DbType.Int64;
+			parameter.Value = value;
+		}
+	}
 }

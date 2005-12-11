@@ -36,6 +36,9 @@ using System.Data;
 using System.IO;
 using System.Collections;
 
+using Sooda.QL;
+using Sooda.Schema;
+
 namespace Sooda.Sql {
 	public abstract class SqlBuilderBase : ISqlBuilder {
 		public virtual string GetDDLCommandTerminator() {
@@ -103,8 +106,8 @@ namespace Sooda.Sql {
 
 		public abstract void BuildCommandWithParameters(IDbCommand command, bool append, string query, object[] par);
 
-		protected virtual bool SetDbTypeFromValue(IDbDataParameter parameter, object value) {
-			object o = paramTypes[value.GetType()];
+		protected virtual bool SetDbTypeFromValue(IDbDataParameter parameter, object value, SoqlLiteralValueModifiers modifiers) {
+            object o = paramTypes[value.GetType()];
 			if (o == null)
 				return false;
 			parameter.DbType = (DbType)o;

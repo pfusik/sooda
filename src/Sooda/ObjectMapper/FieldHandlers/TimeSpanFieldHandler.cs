@@ -103,5 +103,16 @@ namespace Sooda.ObjectMapper.FieldHandlers {
         public override Type GetFieldType() {
             return typeof(TimeSpan);
         }
-    }
+
+		public override Type GetSqlType()
+		{
+			return null;
+		}
+
+		public override void SetupDBParameter(IDbDataParameter parameter, object value)
+		{
+			parameter.DbType = DbType.Int32;
+			parameter.Value = (int)(((TimeSpan)value).TotalSeconds);
+		}
+	}
 }

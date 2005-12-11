@@ -31,13 +31,16 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
+using System;
+using System.Xml.Serialization;
+using System.Data;
+using System.Collections;
+
+using Sooda.ObjectMapper;
+using Sooda.ObjectMapper.FieldHandlers;
+
 namespace Sooda.Schema 
 {
-    using System;
-    using System.Xml.Serialization;
-    using System.Data;
-    using System.Collections;
-
     /// <summary>
     /// Stores database table schema information
     /// </summary>
@@ -541,7 +544,7 @@ namespace Sooda.Schema
                 }
                 else
                 {
-                    fi.PrecommitTypedValue = Convert.ChangeType(pcv, FieldDataTypeHelper.GetClrType(fi.DataType));
+					fi.PrecommitTypedValue = FieldHandlerFactory.GetFieldHandler(fi.DataType).RawDeserialize(pcv);
                 }
             }
         }

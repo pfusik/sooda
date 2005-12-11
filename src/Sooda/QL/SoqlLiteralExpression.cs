@@ -33,18 +33,30 @@
 
 using System;
 using System.IO;
+using Sooda.Schema;
 
 using System.Xml.Serialization;
 
 namespace Sooda.QL {
-    public class SoqlLiteralExpression : SoqlExpression, ISoqlConstantExpression {
-        [XmlAttribute("value")]
-        public object literalValue;
+    public class SoqlLiteralExpression : SoqlExpression, ISoqlConstantExpression, ILiteralModifiers {
+        public readonly object LiteralValue;
+        private SoqlLiteralValueModifiers _modifiers = null;
 
         public SoqlLiteralExpression() {}
 
         public SoqlLiteralExpression(object val) {
-            this.literalValue = val;
+            this.LiteralValue = val;
+        }
+
+        public SoqlLiteralExpression(object val, SoqlLiteralValueModifiers modifiers) {
+            this.LiteralValue = val;
+            this.Modifiers = modifiers;
+        }
+
+        public SoqlLiteralValueModifiers Modifiers
+        {
+            get { return _modifiers; }
+            set { _modifiers = value; }
         }
 
         // visitor pattern
@@ -53,12 +65,12 @@ namespace Sooda.QL {
         }
 
         public object GetConstantValue() {
-            return this.literalValue;
+            return this.LiteralValue;
         }
 
         public override object Evaluate(ISoqlEvaluateContext context)
         {
-            return literalValue;
+            return LiteralValue;
         }
 
     }

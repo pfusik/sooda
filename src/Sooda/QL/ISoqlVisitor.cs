@@ -34,6 +34,7 @@
 using System;
 
 using Sooda.QL.TypedWrappers;
+using Sooda.Schema;
 
 namespace Sooda.QL 
 {

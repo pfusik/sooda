@@ -34,6 +34,7 @@
 using System;
 using System.Data;
 using System.Xml;
+using System.Data.SqlTypes;
 
 namespace Sooda.ObjectMapper.FieldHandlers {
     public class BlobFieldHandler : SoodaFieldHandler {
@@ -99,5 +100,16 @@ namespace Sooda.ObjectMapper.FieldHandlers {
         public override Type GetFieldType() {
             return typeof(byte[]);
         }
-    }
+
+		public override Type GetSqlType()
+		{
+			return typeof(SqlBinary);
+		}
+
+		public override void SetupDBParameter(IDbDataParameter parameter, object value)
+		{
+			parameter.Value = value;
+			parameter.DbType = DbType.Binary;
+		}
+	}
 }

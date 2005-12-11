@@ -71,7 +71,7 @@ namespace Sooda.CodeGen {
             method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(XmlReader), "reader"));
             method.Attributes = MemberAttributes.Family | MemberAttributes.Override;
 
-            string typeWrapper = relationInfo.Table.Fields[0].GetWrapperTypeName();
+            string typeWrapper = relationInfo.Table.Fields[0].GetFieldHandler().GetType().FullName;
 
             method.Statements.Add(
                 new CodeMethodReturnStatement(
@@ -95,7 +95,7 @@ namespace Sooda.CodeGen {
             method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(XmlReader), "reader"));
             method.Attributes = MemberAttributes.Family | MemberAttributes.Override;
 
-            string typeWrapper = relationInfo.Table.Fields[1].GetWrapperTypeName();
+            string typeWrapper = relationInfo.Table.Fields[1].GetFieldHandler().GetType().FullName;
 
             method.Statements.Add(
                 new CodeMethodReturnStatement(

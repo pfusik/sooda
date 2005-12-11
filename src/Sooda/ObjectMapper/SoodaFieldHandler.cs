@@ -80,12 +80,15 @@ namespace Sooda.ObjectMapper {
         public abstract object RawRead(IDataRecord record, int pos);
         public abstract object ZeroValue();
 
-        public abstract Type GetFieldType();
+		public virtual object DefaultPrecommitValue()
+		{
+			return ZeroValue();
+		}
 
-        public virtual object GetDBFieldValue(object val)
-        {
-            return val;
-        }
+        public abstract Type GetFieldType();
+		public abstract Type GetSqlType();
+
+		public abstract void SetupDBParameter(IDbDataParameter parameter, object value);
     }
 }
 

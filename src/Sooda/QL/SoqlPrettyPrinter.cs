@@ -158,12 +158,10 @@ namespace Sooda.QL
             Output.Write(")");
         }
 
-        public virtual void Visit(SoqlBooleanRelationalExpression v) 
+        protected void OutputRelationalOperator(SoqlRelationalOperator op)
         {
-            Output.Write("(");
-            v.par1.Accept(this);
             Output.Write(" ");
-            switch (v.op) 
+            switch (op) 
             {
                 case SoqlRelationalOperator.Greater:
                     Output.Write(">");
@@ -194,9 +192,16 @@ namespace Sooda.QL
                     break;
 
                 default:
-                    throw new NotImplementedException(v.op.ToString());
+                    throw new NotImplementedException(op.ToString());
             }
             Output.Write(" ");
+        }
+
+        public virtual void Visit(SoqlBooleanRelationalExpression v) 
+        {
+            Output.Write("(");
+            v.par1.Accept(this);
+            OutputRelationalOperator(v.op);
             v.par2.Accept(this);
             Output.Write(")");
         }
@@ -239,21 +244,21 @@ namespace Sooda.QL
 
         public virtual void Visit(SoqlLiteralExpression v)
         {
-            if (v.literalValue is String)
+            if (v.LiteralValue is String)
             {
                 Output.Write("'");
-                Output.Write(((string)v.literalValue).Replace("'","''"));
+                Output.Write(((string)v.LiteralValue).Replace("'","''"));
                 Output.Write("'");
             }
-            else if (v.literalValue is DateTime)
+            else if (v.LiteralValue is DateTime)
             {
                 Output.Write("'");
-                Output.Write(((DateTime)v.literalValue).ToString("yyyyMMddHH:mm:ss"));
-                Output.Write("'D");
+                Output.Write(((DateTime)v.LiteralValue).ToString("yyyyMMdd HH:mm:ss"));
+                Output.Write("'");
             }
             else
             {
-                Output.Write(v.literalValue);
+                Output.Write(v.LiteralValue);
             }
         }
 
@@ -266,6 +271,11 @@ namespace Sooda.QL
         {
             Output.Write("{");
             Output.Write(v.ParameterPosition);
+            if (v.Modifiers != null)
+            {
+                Output.Write(":");
+                Output.Write(v.Modifiers.ToString());
+            }
             Output.Write("}");
         }
 

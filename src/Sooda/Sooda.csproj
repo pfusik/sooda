@@ -489,6 +489,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ObjectMapper\FieldHandlers\AnsiStringFieldHandler.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ObjectMapper\FieldHandlers\BlobFieldHandler.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -515,6 +520,11 @@
                 />
                 <File
                     RelPath = "ObjectMapper\FieldHandlers\DoubleFieldHandler.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ObjectMapper\FieldHandlers\FieldHandlerFactory.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -584,6 +594,11 @@
                 />
                 <File
                     RelPath = "QL\GetInvolvedClassesVisitor.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\ILiteralModifers.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -704,6 +719,11 @@
                 />
                 <File
                     RelPath = "QL\SoqlLiteralExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\SoqlLiteralValueModifiers.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -872,12 +892,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "QL\TypedWrappers\SoqlNullableTimeSpanWrapperExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "QL\TypedWrappers\SoqlSingleWrapperExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "QL\TypedWrappers\SoqlStringWrapperExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\TypedWrappers\SoqlTimeSpanWrapperExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

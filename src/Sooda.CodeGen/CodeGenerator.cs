@@ -240,7 +240,7 @@ namespace Sooda.CodeGen
                     formalParameters += ", ";
                     actualParameters += ", ";
                 }
-                string pkClrTypeName = FieldDataTypeHelper.GetClrType(fi.DataType).FullName;
+                string pkClrTypeName = fi.GetFieldHandler().GetFieldType().FullName;
                 formalParameters += pkClrTypeName + " " + MakeCamelCase(fi.Name);
                 actualParameters += "arg(" + MakeCamelCase(fi.Name) + ")";
             }
@@ -259,7 +259,7 @@ namespace Sooda.CodeGen
             }
 
             context["ClassUnifiedFieldCount"] = ci.UnifiedFields.Count;
-            context["PrimaryKeyFieldHandler"] = ci.GetFirstPrimaryKeyField().GetWrapperTypeName();
+            context["PrimaryKeyFieldHandler"] = ci.GetFirstPrimaryKeyField().GetFieldHandler().GetType().FullName;
             context["OptionalNewAttribute"] = (ci.InheritsFromClass != null) ? ",New" : "";
 
             if (ci.ExtBaseClassName != null) 
@@ -343,8 +343,8 @@ namespace Sooda.CodeGen
         {
 #warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
             FieldInfo fi = ci.GetFirstPrimaryKeyField();
-            string pkClrTypeName = FieldDataTypeHelper.GetClrType(fi.DataType).Name;
-            string pkFieldHandlerTypeName = FieldDataTypeHelper.GetDefaultWrapperTypeName(fi.DataType);
+            string pkClrTypeName = fi.GetFieldHandler().GetFieldType().FullName;
+            string pkFieldHandlerTypeName = fi.GetFieldHandler().GetType().FullName;
 
             CDILContext context = new CDILContext();
             context["ClassName"] = ci.Name;
@@ -373,7 +373,7 @@ namespace Sooda.CodeGen
 
             foreach (FieldInfo fi2 in ci.UnifiedFields)
             {
-                string typeWrapper = fi2.GetWrapperTypeName();
+                string typeWrapper = fi2.GetFieldHandler().GetType().FullName;
                 bool isNullable = fi2.IsNullable;
 
                 CodeMemberField field = new CodeMemberField(typeWrapper, "_fieldhandler_" + fi2.Name);
@@ -465,8 +465,8 @@ namespace Sooda.CodeGen
             string relationName = ri.Name;
             string leftColumnName = ri.Table.Fields[0].DBColumnName;
             string rightColumnName = ri.Table.Fields[1].DBColumnName;
-            string leftColumnType = FieldDataTypeHelper.GetClrType(ri.Table.Fields[0].DataType).Name;
-            string rightColumnType = FieldDataTypeHelper.GetClrType(ri.Table.Fields[1].DataType).Name;
+            string leftColumnType = ri.Table.Fields[0].GetFieldHandler().GetFieldType().Name;
+            string rightColumnType = ri.Table.Fields[1].GetFieldHandler().GetFieldType().Name;
             string leftColumnRefType = ri.Table.Fields[0].References;
             string rightColumnRefType = ri.Table.Fields[1].References;
             string SoodaRelationTable = relationName + "_RelationTable";
@@ -564,8 +564,9 @@ namespace Sooda.CodeGen
 
                 if (fi.ReferencedClass == null)
                 {
-                    string rawTypeName = Sooda.Schema.FieldDataTypeHelper.GetClrType(fi.DataType).Name;
+                    string rawTypeName = fi.GetFieldHandler().GetFieldType().Name;
                     fullWrapperTypeName = "Sooda.QL.TypedWrappers.Soql" + optionalNullable + rawTypeName + "WrapperExpression";
+
                     prop.GetStatements.Add(new CodeMethodReturnStatement(
                         new CodeObjectCreateExpression(fullWrapperTypeName, 
                         new CodeObjectCreateExpression("Sooda.QL.SoqlPathExpression", new CodePrimitiveExpression(fi.Name)))));
@@ -587,14 +588,14 @@ namespace Sooda.CodeGen
         {
             CDILContext context = new CDILContext();
             context["ClassName"] = classInfo.Name;
-            context["PrimaryKeyType"] = FieldDataTypeHelper.GetClrType(classInfo.GetFirstPrimaryKeyField().DataType).FullName;
+            context["PrimaryKeyType"] = classInfo.GetFirstPrimaryKeyField().GetFieldHandler().GetFieldType().FullName;
 
             CodeTypeDeclaration ctd = CDILParser.ParseClass(CDILTemplate.Get("TypedCollectionWrapper.cdil"), context);
             ns.Types.Add(ctd);
 
             context = new CDILContext();
             context["ClassName"] = classInfo.Name;
-            context["PrimaryKeyType"] = FieldDataTypeHelper.GetClrType(classInfo.GetFirstPrimaryKeyField().DataType).FullName;
+            context["PrimaryKeyType"] = classInfo.GetFirstPrimaryKeyField().GetFieldHandler().GetFieldType().FullName;
 
             ctd = CDILParser.ParseClass(CDILTemplate.Get("TypedWrapper.cdil"), context);
             ns.Types.Add(ctd);
@@ -627,7 +628,7 @@ namespace Sooda.CodeGen
 
                 if (fi.ReferencedClass == null)
                 {
-                    string rawTypeName = Sooda.Schema.FieldDataTypeHelper.GetClrType(fi.DataType).Name;
+                    string rawTypeName = fi.GetFieldHandler().GetFieldType().Name;
                     fullWrapperTypeName = "Sooda.QL.TypedWrappers.Soql" + optionalNullable + rawTypeName + "WrapperExpression";
                     prop.GetStatements.Add(new CodeMethodReturnStatement(
                         new CodeObjectCreateExpression(fullWrapperTypeName, 
