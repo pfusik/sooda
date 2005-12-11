@@ -1135,6 +1135,8 @@ namespace Sooda.CodeGen
             nspace.Imports.Add(new CodeNamespaceImport("Sooda"));
             nspace.Imports.Add(new CodeNamespaceImport(Project.OutputNamespace + ".Stubs"));
             AddImportsFromIncludedSchema(nspace, schema.Includes, false);
+            AddImportsFromIncludedSchema(nspace, schema.Includes, true);
+            AddTypedQueryImportsFromIncludedSchema(nspace, schema.Includes);
             return nspace;
         }
 
