@@ -83,7 +83,7 @@ namespace Sooda.ObjectMapper.FieldHandlers {
         }
 
         public static string SerializeToString(object obj) {
-            return ((bool)obj) ? "true" : "false";
+            return Convert.ToBoolean(obj) ? "true" : "false";
         }
 
         public static object DeserializeFromString(string s) {

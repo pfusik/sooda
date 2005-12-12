@@ -81,7 +81,7 @@ namespace Sooda.ObjectMapper.FieldHandlers {
         }
 
         public static string SerializeToString(object obj) {
-            return ((bool)obj) ? "true" : "false";
+            return Convert.ToBoolean(obj) ? "true" : "false";
         }
 
         public static object DeserializeFromString(string s) {
@@ -108,7 +108,7 @@ namespace Sooda.ObjectMapper.FieldHandlers {
 		public override void SetupDBParameter(IDbDataParameter parameter, object value)
 		{
 			parameter.DbType = DbType.Int32;
-			parameter.Value = ((bool)value) ? 1 : 0;
+			parameter.Value = Convert.ToBoolean(value) ? 1 : 0;
 		}
 
 

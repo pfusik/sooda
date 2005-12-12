@@ -86,7 +86,7 @@ namespace Sooda.ObjectMapper.FieldHandlers {
 
 
         public static string SerializeToString(object obj) {
-            return ((Int64)obj).ToString(CultureInfo.InvariantCulture);
+            return Convert.ToInt64(obj).ToString(CultureInfo.InvariantCulture);
         }
 
         public static object DeserializeFromString(string s) {
