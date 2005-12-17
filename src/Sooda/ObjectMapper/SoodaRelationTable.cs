@@ -103,7 +103,8 @@ namespace Sooda.ObjectMapper {
             for (int i = 0; i < count; ++i) {
                 if (tuples[i].ref1.Equals(ref1) && tuples[i].ref2.Equals(ref2)) {
                     tuples[i].tupleMode = tupleMode;
-                    this.OnTupleChanged(this, new SoodaRelationTupleChangedArgs(ref1, ref2, tupleMode));
+                    if (this.OnTupleChanged != null)
+                        this.OnTupleChanged(this, new SoodaRelationTupleChangedArgs(ref1, ref2, tupleMode));
                     return ;
                 }
             }
