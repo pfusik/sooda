@@ -84,6 +84,7 @@ namespace Sooda
         private StringToISoodaObjectFactoryAssociation factoryForClassName = new StringToISoodaObjectFactoryAssociation();
         private TypeToISoodaObjectFactoryAssociation factoryForType = new TypeToISoodaObjectFactoryAssociation();
         private SoodaObjectToNameValueCollectionAssociation _persistentValues = new SoodaObjectToNameValueCollectionAssociation();
+        private IsolationLevel _isolationLevel = IsolationLevel.ReadCommitted;
         private Assembly _assembly;
         private SchemaInfo _schema;
         internal bool _savingObjects = false;
@@ -375,10 +376,24 @@ namespace Sooda
             SoodaDataSource ds = (SoodaDataSource)dataSourceInfo.CreateDataSource();
             _dataSources.Add(ds);
             ds.Statistics = this.Statistics;
+            ds.IsolationLevel = IsolationLevel;
             ds.Open();
             if (_savingObjects)
                 ds.BeginSaveChanges();
             return ds;
+        }
+
+        public IsolationLevel IsolationLevel
+        {
+            get { return _isolationLevel; }
+            set
+            {
+                _isolationLevel = value;
+                foreach (SoodaDataSource sds in _dataSources)
+                {
+                    sds.IsolationLevel = value;
+                }
+            }
         }
 
         void CallPrecommits() 

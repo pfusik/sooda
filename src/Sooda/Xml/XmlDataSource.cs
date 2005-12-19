@@ -122,5 +122,11 @@ namespace Sooda.Xml {
         {
             get { return false; }
         }
+
+        public override IsolationLevel IsolationLevel
+        {
+            get { return IsolationLevel.ReadCommitted; }
+            set { }
+        }
     }
 }

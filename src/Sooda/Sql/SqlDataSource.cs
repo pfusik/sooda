@@ -60,8 +60,15 @@ namespace Sooda.Sql
         private IDbCommand _updateCommand = null;
         public bool SupportsUpdateBatch = false;
         public bool StripWhitespaceInLogs = false;
+        private IsolationLevel _isolationLevel = IsolationLevel.ReadCommitted;
 
         public SqlDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo) : base(dataSourceInfo) {}
+
+        public override IsolationLevel IsolationLevel
+        {
+            get { return _isolationLevel; }
+            set { _isolationLevel = value; }
+        }
 
         public override void Open() 
         {
@@ -107,7 +114,7 @@ namespace Sooda.Sql
             Connection.Open();
             if (!DisableTransactions) 
             {
-                Transaction = Connection.BeginTransaction();
+                Transaction = Connection.BeginTransaction(IsolationLevel);
             };
         }
 
@@ -122,7 +129,7 @@ namespace Sooda.Sql
             {
                 Transaction.Rollback();
                 Transaction.Dispose();
-                Transaction = Connection.BeginTransaction();
+                Transaction = Connection.BeginTransaction(IsolationLevel);
             };
         }
 
@@ -132,7 +139,7 @@ namespace Sooda.Sql
             {
                 Transaction.Commit();
                 Transaction.Dispose();
-                Transaction = Connection.BeginTransaction();
+                Transaction = Connection.BeginTransaction(IsolationLevel);
             };
         }
 

@@ -95,6 +95,7 @@ namespace Sooda {
         public abstract void Commit();
         public abstract void Open();
         public abstract void Close();
+        public abstract IsolationLevel IsolationLevel { get; set; }
 
         public abstract void BeginSaveChanges();
         public abstract void SaveObjectChanges(SoodaObject obj, bool isPrecommit);
