@@ -89,27 +89,30 @@ namespace Sooda.Sql
             switch (dialect) 
             {
                 default:
-                    case "msde":
-                        case "mssql":
-                        case "microsoft":
-                        this.SqlBuilder = new SqlServerBuilder();
+                case "msde":
+                case "mssql":
+                case "microsoft":
+                this.SqlBuilder = new SqlServerBuilder();
                     this.SupportsUpdateBatch = true;
                     break;
 
-                    case "postgres":
-                        case "postgresql":
-                        this.SqlBuilder = new PostgreSqlBuilder();
+                case "postgres":
+                case "postgresql":
+                    this.SqlBuilder = new PostgreSqlBuilder();
                     break;
 
-                    case "mysql":
-                        case "mysql4":
-                        this.SqlBuilder = new MySqlBuilder();
+                case "mysql":
+                case "mysql4":
+                    this.SqlBuilder = new MySqlBuilder();
                     break;
 
-                    case "oracle":
-                        this.SqlBuilder = new OracleBuilder();
+                case "oracle":
+                    this.SqlBuilder = new OracleBuilder();
                     break;
             }
+
+            if (GetParameter("disableUpdateBatch", false) != null)
+                this.SupportsUpdateBatch = false;
 
             Connection.Open();
             if (!DisableTransactions) 
