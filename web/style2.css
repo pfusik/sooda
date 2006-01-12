@@ -431,6 +431,18 @@ code.commandline
     font-size: 13px;
 }
 
+.table tr.subheader td
+{
+    border: 1px solid #c0c0c0;
+    margin: 0px;
+    color: #000040;
+    font-weight: bold;
+    font-size: 14px;
+    background-color: #f0f0f0;
+    padding: 8px;
+    
+}
+
 table.navbuttons
 {
     width: 100%;

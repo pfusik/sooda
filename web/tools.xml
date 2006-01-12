@@ -2,5 +2,20 @@
 <?xml-stylesheet type="text/xsl" href="style.xsl" ?>
 <content lang="en" id="documentation" subid="tools">
     <h1>Tools</h1>
+    <p>
+        Sooda comes with the following tools. Click on a tool name for reference.
+    </p>
+    <ul>
+        <li><link href="soodastubgen">SoodaStubGen</link> - creates a set of source files
+            and embedded resources which need to be compiled together to produce the DAL assembly.
+        </li>
+        <li><link href="soodaschematool">SoodaSchemaTool</link> - manipulates schema definitions, generates SQL scripts from
+            schema definition.
+        </li>
+        <li><link href="soodaquery">SoodaQuery</link> - interactive SOQL query analyzer tool.</li>
+        <li><link href="soodacompilestubs">SoodaCompileStubs</link> - precompiles stubs into a separate assembly (useful for very large schemas to speed up the compilation process)</li>
+        <li><link href="soodafixkeygen">SoodaFixKeygen</link> - generates SQL code to update the key generator table.</li>
+    </ul>
+
 </content>
 

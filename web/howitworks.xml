@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="windows-1250" ?>
 <?xml-stylesheet type="text/xsl" href="style.xsl" ?>
 <content lang="en" id="documentation" subid="howitworks">
-
     <h1>How Sooda works?</h1>
     <p>
         Sooda is an O/R mapper which is based on code generation. You provide 

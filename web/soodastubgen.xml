@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="windows-1250" ?>
+<?xml-stylesheet type="text/xsl" href="style.xsl" ?>
+<content lang="en" id="documentation" subid="tools">
+    <h1>SoodaStubGen</h1>
+    <p>
+        SoodaStubGen is a command-line program which creates a set of source files and 
+        embedded resources which need to be compiled together to produce the DAL assembly.
+    </p>
+    <code>
+    </code>
+    <p>You need the following files as inputs to the generation process:</p>
+    <ol>
+        <li><link href="schema">Database Schema</link> description in an XML file</li>
+        <li><link href="soodaproject">Sooda Project File</link> in another XML file which specifies code generation options</li>
+    </ol>
+    <p>
+        The outputs are:
+    </p>
+    <ol>
+        <li>Stub code in <code>_Stubs.cs</code> file (this is regenerated every time you run SoodaStubGen)</li>
+        <li>Binary, serialized database schema in <code>_DBschema.bin</code> which needs to be embedded as a resource in the resulting assembly (this is regenerated every time you run SoodaStubGen)</li>
+        <li>Skeleton source code for all classes defined in the database schema (generated only once if the files are not already present)</li>
+    </ol>
+    <p>
+        In addition SoodaStubGen is able to update the specified Visual Studio .NET project files by adding files
+        that are needed for compilation and embedded resources.
+    </p>
+    <img src="stub_compilation.png" />
+    <p>
+        Command line usage:
+    </p>
+    <code class="commandline">SoodaStubGen option1 option2 ... optionN</code>
+    or
+    <code class="commandline">SoodaStubGen projectfilename.soodaproject</code>
+    <p>
+        You can either pass all options on the command line or store them in 
+        a <link href="soodaproject">Sooda Project</link> file.
+    </p>
+    <div class="table">
+        <table width="100%">
+            <tr>
+                <th>Option</th>
+                <th>XML</th>
+                <th>Description</th>
+            </tr>
+            <tr class="subheader">
+                <td colspan="3" align="center">Basic Options</td>
+            </tr>
+            <tr>
+                <td valign="top"><nobr>--schema <b>filename</b></nobr></td>
+                <td valign="top"><x><schema-file>filename</schema-file></x></td>
+                <td>
+                    <p>
+                        The name of the <link href="schema">schema XML file</link>.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top"><nobr>--namespace <b>ns</b></nobr></td>
+                <td valign="top"><x><output-namespace>ns</output-namespace></x></td>
+                <td>
+                    <p>
+                        The namespace of the resulting stub and skeleton code.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top"><nobr>--output <b>dir</b></nobr></td>
+                <td valign="top"><x><output-path>dir</output-path></x></td>
+                <td>
+                    <p>
+                        The path where the stubs should be written to.
+                        Depending on other options, the following files will be generated:
+                    </p>
+                    <ul>
+                        <li><b>path</b>/_Stubs.cs</li>
+                        <li><b>path</b>/_DBSchema.bin</li>
+                        <li><b>path</b>/ClassName.cs - for each class defined in the schema file</li>
+                        <li><b>path</b>/Stubs/*.csx - files necessary for <link href="soodacompilestubs">separate stub compilation</link></li>
+                    </ul>
+
+                </td>
+            </tr>
+            <tr>
+                <td valign="top"><nobr>--assembly <b>assemblyname</b></nobr></td>
+                <td valign="top"><x><output-assembly>assemblyname</output-assembly></x></td>
+                <td>
+                    <p>
+                        The name of the resulting assembly (without the .dll extension).
+                        This is optional. If not specified, SoodaStubGen will use the namespace as assembly name.
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top"><nobr>--lang <b>name</b></nobr></td>
+                <td valign="top"><x><language>name</language></x></td>
+                <td>
+                    Programming language to use. Can be either an abbreviated name or 
+                    a fully qualified type name of the CodeDOM provider. The abbreviated
+                    names are:
+                    <ul>
+                        <li><b>c#</b>, <b>cs</b>, <b>csharp</b> [default]</li>
+                        <li><b>vb</b></li>
+                    </ul>
+                    An example of a fully qualified type name: "<code>Boo.Lang.CodeDom.BooCodeProvider, Boo.Lang.CodeDom</code>"
+                </td>
+            </tr>
+            <tr>
+                <td valign="top"><nobr>--project <b>type</b></nobr></td>
+                <td valign="top"><x><external-projects><project type="type" /></external-projects></x></td>
+                <td>
+                    <p>
+                        The type of the external project file to update. Use this option to keep 
+                        your Visual Studio.NET or other project in sync with your stubs library.
+                        SoodaStubGen updates the specified project types every time you generate your
+                        stubs.
+                    </p>
+                    <p>
+                        <b>type</b> can be an abbreviated name or a fully qualified name of
+                        the project provider (a type that implements <b>IProjectFile</b>):
+                        The abbreviated
+                        names are:
+                        <ul>
+                            <li><b>vs</b>, <b>vs2003</b> - Visual Studio.NET 2003 project file (default)</li>
+                            <li><b>vs2005</b> - Visual Studio.NET 2005 project file</li>
+                            <li><b>null</b> - don't update any external project files</li>
+                        </ul>
+                        An example of a fully qualified type name is: "<code>Some.Name.Space.Class1, SomeAssembly</code>"
+                    </p>
+                </td>
+            </tr>
+            <tr class="subheader">
+                <td colspan="3" align="center">Advanced Options</td>
+            </tr>
+            <tr>
+                <td valign="top"><nobr>--base-class <b>name</b></nobr></td>
+                <td valign="top"><x><base-class-name>name</base-class-name></x></td>
+                <td>The name of the base class that the stub classes should inherit from. Default value is <b>SoodaObject</b>. You
+                    can use this option to "inject" some member functions in all generated classes.
+                </td>
+            </tr>
+            <tr>
+                <td valign="top"><nobr>--rewrite-skeletons</nobr></td>
+                <td valign="top"></td>
+                <td>Force overwrite of the skeleton classes</td>
+            </tr>
+            <tr>
+                <td valign="top"><nobr>--rewrite-stubs</nobr></td>
+                <td valign="top"></td>
+                <td>Force overwrite of the stub classes</td>
+            </tr>
+            <tr>
+                <td valign="top"><nobr>--rebuild-if-changed</nobr></td>
+                <td valign="top"></td>
+                <td>Rebuild the stubs only if the schema file is newer than the resulting files.</td>
+            </tr>
+
+        </table>
+    </div>
+    <p>
+        where options can be (*) - required option:
+
+        --projectfile &lt;name&gt;  - use &lt;name&gt; instead of default project file name
+        --rewrite-skeletons   - force overwrite of skeleton classes
+        --rewrite-project     - force overwrite of project file
+        --separate-stubs      -
+        --schema-embed-xml    - embed schema as an XML file
+        --schema-embed-bin    - embed schema as an BIN file
+        --help                - display this help
+
+        --null-progagation    - enable null propagation
+        --no-null-progagation - disable null propagation (default)
+        --nullable-as [boxed | sqltype | raw ] (default = boxed)
+        --not-null-as [boxed | sqltype | raw ] (default = raw)
+        - specify the way primitive values are handled
+    </p>
+</content>
+
