@@ -516,13 +516,13 @@ namespace Sooda
 
         internal void SetObjectDirty() 
         {
-            if (IsObjectDirty())
-                return;
-
-            EnsureFieldsInited();
-            _flags |= SoodaObjectFlags.Dirty;
+            if (!IsObjectDirty())
+            {
+                EnsureFieldsInited();
+                _flags |= SoodaObjectFlags.Dirty;
+                GetTransaction().RegisterDirtyObject(this);
+            }
             _flags &= ~SoodaObjectFlags.WrittenIntoDatabase;
-            GetTransaction().RegisterDirtyObject(this);
         }
 
         internal void ResetObjectDirty() 

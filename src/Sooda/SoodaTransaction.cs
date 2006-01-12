@@ -474,6 +474,11 @@ namespace Sooda
             }
         }
 
+        public void SaveObjectChanges()
+        {
+            SaveObjectChanges(true, null);
+        }
+
         internal void SaveObjectChanges(bool isPrecommit, SoodaObjectCollection objectsToPrecommit)
         {
             try
@@ -488,6 +493,11 @@ namespace Sooda
                 }
 
                 _savingObjects = true;
+
+                foreach (SoodaObject o in objectsToPrecommit)
+                {
+                    o.VisitedOnCommit = false;
+                }
 
                 foreach (SoodaObject o in objectsToPrecommit)
                 {
