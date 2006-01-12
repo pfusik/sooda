@@ -160,7 +160,7 @@ from     Contact t0"
         public void SelectFromRelationTest1() {
             AssertTranslation(
                 "select c.Contact.Name,c.Role.Name from ContactToRole c where c.Contact.PrimaryGroup.Manager.Name = 'Mary Manager'",
-                "select t0.name as c_Contact_Name, t1.name as c_Role_Name from ContactRole c left outer join Contact t0 on (c.contact_id = t0.id) left outer join _Role t1 on (c.role_id = t1.id) left outer join _Group t2 on (t0.primary_group = t2.id) left outer join Contact t3 on (t2.manager = t3.id) where (t3.name = 'Mary Manager')");
+                "select t0.name as c_Contact_Name, t1.name as c_Role_Name from ContactRole c left outer join Contact t0 on (c.contact_id = t0.id) left outer join _Role t1 on (c.role_id = t1.id) left outer join _Group t2 on (t0.primary_group = t2.id) left outer join Contact t3 on (t2.manager = t3.id) where (t3.name = {L:AnsiString:Mary Manager})");
         }
         [Test]
         public void SelectCountAsteriskTest1() {
@@ -199,7 +199,7 @@ from     Contact t0"
         public void OneToManyContainsTest2() {
             AssertTranslation(
                 "select Name from Group where Members.Contains(select ContactId from Contact where Name='Mary Manager')",
-                "select t0.name as Name from _Group t0 where exists (select * from Contact where primary_group=t0.id and id in (select t1.id as ContactId from Contact t1 where (t1.name = 'Mary Manager')))");
+                "select t0.name as Name from _Group t0 where exists (select * from Contact where primary_group=t0.id and id in (select t1.id as ContactId from Contact t1 where (t1.name = {L:AnsiString:Mary Manager})))");
         }
 
         [Test]
@@ -212,7 +212,7 @@ from     _Group t0
 where    exists (select * from Contact where primary_group=t0.id and id in (
     select   t1.id as [ContactId]
     from     Contact t1
-    where    (t1.name = 'Mary Manager')))
+    where    (t1.name = {L:AnsiString:Mary Manager})))
 ");
         }
 
@@ -227,14 +227,14 @@ where    exists (select * from Contact where primary_group=t0.id and id in (
         public void ManyToManyContainsTest2() {
             AssertTranslation(
                 "select Name from Contact where Roles.Contains(select Id from Role where Name like 'Man%')",
-                "select t0.name as Name from Contact t0 where exists (select * from ContactRole where contact_id=t0.id and role_id in (select t1.id as Id from _Role t1 where (t1.name like 'Man%')))");
+                "select t0.name as Name from Contact t0 where exists (select * from ContactRole where contact_id=t0.id and role_id in (select t1.id as Id from _Role t1 where (t1.name like {L:String:Man%})))");
         }
 
         [Test]
         public void ManyToManyContainsTest3() {
             AssertTranslation(
                 "select Name from Contact where Roles.Contains(select Id from Role where Name like 'Man%' and Members.Contains(1))",
-                "select t0.name as Name from Contact t0 where exists (select * from ContactRole where contact_id=t0.id and role_id in (select t1.id as Id from _Role t1 where ((t1.name like 'Man%') and exists (select * from ContactRole where role_id=t1.id and contact_id in (1)))))");
+                "select t0.name as Name from Contact t0 where exists (select * from ContactRole where contact_id=t0.id and role_id in (select t1.id as Id from _Role t1 where ((t1.name like {L:String:Man%}) and exists (select * from ContactRole where role_id=t1.id and contact_id in (1)))))");
         }
 
         [Test]
@@ -247,7 +247,7 @@ from     Contact t0
 where    exists (select * from ContactRole where contact_id=t0.id and role_id in (
     select   t1.id as [Id]
     from     _Role t1
-    where    ((t1.name like 'Man%') and exists (select * from ContactRole where role_id=t1.id and contact_id in (
+    where    ((t1.name like {L:String:Man%}) and exists (select * from ContactRole where role_id=t1.id and contact_id in (
 1)))))
 ");
         }
@@ -265,7 +265,7 @@ where    exists (select * from ContactRole where contact_id=t0.id and role_id in
                 @"
                 select c2.Name
                 from Contact c2
-                where exists (ContactToRole cr where cr.Role = 'Unit Manager' and cr.Contact = c2.PrimaryGroup.Manager)",
+                where exists (ContactToRole cr where cr.Role.Name = 'Unit Manager' and cr.Contact = c2.PrimaryGroup.Manager)",
                 null);
         }
 
@@ -307,7 +307,7 @@ from     ContactRole cr
          left outer join Contact t0 on (cr.contact_id = t0.id)
          left outer join _Group t1 on (t0.primary_group = t1.id)
          left outer join Contact t2 on (t1.manager = t2.id)
-where    ((((t2.name = 'zzz') and exists (
+where    ((((t2.name = {L:AnsiString:zzz}) and exists (
     select   *
     from     Contact t3
     where    (t3.name = t0.name)
@@ -319,15 +319,15 @@ where    ((((t2.name = 'zzz') and exists (
     select   *
     from     _Group t5
              left outer join Contact t6 on (t5.manager = t6.id)
-    where    ((((t6.name = 'Mary Manager') and ((select count(*) from Contact where primary_group=t5.id) > 3)) and exists (select * from Contact where primary_group=t5.id and id in (
+    where    ((((t6.name = {L:AnsiString:Mary Manager}) and ((select count(*) from Contact where primary_group=t5.id) > 3)) and exists (select * from Contact where primary_group=t5.id and id in (
         select   t7.id as [ContactId]
         from     Contact t7
                  left outer join _Group t8 on (t7.primary_group = t8.id)
-        where    ((t7.name = 'ZZZ') and exists (select * from Contact where primary_group=t8.id and id in (
+        where    ((t7.name = {L:AnsiString:ZZZ}) and exists (select * from Contact where primary_group=t8.id and id in (
 3)))))) and exists (select * from ContactRole where contact_id=t6.id and role_id in (
         select   t9.id as [Id]
         from     _Role t9
-        where    (t9.name = 'Customer'))))
+        where    (t9.name = {L:String:Customer}))))
 ))
 ");
         }
