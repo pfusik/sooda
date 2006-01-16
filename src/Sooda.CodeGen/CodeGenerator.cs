@@ -308,6 +308,10 @@ namespace Sooda.CodeGen
                     {
                         ctd.Members.Add(gen.Prop_LiteralValue(constInfo.Name, constInfo.Key));
                     } 
+                    else if (ci.GetFirstPrimaryKeyField().DataType == FieldDataType.AnsiString) 
+                    {
+                        ctd.Members.Add(gen.Prop_LiteralValue(constInfo.Name, constInfo.Key));
+                    } 
                     else
                         throw new NotSupportedException("Primary key type " + ci.GetFirstPrimaryKeyField().DataType + " is not supported");
                 }
