@@ -61,8 +61,14 @@ namespace Sooda.Sql
         public bool SupportsUpdateBatch = false;
         public bool StripWhitespaceInLogs = false;
         private IsolationLevel _isolationLevel = IsolationLevel.ReadCommitted;
-
-        public SqlDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo) : base(dataSourceInfo) {}
+        private double queryTimeTraceWarn = 10.0;
+        private double queryTimeTraceInfo = 2.0;
+        public SqlDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo) : base(dataSourceInfo) {
+            string s = GetParameter("queryTimeTraceInfo", false);
+            if (s != null && s.Length > 0) queryTimeTraceInfo = Convert.ToDouble(s);
+            s = GetParameter("queryTimeTraceWarn", false);
+            if (s != null && s.Length > 0) queryTimeTraceWarn = Convert.ToDouble(s);
+        }
 
         public override IsolationLevel IsolationLevel
         {
@@ -887,8 +893,18 @@ namespace Sooda.Sql
                     Statistics.RegisterQueryTime(timeInSeconds);
 
                 SoodaStatistics.Global.RegisterQueryTime(timeInSeconds);
-
-                sqllogger.Trace("Query took {0} s.", timeInSeconds);
+                if (timeInSeconds > queryTimeTraceWarn && sqllogger.IsWarnEnabled)
+                {
+                    sqllogger.Warn("Query took {0} s. Query: {1}", timeInSeconds, LogCommand(cmd));
+                }
+                else if (timeInSeconds > queryTimeTraceInfo && sqllogger.IsInfoEnabled)
+                {
+                    sqllogger.Info("Query took {0} s. Query: {1}", timeInSeconds, LogCommand(cmd));
+                }
+                else 
+                {
+                    sqllogger.Trace("Query took {0} s.", timeInSeconds);
+                }
             }
         }
 
@@ -924,8 +940,18 @@ namespace Sooda.Sql
                     Statistics.RegisterQueryTime(timeInSeconds);
 
                 SoodaStatistics.Global.RegisterQueryTime(timeInSeconds);
-
-                sqllogger.Trace("Non-query took {0} s.", timeInSeconds);
+                if (timeInSeconds > queryTimeTraceWarn && sqllogger.IsWarnEnabled)
+                {
+                    sqllogger.Warn("Non-query took {0} s. Query: {1}", timeInSeconds, LogCommand(cmd));
+                }
+                else if (timeInSeconds > queryTimeTraceInfo && sqllogger.IsInfoEnabled)
+                {
+                    sqllogger.Info("Non-query took {0} s. Query: {1}", timeInSeconds, LogCommand(cmd));
+                }
+                else
+                {
+                    sqllogger.Trace("Non-query took {0} s.", timeInSeconds);
+                }
             }
         }
 
