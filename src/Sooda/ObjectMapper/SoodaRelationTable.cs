@@ -145,7 +145,7 @@ namespace Sooda.ObjectMapper {
                     ds.MakeTuple(tableName, leftColumnName, rightColumnName, tuples[i].ref1, tuples[i].ref2, tuples[i].tupleMode);
                     tuples[i].saved = true;
                 }
-            };
+            }
         }
 
         public void Commit() {
