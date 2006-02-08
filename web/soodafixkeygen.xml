@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1250" ?>
 <?xml-stylesheet type="text/xsl" href="style.xsl" ?>
-<content lang="en" id="documentation" subid="soodaproject">
-    <h1>Sooda Project Files</h1>
+<content lang="en" id="documentation" subid="tools">
+    <h1>SoodaFixKeyGen</h1>
     <p>
         TODO - write me
     </p>

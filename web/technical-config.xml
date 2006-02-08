@@ -8,16 +8,16 @@
         it. The easiest way is to put the full name of the type in <code>App.config</code>
         in <code>sooda.config</code> parameter.:
     </p>
-    <xml-example src="samples/customconfig.xml" />
+    <xml-example src="examples/web/customconfig.xml" />
     <p>
         An alternative would be to attach the <code>SoodaConfigAttribute</code> to your entry assembly (*.exe):
         and specifying the <code>ProviderType</code>. Note that this doesn't work with web applications because
         they don't have the entry assembly defined.
     </p>
-    <cs src="samples/customconfig.cs" />
+    <cs src="examples/web/customconfig.cs" />
     <p>
         Or you can explicitly set the config provider somewhere near the beginning of your program:
     </p>
-    <cs src="samples/customconfig2.cs" />
+    <cs src="examples/web/customconfig2.cs" />
 </content>
 

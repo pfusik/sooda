@@ -35,6 +35,6 @@
         Programmatically, just create an instance of a class that implements <code>ILoggingImplementation</code>
         and assign it to <code>Sooda.Logging.LogManager.Implementation</code>:
     </p>
-    <cs src="samples/customlogging.cs" />
+    <cs src="examples/web/customlogging.cs" />
 </content>
 

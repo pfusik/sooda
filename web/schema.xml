@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="windows-1250" ?>
 <?xml-stylesheet type="text/xsl" href="style.xsl" ?>
 <content lang="en" id="documentation" subid="schema">
-    <h1>Database Schema</h1>
+    <h1>Database Schema Files</h1>
+    <p>
+        TODO - write me
+    </p>
 </content>
 
