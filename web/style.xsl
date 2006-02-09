@@ -35,7 +35,6 @@
                         This web site is under construction. Some sections may be missing or not up-to-date.
                     </span>
                     <xsl:apply-templates select="content" />
-                    <!-- <p class="copyright">Copyright (c) 2003-2005 by Jaros³aw Kowalski <img width="1" height="1"><xsl:attribute name="src">http://jaak.sav.net/transpixel.gif</xsl:attribute></img></p> -->
                 </div>
                 <div id="googlesearch">
                     <!-- SiteSearch Google -->
@@ -76,7 +75,7 @@
                             google_ad_width = 120;
                             google_ad_height = 600;
                             google_ad_format = "120x600_as";
-                            google_ad_type = "image";
+                            google_ad_type = "text_image";
                             google_ad_channel ="";
                             google_color_border = "5290ee";
                             google_color_bg = "FFFFFF";
@@ -132,6 +131,11 @@
                                 alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
                     </td>
                 </tr>  
+                <!--
+                <tr>
+                    <td class="logobutton" style="font-family: Tahoma; color: white; font-size: 10px">Copyright (c) 2003-2006 by <a style="color: white" href="mailto:jaak@jkowalski.net">Jaroslaw Kowalski</a></td>
+                </tr>
+                -->
                 <tr class="navtablespacer"><td></td></tr>
             </table>
         </xsl:template>
