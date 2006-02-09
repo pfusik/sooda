@@ -286,12 +286,24 @@ img.thinborder
     background-color: #5290EE;
 }
 
-#content
+#webcontent
 {
     position: absolute;
     top: 90px;
     left: 190px;
     right: 150px;
+    font-family: Tahoma, Trebuchet MS, Helv, Arial;
+    font-size: 12px;
+    text-align: left;
+    /* background-color: #f8f8ff; */
+}
+
+#helpcontent
+{
+    position: absolute;
+    top: 90px;
+    left: 190px;
+    right: 10px;
     font-family: Tahoma, Trebuchet MS, Helv, Arial;
     font-size: 12px;
     text-align: left;

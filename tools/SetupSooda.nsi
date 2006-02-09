@@ -111,8 +111,8 @@ Section "VC# .NET 2003 Wizards"
   IfErrors novsnet
   DetailPrint "Visual C# .NET 2003 installed in $0"
   SetOutPath $0
-  File /r /x _svn wizard\CSharpProjects
-  File /r /x _svn "wizard\VC#Wizards"
+  File /r /x _svn wizard\vs2003\CSharpProjects
+  File /r /x _svn "wizard\vs2003\VC#Wizards"
   Return
 
 novsnet:

@@ -2,17 +2,29 @@
 <common>
     <navigation>
         <nav href="introduction" label="Introduction" />
-        <nav href="status" label="Current Status" />
         <nav href="tutorial" label="Tutorial" />
         <nav href="examples" label="Examples" />
-        <nav href="documentation" label="Documentation" />
         <nav href="screenshots" label="Screenshots" />
-        <nav href="download" label="Download" />
+        <nav href="http://www.nabble.com/Sooda-Forum-f6382.html" noext="true" label="Forum" />
+        <nav href="http://trac.sav.net/sooda/" noext="true" label="Report a Bug" />
+
+        <nav href="documentation" label="Documentation">
+            <subnav href="howitworks" label="How it works" />
+            <subnav href="tools" label="Tools" />
+            <subnav href="classes" label="Class Libraries" />
+            <subnav href="soodaproject" label="Sooda Project Files" />
+            <subnav href="schema" label="Database Schema Files" />
+        </nav>
         <nav href="development" label="Development" />
         <nav href="mailinglist" label="Mailing Lists" />
-        <nav href="technical" label="Technical" />
+        <nav href="technical" label="Technical">
+            <subnav href="technical-logging" label="Logging"/>
+            <subnav href="technical-config" label="Configuration"/>
+            <subnav href="technical-cdil" label="CDIL"/>
+            <subnav href="http://www.sooda.org/clover/" noext="true" label="Source Code Coverage"/>
+            <subnav href="http://www.sooda.org/nunit2report/" noext="true" label="Unit Test Results"/>
+        </nav>
         <nav href="faq" label="FAQ" />
-        <nav href="blog" label="Blog" />
         <!-- <nav href="links" label="Links" /> -->
     </navigation>
 </common>

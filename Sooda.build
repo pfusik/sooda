@@ -291,7 +291,7 @@
         <exec verbose="true" workingdir="${sooda.dir}" program="nunit-console.exe" commandline="${sooda.dir}/Sooda.UnitTests.TestCases.dll" />
     </target>
 
-    <target name="test" depends="Sooda.UnitTests.TestCases">
+    <target name="test" depends="Sooda.UnitTests.TestCases, Sooda.UnitTests.VBObjects">
         <nunit2>
             <formatter type="Plain" />
             <test assemblyname="${sooda.dir}/Sooda.UnitTests.TestCases.dll" appconfig="tests/TestCases/App.config" />
@@ -555,17 +555,17 @@
         <readregistry property="vcsharp.dir" key="Software\Microsoft\VisualStudio\7.1\Setup\VC#\ProductDir" />
         <echo message="Installing C# wizards to ${vcsharp.dir}" />
         <copy todir="${vcsharp.dir}\CSharpProjectItems">
-            <fileset basedir="wizard/CSharpProjectItems">
+            <fileset basedir="wizard/vs2003/CSharpProjectItems">
                 <include name="**/*" />
             </fileset>
         </copy>
         <copy todir="${vcsharp.dir}\VC#Wizards">
-            <fileset basedir="wizard/VC#Wizards">
+            <fileset basedir="wizard/vs2003/VC#Wizards">
                 <include name="**/*" />
             </fileset>
         </copy>
         <copy todir="${vcsharp.dir}\CSharpProjects">
-            <fileset basedir="wizard/CSharpProjects">
+            <fileset basedir="wizard/vs2003/CSharpProjects">
                 <include name="**/*" />
             </fileset>
         </copy>

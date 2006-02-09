@@ -31,12 +31,13 @@
                 <div id="controls">
                     <xsl:call-template name="controls" />
                 </div>
-                <div id="content">
+                <div id="{$mode}content">
                     <span class="underconstruction">
                         This web site is under construction. Some sections may be missing or not up-to-date.
                     </span>
                     <xsl:apply-templates select="content" />
                 </div>
+                <xsl:if test="$mode = 'web'">
                 <div id="googlesearch">
                     <!-- SiteSearch Google -->
                     <form method="get" action="http://www.google.com/custom" target="_top">
@@ -70,6 +71,8 @@
 </form>
 <!-- SiteSearch Google -->
                 </div>
+            </xsl:if>
+            <xsl:if test="$mode = 'web'">
                 <div id="googleads">
                     <script type="text/javascript"><xsl:comment>
                             google_ad_client = "pub-2535373996863248";
@@ -87,7 +90,8 @@
                     <script type="text/javascript"
                         src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
                     </script>
-                    </div>
+                </div>
+            </xsl:if>
                 </body>
             </html>
         </xsl:template>
@@ -112,30 +116,32 @@
                 <tr>
                     <td class="logobutton">
                         <table style="table-layout: fixed; width: 160px">
-                            <tr>
-                                <td align="right">
-                                    <a href="http://www.cenqua.com/clover.net"><img src="http://www.cenqua.com/images/cloverednet1.gif" width="89" height="33" border="0" alt="Code Coverage by Clover.NET"/></a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td align="right">
-                                    <script type="text/javascript" language="javascript">
-                                        var sc_project=575055; 
-                                        var sc_partition=4; 
-                                        var sc_security="e249d6a5"; 
-                                    </script>
+                            <xsl:if test="$mode = 'web'">
+                                <tr>
+                                    <td align="right">
+                                        <a href="http://www.cenqua.com/clover.net"><img src="http://www.cenqua.com/images/cloverednet1.gif" width="89" height="33" border="0" alt="Code Coverage by Clover.NET"/></a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right">
+                                        <script type="text/javascript" language="javascript">
+                                            var sc_project=575055; 
+                                            var sc_partition=4; 
+                                            var sc_security="e249d6a5"; 
+                                        </script>
 
-                                    <script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><a href="http://www.statcounter.com/" target="_blank"><img  src="http://c5.statcounter.com/counter.php?sc_project=575055&amp;amp;java=0&amp;amp;security=e249d6a5" alt="free web stats" border="0" /></a> </noscript>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td align="right">
-                                    <a href="http://validator.w3.org/check?uri=referer"><img
-                                            src="http://www.w3.org/Icons/valid-xhtml10"
-                                            border="0" 
-                                            alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
-                                </td>
-                            </tr>
+                                        <script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><a href="http://www.statcounter.com/" target="_blank"><img  src="http://c5.statcounter.com/counter.php?sc_project=575055&amp;amp;java=0&amp;amp;security=e249d6a5" alt="free web stats" border="0" /></a> </noscript>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right">
+                                        <a href="http://validator.w3.org/check?uri=referer"><img
+                                                src="http://www.w3.org/Icons/valid-xhtml10"
+                                                border="0" 
+                                                alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
+                                    </td>
+                                </tr>
+                            </xsl:if>
                             <tr>
                                 <td align="right" style="font-family: Tahoma; color: white; font-size: 10px">Copyright (c) 2003-2006<br/><a style="color: white" href="mailto:jaak@jkowalski.net">Jaroslaw Kowalski</a></td>
                             </tr>
