@@ -171,7 +171,6 @@ namespace Sooda.ObjectMapper
             while (reader.Read()) 
             {
                 SoodaObject obj = SoodaObject.GetRefFromRecordHelper(transaction, factory, reader, 0, loadedTables, 0);
-
                 InternalAdd(obj);
             }
         }
@@ -215,7 +214,6 @@ namespace Sooda.ObjectMapper
             using (IDataReader reader = ds.LoadRefObjectList(transaction.Schema, relationInfo, masterColumn, masterValue, out loadedTables))
             {
                 LoadDataFromReader(factory, reader, loadedTables);
-                reader.Close();
             }
             SoodaRelationTable rel = GetSoodaRelationTable();
             rel.OnTupleChanged += new SoodaRelationTupleChanged(this.OnTupleChanged);

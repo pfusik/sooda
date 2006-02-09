@@ -146,7 +146,7 @@
             </sources>
             <resources basedir="src/Sooda.CodeGen" prefix="Sooda.CodeGen" dynamicprefix="true">
                 <include name="Templates/**/*" />
-                <include name="CDIL/Templates/**/*" />
+                <include name="CDIL/Templates/**/*.cdil" />
                 <include name="SoodaProject.xsd" />
             </resources>
         </csc>
@@ -256,6 +256,7 @@
                 <delete dir="${dirname}" />
             </do>
         </foreach>    
+        <nant buildfile="examples/Soodawind/Soodawind.build" target="clean" />
     </target>
 
     <target name="tarbz2" description="Creates a .tar.bz2 snapshot of sources" depends="configure, clean">
@@ -364,6 +365,26 @@
         </csc>
     </target>
 
+    <target name="Sooda.UnitTests.VBObjects" depends="Sooda, SoodaStubGen, Sooda.UnitTests.BaseObjects">
+        <sooda-generate-code project="tests/VBUnitTestObjects/Sooda.UnitTests.VBObjects.soodaproject" verbose="true" />
+
+        <vbc target="library" output="${sooda.dir}/Sooda.UnitTests.VBObjects.dll" debug="true">
+            <references>                                  
+                <include name="${sooda.dir}/NLog.dll" />
+                <include name="${sooda.dir}/Sooda.dll" />
+                <include name="${sooda.dir}/Sooda.UnitTests.BaseObjects.dll" />
+                <include name="System.Data.dll" asis="true" />
+                <include name="System.Xml.dll" asis="true" />
+            </references>
+            <sources basedir="tests/VBUnitTestObjects">
+                <include name="*.vb" />
+            </sources>
+            <resources basedir="tests/VBUnitTestObjects" prefix="Sooda.UnitTests.Objects" dynamicprefix="true">
+                <include name="_DBSchema.*" />
+            </resources>
+        </vbc>
+    </target>
+
     <target name="Sooda.UnitTests.TestCases" depends="libraries, Sooda.UnitTests.Objects, Sooda.UnitTests.BaseObjects">
         <copy file="${nant.location}/lib/${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}/nunit.framework.dll" tofile="${sooda.dir}/nunit.framework.dll" />
         <csc target="library" output="${sooda.dir}/Sooda.UnitTests.TestCases.dll" debug="true">
@@ -413,7 +434,7 @@
         <readregistry property="nsis.dir" key="SOFTWARE\NSIS\" />
         <property name="makensis.exe" value="${nsis.dir}/makensis.exe" />
 
-        <exec program="tools\svnclearignore.cmd" commandline="examples" />
+        <nant buildfile="examples/Soodawind/Soodawind.build" target="clean" />
 
         <foreach item="Line" in="sooda.version" delim="." property="sooda.major,sooda.minor,sooda.revision,sooda.build">
             <exec program="${makensis.exe}" commandline="/DBUILDSUBDIR=${buildsubdir} /DSOODA_VERSION=${sooda.major}.${sooda.minor} /DRELEASE_VERSION=${release.version} tools\SetupSooda.nsi" />
@@ -515,6 +536,7 @@
             <fileset basedir="${web.dir}">
                 <include name="**/*" />
                 <exclude name="index.html" />
+                <exclude name="examples/Soodawind/**" />
                 <exclude name="**/.svn" />
                 <exclude name="**/.svn/**" />
                 <exclude name="**/_svn" />
@@ -573,7 +595,7 @@
             </sourcefiles>
         </uptodate>
         <if test="${not help.uptodate}">
-            <exec program="${ndoc.console.exe}" workingdir="build/${buildsubdir}" commandline="-documenter=MSDN -project=Sooda.ndoc" />
+            <exec program="${ndoc.console.exe}" workingdir="build/${buildsubdir}" commandline="-documenter=MSDN -project=.\Sooda.ndoc" />
         </if>
     </target>
 
@@ -582,7 +604,10 @@
         <property name="web.buildmode" value="web" />
         <property name="web.sourceforge" value="0" />
         <call target="buildwebsite" />
-        <copy file="${web.dir}/introduction.html" tofile="${web.dir}/index.html" />
+        <copy file="${webbuild.dir}/introduction.html" tofile="${webbuild.dir}/index.html" />
+        <copy file="src/Sooda/Schema/SoodaSchema.xsd" tofile="${webbuild.dir}/schemas/SoodaSchema.xsd" />
+        <copy file="web/redirector.html" tofile="${web.dir}/redirector.html" />
+        <copy file="web/redirector.php" tofile="${web.dir}/redirector.php" />
     </target>
 
     <target name="helpwebsite" depends="configure">
@@ -590,6 +615,7 @@
         <property name="web.buildmode" value="help" />
         <property name="web.sourceforge" value="0" />
         <call target="buildwebsite" />
+        <copy file="${webbuild.dir}/introduction.html" tofile="${webbuild.dir}/index.html" />
     </target>
 
     <target name="buildwebsite" depends="configure">

@@ -230,7 +230,6 @@ namespace Sooda.ObjectMapper
                             SoodaObject obj = SoodaObject.GetRefFromKeyRecordHelper(transaction, factory, reader);
                             items.Add(obj);
                         }
-                        reader.Close();
                     }
                 }
                 else
@@ -252,7 +251,6 @@ namespace Sooda.ObjectMapper
                             }
                             items.Add(obj);
                         }
-                        reader.Close();
                     }
                 }
 

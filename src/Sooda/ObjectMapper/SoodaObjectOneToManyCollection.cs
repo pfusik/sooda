@@ -245,7 +245,6 @@ namespace Sooda.ObjectMapper
                         IList primaryKeys = Sooda.Caching.CacheUtils.ConvertSoodaObjectListToKeyList(readObjects);
                         SoodaCache.StoreCollection(cacheKey, primaryKeys);
                     }
-                    reader.Close();
                 }
             }
 

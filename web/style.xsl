@@ -111,14 +111,14 @@
                 <xsl:apply-templates select="nav" />
                 <tr>
                     <td class="logobutton">
-                        <table style="table-layout: fixed">
+                        <table style="table-layout: fixed; width: 160px">
                             <tr>
-                                <td>
+                                <td align="right">
                                     <a href="http://www.cenqua.com/clover.net"><img src="http://www.cenqua.com/images/cloverednet1.gif" width="89" height="33" border="0" alt="Code Coverage by Clover.NET"/></a>
                                 </td>
                             </tr>
                             <tr>
-                                <td>
+                                <td align="right">
                                     <script type="text/javascript" language="javascript">
                                         var sc_project=575055; 
                                         var sc_partition=4; 
@@ -129,21 +129,19 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td>
+                                <td align="right">
                                     <a href="http://validator.w3.org/check?uri=referer"><img
                                             src="http://www.w3.org/Icons/valid-xhtml10"
                                             border="0" 
                                             alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
                                 </td>
                             </tr>
+                            <tr>
+                                <td align="right" style="font-family: Tahoma; color: white; font-size: 10px">Copyright (c) 2003-2006<br/><a style="color: white" href="mailto:jaak@jkowalski.net">Jaroslaw Kowalski</a></td>
+                            </tr>
                         </table>
                     </td>
                 </tr>
-                <!--
-                <tr>
-                    <td class="logobutton" style="font-family: Tahoma; color: white; font-size: 10px">Copyright (c) 2003-2006 by <a style="color: white" href="mailto:jaak@jkowalski.net">Jaroslaw Kowalski</a></td>
-                </tr>
-                -->
                 <tr class="navtablespacer"><td></td></tr>
             </table>
         </xsl:template>
