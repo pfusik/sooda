@@ -16,7 +16,7 @@
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
                 OutputType = "Library"
-                PreBuildEvent = 'SoodaStubGen.exe --rebuild-if-changed --schema "$(ProjectDir)SoodaSchema.xml" --output "$(ProjectDir)." --namespace Soodawind.Objects&#xd;&#xa;'
+                PreBuildEvent = "SoodaStubGen.exe $(ProjectDir)Soodawind.Objects.soodaproject"
                 PostBuildEvent = ""
                 RootNamespace = "Soodawind.Objects"
                 RunPostBuildEvent = "OnBuildSuccess"
@@ -121,6 +121,10 @@
                 <File
                     RelPath = "SoodaSchema.xml"
                     BuildAction = "Content"
+                />
+                <File
+                    RelPath = "Soodawind.Objects.soodaproject"
+                    BuildAction = "None"
                 />
                 <File
                     RelPath = "Supplier.cs"

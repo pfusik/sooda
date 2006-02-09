@@ -1,4 +1,7 @@
 using System;
+using System.Xml;
+using System.IO;
+using System.Xml.Serialization;
 
 using Sooda;
 using Soodawind.Objects;
@@ -20,6 +23,8 @@ namespace Soodawind.ConsoleApp
                     Console.WriteLine("   '{0}' from '{1}'", p.Name, p.Supplier.Company);
                 }
                 Console.WriteLine();
+
+
             }
             //Console.WriteLine(Category.Load(1).Name);
         }
@@ -28,6 +33,7 @@ namespace Soodawind.ConsoleApp
         {
             SupplierList suppliers = Supplier.GetList(
                 new SoodaWhereClause("Country = {0}", countryName));
+
             Console.WriteLine("Companies from {0}. Total: {1}", countryName, suppliers.Count);
             Console.WriteLine();
             foreach (Supplier s in suppliers)

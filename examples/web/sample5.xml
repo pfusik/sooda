@@ -1,5 +1,5 @@
 <schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns="http://sooda.sourceforge.net/schemas/DBSchema.xsd" xml:space="preserve">
+    xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd" xml:space="preserve">
     <!--
     We'll be connecting to the SQL data source.
     -->
