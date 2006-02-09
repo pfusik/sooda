@@ -1,1 +1,0 @@
-SoodaConfig.SetConfigProvider(new MySoodaConfigProvider());

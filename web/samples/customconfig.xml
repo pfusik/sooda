@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<configuration xml:space="preserve">
-    <appSettings>
-        <add key="sooda.config" value="My.Type.Name, MyAssembly" />
-    </appSettings>
-</configuration>
-
-
