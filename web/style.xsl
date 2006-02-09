@@ -26,6 +26,7 @@
                 <meta name="description" content="Sooda is an open source object-to-relational mapping software providing easy-to-use API to create,read,search,update and delete objects without the use of SQL." />
             </head>
             <body>
+                <img src="sooda_nav.jpg" style="display: none" /> <!-- need this for CHM -->
                 <div id="header"><img src="sooda.jpg" alt="Sooda - Simple Object-Oriented Data Access" /></div>
                 <div id="controls">
                     <xsl:call-template name="controls" />
@@ -110,27 +111,34 @@
                 <xsl:apply-templates select="nav" />
                 <tr>
                     <td class="logobutton">
-                        <a href="http://www.cenqua.com/clover.net"><img src="http://www.cenqua.com/images/cloverednet1.gif" width="89" height="33" border="0" alt="Code Coverage by Clover.NET"/></a>
+                        <table style="table-layout: fixed">
+                            <tr>
+                                <td>
+                                    <a href="http://www.cenqua.com/clover.net"><img src="http://www.cenqua.com/images/cloverednet1.gif" width="89" height="33" border="0" alt="Code Coverage by Clover.NET"/></a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <script type="text/javascript" language="javascript">
+                                        var sc_project=575055; 
+                                        var sc_partition=4; 
+                                        var sc_security="e249d6a5"; 
+                                    </script>
+
+                                    <script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><a href="http://www.statcounter.com/" target="_blank"><img  src="http://c5.statcounter.com/counter.php?sc_project=575055&amp;amp;java=0&amp;amp;security=e249d6a5" alt="free web stats" border="0" /></a> </noscript>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="http://validator.w3.org/check?uri=referer"><img
+                                            src="http://www.w3.org/Icons/valid-xhtml10"
+                                            border="0" 
+                                            alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
+                                </td>
+                            </tr>
+                        </table>
                     </td>
                 </tr>
-                <tr><td class="logobutton">
-                        <!-- Start of StatCounter Code -->
-                        <script type="text/javascript" language="javascript">
-                            var sc_project=575055; 
-                            var sc_partition=4; 
-                            var sc_security="e249d6a5"; 
-                        </script>
-
-                        <script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><a href="http://www.statcounter.com/" target="_blank"><img  src="http://c5.statcounter.com/counter.php?sc_project=575055&amp;amp;java=0&amp;amp;security=e249d6a5" alt="free web stats" border="0" /></a> </noscript>
-                        <!-- End of StatCounter Code -->
-                </td></tr>
-                <tr><td class="logobutton">
-                        <a href="http://validator.w3.org/check?uri=referer"><img
-                                src="http://www.w3.org/Icons/valid-xhtml10"
-                                border="0" 
-                                alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
-                    </td>
-                </tr>  
                 <!--
                 <tr>
                     <td class="logobutton" style="font-family: Tahoma; color: white; font-size: 10px">Copyright (c) 2003-2006 by <a style="color: white" href="mailto:jaak@jkowalski.net">Jaroslaw Kowalski</a></td>

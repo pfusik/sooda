@@ -1,0 +1,258 @@
+<VisualStudioProject>
+    <CSHARP
+        ProjectType = "Local"
+        ProductVersion = "7.10.3077"
+        SchemaVersion = "2.0"
+        ProjectGuid = "{2D11C6FF-FF8C-4517-8546-C81C621CFF7C}"
+    >
+        <Build>
+            <Settings
+                ApplicationIcon = ""
+                AssemblyKeyContainerName = ""
+                AssemblyName = "WWW"
+                AssemblyOriginatorKeyFile = ""
+                DefaultClientScript = "JScript"
+                DefaultHTMLPageLayout = "Grid"
+                DefaultTargetSchema = "IE50"
+                DelaySign = "false"
+                OutputType = "Exe"
+                PreBuildEvent = ""
+                PostBuildEvent = ""
+                RootNamespace = "WWW"
+                RunPostBuildEvent = "OnBuildSuccess"
+                StartupObject = ""
+            >
+                <Config
+                    Name = "Debug"
+                    AllowUnsafeBlocks = "false"
+                    BaseAddress = "285212672"
+                    CheckForOverflowUnderflow = "false"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = ""
+                    DocumentationFile = ""
+                    DebugSymbols = "true"
+                    FileAlignment = "4096"
+                    IncrementalBuild = "false"
+                    NoStdLib = "false"
+                    NoWarn = ""
+                    Optimize = "false"
+                    OutputPath = "bin\Debug\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "1"
+                />
+                <Config
+                    Name = "Release"
+                    AllowUnsafeBlocks = "false"
+                    BaseAddress = "285212672"
+                    CheckForOverflowUnderflow = "false"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = ""
+                    DocumentationFile = ""
+                    DebugSymbols = "false"
+                    FileAlignment = "4096"
+                    IncrementalBuild = "false"
+                    NoStdLib = "false"
+                    NoWarn = ""
+                    Optimize = "false"
+                    OutputPath = "bin\Release\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "1"
+                />
+            </Settings>
+            <References/>
+        </Build>
+        <Files>
+            <Include>
+                <File
+                    RelPath = "blog.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "components.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "development.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "documentation.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "download.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "examples.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "faq.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "forum.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "helpmenu.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "howitworks.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "index.html"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "introduction.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "lang_en.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "lang_pl.gif"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "LICENSE.txt"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "links.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "mailinglist.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "new_logo.psp"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "poweredby_sooda.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "poweredby_sooda.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "poweredby_sooda.psp"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "screenshots.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "snapshots.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "sooda.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "sooda.psp"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "sooda_mini.psp"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "sooda_nav.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "sooda_nav.psp"
+                    BuildAction = "None"
+                />
+                <File
+                    RelPath = "SoodaQuery_LICENSE.txt"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "status.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "style.xsl"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "style2.css"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "subversion.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "syntax.css"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "syntax.xsl"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "technical.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "technical-cdil.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "technical-config.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "technical-logging.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "test_poweredby.html"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "titlebanner.jpg"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "titlebanner.png"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "tools.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "tutorial.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "users.xml"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "webmenu.xml"
+                    BuildAction = "Content"
+                />
+            </Include>
+        </Files>
+    </CSHARP>
+</VisualStudioProject>
+
