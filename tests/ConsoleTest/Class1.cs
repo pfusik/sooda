@@ -72,12 +72,12 @@ namespace ConsoleTest
         {
             Sooda.Logging.LogManager.Implementation = new Sooda.Logging.ConsoleLoggingImplementation();
 
-			using (SoodaTransaction t = new SoodaTransaction())
-			{
-				//Group.LoadSingleObject(GroupField.Manager.Name == "Mary M}anager");
-				Contact.GetList(ContactField.Name == ContactField.Name);
-				Contact.GetList(new SoodaWhereClause(ContactField.Name == Soql.Param(0), "ala"));
-			}
+            using (SoodaTransaction t = new SoodaTransaction())
+            {
+                //Group.LoadSingleObject(GroupField.Manager.Name == "Mary M}anager");
+                Contact.GetList(ContactField.Name == ContactField.Name);
+                Contact.GetList(new SoodaWhereClause(ContactField.Name == Soql.Param(0), "ala"));
+            }
 
         }
     }

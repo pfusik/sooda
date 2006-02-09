@@ -34,6 +34,8 @@
 using System;
 using System.Diagnostics;
 using System.Data;
+using System.Collections;
+using System.Threading;
 
 using Sooda.ObjectMapper;
 using Sooda.UnitTests.Objects;
@@ -41,27 +43,60 @@ using Sooda.UnitTests.BaseObjects;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.ObjectMapper {
+namespace Sooda.UnitTests.TestCases.ObjectMapper
+{
     [TestFixture]
-    public class KeyGenTest {
+    public class KeyGenTest
+    {
+
+        class Runner
+        {
+            public ArrayList GeneratedKeys = new ArrayList(); 
+
+            public void ThreadProc()
+            {
+                using (SoodaTransaction t = new SoodaTransaction())
+                {
+                    for (int i = 0; i < 100; ++i)
+                    {
+                        Contact c = new Contact();
+                        lock (GeneratedKeys)
+                        {
+                            GeneratedKeys.Add(c.GetPrimaryKeyValue());
+                        }
+                    }
+                }
+            }
+        }
+        
         [Test]
-        public void Test1() {
-            using (SoodaTransaction t = new SoodaTransaction()) {
-                for (int i = 0 ; i < 12; i++) {
-                    Contact c1 = new Contact();
-                    c1.Type = ContactType.Employee;
-                    c1.Name = "Name " + i;
-                }
-            }
+        public void Test1()
+        {
+            Runner r = new Runner();
+            Thread[] threads = new Thread[50];
 
-            using (SoodaTransaction t = new SoodaTransaction()) {
-                for (int i = 0 ; i < 11; i++) {
-                    Contact c1 = new Contact();
-                    c1.Type = ContactType.Employee;
-                    c1.Name = "Name " + (11 + i);
-                }
-
+            Console.WriteLine("Creating threads...");
+            for (int i = 0; i < threads.Length; ++i)
+            {
+                threads[i] = new Thread(new ThreadStart(r.ThreadProc));
             }
+            Console.WriteLine("Starting threads...");
+            for (int i = 0; i < threads.Length; ++i)
+            {
+                threads[i].Start();
+            }
+            Console.WriteLine("Waiting for threads to join...");
+            for (int i = 0; i < threads.Length; ++i)
+            {
+                threads[i].Join();
+            }
+            Console.WriteLine("Joined. Got {0} keys", r.GeneratedKeys.Count);
+            r.GeneratedKeys.Sort();
+            for (int i = 0; i < r.GeneratedKeys.Count - 1; ++i)
+            {
+                Assert.IsTrue((int)r.GeneratedKeys[i] != (int)r.GeneratedKeys[i + 1]);
+            }
+            Console.WriteLine("Generated keys confirmed to be unique.", r.GeneratedKeys.Count);
         }
     }
 }

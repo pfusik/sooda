@@ -35,6 +35,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.Logging.NLog", "..\sr
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Sooda.UnitTests.VBObjects", "VBUnitTestObjects\Sooda.UnitTests.VBObjects.vbproj", "{14560270-B86E-4C15-BD34-4E06CCFB091B}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -77,6 +81,10 @@ Global
 		{A6A3FE85-9F3D-4A3D-B8E6-B24771CB3F62}.Debug.Build.0 = Debug|.NET
 		{A6A3FE85-9F3D-4A3D-B8E6-B24771CB3F62}.Release.ActiveCfg = Release|.NET
 		{A6A3FE85-9F3D-4A3D-B8E6-B24771CB3F62}.Release.Build.0 = Release|.NET
+		{14560270-B86E-4C15-BD34-4E06CCFB091B}.Debug.ActiveCfg = Debug|.NET
+		{14560270-B86E-4C15-BD34-4E06CCFB091B}.Debug.Build.0 = Debug|.NET
+		{14560270-B86E-4C15-BD34-4E06CCFB091B}.Release.ActiveCfg = Release|.NET
+		{14560270-B86E-4C15-BD34-4E06CCFB091B}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(SolutionItems) = postSolution
 		DBSchema.xml = DBSchema.xml
