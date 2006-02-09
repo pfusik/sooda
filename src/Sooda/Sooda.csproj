@@ -474,11 +474,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "ObjectMapper\SoodaObjectRefFieldIterator.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "ObjectMapper\SoodaRelationTable.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

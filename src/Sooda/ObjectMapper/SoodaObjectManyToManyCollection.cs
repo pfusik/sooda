@@ -168,14 +168,11 @@ namespace Sooda.ObjectMapper
             items = new SoodaObjectToInt32Association();
             itemsArray = new SoodaObjectCollection();
 
-            using (reader) 
+            while (reader.Read()) 
             {
-                while (reader.Read()) 
-                {
-                    SoodaObject obj = SoodaObject.GetRefFromRecordHelper(transaction, factory, reader, 0, loadedTables, 0);
+                SoodaObject obj = SoodaObject.GetRefFromRecordHelper(transaction, factory, reader, 0, loadedTables, 0);
 
-                    InternalAdd(obj);
-                }
+                InternalAdd(obj);
             }
         }
 
@@ -215,9 +212,11 @@ namespace Sooda.ObjectMapper
             TableInfo[] loadedTables;
             ClassInfo classInfo = (masterColumn == 0) ? relationInfo.GetRef1ClassInfo() : relationInfo.GetRef2ClassInfo();
             ISoodaObjectFactory factory = transaction.GetFactory(classInfo);
-            IDataReader reader = ds.LoadRefObjectList(transaction.Schema, relationInfo, masterColumn, masterValue, out loadedTables);
-
-            LoadDataFromReader(factory, reader, loadedTables);
+            using (IDataReader reader = ds.LoadRefObjectList(transaction.Schema, relationInfo, masterColumn, masterValue, out loadedTables))
+            {
+                LoadDataFromReader(factory, reader, loadedTables);
+                reader.Close();
+            }
             SoodaRelationTable rel = GetSoodaRelationTable();
             rel.OnTupleChanged += new SoodaRelationTupleChanged(this.OnTupleChanged);
             if (rel.TupleCount != 0) 

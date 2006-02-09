@@ -448,6 +448,11 @@ namespace Sooda.CodeGen.CDIL
                 GetNextToken();
                 property.Attributes = ParseMemberAttributes();
             }
+            if (IsKeyword("implements"))
+            {
+                GetNextToken();
+                property.ImplementationTypes.Add(ParseType());
+            }
             if (IsKeyword("get"))
             {
                 GetNextToken();

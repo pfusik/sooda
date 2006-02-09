@@ -7,6 +7,7 @@ class _DatabaseSchema
 
     property Sooda.Schema.SchemaInfo Schema
         attributes Public
+        implements Sooda.ObjectMapper.ISoodaSchema
     get
         return defaultscope.GetSchema()
     end
@@ -21,6 +22,7 @@ class _DatabaseSchema
     method GetFactories()
         returns arrayof(Sooda.ISoodaObjectFactory)
         attributes Public
+        implements Sooda.ObjectMapper.ISoodaSchema
     begin
         return defaultscope._factories
     end

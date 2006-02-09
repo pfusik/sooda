@@ -21,14 +21,12 @@ end
 method Add(${ClassName} obj)
     attributes Public,Final
     returns System.Int32
-    implements ${ClassName}List
 begin
     return base.Add(arg(obj))
 end
 
 method Remove(${ClassName} obj)
     attributes Public,Final
-    implements ${ClassName}List
 begin
     call base.Remove(arg(obj))
 end
@@ -36,7 +34,6 @@ end
 method Contains(${ClassName} obj)
     attributes Public,Final
     returns System.Boolean
-    implements ${ClassName}List
 begin
     return base.Contains(arg(obj))
 end
@@ -44,7 +41,6 @@ end
 method Sort(IComparer comp)
     attributes Public,Final,New
     returns ${ClassName}List
-    implements ${ClassName}List
 begin
     return new ${ClassName}List(base.Sort(arg(comp)))
 end
@@ -52,7 +48,6 @@ end
 method SelectFirst(System.Int32 count)
     attributes Public,Final,New
     returns ${ClassName}List
-    implements ${ClassName}List
 begin
     return new ${ClassName}List(base.SelectFirst(arg(count)))
 end
@@ -60,7 +55,6 @@ end
 method SelectLast(System.Int32 count)
     attributes Public,Final,New
     returns ${ClassName}List
-    implements ${ClassName}List
 begin
     return new ${ClassName}List(base.SelectLast(arg(count)))
 end
@@ -68,23 +62,20 @@ end
 method SelectRange(System.Int32 _from, System.Int32 _to)
     attributes Public,Final,New
     returns ${ClassName}List
-    implements ${ClassName}List
 begin
     return new ${ClassName}List(base.SelectRange(arg(_from),arg(_to)))
 end
 
 method Filter(SoodaObjectFilter f)
-    attributes Public,Final,New
+    attributes Public,Final${OptionalNewAttribute}
     returns ${ClassName}List
-    implements ${ClassName}List
 begin
     return new ${ClassName}List(base.Filter(arg(f)))
 end
 
 method Filter(SoodaWhereClause whereClause)
-    attributes Public,Final,New
+    attributes Public,Final${OptionalNewAttribute}
     returns ${ClassName}List
-    implements ${ClassName}List
 begin
     return new ${ClassName}List(base.Filter(arg(whereClause)))
 end

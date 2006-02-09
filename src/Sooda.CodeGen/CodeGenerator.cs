@@ -49,6 +49,7 @@ namespace Sooda.CodeGen
     {
         private SoodaProject _project;
         private ICodeGeneratorOutput _output;
+        private CodeDomProvider _codeProvider;
 
         private bool _rebuildIfChanged = true;
         private bool _rewriteSkeletons = false;
@@ -261,6 +262,10 @@ namespace Sooda.CodeGen
             context["ClassUnifiedFieldCount"] = ci.UnifiedFields.Count;
             context["PrimaryKeyFieldHandler"] = ci.GetFirstPrimaryKeyField().GetFieldHandler().GetType().FullName;
             context["OptionalNewAttribute"] = (ci.InheritsFromClass != null) ? ",New" : "";
+            if (_codeProvider is Microsoft.VisualBasic.VBCodeProvider)
+            {
+                context["OptionalNewAttribute"] = "";
+            }
 
             if (ci.ExtBaseClassName != null) 
             {
@@ -338,9 +343,9 @@ namespace Sooda.CodeGen
                 }
             }
 
-            CodeMemberMethod m = gen.Method_IterateOuterReferences();
-            if (m != null)
-                ctd.Members.Add(m);
+            //CodeMemberMethod m = gen.Method_IterateOuterReferences();
+            //if (m != null)
+            //    ctd.Members.Add(m);
         }
 
         public void GenerateClassFactory(CodeNamespace nspace, ClassInfo ci) 
@@ -459,6 +464,7 @@ namespace Sooda.CodeGen
         {
             CDILContext context = new CDILContext();
             context["ClassName"] = ci.Name;
+            context["OptionalNewAttribute"] = (_codeProvider is Microsoft.VisualBasic.VBCodeProvider) ? "" : ",New";
 
             CodeTypeDeclaration listWrapperClass = CDILParser.ParseClass(CDILTemplate.Get("ListWrapper.cdil"), context);
             nspace.Types.Add(listWrapperClass);
@@ -568,8 +574,9 @@ namespace Sooda.CodeGen
 
                 if (fi.ReferencedClass == null)
                 {
-                    string rawTypeName = fi.GetFieldHandler().GetFieldType().Name;
-                    fullWrapperTypeName = "Sooda.QL.TypedWrappers.Soql" + optionalNullable + rawTypeName + "WrapperExpression";
+                    fullWrapperTypeName = fi.GetFieldHandler().GetTypedWrapperClass(fi.IsNullable);
+                    if (fullWrapperTypeName == null)
+                        continue;
 
                     prop.GetStatements.Add(new CodeMethodReturnStatement(
                         new CodeObjectCreateExpression(fullWrapperTypeName, 
@@ -593,6 +600,7 @@ namespace Sooda.CodeGen
             CDILContext context = new CDILContext();
             context["ClassName"] = classInfo.Name;
             context["PrimaryKeyType"] = classInfo.GetFirstPrimaryKeyField().GetFieldHandler().GetFieldType().FullName;
+            context["CSharp"] = _codeProvider is Microsoft.CSharp.CSharpCodeProvider;
 
             CodeTypeDeclaration ctd = CDILParser.ParseClass(CDILTemplate.Get("TypedCollectionWrapper.cdil"), context);
             ns.Types.Add(ctd);
@@ -600,6 +608,7 @@ namespace Sooda.CodeGen
             context = new CDILContext();
             context["ClassName"] = classInfo.Name;
             context["PrimaryKeyType"] = classInfo.GetFirstPrimaryKeyField().GetFieldHandler().GetFieldType().FullName;
+            context["CSharp"] = _codeProvider is Microsoft.CSharp.CSharpCodeProvider;
 
             ctd = CDILParser.ParseClass(CDILTemplate.Get("TypedWrapper.cdil"), context);
             ns.Types.Add(ctd);
@@ -632,8 +641,10 @@ namespace Sooda.CodeGen
 
                 if (fi.ReferencedClass == null)
                 {
-                    string rawTypeName = fi.GetFieldHandler().GetFieldType().Name;
-                    fullWrapperTypeName = "Sooda.QL.TypedWrappers.Soql" + optionalNullable + rawTypeName + "WrapperExpression";
+                    fullWrapperTypeName = fi.GetFieldHandler().GetTypedWrapperClass(fi.IsNullable);
+                    if (fullWrapperTypeName == null)
+                        continue;
+
                     prop.GetStatements.Add(new CodeMethodReturnStatement(
                         new CodeObjectCreateExpression(fullWrapperTypeName, 
                         new CodeObjectCreateExpression("Sooda.QL.SoqlPathExpression", new CodeThisReferenceExpression(), new CodePrimitiveExpression(fi.Name)))));
@@ -678,10 +689,11 @@ namespace Sooda.CodeGen
 
                 CodeDomProvider codeProvider = GetCodeProvider(Project.Language);
 
+                _codeProvider = codeProvider;
 
                 if (RebuildIfChanged) 
                 {
-                    string stubgenFile = System.Reflection.Assembly.GetEntryAssembly().Location;
+                    string stubgenFile = this.GetType().Assembly.Location;
                     string outputFile;
 
                     if (Project.SeparateStubs) 
@@ -757,8 +769,8 @@ namespace Sooda.CodeGen
                 ICodeGenerator csharpCodeGenerator = GetCodeProvider("c#").CreateGenerator();
 
                 CodeGeneratorOptions codeGeneratorOptions = new CodeGeneratorOptions();
-                codeGeneratorOptions.BracingStyle = "C";
-                codeGeneratorOptions.IndentString = "    ";
+                codeGeneratorOptions.BracingStyle = "Block";
+                codeGeneratorOptions.IndentString = "  ";
                 codeGeneratorOptions.BlankLinesBetweenMembers = false;
                 codeGeneratorOptions.ElseOnClosing = false;
 

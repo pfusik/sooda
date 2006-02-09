@@ -222,9 +222,9 @@ namespace Sooda.Sql
                     query.Append(fi.DBColumnName);
                     query.Append(" = {");
                     query.Append(pos++);
-					query.Append(':');
-					query.Append(fi.DataType);
-					query.Append("}");
+                    query.Append(':');
+                    query.Append(fi.DataType);
+                    query.Append("}");
                     query.Append(")");
                 }
 
@@ -485,13 +485,14 @@ namespace Sooda.Sql
         {
             try 
             {
-                IDbCommand cmd = Connection.CreateCommand();
+                using (IDbCommand cmd = Connection.CreateCommand())
+                {
+                    if (!DisableTransactions)
+                        cmd.Transaction = this.Transaction;
 
-                if (!DisableTransactions)
-                    cmd.Transaction = this.Transaction;
-
-                SqlBuilder.BuildCommandWithParameters(cmd, false, queryText, parameters);
-                return TimedExecuteNonQuery(cmd);
+                    SqlBuilder.BuildCommandWithParameters(cmd, false, queryText, parameters);
+                    return TimedExecuteNonQuery(cmd);
+                }
             }
             catch (Exception ex)
             {
@@ -582,8 +583,8 @@ namespace Sooda.Sql
                 builder.Append('{');
                 int fieldnum = par.Add(val);
                 builder.Append(fieldnum);
-				builder.Append(':');
-				builder.Append(table.Fields[i].DataType);
+                builder.Append(':');
+                builder.Append(table.Fields[i].DataType);
                 builder.Append('}');
             };
             builder.Append(")");
@@ -626,9 +627,9 @@ namespace Sooda.Sql
                     builder.Append("={");
                     int fieldnum = par.Add(obj.GetFieldValue(fieldNumber));
                     builder.Append(fieldnum);
-					builder.Append(':');
-					builder.Append(table.Fields[i].DataType);
-					builder.Append("}");
+                    builder.Append(':');
+                    builder.Append(table.Fields[i].DataType);
+                    builder.Append("}");
                     anyChange = true;
                 };
             };
@@ -646,9 +647,9 @@ namespace Sooda.Sql
                     builder.Append(fi.DBColumnName);
                     builder.Append("={");
                     builder.Append(par.Add(SoodaTuple.GetValue(obj.GetPrimaryKeyValue(), pkordinal)));
-					builder.Append(':');
-					builder.Append(fi.DataType);
-					builder.Append('}');
+                    builder.Append(':');
+                    builder.Append(fi.DataType);
+                    builder.Append('}');
                     builder.Append(")");
                     pkordinal++;
                 }

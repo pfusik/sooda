@@ -49,7 +49,7 @@ namespace Sooda.ObjectMapper
 {
     public class SoodaObjectListSnapshot : ISoodaObjectList 
     {
-		private static Logger logger = LogManager.GetLogger("SoodaObjectListSnapshot");
+        private static Logger logger = LogManager.GetLogger("SoodaObjectListSnapshot");
 
         public SoodaObjectListSnapshot()
         {
@@ -192,30 +192,30 @@ namespace Sooda.ObjectMapper
             SoodaTransaction transaction = t;
 
             ISoodaObjectFactory factory = t.GetFactory(classInfo);
-			SoodaCachedCollectionKey cacheKey = null;
+            SoodaCachedCollectionKey cacheKey = null;
 
-			if ((options & (SoodaSnapshotOptions.LoadFromCache | SoodaSnapshotOptions.StoreInCache)) != 0)
-			{
-				// cache makes sense only on clean database
-				if (!t.HasBeenPrecommitted(classInfo))
-				{
-					cacheKey = SoodaCache.GetCollectionKey(classInfo, whereClause);
-				}
-			}
+            if ((options & (SoodaSnapshotOptions.LoadFromCache | SoodaSnapshotOptions.StoreInCache)) != 0)
+            {
+                // cache makes sense only on clean database
+                if (!t.HasBeenPrecommitted(classInfo))
+                {
+                    cacheKey = SoodaCache.GetCollectionKey(classInfo, whereClause);
+                }
+            }
 
-			if ((options & SoodaSnapshotOptions.LoadFromCache) != 0)
-			{
-				IEnumerable keysCollection = SoodaCache.LoadCollection(cacheKey, orderBy, topCount);
-				if (keysCollection != null)
-				{
-					foreach (object o in keysCollection)
-					{
-						SoodaObject obj = factory.GetRef(t, o);
-						items.Add(obj);
-					}
-					return;
-				}
-			}
+            if ((options & SoodaSnapshotOptions.LoadFromCache) != 0)
+            {
+                IEnumerable keysCollection = SoodaCache.LoadCollection(cacheKey, orderBy, topCount);
+                if (keysCollection != null)
+                {
+                    foreach (object o in keysCollection)
+                    {
+                        SoodaObject obj = factory.GetRef(t, o);
+                        items.Add(obj);
+                    }
+                    return;
+                }
+            }
 
             if ((options & SoodaSnapshotOptions.NoDatabase) == 0) 
             {
@@ -230,6 +230,7 @@ namespace Sooda.ObjectMapper
                             SoodaObject obj = SoodaObject.GetRefFromKeyRecordHelper(transaction, factory, reader);
                             items.Add(obj);
                         }
+                        reader.Close();
                     }
                 }
                 else
@@ -251,20 +252,21 @@ namespace Sooda.ObjectMapper
                             }
                             items.Add(obj);
                         }
+                        reader.Close();
                     }
                 }
 
-				if (cacheKey != null && ((options & SoodaSnapshotOptions.StoreInCache) != 0) && (topCount == -1))
-				{
-					object[] keys = new object[items.Count];
-					int p = 0;
+                if (cacheKey != null && ((options & SoodaSnapshotOptions.StoreInCache) != 0) && (topCount == -1))
+                {
+                    object[] keys = new object[items.Count];
+                    int p = 0;
 
-					foreach (SoodaObject obj in items)
-					{
-						keys[p++] = obj.GetPrimaryKeyValue();
-					}
-					SoodaCache.StoreCollection(cacheKey, keys);
-				}
+                    foreach (SoodaObject obj in items)
+                    {
+                        keys[p++] = obj.GetPrimaryKeyValue();
+                    }
+                    SoodaCache.StoreCollection(cacheKey, keys);
+                }
             }
         }
 

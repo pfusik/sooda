@@ -100,7 +100,6 @@ namespace Sooda.CodeGen
             return new XmlTextReader(GetSoodaProjectXsdStream());
         }
 
-
         [XmlElement("schema-file")]
         public string SchemaFile;
 

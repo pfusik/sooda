@@ -161,7 +161,7 @@ namespace Sooda
                     } 
                     System.Threading.Thread.SetData(g_activeTransactionDataStoreSlot, previousTransaction);
                 }
-                transactionLogger.Debug("Transaction stats:\n\n{0}", Statistics);
+                // transactionLogger.Debug("Transaction stats:\n\n{0}", Statistics);
                 // transactionLogger.Debug("Disposed.");
             }
             catch (Exception ex)
@@ -427,53 +427,6 @@ namespace Sooda
             }
         }
 
-        protected static internal void SaveOuterReferences(SoodaObject theObject, string fieldName, object fieldValue, bool isDirty, ref SoodaObject refcache, ISoodaObjectFactory factory, object context) 
-        {
-            if (fieldValue != null) 
-            {
-                SoodaObject obj = SoodaObjectImpl.TryGetRefFieldValue(ref refcache, fieldValue, theObject.GetTransaction(), factory);
-                if (obj != null && (object)obj != (object)theObject) 
-                {
-                    if (obj.IsInsertMode())
-                    {
-                        if (obj.VisitedOnCommit && !obj.WrittenIntoDatabase)
-                        {
-                            throw new Exception("Cyclic reference between " + theObject.GetObjectKeyString() + " and " + obj.GetObjectKeyString());
-                            // cyclic reference
-                        } 
-                        else 
-                        {
-                            SaveObjectChanges(obj);
-                        }
-                    }
-                }
-            };
-        }
-
-        private static SoodaObjectRefFieldIterator saveOuterReferencesIterator = new SoodaObjectRefFieldIterator(SoodaTransaction.SaveOuterReferences);
-
-        static void SaveObjectChanges(SoodaObject o) 
-        {
-            o.VisitedOnCommit = true;
-            o.IterateOuterReferences(saveOuterReferencesIterator, null);
-            if (o.WrittenIntoDatabase)
-                return ;
-
-            if ((o.IsObjectDirty() || o.IsInsertMode()) && !o.WrittenIntoDatabase) 
-            {
-                // deletes are performed in a separate pass
-                if (!o.IsMarkedForDelete())
-                {
-                    o.CommitObjectChanges();
-                }
-                o.WrittenIntoDatabase = true;
-            } 
-            else if (o.PostCommitForced)
-            {
-                o.GetTransaction().AddToPostCommitQueue(o);
-            }
-        }
-
         public void SaveObjectChanges()
         {
             SaveObjectChanges(true, null);
@@ -503,7 +456,7 @@ namespace Sooda
                 {
                     if (!o.VisitedOnCommit && !o.IsMarkedForDelete()) 
                     {
-                        SaveObjectChanges(o);
+                        o.SaveObjectChanges();
                     }
                 }
 

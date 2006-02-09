@@ -89,6 +89,11 @@ namespace Sooda.ObjectMapper {
 		public abstract Type GetSqlType();
 
 		public abstract void SetupDBParameter(IDbDataParameter parameter, object value);
+
+        public virtual string GetTypedWrapperClass(bool nullable)
+        {
+            return "Sooda.QL.TypedWrappers.Soql" + (nullable ? "Nullable" : "") + GetFieldType().Name + "WrapperExpression";
+        }
     }
 }
 
