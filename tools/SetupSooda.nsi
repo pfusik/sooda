@@ -48,12 +48,22 @@ Section "Library and Tools"
 
   SetOutPath $INSTDIR\bin
   ; Put file there
-  File build\${BUILDSUBDIR}\bin\NLog.dll
   File build\${BUILDSUBDIR}\bin\Sooda.dll
+  File build\${BUILDSUBDIR}\bin\Sooda.Logging.NLog.dll
+  File build\${BUILDSUBDIR}\bin\Sooda.Logging.log4net.dll
+  File build\${BUILDSUBDIR}\bin\Sooda.CodeGen.dll
+  File build\${BUILDSUBDIR}\bin\Sooda.NAnt.Tasks.dll
   File build\${BUILDSUBDIR}\bin\SoodaStubGen.exe
   File build\${BUILDSUBDIR}\bin\SoodaSchemaTool.exe
   File build\${BUILDSUBDIR}\bin\SoodaCompileStubs.exe
-  File build\${BUILDSUBDIR}\bin\Sooda*.pdb
+  File build\${BUILDSUBDIR}\bin\Sooda.pdb
+  File build\${BUILDSUBDIR}\bin\Sooda.Logging.NLog.pdb
+  File build\${BUILDSUBDIR}\bin\Sooda.Logging.log4net.pdb
+  File build\${BUILDSUBDIR}\bin\Sooda.CodeGen.pdb
+  File build\${BUILDSUBDIR}\bin\Sooda.NAnt.Tasks.pdb
+  File build\${BUILDSUBDIR}\bin\SoodaStubGen.pdb
+  File build\${BUILDSUBDIR}\bin\SoodaSchemaTool.pdb
+  File build\${BUILDSUBDIR}\bin\SoodaCompileStubs.pdb
 
   SetOutPath $INSTDIR\docs
   File build\${BUILDSUBDIR}\help\Sooda.chm
