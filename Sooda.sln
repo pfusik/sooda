@@ -91,7 +91,6 @@ Global
 		{5F89F8D0-39BC-49F8-92E3-3A7F5F3FF55F}.Release.Build.0 = Release|.NET
 		{2D11C6FF-FF8C-4517-8546-C81C621CFF7C}.Debug.ActiveCfg = Debug|.NET
 		{2D11C6FF-FF8C-4517-8546-C81C621CFF7C}.Release.ActiveCfg = Release|.NET
-		{2D11C6FF-FF8C-4517-8546-C81C621CFF7C}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
