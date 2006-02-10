@@ -76,7 +76,7 @@ namespace Sooda.Logging
                         break;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 _implementation = new NullLoggingImplementation();
             }

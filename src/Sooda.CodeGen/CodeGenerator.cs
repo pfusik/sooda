@@ -91,7 +91,7 @@ namespace Sooda.CodeGen
 
         public void GenerateClassValues(CodeNamespace nspace, ClassInfo ci, bool miniStub)
         {
-            return;
+#if SKIPPED
             CodeDomClassStubGenerator gen = new CodeDomClassStubGenerator(ci, Project);
 
             CodeTypeDeclaration ctd = new CodeTypeDeclaration(ci.Name + "_Values");
@@ -187,11 +187,12 @@ namespace Sooda.CodeGen
             ctd.Members.Add(lengthProperty);
 
             nspace.Types.Add(ctd);
+#endif  
         }
 
         private void CDILParserTest(CodeTypeDeclaration ctd)
         {
-            return;
+#if SKIPPED
             using (StringWriter sw = new StringWriter())
             {
                 CDILPrettyPrinter.PrintType(sw, ctd);
@@ -211,6 +212,7 @@ namespace Sooda.CodeGen
                     throw new InvalidOperationException("DIFFERENT!");
                 }
             }
+#endif
         }
 
         public string MakeCamelCase(string s)
@@ -350,7 +352,6 @@ namespace Sooda.CodeGen
 
         public void GenerateClassFactory(CodeNamespace nspace, ClassInfo ci) 
         {
-#warning ADD SUPPORT FOR MULTIPLE-COLUMN PRIMARY KEYS
             FieldInfo fi = ci.GetFirstPrimaryKeyField();
             string pkClrTypeName = fi.GetFieldHandler().GetFieldType().FullName;
             string pkFieldHandlerTypeName = fi.GetFieldHandler().GetType().FullName;
@@ -399,10 +400,7 @@ namespace Sooda.CodeGen
                     new CodeFieldReferenceExpression(null, "_fieldhandler_" + fi2.Name)));
             }
 
-
-
             factoryClass.Members.Add(cctor);
-
             nspace.Types.Add(factoryClass);
         }
 
@@ -765,8 +763,13 @@ namespace Sooda.CodeGen
                 }
                 Output.Verbose("Output Path:       {0}", Project.OutputPath);
                 Output.Verbose("Namespace:         {0}", Project.OutputNamespace);
+#if DOTNET2
+                CodeDomProvider codeGenerator = codeProvider;
+                CodeDomProvider csharpCodeGenerator = GetCodeProvider("c#");
+#else                
                 ICodeGenerator codeGenerator = codeProvider.CreateGenerator();
                 ICodeGenerator csharpCodeGenerator = GetCodeProvider("c#").CreateGenerator();
+#endif
 
                 CodeGeneratorOptions codeGeneratorOptions = new CodeGeneratorOptions();
                 codeGeneratorOptions.BracingStyle = "Block";

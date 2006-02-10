@@ -88,8 +88,16 @@ namespace Sooda.Schema {
             SchemaInfo schemaInfo = (SchemaInfo)ser.Deserialize(reader);
 #else
 
+#if DOTNET2
+            XmlReaderSettings readerSettings = new XmlReaderSettings();
+            readerSettings.ValidationType = ValidationType.Schema;
+            readerSettings.Schemas.Add(NamespaceURI, GetSchemaXsdStreamXmlReader());
+
+            XmlReader validatingReader = XmlReader.Create(reader, readerSettings);
+#else
             XmlValidatingReader validatingReader = new XmlValidatingReader(reader);
-            validatingReader.Schemas.Add(SchemaManager.NamespaceURI, SchemaManager.GetSchemaXsdStreamXmlReader());
+            validatingReader.Schemas.Add(NamespaceURI, GetSchemaXsdStreamXmlReader());
+#endif
 
             XmlSerializer ser = new XmlSerializer(typeof(Sooda.Schema.SchemaInfo));
             SchemaInfo schemaInfo = (SchemaInfo)ser.Deserialize(validatingReader);

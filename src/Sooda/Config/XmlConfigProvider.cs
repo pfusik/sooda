@@ -134,7 +134,11 @@ namespace Sooda.Config {
         }
 
         public string GetMachineName() {
+#if DOTNET2
+            string overrideMachineName = ConfigurationManager.AppSettings["sooda.hostname"];
+#else
             string overrideMachineName = ConfigurationSettings.AppSettings["sooda.hostname"];
+#endif
             if (overrideMachineName != null)
                 return overrideMachineName;
 
@@ -205,10 +209,17 @@ namespace Sooda.Config {
 
 		private void OverrideFromAppConfig()
 		{
-			foreach (string s in ConfigurationSettings.AppSettings.Keys)
+#if DOTNET2
+            foreach (string s in ConfigurationManager.AppSettings.Keys)
+            {
+                dataDictionary[s] = ConfigurationManager.AppSettings[s];
+            }
+#else
+            foreach (string s in ConfigurationSettings.AppSettings.Keys)
 			{
 				dataDictionary[s] = ConfigurationSettings.AppSettings[s];
 			}
+#endif
 		}
     }
 }

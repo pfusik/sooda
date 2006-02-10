@@ -35,10 +35,17 @@ using System;
 using System.IO;
 using System.Configuration;
 
-namespace Sooda.Config {
-    public class AppSettingsConfigProvider : ISoodaConfigProvider {
-        public string GetString(string key) {
+namespace Sooda.Config
+{
+    public class AppSettingsConfigProvider : ISoodaConfigProvider
+    {
+        public string GetString(string key)
+        {
+#if DOTNET2
+            return ConfigurationManager.AppSettings[key];
+#else
             return ConfigurationSettings.AppSettings[key];
+#endif
         }
     }
 }

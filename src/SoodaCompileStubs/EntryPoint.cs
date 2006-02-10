@@ -99,7 +99,11 @@ namespace SoodaCompileStubs
                 Console.WriteLine("Rebuilding '{0}.Stubs.dll'", assemblyBaseName);
 
                 CSharpCodeProvider codeProvider = new CSharpCodeProvider();
+#if DOTNET2
+                CSharpCodeProvider compiler = codeProvider;
+#else
                 ICodeCompiler compiler = codeProvider.CreateCompiler();
+#endif
 
                 // Step 1. Create mini-stubs
 
@@ -155,7 +159,11 @@ namespace SoodaCompileStubs
                     skeletonSourceFiles.Add(Path.GetFullPath(args[i]));
                 }
 
+#if DOTNET2
+                results = compiler.CompileAssemblyFromFile(options, (string[])skeletonSourceFiles.ToArray(typeof(string)));
+#else
                 results = compiler.CompileAssemblyFromFileBatch(options, (string[])skeletonSourceFiles.ToArray(typeof(string)));
+#endif
                 if (results.NativeCompilerReturnValue != 0)
                 {
                     Console.WriteLine("Compilation failed:");

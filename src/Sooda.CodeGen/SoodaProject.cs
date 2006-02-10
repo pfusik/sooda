@@ -206,8 +206,16 @@ namespace Sooda.CodeGen
             SoodaProject project = (SoodaProject)ser.Deserialize(reader);
 #else
 
+#if DOTNET2
+            XmlReaderSettings readerSettings = new XmlReaderSettings();
+            readerSettings.ValidationType = ValidationType.Schema;
+            readerSettings.Schemas.Add(NamespaceURI, GetSoodaProjectXsdStreamXmlReader());
+
+            XmlReader validatingReader = XmlReader.Create(reader, readerSettings);
+#else
             XmlValidatingReader validatingReader = new XmlValidatingReader(reader);
             validatingReader.Schemas.Add(NamespaceURI, GetSoodaProjectXsdStreamXmlReader());
+#endif
 
             XmlSerializer ser = new XmlSerializer(typeof(SoodaProject));
             SoodaProject project = (SoodaProject)ser.Deserialize(validatingReader);

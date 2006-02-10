@@ -66,8 +66,9 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     }
                     Assert.Fail("Object not deleted!");
                 }
-                catch (SoodaObjectNotFoundException ex)
+                catch (SoodaObjectNotFoundException)
                 {
+                    Assert.IsTrue(true);
                 }
             }
         }

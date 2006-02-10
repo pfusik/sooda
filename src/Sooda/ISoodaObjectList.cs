@@ -34,8 +34,10 @@
 using System;
 using System.Collections;
 
-namespace Sooda {
-    public interface ISoodaObjectList : System.Collections.IList {
+namespace Sooda
+{
+    public interface ISoodaObjectList : System.Collections.IList
+    {
         SoodaObject GetItem(int pos);
 
         ISoodaObjectList GetSnapshot();

@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <sooda-project xmlns="http://www.sooda.org/schemas/SoodaProject.xsd">
-    <schema-file>../DBSchema.xml</schema-file>
-    <language>vb</language>
-    <output-namespace>Sooda.UnitTests.VBObjects</output-namespace>
-    <output-path>.</output-path>
-    <nullable-representation>SqlType</nullable-representation>
-    <not-null-representation>Raw</not-null-representation>
-    <with-indexers>false</with-indexers>
-    <with-typed-queries>false</with-typed-queries>
-    <embedded-schema-type>Binary</embedded-schema-type>
-    <external-projects>
-        <project type="vs" />
-    </external-projects>
+  <schema-file>../DBSchema.xml</schema-file>
+  <language>vb</language>
+  <output-namespace>Sooda.UnitTests.VBObjects</output-namespace>
+  <output-path>.</output-path>
+  <nullable-representation>SqlType</nullable-representation>
+  <not-null-representation>Raw</not-null-representation>
+  <with-indexers>false</with-indexers>
+  <with-typed-queries>false</with-typed-queries>
+  <embedded-schema-type>Binary</embedded-schema-type>
+  <external-projects>
+    <project type="vs2003" file="Sooda.UnitTests.VBObjects.vbproj" />
+    <project type="vs2005" file="Sooda.UnitTests.VBObjects-net-2.0.vbproj" />
+  </external-projects>
 </sooda-project>

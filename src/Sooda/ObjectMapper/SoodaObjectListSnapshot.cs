@@ -175,7 +175,7 @@ namespace Sooda.ObjectMapper
                         }
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // cannot detect involved classes (probably because of RAWQUERY)
                     // - precommit all objects

@@ -34,8 +34,10 @@
 using System;
 using System.Collections;
 
-namespace Sooda.ObjectMapper {
-    public interface ISoodaObjectListInternal {
+namespace Sooda.ObjectMapper
+{
+    public interface ISoodaObjectListInternal
+    {
         void InternalAdd(SoodaObject o);
         void InternalRemove(SoodaObject o);
     }

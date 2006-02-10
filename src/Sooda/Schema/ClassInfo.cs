@@ -322,12 +322,6 @@ namespace Sooda.Schema
             LocalFields = new FieldInfoCollection();
             int localOrdinal = 0;
             int count = 0;
-            foreach (TableInfo table in UnifiedTables) 
-            {
-                foreach (FieldInfo fi in table.Fields) 
-                {
-                }
-            }
             foreach (TableInfo table in LocalTables) 
             {
                 foreach (FieldInfo fi in table.Fields) 

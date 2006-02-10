@@ -36,8 +36,10 @@ using System.Data;
 
 using Sooda;
 
-namespace Sooda.ObjectMapper.KeyGenerators {
-    public class TableBasedGenerator : IPrimaryKeyGenerator {
+namespace Sooda.ObjectMapper.KeyGenerators
+{
+    public class TableBasedGenerator : IPrimaryKeyGenerator
+    {
         private string keyName;
         private int poolSize;
         private int currentValue = 0;
@@ -59,20 +61,24 @@ namespace Sooda.ObjectMapper.KeyGenerators {
             poolSize = Convert.ToInt32(SoodaConfig.GetString(dataSourceInfo.Name + ".keygentable.pool_size", "10"));
         }
 
-        public object GetNextKeyValue() {
-            lock (this) {
-                if (currentValue >= maxValue) {
+        public object GetNextKeyValue()
+        {
+            lock (this)
+            {
+                if (currentValue >= maxValue)
+                {
                     AcquireNextRange();
                 }
                 return currentValue++;
             }
         }
 
-        public void AcquireNextRange() {
+        public void AcquireNextRange()
+        {
             // TODO - fix me, this is hack
 
-            Sooda.Sql.SqlDataSource sds = (Sooda.Sql.SqlDataSource)dataSourceInfo.CreateDataSource();
-            try {
+            using (Sooda.Sql.SqlDataSource sds = (Sooda.Sql.SqlDataSource)dataSourceInfo.CreateDataSource())
+            {
                 sds.Open();
 
                 IDbConnection conn = sds.Connection;
@@ -81,7 +87,8 @@ namespace Sooda.ObjectMapper.KeyGenerators {
 
                 bool justInserted = false;
                 int maxRandomTimeout = 2;
-                for (int i = 0; (i < 10) && !gotKey; ++i) {
+                for (int i = 0; (i < 10) && !gotKey; ++i)
+                {
                     string query = "select " + key_value_column + " from " + table_name + " where " + key_name_column + " = '" + keyName + "'";
                     IDbCommand cmd = conn.CreateCommand();
 
@@ -90,15 +97,16 @@ namespace Sooda.ObjectMapper.KeyGenerators {
 
                     cmd.CommandText = query;
                     int keyValue = -1;
-                    
-                    using(IDataReader reader = cmd.ExecuteReader())
+
+                    using (IDataReader reader = cmd.ExecuteReader())
                     {
-                        
+
                         if (reader.Read())
                             keyValue = Convert.ToInt32(reader.GetValue(0));
                     }
 
-                    if (keyValue == -1) {
+                    if (keyValue == -1)
+                    {
                         if (justInserted)
                             throw new Exception("FATAL DATABASE ERROR - cannot get new key value");
                         cmd.CommandText = "insert into " + table_name + "(" + key_name_column + ", " + key_value_column + ") values('" + keyName + "', 1)";
@@ -117,26 +125,26 @@ namespace Sooda.ObjectMapper.KeyGenerators {
                     int rows = cmd.ExecuteNonQuery();
                     // Console.WriteLine("{0} row(s) affected", rows);
 
-                    if (rows != 1) {
+                    if (rows != 1)
+                    {
                         // Console.WriteLine("Conflict on write, sleeping for random number of milliseconds ({0} max)", maxRandomTimeout);
                         System.Threading.Thread.Sleep(1 + random.Next(maxRandomTimeout));
                         maxRandomTimeout = maxRandomTimeout * 2;
                         // conflict on write
                         continue;
-                    } else {
+                    }
+                    else
+                    {
                         this.currentValue = keyValue;
                         this.maxValue = nextKeyValue;
 
                         sds.Commit();
 
                         //Console.WriteLine("New key range for {0} [{1}:{2}]", keyName, currentValue, maxValue);
-                        return ;
+                        return;
                     }
                 }
                 throw new Exception("FATAL DATABASE ERROR - cannot get new key value");
-            } 
-            finally {
-                sds.Close();
             }
         }
     }

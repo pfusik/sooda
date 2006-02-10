@@ -67,18 +67,6 @@ namespace Sooda.UnitTests.TestCases.Soql {
             Sooda.Sql.SoqlToSqlConverter converter = new Sooda.Sql.SoqlToSqlConverter(sw, _DatabaseSchema.GetSchema(), new Sooda.Sql.SqlServerBuilder());
             Sooda.QL.SoqlPrettyPrinter prettyPrinter = new Sooda.QL.SoqlPrettyPrinter(Console.Out);
 
-#warning TODO - enable me
-#if A
-
-            trans.Options = Sooda.QL.SoqlTranslatorOptions.Strict;
-            trans.AllowedFunctions = System.Collections.Specialized.CollectionsUtil.CreateCaseInsensitiveHashtable();
-            trans.AllowedFunctions.Add("count", this);
-            trans.AllowedFunctions.Add("avg", this);
-            trans.AllowedFunctions.Add("max", this);
-            trans.AllowedFunctions.Add("min", this);
-            trans.AllowedFunctions.Add("sum", this);
-#endif
-
             Sooda.QL.SoqlQueryExpression query = Sooda.QL.SoqlParser.ParseQuery(input);
             prettyPrinter.PrintQuery(query);
             Console.WriteLine();

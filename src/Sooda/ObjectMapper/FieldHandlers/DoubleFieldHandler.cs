@@ -37,79 +37,93 @@ using System.Xml;
 
 using System.Globalization;
 
-namespace Sooda.ObjectMapper.FieldHandlers {
-    public class DoubleFieldHandler : SoodaFieldHandler {
-        public DoubleFieldHandler(bool nullable) : base(nullable) {}
+namespace Sooda.ObjectMapper.FieldHandlers
+{
+    public class DoubleFieldHandler : SoodaFieldHandler
+    {
+        public DoubleFieldHandler(bool nullable) : base(nullable) { }
 
         protected override string TypeName
         {
-            get {
+            get
+            {
                 return "double";
             }
         }
 
-        public System.Data.SqlTypes.SqlDouble GetSqlNullableValue(object fieldValue) {
+        public System.Data.SqlTypes.SqlDouble GetSqlNullableValue(object fieldValue)
+        {
             if (fieldValue == null)
                 return System.Data.SqlTypes.SqlDouble.Null;
             else
                 return new System.Data.SqlTypes.SqlDouble((double)fieldValue);
         }
 
-        public Double GetNotNullValue(object val) {
+        public Double GetNotNullValue(object val)
+        {
             if (val == null)
                 throw new InvalidOperationException("Attempt to read a non-null value that isn't set yet");
             return (Double)val;
         }
 
-        public override object RawRead(IDataRecord record, int pos) {
+        public override object RawRead(IDataRecord record, int pos)
+        {
             return GetFromReader(record, pos);
         }
 
-        public static Double GetFromReader(IDataRecord record, int pos) {
+        public static Double GetFromReader(IDataRecord record, int pos)
+        {
             return record.GetDouble(pos);
         }
 
-        public static object GetBoxedFromReader(IDataRecord record, int pos) {
+        public static object GetBoxedFromReader(IDataRecord record, int pos)
+        {
             object v = record.GetValue(pos);
             if (!(v is Double))
                 throw new SoodaDatabaseException();
             return v;
         }
 
-        public override string RawSerialize(object val) {
+        public override string RawSerialize(object val)
+        {
             return SerializeToString(val);
         }
 
-        public override object RawDeserialize(string s) {
+        public override object RawDeserialize(string s)
+        {
             return DeserializeFromString(s);
         }
 
-        public static string SerializeToString(object obj) {
+        public static string SerializeToString(object obj)
+        {
             return Convert.ToDouble(obj).ToString("R", CultureInfo.InvariantCulture);
         }
 
-        public static object DeserializeFromString(string s) {
+        public static object DeserializeFromString(string s)
+        {
             return Double.Parse(s, CultureInfo.InvariantCulture);
         }
 
         private static object _zeroValue = (double)0.0;
-        public override object ZeroValue() {
+        public override object ZeroValue()
+        {
             return _zeroValue;
         }
 
-        public override Type GetFieldType() {
+        public override Type GetFieldType()
+        {
             return typeof(Double);
         }
 
-		public override Type GetSqlType()
-		{
-			return typeof(System.Data.SqlTypes.SqlDouble);
-		}
+        public override Type GetSqlType()
+        {
+            return typeof(System.Data.SqlTypes.SqlDouble);
+        }
 
-		public override void SetupDBParameter(IDbDataParameter parameter, object value)
-		{
-			parameter.DbType = DbType.Double;
-			parameter.Value = value;
-		}
-	}
+        public override void SetupDBParameter(IDbDataParameter parameter, object value)
+        {
+            parameter.DbType = DbType.Double;
+            parameter.Value = value;
+        }
+    }
 }

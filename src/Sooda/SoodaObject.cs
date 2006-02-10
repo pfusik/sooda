@@ -59,10 +59,7 @@ namespace Sooda
 
         // instance fields - initialized in InitRawObject()
 
-        [CLSCompliant(false)]
         internal SoodaFieldData[] _fieldData;
-
-        [CLSCompliant(false)]
         internal SoodaObjectFieldValues _fieldValues;
         private int _dataLoadedMask;
         private SoodaTransaction _transaction;
@@ -754,7 +751,8 @@ namespace Sooda
 
         internal void LoadAllData() 
         {
-#warning FIXME: Optimize!
+            // TODO - OPTIMIZE: LOAD DATA FROM ALL TABLES IN A SINGLE QUERY
+
             for (int i = 0; i < GetClassInfo().UnifiedTables.Count; ++i) 
             {
                 if (!IsDataLoaded(i)) 
@@ -1256,9 +1254,8 @@ namespace Sooda
             }
 
             SoodaObject retVal = factory.TryGet(tran, keyValue);
-            if ((retVal != null)) 
+            if (retVal != null)
             {
-#warning FIX ME
                 if (!retVal.IsDataLoaded(0)) 
                 {
                     retVal.LoadDataFromRecord(record, firstColumnIndex, loadedTables, tableIndex);
@@ -1319,12 +1316,12 @@ namespace Sooda
             return retVal;
         }
 
-        public static SoodaObject GetRefFromKeyRecordHelper(SoodaTransaction tran, ISoodaObjectFactory factory, IDataRecord record)
+        internal static SoodaObject GetRefFromKeyRecordHelper(SoodaTransaction tran, ISoodaObjectFactory factory, IDataRecord record)
         {
             object keyValue;
             int pkSize = factory.GetClassInfo().GetPrimaryKeyFields().Length;
 
-#warning REFACTOR ME - Merge GetRefFromKeyRecordHelper with GetRefFromRecordHelper
+            // TODO - REFACTORING: Merge GetRefFromKeyRecordHelper with GetRefFromRecordHelper
 
             if (pkSize == 1)
             {
@@ -1341,11 +1338,10 @@ namespace Sooda
             else
             {
                 object[] pkParts = new object[pkSize];
-                int currentPkPart = 0;
-                foreach (Sooda.Schema.FieldInfo fi in factory.GetClassInfo().GetPrimaryKeyFields())
+                for (int currentPkPart = 0; currentPkPart < pkSize; currentPkPart++)
                 {
                     SoodaFieldHandler handler = factory.GetFieldHandler(currentPkPart);
-                    pkParts[currentPkPart++] = handler.RawRead(record, currentPkPart);
+                    pkParts[currentPkPart] = handler.RawRead(record, currentPkPart);
                 }
                 keyValue = new SoodaTuple(pkParts);
                 //logger.Debug("Tuple: {0}", keyValue);
@@ -1443,7 +1439,7 @@ namespace Sooda
                     // if the class is actually inherited, we delegate the responsibility
                     // to the appropriate GetRefFromRecord which will be called by the snapshot
 
-#warning FIX ME - OPTIMIZE
+                    // TODO - OPTIMIZE: REMOVE PARSING
 
                     StringBuilder query = new StringBuilder();
                     Sooda.Schema.FieldInfo[] pkFields = factory.GetClassInfo().GetPrimaryKeyFields();

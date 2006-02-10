@@ -40,135 +40,193 @@ using System.Reflection;
 
 using Sooda.Schema;
 
-namespace Sooda.ObjectMapper {
+namespace Sooda.ObjectMapper
+{
     [DebuggerStepThrough]
-    public class SoodaObjectCollectionWrapper : ISoodaObjectList, ISoodaObjectListInternal {
+    public class SoodaObjectCollectionWrapper : ISoodaObjectList, ISoodaObjectListInternal
+    {
         private ISoodaObjectList _theList;
 
-        protected SoodaObjectCollectionWrapper() {
+        protected SoodaObjectCollectionWrapper()
+        {
             _theList = new SoodaObjectListSnapshot();
         }
 
-        protected SoodaObjectCollectionWrapper(ISoodaObjectList list) {
+        protected SoodaObjectCollectionWrapper(ISoodaObjectList list)
+        {
             _theList = list;
         }
 
 
-        public SoodaObject GetItem(int pos) {
+        public SoodaObject GetItem(int pos)
+        {
             return _theList.GetItem(pos);
         }
 
-        public bool IsReadOnly { get {
-                                     return _theList.IsReadOnly;
-                                 } }
+        public bool IsReadOnly
+        {
+            get
+            {
+                return _theList.IsReadOnly;
+            }
+        }
         public object this[int index]
         {
-            get {
+            get
+            {
                 return _theList[index];
             }
-            set {
+            set
+            {
                 _theList[index] = value;
             }
         }
 
-        public void RemoveAt(int index) {
+        public void RemoveAt(int index)
+        {
             _theList.RemoveAt(index);
         }
 
-        public void Insert(int index, object value) {
+        public void Insert(int index, object value)
+        {
             _theList.Insert(index, value);
         }
 
-        public void Remove(object value) {
+        void IList.Remove(object value)
+        {
             _theList.Remove(value);
         }
 
-        public bool Contains(object value) {
+        public void Remove2(object value)
+        {
+            _theList.Remove(value);
+        }
+
+        bool IList.Contains(object value)
+        {
             return _theList.Contains(value);
         }
 
-        public void Clear() {
+        public bool Contains2(object value)
+        {
+            return _theList.Contains(value);
+        }
+
+        public void Clear()
+        {
             _theList.Clear();
         }
 
-        public int IndexOf(object value) {
+        public int IndexOf(object value)
+        {
             return _theList.IndexOf(value);
         }
 
-        public int Add(object value) {
+        int IList.Add(object value)
+        {
+            return _theList.Add(value);
+        }
+
+        protected int Add2(object value)
+        {
             return _theList.Add(value);
         }
 
         public bool IsFixedSize
         {
-            get {
+            get
+            {
                 return _theList.IsFixedSize;
             }
         }
 
         public bool IsSynchronized
         {
-            get {
+            get
+            {
                 return _theList.IsSynchronized;
             }
         }
 
         public int Count
         {
-            get {
+            get
+            {
                 return _theList.Count;
             }
         }
 
-        public void CopyTo(Array array, int index) {
+        public void CopyTo(Array array, int index)
+        {
             _theList.CopyTo(array, index);
         }
 
         public object SyncRoot
         {
-            get {
+            get
+            {
                 return _theList.SyncRoot;
             }
         }
 
-        public IEnumerator GetEnumerator() {
+        public IEnumerator GetEnumerator()
+        {
             return _theList.GetEnumerator();
         }
 
-        public ISoodaObjectList GetSnapshot() {
+        public ISoodaObjectList GetSnapshot()
+        {
             return _theList.GetSnapshot();
         }
 
-        public ISoodaObjectList Filter(SoodaWhereClause whereClause) {
+        ISoodaObjectList ISoodaObjectList.Filter(SoodaWhereClause whereClause)
+        {
             return _theList.Filter(whereClause);
         }
 
-        public ISoodaObjectList Filter(SoodaObjectFilter filter) {
+        ISoodaObjectList ISoodaObjectList.Filter(SoodaObjectFilter filter)
+        {
             return _theList.Filter(filter);
         }
 
-        public ISoodaObjectList Sort(IComparer comparer) {
+        protected ISoodaObjectList Filter2(SoodaWhereClause whereClause)
+        {
+            return _theList.Filter(whereClause);
+        }
+
+        protected ISoodaObjectList Filter2(SoodaObjectFilter filter)
+        {
+            return _theList.Filter(filter);
+        }
+
+        public ISoodaObjectList Sort(IComparer comparer)
+        {
             return _theList.Sort(comparer);
         }
 
-        public ISoodaObjectList SelectFirst(int count) {
+        public ISoodaObjectList SelectFirst(int count)
+        {
             return _theList.SelectFirst(count);
         }
 
-        public ISoodaObjectList SelectLast(int count) {
+        public ISoodaObjectList SelectLast(int count)
+        {
             return _theList.SelectLast(count);
         }
 
-        public ISoodaObjectList SelectRange(int from, int to) {
+        public ISoodaObjectList SelectRange(int from, int to)
+        {
             return _theList.SelectRange(from, to);
         }
 
-        public void InternalAdd(SoodaObject o) {
+        public void InternalAdd(SoodaObject o)
+        {
             ((ISoodaObjectListInternal)_theList).InternalAdd(o);
             // TODO:  Add SoodaObjectCollectionWrapper.InternalAdd implementation
         }
 
-        public void InternalRemove(SoodaObject o) {
+        public void InternalRemove(SoodaObject o)
+        {
             ((ISoodaObjectListInternal)_theList).InternalRemove(o);
         }
     }

@@ -71,6 +71,11 @@
         <property name="sooda.define" value="${sooda.define},SOODA_NO_ODBC" />
     </target>
 
+    <target name="configure-net-2.0">
+        <property name="sooda.csc.args" value="/nowarn:1591,1699" />
+        <property name="sooda.define" value="${sooda.define},DOTNET2" />
+    </target>
+
     <target name="release">
         <property name="sooda.debug" value="false" />
         <property name="sooda.optimize" value="true" />
@@ -82,7 +87,7 @@
     </target>
 
     <target name="Sooda" depends="configure" description="Sooda">
-        <csc target="library" output="${sooda.dir}/Sooda.dll" doc="${sooda.dir}/Sooda.xml" debug="${sooda.debug}" define="${sooda.define}">
+        <csc target="library" output="${sooda.dir}/Sooda.dll" doc="${sooda.dir}/Sooda.xml" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
             <references>                                  
                 <include name="mscorlib.dll" />
                 <include name="System.dll" />
@@ -101,7 +106,7 @@
     </target>
 
     <target name="Sooda.Logging.NLog" depends="configure, NLog" description="Sooda">
-        <csc target="library" output="${sooda.dir}/Sooda.Logging.NLog.dll" doc="${sooda.dir}/Sooda.Logging.NLog.xml" debug="${sooda.debug}" define="${sooda.define}">
+        <csc target="library" output="${sooda.dir}/Sooda.Logging.NLog.dll" doc="${sooda.dir}/Sooda.Logging.NLog.xml" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
             <references>                                  
                 <include name="mscorlib.dll" />
                 <include name="System.dll" />
@@ -119,7 +124,7 @@
     </target>
 
     <target name="Sooda.Logging.log4net" depends="configure, log4net" description="Sooda">
-        <csc target="library" output="${sooda.dir}/Sooda.Logging.log4net.dll" doc="${sooda.dir}/Sooda.Logging.log4net.xml" debug="${sooda.debug}" define="${sooda.define}">
+        <csc target="library" output="${sooda.dir}/Sooda.Logging.log4net.dll" doc="${sooda.dir}/Sooda.Logging.log4net.xml" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
             <references>                                  
                 <include name="mscorlib.dll" />
                 <include name="System.dll" />
@@ -137,7 +142,7 @@
     </target>
 
     <target name="Sooda.CodeGen" depends="configure, Sooda">
-        <csc target="library" output="${sooda.dir}/Sooda.CodeGen.dll" debug="${sooda.debug}" define="${sooda.define}">
+        <csc target="library" output="${sooda.dir}/Sooda.CodeGen.dll" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
             <references>                                  
                 <include name="${sooda.dir}/Sooda.dll" />
             </references>
@@ -149,6 +154,7 @@
                 <include name="CDIL/Templates/**/*.cdil" />
                 <include name="SoodaProject.xsd" />
             </resources>
+            <arg value="${sooda.csc.args}"/>
         </csc>
     </target>
 
@@ -161,23 +167,25 @@
             <sources basedir="src/SoodaStubGen">
                 <include name="**/*.cs" />
             </sources>
+            <arg value="${sooda.csc.args}"/>
         </csc>
         <copy file="src/SoodaStubGen/App.config" tofile="${sooda.dir}/SoodaStubGen.exe.config" />
     </target>
 
     <target name="SoodaCompileStubs" depends="configure, Sooda">
-        <csc target="exe" output="${sooda.dir}/SoodaCompileStubs.exe" debug="${sooda.debug}" define="${sooda.define}">
+        <csc target="exe" output="${sooda.dir}/SoodaCompileStubs.exe" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
             <references>                                  
                 <include name="${sooda.dir}/Sooda.dll" />
             </references>
             <sources basedir="src/SoodaCompileStubs">
                 <include name="*.cs" />
             </sources>
+            <arg value="${sooda.csc.args}"/>
         </csc>
     </target>
 
     <target name="SoodaSchemaTool" depends="configure, Sooda">
-        <csc target="exe" output="${sooda.dir}/SoodaSchemaTool.exe" debug="${sooda.debug}" define="${sooda.define}">
+        <csc target="exe" output="${sooda.dir}/SoodaSchemaTool.exe" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
             <references>                                  
                 <include name="System.Data.dll" asis="true" />
                 <include name="${sooda.dir}/Sooda.dll" />
@@ -185,11 +193,12 @@
             <sources basedir="src/SoodaSchemaTool">
                 <include name="*.cs" />
             </sources>
+            <arg value="${sooda.csc.args}"/>
         </csc>
     </target>
 
     <target name="SoodaFixKeygen" depends="configure, Sooda">
-        <csc target="exe" output="${sooda.dir}/SoodaFixKeygen.exe" debug="${sooda.debug}" define="${sooda.define}">
+        <csc target="exe" output="${sooda.dir}/SoodaFixKeygen.exe" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
             <references>                                  
                 <include name="System.Data.dll" asis="true" />
                 <include name="${sooda.dir}/Sooda.dll" />
@@ -197,6 +206,7 @@
             <sources basedir="src/SoodaFixKeygen">
                 <include name="*.cs" />
             </sources>
+            <arg value="${sooda.csc.args}"/>
         </csc>
     </target>
 
@@ -214,6 +224,7 @@
                 <include name="*.xshd" />
                 <include name="SyntaxModes.xml" />
             </resources>
+            <arg value="${sooda.csc.args}"/>
         </csc>
         <copy file="src/SoodaQuery/App.config" tofile="${sooda.dir}/SoodaQuery.exe.config" />
         <copy file="src/SoodaQuery/SoodaQuery.exe.manifest" tofile="${sooda.dir}/SoodaQuery.exe.manifest" />

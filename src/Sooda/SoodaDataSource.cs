@@ -38,11 +38,14 @@ using System.Data;
 
 using Sooda.Schema;
 
-namespace Sooda {
-    public abstract class SoodaDataSource : IDisposable {
+namespace Sooda
+{
+    public abstract class SoodaDataSource : IDisposable
+    {
         private DataSourceInfo _dataSourceInfo;
 
-        protected SoodaDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo) {
+        protected SoodaDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo)
+        {
             _dataSourceInfo = dataSourceInfo;
         }
 
@@ -53,17 +56,20 @@ namespace Sooda {
 
         public string Name
         {
-            get { 
+            get
+            {
                 return _dataSourceInfo.Name;
             }
         }
 
-        protected string GetParameter(string name, bool throwOnFailure) {
+        protected string GetParameter(string name, bool throwOnFailure)
+        {
             string val = SoodaConfig.GetString(this.Name + "." + name);
             if (val != null)
                 return val;
 
-            if (this.Name == "default") {
+            if (this.Name == "default")
+            {
                 val = SoodaConfig.GetString(name);
                 if (val != null)
                     return val;
@@ -82,15 +88,15 @@ namespace Sooda {
             }
         }
 
-		private SoodaStatistics _statistics;
+        private SoodaStatistics _statistics;
 
-		public SoodaStatistics Statistics
-		{
-			get { return _statistics; }
-			set { _statistics = value; }
-		}
+        public SoodaStatistics Statistics
+        {
+            get { return _statistics; }
+            set { _statistics = value; }
+        }
 
-		public abstract bool IsOpen { get; }
+        public abstract bool IsOpen { get; }
         public abstract void Rollback();
         public abstract void Commit();
         public abstract void Open();
@@ -111,14 +117,16 @@ namespace Sooda {
         public abstract IDataReader ExecuteRawQuery(string queryText, params object[] parameters);
         public abstract int ExecuteNonQuery(string queryText, object[] parameters);
 
-        public IDataReader ExecuteQuery(Sooda.QL.SoqlQueryExpression queryText, SchemaInfo schema, ArrayList parameters) {
+        public IDataReader ExecuteQuery(Sooda.QL.SoqlQueryExpression queryText, SchemaInfo schema, ArrayList parameters)
+        {
             return ExecuteQuery(queryText, schema, parameters.ToArray());
         }
 
-        public IDataReader ExecuteRawQuery(string queryText, ArrayList parameters) {
+        public IDataReader ExecuteRawQuery(string queryText, ArrayList parameters)
+        {
             return ExecuteRawQuery(queryText, parameters.ToArray());
         }
-        
+
         public int ExecuteNonQuery(string queryText, ArrayList parameters)
         {
             return ExecuteNonQuery(queryText, parameters.ToArray());

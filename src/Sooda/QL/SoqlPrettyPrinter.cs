@@ -483,7 +483,7 @@ namespace Sooda.QL
                     }
                 }
             } 
-            finally 
+            finally
             {
                 IndentLevel--;
             }

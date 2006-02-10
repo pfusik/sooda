@@ -14,10 +14,10 @@
     <!-- where to build Soodawind example to -->
     <property name="soodawind.dir" value="${nant.project.basedir}/build/${buildsubdir}" unless="${property::exists('soodawind.dir')}" />
 
-    <loadtasks assembly="${sooda.dir}/Sooda.NAnt.Tasks.dll" />
-
     <target name="build">
         <mkdir dir="${soodawind.dir}" />
+
+        <loadtasks assembly="${sooda.dir}/Sooda.NAnt.Tasks.dll" />
 
         <copy todir="${soodawind.dir}">
             <fileset basedir="${sooda.dir}">

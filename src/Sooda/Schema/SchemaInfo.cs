@@ -31,7 +31,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using Sooda.ObjectMapper;
 using System;
 using System.Collections;
 using System.Xml.Serialization;
@@ -130,8 +129,13 @@ namespace Sooda.Schema
             if (Includes == null)
                 Includes = new IncludeInfoCollection();
 
+#if DOTNET2
+            classNameHash = new Hashtable(StringComparer.Ordinal);
+            relationNameHash = new Hashtable(StringComparer.Ordinal);
+#else
             classNameHash = new Hashtable(new CaseInsensitiveHashCodeProvider(), new CaseInsensitiveComparer());
             relationNameHash = new Hashtable(new CaseInsensitiveHashCodeProvider(), new CaseInsensitiveComparer());
+#endif
             
             Rehash();
             foreach (ClassInfo ci in Classes) 

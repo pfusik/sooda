@@ -611,8 +611,6 @@ namespace Sooda.Sql
             ArrayList par = new ArrayList();
             bool anyChange = false;
 
-#warning FIX ME
-
             for (int i = 0; i < table.Fields.Count; ++i) 
             {
                 int fieldNumber = table.Fields[i].ClassUnifiedOrdinal;

@@ -39,8 +39,8 @@
                     OutputPath = "bin\Debug\"
                     RegisterForComInterop = "false"
                     RemoveIntegerChecks = "false"
-                    TreatWarningsAsErrors = "false"
-                    WarningLevel = "1"
+                    TreatWarningsAsErrors = "true"
+                    WarningLevel = "4"
                 />
                 <Config
                     Name = "Release"
@@ -59,8 +59,8 @@
                     OutputPath = "bin\Release\"
                     RegisterForComInterop = "false"
                     RemoveIntegerChecks = "false"
-                    TreatWarningsAsErrors = "false"
-                    WarningLevel = "1"
+                    TreatWarningsAsErrors = "true"
+                    WarningLevel = "4"
                 />
             </Settings>
             <References>
@@ -574,20 +574,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "QL\Collections.xml"
-                    BuildAction = "Content"
-                    Generator = "SBCollectionGenerator"
-                    LastGenOutput = "Collections.cs"
-                />
-                <File
-                    RelPath = "QL\Collections.cs"
-                    DependentUpon = "Collections.xml"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                    DesignTime = "True"
-                    AutoGen = "True"
-                />
-                <File
                     RelPath = "QL\GetInvolvedClassesVisitor.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -699,6 +685,11 @@
                 />
                 <File
                     RelPath = "QL\SoqlExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\SoqlExpressionCollection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

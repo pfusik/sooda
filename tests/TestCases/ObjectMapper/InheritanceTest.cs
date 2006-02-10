@@ -159,7 +159,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     ebKey = eb.Id;
                     bikeKey = v.Id;
 
-                    Contact.Mary.Bikes.Add(v);
+                    Contact.Mary.Bikes.Add((Bike)v);
                     Contact.Mary.Bikes.Add(eb);
 
                     Contact.Mary.Vehicles.Add(v);
@@ -191,10 +191,10 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     Assert.IsTrue(!Contact.Mary.Vehicles.Contains(v1));
                     Assert.IsTrue(!Contact.Mary.Vehicles.Contains(v2));
 
-                    Assert.IsTrue(Contact.Mary.Bikes.Contains(v1));
-                    Assert.IsTrue(Contact.Mary.Bikes.Contains(v2));
+                    Assert.IsTrue(Contact.Mary.Bikes.Contains((Bike)v1));
+                    Assert.IsTrue(Contact.Mary.Bikes.Contains((Bike)v2));
 
-                    Contact.Mary.Bikes.Remove(v1);
+                    Contact.Mary.Bikes.Remove((Bike)v1);
 
                     try {
                         Vehicle v3 = ExtendedBike.GetRef(bikeKey);
@@ -217,8 +217,8 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     Assert.IsTrue(!Contact.Mary.Vehicles.Contains(v1));
                     Assert.IsTrue(!Contact.Mary.Vehicles.Contains(v2));
 
-                    Assert.IsTrue(!Contact.Mary.Bikes.Contains(v1));
-                    Assert.IsTrue(Contact.Mary.Bikes.Contains(v2));
+                    Assert.IsTrue(!Contact.Mary.Bikes.Contains((Bike)v1));
+                    Assert.IsTrue(Contact.Mary.Bikes.Contains((Bike)v2));
 
                     tran.Commit();
                 }

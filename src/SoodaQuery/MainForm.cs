@@ -873,11 +873,9 @@ namespace SoodaQuery {
 
                 // HACK
                 DataSourceInfo dsi = schemaInfo.GetDataSourceInfo("default");
-                Sooda.Sql.SqlDataSource sds = (Sooda.Sql.SqlDataSource)dsi.CreateDataSource();
-
-                sds.Open();
-
-                try {
+                using (Sooda.Sql.SqlDataSource sds = (Sooda.Sql.SqlDataSource)dsi.CreateDataSource())
+                {
+                    sds.Open();
 
                     IDbConnection conn = sds.Connection;
                     IDbCommand cmd = conn.CreateCommand();
@@ -889,7 +887,8 @@ namespace SoodaQuery {
                     resultSet.Columns.Clear();
 
                     IDataReader reader = cmd.ExecuteReader();
-                    for (int i = 0; i < reader.FieldCount; ++i) {
+                    for (int i = 0; i < reader.FieldCount; ++i)
+                    {
                         string name = reader.GetName(i);
 
                         ColumnHeader ch = new ColumnHeader();
@@ -907,7 +906,8 @@ namespace SoodaQuery {
                     xmlWriter.Formatting = Formatting.Indented;
                     xmlWriter.WriteStartDocument(true);
                     xmlWriter.WriteStartElement("results");
-                    while (reader.Read()) {
+                    while (reader.Read())
+                    {
                         xmlWriter.WriteStartElement("item");
                         object v = reader.GetValue(0);
                         string text = (v is DBNull) ? "(null)" : v.ToString();
@@ -917,7 +917,8 @@ namespace SoodaQuery {
                         //if (!(v is DBNull))
                         xmlWriter.WriteAttributeString(reader.GetName(0), text);
 
-                        for (int i = 1; i < reader.FieldCount; ++i) {
+                        for (int i = 1; i < reader.FieldCount; ++i)
+                        {
                             csvText.Append(";");
                             v = reader.GetValue(i);
                             text = (v is DBNull) ? "(null)" : v.ToString();
@@ -933,11 +934,10 @@ namespace SoodaQuery {
                     csvResults.Text = csvText.ToString();
                     xmlResults.Text = xmlStringWriter.ToString();
 
-                    foreach (ColumnHeader ch in resultSet.Columns) {
+                    foreach (ColumnHeader ch in resultSet.Columns)
+                    {
                         ch.Width = -2;
                     }
-                } finally {
-                    sds.Close();
                 }
 
                 DateTime t1 = DateTime.Now;

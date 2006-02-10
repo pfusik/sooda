@@ -33,8 +33,10 @@
 
 using System;
 
-namespace Sooda.ObjectMapper {
-    public interface ISoodaObjectFactoryCache {
+namespace Sooda.ObjectMapper
+{
+    public interface ISoodaObjectFactoryCache
+    {
         ISoodaObjectFactory FindObjectFactory(string className, object primaryKeyValue);
         void SetObjectFactory(string className, object primaryKeyValue, ISoodaObjectFactory factory);
         void Invalidate();

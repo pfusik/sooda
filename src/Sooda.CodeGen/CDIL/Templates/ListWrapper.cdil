@@ -22,20 +22,20 @@ method Add(${ClassName} obj)
     attributes Public,Final
     returns System.Int32
 begin
-    return base.Add(arg(obj))
+    return base.Add2(arg(obj))
 end
 
 method Remove(${ClassName} obj)
     attributes Public,Final
 begin
-    call base.Remove(arg(obj))
+    call base.Remove2(arg(obj))
 end
 
 method Contains(${ClassName} obj)
     attributes Public,Final
     returns System.Boolean
 begin
-    return base.Contains(arg(obj))
+    return base.Contains2(arg(obj))
 end
 
 method Sort(IComparer comp)
@@ -67,17 +67,17 @@ begin
 end
 
 method Filter(SoodaObjectFilter f)
-    attributes Public,Final${OptionalNewAttribute}
+    attributes Public,Final
     returns ${ClassName}List
 begin
-    return new ${ClassName}List(base.Filter(arg(f)))
+    return new ${ClassName}List(base.Filter2(arg(f)))
 end
 
 method Filter(SoodaWhereClause whereClause)
-    attributes Public,Final${OptionalNewAttribute}
+    attributes Public,Final
     returns ${ClassName}List
 begin
-    return new ${ClassName}List(base.Filter(arg(whereClause)))
+    return new ${ClassName}List(base.Filter2(arg(whereClause)))
 end
 
 method GetSnapshot()

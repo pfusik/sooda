@@ -3,21 +3,22 @@
     <ProjectType>Local</ProjectType>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{5F89F8D0-39BC-49F8-92E3-3A7F5F3FF55F}</ProjectGuid>
+    <ProjectGuid>{3574E1EF-2272-4474-85D9-0718B3D452E3}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ApplicationIcon>App.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
-    <AssemblyName>SoodaStubGen</AssemblyName>
+    <AssemblyName>Sooda.UnitTests.Objects</AssemblyName>
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
     <DefaultClientScript>JScript</DefaultClientScript>
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
     <DelaySign>false</DelaySign>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>SoodaStubGen</RootNamespace>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Sooda.UnitTests.Objects</RootNamespace>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <StartupObject>
     </StartupObject>
@@ -33,13 +34,14 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>TRACE;DEBUG;VSNET,DOTNET2</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DocumentationFile>
     </DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
-    <NoWarn>1699</NoWarn>
+    <NoWarn>
+    </NoWarn>
     <Optimize>false</Optimize>
     <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
@@ -55,17 +57,18 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>TRACE;VSNET,DOTNET2</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <DocumentationFile>
     </DocumentationFile>
     <DebugSymbols>false</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
-    <NoWarn>1699</NoWarn>
+    <NoWarn>
+    </NoWarn>
     <Optimize>true</Optimize>
     <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
     <DebugType>none</DebugType>
     <ErrorReport>prompt</ErrorReport>
@@ -77,35 +80,84 @@
     <Reference Include="System.Data">
       <Name>System.Data</Name>
     </Reference>
+    <Reference Include="System.Drawing">
+      <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <Name>System.Windows.Forms</Name>
+    </Reference>
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
-    <ProjectReference Include="..\Sooda.CodeGen\Sooda.CodeGen-net-2.0.csproj">
-      <Name>Sooda.CodeGen-net-2.0</Name>
-      <Project>{0D67237B-4FBA-4BD9-95C3-24B5F427D014}</Project>
+    <ProjectReference Include="..\..\src\Sooda\Sooda-net-2.0.csproj">
+      <Name>Sooda</Name>
+      <Project>{FCC9B644-9093-41F6-8F0D-F98F22474CB5}</Project>
+      <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+    </ProjectReference>
+    <ProjectReference Include="..\BaseObjects\Sooda.UnitTests.BaseObjects-net-2.0.csproj">
+      <Name>Sooda.UnitTests.BaseObjects-net-2.0</Name>
+      <Project>{A1D122ED-CF84-4EF0-A138-72922DD50409}</Project>
       <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <Content Include="App.ico" />
+    <EmbeddedResource Include="_DBSchema.bin" />
+    <Compile Include="AbstractMegaSuperBike.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AllDataTypes.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AssemblySign.cs">
+    <Compile Include="ConcreteMegaSuperBikeA.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ConsoleCodeGeneratorOutput.cs">
+    <Compile Include="ConcreteMegaSuperBikeB.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="EntryPoint.cs">
+    <Compile Include="ExtendedBike.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MegaSuperBike.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MultiKey.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PKBool.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PKDateTime.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PKGuid.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PKInt32.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PKInt64.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PKString.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SuperBike.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="XmlTest1.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="_Stubs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <None Include="Sooda.UnitTests.Objects.soodaproject" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PreBuildEvent>$(SolutionDir)..\src\SoodaStubGen\bin\$(ConfigurationName)\SoodaStubGen.exe $(ProjectDir)Sooda.UnitTests.Objects.soodaproject</PreBuildEvent>
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
