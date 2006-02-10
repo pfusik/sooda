@@ -65,15 +65,10 @@ Section "Library and Tools"
   File build\${BUILDSUBDIR}\bin\SoodaSchemaTool.pdb
   File build\${BUILDSUBDIR}\bin\SoodaCompileStubs.pdb
 
-  SetOutPath $INSTDIR\docs
-  File build\${BUILDSUBDIR}\help\Sooda.chm
-
   CreateDirectory "$SMPROGRAMS\Sooda ${SOODA_VERSION}"
   CreateShortCut  "$SMPROGRAMS\Sooda ${SOODA_VERSION}\Uninstall.lnk" "$INSTDIR\Uninstall.exe" ""
-  CreateShortCut  "$SMPROGRAMS\Sooda\Sooda Class Library Reference.lnk" "$INSTDIR\Doc\Sooda.chm" ""
   CreateShortCut  "$SMPROGRAMS\Sooda ${SOODA_VERSION}\View Sooda License.lnk" "$INSTDIR\License.txt" ""
 
-  WriteRegStr HKCU "Software\Microsoft\VisualStudio\7.1\AssemblyFolders\Sooda${SOODA_VERSION}" "" "$INSTDIR\Bin"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Sooda${SOODA_VERSION}" "" ""
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Sooda${SOODA_VERSION}" "DisplayName" "Sooda ${SOODA_VERSION}"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Sooda${SOODA_VERSION}" "UninstallString" "$INSTDIR\Uninstall.exe"
@@ -104,8 +99,25 @@ Section "Examples"
   CreateShortCut  "$SMPROGRAMS\Sooda ${SOODA_VERSION}\Examples.lnk" "$INSTDIR\examples" ""
 SectionEnd
 
-Section "VC# .NET 2003 Wizards"
+Section "Documentation"
   SectionIn 1
+  SetOutPath $INSTDIR\docs
+  File build\${BUILDSUBDIR}\help\Sooda.chm
+  CreateShortCut  "$SMPROGRAMS\Sooda\Sooda Class Library Reference.lnk" "$INSTDIR\Doc\Sooda.chm" ""
+SectionEnd
+
+Section "Visual Studio.NET 2003 Support"
+  SectionIn 1
+
+  WriteRegStr HKCU "Software\Microsoft\VisualStudio\7.1\AssemblyFolders\Sooda${SOODA_VERSION}" "" "$INSTDIR\Bin"
+
+  ClearErrors
+  ReadRegStr $0 HKLM Software\Microsoft\VisualStudio\7.1\Setup\VS "VS7CommonDir"
+  IfErrors novsnet
+  DetailPrint "Visual Studio .NET 2003 installed in $0"
+  SetOutPath "$0\Packages\schemas\xml"
+  File src\Sooda\Schema\SoodaSchema.xsd
+
   ClearErrors
   ReadRegStr $0 HKLM Software\Microsoft\VisualStudio\7.1\Setup\VC# "ProductDir"
   IfErrors novsnet
@@ -116,20 +128,25 @@ Section "VC# .NET 2003 Wizards"
   Return
 
 novsnet:
-  MessageBox MB_OK "Visual C# .NET 2003 was not found. Wizards not installed."
+  MessageBox MB_OK "Visual Studio .NET 2003 was not found. Support not installed."
+
 SectionEnd
 
-Section "Documentation"
+Section "Visual Studio.NET 2005 Support"
   SectionIn 1
+
+  WriteRegStr HKCU "Software\Microsoft\.NETFramework\AssemblyFolders\Sooda${SOODA_VERSION}" "" "$INSTDIR\Bin"
+
   ClearErrors
-  ReadRegStr $0 HKLM Software\Microsoft\VisualStudio\7.1\Setup\VS "VS7CommonDir"
+  ReadRegStr $0 HKLM Software\Microsoft\VisualStudio\8.0\Setup\VS "ProductDir"
   IfErrors novsnet
-  DetailPrint "Visual Studio .NET 2003 installed in $0"
-  SetOutPath "$0\Packages\schemas\xml"
+  DetailPrint "Visual Studio .NET 2005 installed in $0"
+  SetOutPath "$0\xml\schemas"
   File src\Sooda\Schema\SoodaSchema.xsd
   Return
+
 novsnet:
-  MessageBox MB_OK "Visual Studio .NET 2003 was not found. Schema not installed."
+  MessageBox MB_OK "Visual Studio .NET 2005 was not found. Support not installed."
 
 SectionEnd
 
@@ -137,10 +154,6 @@ Section "Add bin directory to PATH"
   SectionIn 1
   Push "$INSTDIR\bin"
   call AddToPath
-SectionEnd
-
-Section "Schema for VS.NET 2003 Intellisense"
-  SectionIn 1
 SectionEnd
 
 Section "Uninstall"
@@ -158,7 +171,7 @@ Section "Uninstall"
 
 novsnet:
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Sooda"
-  DeleteRegKey HKCU "Software\Microsoft\VisualStudio\7.1\AssemblyFolders\Sooda"
+  DeleteRegKey HKCU "Software\Microsoft\VisualStudio\7.1\AssemblyFolders\Sooda${SOODA_VERSION}"
 
   ClearErrors
   ReadRegStr $0 HKLM Software\Microsoft\VisualStudio\7.1\Setup\VS "VS7CommonDir"
@@ -166,6 +179,12 @@ novsnet:
   Delete "$0\Packages\schemas\xml\SoodaSchema.xsd"
 
 novsnet2:
+  ClearErrors
+  ReadRegStr $0 HKLM Software\Microsoft\VisualStudio\8.0\Setup\VS "ProductDir"
+  IfErrors novsnet3
+  Delete "$0\xml\schemas\SoodaSchema.xsd"
+
+novsnet3:
   Delete "$SMPROGRAMS\Sooda ${SOODA_VERSION}\*.lnk"
   RMDir "$SMPROGRAMS\Sooda ${SOODA_VERSION}"
   RMDir /r "$INSTDIR"

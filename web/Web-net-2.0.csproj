@@ -1,0 +1,130 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2D11C6FF-FF8C-4517-8546-C81C621CFF7C}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>WWW</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>WWW</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>
+    </DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>1</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>
+    </DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>1</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="blog.xml" />
+    <Content Include="components.xml" />
+    <Content Include="development.xml" />
+    <Content Include="documentation.xml" />
+    <Content Include="download.xml" />
+    <Content Include="examples.xml" />
+    <Content Include="faq.xml" />
+    <Content Include="forum.xml" />
+    <Content Include="helpmenu.xml" />
+    <Content Include="howitworks.xml" />
+    <Content Include="index.html" />
+    <Content Include="introduction.xml" />
+    <Content Include="lang_en.gif" />
+    <Content Include="lang_pl.gif" />
+    <Content Include="LICENSE.txt" />
+    <Content Include="links.xml" />
+    <Content Include="mailinglist.xml" />
+    <Content Include="poweredby_sooda.jpg" />
+    <Content Include="poweredby_sooda.png" />
+    <Content Include="screenshots.xml" />
+    <Content Include="snapshots.xml" />
+    <Content Include="sooda.jpg" />
+    <Content Include="SoodaQuery_LICENSE.txt" />
+    <Content Include="sooda_nav.jpg" />
+    <Content Include="status.xml" />
+    <Content Include="style.xsl" />
+    <Content Include="style2.css" />
+    <Content Include="subversion.xml" />
+    <Content Include="syntax.css" />
+    <Content Include="syntax.xsl" />
+    <Content Include="technical-cdil.xml" />
+    <Content Include="technical-config.xml" />
+    <Content Include="technical-logging.xml" />
+    <Content Include="technical.xml" />
+    <Content Include="tools.xml" />
+    <Content Include="tutorial.xml" />
+    <Content Include="users.xml" />
+    <Content Include="webmenu.xml" />
+    <None Include="new_logo.psp" />
+    <None Include="poweredby_sooda.psp" />
+    <None Include="sooda.psp" />
+    <None Include="sooda_mini.psp" />
+    <None Include="sooda_nav.psp" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>
