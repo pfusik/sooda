@@ -1072,6 +1072,16 @@ namespace Sooda.CodeGen
                 case "vb":
                     return new Microsoft.VisualBasic.VBCodeProvider();
 #endif
+                
+#if DOTNET2
+                case "c++/cli":
+                    return GetCodeProvider("Microsoft.VisualC.CppCodeProvider, CppCodeProvider, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL");
+#endif
+                
+#if !DOTNET2
+                case "mc++":
+                    return GetCodeProvider("Microsoft.MCpp.MCppCodeProvider, MCppCodeDomProvider, Version=7.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a");
+#endif
 
                 default: 
                 {

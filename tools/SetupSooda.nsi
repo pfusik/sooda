@@ -36,80 +36,64 @@ InstallDir "$PROGRAMFILES\Sooda ${SOODA_VERSION}"
 DirText "This will install Sooda ${SOODA_VERSION} on your computer. Choose a directory:"
 
 InstType "Full"
+InstType ".NET 1.1 / Visual Studio.NET 2003 Support"
+InstType ".NET 2.0 / Visual Studio 2005 Support"
 InstType "Minimal"
 
 ; The stuff to install
-Section "Library and Tools"
-  SectionIn 1 2
-  ; Set output path to the installation directory.
+Section "Core Files"
+  SectionIn 1 2 3 4 RO
+
   SetOutPath $INSTDIR
   File License.txt
+  File SoodaQuery_License.txt
   File src\Sooda\Schema\SoodaSchema.xsd
+  File src\Sooda.CodeGen\SoodaProject.xsd
 
-  SetOutPath $INSTDIR\bin
-  ; Put file there
-  File build\${BUILDSUBDIR}\bin\Sooda.dll
-  File build\${BUILDSUBDIR}\bin\Sooda.Logging.NLog.dll
-  File build\${BUILDSUBDIR}\bin\Sooda.Logging.log4net.dll
-  File build\${BUILDSUBDIR}\bin\Sooda.CodeGen.dll
-  File build\${BUILDSUBDIR}\bin\Sooda.NAnt.Tasks.dll
-  File build\${BUILDSUBDIR}\bin\SoodaStubGen.exe
-  File build\${BUILDSUBDIR}\bin\SoodaSchemaTool.exe
-  File build\${BUILDSUBDIR}\bin\SoodaCompileStubs.exe
-  File build\${BUILDSUBDIR}\bin\Sooda.pdb
-  File build\${BUILDSUBDIR}\bin\Sooda.Logging.NLog.pdb
-  File build\${BUILDSUBDIR}\bin\Sooda.Logging.log4net.pdb
-  File build\${BUILDSUBDIR}\bin\Sooda.CodeGen.pdb
-  File build\${BUILDSUBDIR}\bin\Sooda.NAnt.Tasks.pdb
-  File build\${BUILDSUBDIR}\bin\SoodaStubGen.pdb
-  File build\${BUILDSUBDIR}\bin\SoodaSchemaTool.pdb
-  File build\${BUILDSUBDIR}\bin\SoodaCompileStubs.pdb
+  # create shortcuts
 
   CreateDirectory "$SMPROGRAMS\Sooda ${SOODA_VERSION}"
+  CreateShortCut  "$SMPROGRAMS\Sooda ${SOODA_VERSION}\View Sooda Query Analyzer License.lnk" "$INSTDIR\SoodaQuery_License.txt" ""
   CreateShortCut  "$SMPROGRAMS\Sooda ${SOODA_VERSION}\Uninstall.lnk" "$INSTDIR\Uninstall.exe" ""
   CreateShortCut  "$SMPROGRAMS\Sooda ${SOODA_VERSION}\View Sooda License.lnk" "$INSTDIR\License.txt" ""
+
+  # register uninstaller
 
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Sooda${SOODA_VERSION}" "" ""
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Sooda${SOODA_VERSION}" "DisplayName" "Sooda ${SOODA_VERSION}"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Sooda${SOODA_VERSION}" "UninstallString" "$INSTDIR\Uninstall.exe"
   WriteUninstaller "$INSTDIR\Uninstall.exe"
+
+  # register SOODA_DIR environment variable
+
+  WriteRegStr HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment" "SOODA_DIR" "$INSTDIR"
+  SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
 SectionEnd ; end the section
 
-Section "Sooda Query Analyzer"
-  SectionIn 1
-  ; Set output path to the installation directory.
-  SetOutPath $INSTDIR
-  File SoodaQuery_License.txt
+SectionGroup ".NET 1.1 / Visual Studio.NET 2003 Support"
 
-  SetOutPath $INSTDIR\bin
-  File build\${BUILDSUBDIR}\bin\ICSharpCode.TextEditor.dll
-  File build\${BUILDSUBDIR}\bin\SoodaQuery.exe
-  File build\${BUILDSUBDIR}\bin\SoodaQuery.exe.manifest
+Section ".NET 1.1 Libraries and Tools"
+  SectionIn 1 2 4
 
-  CreateDirectory "$SMPROGRAMS\Sooda ${SOODA_VERSION}"
-  CreateShortCut  "$SMPROGRAMS\Sooda ${SOODA_VERSION}\View Sooda Query Analyzer License.lnk" "$INSTDIR\SoodaQuery_License.txt" ""
-  CreateShortCut  "$SMPROGRAMS\Sooda ${SOODA_VERSION}\Soql Query Analyzer.lnk" "$INSTDIR\bin\SoodaQuery.exe" ""
-  CreateShortCut  "$SMPROGRAMS\Sooda ${SOODA_VERSION}\Examples.lnk" "$INSTDIR\examples" ""
+  SetOutPath $INSTDIR\bin\net-1.1
+  File /r build\net-1.1-debug\bin\Sooda*.dll
+  File /r build\net-1.1-debug\bin\Sooda*.exe
+  File /r build\net-1.1-debug\bin\Sooda*.xml
+  File /r build\net-1.1-debug\bin\ICSharpCode*.dll
+  File /r build\net-1.1-debug\bin\Sooda*.exe.config
+  File /r build\net-1.1-debug\bin\Sooda*.exe.manifest
 SectionEnd
 
-Section "Examples"
-  SectionIn 1
-  SetOutPath $INSTDIR\examples
-  File /r /x _svn examples\*.*
-  CreateShortCut  "$SMPROGRAMS\Sooda ${SOODA_VERSION}\Examples.lnk" "$INSTDIR\examples" ""
+Section "Debug Symbols"
+  SectionIn 1 2
+
+  SetOutPath $INSTDIR\bin\net-1.1
+  File /r build\net-1.1-debug\bin\Sooda*.pdb
 SectionEnd
 
-Section "Documentation"
-  SectionIn 1
-  SetOutPath $INSTDIR\docs
-  File build\${BUILDSUBDIR}\help\Sooda.chm
-  CreateShortCut  "$SMPROGRAMS\Sooda\Sooda Class Library Reference.lnk" "$INSTDIR\Doc\Sooda.chm" ""
-SectionEnd
-
-Section "Visual Studio.NET 2003 Support"
-  SectionIn 1
-
-  WriteRegStr HKCU "Software\Microsoft\VisualStudio\7.1\AssemblyFolders\Sooda${SOODA_VERSION}" "" "$INSTDIR\Bin"
+Section "Visual Studio 2003 Support"
+  SectionIn 1 2
+  WriteRegStr HKLM "Software\Microsoft\VisualStudio\7.1\AssemblyFolders\Sooda" "" "$INSTDIR\bin\net-1.1"
 
   ClearErrors
   ReadRegStr $0 HKLM Software\Microsoft\VisualStudio\7.1\Setup\VS "VS7CommonDir"
@@ -117,6 +101,7 @@ Section "Visual Studio.NET 2003 Support"
   DetailPrint "Visual Studio .NET 2003 installed in $0"
   SetOutPath "$0\Packages\schemas\xml"
   File src\Sooda\Schema\SoodaSchema.xsd
+  File src\Sooda.CodeGen\SoodaProject.xsd
 
   ClearErrors
   ReadRegStr $0 HKLM Software\Microsoft\VisualStudio\7.1\Setup\VC# "ProductDir"
@@ -132,10 +117,32 @@ novsnet:
 
 SectionEnd
 
-Section "Visual Studio.NET 2005 Support"
-  SectionIn 1
+SectionGroupEnd
 
-  WriteRegStr HKCU "Software\Microsoft\.NETFramework\AssemblyFolders\Sooda${SOODA_VERSION}" "" "$INSTDIR\Bin"
+SectionGroup ".NET 2.0 / Visual Studio 2005 Support"
+
+Section ".NET 2.0 Libraries and Tools"
+  SectionIn 1 3 4
+
+  SetOutPath $INSTDIR\bin\net-2.0
+  File /r build\net-2.0-debug\bin\Sooda*.dll
+  File /r build\net-2.0-debug\bin\Sooda*.exe
+  File /r build\net-2.0-debug\bin\Sooda*.xml
+  File /r build\net-2.0-debug\bin\ICSharpCode*.dll
+  File /r build\net-2.0-debug\bin\Sooda*.exe.config
+  File /r build\net-2.0-debug\bin\Sooda*.exe.manifest
+SectionEnd
+
+Section "Debug Symbols"
+  SectionIn 1 3
+
+  SetOutPath $INSTDIR\bin\net-2.0
+  File /r build\net-2.0-debug\bin\Sooda*.pdb
+SectionEnd
+
+Section "Visual Studio 2005 Support"
+  SectionIn 1 3
+  WriteRegStr HKLM "Software\Microsoft\.NETFramework\v2.0.50727\AssemblyFoldersEx\Sooda" "" "$INSTDIR\bin\net-2.0"
 
   ClearErrors
   ReadRegStr $0 HKLM Software\Microsoft\VisualStudio\8.0\Setup\VS "ProductDir"
@@ -143,6 +150,7 @@ Section "Visual Studio.NET 2005 Support"
   DetailPrint "Visual Studio .NET 2005 installed in $0"
   SetOutPath "$0\xml\schemas"
   File src\Sooda\Schema\SoodaSchema.xsd
+  File src\Sooda.CodeGen\SoodaProject.xsd
   Return
 
 novsnet:
@@ -150,10 +158,20 @@ novsnet:
 
 SectionEnd
 
-Section "Add bin directory to PATH"
-  SectionIn 1
-  Push "$INSTDIR\bin"
-  call AddToPath
+SectionGroupEnd
+
+Section "Example Projects"
+  SectionIn 1 2 3
+  SetOutPath $INSTDIR\examples
+  File /r /x _svn examples\*.*
+  CreateShortCut  "$SMPROGRAMS\Sooda ${SOODA_VERSION}\Examples.lnk" "$INSTDIR\examples" ""
+SectionEnd
+
+Section "Documentation"
+  SectionIn 1 2 3
+  SetOutPath $INSTDIR\docs
+  File build\net-1.1-debug\help\Sooda.chm
+  CreateShortCut  "$SMPROGRAMS\Sooda\Sooda Class Library Reference.lnk" "$INSTDIR\Doc\Sooda.chm" ""
 SectionEnd
 
 Section "Uninstall"
@@ -170,24 +188,37 @@ Section "Uninstall"
   RMDir /r "$0VC#Wizards\CSharpAddSoodaSchemaWiz"
 
 novsnet:
-  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Sooda"
-  DeleteRegKey HKCU "Software\Microsoft\VisualStudio\7.1\AssemblyFolders\Sooda${SOODA_VERSION}"
 
   ClearErrors
   ReadRegStr $0 HKLM Software\Microsoft\VisualStudio\7.1\Setup\VS "VS7CommonDir"
   IfErrors novsnet2
   Delete "$0\Packages\schemas\xml\SoodaSchema.xsd"
+  Delete "$0\Packages\schemas\xml\SoodaProject.xsd"
 
 novsnet2:
   ClearErrors
   ReadRegStr $0 HKLM Software\Microsoft\VisualStudio\8.0\Setup\VS "ProductDir"
   IfErrors novsnet3
   Delete "$0\xml\schemas\SoodaSchema.xsd"
+  Delete "$0\xml\schemas\SoodaProject.xsd"
 
 novsnet3:
   Delete "$SMPROGRAMS\Sooda ${SOODA_VERSION}\*.lnk"
   RMDir "$SMPROGRAMS\Sooda ${SOODA_VERSION}"
   RMDir /r "$INSTDIR"
+
+  # delete AssemblyFolders
+
+  DeleteRegKey HKLM "Software\Microsoft\VisualStudio\7.1\AssemblyFolders\Sooda"
+  DeleteRegKey HKLM "Software\Microsoft\.NETFramework\v2.0.50727\AssemblyFoldersEx\Sooda"
+
+  # unregister environment variable SOODA_DIR
+
+  DeleteRegValue HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment" "SOODA_DIR"
+  SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
+
+  # unregister the uninstaller
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Sooda"
 SectionEnd
 ; eof
 

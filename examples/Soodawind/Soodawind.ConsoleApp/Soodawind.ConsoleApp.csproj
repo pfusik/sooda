@@ -87,8 +87,8 @@
                 <Reference
                     Name = "Sooda"
                     AssemblyName = "Sooda"
-                    HintPath = "C:\Program Files\Sooda 0.7\Bin\Sooda.dll"
-                    AssemblyFolderKey = "hkcu\sooda0.7"
+                    HintPath = "C:\Program Files\Sooda 0.8\bin\net-1.1\Sooda.dll"
+                    AssemblyFolderKey = "hklm\sooda"
                 />
             </References>
         </Build>

@@ -73,11 +73,7 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Sooda">
-      <Name>Sooda</Name>
-      <HintPath>C:\Program Files\Sooda 0.7\Bin\Sooda.dll</HintPath>
-      <AssemblyFolderKey>hkcu\sooda0.7</AssemblyFolderKey>
-    </Reference>
+    <Reference Include="Sooda, Version=0.8.0.0, Culture=neutral, PublicKeyToken=102bbd392415062a, processorArchitecture=MSIL" />
     <Reference Include="System">
       <Name>System</Name>
     </Reference>

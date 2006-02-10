@@ -28,7 +28,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Sooda, Version=0.7.0.0, Culture=neutral, PublicKeyToken=102bbd392415062a" />
+    <Reference Include="Sooda, Version=0.8.0.0, Culture=neutral, PublicKeyToken=102bbd392415062a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -55,6 +55,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PreBuildEvent>SoodaStubGen.exe $(ProjectDir)$(ProjectName).soodaproject</PreBuildEvent>
+    <PreBuildEvent>"%25SOODA_DIR%25\bin\net-2.0\SoodaStubGen.exe" "$(ProjectDir)$(ProjectName).soodaproject"</PreBuildEvent>
   </PropertyGroup>
 </Project>

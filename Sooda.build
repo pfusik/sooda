@@ -396,6 +396,10 @@
         </vbc>
     </target>
 
+    <target name="Sooda.UnitTests.CppObjects" depends="Sooda.NAnt.Tasks, Sooda, SoodaStubGen, Sooda.UnitTests.BaseObjects">
+        <sooda-generate-code project="tests/CppUnitTestObjects/Sooda.UnitTests.CppObjects.soodaproject" verbose="true" />
+    </target>
+
     <target name="Sooda.UnitTests.TestCases" depends="libraries, Sooda.UnitTests.Objects, Sooda.UnitTests.BaseObjects">
         <copy file="${nant.location}/lib/${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}/nunit.framework.dll" tofile="${sooda.dir}/nunit.framework.dll" />
         <csc target="library" output="${sooda.dir}/Sooda.UnitTests.TestCases.dll" debug="true">
@@ -441,14 +445,24 @@
         <call target="installer" />
     </target>
 
-    <target name="installer" depends="build, doc">
+    <target name="cleaninstaller">
+        <exec program="nant" commandline="-t:net-1.1 clean" />
+        <exec program="nant" commandline="-t:net-2.0 clean" />
+
+        <call target="clean_wizards" />
+        <nant buildfile="examples/Soodawind/Soodawind.build" target="clean" />
+        
+        <call target="installer" />
+    </target>
+    <target name="installer">
+        <exec program="nant" commandline="-t:net-1.1 build doc" />
+        <exec program="nant" commandline="-t:net-2.0 build" />
+
         <readregistry property="nsis.dir" key="SOFTWARE\NSIS\" />
         <property name="makensis.exe" value="${nsis.dir}/makensis.exe" />
 
-        <nant buildfile="examples/Soodawind/Soodawind.build" target="clean" />
-
         <foreach item="Line" in="sooda.version" delim="." property="sooda.major,sooda.minor,sooda.revision,sooda.build">
-            <exec program="${makensis.exe}" commandline="/DBUILDSUBDIR=${buildsubdir} /DSOODA_VERSION=${sooda.major}.${sooda.minor} /DRELEASE_VERSION=${release.version} tools\SetupSooda.nsi" />
+            <exec program="${makensis.exe}" commandline="/DSOODA_VERSION=${sooda.major}.${sooda.minor} /DRELEASE_VERSION=${release.version} tools\SetupSooda.nsi" />
         </foreach>
     </target>
 
@@ -771,6 +785,20 @@
                 <format type="html" />
             </current>
         </clover-report>
+    </target>
+
+    <target name="clean_wizards">
+        <delete>
+            <fileset basedir="wizard">
+                <include name="**/bin/**" />
+                <include name="**/obj/**" />
+                <include name="**/Stubs/**" />
+                <include name="**/_Stubs.*" />
+                <include name="**/_DBSchema.bin" />
+                <include name="**/*.suo" />
+                <include name="**/*.*proj.user" />
+            </fileset>
+        </delete>
     </target>
 
     <target name="source_snapshot">
