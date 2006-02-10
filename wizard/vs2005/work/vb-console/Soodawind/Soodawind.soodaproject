@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sooda-project xmlns="http://www.sooda.org/schemas/SoodaProject.xsd">
+    <schema-file>SoodaSchema.xml</schema-file>
+    <language>vb</language>
+    <output-namespace>Soodawind</output-namespace>
+    <output-path>.</output-path>
+    <nullable-representation>SqlType</nullable-representation>
+    <not-null-representation>Raw</not-null-representation>
+    <with-indexers>false</with-indexers>
+    <with-typed-queries>false</with-typed-queries>
+    <embedded-schema-type>Binary</embedded-schema-type>
+    <external-projects>
+        <project type="vs2005" />
+    </external-projects>
+</sooda-project>
