@@ -516,6 +516,20 @@
         <solution configuration="Release" solutionfile="Sooda.sln" />
     </target>
 
+    <target name="msbuild">
+        <exec program="${nant.settings.currentframework.frameworkdirectory}/msbuild.exe" commandline="Sooda-net-2.0.sln" />
+    </target>
+
+    <target name="precommitcheck">
+        <call target="clean" />
+        <property name="nant.settings.currentframework" value="net-2.0" />
+        <call target="msbuild" />
+        <property name="nant.settings.currentframework" value="net-1.1" />
+        <call target="sln" />
+        <exec program="nant" commandline="-t:net-1.1 clean build" />
+        <exec program="nant" commandline="-t:net-2.0 clean build" />
+    </target>
+
     <target name="keyfile">
         <exec program="${nant.settings.currentframework.sdkdirectory}/sn.exe" workingdir="${nant.project.basedir}" commandline="-q -k Sooda.snk"/>
     </target>
