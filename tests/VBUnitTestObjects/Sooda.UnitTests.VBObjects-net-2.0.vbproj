@@ -143,8 +143,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PreBuildEvent>"$(SolutionDir)..\src\SoodaStubGen\bin\$(ConfigurationName)\SoodaStubGen.exe" "$(ProjectDir)Sooda.UnitTests.VBObjects.soodaproject"</PreBuildEvent>
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
