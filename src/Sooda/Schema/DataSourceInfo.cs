@@ -32,11 +32,8 @@
 // 
 
 using System;
-using System.Collections.Specialized;
-using System.Xml;
 using System.Xml.Serialization;
 
-using Sooda;
 
 namespace Sooda.Schema 
 {

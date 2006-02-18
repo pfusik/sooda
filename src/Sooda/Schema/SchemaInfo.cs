@@ -34,10 +34,8 @@
 using System;
 using System.Collections;
 using System.Xml.Serialization;
-using System.Runtime.Serialization;
 using System.Text;
 
-using Sooda.ObjectMapper;
 using Sooda.ObjectMapper.FieldHandlers;
 
 [assembly: System.CLSCompliant(true)]

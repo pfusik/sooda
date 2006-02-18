@@ -31,9 +31,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System;
-using System.Xml.Serialization;
-using System.Globalization;
 
 namespace Sooda.Schema 
 {

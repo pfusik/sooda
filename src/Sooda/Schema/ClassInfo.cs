@@ -33,10 +33,8 @@
 
 using System;
 using System.Xml.Serialization;
-using System.Data;
 using System.Collections;
 
-using Sooda.ObjectMapper;
 using Sooda.ObjectMapper.FieldHandlers;
 
 namespace Sooda.Schema 
