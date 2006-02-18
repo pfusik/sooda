@@ -31,11 +31,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System;
 using System.Data;
-using System.Collections.Specialized;
 
-using Sooda;
 using Sooda.Schema;
 
 namespace Sooda.Xml {
