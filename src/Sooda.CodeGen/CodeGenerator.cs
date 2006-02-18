@@ -386,18 +386,13 @@ namespace Sooda.CodeGen
                 string typeWrapper = fi2.GetFieldHandler().GetType().FullName;
                 bool isNullable = fi2.IsNullable;
 
-                CodeMemberField field = new CodeMemberField(typeWrapper, "_fieldhandler_" + fi2.Name);
-                field.Attributes = MemberAttributes.Assembly | MemberAttributes.Static;
-                field.InitExpression = new CodeObjectCreateExpression(typeWrapper, new CodePrimitiveExpression(isNullable));
-                factoryClass.Members.Add(field);
-
                 cctor.Statements.Add(
                     new CodeAssignStatement(
                     new CodeArrayIndexerExpression(
                     new CodeFieldReferenceExpression(null, "_fieldHandlers"),
                     new CodePrimitiveExpression(fi2.ClassUnifiedOrdinal)
                     ),
-                    new CodeFieldReferenceExpression(null, "_fieldhandler_" + fi2.Name)));
+                    new CodeObjectCreateExpression(typeWrapper, new CodePrimitiveExpression(isNullable))));
             }
 
             factoryClass.Members.Add(cctor);
