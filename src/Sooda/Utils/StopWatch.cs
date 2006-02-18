@@ -32,12 +32,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System;
-using System.Threading;
-using System.Globalization;
-using System.IO;
-using System.Xml;
-using System.Runtime.InteropServices;
 
 namespace Sooda.Utils
 {
