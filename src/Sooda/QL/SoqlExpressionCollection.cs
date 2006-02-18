@@ -31,11 +31,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System;
-using System.IO;
-using System.Xml;
-using System.Xml.Serialization;
-using Sooda.Schema;
 
 namespace Sooda.QL
 {

@@ -31,9 +31,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System;
-using System.IO;
-using System.Collections;
 
 namespace Sooda.QL {
     public class SoqlBooleanAndExpression : SoqlBooleanExpression {

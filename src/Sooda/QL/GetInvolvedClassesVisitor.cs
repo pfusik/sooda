@@ -5,16 +5,16 @@ using Sooda.QL.TypedWrappers;
 
 namespace Sooda.QL
 {
-	/// <summary>
-	/// Summary description for GetInvolvedClassesVisitor.
-	/// </summary> 
-	public class GetInvolvedClassesVisitor : ISoqlVisitor
-	{
+    /// <summary>
+    /// Summary description for GetInvolvedClassesVisitor.
+    /// </summary> 
+    public class GetInvolvedClassesVisitor : ISoqlVisitor
+    {
         private ClassInfo _rootClass;
         private ClassInfoCollection _result = new ClassInfoCollection();
 
-		public GetInvolvedClassesVisitor(ClassInfo rootClass)
-		{
+        public GetInvolvedClassesVisitor(ClassInfo rootClass)
+        {
             _rootClass = rootClass;
         }
 
@@ -164,7 +164,7 @@ namespace Sooda.QL
         {
             // nothing here
         }
- 
+
         void Sooda.QL.ISoqlVisitor.Visit(SoqlParameterLiteralExpression v)
         {
             // nothing here

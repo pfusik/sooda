@@ -32,9 +32,7 @@
 // 
 
 using System;
-using System.IO;
 
-using System.Xml.Serialization;
 
 namespace Sooda.QL {
     public class SoqlExistsExpression : SoqlBooleanExpression {

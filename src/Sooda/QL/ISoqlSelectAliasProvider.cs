@@ -31,10 +31,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System;
 using System.IO;
-using System.Xml;
-using System.Xml.Serialization;
 
 namespace Sooda.QL {
     public interface ISoqlSelectAliasProvider {

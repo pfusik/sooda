@@ -31,7 +31,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System;
 using System.Text.RegularExpressions;
 
 namespace Sooda.QL {

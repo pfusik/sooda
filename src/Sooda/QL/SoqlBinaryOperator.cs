@@ -31,8 +31,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System;
-using System.IO;
 
 namespace Sooda.QL {
     public enum SoqlBinaryOperator

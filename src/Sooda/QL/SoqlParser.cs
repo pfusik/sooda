@@ -33,10 +33,8 @@
 
 using System;
 using System.Text;
-using System.Collections;
 using System.Globalization;
 
-using Sooda.QL;
 using Sooda.Schema;
 
 namespace Sooda.QL {

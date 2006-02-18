@@ -33,10 +33,7 @@
 
 using System;
 using System.IO;
-using System.Collections.Specialized;
 
-using Sooda.Schema;
-using Sooda.QL;
 using Sooda.QL.TypedWrappers;
 
 namespace Sooda.QL 

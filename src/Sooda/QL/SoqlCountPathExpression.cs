@@ -31,11 +31,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System;
 using System.Collections;
 using System.IO;
 
-using System.Xml.Serialization;
 
 namespace Sooda.QL {
     public class SoqlCountExpression : SoqlExpression, ISoqlSelectAliasProvider {

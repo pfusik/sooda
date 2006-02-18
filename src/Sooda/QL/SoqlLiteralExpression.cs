@@ -31,11 +31,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System;
-using System.IO;
-using Sooda.Schema;
 
-using System.Xml.Serialization;
 
 namespace Sooda.QL {
     public class SoqlLiteralExpression : SoqlExpression, ISoqlConstantExpression, ILiteralModifiers {

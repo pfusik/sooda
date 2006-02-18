@@ -31,10 +31,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System;
 
 using Sooda.QL.TypedWrappers;
-using Sooda.Schema;
 
 namespace Sooda.QL 
 {
