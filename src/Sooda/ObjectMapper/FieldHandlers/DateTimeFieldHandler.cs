@@ -47,19 +47,6 @@ namespace Sooda.ObjectMapper.FieldHandlers {
             }
         }
 
-        public System.Data.SqlTypes.SqlDateTime GetSqlNullableValue(object fieldValue) {
-            if (fieldValue == null)
-                return System.Data.SqlTypes.SqlDateTime.Null;
-            else
-                return new System.Data.SqlTypes.SqlDateTime((DateTime)fieldValue);
-        }
-
-        public DateTime GetNotNullValue(object val) {
-            if (val == null)
-                throw new InvalidOperationException("Attempt to read a non-null value that isn't set yet");
-            return (DateTime)val;
-        }
-
         public override object RawRead(IDataRecord record, int pos) {
             return GetFromReader(record, pos);
         }
@@ -105,8 +92,23 @@ namespace Sooda.ObjectMapper.FieldHandlers {
 			parameter.Value = value;
 		}
 
+        // type conversions - used in generated stub code
+
+        public static System.Data.SqlTypes.SqlDateTime GetSqlNullableValue(object fieldValue) {
+            if (fieldValue == null)
+                return System.Data.SqlTypes.SqlDateTime.Null;
+            else
+                return new System.Data.SqlTypes.SqlDateTime((DateTime)fieldValue);
+        }
+
+        public static DateTime GetNotNullValue(object val) {
+            if (val == null)
+                throw new InvalidOperationException("Attempt to read a non-null value that isn't set yet");
+            return (DateTime)val;
+        }
+
 #if DOTNET2
-        public DateTime? GetNullableValue(object fieldValue) {
+        public static DateTime? GetNullableValue(object fieldValue) {
             if (fieldValue == null)
                 return null;
             else

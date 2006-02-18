@@ -24,6 +24,7 @@
       <xs:enumeration value="Boxed" />
       <xs:enumeration value="SqlType" />
       <xs:enumeration value="Raw" />
+      <xs:enumeration value="Nullable" />
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="EmbedSchema">

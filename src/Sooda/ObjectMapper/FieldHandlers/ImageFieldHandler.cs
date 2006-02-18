@@ -48,13 +48,6 @@ namespace Sooda.ObjectMapper.FieldHandlers {
             }
         }
 
-        public Image GetNotNullValue(object val) {
-            // TEGO testu nie ma!!!!
-            // if (val == null)
-            //    throw new InvalidOperationException("Attempt to read a non-null value that isn't set yet");
-            return (Image) val;
-        }
-
         public override object RawRead(IDataRecord record, int pos) {
             return GetFromReader(record, pos);
         }
@@ -121,5 +114,9 @@ namespace Sooda.ObjectMapper.FieldHandlers {
 			parameter.DbType = DbType.Binary;
 			parameter.Value = ms.GetBuffer();
 		}
+        
+        public static Image GetNotNullValue(object val) {
+            return (Image) val;
+        }
 	}
 }

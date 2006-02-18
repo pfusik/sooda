@@ -49,6 +49,7 @@ namespace Sooda.CodeGen
         Boxed,
         SqlType,
         Raw,
+        Nullable,
     }
 
     public class ExternalProjectInfo

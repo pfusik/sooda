@@ -46,19 +46,6 @@ namespace Sooda.ObjectMapper.FieldHandlers {
             }
         }
 
-        public System.Data.SqlTypes.SqlDecimal GetSqlNullableValue(object fieldValue) {
-            if (fieldValue == null)
-                return System.Data.SqlTypes.SqlDecimal.Null;
-            else
-                return new System.Data.SqlTypes.SqlDecimal((Decimal)fieldValue);
-        }
-
-        public decimal GetNotNullValue(object val) {
-            if (val == null)
-                throw new InvalidOperationException("Attempt to read a non-null value that isn't set yet");
-            return (decimal)val;
-        }
-
         public override object RawRead(IDataRecord record, int pos) {
             return GetFromReader(record, pos);
         }
@@ -103,8 +90,23 @@ namespace Sooda.ObjectMapper.FieldHandlers {
 			parameter.Value = value;
 		}
 
+        // type conversions - used in generated stub code
+
+        public static System.Data.SqlTypes.SqlDecimal GetSqlNullableValue(object fieldValue) {
+            if (fieldValue == null)
+                return System.Data.SqlTypes.SqlDecimal.Null;
+            else
+                return new System.Data.SqlTypes.SqlDecimal((Decimal)fieldValue);
+        }
+
+        public static decimal GetNotNullValue(object val) {
+            if (val == null)
+                throw new InvalidOperationException("Attempt to read a non-null value that isn't set yet");
+            return (decimal)val;
+        }
+
 #if DOTNET2
-        public decimal? GetNullableValue(object fieldValue) {
+        public static decimal? GetNullableValue(object fieldValue) {
             if (fieldValue == null)
                 return null;
             else

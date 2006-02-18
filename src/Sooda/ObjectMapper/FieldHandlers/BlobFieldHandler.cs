@@ -46,19 +46,6 @@ namespace Sooda.ObjectMapper.FieldHandlers {
             }
         }
 
-        public System.Data.SqlTypes.SqlBinary GetSqlNullableValue(object fieldValue) {
-            if (fieldValue == null)
-                return System.Data.SqlTypes.SqlBinary.Null;
-            else
-                return new System.Data.SqlTypes.SqlBinary((byte[])fieldValue);
-        }
-
-        public byte[] GetNotNullValue(object val) {
-            if (val == null)
-                throw new InvalidOperationException("Attempt to read a non-null value that isn't set yet");
-            return (byte[]) val;
-        }
-
         public override object RawRead(IDataRecord record, int pos) {
             return GetFromReader(record, pos);
         }
@@ -110,6 +97,21 @@ namespace Sooda.ObjectMapper.FieldHandlers {
         public override string GetTypedWrapperClass(bool nullable)
         {
             return null; // no typed wrapper for this field type
+        }
+
+        // type conversions - used in generated stub code
+
+        public static System.Data.SqlTypes.SqlBinary GetSqlNullableValue(object fieldValue) {
+            if (fieldValue == null)
+                return System.Data.SqlTypes.SqlBinary.Null;
+            else
+                return new System.Data.SqlTypes.SqlBinary((byte[])fieldValue);
+        }
+
+        public static byte[] GetNotNullValue(object val) {
+            if (val == null)
+                throw new InvalidOperationException("Attempt to read a non-null value that isn't set yet");
+            return (byte[]) val;
         }
 	}
 }

@@ -45,19 +45,6 @@ namespace Sooda.ObjectMapper.FieldHandlers {
             }
         }
 
-        public System.Data.SqlTypes.SqlString GetSqlNullableValue(object fieldValue) {
-            if (fieldValue == null)
-                return System.Data.SqlTypes.SqlString.Null;
-            else
-                return new System.Data.SqlTypes.SqlString((String)fieldValue);
-        }
-
-        public string GetNotNullValue(object val) {
-            if (val == null)
-                throw new InvalidOperationException("Attempt to read a non-null value that isn't set yet");
-            return (string)val;
-        }
-
         public override object RawRead(IDataRecord record, int pos) {
             return GetFromReader(record, pos);
         }
@@ -101,5 +88,20 @@ namespace Sooda.ObjectMapper.FieldHandlers {
 			parameter.Value = value;
 			parameter.DbType = DbType.AnsiString;
 		}
+
+        // type conversions - used in generated stub code
+
+        public static System.Data.SqlTypes.SqlString GetSqlNullableValue(object fieldValue) {
+            if (fieldValue == null)
+                return System.Data.SqlTypes.SqlString.Null;
+            else
+                return new System.Data.SqlTypes.SqlString((String)fieldValue);
+        }
+
+        public static string GetNotNullValue(object val) {
+            if (val == null)
+                throw new InvalidOperationException("Attempt to read a non-null value that isn't set yet");
+            return (string)val;
+        }
 	}
 }

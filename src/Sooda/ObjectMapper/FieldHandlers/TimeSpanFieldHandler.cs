@@ -47,22 +47,6 @@ namespace Sooda.ObjectMapper.FieldHandlers {
             }
         }
 
-/*
- *         public System.Data.SqlTypes.SqlInt32 GetSqlNullableValue(object fieldValue) 
-        {
-            if (fieldValue == null)
-                return System.Data.SqlTypes.SqlInt32.Null;
-            else
-                return new System.Data.SqlTypes.SqlInt32((Int32)fieldValue);
-        }
-*/
-        public TimeSpan GetNotNullValue(object val) 
-        {
-            if (val == null)
-                return TimeSpan.Zero;
-            return (TimeSpan)val;
-        }
-
         public override object RawRead(IDataRecord record, int pos) {
             return GetFromReader(record, pos);
         }
@@ -96,19 +80,28 @@ namespace Sooda.ObjectMapper.FieldHandlers {
             return typeof(TimeSpan);
         }
 
-		public override Type GetSqlType()
-		{
-			return null;
-		}
+        public override Type GetSqlType()
+        {
+            return null;
+        }
 
-		public override void SetupDBParameter(IDbDataParameter parameter, object value)
-		{
-			parameter.DbType = DbType.Int32;
-			parameter.Value = (int)(((TimeSpan)value).TotalSeconds);
-		}
+        public override void SetupDBParameter(IDbDataParameter parameter, object value)
+        {
+            parameter.DbType = DbType.Int32;
+            parameter.Value = (int)(((TimeSpan)value).TotalSeconds);
+        }
+
+        // type conversions - used in generated stub code
+
+        public static TimeSpan GetNotNullValue(object val) 
+        {
+            if (val == null)
+                return TimeSpan.Zero;
+            return (TimeSpan)val;
+        }
 
 #if DOTNET2
-        public TimeSpan? GetNullableValue(object fieldValue) {
+        public static TimeSpan? GetNullableValue(object fieldValue) {
             if (fieldValue == null)
                 return null;
             else

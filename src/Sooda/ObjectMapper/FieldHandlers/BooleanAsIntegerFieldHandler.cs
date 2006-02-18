@@ -46,19 +46,6 @@ namespace Sooda.ObjectMapper.FieldHandlers {
             }
         }
 
-        public System.Data.SqlTypes.SqlBoolean GetSqlNullableValue(object fieldValue) {
-            if (fieldValue == null)
-                return System.Data.SqlTypes.SqlBoolean.Null;
-            else
-                return new System.Data.SqlTypes.SqlBoolean((Boolean)fieldValue);
-        }
-
-        public bool GetNotNullValue(object val) {
-            if (val == null)
-                throw new InvalidOperationException("Attempt to read a non-null value that isn't set yet");
-            return (bool)val;
-        }
-
         public override object RawRead(IDataRecord record, int pos) {
             return GetFromReader(record, pos);
         }
@@ -106,8 +93,23 @@ namespace Sooda.ObjectMapper.FieldHandlers {
 			parameter.Value = Convert.ToBoolean(value) ? 1 : 0;
 		}
 
+        // type conversions - used in generated stub code
+
+        public static System.Data.SqlTypes.SqlBoolean GetSqlNullableValue(object fieldValue) {
+            if (fieldValue == null)
+                return System.Data.SqlTypes.SqlBoolean.Null;
+            else
+                return new System.Data.SqlTypes.SqlBoolean((Boolean)fieldValue);
+        }
+
+        public static bool GetNotNullValue(object val) {
+            if (val == null)
+                throw new InvalidOperationException("Attempt to read a non-null value that isn't set yet");
+            return (bool)val;
+        }
+
 #if DOTNET2
-        public bool? GetNullableValue(object fieldValue) {
+        public static bool? GetNullableValue(object fieldValue) {
             if (fieldValue == null)
                 return null;
             else

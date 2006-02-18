@@ -548,15 +548,18 @@ namespace Sooda.CodeGen
                             prop.GetStatements.Add(
                                 new CodeMethodReturnStatement(
                                 new CodeMethodInvokeExpression(
-                                new CodeFieldReferenceExpression(new CodeTypeReferenceExpression(classInfo.Name + "_Factory"), "_fieldhandler_" + fi.Name), "GetSqlNullableValue", GetFieldValueExpression(fi))));
+                                new CodeTypeReferenceExpression(fi.GetFieldHandler().GetType().FullName),
+                                "GetSqlNullableValue", 
+                                GetFieldValueExpression(fi))));
                             break;
 
                         case PrimitiveRepresentation.Raw:
                             prop.GetStatements.Add(
                                 new CodeMethodReturnStatement(
                                 new CodeMethodInvokeExpression(
-                                new CodeFieldReferenceExpression(new CodeTypeReferenceExpression(classInfo.Name + "_Factory"), "_fieldhandler_" + fi.Name), "GetNotNullValue", GetFieldValueExpression(fi)
-                                )));
+                                new CodeTypeReferenceExpression(fi.GetFieldHandler().GetType().FullName),
+                                "GetNotNullValue", 
+                                GetFieldValueExpression(fi))));
                             break;
 
                         default:
@@ -609,10 +612,11 @@ namespace Sooda.CodeGen
                 else 
                 {
                     prop.GetStatements.Add(
-                        new CodeMethodReturnStatement(
-                        new CodeMethodInvokeExpression(
-                        new CodeFieldReferenceExpression(new CodeTypeReferenceExpression(classInfo.Name + "_Factory"), "_fieldhandler_" + fi.Name), "GetNotNullValue",
-                        GetFieldValueExpression(fi))));
+                            new CodeMethodReturnStatement(
+                                new CodeMethodInvokeExpression(
+                                    new CodeTypeReferenceExpression(fi.GetFieldHandler().GetType().FullName),
+                                    "GetNotNullValue", 
+                                    GetFieldValueExpression(fi))));
                     if (!classInfo.ReadOnly) 
                     {
                         // SetPlainFieldValue("FIELD_NAME", _db_fieldhandler_NAME, value); // box here
