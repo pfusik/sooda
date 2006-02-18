@@ -33,7 +33,6 @@
 
 using System;
 using System.Data;
-using System.Xml;
 
 namespace Sooda.ObjectMapper.FieldHandlers {
     public class GuidFieldHandler : SoodaFieldHandler {
@@ -109,5 +108,19 @@ namespace Sooda.ObjectMapper.FieldHandlers {
 			parameter.DbType = DbType.Guid;
 			parameter.Value = value;
 		}
+
+#if DOTNET2
+        public Guid? GetNullableValue(object fieldValue) {
+            if (fieldValue == null)
+                return null;
+            else
+                return (Guid)fieldValue;
+        }
+
+        public override Type GetNullableType()
+        {
+            return typeof(Guid?);
+        }
+#endif
 	}
 }

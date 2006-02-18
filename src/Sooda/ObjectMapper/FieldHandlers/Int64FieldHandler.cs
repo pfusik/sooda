@@ -33,7 +33,6 @@
 
 using System;
 using System.Data;
-using System.Xml;
 
 using System.Globalization;
 
@@ -112,5 +111,19 @@ namespace Sooda.ObjectMapper.FieldHandlers {
 			parameter.DbType = DbType.Int64;
 			parameter.Value = value;
 		}
+
+#if DOTNET2
+        public Int64? GetNullableValue(object fieldValue) {
+            if (fieldValue == null)
+                return null;
+            else
+                return (Int64)fieldValue;
+        }
+
+        public override Type GetNullableType()
+        {
+            return typeof(Int64?);
+        }
+#endif
 	}
 }

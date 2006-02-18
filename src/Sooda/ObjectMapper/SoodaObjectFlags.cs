@@ -32,16 +32,7 @@
 // 
 
 using System;
-using System.Diagnostics;
-using System.Data;
-using System.Text;
-using System.Collections;
-using System.Reflection;
-using System.Xml;
-using System.IO;
 
-using Sooda.Schema;
-using Sooda.ObjectMapper;
 
 namespace Sooda.ObjectMapper {
     [Flags]

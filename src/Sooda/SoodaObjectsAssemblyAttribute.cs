@@ -32,7 +32,6 @@
 // 
 
 using System;
-using System.Reflection;
 
 namespace Sooda {
     [AttributeUsage(AttributeTargets.Assembly)]

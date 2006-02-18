@@ -33,7 +33,6 @@
 
 using System;
 using System.Data;
-using System.Xml;
 
 using System.Globalization;
 
@@ -112,5 +111,20 @@ namespace Sooda.ObjectMapper.FieldHandlers {
 			parameter.DbType = DbType.DateTime;
 			parameter.Value = value;
 		}
+
+#if DOTNET2
+        public DateTime? GetNullableValue(object fieldValue) {
+            if (fieldValue == null)
+                return null;
+            else
+                return (DateTime)fieldValue;
+        }
+
+        public override Type GetNullableType()
+        {
+            return typeof(DateTime?);
+        }
+#endif
+
 	}
 }

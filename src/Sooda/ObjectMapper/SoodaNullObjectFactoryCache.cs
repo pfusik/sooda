@@ -31,8 +31,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System;
-using Sooda;
 
 namespace Sooda.ObjectMapper {
     public class SoodaNullObjectFactoryCache : ISoodaObjectFactoryCache {

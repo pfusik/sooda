@@ -31,12 +31,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System;
-using Sooda;
-using Sooda.Collections;
 using System.Collections;
 
-using Sooda.Logging;
 using Sooda.Schema;
 
 namespace Sooda.ObjectMapper.FieldHandlers

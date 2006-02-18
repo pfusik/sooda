@@ -31,14 +31,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System;
-using System.Diagnostics;
-using System.Data;
-using System.Text;
-using System.Collections;
-using System.Reflection;
-using System.Xml;
-using System.IO;
 
 using Sooda.ObjectMapper;
 using Sooda.Schema;

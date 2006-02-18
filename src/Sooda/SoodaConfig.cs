@@ -33,14 +33,8 @@
 
 using System;
 using System.Reflection;
-using System.Collections;
-using System.IO;
-using System.Diagnostics;
-using System.Xml;
-using System.Data;
 
 using Sooda.Config;
-
 using Sooda.Logging;
 
 namespace Sooda {

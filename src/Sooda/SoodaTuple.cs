@@ -34,7 +34,6 @@
 using System;
 using System.Text;
 
-using Sooda.ObjectMapper;
 
 namespace Sooda {
     [Serializable]

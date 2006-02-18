@@ -33,7 +33,6 @@
 
 using System;
 using System.Data;
-using System.Xml;
 using System.Data.SqlTypes;
 
 namespace Sooda.ObjectMapper.FieldHandlers {
@@ -111,6 +110,19 @@ namespace Sooda.ObjectMapper.FieldHandlers {
 			parameter.Value = Convert.ToBoolean(value) ? 1 : 0;
 		}
 
+#if DOTNET2
+        public bool? GetNullableValue(object fieldValue) {
+            if (fieldValue == null)
+                return null;
+            else
+                return (bool)fieldValue;
+        }
+
+        public override Type GetNullableType()
+        {
+            return typeof(bool?);
+        }
+#endif
 
     }
 }

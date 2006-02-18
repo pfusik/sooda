@@ -32,7 +32,6 @@
 // 
 
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 [assembly: AssemblyTitle("Sooda")]
 [assembly: AssemblyDescription("Sooda")]

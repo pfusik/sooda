@@ -32,21 +32,8 @@
 // 
 
 using System;
-using System.Diagnostics;
-using System.Data;
-using System.Text;
-using System.Collections;
-using System.Reflection;
-using System.Xml;
-using System.IO;
-using System.Globalization;
-using System.Collections.Specialized;
 
-using Sooda.Schema;
-using Sooda.ObjectMapper;
-using Sooda.Collections;
 
-using System.Data.SqlTypes;
 
 namespace Sooda 
 {

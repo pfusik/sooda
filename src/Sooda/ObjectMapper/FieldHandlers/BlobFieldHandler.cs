@@ -33,7 +33,6 @@
 
 using System;
 using System.Data;
-using System.Xml;
 using System.Data.SqlTypes;
 
 namespace Sooda.ObjectMapper.FieldHandlers {

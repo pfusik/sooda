@@ -33,7 +33,6 @@
 
 using System;
 using System.Data;
-using System.Xml;
 
 namespace Sooda.ObjectMapper.FieldHandlers {
     public class BooleanFieldHandler : SoodaFieldHandler {
@@ -109,5 +108,20 @@ namespace Sooda.ObjectMapper.FieldHandlers {
 			parameter.DbType = DbType.Boolean;
 			parameter.Value = value;
 		}
+
+#if DOTNET2
+        public bool? GetNullableValue(object fieldValue) {
+            if (fieldValue == null)
+                return null;
+            else
+                return (bool)fieldValue;
+        }
+
+        public override Type GetNullableType()
+        {
+            return typeof(bool?);
+        }
+#endif
+
 	}
 }

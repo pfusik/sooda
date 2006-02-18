@@ -33,7 +33,6 @@
 
 using System;
 using System.Data;
-using System.Xml;
 
 namespace Sooda.ObjectMapper.FieldHandlers {
     public class AnsiStringFieldHandler : SoodaFieldHandler {

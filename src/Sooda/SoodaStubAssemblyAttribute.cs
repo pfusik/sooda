@@ -34,7 +34,6 @@
 using System;
 using System.Reflection;
 
-using Sooda.Logging;
 
 namespace Sooda 
 {

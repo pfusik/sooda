@@ -87,6 +87,10 @@ namespace Sooda.ObjectMapper {
 
         public abstract Type GetFieldType();
 		public abstract Type GetSqlType();
+        public virtual Type GetNullableType()
+        {
+            return null;
+        }
 
 		public abstract void SetupDBParameter(IDbDataParameter parameter, object value);
 
@@ -94,6 +98,7 @@ namespace Sooda.ObjectMapper {
         {
             return "Sooda.QL.TypedWrappers.Soql" + (nullable ? "Nullable" : "") + GetFieldType().Name + "WrapperExpression";
         }
+
     }
 }
 

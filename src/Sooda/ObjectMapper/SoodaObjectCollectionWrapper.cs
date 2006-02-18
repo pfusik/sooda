@@ -33,12 +33,8 @@
 
 using System;
 using System.Diagnostics;
-using System.Data;
-using System.Text;
 using System.Collections;
-using System.Reflection;
 
-using Sooda.Schema;
 
 namespace Sooda.ObjectMapper
 {

@@ -33,7 +33,6 @@
 
 using System;
 using System.Data;
-using System.Xml;
 
 using System.Globalization;
 
@@ -125,5 +124,19 @@ namespace Sooda.ObjectMapper.FieldHandlers
             parameter.DbType = DbType.Double;
             parameter.Value = value;
         }
+
+#if DOTNET2
+        public Double? GetNullableValue(object fieldValue) {
+            if (fieldValue == null)
+                return null;
+            else
+                return (Double)fieldValue;
+        }
+
+        public override Type GetNullableType()
+        {
+            return typeof(Double?);
+        }
+#endif
     }
 }

@@ -32,11 +32,7 @@
 // 
 
 using System;
-using System.IO;
 using System.Xml;
-using System.Data;
-using System.Collections;
-using System.Reflection;
 
 namespace Sooda.ObjectMapper {
     public class SoodaRelationTupleChangedArgs : EventArgs {

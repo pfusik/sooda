@@ -31,9 +31,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System;
-using System.Data;
-using System.Xml;
 
 using Sooda.QL;
 

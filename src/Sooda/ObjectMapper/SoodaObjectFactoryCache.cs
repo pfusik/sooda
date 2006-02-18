@@ -31,8 +31,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System;
-using Sooda;
 using Sooda.Collections;
 
 using Sooda.Logging;

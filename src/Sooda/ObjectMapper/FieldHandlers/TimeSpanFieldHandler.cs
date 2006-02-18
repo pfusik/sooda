@@ -33,7 +33,6 @@
 
 using System;
 using System.Data;
-using System.Xml;
 
 using System.Globalization;
 
@@ -114,5 +113,19 @@ namespace Sooda.ObjectMapper.FieldHandlers {
 			parameter.DbType = DbType.Int32;
 			parameter.Value = (int)(((TimeSpan)value).TotalSeconds);
 		}
+
+#if DOTNET2
+        public TimeSpan? GetNullableValue(object fieldValue) {
+            if (fieldValue == null)
+                return null;
+            else
+                return (TimeSpan)fieldValue;
+        }
+
+        public override Type GetNullableType()
+        {
+            return typeof(TimeSpan?);
+        }
+#endif
 	}
 }

@@ -33,7 +33,6 @@
 
 using System;
 using System.Data;
-using System.Xml;
 using System.Globalization;
 
 namespace Sooda.ObjectMapper.FieldHandlers {
@@ -110,5 +109,20 @@ namespace Sooda.ObjectMapper.FieldHandlers {
 			parameter.DbType = DbType.Decimal;
 			parameter.Value = value;
 		}
+
+#if DOTNET2
+        public decimal? GetNullableValue(object fieldValue) {
+            if (fieldValue == null)
+                return null;
+            else
+                return (decimal)fieldValue;
+        }
+
+        public override Type GetNullableType()
+        {
+            return typeof(decimal?);
+        }
+#endif
+
 	}
 }
