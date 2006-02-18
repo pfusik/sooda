@@ -11,10 +11,12 @@ class ${ClassName}_Factory
         attributes Private,Static
     end
     
+#ifnot MultiColumnPrimaryKey
     field SoodaFieldHandler _primaryKeyFieldHandler
         attributes Private,Static
         value new ${PrimaryKeyHandlerType}(false)
     end
+#endif
     
     field ${ClassName}_Factory _theFactory
         attributes Private,Static
@@ -87,7 +89,11 @@ class ${ClassName}_Factory
         attributes Public
         implements ISoodaObjectFactory
     begin
+#if MultiColumnPrimaryKey
+        throw new NotSupportedException('GetPrimaryKeyFieldHandler() makes no sense on multi-column primary keys.')
+#else
         return defaultscope._primaryKeyFieldHandler;
+#endif
     end
     
     method GetFieldHandler(System.Int32 ordinal)

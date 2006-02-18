@@ -362,10 +362,12 @@ namespace Sooda.CodeGen
             if (ci.GetPrimaryKeyFields().Length == 1)
             {
                 context["GetRefArgumentType"] = pkClrTypeName;
+                context["MultiColumnPrimaryKey"] = false;
             }
             else
             {
                 context["GetRefArgumentType"] = "SoodaTuple";
+                context["MultiColumnPrimaryKey"] = true;
             }
             context["PrimaryKeyHandlerType"] = pkFieldHandlerTypeName;
             context["IsAbstract"] = ci.IsAbstractClass();
