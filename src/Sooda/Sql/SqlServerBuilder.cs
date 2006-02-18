@@ -32,9 +32,6 @@
 // 
 
 using System;
-using System.IO;
-using System.Data;
-using System.Data.SqlClient;
 
 using Sooda.Schema;
 

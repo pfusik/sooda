@@ -31,12 +31,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System;
-using System.IO;
-using System.Reflection;
 
-using System.Xml;
-using System.Data;
 
 namespace Sooda.Sql {
     public enum SqlOuterJoinSyntax

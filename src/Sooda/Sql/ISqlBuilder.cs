@@ -31,11 +31,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System;
 using System.IO;
-using System.Reflection;
 
-using System.Xml;
 using System.Data;
 
 using Sooda.Schema;

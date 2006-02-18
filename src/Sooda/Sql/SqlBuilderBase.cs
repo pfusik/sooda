@@ -37,7 +37,6 @@ using System.IO;
 using System.Collections;
 
 using Sooda.QL;
-using Sooda.Schema;
 
 namespace Sooda.Sql {
 	public abstract class SqlBuilderBase : ISqlBuilder {
