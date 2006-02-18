@@ -74,13 +74,6 @@ namespace Sooda.ObjectMapper.FieldHandlers {
             return record.GetGuid(pos);
         }
 
-        public static object GetBoxedFromReader(IDataRecord record, int pos) {
-            object v = record.GetValue(pos);
-            if (!(v is Guid))
-                throw new SoodaDatabaseException();
-            return v;
-        }
-
         public static string SerializeToString(object o) {
             return o.ToString();
         }

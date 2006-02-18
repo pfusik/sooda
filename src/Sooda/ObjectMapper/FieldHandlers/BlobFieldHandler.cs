@@ -70,10 +70,6 @@ namespace Sooda.ObjectMapper.FieldHandlers {
             return buf;
         }
 
-        public static object GetBoxedFromReader(IDataRecord record, int pos) {
-            return GetFromReader(record, pos);
-        }
-
         public override string RawSerialize(object val) {
             return SerializeToString(val);
         }

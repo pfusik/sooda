@@ -73,10 +73,6 @@ namespace Sooda.ObjectMapper.FieldHandlers {
             return Image.FromStream(ms);
         }
 
-        public static object GetBoxedFromReader(IDataRecord record, int pos) {
-            return GetFromReader(record, pos);
-        }
-
         public override string RawSerialize(object val) {
             return SerializeToString(val);
         }

@@ -75,14 +75,6 @@ namespace Sooda.ObjectMapper.FieldHandlers
             return record.GetDouble(pos);
         }
 
-        public static object GetBoxedFromReader(IDataRecord record, int pos)
-        {
-            object v = record.GetValue(pos);
-            if (!(v is Double))
-                throw new SoodaDatabaseException();
-            return v;
-        }
-
         public override string RawSerialize(object val)
         {
             return SerializeToString(val);

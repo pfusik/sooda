@@ -71,13 +71,6 @@ namespace Sooda.ObjectMapper.FieldHandlers {
             return TimeSpan.FromSeconds(record.GetInt32(pos));
         }
 
-        public static object GetBoxedFromReader(IDataRecord record, int pos) {
-            object v = record.GetValue(pos);
-            if (!(v is Int32))
-                throw new SoodaDatabaseException();
-            return TimeSpan.FromSeconds((Int32)v);
-        }
-
         public override string RawSerialize(object val) {
             return SerializeToString(val);
         }

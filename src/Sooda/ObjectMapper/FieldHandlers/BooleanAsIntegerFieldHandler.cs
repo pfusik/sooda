@@ -67,10 +67,6 @@ namespace Sooda.ObjectMapper.FieldHandlers {
             return (record.GetInt32(pos) != 0) ? true : false;
         }
 
-        public static object GetBoxedFromReader(IDataRecord record, int pos) {
-            return (record.GetInt32(pos) != 0) ? true : false;
-        }
-
         public override string RawSerialize(object val) {
             return SerializeToString(val);
         }

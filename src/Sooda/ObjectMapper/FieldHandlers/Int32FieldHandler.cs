@@ -68,13 +68,6 @@ namespace Sooda.ObjectMapper.FieldHandlers {
             return record.GetInt32(pos);
         }
 
-        public static object GetBoxedFromReader(IDataRecord record, int pos) {
-            object v = record.GetValue(pos);
-            if (!(v is Int32))
-                throw new SoodaDatabaseException("Wrong data type at position: " + pos + " expected Int32, got " + v.GetType().FullName);
-            return v;
-        }
-
         public override string RawSerialize(object val) {
             return SerializeToString(val);
         }

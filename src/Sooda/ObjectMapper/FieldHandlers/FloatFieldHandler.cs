@@ -68,13 +68,6 @@ namespace Sooda.ObjectMapper.FieldHandlers {
             return record.GetFloat(pos);
         }
 
-        public static object GetBoxedFromReader(IDataRecord record, int pos) {
-            object v = record.GetValue(pos);
-            if (!(v is float))
-                throw new SoodaDatabaseException();
-            return v;
-        }
-
         public override string RawSerialize(object val) {
             return SerializeToString(val);
         }
