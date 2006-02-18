@@ -31,18 +31,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System;
-using System.IO;
-using System.Xml;
-using System.Text;
-using System.Globalization;
 using System.Collections;
-using System.Reflection;
 
-using Sooda.Logging;
-using Sooda.Schema;
-using Sooda;
-using Sooda.QL;
 
 namespace Sooda.Caching 
 {
