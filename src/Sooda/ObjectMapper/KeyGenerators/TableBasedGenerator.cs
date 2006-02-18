@@ -34,7 +34,6 @@
 using System;
 using System.Data;
 
-using Sooda;
 
 namespace Sooda.ObjectMapper.KeyGenerators
 {

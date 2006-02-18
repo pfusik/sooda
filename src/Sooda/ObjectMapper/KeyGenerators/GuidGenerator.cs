@@ -32,7 +32,6 @@
 // 
 
 using System;
-using System.Data;
 
 namespace Sooda.ObjectMapper.KeyGenerators {
     public class GuidGenerator : IPrimaryKeyGenerator {
