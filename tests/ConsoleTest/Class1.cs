@@ -74,9 +74,8 @@ namespace ConsoleTest
 
             using (SoodaTransaction t = new SoodaTransaction())
             {
-                //Group.LoadSingleObject(GroupField.Manager.Name == "Mary M}anager");
-                Contact.GetList(ContactField.Name == ContactField.Name);
-                Contact.GetList(new SoodaWhereClause(ContactField.Name == Soql.Param(0), "ala"));
+                Sooda.UnitTests.TestCases.ObjectMapper.SerializationTest st = new Sooda.UnitTests.TestCases.ObjectMapper.SerializationTest();
+                st.Collection1toNTest();
             }
 
         }

@@ -64,6 +64,16 @@ namespace Sooda.CodeGen {
             }
         }
 
+        protected static CodeConditionStatement If(CodeExpression cond, CodeStatement[] thenStats)
+        {
+            return new CodeConditionStatement(cond, thenStats);
+        }
+
+        protected static CodeConditionStatement If(CodeExpression cond, CodeStatement[] thenStats, CodeStatement[] elseStats)
+        {
+            return new CodeConditionStatement(cond, thenStats, elseStats);
+        }
+
         protected static CodePropertyReferenceExpression ThisProperty(string name) {
             return new CodePropertyReferenceExpression(This, name);
         }

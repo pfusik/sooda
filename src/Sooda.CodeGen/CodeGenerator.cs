@@ -89,17 +89,40 @@ namespace Sooda.CodeGen
             this.Output = Output;
         }
 
+        private void GenerateConditionalSets(CodeStatementCollection stats, int min, int max, ClassInfo ci)
+        {
+            if (min >= max)
+            {
+                stats.Add(new CodeCommentStatement("ordinal: " + min));
+                return;
+            }
+            // stats.Add(new CodeCommentStatement("range: [" + min + ".." + max + "]"));
+            
+            int mid = (min + max) / 2;
+
+            CodeConditionStatement ifStatement = new CodeConditionStatement();
+            ifStatement.Condition = new CodeBinaryOperatorExpression(
+                            new CodeArgumentReferenceExpression("fieldOrdinal"),
+                            CodeBinaryOperatorType.LessThanOrEqual, 
+                            new CodePrimitiveExpression(mid));
+
+            stats.Add(ifStatement);
+            GenerateConditionalSets(ifStatement.TrueStatements, min, mid, ci);
+            GenerateConditionalSets(ifStatement.FalseStatements, mid + 1, max, ci);
+        }
+
         public void GenerateClassValues(CodeNamespace nspace, ClassInfo ci, bool miniStub)
         {
-#if SKIPPED
             CodeDomClassStubGenerator gen = new CodeDomClassStubGenerator(ci, Project);
 
             CodeTypeDeclaration ctd = new CodeTypeDeclaration(ci.Name + "_Values");
             if (ci.InheritFrom != null)
                 ctd.BaseTypes.Add(ci.InheritFrom + "_Values");
             else
-                ctd.BaseTypes.Add(typeof(SoodaObjectFieldValues));
+                ctd.BaseTypes.Add(typeof(SoodaObjectReflectionBasedFieldValues));
             ctd.Attributes = MemberAttributes.Assembly;
+
+            CodeMemberField field;
 
             foreach (FieldInfo fi in ci.LocalFields)
             {
@@ -117,77 +140,64 @@ namespace Sooda.CodeGen
                     fieldType = gen.GetReturnType(Project.NotNullRepresentation, fi);
                 }
 
-                CodeMemberField field = new CodeMemberField(fieldType, fi.Name);
+                field = new CodeMemberField(fieldType, fi.Name);
                 field.Attributes = MemberAttributes.Public;
                 ctd.Members.Add(field);
             }
+
+            field = new CodeMemberField(new CodeTypeReference(new CodeTypeReference(typeof(string)), 1), "_fieldNames");
+            field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
+
+            CodeArrayCreateExpression cace = 
+                new CodeArrayCreateExpression(
+                        new CodeTypeReference(typeof(string)));
+
+            foreach (FieldInfo fi in ci.UnifiedFields)
+            {
+                cace.Initializers.Add(new CodePrimitiveExpression(fi.Name));
+            }
+                        
+            field.InitExpression = cace;
+
+            ctd.Members.Add(field);
+
+            CodeConstructor constructor1 = new CodeConstructor();
+            constructor1.Attributes = MemberAttributes.Public;
+            constructor1.BaseConstructorArgs.Add(new CodeFieldReferenceExpression(null, "_fieldNames"));
+            ctd.Members.Add(constructor1);
+
+            CodeConstructor constructor2 = new CodeConstructor();
+            constructor2.Attributes = MemberAttributes.Public;
+            constructor2.Parameters.Add(new CodeParameterDeclarationExpression(typeof(SoodaObjectReflectionBasedFieldValues), "other"));
+            constructor2.BaseConstructorArgs.Add(new CodeArgumentReferenceExpression("other"));
+            constructor2.BaseConstructorArgs.Add(new CodeFieldReferenceExpression(null, "_fieldNames"));
+            ctd.Members.Add(constructor2);
+
+            CodeConstructor constructor3 = new CodeConstructor();
+            constructor3.Attributes = MemberAttributes.Public;
+            constructor3.Parameters.Add(new CodeParameterDeclarationExpression(typeof(string[]), "fieldNames"));
+            constructor3.BaseConstructorArgs.Add(new CodeArgumentReferenceExpression("fieldNames"));
+            ctd.Members.Add(constructor3);
+
+            CodeConstructor constructor4 = new CodeConstructor();
+            constructor4.Attributes = MemberAttributes.Public;
+            constructor4.Parameters.Add(new CodeParameterDeclarationExpression(typeof(SoodaObjectReflectionBasedFieldValues), "other"));
+            constructor4.Parameters.Add(new CodeParameterDeclarationExpression(typeof(string[]), "fieldNames"));
+            constructor4.BaseConstructorArgs.Add(new CodeArgumentReferenceExpression("other"));
+            constructor4.BaseConstructorArgs.Add(new CodeArgumentReferenceExpression("fieldNames"));
+            ctd.Members.Add(constructor4);
 
             CodeMemberMethod cloneMethod = new CodeMemberMethod();
             cloneMethod.Name = "Clone";
             cloneMethod.ReturnType = new CodeTypeReference(typeof(SoodaObjectFieldValues));
             cloneMethod.Attributes = MemberAttributes.Public | MemberAttributes.Override;
-            cloneMethod.Statements.Add(new CodeThrowExceptionStatement(new CodeObjectCreateExpression(typeof(NotImplementedException))));
+            cloneMethod.Statements.Add(
+                    new CodeMethodReturnStatement(
+                        new CodeObjectCreateExpression(ci.Name + "_Values", 
+                            new CodeThisReferenceExpression())));
             ctd.Members.Add(cloneMethod);
 
-            CodeMemberMethod getBoxedFieldValueMethod = new CodeMemberMethod();
-            getBoxedFieldValueMethod.Name = "GetBoxedFieldValue";
-            getBoxedFieldValueMethod.Parameters.Add(new CodeParameterDeclarationExpression(typeof(int), "fieldOrdinal"));
-            getBoxedFieldValueMethod.Attributes = MemberAttributes.Public | MemberAttributes.Override;
-            getBoxedFieldValueMethod.ReturnType = new CodeTypeReference(typeof(object));
-            getBoxedFieldValueMethod.Statements.Add(new CodeThrowExceptionStatement(new CodeObjectCreateExpression(typeof(NotImplementedException))));
-            ctd.Members.Add(getBoxedFieldValueMethod);
-
-            CodeMemberMethod setFieldValueMethod = new CodeMemberMethod();
-            setFieldValueMethod.Name = "SetFieldValue";
-            setFieldValueMethod.Parameters.Add(new CodeParameterDeclarationExpression(typeof(int), "fieldOrdinal"));
-            setFieldValueMethod.Parameters.Add(new CodeParameterDeclarationExpression(typeof(object), "fieldValue"));
-            setFieldValueMethod.Attributes = MemberAttributes.Public | MemberAttributes.Override;
-            setFieldValueMethod.Statements.Add(new CodeThrowExceptionStatement(new CodeObjectCreateExpression(typeof(NotImplementedException))));
-            ctd.Members.Add(setFieldValueMethod);
-
-            CodeMemberMethod isNullMethod = new CodeMemberMethod();
-            isNullMethod.Name = "IsNull";
-            isNullMethod.Parameters.Add(new CodeParameterDeclarationExpression(typeof(int), "fieldOrdinal"));
-            isNullMethod.Attributes = MemberAttributes.Public | MemberAttributes.Override;
-
-            foreach (FieldInfo fi in ci.LocalFields)
-            {
-                if (fi.IsNullable)
-                {
-                    isNullMethod.Statements.Add(
-                        new CodeConditionStatement(
-                        new CodeBinaryOperatorExpression(
-                        new CodeArgumentReferenceExpression("fieldOrdinal"),CodeBinaryOperatorType.ValueEquality, new CodePrimitiveExpression(fi.ClassUnifiedOrdinal)),
-                        new CodeMethodReturnStatement(
-                        new CodePropertyReferenceExpression(new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), fi.Name), "IsNull")
-                        )
-                        ));
-                }
-            }
-            if (ci.InheritFrom != null)
-            {
-                isNullMethod.Statements.Add(
-                    new CodeMethodReturnStatement(
-                    new CodeMethodInvokeExpression(
-                    new CodeBaseReferenceExpression(),"IsNull",
-                    new CodeArgumentReferenceExpression("fieldOrdinal"))));
-            }
-            else
-            {
-                isNullMethod.Statements.Add(new CodeMethodReturnStatement(new CodePrimitiveExpression(false)));
-            }
-            isNullMethod.ReturnType = new CodeTypeReference(typeof(bool));
-            ctd.Members.Add(isNullMethod);
-
-            CodeMemberProperty lengthProperty = new CodeMemberProperty();
-            lengthProperty.Name = "Length";
-            lengthProperty.Attributes = MemberAttributes.Public | MemberAttributes.Override;
-            lengthProperty.GetStatements.Add(new CodeMethodReturnStatement(new CodePrimitiveExpression(ci.UnifiedFields.Count)));
-            lengthProperty.Type = new CodeTypeReference(typeof(int));
-            ctd.Members.Add(lengthProperty);
-
             nspace.Types.Add(ctd);
-#endif  
         }
 
         private void CDILParserTest(CodeTypeDeclaration ctd)
@@ -344,10 +354,6 @@ namespace Sooda.CodeGen
                     ctd.Members.Add(gen.Method_AfterCollectionUpdate(fi));
                 }
             }
-
-            //CodeMemberMethod m = gen.Method_IterateOuterReferences();
-            //if (m != null)
-            //    ctd.Members.Add(m);
         }
 
         public void GenerateClassFactory(CodeNamespace nspace, ClassInfo ci) 

@@ -181,17 +181,17 @@ namespace Sooda
         public static SoodaTransaction ActiveTransaction
         {
             [DebuggerStepThrough]
-                get 
+            get 
+            {
+                SoodaTransaction retVal = (SoodaTransaction)System.Threading.Thread.GetData(g_activeTransactionDataStoreSlot);
+
+                if (retVal == null) 
                 {
-                    SoodaTransaction retVal = (SoodaTransaction)System.Threading.Thread.GetData(g_activeTransactionDataStoreSlot);
-
-                    if (retVal == null) 
-                    {
-                        throw new InvalidOperationException("There's no implicit transaction currently active. Either use explicit transactions or create a new implicit one.");
-                    }
-
-                    return retVal;
+                    throw new InvalidOperationException("There's no implicit transaction currently active. Either use explicit transactions or create a new implicit one.");
                 }
+
+                return retVal;
+            }
         }
 
         internal WeakSoodaObjectCollection GetObjectsByClassName(string className) 

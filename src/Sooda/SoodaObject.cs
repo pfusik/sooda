@@ -77,6 +77,11 @@ namespace Sooda
             }
         }
 
+        protected bool AreFieldUpdateTriggersEnabled()
+        {
+            return !DisableTriggers;
+        }
+
         private bool InsertMode
         {
             get 
@@ -147,10 +152,7 @@ namespace Sooda
 
         internal bool InsertedIntoDatabase
         {
-            get 
-            {
-                return (_flags & SoodaObjectFlags.InsertedIntoDatabase) != 0;
-            }
+            get { return (_flags & SoodaObjectFlags.InsertedIntoDatabase) != 0; }
             set 
             {
                 if (value)
@@ -162,10 +164,7 @@ namespace Sooda
 
         internal bool FromCache
         {
-            get 
-            {
-                return (_flags & SoodaObjectFlags.FromCache) != 0;
-            }
+            get { return (_flags & SoodaObjectFlags.FromCache) != 0; }
             set 
             {
                 if (value)
@@ -215,7 +214,6 @@ namespace Sooda
         protected SoodaObject(SoodaConstructor c) 
         {
             GC.SuppressFinalize(this);
-            // do nothing - we delay all the initialization
         }
 
         protected SoodaObject(SoodaTransaction tran) 
@@ -262,13 +260,18 @@ namespace Sooda
             }
         }
 
+        protected virtual SoodaObjectFieldValues InitFieldValues(int fieldCount)
+        {
+            return new SoodaObjectArrayFieldValues(fieldCount);
+        }
+
         private void InitFieldData() 
         {
             ClassInfo ci = GetClassInfo();
 
             int fieldCount = ci.UnifiedFields.Count;
             _fieldData = new SoodaFieldData[fieldCount];
-            _fieldValues = new SoodaObjectArrayFieldValues(fieldCount);
+            _fieldValues = InitFieldValues(fieldCount);
             GetTransaction().Statistics.RegisterFieldsInited();
             SoodaStatistics.Global.RegisterFieldsInited();
 
@@ -1505,7 +1508,7 @@ namespace Sooda
         private static Type[] rawConstructorParameterTypes = new Type[] { typeof(SoodaConstructor) };
         private static object[] rawConstructorParameterValues = new object[] { SoodaConstructor.Constructor };
 
-        private void CopyOnWrite() 
+        internal void CopyOnWrite() 
         {
             if (FromCache) 
             {

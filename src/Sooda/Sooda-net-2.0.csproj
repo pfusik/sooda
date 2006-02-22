@@ -613,6 +613,7 @@
     <Compile Include="SoodaException.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SoodaNullable.cs" />
     <Compile Include="SoodaObject.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -634,6 +635,7 @@
     <Compile Include="SoodaObjectNotFoundException.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SoodaObjectReflectionBasedFieldValues.cs" />
     <Compile Include="SoodaObjectsAssemblyAttribute.cs">
       <SubType>Code</SubType>
     </Compile>

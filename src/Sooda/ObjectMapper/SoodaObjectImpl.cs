@@ -79,5 +79,27 @@ namespace Sooda.ObjectMapper
                 throw new SoodaObjectNotFoundException("Not a unique match: '" + expr + "'");
             return list.GetItem(0);
         }
+
+        public static SoodaObjectFieldValues GetFieldValuesForRead(SoodaObject t, int tableNumber)
+        {
+            t.EnsureDataLoaded(tableNumber);
+            return t._fieldValues;
+        }
+
+        public static SoodaObjectFieldValues GetFieldValuesForWrite(SoodaObject t, int fieldOrdinal)
+        {
+            t.CopyOnWrite();
+            t._fieldData[fieldOrdinal].IsDirty = true;
+            t.SetObjectDirty();
+            return t._fieldValues;
+        }
+
+        public static bool IsFieldInited(SoodaObject t, int fieldOrdinal)
+        {
+            if (!t.IsInsertMode())
+                return true;
+
+            return t._fieldData[fieldOrdinal].IsDirty;
+        }
     }
 }

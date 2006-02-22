@@ -102,6 +102,8 @@ namespace Sooda.Schema
 
         bool _loadOnDemand = true;
 
+        private string[] _orderedFieldNames;
+
         [System.Xml.Serialization.XmlAttributeAttribute("cached")]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool Cached = false;
@@ -391,6 +393,12 @@ namespace Sooda.Schema
                 }
             }
 
+            _orderedFieldNames = new string[UnifiedFields.Count];
+            for (int i = 0; i < UnifiedFields.Count; ++i)
+            {
+                _orderedFieldNames[i] = UnifiedFields[i].Name;
+            }
+
             if (SubclassSelectorFieldName != null) 
             {
                 SubclassSelectorField = FindFieldByName(SubclassSelectorFieldName);
@@ -557,6 +565,11 @@ namespace Sooda.Schema
         public FieldInfoCollection GetAllFields() 
         {
             return UnifiedFields;
+        }
+
+        public string[] OrderedFieldNames
+        {
+            get { return _orderedFieldNames; }
         }
 
         public FieldInfo FindFieldByName(string fieldName) 

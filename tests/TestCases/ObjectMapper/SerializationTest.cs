@@ -91,7 +91,9 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     Assert.AreEqual((string)g.Manager.Name, "Mary Manager");
                     Assert.AreEqual(g.Members.Count, 4);
                     Assert.IsTrue(g.Members.Contains(Contact.GetRef(53)));
+                    Console.WriteLine("oldgroup: {0}", Contact.GetRef(53).PrimaryGroup);
                     g.Members.Remove(Contact.GetRef(53));
+                    Console.WriteLine("newgroup: {0}", Contact.GetRef(53).PrimaryGroup);
                     Assert.AreEqual(g.Members.Count, 3);
                     Assert.IsTrue(!g.Members.Contains(Contact.GetRef(53)));
 

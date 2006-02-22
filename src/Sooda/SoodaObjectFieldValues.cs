@@ -31,9 +31,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-
-
-
 namespace Sooda 
 {
     public abstract class SoodaObjectFieldValues
