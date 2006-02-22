@@ -269,7 +269,7 @@ namespace Sooda.CodeGen
                 context["OptionalNewAttribute"] = "";
             }
 
-            if (ci.ExtBaseClassName != null) 
+            if (ci.ExtBaseClassName != null && !miniStub) 
             {
                 context["BaseClassName"] = ci.ExtBaseClassName;
             } 
@@ -518,8 +518,12 @@ namespace Sooda.CodeGen
                 generatedMiniBaseClasses.Add(className, className);
 
                 int lastPeriod = className.LastIndexOf('.');
-                string namespaceName = className.Substring(0, lastPeriod);
-                className = className.Substring(lastPeriod + 1);
+                string namespaceName = Project.OutputNamespace;
+                if (lastPeriod != -1)
+                {
+                    namespaceName = className.Substring(0, lastPeriod);
+                    className = className.Substring(lastPeriod + 1);
+                }
 
                 CodeNamespace ns = new CodeNamespace(namespaceName);
                 ns.Imports.Add(new CodeNamespaceImport("Sooda"));
