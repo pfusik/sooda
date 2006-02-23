@@ -55,7 +55,7 @@ namespace Sooda
 
         // instance fields - initialized in InitRawObject()
 
-        internal SoodaFieldData[] _fieldData;
+        internal byte[] _fieldIsDirty;
         internal SoodaObjectFieldValues _fieldValues;
         private int _dataLoadedMask;
         private SoodaTransaction _transaction;
@@ -270,7 +270,6 @@ namespace Sooda
             ClassInfo ci = GetClassInfo();
 
             int fieldCount = ci.UnifiedFields.Count;
-            _fieldData = new SoodaFieldData[fieldCount];
             _fieldValues = InitFieldValues(fieldCount);
             GetTransaction().Statistics.RegisterFieldsInited();
             SoodaStatistics.Global.RegisterFieldsInited();
@@ -327,7 +326,6 @@ namespace Sooda
                         logger.Trace("Initializing object {0}({1}) from cache: {2}", this.GetType().Name, primaryKeyValue, cachedData);
                     }
                     _fieldValues = cachedData.Data;
-                    _fieldData = new SoodaFieldData[_fieldValues.Length];
                     _dataLoadedMask = cachedData.DataLoadedMask;
                     FromCache = true;
                 } 
@@ -463,8 +461,36 @@ namespace Sooda
 
         public bool IsFieldDirty(int fieldNumber) 
         {
-            EnsureFieldsInited();
-            return _fieldData[fieldNumber].IsDirty;
+            if (_fieldIsDirty == null)
+                return false;
+
+            int slotNumber = fieldNumber >> 3;
+            int bitNumber = fieldNumber & 7;
+
+            return (_fieldIsDirty[slotNumber] & (1 << bitNumber)) != 0;
+        }
+
+        public void SetFieldDirty(int fieldNumber, bool dirty)
+        {
+            if (_fieldIsDirty == null)
+            {
+                ClassInfo ci = GetClassInfo();
+
+                int fieldCount = ci.UnifiedFields.Count;
+                _fieldIsDirty = new byte[(fieldCount + 7) / 8];
+            }
+
+            int slotNumber = fieldNumber >> 3;
+            int bitNumber = fieldNumber & 7;
+
+            if (dirty)
+            {
+                _fieldIsDirty[slotNumber] |= (byte)(1 << bitNumber);
+            }
+            else
+            {
+                _fieldIsDirty[slotNumber] &= (byte)~(1 << bitNumber);
+            }
         }
 
         protected virtual SoodaFieldHandler GetFieldHandler(int ordinal) 
@@ -488,11 +514,11 @@ namespace Sooda
             EnsureFieldsInited();
             ClassInfo ci = GetClassInfo();
 
-            for (int i = 0; i < _fieldData.Length; ++i) 
+            for (int i = 0; i < _fieldValues.Length; ++i) 
             {
                 if (!ci.UnifiedFields[i].IsNullable && IsInsertMode()) 
                 {
-                    if (_fieldValues.IsNull(i) && (IsInsertMode() || _fieldData[i].IsDirty))
+                    if (_fieldValues.IsNull(i) && (IsInsertMode() || IsFieldDirty(i)))
                         FieldCannotBeNull(ci.UnifiedFields[i].Name);
                 }
             }
@@ -559,7 +585,7 @@ namespace Sooda
             ((SoodaTuple)_primaryKeyValue).SetValue(valueOrdinal, keyValue);
             if (IsPrimaryKeyReadyForRegistration(_primaryKeyValue))
             {
-                if (_fieldData != null) 
+                if (_fieldValues != null) 
                     PropagatePrimaryKeyToFields();
                 if (IsRegisteredInTransaction())
                 {
@@ -577,7 +603,7 @@ namespace Sooda
             if (_primaryKeyValue == null) 
             {
                 _primaryKeyValue = keyValue;
-                if (_fieldData != null) 
+                if (_fieldValues != null) 
                     PropagatePrimaryKeyToFields();
                 RegisterObjectInTransaction();
             } 
@@ -667,7 +693,7 @@ namespace Sooda
                             SoodaFieldHandler handler = GetFieldHandler(field.ClassUnifiedOrdinal);
                             int ordinal = field.ClassUnifiedOrdinal;
 
-                            if (!_fieldData[ordinal].IsDirty) 
+                            if (!IsFieldDirty(ordinal)) 
                             {
                                 if (reader.IsDBNull(recordPos))
                                     _fieldValues.SetFieldValue(ordinal, null);
@@ -731,7 +757,7 @@ namespace Sooda
 
         internal void EnsureFieldsInited() 
         {
-            if (_fieldData == null)
+            if (_fieldValues == null)
                 InitFieldData();
         }
 
@@ -989,7 +1015,7 @@ namespace Sooda
                 SoodaFieldHandler field = GetFieldHandler(fi.ClassUnifiedOrdinal);
                 string s = fi.Name;
 
-                if (_fieldData[fi.ClassUnifiedOrdinal].IsDirty) 
+                if (IsFieldDirty(fi.ClassUnifiedOrdinal)) 
                 {
                     xw.WriteStartElement("field");
                     xw.WriteAttributeString("name", s);
@@ -1071,7 +1097,7 @@ namespace Sooda
                     int fieldOrdinal = GetClassInfo().FindFieldByName(name).ClassUnifiedOrdinal;
 
                     _fieldValues.SetFieldValue(fieldOrdinal, val);
-                    _fieldData[fieldOrdinal].IsDirty = true;
+                    SetFieldDirty(fieldOrdinal, true);
                 }
 
                 SetObjectDirty();
@@ -1101,7 +1127,7 @@ namespace Sooda
 
                     CopyOnWrite();
                     _fieldValues.SetFieldValue(fieldOrdinal, newValue);
-                    _fieldData[fieldOrdinal].IsDirty = true;
+                    SetFieldDirty(fieldOrdinal, true);
 
                     mi = this.GetType().GetMethod("AfterFieldUpdate_" + fieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
                     mi.Invoke(this, triggerArgs);
@@ -1118,7 +1144,7 @@ namespace Sooda
                 // optimization here - we don't even need to load old values from database
 
                 _fieldValues.SetFieldValue(fieldOrdinal, newValue);
-                _fieldData[fieldOrdinal].IsDirty = true;
+                SetFieldDirty(fieldOrdinal, true);
                 SetObjectDirty();
             }
         }
@@ -1163,7 +1189,7 @@ namespace Sooda
                 {
                     _fieldValues.SetFieldValue(fieldOrdinal, newValue.GetPrimaryKeyValue());
                 }
-                _fieldData[fieldOrdinal].IsDirty = true;
+                SetFieldDirty(fieldOrdinal, true);
                 refcache = null;
                 SetObjectDirty();
                 if (newValue != null) 

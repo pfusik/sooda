@@ -834,28 +834,28 @@ namespace Sooda
                     source.BeginSaveChanges();
                 }
 
-                while (reader.Read()) 
+                while (reader.Read())
                 {
-                    if (reader.NodeType == XmlNodeType.Element && !inDebug) 
+                    if (reader.NodeType == XmlNodeType.Element && !inDebug)
                     {
-                        switch (reader.Name) 
+                        switch (reader.Name)
                         {
                             case "field":
                                 if (currentObject == null)
                                     throw new Exception("Field without an object during deserialization!");
 
-                            currentObject.DeserializeField(reader);
-                            break;
+                                currentObject.DeserializeField(reader);
+                                break;
 
                             case "persistent":
                                 if (currentObject == null)
                                     throw new Exception("Field without an object during deserialization!");
 
-                            currentObject.DeserializePersistentField(reader);
-                            break;
+                                currentObject.DeserializePersistentField(reader);
+                                break;
 
                             case "object":
-                                if (currentObject != null) 
+                                if (currentObject != null)
                                 {
                                     // end deserialization
 
@@ -863,94 +863,94 @@ namespace Sooda
                                     currentObject = null;
                                 };
 
-                            objectKeyCounter = 0;
-                            objectForcePostCommit = false;
-                            objectClassName = reader.GetAttribute("class");
-                            objectMode = reader.GetAttribute("mode");
-                            objectDelete = false;
-                            objectFactory = GetFactory(objectClassName);
-                            objectClassInfo = objectFactory.GetClassInfo();
-                            objectTotalKeyCounter = objectClassInfo.GetPrimaryKeyFields().Length;
-                            if (objectTotalKeyCounter > 1)
-                                objectPrimaryKey = new object[objectTotalKeyCounter];
-                            if (reader.GetAttribute("forcepostcommit") != null)
-                                objectForcePostCommit = true;
-                            if (reader.GetAttribute("delete") != null)
-                                objectDelete = true;
-                            break;
+                                objectKeyCounter = 0;
+                                objectForcePostCommit = false;
+                                objectClassName = reader.GetAttribute("class");
+                                objectMode = reader.GetAttribute("mode");
+                                objectDelete = false;
+                                objectFactory = GetFactory(objectClassName);
+                                objectClassInfo = objectFactory.GetClassInfo();
+                                objectTotalKeyCounter = objectClassInfo.GetPrimaryKeyFields().Length;
+                                if (objectTotalKeyCounter > 1)
+                                    objectPrimaryKey = new object[objectTotalKeyCounter];
+                                if (reader.GetAttribute("forcepostcommit") != null)
+                                    objectForcePostCommit = true;
+                                if (reader.GetAttribute("delete") != null)
+                                    objectDelete = true;
+                                break;
 
                             case "key":
                                 int ordinal = Convert.ToInt32(reader.GetAttribute("ordinal"));
-                            object val = objectFactory.GetFieldHandler(ordinal).RawDeserialize(reader.GetAttribute("value"));
+                                object val = objectFactory.GetFieldHandler(ordinal).RawDeserialize(reader.GetAttribute("value"));
 
-                            if (objectTotalKeyCounter > 1)
-                            {
-                                objectPrimaryKey[objectKeyCounter] = val;
-                            }
-
-                            objectKeyCounter++;
-
-                            if (objectKeyCounter == objectTotalKeyCounter)
-                            {
-                                object primaryKey;
-
-                                if (objectTotalKeyCounter == 1)
+                                if (objectTotalKeyCounter > 1)
                                 {
-                                    primaryKey = val;
-                                }
-                                else
-                                {
-                                    primaryKey = new SoodaTuple(objectPrimaryKey);
+                                    objectPrimaryKey[objectKeyCounter] = val;
                                 }
 
-                                currentObject = BeginObjectDeserialization(objectFactory, primaryKey, objectMode);
-                                if (objectForcePostCommit)
-                                    currentObject.ForcePostCommit();
-                                currentObject.DisableTriggers = true;
-                                if (objectDelete)
+                                objectKeyCounter++;
+
+                                if (objectKeyCounter == objectTotalKeyCounter)
                                 {
-                                    DeletedObjects.Add(currentObject);
-                                    currentObject.DeleteMarker = true;
-                                    currentObject.CommitObjectChanges();
-                                    currentObject.SetObjectDirty();
+                                    object primaryKey;
+
+                                    if (objectTotalKeyCounter == 1)
+                                    {
+                                        primaryKey = val;
+                                    }
+                                    else
+                                    {
+                                        primaryKey = new SoodaTuple(objectPrimaryKey);
+                                    }
+
+                                    currentObject = BeginObjectDeserialization(objectFactory, primaryKey, objectMode);
+                                    if (objectForcePostCommit)
+                                        currentObject.ForcePostCommit();
+                                    currentObject.DisableTriggers = true;
+                                    if (objectDelete)
+                                    {
+                                        DeletedObjects.Add(currentObject);
+                                        currentObject.DeleteMarker = true;
+                                        currentObject.CommitObjectChanges();
+                                        currentObject.SetObjectDirty();
+                                    }
                                 }
-                            }
-                            break;
+                                break;
 
                             case "transaction":
                                 break;
 
                             case "relation":
                                 currentRelation = GetRelationFromXml(reader);
-                            break;
+                                break;
 
                             case "tuple":
                                 currentRelation.DeserializeTuple(reader);
-                            break;
+                                break;
 
                             case "debug":
-                                if (!reader.IsEmptyElement) 
+                                if (!reader.IsEmptyElement)
                                 {
                                     inDebug = true;
                                 }
-                            break;
+                                break;
 
                             default:
-                            throw new NotImplementedException("Element not implemented in deserialization: " + reader.Name);
+                                throw new NotImplementedException("Element not implemented in deserialization: " + reader.Name);
                         }
-                    } 
-                    else if (reader.NodeType == XmlNodeType.EndElement) 
+                    }
+                    else if (reader.NodeType == XmlNodeType.EndElement)
                     {
-                        if (reader.Name == "debug") 
+                        if (reader.Name == "debug")
                         {
                             inDebug = false;
-                        } 
-                        else if (reader.Name == "object") 
+                        }
+                        else if (reader.Name == "object")
                         {
                             currentObject.DisableTriggers = false;
                         }
                     }
-                };
+                }
 
                 foreach (WeakSoodaObject wr in _objectList) 
                 {

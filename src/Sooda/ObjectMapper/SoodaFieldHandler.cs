@@ -36,11 +36,6 @@ using System.Data;
 using System.Xml;
 
 namespace Sooda.ObjectMapper {
-    public struct SoodaFieldData {
-        public bool IsDirty;
-        public int Status;
-    }
-
     public abstract class SoodaFieldHandler {
         private bool _isNullable;
 

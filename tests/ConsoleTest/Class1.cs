@@ -75,7 +75,8 @@ namespace ConsoleTest
             using (SoodaTransaction t = new SoodaTransaction())
             {
                 Sooda.UnitTests.TestCases.ObjectMapper.SerializationTest st = new Sooda.UnitTests.TestCases.ObjectMapper.SerializationTest();
-                st.Collection1toNTest();
+                st.MiniTest();
+                //st.Collection1toNTest();
             }
 
         }

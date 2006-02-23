@@ -188,5 +188,44 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                 }
             }
         }
+        
+        public void MiniTest() {
+            string serialized;
+            int id;
+
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) {
+                testDataSource.Open();
+
+                using (SoodaTransaction tran = new SoodaTransaction()) {
+                    tran.RegisterDataSource(testDataSource);
+                    Contact c1;
+                    c1 = new Contact();
+                    c1.Name = "Nancy Newcomer";
+                    c1.Active = true;
+                    c1.Type = ContactType.Employee;
+                    id = c1.ContactId;
+                    serialized = tran.Serialize(SoodaSerializeOptions.IncludeNonDirtyFields | SoodaSerializeOptions.IncludeNonDirtyObjects | SoodaSerializeOptions.Canonical);
+                }
+            }
+            Console.WriteLine("serialized: {0}", serialized);
+            
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) {
+                testDataSource.Open();
+
+                using (SoodaTransaction tran = new SoodaTransaction()) {
+                    tran.RegisterDataSource(testDataSource);
+
+                    Console.WriteLine("*** Deserializing");
+                    tran.Deserialize(serialized);
+                    Console.WriteLine("*** Deserialized.");
+
+                    Console.WriteLine("*** type: {0}", Contact.GetRef(id).Type);
+                    string serialized2 = tran.Serialize(SoodaSerializeOptions.IncludeNonDirtyFields | SoodaSerializeOptions.IncludeNonDirtyObjects | SoodaSerializeOptions.Canonical);
+
+                    Assert.AreEqual(serialized, serialized2);
+                    // Console.WriteLine("s: {0}", serialized);
+                }
+            }
+        }
     }
 }

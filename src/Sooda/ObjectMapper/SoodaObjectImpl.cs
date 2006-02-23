@@ -5,8 +5,7 @@ namespace Sooda.ObjectMapper
     {
         public static bool IsFieldDirty(SoodaObject theObject, int tableNumber, int fieldOrdinal)
         {
-            theObject.EnsureFieldsInited();
-            return theObject._fieldData[fieldOrdinal].IsDirty;
+            return theObject.IsFieldDirty(fieldOrdinal);
         }
 
         public static bool IsFieldNull(SoodaObject theObject, int tableNumber, int fieldOrdinal)
@@ -84,22 +83,6 @@ namespace Sooda.ObjectMapper
         {
             t.EnsureDataLoaded(tableNumber);
             return t._fieldValues;
-        }
-
-        public static SoodaObjectFieldValues GetFieldValuesForWrite(SoodaObject t, int fieldOrdinal)
-        {
-            t.CopyOnWrite();
-            t._fieldData[fieldOrdinal].IsDirty = true;
-            t.SetObjectDirty();
-            return t._fieldValues;
-        }
-
-        public static bool IsFieldInited(SoodaObject t, int fieldOrdinal)
-        {
-            if (!t.IsInsertMode())
-                return true;
-
-            return t._fieldData[fieldOrdinal].IsDirty;
         }
     }
 }
