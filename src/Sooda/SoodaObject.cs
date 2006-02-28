@@ -229,7 +229,7 @@ namespace Sooda
             {
                 DisableTriggers = true;
                 Sooda.Schema.FieldInfo selectorField = GetClassInfo().SubclassSelectorField;
-                SetPlainFieldValue(0, selectorField.Name, selectorField.ClassUnifiedOrdinal, GetClassInfo().SubclassSelectorValue);
+                SetPlainFieldValue(0, selectorField.Name, selectorField.ClassUnifiedOrdinal, GetClassInfo().SubclassSelectorValue, null, null);
                 DisableTriggers = false;
             }
         }
@@ -1108,7 +1108,7 @@ namespace Sooda
             }
         }
 
-        internal void SetPlainFieldValue(int tableNumber, string fieldName, int fieldOrdinal, object newValue) 
+        internal void SetPlainFieldValue(int tableNumber, string fieldName, int fieldOrdinal, object newValue, SoodaFieldUpdateDelegate before, SoodaFieldUpdateDelegate after) 
         {
             EnsureFieldsInited();
 
@@ -1120,18 +1120,17 @@ namespace Sooda
                     object oldValue = _fieldValues.GetBoxedFieldValue(fieldOrdinal);
                     if (Object.Equals(oldValue, newValue))
                         return ;
-                    object[] triggerArgs = new object[] { oldValue, newValue };
 
-                    MethodInfo mi = this.GetType().GetMethod("BeforeFieldUpdate_" + fieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-                    mi.Invoke(this, triggerArgs);
+                    if (before != null)
+                        before(oldValue, newValue);
 
                     CopyOnWrite();
                     _fieldValues.SetFieldValue(fieldOrdinal, newValue);
                     SetFieldDirty(fieldOrdinal, true);
 
-                    mi = this.GetType().GetMethod("AfterFieldUpdate_" + fieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-                    mi.Invoke(this, triggerArgs);
-
+                    if (after != null)
+                        after(oldValue, newValue);
+                    
                     SetObjectDirty();
                 } 
                 catch (Exception e) 

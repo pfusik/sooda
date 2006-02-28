@@ -622,6 +622,17 @@ namespace Sooda.CodeGen
                     prop.GetStatements.Add(new CodeMethodReturnStatement(GetFieldValueForRead(fi)));
                     if (!classInfo.ReadOnly) 
                     {
+                        CodeExpression beforeDelegate = new CodePrimitiveExpression(null);
+                        CodeExpression afterDelegate = new CodePrimitiveExpression(null);
+                        
+                        if (classInfo.Triggers)
+                        {
+                            beforeDelegate = new CodeDelegateCreateExpression(new CodeTypeReference(typeof(SoodaFieldUpdateDelegate)), 
+                                    new CodeThisReferenceExpression(), "BeforeFieldUpdate_" + fi.Name);
+                            afterDelegate = new CodeDelegateCreateExpression(new CodeTypeReference(typeof(SoodaFieldUpdateDelegate)), 
+                                    new CodeThisReferenceExpression(), "AfterFieldUpdate_" + fi.Name);
+                        }
+                        
                         prop.SetStatements.Add(
                                 new CodeExpressionStatement(
                                     new CodeMethodInvokeExpression(
@@ -632,7 +643,9 @@ namespace Sooda.CodeGen
                                         new CodePrimitiveExpression(fi.Table.OrdinalInClass),
                                         new CodePrimitiveExpression(fi.Name),
                                         new CodePrimitiveExpression(fi.ClassUnifiedOrdinal),
-                                        Box(new CodePropertySetValueReferenceExpression())
+                                        Box(new CodePropertySetValueReferenceExpression()),
+                                        beforeDelegate,
+                                        afterDelegate
                                         )));
                     }
                 }

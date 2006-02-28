@@ -49,10 +49,7 @@ namespace SoodaCompileStubs
             sourceFiles.Add(stubsCSX);
             sourceFiles.Add(soodaDll);
 
-            string[] targetFiles = {
-                                       objectsAssemblyDll,
-                                       stubsDll
-                                   };
+            string[] targetFiles = { objectsAssemblyDll, stubsDll };
 
             try
             {

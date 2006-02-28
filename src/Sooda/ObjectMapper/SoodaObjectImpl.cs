@@ -51,9 +51,9 @@ namespace Sooda.ObjectMapper
             theObject.LoadAllData();
         }
 
-        public static void SetPlainFieldValue(SoodaObject theObject, int tableNumber, string fieldName, int fieldOrdinal, object newValue)
+        public static void SetPlainFieldValue(SoodaObject theObject, int tableNumber, string fieldName, int fieldOrdinal, object newValue, SoodaFieldUpdateDelegate before, SoodaFieldUpdateDelegate after)
         {
-            theObject.SetPlainFieldValue(tableNumber, fieldName, fieldOrdinal, newValue);
+            theObject.SetPlainFieldValue(tableNumber, fieldName, fieldOrdinal, newValue, before, after);
         }
 
         public static void SetRefFieldValue(SoodaObject theObject, int tableNumber, string fieldName, int fieldOrdinal, SoodaObject newValue, ref SoodaObject refcache, ISoodaObjectFactory factory)
