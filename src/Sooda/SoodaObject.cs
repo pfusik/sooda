@@ -1173,7 +1173,8 @@ namespace Sooda
                 if (!DisableTriggers) 
                 {
                     MethodInfo mi = this.GetType().GetMethod("BeforeFieldUpdate_" + fieldName, BindingFlags.Instance | BindingFlags.FlattenHierarchy | BindingFlags.NonPublic | BindingFlags.Public);
-                    mi.Invoke(this, triggerArgs);
+                    if (mi != null)
+                        mi.Invoke(this, triggerArgs);
                 }
                 if (oldValue != null) 
                 {
@@ -1199,7 +1200,8 @@ namespace Sooda
                 if (!DisableTriggers) 
                 {
                     MethodInfo mi = this.GetType().GetMethod("AfterFieldUpdate_" + fieldName, BindingFlags.Instance | BindingFlags.FlattenHierarchy | BindingFlags.NonPublic | BindingFlags.Public);
-                    mi.Invoke(this, triggerArgs);
+                    if (mi != null)
+                        mi.Invoke(this, triggerArgs);
                 }
             } 
             catch (Exception e) 

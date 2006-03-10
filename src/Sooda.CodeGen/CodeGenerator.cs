@@ -342,11 +342,11 @@ namespace Sooda.CodeGen
                 if (fi.Name == ci.LastModifiedFieldName && !fi.ForceTrigger)
                     continue;
 
-                if (!(ci.Triggers || fi.ForceTrigger))
-                    continue;
-
-                ctd.Members.Add(gen.Method_TriggerFieldUpdate(fi, "BeforeFieldUpdate"));
-                ctd.Members.Add(gen.Method_TriggerFieldUpdate(fi, "AfterFieldUpdate"));
+                if (ci.Triggers || fi.ForceTrigger)
+                {
+                    ctd.Members.Add(gen.Method_TriggerFieldUpdate(fi, "BeforeFieldUpdate"));
+                    ctd.Members.Add(gen.Method_TriggerFieldUpdate(fi, "AfterFieldUpdate"));
+                }
 
                 if (fi.References != null) 
                 {
