@@ -260,7 +260,7 @@ namespace Sooda
             }
         }
 
-        protected virtual SoodaObjectFieldValues InitFieldValues(int fieldCount)
+        protected virtual SoodaObjectFieldValues InitFieldValues(int fieldCount, string[] fieldNames)
         {
             return new SoodaObjectArrayFieldValues(fieldCount);
         }
@@ -270,7 +270,7 @@ namespace Sooda
             ClassInfo ci = GetClassInfo();
 
             int fieldCount = ci.UnifiedFields.Count;
-            _fieldValues = InitFieldValues(fieldCount);
+            _fieldValues = InitFieldValues(fieldCount, ci.OrderedFieldNames);
             GetTransaction().Statistics.RegisterFieldsInited();
             SoodaStatistics.Global.RegisterFieldsInited();
 

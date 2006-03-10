@@ -45,12 +45,12 @@ namespace Sooda
             _orderedFieldNames = orderedFieldNames;
         }
 
-        protected SoodaObjectReflectionBasedFieldValues(SoodaObjectReflectionBasedFieldValues other, string[] orderedFieldNames)
+        protected SoodaObjectReflectionBasedFieldValues(SoodaObjectReflectionBasedFieldValues other)
         {
-            _orderedFieldNames = orderedFieldNames;
-            for (int i = 0; i < orderedFieldNames.Length; ++i)
+            _orderedFieldNames = other.GetFieldNames();
+            for (int i = 0; i < _orderedFieldNames.Length; ++i)
             {
-                FieldInfo fi = this.GetType().GetField(orderedFieldNames[i]);
+                FieldInfo fi = this.GetType().GetField(_orderedFieldNames[i]);
                 fi.SetValue(this, fi.GetValue(other));
             }
         }

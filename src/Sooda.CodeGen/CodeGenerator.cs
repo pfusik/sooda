@@ -145,32 +145,10 @@ namespace Sooda.CodeGen
                 ctd.Members.Add(field);
             }
 
-            field = new CodeMemberField(new CodeTypeReference(new CodeTypeReference(typeof(string)), 1), "_fieldNames");
-            field.Attributes = MemberAttributes.Private | MemberAttributes.Static;
-
-            CodeArrayCreateExpression cace = 
-                new CodeArrayCreateExpression(
-                        new CodeTypeReference(typeof(string)));
-
-            foreach (FieldInfo fi in ci.UnifiedFields)
-            {
-                cace.Initializers.Add(new CodePrimitiveExpression(fi.Name));
-            }
-                        
-            field.InitExpression = cace;
-
-            ctd.Members.Add(field);
-
-            CodeConstructor constructor1 = new CodeConstructor();
-            constructor1.Attributes = MemberAttributes.Public;
-            constructor1.BaseConstructorArgs.Add(new CodeFieldReferenceExpression(null, "_fieldNames"));
-            ctd.Members.Add(constructor1);
-
             CodeConstructor constructor2 = new CodeConstructor();
             constructor2.Attributes = MemberAttributes.Public;
             constructor2.Parameters.Add(new CodeParameterDeclarationExpression(typeof(SoodaObjectReflectionBasedFieldValues), "other"));
             constructor2.BaseConstructorArgs.Add(new CodeArgumentReferenceExpression("other"));
-            constructor2.BaseConstructorArgs.Add(new CodeFieldReferenceExpression(null, "_fieldNames"));
             ctd.Members.Add(constructor2);
 
             CodeConstructor constructor3 = new CodeConstructor();
@@ -178,14 +156,6 @@ namespace Sooda.CodeGen
             constructor3.Parameters.Add(new CodeParameterDeclarationExpression(typeof(string[]), "fieldNames"));
             constructor3.BaseConstructorArgs.Add(new CodeArgumentReferenceExpression("fieldNames"));
             ctd.Members.Add(constructor3);
-
-            CodeConstructor constructor4 = new CodeConstructor();
-            constructor4.Attributes = MemberAttributes.Public;
-            constructor4.Parameters.Add(new CodeParameterDeclarationExpression(typeof(SoodaObjectReflectionBasedFieldValues), "other"));
-            constructor4.Parameters.Add(new CodeParameterDeclarationExpression(typeof(string[]), "fieldNames"));
-            constructor4.BaseConstructorArgs.Add(new CodeArgumentReferenceExpression("other"));
-            constructor4.BaseConstructorArgs.Add(new CodeArgumentReferenceExpression("fieldNames"));
-            ctd.Members.Add(constructor4);
 
             CodeMemberMethod cloneMethod = new CodeMemberMethod();
             cloneMethod.Name = "Clone";
