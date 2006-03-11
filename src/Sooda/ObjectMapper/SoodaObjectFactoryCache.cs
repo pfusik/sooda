@@ -35,56 +35,72 @@ using Sooda.Collections;
 
 using Sooda.Logging;
 
-namespace Sooda.ObjectMapper {
-    public class SoodaObjectFactoryCache : ISoodaObjectFactoryCache {
+namespace Sooda.ObjectMapper
+{
+    public class SoodaObjectFactoryCache : ISoodaObjectFactoryCache
+    {
         private StringToStringToISoodaObjectFactoryAssociation _classes = new StringToStringToISoodaObjectFactoryAssociation();
         private Logger logger = LogManager.GetLogger("Sooda.FactoryCache");
 
-        private ObjectToSoodaObjectFactoryAssociation GetObjectFactoryDictionaryForClass(string className) {
+        private ObjectToSoodaObjectFactoryAssociation GetObjectFactoryDictionaryForClass(string className)
+        {
             ObjectToSoodaObjectFactoryAssociation dict = _classes[className];
-            if (dict == null) {
+            if (dict == null)
+            {
                 dict = new ObjectToSoodaObjectFactoryAssociation();
                 _classes[className] = dict;
             }
             return dict;
         }
 
-        private void AddObjectWithKey(string className, object keyValue, ISoodaObjectFactory factory) {
+        private void AddObjectWithKey(string className, object keyValue, ISoodaObjectFactory factory)
+        {
             GetObjectFactoryDictionaryForClass(className).Add(keyValue, factory);
         }
 
-        private void UnregisterObjectWithKey(string className, object keyValue) {
+        private void UnregisterObjectWithKey(string className, object keyValue)
+        {
             GetObjectFactoryDictionaryForClass(className).Remove(keyValue);
         }
 
-        internal bool ExistsObjectWithKey(string className, object keyValue) {
+        internal bool ExistsObjectWithKey(string className, object keyValue)
+        {
             return GetObjectFactoryDictionaryForClass(className).Contains(keyValue);
         }
 
-        private ISoodaObjectFactory FindObjectWithKey(string className, object keyValue) {
+        private ISoodaObjectFactory FindObjectWithKey(string className, object keyValue)
+        {
             return GetObjectFactoryDictionaryForClass(className)[keyValue];
         }
 
-        public ISoodaObjectFactory FindObjectFactory(string className, object primaryKeyValue) {
+        public ISoodaObjectFactory FindObjectFactory(string className, object primaryKeyValue)
+        {
             ISoodaObjectFactory fact = FindObjectWithKey(className, primaryKeyValue);
-            if (logger.IsDebugEnabled) {
-                if (fact == null) {
+            if (logger.IsDebugEnabled)
+            {
+                if (fact == null)
+                {
                     logger.Debug("{0}[{1}] not found in the factory cache", className, primaryKeyValue);
-                } else {
+                }
+                else
+                {
                     logger.Debug("{0}[{1}] found in factory cache as {2}", className, primaryKeyValue, fact.GetClassInfo().Name);
                 }
             }
             return fact;
         }
 
-        public void SetObjectFactory(string className, object primaryKeyValue, ISoodaObjectFactory factory) {
-            if (logger.IsDebugEnabled) {
+        public void SetObjectFactory(string className, object primaryKeyValue, ISoodaObjectFactory factory)
+        {
+            if (logger.IsDebugEnabled)
+            {
                 logger.Debug("Adding {0}[{1}]={2} to the factory cache", className, primaryKeyValue, factory.GetClassInfo().Name);
             }
             AddObjectWithKey(className, primaryKeyValue, factory);
         }
 
-        public void Invalidate() {
+        public void Invalidate()
+        {
             logger.Debug("Invalidating factory cache");
             _classes.Clear();
         }

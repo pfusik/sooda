@@ -41,14 +41,19 @@ using Sooda.UnitTests.BaseObjects;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.ObjectMapper {
+namespace Sooda.UnitTests.TestCases.ObjectMapper
+{
     [TestFixture]
-    public class Nto1CollectionTest {
+    public class Nto1CollectionTest
+    {
         [Test]
-        public void CollectionNto1Test() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void CollectionNto1Test()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 ContactList list = Contact.GetList(SoodaWhereClause.Unrestricted);
-                for (int i = 0; i < list.Count; ++i) {
+                for (int i = 0; i < list.Count; ++i)
+                {
                     Assert.AreEqual(i, list.IndexOf(list[i]), "IndexOf");
                 }
             }

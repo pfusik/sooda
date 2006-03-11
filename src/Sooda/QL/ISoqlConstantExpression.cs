@@ -32,8 +32,10 @@
 // 
 
 
-namespace Sooda.QL {
-    internal interface ISoqlConstantExpression {
+namespace Sooda.QL
+{
+    internal interface ISoqlConstantExpression
+    {
         object GetConstantValue();
     }
 }

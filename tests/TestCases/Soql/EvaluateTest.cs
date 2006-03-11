@@ -41,7 +41,8 @@ using Sooda.QL;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.Soql {
+namespace Sooda.UnitTests.TestCases.Soql
+{
     [TestFixture]
     public class EvaluateTest
     {
@@ -56,7 +57,7 @@ namespace Sooda.UnitTests.TestCases.Soql {
         }
 
         [Test]
-        public void TestRelationOperators() 
+        public void TestRelationOperators()
         {
             // string & string
             AssertExpression("'a' == 'a'", true);
@@ -93,7 +94,7 @@ namespace Sooda.UnitTests.TestCases.Soql {
             AssertExpression("false <= true", true);
             AssertExpression("false <= false", true);
             AssertExpression("true <= false", false);
-            
+
             // int & int
             AssertExpression("1 == 1", true);
             AssertExpression("1 == 2", false);
@@ -168,7 +169,7 @@ namespace Sooda.UnitTests.TestCases.Soql {
         }
 
         [Test]
-        public void TestCoreOperations() 
+        public void TestCoreOperations()
         {
             AssertExpression("1 + 2", 3);
             AssertExpression("1 + 2 + 3", 6);
@@ -192,17 +193,17 @@ namespace Sooda.UnitTests.TestCases.Soql {
             AssertExpression("10.0 + 1 <= 11.1", true);
             AssertExpression("1 * 1.0 == 1.0", true);
         }
-        
+
         [Test]
-        public void TestRelationalOperators() 
+        public void TestRelationalOperators()
         {
             AssertExpression("'a' + 'b' == 'ab'", true);
             AssertExpression("true", true);
             AssertExpression("false", false);
         }
-        
+
         [Test]
-        public void TestLogicalOperators() 
+        public void TestLogicalOperators()
         {
             AssertExpression("true or false or false", true);
             AssertExpression("false or false or false", false);

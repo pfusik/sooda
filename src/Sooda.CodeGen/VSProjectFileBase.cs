@@ -35,9 +35,9 @@ using System;
 using System.Xml;
 using System.IO;
 
-namespace Sooda.CodeGen 
+namespace Sooda.CodeGen
 {
-    public class VSProjectFileBase : IProjectFile 
+    public class VSProjectFileBase : IProjectFile
     {
         protected XmlDocument doc = new XmlDocument();
         protected string projectRoot;
@@ -45,54 +45,54 @@ namespace Sooda.CodeGen
         protected string templateName;
         protected bool modified = false;
 
-        protected VSProjectFileBase(string projectRoot, string projectExtension, string templateName) 
+        protected VSProjectFileBase(string projectRoot, string projectExtension, string templateName)
         {
             this.projectRoot = projectRoot;
             this.projectExtension = projectExtension;
             this.templateName = templateName;
         }
 
-        public virtual void CreateNew(string outputNamespace, string assemblyName) 
+        public virtual void CreateNew(string outputNamespace, string assemblyName)
         {
             doc = new XmlDocument();
-            using (Stream ins = typeof(CodeGenerator).Assembly.GetManifestResourceStream(templateName)) 
+            using (Stream ins = typeof(CodeGenerator).Assembly.GetManifestResourceStream(templateName))
             {
                 doc.Load(ins);
             }
             modified = true;
             XmlElement el = (XmlElement)doc.SelectSingleNode(projectRoot);
-            if (!el.HasAttribute("AssemblyName")) 
+            if (!el.HasAttribute("AssemblyName"))
             {
                 el.SetAttribute("AssemblyName", assemblyName);
             }
         }
-        void IProjectFile.LoadFrom(string fileName) 
+        void IProjectFile.LoadFrom(string fileName)
         {
             doc = new XmlDocument();
             doc.Load(fileName);
             modified = false;
         }
 
-        void IProjectFile.SaveTo(string fileName) 
+        void IProjectFile.SaveTo(string fileName)
         {
             XmlElement el = (XmlElement)doc.SelectSingleNode(projectRoot);
-            if (!el.HasAttribute("ProjectGuid")) 
+            if (!el.HasAttribute("ProjectGuid"))
             {
                 Guid g = Guid.NewGuid();
                 el.SetAttribute("ProjectGuid", "{" + g.ToString().ToUpper() + "}");
                 modified = true;
             }
 
-            if (modified) 
+            if (modified)
             {
                 doc.Save(fileName);
             }
         }
-        void IProjectFile.AddCompileUnit(string relativeFileName) 
+        void IProjectFile.AddCompileUnit(string relativeFileName)
         {
             XmlNodeList nl = doc.SelectNodes(projectRoot + "/Files/Include/File[@RelPath='" + relativeFileName + "']");
 
-            if (nl.Count == 0) 
+            if (nl.Count == 0)
             {
                 XmlElement el = doc.CreateElement("File");
                 el.SetAttribute("RelPath", relativeFileName);
@@ -101,11 +101,11 @@ namespace Sooda.CodeGen
                 modified = true;
             }
         }
-        void IProjectFile.AddResource(string relativeFileName) 
+        void IProjectFile.AddResource(string relativeFileName)
         {
             XmlNodeList nl = doc.SelectNodes(projectRoot + "/Files/Include/File[@RelPath='" + relativeFileName + "']");
 
-            if (nl.Count == 0) 
+            if (nl.Count == 0)
             {
                 XmlElement el = doc.CreateElement("File");
                 el.SetAttribute("RelPath", relativeFileName);
@@ -114,7 +114,7 @@ namespace Sooda.CodeGen
                 modified = true;
             }
         }
-        string IProjectFile.GetProjectFileName(string outNamespace) 
+        string IProjectFile.GetProjectFileName(string outNamespace)
         {
             return outNamespace + projectExtension;
         }

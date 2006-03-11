@@ -40,12 +40,12 @@ using Sooda.ObjectMapper.FieldHandlers;
 
 [assembly: System.CLSCompliant(true)]
 
-namespace Sooda.Schema 
+namespace Sooda.Schema
 {
     [XmlType(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [XmlRoot("schema", Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd", IsNullable = false)]
     [Serializable]
-    public class SchemaInfo 
+    public class SchemaInfo
     {
         [XmlElement("namespace")]
         public string Namespace;
@@ -86,12 +86,12 @@ namespace Sooda.Schema
         [NonSerialized]
         private Hashtable _subclasses = new Hashtable();
 
-        public bool Contains(string className) 
+        public bool Contains(string className)
         {
             return FindClassByName(className) != null;
         }
 
-        public ClassInfo FindClassByName(string className) 
+        public ClassInfo FindClassByName(string className)
         {
             if (Classes == null)
                 return null;
@@ -99,7 +99,7 @@ namespace Sooda.Schema
             return (ClassInfo)classNameHash[className];
         }
 
-        public RelationInfo FindRelationByName(string relationName) 
+        public RelationInfo FindRelationByName(string relationName)
         {
             if (Relations == null)
                 return null;
@@ -107,7 +107,7 @@ namespace Sooda.Schema
             return (RelationInfo)relationNameHash[relationName];
         }
 
-        public void AddClass(ClassInfo ci) 
+        public void AddClass(ClassInfo ci)
         {
             Classes.Add(ci);
             Rehash();
@@ -122,7 +122,7 @@ namespace Sooda.Schema
         {
         }
 
-        public void Resolve() 
+        public void Resolve()
         {
             if (Includes == null)
                 Includes = new IncludeInfoCollection();
@@ -134,47 +134,47 @@ namespace Sooda.Schema
             classNameHash = new Hashtable(new CaseInsensitiveHashCodeProvider(), new CaseInsensitiveComparer());
             relationNameHash = new Hashtable(new CaseInsensitiveHashCodeProvider(), new CaseInsensitiveComparer());
 #endif
-            
+
             Rehash();
-            foreach (ClassInfo ci in Classes) 
+            foreach (ClassInfo ci in Classes)
             {
                 ci.ResolveInheritance(this);
             }
-            foreach (ClassInfo ci in Classes) 
+            foreach (ClassInfo ci in Classes)
             {
                 ci.FlattenTables();
             }
-            foreach (ClassInfo ci in Classes) 
+            foreach (ClassInfo ci in Classes)
             {
                 ci.Resolve(this);
             }
-            foreach (ClassInfo ci in Classes) 
+            foreach (ClassInfo ci in Classes)
             {
                 ci.MergeTables();
             }
-            foreach (ClassInfo ci in Classes) 
+            foreach (ClassInfo ci in Classes)
             {
                 ci.ResolveReferences(this);
             }
-            foreach (ClassInfo ci in Classes) 
+            foreach (ClassInfo ci in Classes)
             {
                 ci.ResolveCollections(this);
             }
 
-            foreach (ClassInfo ci in Classes) 
+            foreach (ClassInfo ci in Classes)
             {
                 ci.ResolvePrecommitValues();
             }
 
-            if (Relations != null) 
+            if (Relations != null)
             {
-                foreach (RelationInfo ri in Relations) 
+                foreach (RelationInfo ri in Relations)
                 {
                     ri.Resolve(this);
                 }
             }
 
-            foreach (DataSourceInfo dsi in DataSources) 
+            foreach (DataSourceInfo dsi in DataSources)
             {
                 dsi.Resolve();
             };
@@ -195,14 +195,14 @@ namespace Sooda.Schema
 
             _subclasses = new Hashtable();
 
-            foreach (ClassInfo ci in Classes) 
+            foreach (ClassInfo ci in Classes)
             {
                 _subclasses[ci.Name] = new ClassInfoCollection();
             }
 
-            foreach (ClassInfo ci0 in Classes) 
+            foreach (ClassInfo ci0 in Classes)
             {
-                for (ClassInfo ci = ci0.InheritsFromClass; ci != null; ci = ci.InheritsFromClass) 
+                for (ClassInfo ci = ci0.InheritsFromClass; ci != null; ci = ci.InheritsFromClass)
                 {
                     ((ClassInfoCollection)_subclasses[ci.Name]).Add(ci0);
                 }
@@ -214,33 +214,33 @@ namespace Sooda.Schema
             return (ClassInfoCollection)_subclasses[ci.Name];
         }
 
-        private void Rehash() 
+        private void Rehash()
         {
             classNameHash.Clear();
             relationNameHash.Clear();
-            if (Classes != null) 
+            if (Classes != null)
             {
-                foreach (ClassInfo ci in Classes) 
+                foreach (ClassInfo ci in Classes)
                 {
                     if (ci.Name != null)
                         classNameHash[ci.Name] = ci;
                 }
             }
-            if (Relations != null) 
+            if (Relations != null)
             {
-                foreach (RelationInfo ri in Relations) 
+                foreach (RelationInfo ri in Relations)
                 {
                     relationNameHash[ri.Name] = ri;
                 }
             }
         }
 
-        public DataSourceInfo GetDataSourceInfo(string name) 
+        public DataSourceInfo GetDataSourceInfo(string name)
         {
             if (name == null)
                 name = "default";
 
-            foreach (DataSourceInfo dsi in DataSources) 
+            foreach (DataSourceInfo dsi in DataSources)
             {
                 if (dsi.Name == name)
                     return dsi;
@@ -257,7 +257,7 @@ namespace Sooda.Schema
                 if (sb.Length > 0)
                     sb.Append(",");
                 sb.Append(dsi.Name + ": " + dsi.DataSourceType);
-            }   
+            }
 
             return sb.ToString();
         }

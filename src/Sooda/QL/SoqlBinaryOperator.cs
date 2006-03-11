@@ -32,7 +32,8 @@
 // 
 
 
-namespace Sooda.QL {
+namespace Sooda.QL
+{
     public enum SoqlBinaryOperator
     {
         Add,

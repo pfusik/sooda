@@ -35,12 +35,15 @@ using System;
 
 using Sooda.Schema;
 
-namespace Sooda.QL {
-    public struct SoqlExpressionType {
+namespace Sooda.QL
+{
+    public struct SoqlExpressionType
+    {
         public Type PrimitiveType;
         public ClassInfo ClassInfo;
 
-        public SoqlExpressionType(Type t) {
+        public SoqlExpressionType(Type t)
+        {
             PrimitiveType = t;
             ClassInfo = null;
         }

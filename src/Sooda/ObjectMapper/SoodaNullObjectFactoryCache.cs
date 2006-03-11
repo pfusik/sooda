@@ -32,14 +32,17 @@
 // 
 
 
-namespace Sooda.ObjectMapper {
-    public class SoodaNullObjectFactoryCache : ISoodaObjectFactoryCache {
-        public ISoodaObjectFactory FindObjectFactory(string className, object primaryKeyValue) {
+namespace Sooda.ObjectMapper
+{
+    public class SoodaNullObjectFactoryCache : ISoodaObjectFactoryCache
+    {
+        public ISoodaObjectFactory FindObjectFactory(string className, object primaryKeyValue)
+        {
             return null;
         }
 
-        public void SetObjectFactory(string className, object primaryKeyValue, ISoodaObjectFactory factory) {}
+        public void SetObjectFactory(string className, object primaryKeyValue, ISoodaObjectFactory factory) { }
 
-        public void Invalidate() {}
+        public void Invalidate() { }
     }
 }

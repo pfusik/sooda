@@ -34,98 +34,162 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Threading;
 
 using Sooda.Logging;
 using Sooda.Schema;
 using Sooda.QL;
 
-namespace Sooda.Caching 
+namespace Sooda.Caching
 {
-	public class SoodaCache 
-	{
-		private static Hashtable _objectCache = new Hashtable();
-		private static SoodaCachedCollectionHash _collectionCache = new SoodaCachedCollectionHash();
-		private static Logger logger = LogManager.GetLogger("Sooda.Cache");
+    public class SoodaCache
+    {
+        private static ReaderWriterLock _rwlock = new ReaderWriterLock();
+        private static Hashtable _objectCache = new Hashtable();
 
-		public static TimeSpan ExpirationTimeout = TimeSpan.FromMinutes(1);
-		public static bool Enabled = true;
+        // string -> (SoodaCachedCollectionKey->object)
+        private static Hashtable _class2keys = new Hashtable();
+        private static object _marker = new object();
 
-		public static SoodaCacheEntry FindObjectData(string className, object primaryKeyValue) 
-		{
-			if (!Enabled)
-				return null;
+        private static SoodaCachedCollectionHash _collectionCache = new SoodaCachedCollectionHash();
+        private static Logger logger = LogManager.GetLogger("Sooda.Cache");
 
-			Hashtable ht = (Hashtable)_objectCache[className];
-			SoodaCacheEntry retVal = null;
+        public static TimeSpan ExpirationTimeout = TimeSpan.FromMinutes(1);
+        public static bool Enabled = true;
 
-			if (ht != null) 
-			{
-				retVal = (SoodaCacheEntry)ht[primaryKeyValue];
-				if (retVal != null) 
-				{
-					if (retVal.Age > ExpirationTimeout) 
-					{
-						ht.Remove(primaryKeyValue);
-						retVal = null;
-					}
-				}
-			}
+        public static SoodaCacheEntry FindObjectData(string className, object primaryKeyValue)
+        {
+            if (!Enabled)
+                return null;
 
-			if (logger.IsTraceEnabled)
-			{
-				logger.Trace("SoodaCache.FindObjectData('{0}',{1}) {2}", className, primaryKeyValue, (retVal != null) ? "FOUND" : "NOT FOUND");
-			}
-			return retVal;
-		}
+            _rwlock.AcquireReaderLock(-1);
+            try
+            {
+                Hashtable ht = (Hashtable)_objectCache[className];
+                SoodaCacheEntry retVal = null;
 
-		public static void AddObject(string className, object primaryKeyValue, SoodaCacheEntry entry) 
-		{
-			if (!Enabled)
-				return ;
+                if (ht != null)
+                {
+                    retVal = (SoodaCacheEntry)ht[primaryKeyValue];
+                    if (retVal != null)
+                    {
+                        if (retVal.Age > ExpirationTimeout)
+                        {
+                            ht.Remove(primaryKeyValue);
+                            retVal = null;
+                        }
+                    }
+                }
 
-			Hashtable ht = (Hashtable)_objectCache[className];
-			if (ht == null) 
-			{
-				ht = new Hashtable();
-				_objectCache[className] = ht;
-			}
+                //if (logger.IsTraceEnabled)
+                //{
+                //logger.Trace("SoodaCache.FindObjectData('{0}',{1}) {2}", className, primaryKeyValue, (retVal != null) ? "FOUND" : "NOT FOUND");
+                //}
+                return retVal;
+            }
+            finally
+            {
+                _rwlock.ReleaseReaderLock();
+            }
+        }
 
-			if (logger.IsTraceEnabled) 
-			{
-				logger.Trace("Add {0}({1}): {2}", className, primaryKeyValue, entry.ToString());
-			}
+        public static void AddObject(string className, object primaryKeyValue, SoodaCacheEntry entry)
+        {
+            if (!Enabled)
+                return;
 
-			ht[primaryKeyValue] = entry;
-		}
+            _rwlock.AcquireWriterLock(-1);
+            try
+            {
+                Hashtable ht = (Hashtable)_objectCache[className];
+                if (ht == null)
+                {
+                    ht = new Hashtable();
+                    _objectCache[className] = ht;
+                }
 
-		public static void InvalidateObject(string className, object primaryKeyValue) 
-		{
-			if (!Enabled)
-				return ;
-			if (logger.IsTraceEnabled)
-			{
-				logger.Trace("Invalidating object {0}[{1}]", className, primaryKeyValue);
-			}
+                if (logger.IsTraceEnabled)
+                {
+                    logger.Trace("Add {0}({1}): {2}", className, primaryKeyValue, entry.ToString());
+                }
 
-			Hashtable ht = (Hashtable)_objectCache[className];
-			if (ht == null)
-				return;
+                ht[primaryKeyValue] = entry;
+            }
+            finally
+            {
+                _rwlock.ReleaseWriterLock();
+            }
+        }
 
-			// no exception when the key doesn't exist
-			ht.Remove(primaryKeyValue);
-		}
 
-		public static void Clear() 
-		{
-			logger.Debug("Clear");
-			_objectCache.Clear();
-		}
+        public static void InvalidateObject(string className, object primaryKeyValue)
+        {
+            if (!Enabled)
+                return;
 
-		public static SoodaCachedCollectionKey GetCollectionKey(ClassInfo ci, SoodaWhereClause wc)
-		{
-			logger.Debug("GetCollectionKey({0},{1}", ci.Name, wc.WhereExpression);
-			if (wc == null)
-				return null;
+            if (logger.IsTraceEnabled)
+            {
+                logger.Trace("Invalidating object {0}[{1}]", className, primaryKeyValue);
+            }
+
+            _rwlock.AcquireWriterLock(-1);
+            try
+            {
+                Hashtable ht = (Hashtable)_objectCache[className];
+                if (ht != null)
+                {
+                    // no exception when the key doesn't exist
+                    ht.Remove(primaryKeyValue);
+                }
+                ht = (Hashtable)_class2keys[className];
+                if (ht != null)
+                {
+                    _class2keys.Remove(className);
+                    foreach (SoodaCachedCollectionKey key in ht.Keys)
+                    {
+                        // Console.WriteLine("Invalidating '{0}'", key);
+                        _collectionCache.Remove(key);
+                    }
+                }
+            }
+            finally
+            {
+                _rwlock.ReleaseWriterLock();
+            }
+        }
+
+        public static void Clear()
+        {
+            _rwlock.AcquireWriterLock(-1);
+            try
+            {
+                logger.Debug("Clear");
+                _objectCache.Clear();
+                _collectionCache.Clear();
+                _class2keys.Clear();
+            }
+            finally
+            {
+                _rwlock.ReleaseWriterLock();
+            }
+        }
+
+        public static SoodaCachedCollectionKey GetCollectionKey(ClassInfo ci, SoodaWhereClause wc)
+        {
+            logger.Debug("GetCollectionKey({0},{1})", ci.Name, wc.WhereExpression);
+            if (wc == null)
+                return new SoodaCachedCollectionKeyAllRecords(ci);
+
+            if (wc.WhereExpression == null)
+                return new SoodaCachedCollectionKeyAllRecords(ci);
+#if A
+            if (wc.WhereExpression is SoqlBooleanLiteralExpression)
+            {
+                SoqlBooleanLiteralExpression ble = (SoqlBooleanLiteralExpression)wc.WhereExpression;
+                if (ble.Value == false)
+                    return null;
+                return new SoodaCachedCollectionKeyAllRecords(ci);
+            }
 
 			if (wc.WhereExpression is SoqlBooleanRelationalExpression)
 			{
@@ -136,13 +200,16 @@ namespace Sooda.Caching
 				SoqlPathExpression pathExpression;
 				object value;
 
-				if (bre.par1 is SoqlPathExpression)
+                SoqlExpression lhs = SoqlExpression.Unwrap(bre.par1);
+                SoqlExpression rhs = SoqlExpression.Unwrap(bre.par2);
+
+				if (lhs is SoqlPathExpression)
 				{
-					pathExpression = (SoqlPathExpression)bre.par1;
+					pathExpression = (SoqlPathExpression)lhs;
 				}
-				else if (bre.par2 is SoqlPathExpression)
+				else if (rhs is SoqlPathExpression)
 				{
-					pathExpression = (SoqlPathExpression)bre.par2;
+					pathExpression = (SoqlPathExpression)rhs;
 				}
 				else
 					return null;
@@ -156,98 +223,145 @@ namespace Sooda.Caching
 
 				string fieldName = pathExpression.PropertyName;
 
-				if (bre.par1 is SoqlLiteralExpression)
+				if (lhs is SoqlLiteralExpression)
 				{
-					value = ((SoqlLiteralExpression)bre.par1).LiteralValue;
+					value = ((SoqlLiteralExpression)lhs).LiteralValue;
 				}
-				else if (bre.par2 is SoqlLiteralExpression)
+				else if (rhs is SoqlLiteralExpression)
 				{
-					value = ((SoqlLiteralExpression)bre.par2).LiteralValue;
+					value = ((SoqlLiteralExpression)rhs).LiteralValue;
 				}
-				else if (bre.par1 is SoqlParameterLiteralExpression)
+                else if (lhs is SoqlBooleanLiteralExpression)
+                {
+                    value = ((SoqlBooleanLiteralExpression)lhs).Value;
+                }
+                else if (rhs is SoqlBooleanLiteralExpression)
+                {
+                    value = ((SoqlBooleanLiteralExpression)rhs).Value;
+                }
+                else if (lhs is SoqlParameterLiteralExpression)
 				{
-					value = wc.Parameters[((SoqlParameterLiteralExpression)bre.par1).ParameterPosition];
+					value = wc.Parameters[((SoqlParameterLiteralExpression)lhs).ParameterPosition];
 				}
-				else if (bre.par2 is SoqlParameterLiteralExpression)
+				else if (rhs is SoqlParameterLiteralExpression)
 				{
-					value = wc.Parameters[((SoqlParameterLiteralExpression)bre.par2).ParameterPosition];
+					value = wc.Parameters[((SoqlParameterLiteralExpression)rhs).ParameterPosition];
 				}
 				else
 					return null;
 
-				SoodaCachedCollectionKey key = new SoodaCachedCollectionKey(ci, fieldName, value);
-				if (logger.IsTraceEnabled)
-				{
-					logger.Trace("Key: {0}", key);
-				}
+				SoodaCachedCollectionKey key = new SoodaCachedCollectionKeySimple(ci, fieldName, value);
 				return key;
 			}
-			
-			return null;
-		}
+#endif
 
-		public static IEnumerable LoadCollection(SoodaCachedCollectionKey key, SoodaOrderBy orderBy, int topCount)
-		{
-			if (key == null)
-				return null;
+            StringWriter sw = new StringWriter();
+            SoqlPrettyPrinter pp = new SoqlPrettyPrinter(sw, wc.Parameters);
+            pp.PrintExpression(wc.WhereExpression);
+            string canonicalWhereClause = sw.ToString();
+            SoodaCachedCollectionKey key = new SoodaCachedCollectionKeyComplex(ci, canonicalWhereClause);
+            //Console.WriteLine("key: {0}", key);
+            return key;
+        }
 
-			SoodaCachedCollection coll = _collectionCache[key];
-			if (coll == null)
-				return null;
+        public static IEnumerable LoadCollection(SoodaCachedCollectionKey key)
+        {
+            if (key == null)
+                return null;
 
-			if (orderBy != null)
-			{
-				// TODO - add sorted queries, too
-				return null;
-			}
+            SoodaCachedCollection coll = _collectionCache[key];
+            if (coll == null)
+                return null;
 
-			if (topCount != -1)
-			{
-				// TODO - add 'top' support
-				return null;
-			}
+            return coll.PrimaryKeys;
+        }
 
-			return coll.PrimaryKeys;
-		}
+        private static void RegisterDependentCollectionClass(SoodaCachedCollectionKey cacheKey, ClassInfo dependentClass)
+        {
+            Hashtable ht = (Hashtable)_class2keys[dependentClass.Name];
+            if (ht == null)
+            {
+                ht = new Hashtable();
+                _class2keys[dependentClass.Name] = ht;
+            }
 
-		public static void StoreCollection(SoodaCachedCollectionKey cacheKey, IList primaryKeys)
-		{
-			if (cacheKey != null)
-			{
-				logger.Debug("Storing collection: {0} {1} items", cacheKey, primaryKeys.Count);
-				SoodaCachedCollection value = new SoodaCachedCollection(primaryKeys);
+            // this is actually a set
+            ht[cacheKey] = _marker;
+        }
 
-				_collectionCache[cacheKey] = value;
-			}
-		}
+        public static void StoreCollection(SoodaCachedCollectionKey cacheKey, IList primaryKeys, ClassInfoCollection dependentClasses)
+        {
+            if (cacheKey != null)
+            {
+                logger.Debug("Storing collection: {0} {1} items", cacheKey, primaryKeys.Count);
+                if (dependentClasses != null)
+                {
+                    logger.Debug("Dependent classes: {0}", dependentClasses.Count);
+                }
+                SoodaCachedCollection value = new SoodaCachedCollection(primaryKeys);
+                _collectionCache[cacheKey] = value;
 
-		public static void Dump(TextWriter output) 
-		{
-			output.WriteLine("CACHE DUMP:");
-			foreach (string className in _objectCache.Keys) 
-			{
-				output.WriteLine(className);
+                RegisterDependentCollectionClass(cacheKey, cacheKey.ClassInfo);
+                if (dependentClasses != null)
+                {
+                    for (int i = 0; i < dependentClasses.Count; ++i)
+                    {
+                        RegisterDependentCollectionClass(cacheKey, dependentClasses[i]);
+                    }
+                }
+            }
+        }
 
-				foreach (DictionaryEntry de in (Hashtable)_objectCache[className]) 
-				{
-					SoodaCacheEntry entry = (SoodaCacheEntry)de.Value;
+        public static void Dump(TextWriter output)
+        {
+            output.WriteLine("CACHE DUMP:");
+            foreach (string className in _objectCache.Keys)
+            {
+                output.WriteLine(className);
 
-					output.Write("{0,8} [", de.Key);
-					bool first = true;
-					for (int i = 0; i < entry.Data.Length; ++i)
-					{
-						object fd = entry.Data.GetBoxedFieldValue(i);
-						if (!first)
-							output.Write("|");
-						output.Write(fd);
-						first = false;
-					}
-					output.Write("]");
-					output.WriteLine();
-				}
-				output.WriteLine();
-			}
-			output.WriteLine();
-		}
-	}
+                foreach (DictionaryEntry de in (Hashtable)_objectCache[className])
+                {
+                    SoodaCacheEntry entry = (SoodaCacheEntry)de.Value;
+
+                    output.Write("{0,8} [", de.Key);
+                    bool first = true;
+                    for (int i = 0; i < entry.Data.Length; ++i)
+                    {
+                        object fd = entry.Data.GetBoxedFieldValue(i);
+                        if (!first)
+                            output.Write("|");
+                        output.Write(fd);
+                        first = false;
+                    }
+                    output.Write("]");
+                    output.WriteLine();
+                }
+                output.WriteLine();
+            }
+            output.WriteLine();
+        }
+
+        public static IDisposable BeginCommit()
+        {
+            _rwlock.AcquireWriterLock(-1);
+            return new EndCommitCaller();
+        }
+
+        public static void EndCommit()
+        {
+            _rwlock.ReleaseWriterLock();
+        }
+
+        class EndCommitCaller : IDisposable
+        {
+            #region IDisposable Members
+
+            public void Dispose()
+            {
+                SoodaCache.EndCommit();
+            }
+
+            #endregion
+        }
+    }
 }

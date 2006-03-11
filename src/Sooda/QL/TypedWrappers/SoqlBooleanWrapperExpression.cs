@@ -33,9 +33,9 @@
 
 using System;
 
-namespace Sooda.QL.TypedWrappers 
+namespace Sooda.QL.TypedWrappers
 {
-    public class SoqlBooleanWrapperExpression : SoqlBooleanExpression 
+    public class SoqlBooleanWrapperExpression : SoqlBooleanExpression
     {
         private SoqlExpression _innerExpression;
 
@@ -54,7 +54,7 @@ namespace Sooda.QL.TypedWrappers
             set { _innerExpression = value; }
         }
 
-        public override SoqlExpression Simplify() 
+        public override SoqlExpression Simplify()
         {
             return this;
         }

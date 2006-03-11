@@ -38,7 +38,7 @@ namespace Sooda.Collections
     /// <summary>
     /// A collection of elements of type SoodaObject
     /// </summary>
-    public class SoodaObjectCollection: System.Collections.CollectionBase, ICloneable
+    public class SoodaObjectCollection : System.Collections.CollectionBase, ICloneable
     {
         /// <summary>
         /// Initializes a new empty instance of the SoodaObjectCollection class.
@@ -163,7 +163,7 @@ namespace Sooda.Collections
         {
             get
             {
-                return (SoodaObject) this.List[index];
+                return (SoodaObject)this.List[index];
             }
             set
             {
@@ -185,7 +185,7 @@ namespace Sooda.Collections
         /// <summary>
         /// Type-specific enumeration class, used by SoodaObjectCollection.GetEnumerator.
         /// </summary>
-        public class Enumerator: System.Collections.IEnumerator
+        public class Enumerator : System.Collections.IEnumerator
         {
             private System.Collections.IEnumerator wrapped;
 
@@ -198,7 +198,7 @@ namespace Sooda.Collections
             {
                 get
                 {
-                    return (SoodaObject) (this.wrapped.Current);
+                    return (SoodaObject)(this.wrapped.Current);
                 }
             }
 
@@ -206,7 +206,7 @@ namespace Sooda.Collections
             {
                 get
                 {
-                    return (SoodaObject) (this.wrapped.Current);
+                    return (SoodaObject)(this.wrapped.Current);
                 }
             }
 

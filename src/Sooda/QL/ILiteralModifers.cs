@@ -32,7 +32,8 @@
 // 
 
 
-namespace Sooda.QL {
+namespace Sooda.QL
+{
     public interface ILiteralModifiers
     {
         SoqlLiteralValueModifiers Modifiers { get; }

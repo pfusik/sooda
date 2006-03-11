@@ -37,14 +37,14 @@ using System.Collections;
 
 using Sooda.ObjectMapper.FieldHandlers;
 
-namespace Sooda.Schema 
+namespace Sooda.Schema
 {
     /// <summary>
     /// Stores database table schema information
     /// </summary>
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [Serializable]
-    public class ClassInfo : IFieldContainer 
+    public class ClassInfo : IFieldContainer
     {
         private static Logging.Logger logger = Logging.LogManager.GetLogger("Sooda.Schema.ClassInfo");
 
@@ -87,11 +87,11 @@ namespace Sooda.Schema
         [System.Xml.Serialization.XmlAttributeAttribute("name")]
         public string Name
         {
-            get 
+            get
             {
                 return _name;
             }
-            set 
+            set
             {
                 _name = value;
             }
@@ -100,13 +100,15 @@ namespace Sooda.Schema
         [System.Xml.Serialization.XmlAttributeAttribute("extBaseClassName")]
         public string ExtBaseClassName;
 
-        bool _loadOnDemand = true;
-
         private string[] _orderedFieldNames;
 
         [System.Xml.Serialization.XmlAttributeAttribute("cached")]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool Cached = false;
+
+        [System.Xml.Serialization.XmlAttributeAttribute("cacheCollections")]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool CacheCollections = false;
 
         [System.Xml.Serialization.XmlAttributeAttribute("cardinality")]
         [System.ComponentModel.DefaultValueAttribute(ClassCardinality.Medium)]
@@ -159,26 +161,11 @@ namespace Sooda.Schema
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool DisableTypeCache = false;
 
-        [System.Xml.Serialization.XmlAttributeAttribute("loadOnDemand")]
-        [System.ComponentModel.DefaultValueAttribute(true)]
-        public bool LoadOnDemand
+        public CollectionOnetoManyInfo FindCollectionOneToMany(string collectionName)
         {
-            get 
+            if (Collections1toN != null)
             {
-                if (ReadOnly)
-                    return false;
-                return _loadOnDemand;
-            }
-            set 
-            {
-                _loadOnDemand = value;
-            }
-        }
-        public CollectionOnetoManyInfo FindCollectionOneToMany(string collectionName) 
-        {
-            if (Collections1toN != null) 
-            {
-                foreach (CollectionOnetoManyInfo i in Collections1toN) 
+                foreach (CollectionOnetoManyInfo i in Collections1toN)
                 {
                     if (collectionName == i.Name)
                         return i;
@@ -189,11 +176,11 @@ namespace Sooda.Schema
             return null;
         }
 
-        public CollectionManyToManyInfo FindCollectionManyToMany(string collectionName) 
+        public CollectionManyToManyInfo FindCollectionManyToMany(string collectionName)
         {
-            if (CollectionsNtoN != null) 
+            if (CollectionsNtoN != null)
             {
-                foreach (CollectionManyToManyInfo i in CollectionsNtoN) 
+                foreach (CollectionManyToManyInfo i in CollectionsNtoN)
                 {
                     if (collectionName == i.Name)
                         return i;
@@ -204,7 +191,7 @@ namespace Sooda.Schema
             return null;
         }
 
-        public int ContainsCollection(string collectionName) 
+        public int ContainsCollection(string collectionName)
         {
             if (FindCollectionOneToMany(collectionName) != null)
                 return 1;
@@ -215,12 +202,12 @@ namespace Sooda.Schema
 
         FieldInfo[] _primaryKeyFields = null;
 
-        public FieldInfo[] GetPrimaryKeyFields() 
+        public FieldInfo[] GetPrimaryKeyFields()
         {
             return _primaryKeyFields;
         }
 
-        public FieldInfo GetFirstPrimaryKeyField() 
+        public FieldInfo GetFirstPrimaryKeyField()
         {
             return _primaryKeyFields[0];
         }
@@ -248,48 +235,48 @@ namespace Sooda.Schema
             return schema.GetSubclasses(this);
         }
 
-        internal void ResolveInheritance(SchemaInfo schema) 
+        internal void ResolveInheritance(SchemaInfo schema)
         {
-            if (InheritFrom != null) 
+            if (InheritFrom != null)
             {
                 InheritsFromClass = schema.FindClassByName(InheritFrom);
-            } 
-            else 
+            }
+            else
             {
                 InheritsFromClass = null;
             }
         }
 
-        internal void FlattenTables() 
+        internal void FlattenTables()
         {
             // Console.WriteLine(">>> FlattenTables for {0}", Name);
             if (LocalTables == null)
                 LocalTables = new TableInfoCollection();
 
-            if (InheritsFromClass != null) 
+            if (InheritsFromClass != null)
             {
                 if (InheritsFromClass.UnifiedTables == null || InheritsFromClass.UnifiedTables.Count == 0)
                 {
                     InheritsFromClass.FlattenTables();
                 }
                 UnifiedTables = new TableInfoCollection();
-                foreach (TableInfo ti in InheritsFromClass.UnifiedTables) 
+                foreach (TableInfo ti in InheritsFromClass.UnifiedTables)
                 {
                     UnifiedTables.Add(ti.Clone(this));
                 }
-                foreach (TableInfo ti in LocalTables) 
+                foreach (TableInfo ti in LocalTables)
                 {
                     UnifiedTables.Add(ti);
                 }
-            } 
-            else 
+            }
+            else
             {
                 UnifiedTables = LocalTables;
             }
 
             int ordinalInClass = 0;
 
-            foreach (TableInfo t in UnifiedTables) 
+            foreach (TableInfo t in UnifiedTables)
             {
                 // Console.WriteLine("Setting OrdinalInClass for {0}.{1} to {2}", Name, t.DBTableName, ordinalInClass);
                 t.OrdinalInClass = ordinalInClass++;
@@ -299,14 +286,14 @@ namespace Sooda.Schema
                 t.Resolve(this.Name, false);
             }
 
-            if (UnifiedTables.Count > 30) 
+            if (UnifiedTables.Count > 30)
             {
                 throw new SoodaSchemaException("Class " + Name + " is invalid, because it's base on more than 30 tables. ");
             }
             // Console.WriteLine("<<< End of FlattenTables for {0}", Name);
         }
 
-        internal void Resolve(SchemaInfo schema) 
+        internal void Resolve(SchemaInfo schema)
         {
             if (parentSchema != null)
             {
@@ -322,14 +309,14 @@ namespace Sooda.Schema
             LocalFields = new FieldInfoCollection();
             int localOrdinal = 0;
             int count = 0;
-            foreach (TableInfo table in LocalTables) 
+            foreach (TableInfo table in LocalTables)
             {
-                foreach (FieldInfo fi in table.Fields) 
+                foreach (FieldInfo fi in table.Fields)
                 {
                     // add all fields from the root table + all non-key fields
                     // from other tables
 
-                    if (table.OrdinalInClass == 0 || !fi.IsPrimaryKey) 
+                    if (table.OrdinalInClass == 0 || !fi.IsPrimaryKey)
                     {
                         // Console.WriteLine("Adding local field {0} to class {1}", fi.Name, Name);
                         LocalFields.Add(fi);
@@ -339,11 +326,11 @@ namespace Sooda.Schema
                 count++;
             }
 
-            if (SubclassSelectorFieldName == null && InheritsFromClass != null) 
+            if (SubclassSelectorFieldName == null && InheritsFromClass != null)
             {
-                for (ClassInfo ci = this; ci != null; ci = ci.InheritsFromClass) 
+                for (ClassInfo ci = this; ci != null; ci = ci.InheritsFromClass)
                 {
-                    if (ci.SubclassSelectorFieldName != null) 
+                    if (ci.SubclassSelectorFieldName != null)
                     {
                         SubclassSelectorFieldName = ci.SubclassSelectorFieldName;
                         break;
@@ -381,11 +368,11 @@ namespace Sooda.Schema
             UnifiedFields = new FieldInfoCollection();
 
             int unifiedOrdinal = 0;
-            foreach (TableInfo ti in UnifiedTables) 
+            foreach (TableInfo ti in UnifiedTables)
             {
-                foreach (FieldInfo fi in ti.Fields) 
+                foreach (FieldInfo fi in ti.Fields)
                 {
-                    if (ti.OrdinalInClass == 0 || !fi.IsPrimaryKey) 
+                    if (ti.OrdinalInClass == 0 || !fi.IsPrimaryKey)
                     {
                         UnifiedFields.Add(fi);
                         fi.ClassUnifiedOrdinal = unifiedOrdinal++;
@@ -399,23 +386,23 @@ namespace Sooda.Schema
                 _orderedFieldNames[i] = UnifiedFields[i].Name;
             }
 
-            if (SubclassSelectorFieldName != null) 
+            if (SubclassSelectorFieldName != null)
             {
                 SubclassSelectorField = FindFieldByName(SubclassSelectorFieldName);
                 if (SubclassSelectorField == null)
                     throw new SoodaSchemaException("subclassSelectorField points to invalid field name " + SubclassSelectorFieldName + " in " + Name);
-            } 
-            else if (InheritFrom != null) 
+            }
+            else if (InheritFrom != null)
             {
                 throw new SoodaSchemaException("Must use subclassSelectorFieldName when defining inherited class");
             }
-            if (SubclassSelectorStringValue != null) 
+            if (SubclassSelectorStringValue != null)
             {
                 // TODO - allow other types based on the field type
                 //
                 if (SubclassSelectorField == null)
                     throw new SoodaSchemaException("subclassSelectorField is invalid");
-                switch (SubclassSelectorField.DataType) 
+                switch (SubclassSelectorField.DataType)
                 {
                     case FieldDataType.Integer:
                         SubclassSelectorValue = Convert.ToInt32(SubclassSelectorStringValue);
@@ -432,9 +419,9 @@ namespace Sooda.Schema
 
             ArrayList pkFields = new ArrayList();
 
-            foreach (FieldInfo fi in UnifiedFields) 
+            foreach (FieldInfo fi in UnifiedFields)
             {
-                if (fi.IsPrimaryKey) 
+                if (fi.IsPrimaryKey)
                 {
                     pkFields.Add(fi);
                 }
@@ -442,15 +429,15 @@ namespace Sooda.Schema
             _primaryKeyFields = (FieldInfo[])pkFields.ToArray(typeof(FieldInfo));
         }
 
-        internal void MergeTables() 
+        internal void MergeTables()
         {
             MergedTables = new TableInfoCollection();
             Hashtable mergedTables = new Hashtable();
 
-            foreach (TableInfo table in UnifiedTables) 
+            foreach (TableInfo table in UnifiedTables)
             {
                 TableInfo mt = (TableInfo)mergedTables[table.DBTableName];
-                if (mt == null) 
+                if (mt == null)
                 {
                     mt = new TableInfo();
                     mt.DBTableName = table.DBTableName;
@@ -460,9 +447,9 @@ namespace Sooda.Schema
                     MergedTables.Add(mt);
                 }
 
-                foreach (FieldInfo fi in table.Fields) 
+                foreach (FieldInfo fi in table.Fields)
                 {
-                    if (mt.ContainsField(fi.Name)) 
+                    if (mt.ContainsField(fi.Name))
                     {
                         if (!fi.IsPrimaryKey)
                             throw new SoodaSchemaException("Duplicate field found for one table!");
@@ -475,19 +462,19 @@ namespace Sooda.Schema
             }
         }
 
-        internal void ResolveCollections(SchemaInfo schema) 
+        internal void ResolveCollections(SchemaInfo schema)
         {
-            if (CollectionsNtoN != null) 
+            if (CollectionsNtoN != null)
             {
-                foreach (CollectionManyToManyInfo cinfo in CollectionsNtoN) 
+                foreach (CollectionManyToManyInfo cinfo in CollectionsNtoN)
                 {
                     cinfo.Resolve(schema);
                 }
             }
 
-            if (Collections1toN != null) 
+            if (Collections1toN != null)
             {
-                foreach (CollectionOnetoManyInfo cinfo in Collections1toN) 
+                foreach (CollectionOnetoManyInfo cinfo in Collections1toN)
                 {
                     ClassInfo ci = schema.FindClassByName(cinfo.ClassName);
                     if (ci == null)
@@ -505,24 +492,24 @@ namespace Sooda.Schema
             }
         }
 
-        internal void ResolveReferences(SchemaInfo schema) 
+        internal void ResolveReferences(SchemaInfo schema)
         {
             // logger.Debug("ResolveReferences({0})", this.Name);
-            foreach (FieldInfo fi in UnifiedFields) 
+            foreach (FieldInfo fi in UnifiedFields)
             {
                 // logger.Debug("unifiedField: {0}", fi.Name);
-                if (fi.References != null) 
+                if (fi.References != null)
                 {
                     ClassInfo ci = schema.FindClassByName(fi.References);
                     fi.ReferencedClass = ci;
                 }
             }
 
-            foreach (FieldInfo fi in LocalFields) 
+            foreach (FieldInfo fi in LocalFields)
             {
                 fi.ParentClass = this;
                 // logger.Debug("localField: {0}", fi.Name);
-                if (fi.ReferencedClass != null) 
+                if (fi.ReferencedClass != null)
                 {
                     // logger.Debug("Is a reference to {0} with ondelete = {1}", fi.ReferencedClass.Name, fi.DeleteAction);
                     fi.ReferencedClass.OuterReferences.Add(fi);
@@ -530,9 +517,9 @@ namespace Sooda.Schema
             }
         }
 
-        internal void ResolvePrecommitValues() 
+        internal void ResolvePrecommitValues()
         {
-            foreach (FieldInfo fi in UnifiedFields) 
+            foreach (FieldInfo fi in UnifiedFields)
             {
                 string pcv = fi.PrecommitValue;
                 if (pcv == null && fi.ReferencedClass != null)
@@ -540,29 +527,29 @@ namespace Sooda.Schema
 
                 if (pcv == null)
                 {
-                     fi.PrecommitTypedValue = Schema.GetDefaultPrecommitValueForDataType(fi.DataType);
+                    fi.PrecommitTypedValue = Schema.GetDefaultPrecommitValueForDataType(fi.DataType);
                 }
                 else
                 {
-					fi.PrecommitTypedValue = FieldHandlerFactory.GetFieldHandler(fi.DataType).RawDeserialize(pcv);
+                    fi.PrecommitTypedValue = FieldHandlerFactory.GetFieldHandler(fi.DataType).RawDeserialize(pcv);
                 }
             }
         }
 
-        public DataSourceInfo GetDataSource() 
+        public DataSourceInfo GetDataSource()
         {
             return parentSchema.GetDataSourceInfo(DataSourceName);
         }
 
         public SchemaInfo Schema
         {
-            get 
+            get
             {
                 return parentSchema;
             }
         }
 
-        public FieldInfoCollection GetAllFields() 
+        public FieldInfoCollection GetAllFields()
         {
             return UnifiedFields;
         }
@@ -572,9 +559,9 @@ namespace Sooda.Schema
             get { return _orderedFieldNames; }
         }
 
-        public FieldInfo FindFieldByName(string fieldName) 
+        public FieldInfo FindFieldByName(string fieldName)
         {
-            foreach (TableInfo ti in UnifiedTables) 
+            foreach (TableInfo ti in UnifiedTables)
             {
                 FieldInfo fi = ti.FindFieldByName(fieldName);
                 if (fi != null)
@@ -583,9 +570,9 @@ namespace Sooda.Schema
             return null;
         }
 
-        public FieldInfo FindFieldByDBName(string fieldName) 
+        public FieldInfo FindFieldByDBName(string fieldName)
         {
-            foreach (TableInfo ti in UnifiedTables) 
+            foreach (TableInfo ti in UnifiedTables)
             {
                 FieldInfo fi = ti.FindFieldByDBName(fieldName);
                 if (fi != null)
@@ -594,12 +581,12 @@ namespace Sooda.Schema
             return null;
         }
 
-        public bool ContainsField(string fieldName) 
+        public bool ContainsField(string fieldName)
         {
             return FindFieldByName(fieldName) != null;
         }
 
-        public ClassInfo GetRootClass() 
+        public ClassInfo GetRootClass()
         {
             if (InheritsFromClass != null)
                 return InheritsFromClass.GetRootClass();
@@ -607,12 +594,12 @@ namespace Sooda.Schema
                 return this;
         }
 
-        public bool IsAbstractClass() 
+        public bool IsAbstractClass()
         {
             return (SubclassSelectorFieldName != null) && (SubclassSelectorValue == null);
         }
 
-        public string GetLabel() 
+        public string GetLabel()
         {
             if (LabelField != null)
                 return LabelField;

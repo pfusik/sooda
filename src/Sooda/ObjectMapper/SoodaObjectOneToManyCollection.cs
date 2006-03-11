@@ -39,9 +39,9 @@ using Sooda.Schema;
 using Sooda.Collections;
 using Sooda.Caching;
 
-namespace Sooda.ObjectMapper 
+namespace Sooda.ObjectMapper
 {
-    public class SoodaObjectOneToManyCollection : IList, ISoodaObjectList, ISoodaObjectListInternal 
+    public class SoodaObjectOneToManyCollection : IList, ISoodaObjectList, ISoodaObjectListInternal
     {
         private SoodaObjectToInt32Association items = null;
         private SoodaObjectToObjectAssociation tempItems = null;
@@ -58,7 +58,7 @@ namespace Sooda.ObjectMapper
         private static object markerRemoved = new Object();
         private static object markerUnchanged = new Object();
 
-        public SoodaObjectOneToManyCollection(SoodaTransaction tran, Type childType, SoodaObject parentObject, string childRefField, Sooda.Schema.ClassInfo classInfo, SoodaWhereClause additionalWhereClause, bool cached) 
+        public SoodaObjectOneToManyCollection(SoodaTransaction tran, Type childType, SoodaObject parentObject, string childRefField, Sooda.Schema.ClassInfo classInfo, SoodaWhereClause additionalWhereClause, bool cached)
         {
             this.classInfo = classInfo;
             this.transaction = tran;
@@ -69,7 +69,7 @@ namespace Sooda.ObjectMapper
             this.cached = cached;
         }
 
-        public SoodaObject GetItem(int pos) 
+        public SoodaObject GetItem(int pos)
         {
             if (items == null)
                 LoadData();
@@ -78,7 +78,7 @@ namespace Sooda.ObjectMapper
 
         public int Length
         {
-            get 
+            get
             {
                 if (items == null)
                     LoadData();
@@ -86,14 +86,14 @@ namespace Sooda.ObjectMapper
             }
         }
 
-        public IEnumerator GetEnumerator() 
+        public IEnumerator GetEnumerator()
         {
             if (items == null)
                 LoadData();
             return items.Keys.GetEnumerator();
         }
 
-        public int Add(object obj) 
+        public int Add(object obj)
         {
             if (obj == null)
                 throw new ArgumentNullException("obj");
@@ -104,7 +104,7 @@ namespace Sooda.ObjectMapper
             return 0;
         }
 
-        public void Remove(object obj) 
+        public void Remove(object obj)
         {
             if (obj == null)
                 throw new ArgumentNullException("obj");
@@ -114,7 +114,7 @@ namespace Sooda.ObjectMapper
             prop.SetValue(obj, null, null);
         }
 
-        public bool Contains(object obj) 
+        public bool Contains(object obj)
         {
             if (obj == null)
                 return false;
@@ -124,31 +124,31 @@ namespace Sooda.ObjectMapper
             return parentObject == prop.GetValue(obj, null);
         }
 
-        public void InternalAdd(SoodaObject c) 
+        public void InternalAdd(SoodaObject c)
         {
-            if (items == null) 
+            if (items == null)
             {
                 if (tempItems == null)
                     tempItems = new SoodaObjectToObjectAssociation();
                 tempItems[c] = markerAdded;
-                return ;
+                return;
             }
 
             if (items.Contains(c))
-                return ;
+                return;
 
             int pos = itemsArray.Add(c);
             items.Add(c, pos);
         }
 
-        public void InternalRemove(SoodaObject c) 
+        public void InternalRemove(SoodaObject c)
         {
-            if (items == null) 
+            if (items == null)
             {
                 if (tempItems == null)
                     tempItems = new SoodaObjectToObjectAssociation();
                 tempItems[c] = markerRemoved;
-                return ;
+                return;
             }
 
             if (!items.Contains(c))
@@ -157,7 +157,7 @@ namespace Sooda.ObjectMapper
             int pos = items[c];
 
             SoodaObject lastObj = itemsArray[itemsArray.Count - 1];
-            if (lastObj != c) 
+            if (lastObj != c)
             {
                 itemsArray[pos] = lastObj;
                 items[lastObj] = pos;
@@ -166,7 +166,7 @@ namespace Sooda.ObjectMapper
             items.Remove(c);
         }
 
-        private void LoadData() 
+        private void LoadData()
         {
             SoodaDataSource ds = transaction.OpenDataSource(classInfo.GetDataSource());
             TableInfo[] loadedTables;
@@ -175,13 +175,13 @@ namespace Sooda.ObjectMapper
             itemsArray = new SoodaObjectCollection();
 
             ISoodaObjectFactory factory = transaction.GetFactory(classInfo);
-            SoodaWhereClause whereClause = new SoodaWhereClause(childRefField + " = {0}" , parentObject.GetPrimaryKeyValue());
+            SoodaWhereClause whereClause = new SoodaWhereClause(childRefField + " = {0}", parentObject.GetPrimaryKeyValue());
 
             if (additionalWhereClause != null)
                 whereClause = whereClause.Append(additionalWhereClause);
 
             SoodaCachedCollectionKey cacheKey = null;
-            
+
             if (cached)
             {
                 // cache makes sense only on clean database
@@ -190,17 +190,17 @@ namespace Sooda.ObjectMapper
                     cacheKey = SoodaCache.GetCollectionKey(classInfo, whereClause);
                 }
             }
-            IEnumerable keysCollection = SoodaCache.LoadCollection(cacheKey, null, -1);
+            IEnumerable keysCollection = SoodaCache.LoadCollection(cacheKey);
             if (keysCollection != null)
             {
                 foreach (object o in keysCollection)
                 {
                     SoodaObject obj = factory.GetRef(transaction, o);
 
-                    if (tempItems != null) 
+                    if (tempItems != null)
                     {
                         object o2 = tempItems[obj];
-                        if (o2 == markerRemoved) 
+                        if (o2 == markerRemoved)
                         {
                             continue;
                         }
@@ -212,23 +212,23 @@ namespace Sooda.ObjectMapper
             }
             else
             {
-                using (IDataReader reader = ds.LoadObjectList(transaction.Schema, classInfo, whereClause, null, -1, SoodaSnapshotOptions.Default, out loadedTables)) 
+                using (IDataReader reader = ds.LoadObjectList(transaction.Schema, classInfo, whereClause, null, -1, SoodaSnapshotOptions.Default, out loadedTables))
                 {
                     SoodaObjectCollection readObjects = null;
 
                     if (cached)
                         readObjects = new SoodaObjectCollection();
-                    
-                    while (reader.Read()) 
+
+                    while (reader.Read())
                     {
                         SoodaObject obj = SoodaObject.GetRefFromRecordHelper(transaction, factory, reader, 0, loadedTables, 0);
-                        if (readObjects != null) 
+                        if (readObjects != null)
                             readObjects.Add(obj);
 
-                        if (tempItems != null) 
+                        if (tempItems != null)
                         {
                             object o = tempItems[obj];
-                            if (o == markerRemoved) 
+                            if (o == markerRemoved)
                             {
                                 continue;
                             }
@@ -240,20 +240,20 @@ namespace Sooda.ObjectMapper
                     if (cached)
                     {
                         IList primaryKeys = Sooda.Caching.CacheUtils.ConvertSoodaObjectListToKeyList(readObjects);
-                        SoodaCache.StoreCollection(cacheKey, primaryKeys);
+                        SoodaCache.StoreCollection(cacheKey, primaryKeys, null);
                     }
                 }
             }
 
-            if (tempItems != null) 
+            if (tempItems != null)
             {
-                foreach (DictionaryEntry entry in tempItems) 
+                foreach (DictionaryEntry entry in tempItems)
                 {
-                    if (entry.Value == markerAdded) 
+                    if (entry.Value == markerAdded)
                     {
                         SoodaObject obj = (SoodaObject)entry.Key;
 
-                        if (!items.Contains(obj)) 
+                        if (!items.Contains(obj))
                         {
                             int pos = itemsArray.Add(obj);
                             items.Add(obj, pos);
@@ -265,7 +265,7 @@ namespace Sooda.ObjectMapper
 
         public bool IsReadOnly
         {
-            get 
+            get
             {
                 return true;
             }
@@ -273,32 +273,32 @@ namespace Sooda.ObjectMapper
 
         object IList.this[int index]
         {
-            get 
+            get
             {
                 return GetItem(index);
             }
-            set 
+            set
             {
                 throw new NotSupportedException();
             }
         }
 
-        public void RemoveAt(int index) 
+        public void RemoveAt(int index)
         {
             Remove(GetItem(index));
         }
 
-        public void Insert(int index, object value) 
+        public void Insert(int index, object value)
         {
             throw new NotSupportedException();
         }
 
-        public void Clear() 
+        public void Clear()
         {
             throw new NotSupportedException();
         }
 
-        public int IndexOf(object value) 
+        public int IndexOf(object value)
         {
             object o = items[(SoodaObject)value];
             if (o == null)
@@ -309,7 +309,7 @@ namespace Sooda.ObjectMapper
 
         public bool IsFixedSize
         {
-            get 
+            get
             {
                 return false;
             }
@@ -317,7 +317,7 @@ namespace Sooda.ObjectMapper
 
         public bool IsSynchronized
         {
-            get 
+            get
             {
                 return false;
             }
@@ -325,56 +325,56 @@ namespace Sooda.ObjectMapper
 
         public int Count
         {
-            get 
+            get
             {
                 return this.Length;
             }
         }
 
-        public void CopyTo(Array array, int index) 
+        public void CopyTo(Array array, int index)
         {
             throw new NotImplementedException();
         }
 
         public object SyncRoot
         {
-            get 
+            get
             {
                 return this;
             }
         }
 
-        public ISoodaObjectList GetSnapshot() 
+        public ISoodaObjectList GetSnapshot()
         {
             return new SoodaObjectListSnapshot(this);
         }
 
-        public ISoodaObjectList SelectFirst(int n) 
+        public ISoodaObjectList SelectFirst(int n)
         {
             return new SoodaObjectListSnapshot(this, 0, n);
         }
 
-        public ISoodaObjectList SelectLast(int n) 
+        public ISoodaObjectList SelectLast(int n)
         {
             return new SoodaObjectListSnapshot(this, this.Length - n, n);
         }
 
-        public ISoodaObjectList SelectRange(int from, int to) 
+        public ISoodaObjectList SelectRange(int from, int to)
         {
             return new SoodaObjectListSnapshot(this, from, to - from);
         }
 
-        public ISoodaObjectList Filter(SoodaObjectFilter filter) 
+        public ISoodaObjectList Filter(SoodaObjectFilter filter)
         {
             return new SoodaObjectListSnapshot(this, filter);
         }
 
-        public ISoodaObjectList Filter(SoodaWhereClause whereClause) 
+        public ISoodaObjectList Filter(SoodaWhereClause whereClause)
         {
             return new SoodaObjectListSnapshot(this, whereClause);
         }
 
-        public ISoodaObjectList Sort(IComparer comparer) 
+        public ISoodaObjectList Sort(IComparer comparer)
         {
             return new SoodaObjectListSnapshot(this, comparer);
         }

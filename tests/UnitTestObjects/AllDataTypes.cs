@@ -38,22 +38,25 @@ namespace Sooda.UnitTests.Objects
     using System.Diagnostics;
     using System.Data;
     using Sooda;
-    
+
     public class AllDataTypes : Sooda.UnitTests.Objects.Stubs.AllDataTypes_Stub
     {
-        public AllDataTypes(SoodaConstructor c) : 
+        public AllDataTypes(SoodaConstructor c)
+            :
                 base(c)
         {
             // Do not modify this constructor.
         }
-        public AllDataTypes(SoodaTransaction transaction) : 
+        public AllDataTypes(SoodaTransaction transaction)
+            :
                 base(transaction)
         {
             // 
             // TODO: Add construction logic here.
             // 
         }
-        public AllDataTypes() : 
+        public AllDataTypes()
+            :
                 this(SoodaTransaction.ActiveTransaction)
         {
             // Do not modify this constructor.

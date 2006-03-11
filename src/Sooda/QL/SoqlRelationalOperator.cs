@@ -31,7 +31,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-namespace Sooda.QL {
+namespace Sooda.QL
+{
     public enum SoqlRelationalOperator
     {
         Equal,

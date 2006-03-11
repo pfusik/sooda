@@ -39,7 +39,7 @@ namespace Sooda.Schema
     /// A collection of elements of type TableInfo
     /// </summary>
     [Serializable]
-    public class TableInfoCollection: System.Collections.CollectionBase
+    public class TableInfoCollection : System.Collections.CollectionBase
     {
         /// <summary>
         /// Initializes a new empty instance of the TableInfoCollection class.
@@ -164,7 +164,7 @@ namespace Sooda.Schema
         {
             get
             {
-                return (TableInfo) this.List[index];
+                return (TableInfo)this.List[index];
             }
             set
             {
@@ -186,7 +186,7 @@ namespace Sooda.Schema
         /// <summary>
         /// Type-specific enumeration class, used by TableInfoCollection.GetEnumerator.
         /// </summary>
-        public class Enumerator: System.Collections.IEnumerator
+        public class Enumerator : System.Collections.IEnumerator
         {
             private System.Collections.IEnumerator wrapped;
 
@@ -199,7 +199,7 @@ namespace Sooda.Schema
             {
                 get
                 {
-                    return (TableInfo) (this.wrapped.Current);
+                    return (TableInfo)(this.wrapped.Current);
                 }
             }
 
@@ -207,7 +207,7 @@ namespace Sooda.Schema
             {
                 get
                 {
-                    return (TableInfo) (this.wrapped.Current);
+                    return (TableInfo)(this.wrapped.Current);
                 }
             }
 

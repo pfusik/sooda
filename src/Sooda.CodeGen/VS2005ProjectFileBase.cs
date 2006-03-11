@@ -35,9 +35,9 @@ using System;
 using System.Xml;
 using System.IO;
 
-namespace Sooda.CodeGen 
+namespace Sooda.CodeGen
 {
-    public class VS2005ProjectFileBase : IProjectFile 
+    public class VS2005ProjectFileBase : IProjectFile
     {
         protected XmlDocument doc = new XmlDocument();
         protected string projectExtension;
@@ -45,29 +45,29 @@ namespace Sooda.CodeGen
         protected bool modified = false;
         protected XmlNamespaceManager namespaceManager;
 
-        protected VS2005ProjectFileBase(string projectExtension, string templateName) 
+        protected VS2005ProjectFileBase(string projectExtension, string templateName)
         {
             this.projectExtension = projectExtension;
             this.templateName = templateName;
         }
 
-        public virtual void CreateNew(string outputNamespace, string assemblyName) 
+        public virtual void CreateNew(string outputNamespace, string assemblyName)
         {
             doc = new XmlDocument();
             namespaceManager = new XmlNamespaceManager(doc.NameTable);
             namespaceManager.AddNamespace("msbuild", "http://schemas.microsoft.com/developer/msbuild/2003");
-            using (Stream ins = typeof(CodeGenerator).Assembly.GetManifestResourceStream(templateName)) 
+            using (Stream ins = typeof(CodeGenerator).Assembly.GetManifestResourceStream(templateName))
             {
                 doc.Load(ins);
             }
             modified = true;
             XmlElement assemblyNameElement = (XmlElement)doc.SelectSingleNode("msbuild:Project/msbuild:PropertyGroup[msbuild:OutputType]/msbuild:AssemblyName", namespaceManager);
-            if (assemblyNameElement != null && assemblyNameElement.InnerText.Trim() == "") 
+            if (assemblyNameElement != null && assemblyNameElement.InnerText.Trim() == "")
             {
                 assemblyNameElement.InnerText = assemblyName;
             }
         }
-        void IProjectFile.LoadFrom(string fileName) 
+        void IProjectFile.LoadFrom(string fileName)
         {
             doc = new XmlDocument();
             doc.Load(fileName);
@@ -76,17 +76,17 @@ namespace Sooda.CodeGen
             modified = false;
         }
 
-        void IProjectFile.SaveTo(string fileName) 
+        void IProjectFile.SaveTo(string fileName)
         {
             XmlElement projectGuid = (XmlElement)doc.SelectSingleNode("msbuild:Project/msbuild:PropertyGroup/msbuild:ProjectGuid", namespaceManager);
-            if (projectGuid != null && projectGuid.InnerText.Trim() == "") 
+            if (projectGuid != null && projectGuid.InnerText.Trim() == "")
             {
                 Guid g = Guid.NewGuid();
                 projectGuid.InnerText = "{" + g.ToString().ToUpper() + "}";
                 modified = true;
             }
 
-            if (modified) 
+            if (modified)
             {
                 doc.Save(fileName);
             }
@@ -103,8 +103,8 @@ namespace Sooda.CodeGen
             return itemGroup;
         }
 
-        
-        void IProjectFile.AddCompileUnit(string relativeFileName) 
+
+        void IProjectFile.AddCompileUnit(string relativeFileName)
         {
             XmlElement compileItemGroup = GetItemGroup("Compile");
 
@@ -117,7 +117,7 @@ namespace Sooda.CodeGen
                 modified = true;
             }
         }
-        void IProjectFile.AddResource(string relativeFileName) 
+        void IProjectFile.AddResource(string relativeFileName)
         {
             XmlElement compileItemGroup = GetItemGroup("Compile");
 
@@ -130,7 +130,7 @@ namespace Sooda.CodeGen
                 modified = true;
             }
         }
-        string IProjectFile.GetProjectFileName(string outNamespace) 
+        string IProjectFile.GetProjectFileName(string outNamespace)
         {
             return outNamespace + projectExtension;
         }

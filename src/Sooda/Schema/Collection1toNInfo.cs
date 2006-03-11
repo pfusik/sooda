@@ -35,12 +35,13 @@ using System;
 using System.Xml.Serialization;
 using System.ComponentModel;
 
-namespace Sooda.Schema 
+namespace Sooda.Schema
 {
     /// <remarks/>
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [Serializable]
-    public class CollectionOnetoManyInfo : CollectionBaseInfo {
+    public class CollectionOnetoManyInfo : CollectionBaseInfo
+    {
         [System.Xml.Serialization.XmlAttributeAttribute("class")]
         public string ClassName;
 
@@ -57,7 +58,8 @@ namespace Sooda.Schema
 
         public string ForeignColumn
         {
-            get {
+            get
+            {
                 return ForeignField2.DBColumnName;
             }
         }
@@ -65,9 +67,9 @@ namespace Sooda.Schema
         [System.Xml.Serialization.XmlAttributeAttribute("where")]
         public string Where;
 
-		[XmlAttribute("cache")]
-		[DefaultValue(false)]
-		public bool Cache = false;
+        [XmlAttribute("cache")]
+        [DefaultValue(false)]
+        public bool Cache = false;
 
         private DeleteAction deleteAction = DeleteAction.Nothing;
 
@@ -75,17 +77,19 @@ namespace Sooda.Schema
         [System.ComponentModel.DefaultValue(DeleteAction.Nothing)]
         public DeleteAction OnDelete
         {
-            get {
+            get
+            {
                 return deleteAction;
             }
-            set {
+            set
+            {
                 deleteAction = value;
             }
         }
         [XmlAttribute("prefetch")]
         [DefaultValue(0)]
         public int PrefetchLevel = 0;
-        
+
         public override ClassInfo GetItemClass()
         {
             return Class;

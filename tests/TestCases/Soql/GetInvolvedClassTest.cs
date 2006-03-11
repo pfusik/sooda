@@ -42,9 +42,11 @@ using Sooda.UnitTests.Objects;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.Soql {
+namespace Sooda.UnitTests.TestCases.Soql
+{
     [TestFixture]
-    public class GetInvolvedClassTest {
+    public class GetInvolvedClassTest
+    {
         private void AssertInvolved(string rootClassName, string expression, params string[] expectedClassNames)
         {
             SoqlExpression expr = SoqlParser.ParseExpression(expression);

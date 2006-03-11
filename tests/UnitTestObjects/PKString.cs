@@ -38,22 +38,25 @@ namespace Sooda.UnitTests.Objects
     using System.Diagnostics;
     using System.Data;
     using Sooda;
-    
+
     public class PKString : Sooda.UnitTests.Objects.Stubs.PKString_Stub
     {
-        public PKString(SoodaConstructor c) : 
+        public PKString(SoodaConstructor c)
+            :
                 base(c)
         {
             // Do not modify this constructor.
         }
-        public PKString(SoodaTransaction transaction) : 
+        public PKString(SoodaTransaction transaction)
+            :
                 base(transaction)
         {
             // 
             // TODO: Add construction logic here.
             // 
         }
-        public PKString() : 
+        public PKString()
+            :
                 this(SoodaTransaction.ActiveTransaction)
         {
             // Do not modify this constructor.

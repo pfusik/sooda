@@ -34,12 +34,12 @@
 using System;
 using System.Xml;
 
-namespace Sooda.CodeGen 
+namespace Sooda.CodeGen
 {
-    public class VS2005vbprojProjectFile : VS2005ProjectFileBase 
+    public class VS2005vbprojProjectFile : VS2005ProjectFileBase
     {
-        public VS2005vbprojProjectFile() : base(".vbproj", "Sooda.CodeGen.Template.Template80.vbproj") {}
-        public override void CreateNew(string outputNamespace, string assemblyName) 
+        public VS2005vbprojProjectFile() : base(".vbproj", "Sooda.CodeGen.Template.Template80.vbproj") { }
+        public override void CreateNew(string outputNamespace, string assemblyName)
         {
             base.CreateNew(outputNamespace, assemblyName);
         }

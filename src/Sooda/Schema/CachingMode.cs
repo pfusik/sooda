@@ -31,7 +31,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-namespace Sooda.Schema {
+namespace Sooda.Schema
+{
     using System;
     using System.Xml.Serialization;
 
@@ -39,6 +40,7 @@ namespace Sooda.Schema {
     public enum CachingMode
     {
         None,
-        ReadOnly,
+        Eternal,
+        Normal,
     }
 }

@@ -37,7 +37,8 @@ namespace Sooda.Logging
 {
     internal sealed class ConsoleLogger : BasicLogger
     {
-        public ConsoleLogger(string name) : base(name)
+        public ConsoleLogger(string name)
+            : base(name)
         {
         }
 

@@ -34,78 +34,92 @@
 using System;
 using System.Data;
 
-namespace Sooda.ObjectMapper.FieldHandlers {
-    public class GuidFieldHandler : SoodaFieldHandler {
-        public GuidFieldHandler(bool nullable) : base(nullable) {}
+namespace Sooda.ObjectMapper.FieldHandlers
+{
+    public class GuidFieldHandler : SoodaFieldHandler
+    {
+        public GuidFieldHandler(bool nullable) : base(nullable) { }
 
         protected override string TypeName
         {
-            get {
+            get
+            {
                 return "guid";
             }
         }
 
-        public override object RawRead(IDataRecord record, int pos) {
+        public override object RawRead(IDataRecord record, int pos)
+        {
             return GetFromReader(record, pos);
         }
 
-        public override string RawSerialize(object val) {
+        public override string RawSerialize(object val)
+        {
             return SerializeToString(val);
         }
 
-        public override object RawDeserialize(string s) {
+        public override object RawDeserialize(string s)
+        {
             return DeserializeFromString(s);
         }
 
-        public static Guid GetFromReader(IDataRecord record, int pos) {
+        public static Guid GetFromReader(IDataRecord record, int pos)
+        {
             return record.GetGuid(pos);
         }
 
-        public static string SerializeToString(object o) {
+        public static string SerializeToString(object o)
+        {
             return o.ToString();
         }
 
-        public static object DeserializeFromString(string s) {
+        public static object DeserializeFromString(string s)
+        {
             return new Guid(s);
         }
 
         private static object _zeroValue = Guid.Empty;
-        public override object ZeroValue() {
+        public override object ZeroValue()
+        {
             return _zeroValue;
         }
 
-        public override Type GetFieldType() {
+        public override Type GetFieldType()
+        {
             return typeof(Guid);
         }
 
-		public override Type GetSqlType()
-		{
-			return typeof(System.Data.SqlTypes.SqlGuid);
-		}
+        public override Type GetSqlType()
+        {
+            return typeof(System.Data.SqlTypes.SqlGuid);
+        }
 
-		public override void SetupDBParameter(IDbDataParameter parameter, object value)
-		{
-			parameter.DbType = DbType.Guid;
-			parameter.Value = value;
-		}
+        public override void SetupDBParameter(IDbDataParameter parameter, object value)
+        {
+            parameter.DbType = DbType.Guid;
+            parameter.Value = value;
+        }
 
         // type conversions - used in generated stub code
 
-        public static System.Data.SqlTypes.SqlGuid GetSqlNullableValue(object fieldValue) {
+        public static System.Data.SqlTypes.SqlGuid GetSqlNullableValue(object fieldValue)
+        {
             if (fieldValue == null)
                 return System.Data.SqlTypes.SqlGuid.Null;
             else
                 return new System.Data.SqlTypes.SqlGuid((Guid)fieldValue);
         }
 
-        public static Guid GetNotNullValue(object val) {
+        public static Guid GetNotNullValue(object val)
+        {
             if (val == null)
                 throw new InvalidOperationException("Attempt to read a non-null value that isn't set yet");
             return (Guid)val;
         }
 
 #if DOTNET2
-        public static Guid? GetNullableValue(object fieldValue) {
+        public static Guid? GetNullableValue(object fieldValue)
+        {
             if (fieldValue == null)
                 return null;
             else
@@ -117,5 +131,5 @@ namespace Sooda.ObjectMapper.FieldHandlers {
             return typeof(Guid?);
         }
 #endif
-	}
+    }
 }

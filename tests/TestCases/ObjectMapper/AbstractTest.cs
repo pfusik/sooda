@@ -41,75 +41,97 @@ using Sooda.UnitTests.BaseObjects;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.ObjectMapper {
+namespace Sooda.UnitTests.TestCases.ObjectMapper
+{
     [TestFixture]
-    public class AbstractTest {
+    public class AbstractTest
+    {
         [Test]
-        public void AbstractTest1() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void AbstractTest1()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 Vehicle v = Vehicle.GetRef(1);
             }
         }
 
         [Test]
-        public void AbstractTest2() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void AbstractTest2()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 Vehicle v = Vehicle.GetRef(2);
             }
         }
 
         [Test]
-        public void AbstractTest3() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void AbstractTest3()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 Vehicle v = Vehicle.GetRef(3);
             }
         }
 
         [Test]
-        public void AbstractTest4() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void AbstractTest4()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 Vehicle v = Vehicle.GetRef(4);
             }
         }
 
         [Test]
-        public void AbstractTest5() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void AbstractTest5()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 Vehicle v = Vehicle.GetRef(5);
             }
         }
 
         [Test]
-        public void AbstractTest6() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void AbstractTest6()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 Vehicle v = Vehicle.GetRef(6);
             }
         }
 
         [Test]
-        public void AbstractTest7() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void AbstractTest7()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 Vehicle v = Vehicle.GetRef(10);
             }
         }
 
         [Test]
-        public void AbstractTest8() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void AbstractTest8()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 AbstractMegaSuperBike v = AbstractMegaSuperBike.GetRef(11);
             }
         }
 
         [Test]
-        public void AbstractTest9() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void AbstractTest9()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 ConcreteMegaSuperBikeA v = ConcreteMegaSuperBikeA.GetRef(11);
             }
         }
 
         [Test]
-        public void AbstractTest10() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void AbstractTest10()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 ConcreteMegaSuperBikeB v = ConcreteMegaSuperBikeB.GetRef(12);
             }
         }

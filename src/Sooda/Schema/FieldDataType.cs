@@ -32,7 +32,7 @@
 // 
 
 
-namespace Sooda.Schema 
+namespace Sooda.Schema
 {
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     public enum FieldDataType

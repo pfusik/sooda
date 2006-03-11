@@ -41,23 +41,30 @@ using Sooda.UnitTests.BaseObjects;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.ObjectMapper {
+namespace Sooda.UnitTests.TestCases.ObjectMapper
+{
     [TestFixture]
-    public class GetListTest {
+    public class GetListTest
+    {
         [Test]
-        public void DoGetListTest() {
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) {
+        public void DoGetListTest()
+        {
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
+            {
                 testDataSource.Open();
 
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
                     tran.RegisterDataSource(testDataSource);
                     ContactTypeList ctl = ContactType.GetList(tran, SoodaWhereClause.Unrestricted, SoodaSnapshotOptions.Default);
-                    foreach(ContactType ct in ctl) {
+                    foreach (ContactType ct in ctl)
+                    {
                         Console.Out.WriteLine("ContactType[{0}]", ct.GetPrimaryKeyValue());
                     }
 
                     RoleList rl = Role.GetList(tran, SoodaWhereClause.Unrestricted);
-                    foreach(Role r in rl) {
+                    foreach (Role r in rl)
+                    {
                         Console.Out.WriteLine("Role[{0}]", r.GetPrimaryKeyValue());
                     }
                     tran.Commit();
@@ -66,11 +73,14 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void OrderByTest() {
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) {
+        public void OrderByTest()
+        {
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
+            {
                 testDataSource.Open();
 
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
                     tran.RegisterDataSource(testDataSource);
                     ContactList l;
 
@@ -79,13 +89,15 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
 
                     l = Contact.GetList(tran, SoodaWhereClause.Unrestricted, SoodaOrderBy.Ascending("Name"));
 
-                    foreach (Contact c in l) {
+                    foreach (Contact c in l)
+                    {
                         Console.WriteLine("c: {0}", c.Name);
                     }
 
                     Assert.IsTrue(l.IndexOf(Contact.Mary) == 0);
                     Assert.IsTrue(l.IndexOf(Contact.Ed) == l.Count - 1);
-                    for (int i = 0; i < l.Count - 1; ++i) {
+                    for (int i = 0; i < l.Count - 1; ++i)
+                    {
                         if (String.CompareOrdinal((string)l[i].Name, (string)l[i + 1].Name) > 0)
                             Assert.Fail("Invalid sort!");
                     }
@@ -95,23 +107,28 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void OrderByTest3() {
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) {
+        public void OrderByTest3()
+        {
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
+            {
                 testDataSource.Open();
 
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
                     tran.RegisterDataSource(testDataSource);
                     ContactList l;
 
                     l = Contact.GetList(tran, new SoodaWhereClause("Name like '%customer'"), SoodaOrderBy.Ascending("Name"));
 
-                    foreach (Contact c in l) {
+                    foreach (Contact c in l)
+                    {
                         Console.WriteLine("c: {0}", c.Name);
                     }
 
                     Assert.IsTrue(l.IndexOf(Contact.Mary) == -1);
                     Assert.IsTrue(l.IndexOf(Contact.Ed) == -1);
-                    for (int i = 0; i < l.Count - 1; ++i) {
+                    for (int i = 0; i < l.Count - 1; ++i)
+                    {
                         if (String.CompareOrdinal((string)l[i].Name, (string)l[i + 1].Name) > 0)
                             Assert.Fail("Invalid sort!");
                     }
@@ -121,13 +138,16 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void TestInsertedObject() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void TestInsertedObject()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 Contact c0 = new Contact();
                 c0.Type = ContactType.Employee;
 
                 ContactList cl = Contact.GetList(new SoodaWhereClause("Name = {0}", "Ala"));
-                foreach (Contact c in cl) {
+                foreach (Contact c in cl)
+                {
                     Console.WriteLine("c.Name = {0}", c.Name);
                 }
             }

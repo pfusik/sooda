@@ -34,22 +34,26 @@
 using System;
 
 
-namespace Sooda.QL {
-    public class SoqlContainsExpression : SoqlBooleanExpression {
+namespace Sooda.QL
+{
+    public class SoqlContainsExpression : SoqlBooleanExpression
+    {
         public SoqlPathExpression Path;
         public string CollectionName;
         public SoqlExpression Expr;
 
-        public SoqlContainsExpression() {}
+        public SoqlContainsExpression() { }
 
-        public SoqlContainsExpression(SoqlPathExpression path, string collectionName, SoqlExpression expr) {
+        public SoqlContainsExpression(SoqlPathExpression path, string collectionName, SoqlExpression expr)
+        {
             this.Path = path;
             this.CollectionName = collectionName;
             this.Expr = expr;
         }
 
         // visitor pattern
-        public override void Accept(ISoqlVisitor visitor) {
+        public override void Accept(ISoqlVisitor visitor)
+        {
             visitor.Visit(this);
         }
 
@@ -57,6 +61,6 @@ namespace Sooda.QL {
         {
             throw new NotImplementedException();
         }
- 
+
     }
 }

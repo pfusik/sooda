@@ -41,25 +41,26 @@ using Sooda.QL;
 
 using Sooda.Logging;
 
-namespace Sooda.Sql 
+namespace Sooda.Sql
 {
     /// <summary>
     /// Summary description for SoqlToSqlConverter.
     /// </summary>
-    public class SoqlToSqlConverter : SoqlPrettyPrinter 
+    public class SoqlToSqlConverter : SoqlPrettyPrinter
     {
         private ISqlBuilder _builder;
         private Logger logger = LogManager.GetLogger("Sooda.Sql.SoqlToSqlConverter");
 
         public bool DisableBooleanExpansion = false;
 
-        public SoqlToSqlConverter(TextWriter output, SchemaInfo schema, ISqlBuilder builder) : base(output) 
+        public SoqlToSqlConverter(TextWriter output, SchemaInfo schema, ISqlBuilder builder)
+            : base(output)
         {
             Schema = schema;
             _builder = builder;
         }
 
-        private IFieldContainer GenerateTableJoins(SoqlPathExpression expr, out string p, out string firstTableAlias) 
+        private IFieldContainer GenerateTableJoins(SoqlPathExpression expr, out string p, out string firstTableAlias)
         {
             // logger.Debug("GenerateTableJoins({0})", expr);
             IFieldContainer currentContainer;
@@ -67,7 +68,7 @@ namespace Sooda.Sql
 
             // make the list bi-directional
 
-            for (e = expr; e.Left != null; e = e.Left) 
+            for (e = expr; e.Left != null; e = e.Left)
             {
                 e.Left.Next = e;
             }
@@ -76,19 +77,19 @@ namespace Sooda.Sql
             SoqlPathExpression startingToken;
 
             // check if the first name on the list is an alias in current context
-            if (TableAliases.ContainsKey(firstToken.PropertyName)) 
+            if (TableAliases.ContainsKey(firstToken.PropertyName))
             {
                 string ta = TableAliases[firstToken.PropertyName];
 
                 currentContainer = FindContainerByName(ta);
                 p = firstToken.PropertyName;
                 startingToken = firstToken.Next;
-            } 
-            else 
+            }
+            else
             {
-                if (Parent != null) 
+                if (Parent != null)
                 {
-                    if (Parent.TableAliases.ContainsKey(firstToken.PropertyName)) 
+                    if (Parent.TableAliases.ContainsKey(firstToken.PropertyName))
                     {
                         return Parent.GenerateTableJoins(expr, out p, out firstTableAlias);
                     };
@@ -107,13 +108,13 @@ namespace Sooda.Sql
 
             SoqlPathExpression currentToken;
 
-            for (currentToken = startingToken; currentToken != null; currentToken = currentToken.Next) 
+            for (currentToken = startingToken; currentToken != null; currentToken = currentToken.Next)
             {
                 lastTableAlias = GetTableAliasForExpressionPrefix(p);
                 // logger.Trace("Container: {0} Prop: {1} {2} {3}", currentContainer.Name, currentToken.PropertyName, currentContainer.GetType().FullName, currentToken.GetType().FullName);
 
                 FieldInfo fi = currentContainer.FindFieldByName(currentToken.PropertyName);
-                if (fi == null) 
+                if (fi == null)
                 {
                     throw new Exception(String.Format("{0} not found in {1}", currentToken.PropertyName, currentContainer.Name));
                 }
@@ -123,13 +124,13 @@ namespace Sooda.Sql
 
                 p += currentToken.PropertyName;
 
-                if (fi.ReferencedClass == null) 
+                if (fi.ReferencedClass == null)
                 {
                     currentContainer = null;
                     continue;
                 };
 
-                if (fi.Table.OrdinalInClass > 0) 
+                if (fi.Table.OrdinalInClass > 0)
                 {
                     string extPrefix = AddPrimaryKeyJoin(firstTableAlias, (ClassInfo)currentContainer, lastTableAlias, fi);
                     AddRefJoin(firstTableAlias, p, extPrefix, fi);
@@ -171,7 +172,7 @@ namespace Sooda.Sql
             Output.Write(s);
         }
 
-        public override void Visit(SoqlRawExpression v) 
+        public override void Visit(SoqlRawExpression v)
         {
             ReplaceEmbeddedSoql(v.Text);
         }
@@ -181,7 +182,7 @@ namespace Sooda.Sql
             if (literalValue is String)
             {
                 Output.Write("'");
-                Output.Write(((string)literalValue).Replace("'","''"));
+                Output.Write(((string)literalValue).Replace("'", "''"));
                 Output.Write("'");
                 if (modifier != null)
                 {
@@ -203,30 +204,31 @@ namespace Sooda.Sql
             }
         }
 
-        public override void Visit(SoqlLiteralExpression v) {
+        public override void Visit(SoqlLiteralExpression v)
+        {
             OutputLiteral(v.LiteralValue, v.Modifiers);
         }
 
-        public override void Visit(SoqlBooleanLiteralExpression v) 
+        public override void Visit(SoqlBooleanLiteralExpression v)
         {
             if (DisableBooleanExpansion)
             {
-                if (v.Value) 
+                if (v.Value)
                 {
                     Output.Write("1");
-                } 
-                else 
+                }
+                else
                 {
                     Output.Write("0");
                 }
             }
             else
             {
-                if (v.Value) 
+                if (v.Value)
                 {
                     Output.Write("(1=1)");
-                } 
-                else 
+                }
+                else
                 {
                     Output.Write("(0=1)");
                 }
@@ -243,7 +245,7 @@ namespace Sooda.Sql
 
             if (v.InnerExpression is SoqlBooleanExpression)
             {
-                base.Visit (v);
+                base.Visit(v);
             }
             else
             {
@@ -254,23 +256,23 @@ namespace Sooda.Sql
         }
 
 
-        public override void Visit(SoqlAsteriskExpression v) 
+        public override void Visit(SoqlAsteriskExpression v)
         {
             string p;
             string firstTableAlias;
             IFieldContainer currentContainer;
 
-            if (Parent != null && v.Left == null) 
+            if (Parent != null && v.Left == null)
             {
                 Output.Write("*");
-                return ;
+                return;
             }
 
-            if (v.Left != null) 
+            if (v.Left != null)
             {
                 currentContainer = GenerateTableJoins(v.Left, out p, out firstTableAlias);
-            } 
-            else 
+            }
+            else
             {
                 p = ExpressionPrefixToTableAlias[Query.From[0]];
                 currentContainer = FindContainerByName(Query.From[0]);
@@ -279,9 +281,9 @@ namespace Sooda.Sql
             }
 
             bool first = true;
-            foreach (FieldInfo fi in currentContainer.GetAllFields()) 
+            foreach (FieldInfo fi in currentContainer.GetAllFields())
             {
-                if (!first) 
+                if (!first)
                 {
                     if (IndentOutput)
                     {
@@ -294,12 +296,12 @@ namespace Sooda.Sql
                         Output.Write(",");
                     }
                 }
-                if (fi.Table.OrdinalInClass > 0) 
+                if (fi.Table.OrdinalInClass > 0)
                 {
                     string extPrefix = AddPrimaryKeyJoin(firstTableAlias, (ClassInfo)currentContainer, GetTableAliasForExpressionPrefix(p), fi);
                     Output.Write(extPrefix);
-                } 
-                else 
+                }
+                else
                 {
                     Output.Write(GetTableAliasForExpressionPrefix(p));
                 }
@@ -311,25 +313,25 @@ namespace Sooda.Sql
             }
         }
 
-        public override void Visit(SoqlSoodaClassExpression v) 
+        public override void Visit(SoqlSoodaClassExpression v)
         {
             ClassInfo currentClass;
             string p = "";
             string firstTableAlias = null;
 
-            if (v.Path != null) 
+            if (v.Path != null)
             {
                 IFieldContainer container = GenerateTableJoins(v.Path, out p, out firstTableAlias);
                 currentClass = container as ClassInfo;
-            } 
-            else 
+            }
+            else
             {
-                if (Query.From.Count == 1) 
+                if (Query.From.Count == 1)
                 {
                     p = ExpressionPrefixToTableAlias[Query.From[0]];
                     currentClass = (ClassInfo)FindContainerByName(Query.From[0]);
                 }
-                else 
+                else
                 {
                     throw new Exception("Ambiguous SoodaClass!");
                 }
@@ -372,25 +374,25 @@ namespace Sooda.Sql
                 Output.Write(" else null end)");
             }
         }
-        
-        public override void Visit(SoqlCountExpression v) 
+
+        public override void Visit(SoqlCountExpression v)
         {
             ClassInfo currentClass;
             string p = "";
             string firstTableAlias = null;
 
-            if (v.Path != null) 
+            if (v.Path != null)
             {
                 IFieldContainer container = GenerateTableJoins(v.Path, out p, out firstTableAlias);
                 currentClass = container as ClassInfo;
-            } 
-            else 
+            }
+            else
             {
                 currentClass = FindClassByCollectionName(v.CollectionName, out p);
             }
 
             CollectionOnetoManyInfo col1n = currentClass.FindCollectionOneToMany(v.CollectionName);
-            if (col1n != null) 
+            if (col1n != null)
             {
                 Output.Write("(select count(*) from ");
                 Output.Write(col1n.Class.LocalTables[0].DBTableName);
@@ -402,11 +404,11 @@ namespace Sooda.Sql
                 Output.Write(".");
                 Output.Write(currentClass.GetFirstPrimaryKeyField().DBColumnName);
                 Output.Write(")");
-                return ;
+                return;
             }
 
             CollectionManyToManyInfo colnn = currentClass.FindCollectionManyToMany(v.CollectionName);
-            if (colnn != null) 
+            if (colnn != null)
             {
                 RelationInfo ri = colnn.GetRelationInfo();
 
@@ -420,30 +422,30 @@ namespace Sooda.Sql
                 Output.Write(".");
                 Output.Write(currentClass.GetFirstPrimaryKeyField().DBColumnName);
                 Output.Write(")");
-                return ;
+                return;
             }
 
             throw new Exception("Unknown collection " + v.CollectionName + " in " + currentClass.Name);
         }
 
-        public override void Visit(SoqlContainsExpression v) 
+        public override void Visit(SoqlContainsExpression v)
         {
             ClassInfo currentClass;
             string p = "";
             string firstTableAlias = null;
 
-            if (v.Path != null) 
+            if (v.Path != null)
             {
                 IFieldContainer container = GenerateTableJoins(v.Path, out p, out firstTableAlias);
                 currentClass = container as ClassInfo;
-            } 
-            else 
+            }
+            else
             {
                 currentClass = FindClassByCollectionName(v.CollectionName, out p);
             }
 
             CollectionOnetoManyInfo col1n = currentClass.FindCollectionOneToMany(v.CollectionName);
-            if (col1n != null) 
+            if (col1n != null)
             {
                 Output.Write("exists (select * from ");
                 Output.Write(col1n.Class.LocalTables[0].DBTableName);
@@ -463,11 +465,11 @@ namespace Sooda.Sql
                 v.Expr.Accept(this);
 
                 Output.Write("))");
-                return ;
+                return;
             }
 
             CollectionManyToManyInfo colnn = currentClass.FindCollectionManyToMany(v.CollectionName);
-            if (colnn != null) 
+            if (colnn != null)
             {
                 RelationInfo ri = colnn.GetRelationInfo();
 
@@ -489,13 +491,13 @@ namespace Sooda.Sql
                 v.Expr.Accept(this);
 
                 Output.Write("))");
-                return ;
+                return;
             }
 
             throw new Exception("Unknown collection " + v.CollectionName + " in " + currentClass.Name);
         }
 
-        private FieldInfo VisitAndGetFieldInfo(SoqlPathExpression v, bool doOutput) 
+        private FieldInfo VisitAndGetFieldInfo(SoqlPathExpression v, bool doOutput)
         {
             if (v.Left != null && v.Left.Left == null)
             {
@@ -536,11 +538,11 @@ namespace Sooda.Sql
             string firstTableAlias;
             string p;
 
-            if (v.Left != null) 
+            if (v.Left != null)
             {
                 currentContainer = GenerateTableJoins(v.Left, out p, out firstTableAlias);
-            } 
-            else 
+            }
+            else
             {
                 currentContainer = FindStartingContainerByFieldName(v.PropertyName, out p);
                 firstTableAlias = p;
@@ -548,19 +550,19 @@ namespace Sooda.Sql
             }
 
             FieldInfo fi = currentContainer.FindFieldByName(v.PropertyName);
-            if (fi == null) 
+            if (fi == null)
             {
                 throw new Exception(String.Format("{0} not found in {1}", v.PropertyName, currentContainer.Name));
             }
-            
+
             if (doOutput)
             {
-                if (fi.Table.OrdinalInClass > 0) 
+                if (fi.Table.OrdinalInClass > 0)
                 {
                     string extPrefix = AddPrimaryKeyJoin(firstTableAlias, (ClassInfo)currentContainer, GetTableAliasForExpressionPrefix(p), fi);
                     Output.Write(extPrefix);
-                } 
-                else 
+                }
+                else
                 {
                     Output.Write(GetTableAliasForExpressionPrefix(p));
                 }
@@ -570,27 +572,27 @@ namespace Sooda.Sql
             return fi;
         }
 
-        public override void Visit(SoqlPathExpression v) 
+        public override void Visit(SoqlPathExpression v)
         {
             VisitAndGetFieldInfo(v, true);
         }
 
-        public override void Visit(SoqlQueryExpression v) 
+        public override void Visit(SoqlQueryExpression v)
         {
-            if (this.Query != null) 
+            if (this.Query != null)
             {
                 SoqlToSqlConverter subconverter = new SoqlToSqlConverter(Output, Schema, _builder);
                 subconverter.Parent = this;
                 subconverter.IndentLevel = this.IndentLevel;
                 subconverter.IndentStep = this.IndentStep;
                 subconverter.Visit(v);
-            } 
-            else 
+            }
+            else
             {
                 Init(v);
 
                 IndentLevel++;
-                try 
+                try
                 {
                     WriteIndentString();
                     if (IndentOutput)
@@ -602,9 +604,9 @@ namespace Sooda.Sql
                         Output.Write("select ");
                     }
 
-                    if (v.TopCount != -1) 
+                    if (v.TopCount != -1)
                     {
-                        if (_builder.TopSupport == SqlTopSupportMode.SelectTop) 
+                        if (_builder.TopSupport == SqlTopSupportMode.SelectTop)
                         {
                             Output.Write("top ");
                             Output.Write(v.TopCount);
@@ -612,7 +614,7 @@ namespace Sooda.Sql
                         }
                     }
 
-                    if (v.SelectExpressions.Count == 0) 
+                    if (v.SelectExpressions.Count == 0)
                     {
                         // simplified query - emit the primary key here
 
@@ -630,12 +632,12 @@ namespace Sooda.Sql
                             Output.Write(_builder.QuoteFieldName(pkfi.Name));
                             first = false;
                         }
-                    } 
-                    else 
+                    }
+                    else
                     {
-                        for (int i = 0; i < v.SelectExpressions.Count; ++i) 
+                        for (int i = 0; i < v.SelectExpressions.Count; ++i)
                         {
-                            if (i > 0) 
+                            if (i > 0)
                             {
                                 if (IndentOutput)
                                 {
@@ -649,14 +651,14 @@ namespace Sooda.Sql
                                 }
                             }
                             v.SelectExpressions[i].Accept(this);
-                            if (v.SelectAliases[i].Length > 0) 
+                            if (v.SelectAliases[i].Length > 0)
                             {
                                 Output.Write(" as ");
                                 Output.Write(_builder.QuoteFieldName(v.SelectAliases[i]));
-                            } 
-                            else 
+                            }
+                            else
                             {
-                                if (v.SelectExpressions[i] is ISoqlSelectAliasProvider) 
+                                if (v.SelectExpressions[i] is ISoqlSelectAliasProvider)
                                 {
                                     Output.Write(" as ");
 
@@ -672,7 +674,7 @@ namespace Sooda.Sql
 
                     SoqlBooleanExpression limitedWhere = (SoqlBooleanExpression)v.WhereClause;
 
-                    for (int i = 0; i < v.From.Count; ++i) 
+                    for (int i = 0; i < v.From.Count; ++i)
                     {
                         Sooda.Schema.ClassInfo ci = Schema.FindClassByName(v.From[i]);
 
@@ -681,13 +683,13 @@ namespace Sooda.Sql
 
                         SoqlBooleanExpression restriction = BuildClassRestriction(v.FromAliases[i], ci);
 
-                        if (restriction != null) 
+                        if (restriction != null)
                         {
-                            if (limitedWhere == null) 
+                            if (limitedWhere == null)
                             {
                                 limitedWhere = restriction;
-                            } 
-                            else 
+                            }
+                            else
                             {
                                 limitedWhere = new SoqlBooleanAndExpression(limitedWhere, restriction);
                             }
@@ -717,7 +719,7 @@ namespace Sooda.Sql
                             Output.Write(s);
                         }
                     }
-                    if (v.GroupByExpressions != null && v.GroupByExpressions.Count > 0) 
+                    if (v.GroupByExpressions != null && v.GroupByExpressions.Count > 0)
                     {
                         if (IndentOutput)
                         {
@@ -729,14 +731,14 @@ namespace Sooda.Sql
                             Output.Write(" ");
                         }
                         Output.Write("group by ");
-                        for (int i = 0; i < v.GroupByExpressions.Count; ++i) 
+                        for (int i = 0; i < v.GroupByExpressions.Count; ++i)
                         {
                             if (i > 0)
                                 Output.Write(", ");
                             v.GroupByExpressions[i].Accept(this);
                         }
                     }
-                    if (v.Having != null) 
+                    if (v.Having != null)
                     {
                         if (IndentOutput)
                         {
@@ -750,7 +752,7 @@ namespace Sooda.Sql
                         Output.Write("having   ");
                         v.Having.Accept(this);
                     }
-                    if (v.OrderByExpressions != null && v.OrderByExpressions.Count > 0) 
+                    if (v.OrderByExpressions != null && v.OrderByExpressions.Count > 0)
                     {
                         if (IndentOutput)
                         {
@@ -762,7 +764,7 @@ namespace Sooda.Sql
                             Output.Write(" ");
                         }
                         Output.Write("order by ");
-                        for (int i = 0; i < v.OrderByExpressions.Count; ++i) 
+                        for (int i = 0; i < v.OrderByExpressions.Count; ++i)
                         {
                             if (i > 0)
                                 Output.Write(", ");
@@ -772,9 +774,9 @@ namespace Sooda.Sql
                         }
                     }
 
-                    if (v.TopCount != -1) 
+                    if (v.TopCount != -1)
                     {
-                        if (_builder.TopSupport == SqlTopSupportMode.Limit) 
+                        if (_builder.TopSupport == SqlTopSupportMode.Limit)
                         {
                             Output.Write(" limit ");
                             Output.Write(v.TopCount);
@@ -795,9 +797,9 @@ namespace Sooda.Sql
                     {
                         Output.Write(" from ");
                     }
-                    for (int i = 0; i < v.From.Count; ++i) 
+                    for (int i = 0; i < v.From.Count; ++i)
                     {
-                        if (i > 0) 
+                        if (i > 0)
                         {
                             if (IndentOutput)
                             {
@@ -812,12 +814,12 @@ namespace Sooda.Sql
                         }
 
                         Output.Write(FindContainerByName(v.From[i]).GetAllFields()[0].Table.DBTableName);
-                        if (v.FromAliases[i].Length > 0) 
+                        if (v.FromAliases[i].Length > 0)
                         {
                             Output.Write(" ");
                             Output.Write(v.FromAliases[i]);
                         }
-                        foreach (string s in (StringCollection)v.FromJoins[i]) 
+                        foreach (string s in (StringCollection)v.FromJoins[i])
                         {
                             Output.WriteLine();
                             WriteIndentString();
@@ -827,8 +829,8 @@ namespace Sooda.Sql
                     }
 
                     Output.Write(sw.ToString());
-                } 
-                finally 
+                }
+                finally
                 {
                     IndentLevel--;
                 }
@@ -844,63 +846,63 @@ namespace Sooda.Sql
 
         private SoqlQueryExpression Query;
 
-        public void Init(SoqlQueryExpression query) 
+        public void Init(SoqlQueryExpression query)
         {
             this.Query = query;
 
             StringCollection killPrefixes = new StringCollection();
 
-            for (int i = 0; i < query.From.Count; ++i) 
+            for (int i = 0; i < query.From.Count; ++i)
             {
                 query.FromJoins.Add(new StringCollection());
 
                 string table = query.From[i];
                 string alias = query.FromAliases[i];
 
-                if (alias.Length == 0) 
+                if (alias.Length == 0)
                 {
                     alias = GetNextTablePrefix();
                     query.FromAliases[i] = alias;
                 }
 
-                if (!ExpressionPrefixToTableAlias.ContainsKey(alias)) 
+                if (!ExpressionPrefixToTableAlias.ContainsKey(alias))
                 {
                     ExpressionPrefixToTableAlias.Add(alias, alias);
-                } 
-                else 
+                }
+                else
                 {
                     killPrefixes.Add(alias);
                 };
 
-                if (!ExpressionPrefixToTableAlias.ContainsKey(table)) 
+                if (!ExpressionPrefixToTableAlias.ContainsKey(table))
                 {
                     ExpressionPrefixToTableAlias.Add(table, alias);
-                } 
-                else 
+                }
+                else
                 {
                     killPrefixes.Add(table);
                 };
 
-                if (!TableAliases.ContainsKey(alias)) 
+                if (!TableAliases.ContainsKey(alias))
                 {
                     TableAliases.Add(alias, table);
                 }
-                if (!TableAliases.ContainsKey(table)) 
+                if (!TableAliases.ContainsKey(table))
                 {
                     TableAliases.Add(table, table);
                 }
             }
 
-            foreach (string s in killPrefixes) 
+            foreach (string s in killPrefixes)
             {
                 TableAliases.Remove(s);
                 ExpressionPrefixToTableAlias.Remove(s);
             }
         }
 
-        public IFieldContainer FindStartingContainerByFieldName(string fieldName, out string alias) 
+        public IFieldContainer FindStartingContainerByFieldName(string fieldName, out string alias)
         {
-            if (Query.From.Count == 1) 
+            if (Query.From.Count == 1)
             {
                 alias = ExpressionPrefixToTableAlias[Query.From[0]];
                 return FindContainerByName(Query.From[0]);
@@ -909,13 +911,13 @@ namespace Sooda.Sql
             IFieldContainer foundContainer = null;
             alias = null;
 
-            foreach (string containerName in Query.From) 
+            foreach (string containerName in Query.From)
             {
                 IFieldContainer container = FindContainerByName(containerName);
 
-                if (container.ContainsField(fieldName)) 
+                if (container.ContainsField(fieldName))
                 {
-                    if (foundContainer != null) 
+                    if (foundContainer != null)
                     {
                         throw new Exception(String.Format("Cannot determine table from field name '{0}'. Can be either {1}.{0} or {2}.{0}. Use prefixed names.",
                             fieldName,
@@ -925,7 +927,7 @@ namespace Sooda.Sql
                     foundContainer = container;
                 }
             }
-            if (foundContainer != null) 
+            if (foundContainer != null)
             {
                 return foundContainer;
             }
@@ -933,9 +935,9 @@ namespace Sooda.Sql
             throw new Exception("Cannot determine table from field name '" + fieldName + "'. Use prefixed names.");
         }
 
-        public ClassInfo FindClassByCollectionName(string collectionName, out string alias) 
+        public ClassInfo FindClassByCollectionName(string collectionName, out string alias)
         {
-            if (Query.From.Count == 1) 
+            if (Query.From.Count == 1)
             {
                 alias = ExpressionPrefixToTableAlias[Query.From[0]];
                 return (ClassInfo)FindContainerByName(Query.From[0]);
@@ -944,13 +946,13 @@ namespace Sooda.Sql
             IFieldContainer foundContainer = null;
             alias = null;
 
-            foreach (string containerName in Query.From) 
+            foreach (string containerName in Query.From)
             {
                 IFieldContainer container = FindContainerByName(containerName);
 
-                if (container.ContainsCollection(collectionName) != 0) 
+                if (container.ContainsCollection(collectionName) != 0)
                 {
-                    if (foundContainer != null) 
+                    if (foundContainer != null)
                     {
                         throw new Exception(String.Format("Cannot determine table from collection name '{0}'. Can be either {1}.{0} or {2}.{0}. Use prefixed names.",
                             collectionName,
@@ -960,7 +962,7 @@ namespace Sooda.Sql
                     foundContainer = container;
                 }
             }
-            if (foundContainer != null) 
+            if (foundContainer != null)
             {
                 return foundContainer as ClassInfo;
             }
@@ -968,7 +970,7 @@ namespace Sooda.Sql
             throw new Exception("Cannot determine table from field name '" + collectionName + "'. Use prefixed names.");
         }
 
-        public IFieldContainer FindContainerByName(string name) 
+        public IFieldContainer FindContainerByName(string name)
         {
             ClassInfo ci = Schema.FindClassByName(name);
             if (ci != null)
@@ -981,7 +983,7 @@ namespace Sooda.Sql
             throw new Exception(String.Format("'{0}' is neither a class nor a relation", name));
         }
 
-        public string AddPrimaryKeyJoin(string fromTableAlias, ClassInfo classInfo, string rootPrefix, FieldInfo fieldToReach) 
+        public string AddPrimaryKeyJoin(string fromTableAlias, ClassInfo classInfo, string rootPrefix, FieldInfo fieldToReach)
         {
             // logger.Debug("AddPrimaryKeyJoin({0},{1},{2},{3})", fromTableAlias, classInfo.Name, rootPrefix, fieldToReach);
             if (fieldToReach.Table.DBTableName == classInfo.UnifiedTables[0].DBTableName)
@@ -1006,7 +1008,7 @@ namespace Sooda.Sql
             }
             else
             {
-                s = String.Format(", {0} {1}", 
+                s = String.Format(", {0} {1}",
                     fieldToReach.Table.DBTableName,
                     newPrefix);
 
@@ -1020,9 +1022,9 @@ namespace Sooda.Sql
             }
 
             int foundPos = -1;
-            for (int i = 0; i < Query.FromAliases.Count; ++i) 
+            for (int i = 0; i < Query.FromAliases.Count; ++i)
             {
-                if (Query.FromAliases[i] == fromTableAlias) 
+                if (Query.FromAliases[i] == fromTableAlias)
                 {
                     foundPos = i;
                     break;
@@ -1038,19 +1040,19 @@ namespace Sooda.Sql
             return newPrefix;
         }
 
-        public void AddRefJoin(string fromTableAlias, string newPrefix, string lastTableAlias, FieldInfo field) 
+        public void AddRefJoin(string fromTableAlias, string newPrefix, string lastTableAlias, FieldInfo field)
         {
             // logger.Debug("AddRefJoin({0},{1},{2},{3})", fromTableAlias, newPrefix, lastTableAlias, field);
             if (ExpressionPrefixToTableAlias.ContainsKey(newPrefix))
-                return ;
+                return;
 
             string tbl = GetNextTablePrefix();
             ExpressionPrefixToTableAlias.Add(newPrefix, tbl);
 
             int foundPos = -1;
-            for (int i = 0; i < Query.FromAliases.Count; ++i) 
+            for (int i = 0; i < Query.FromAliases.Count; ++i)
             {
-                if (Query.FromAliases[i] == fromTableAlias) 
+                if (Query.FromAliases[i] == fromTableAlias)
                 {
                     foundPos = i;
                     break;
@@ -1089,10 +1091,10 @@ namespace Sooda.Sql
             coll.Add(s);
         }
 
-        public string GetTableAliasForExpressionPrefix(string prefix) 
+        public string GetTableAliasForExpressionPrefix(string prefix)
         {
             string s = ExpressionPrefixToTableAlias[prefix];
-            if (s == null) 
+            if (s == null)
             {
                 if (Parent != null)
                     return Parent.GetTableAliasForExpressionPrefix(prefix);
@@ -1101,7 +1103,7 @@ namespace Sooda.Sql
             return s;
         }
 
-        private string GetNextTablePrefix() 
+        private string GetNextTablePrefix()
         {
             if (Parent != null)
                 return Parent.GetNextTablePrefix();
@@ -1109,21 +1111,21 @@ namespace Sooda.Sql
                 return String.Format("t{0}", CurrentTablePrefix++);
         }
 
-        public SoqlBooleanExpression BuildClassRestriction(string startingAlias, Sooda.Schema.ClassInfo classInfo) 
+        public SoqlBooleanExpression BuildClassRestriction(string startingAlias, Sooda.Schema.ClassInfo classInfo)
         {
             if (classInfo.GetSubclassesForSchema(Schema).Count == 0 && classInfo.InheritsFromClass == null)
                 return null;
 
             SoqlExpressionCollection literals = new SoqlExpressionCollection();
 
-            foreach (ClassInfo subclass in classInfo.GetSubclassesForSchema(Schema)) 
+            foreach (ClassInfo subclass in classInfo.GetSubclassesForSchema(Schema))
             {
-                if (subclass.SubclassSelectorValue != null) 
+                if (subclass.SubclassSelectorValue != null)
                 {
                     literals.Add(new SoqlLiteralExpression(subclass.SubclassSelectorValue));
                 }
             }
-            if (classInfo.SubclassSelectorValue != null) 
+            if (classInfo.SubclassSelectorValue != null)
             {
                 literals.Add(new SoqlLiteralExpression(classInfo.SubclassSelectorValue));
             }
@@ -1139,64 +1141,54 @@ namespace Sooda.Sql
             return restriction;
         }
 
-        public void ConvertQuery(SoqlQueryExpression expr) 
+        public void ConvertQuery(SoqlQueryExpression expr)
         {
             expr.Accept(this);
         }
 
         private void OutputModifiedLiteral(SoqlExpression expr, FieldInfo fieldInfo)
         {
-			if (expr is SoqlLiteralExpression)
-			{
-				SoqlLiteralExpression e = (SoqlLiteralExpression)expr;
-                
-				Output.Write("{L:");
-				Output.Write(fieldInfo.DataType.ToString());
-				Output.Write(":");
+            if (expr is SoqlLiteralExpression)
+            {
+                SoqlLiteralExpression e = (SoqlLiteralExpression)expr;
 
-				string serializedValue = fieldInfo.GetFieldHandler().RawSerialize(e.LiteralValue).Replace("\\", "\\\\").Replace("}", "\\}");
+                Output.Write("{L:");
+                Output.Write(fieldInfo.DataType.ToString());
+                Output.Write(":");
 
-				Output.Write(serializedValue);
-				Output.Write("}");
-			}
-			else if (expr is SoqlParameterLiteralExpression)
-			{
-				SoqlParameterLiteralExpression e = (SoqlParameterLiteralExpression)expr;
-                
-				Output.Write("{");
-				Output.Write(e.ParameterPosition);
-				Output.Write(":");
-				Output.Write(fieldInfo.DataType.ToString());
-				Output.Write("}");
-			}
-			else if (expr is SoqlBooleanLiteralExpression)
-			{
-				SoqlBooleanLiteralExpression e = (SoqlBooleanLiteralExpression)expr;
-                
-				Output.Write("{L:");
-				Output.Write(fieldInfo.DataType.ToString());
-				Output.Write(":");
+                string serializedValue = fieldInfo.GetFieldHandler().RawSerialize(e.LiteralValue).Replace("\\", "\\\\").Replace("}", "\\}");
 
-				string serializedValue = fieldInfo.GetFieldHandler().RawSerialize(e.Value).Replace("\\", "\\\\").Replace("}", "\\}");
+                Output.Write(serializedValue);
+                Output.Write("}");
+            }
+            else if (expr is SoqlParameterLiteralExpression)
+            {
+                SoqlParameterLiteralExpression e = (SoqlParameterLiteralExpression)expr;
 
-				Output.Write(serializedValue);
-				Output.Write("}");
-			}
-			else
-			{
-				throw new ArgumentException("Not supported literal expression type: " + expr.GetType().FullName);
-			}
+                Output.Write("{");
+                Output.Write(e.ParameterPosition);
+                Output.Write(":");
+                Output.Write(fieldInfo.DataType.ToString());
+                Output.Write("}");
+            }
+            else if (expr is SoqlBooleanLiteralExpression)
+            {
+                SoqlBooleanLiteralExpression e = (SoqlBooleanLiteralExpression)expr;
+
+                Output.Write("{L:");
+                Output.Write(fieldInfo.DataType.ToString());
+                Output.Write(":");
+
+                string serializedValue = fieldInfo.GetFieldHandler().RawSerialize(e.Value).Replace("\\", "\\\\").Replace("}", "\\}");
+
+                Output.Write(serializedValue);
+                Output.Write("}");
+            }
+            else
+            {
+                throw new ArgumentException("Not supported literal expression type: " + expr.GetType().FullName);
+            }
         }
-
-		private SoqlExpression UnwrapExpression(SoqlExpression expr)
-		{
-			if (expr is SoqlTypedWrapperExpression)
-				return UnwrapExpression(((SoqlTypedWrapperExpression)expr).InnerExpression);
-			else if (expr is SoqlBooleanWrapperExpression)
-				return UnwrapExpression(((SoqlBooleanWrapperExpression)expr).InnerExpression);
-			else
-				return expr;
-		}
 
         public override void Visit(SoqlBooleanRelationalExpression v)
         {
@@ -1213,10 +1205,10 @@ namespace Sooda.Sql
             // Unfortunately MSSQL crawls without this when comparing varchar() columns 
             // against nvarchar() parameter values.
             //
-           
+
             bool oldBooleanExpansion;
-			SoqlExpression unwrappedPar1 = UnwrapExpression(v.par1);
-			SoqlExpression unwrappedPar2 = UnwrapExpression(v.par2);
+            SoqlExpression unwrappedPar1 = SoqlExpression.Unwrap(v.par1);
+            SoqlExpression unwrappedPar2 = SoqlExpression.Unwrap(v.par2);
 
             bool anyLiteral = unwrappedPar1 is ILiteralModifiers || unwrappedPar2 is ILiteralModifiers;
             if (anyLiteral)
@@ -1264,7 +1256,7 @@ namespace Sooda.Sql
                     }
                 }
             }
-                           
+
             // by default booleans expand to "b <> 0"
             // in relational expressions they expand to "b"
             // this is a dirty hack - will be fixed when we support

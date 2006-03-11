@@ -40,8 +40,9 @@ namespace Sooda.ObjectMapper
 {
     public class WeakSoodaObject : WeakReference
     {
-        public WeakSoodaObject(SoodaObject target) : base(target)
-        { 
+        public WeakSoodaObject(SoodaObject target)
+            : base(target)
+        {
         }
 
 

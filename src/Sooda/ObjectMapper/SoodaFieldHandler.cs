@@ -35,34 +35,43 @@ using System;
 using System.Data;
 using System.Xml;
 
-namespace Sooda.ObjectMapper {
-    public abstract class SoodaFieldHandler {
+namespace Sooda.ObjectMapper
+{
+    public abstract class SoodaFieldHandler
+    {
         private bool _isNullable;
 
-        protected SoodaFieldHandler(bool nullable) {
+        protected SoodaFieldHandler(bool nullable)
+        {
             this._isNullable = nullable;
         }
 
         public bool IsNullable
         {
-            get {
+            get
+            {
                 return _isNullable;
             }
         }
 
-        public object Deserialize(XmlReader xr) {
+        public object Deserialize(XmlReader xr)
+        {
             if (xr.GetAttribute("type") != TypeName)
                 throw new ArgumentException("Invalid field type on deserialize");
-            if (xr.GetAttribute("null") != null) {
+            if (xr.GetAttribute("null") != null)
+            {
                 return null;
-            } else {
+            }
+            else
+            {
                 return RawDeserialize(xr.GetAttribute("value"));
             }
         }
 
-        protected abstract string TypeName { get ; }
+        protected abstract string TypeName { get; }
 
-        public void Serialize(object fieldValue, XmlWriter xw) {
+        public void Serialize(object fieldValue, XmlWriter xw)
+        {
             xw.WriteAttributeString("type", TypeName);
             if (fieldValue == null)
                 xw.WriteAttributeString("null", "true");
@@ -75,19 +84,19 @@ namespace Sooda.ObjectMapper {
         public abstract object RawRead(IDataRecord record, int pos);
         public abstract object ZeroValue();
 
-		public virtual object DefaultPrecommitValue()
-		{
-			return ZeroValue();
-		}
+        public virtual object DefaultPrecommitValue()
+        {
+            return ZeroValue();
+        }
 
         public abstract Type GetFieldType();
-		public abstract Type GetSqlType();
+        public abstract Type GetSqlType();
         public virtual Type GetNullableType()
         {
             return null;
         }
 
-		public abstract void SetupDBParameter(IDbDataParameter parameter, object value);
+        public abstract void SetupDBParameter(IDbDataParameter parameter, object value);
 
         public virtual string GetTypedWrapperClass(bool nullable)
         {

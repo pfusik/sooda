@@ -41,14 +41,18 @@ using Sooda.UnitTests.BaseObjects;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.ObjectMapper {
+namespace Sooda.UnitTests.TestCases.ObjectMapper
+{
     [TestFixture]
-    public class SerializationTest {
+    public class SerializationTest
+    {
         [Test]
-        public void Bug1() {
+        public void Bug1()
+        {
             string ser1, ser2;
 
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 Group g1 = new Group();
                 Group g2 = new Group();
                 Contact c1 = new Contact();
@@ -62,7 +66,8 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
 
                 ser1 = tran.Serialize(SoodaSerializeOptions.Canonical);
             }
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 tran.Deserialize(ser1);
 
                 ser2 = tran.Serialize(SoodaSerializeOptions.Canonical);
@@ -73,17 +78,21 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void Collection1toNTest() {
+        public void Collection1toNTest()
+        {
             Collection1toNTest(false);
         }
 
-        public void Collection1toNTest(bool quiet) {
+        public void Collection1toNTest(bool quiet)
+        {
             string serialized;
 
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) {
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
+            {
                 testDataSource.Open();
 
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
                     tran.RegisterDataSource(testDataSource);
                     Contact c1;
                     Group g = Group.Load(10);
@@ -111,7 +120,8 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     Assert.IsTrue(g.Members.Contains(Contact.GetRef(1)));
                     Assert.IsTrue(g.Members.Contains(Contact.GetRef(2)));
                     int times = 0;
-                    foreach (Contact c in g.Members) {
+                    foreach (Contact c in g.Members)
+                    {
                         if (!quiet)
                             Console.WriteLine("Got {0} [{1}]", c.Name, c.ContactId);
                         times++;
@@ -129,7 +139,8 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     Assert.IsTrue(g.Members.Contains(c1));
                     Assert.AreEqual(g.Members.Count, 4);
 
-                    foreach (Contact c in g.Members) {
+                    foreach (Contact c in g.Members)
+                    {
                         if (!quiet)
                             Console.WriteLine("before serialization, member: {0}", c.Name);
                     }
@@ -139,17 +150,21 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                         Console.WriteLine("Serialized as\n{0}", serialized);
                 }
 
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
                     tran.RegisterDataSource(testDataSource);
                     tran.Deserialize(serialized);
 
                     Console.WriteLine(ContactType.Employee.Description);
                     string serialized2 = tran.Serialize(SoodaSerializeOptions.IncludeNonDirtyFields | SoodaSerializeOptions.IncludeNonDirtyObjects | SoodaSerializeOptions.Canonical);
                     //string serialized2 = tran.Serialize();
-                    if (serialized == serialized2) {
+                    if (serialized == serialized2)
+                    {
                         if (!quiet)
                             Console.WriteLine("Serialization is stable\n{0}", serialized);
-                    } else {
+                    }
+                    else
+                    {
                         if (!quiet)
                             Console.WriteLine("Serialized again as\n{0}", serialized2);
                     }
@@ -158,7 +173,8 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
 
                     Group g = Group.Load(10);
 
-                    foreach (Contact c in g.Members) {
+                    foreach (Contact c in g.Members)
+                    {
                         //if (!quiet)
                         Console.WriteLine("after deserialization, member: {0}", c.Name);
                     }
@@ -170,7 +186,8 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     Assert.IsTrue(g.Members.Contains(Contact.GetRef(1)));
                     Assert.IsTrue(g.Members.Contains(Contact.GetRef(2)));
                     int times = 0;
-                    foreach (Contact c in g.Members) {
+                    foreach (Contact c in g.Members)
+                    {
                         times++;
                         Assert.IsTrue(
                             c == Contact.GetRef(51) ||
@@ -188,15 +205,18 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                 }
             }
         }
-        
-        public void MiniTest() {
+
+        public void MiniTest()
+        {
             string serialized;
             int id;
 
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) {
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
+            {
                 testDataSource.Open();
 
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
                     tran.RegisterDataSource(testDataSource);
                     Contact c1;
                     c1 = new Contact();
@@ -208,11 +228,13 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                 }
             }
             Console.WriteLine("serialized: {0}", serialized);
-            
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) {
+
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
+            {
                 testDataSource.Open();
 
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
                     tran.RegisterDataSource(testDataSource);
 
                     Console.WriteLine("*** Deserializing");

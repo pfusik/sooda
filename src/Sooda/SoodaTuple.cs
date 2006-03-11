@@ -35,7 +35,8 @@ using System;
 using System.Text;
 
 
-namespace Sooda {
+namespace Sooda
+{
     [Serializable]
     public class SoodaTuple : IComparable
     {
@@ -119,7 +120,7 @@ namespace Sooda {
             else
                 return new object[] { tupleOrScalar };
         }
-        
+
         public bool IsAllNotNull()
         {
             for (int i = 0; i < _items.Length; ++i)
@@ -129,7 +130,7 @@ namespace Sooda {
             }
             return true;
         }
-        
+
         public int CompareTo(object obj)
         {
             throw new NotImplementedException();

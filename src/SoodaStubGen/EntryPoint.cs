@@ -7,9 +7,9 @@ using Sooda.CodeGen;
 
 namespace SoodaStubGen
 {
-	public class EntryPoint
-	{
-        private static int Usage() 
+    public class EntryPoint
+    {
+        private static int Usage()
         {
             Console.WriteLine("Usage: StubGen [project]");
             Console.WriteLine("SoodaWhereClause project can be (*) - required option:");
@@ -61,9 +61,9 @@ namespace SoodaStubGen
 
                 string writeProjectTo = null;
 
-                for (int i = 0; i < args.Length; ++i) 
+                for (int i = 0; i < args.Length; ++i)
                 {
-                    switch (args[i]) 
+                    switch (args[i])
                     {
                         case "/?":
                         case "-?":
@@ -71,7 +71,7 @@ namespace SoodaStubGen
                         case "-h":
                             return Usage();
 
-                            // generator options (this run only)
+                        // generator options (this run only)
 
                         case "--rebuild-if-changed":
                             generator.RebuildIfChanged = true;
@@ -207,5 +207,5 @@ namespace SoodaStubGen
                 return 1;
             }
         }
-	}
+    }
 }

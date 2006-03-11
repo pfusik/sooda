@@ -38,7 +38,7 @@ namespace Sooda.Collections
     /// <summary>
     /// A dictionary with keys of type Type and values of type ISoodaObjectFactory
     /// </summary>
-    public class TypeToISoodaObjectFactoryAssociation: System.Collections.DictionaryBase
+    public class TypeToISoodaObjectFactoryAssociation : System.Collections.DictionaryBase
     {
         /// <summary>
         /// Initializes a new empty instance of the TypeToISoodaObjectFactoryAssociation class
@@ -58,7 +58,7 @@ namespace Sooda.Collections
         {
             get
             {
-                return (ISoodaObjectFactory) this.Dictionary[key];
+                return (ISoodaObjectFactory)this.Dictionary[key];
             }
             set
             {

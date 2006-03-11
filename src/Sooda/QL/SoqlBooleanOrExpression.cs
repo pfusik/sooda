@@ -32,24 +32,29 @@
 // 
 
 
-namespace Sooda.QL {
-    public class SoqlBooleanOrExpression : SoqlBooleanExpression {
+namespace Sooda.QL
+{
+    public class SoqlBooleanOrExpression : SoqlBooleanExpression
+    {
         public SoqlBooleanExpression par1;
         public SoqlBooleanExpression par2;
 
-        public SoqlBooleanOrExpression() {}
+        public SoqlBooleanOrExpression() { }
 
-        public SoqlBooleanOrExpression(SoqlBooleanExpression par1, SoqlBooleanExpression par2) {
+        public SoqlBooleanOrExpression(SoqlBooleanExpression par1, SoqlBooleanExpression par2)
+        {
             this.par1 = par1;
             this.par2 = par2;
         }
 
         // visitor pattern
-        public override void Accept(ISoqlVisitor visitor) {
+        public override void Accept(ISoqlVisitor visitor)
+        {
             visitor.Visit(this);
         }
 
-        public override SoqlExpression Simplify() {
+        public override SoqlExpression Simplify()
+        {
             par1 = (SoqlBooleanExpression)par1.Simplify();
             par2 = (SoqlBooleanExpression)par2.Simplify();
 

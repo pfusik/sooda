@@ -33,24 +33,29 @@
 
 
 
-namespace Sooda.QL {
-    public class SoqlBooleanIsNullExpression : SoqlBooleanExpression {
+namespace Sooda.QL
+{
+    public class SoqlBooleanIsNullExpression : SoqlBooleanExpression
+    {
         public SoqlExpression Expr;
         public bool NotNull;
 
-        public SoqlBooleanIsNullExpression() {}
+        public SoqlBooleanIsNullExpression() { }
 
-        public SoqlBooleanIsNullExpression(SoqlExpression expr, bool notnull) {
+        public SoqlBooleanIsNullExpression(SoqlExpression expr, bool notnull)
+        {
             this.Expr = expr;
             this.NotNull = notnull;
         }
 
         // visitor pattern
-        public override void Accept(ISoqlVisitor visitor) {
+        public override void Accept(ISoqlVisitor visitor)
+        {
             visitor.Visit(this);
         }
 
-        public override SoqlExpression Simplify() {
+        public override SoqlExpression Simplify()
+        {
             return this;
         }
 

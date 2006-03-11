@@ -3,8 +3,8 @@ using System.IO;
 
 namespace Sooda.CodeGen.CDIL
 {
-	public class CDILTokenizer
-	{
+    public class CDILTokenizer
+    {
         private CDILToken _tokenType;
         private object _tokenValue;
         private string _input;
@@ -82,7 +82,7 @@ namespace Sooda.CodeGen.CDIL
             {
                 ReadChar();
                 string text = "";
-                while ((p =ReadChar()) != -1)
+                while ((p = ReadChar()) != -1)
                 {
                     ch = (char)p;
                     if (ch == '\'')
@@ -104,7 +104,7 @@ namespace Sooda.CodeGen.CDIL
             {
                 bool minus = ch == '-';
                 if (minus) ReadChar();
-                
+
                 string text = "";
                 while ((p = PeekChar()) != -1 && Char.IsNumber((char)p))
                 {
@@ -179,7 +179,7 @@ namespace Sooda.CodeGen.CDIL
             }
 
             throw BuildException("Unrecognized character: " + ch);
-            
+
         }
 
         public void Expect(CDILToken token)

@@ -33,11 +33,13 @@
 
 using System;
 
-namespace Sooda.Schema {
+namespace Sooda.Schema
+{
     /// <remarks/>
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [Serializable]
-    public class IndexFieldInfo {
+    public class IndexFieldInfo
+    {
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]

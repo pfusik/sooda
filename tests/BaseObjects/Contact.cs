@@ -5,7 +5,7 @@ namespace Sooda.UnitTests.BaseObjects
     using System.Diagnostics;
     using System.Data;
     using Sooda;
-    
+
     public class Contact : Sooda.UnitTests.BaseObjects.Stubs.Contact_Stub
     {
         public string PersistentValue
@@ -13,19 +13,22 @@ namespace Sooda.UnitTests.BaseObjects
             get { return (string)GetTransactionPersistentValue("PersistentValue"); }
             set { SetTransactionPersistentValue("PersistentValue", value); }
         }
-        public Contact(SoodaConstructor c) : 
+        public Contact(SoodaConstructor c)
+            :
                 base(c)
         {
             // Do not modify this constructor.
         }
-        public Contact(SoodaTransaction transaction) : 
+        public Contact(SoodaTransaction transaction)
+            :
                 base(transaction)
         {
             // 
             // TODO: Add construction logic here.
             // 
         }
-        public Contact() : 
+        public Contact()
+            :
                 this(SoodaTransaction.ActiveTransaction)
         {
             // Do not modify this constructor.

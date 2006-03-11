@@ -33,7 +33,7 @@
 
 using System.Data.SqlTypes;
 
-namespace Sooda 
+namespace Sooda
 {
     public class SoodaNullable
     {

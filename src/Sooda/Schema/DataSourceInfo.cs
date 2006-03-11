@@ -35,11 +35,11 @@ using System;
 using System.Xml.Serialization;
 
 
-namespace Sooda.Schema 
+namespace Sooda.Schema
 {
     [XmlType(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [Serializable]
-    public class DataSourceInfo 
+    public class DataSourceInfo
     {
         [XmlAttribute("name")]
         public string Name;
@@ -47,9 +47,9 @@ namespace Sooda.Schema
         [XmlAttribute("type")]
         public string DataSourceType;
 
-        public void Resolve() {}
+        public void Resolve() { }
 
-        public SoodaDataSource CreateDataSource() 
+        public SoodaDataSource CreateDataSource()
         {
             Type t = Type.GetType(DataSourceType, true);
             return (SoodaDataSource)Activator.CreateInstance(t, new object[] { this });

@@ -144,6 +144,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SoodaFieldUpdateDelegate.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SoodaNullable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SoodaObject.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -175,6 +185,11 @@
                 />
                 <File
                     RelPath = "SoodaObjectNotFoundException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SoodaObjectReflectionBasedFieldValues.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -35,7 +35,7 @@ using System;
 
 
 
-namespace Sooda 
+namespace Sooda
 {
     public class SoodaObjectArrayFieldValues : SoodaObjectFieldValues
     {

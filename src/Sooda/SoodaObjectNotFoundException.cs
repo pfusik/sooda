@@ -34,12 +34,14 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Sooda {
+namespace Sooda
+{
     [Serializable]
-    public class SoodaObjectNotFoundException : SoodaDatabaseException {
-        public SoodaObjectNotFoundException() : this(null, null) {}
-        public SoodaObjectNotFoundException(string msg) : this(msg, null) {}
-        public SoodaObjectNotFoundException(string msg, Exception inner) : base(msg, inner) {}
-        protected SoodaObjectNotFoundException(SerializationInfo info, StreamingContext context) : base(info, context) {}
+    public class SoodaObjectNotFoundException : SoodaDatabaseException
+    {
+        public SoodaObjectNotFoundException() : this(null, null) { }
+        public SoodaObjectNotFoundException(string msg) : this(msg, null) { }
+        public SoodaObjectNotFoundException(string msg, Exception inner) : base(msg, inner) { }
+        protected SoodaObjectNotFoundException(SerializationInfo info, StreamingContext context) : base(info, context) { }
     }
 }

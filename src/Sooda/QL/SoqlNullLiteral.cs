@@ -34,16 +34,20 @@
 using System;
 
 
-namespace Sooda.QL {
-    public class SoqlNullLiteral : SoqlExpression, ISoqlConstantExpression {
-        public SoqlNullLiteral() {}
+namespace Sooda.QL
+{
+    public class SoqlNullLiteral : SoqlExpression, ISoqlConstantExpression
+    {
+        public SoqlNullLiteral() { }
 
         // visitor pattern
-        public override void Accept(ISoqlVisitor visitor) {
+        public override void Accept(ISoqlVisitor visitor)
+        {
             visitor.Visit(this);
         }
 
-        public object GetConstantValue() {
+        public object GetConstantValue()
+        {
             return DBNull.Value;
         }
 

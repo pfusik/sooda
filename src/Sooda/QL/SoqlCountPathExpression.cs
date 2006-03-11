@@ -35,25 +35,31 @@ using System.Collections;
 using System.IO;
 
 
-namespace Sooda.QL {
-    public class SoqlCountExpression : SoqlExpression, ISoqlSelectAliasProvider {
+namespace Sooda.QL
+{
+    public class SoqlCountExpression : SoqlExpression, ISoqlSelectAliasProvider
+    {
         public SoqlPathExpression Path;
         public string CollectionName;
 
-        public SoqlCountExpression() {}
+        public SoqlCountExpression() { }
 
-        public SoqlCountExpression(SoqlPathExpression path, string collectionName) {
+        public SoqlCountExpression(SoqlPathExpression path, string collectionName)
+        {
             this.Path = path;
             this.CollectionName = collectionName;
         }
 
         // visitor pattern
-        public override void Accept(ISoqlVisitor visitor) {
+        public override void Accept(ISoqlVisitor visitor)
+        {
             visitor.Visit(this);
         }
 
-        public void WriteDefaultSelectAlias(TextWriter output) {
-            if (this.Path != null) {
+        public void WriteDefaultSelectAlias(TextWriter output)
+        {
+            if (this.Path != null)
+            {
                 this.Path.WriteDefaultSelectAlias(output);
                 output.Write("_");
             }
@@ -64,7 +70,7 @@ namespace Sooda.QL {
         public override object Evaluate(ISoqlEvaluateContext context)
         {
             object val;
-            
+
             if (this.Path != null)
             {
                 val = this.Path.Evaluate(context);

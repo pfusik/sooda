@@ -34,7 +34,7 @@
 
 namespace Sooda.QL.TypedWrappers
 {
-    public class SoqlCollectionWrapperExpression 
+    public class SoqlCollectionWrapperExpression
     {
         private SoqlPathExpression _left;
         private string _collectionName;
@@ -47,7 +47,7 @@ namespace Sooda.QL.TypedWrappers
 
         public SoqlInt32WrapperExpression Count
         {
-            get 
+            get
             {
                 return new SoqlInt32WrapperExpression(new SoqlCountExpression(_left, _collectionName));
             }

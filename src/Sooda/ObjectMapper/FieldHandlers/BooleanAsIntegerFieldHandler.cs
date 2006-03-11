@@ -35,38 +35,47 @@ using System;
 using System.Data;
 using System.Data.SqlTypes;
 
-namespace Sooda.ObjectMapper.FieldHandlers {
-    public class BooleanAsIntegerFieldHandler : SoodaFieldHandler {
-        public BooleanAsIntegerFieldHandler(bool nullable) : base(nullable) {}
+namespace Sooda.ObjectMapper.FieldHandlers
+{
+    public class BooleanAsIntegerFieldHandler : SoodaFieldHandler
+    {
+        public BooleanAsIntegerFieldHandler(bool nullable) : base(nullable) { }
 
         protected override string TypeName
         {
-            get {
+            get
+            {
                 return "boolint";
             }
         }
 
-        public override object RawRead(IDataRecord record, int pos) {
+        public override object RawRead(IDataRecord record, int pos)
+        {
             return GetFromReader(record, pos);
         }
 
-        public static bool GetFromReader(IDataRecord record, int pos) {
+        public static bool GetFromReader(IDataRecord record, int pos)
+        {
             return (record.GetInt32(pos) != 0) ? true : false;
         }
 
-        public override string RawSerialize(object val) {
+        public override string RawSerialize(object val)
+        {
             return SerializeToString(val);
         }
 
-        public override object RawDeserialize(string s) {
+        public override object RawDeserialize(string s)
+        {
             return DeserializeFromString(s);
         }
 
-        public static string SerializeToString(object obj) {
+        public static string SerializeToString(object obj)
+        {
             return Convert.ToBoolean(obj) ? "true" : "false";
         }
 
-        public static object DeserializeFromString(string s) {
+        public static object DeserializeFromString(string s)
+        {
             return (s == "true") ? true : false;
         }
 
@@ -74,42 +83,47 @@ namespace Sooda.ObjectMapper.FieldHandlers {
         private static object _boxed1 = 1;
         private static object _boxed0 = 0;
 
-        public override object ZeroValue() {
+        public override object ZeroValue()
+        {
             return _zeroValue;
         }
 
-        public override Type GetFieldType() {
+        public override Type GetFieldType()
+        {
             return typeof(bool);
         }
 
-		public override Type GetSqlType()
-		{
-			return typeof(SqlBoolean);
-		}
+        public override Type GetSqlType()
+        {
+            return typeof(SqlBoolean);
+        }
 
-		public override void SetupDBParameter(IDbDataParameter parameter, object value)
-		{
-			parameter.DbType = DbType.Int32;
-			parameter.Value = Convert.ToBoolean(value) ? 1 : 0;
-		}
+        public override void SetupDBParameter(IDbDataParameter parameter, object value)
+        {
+            parameter.DbType = DbType.Int32;
+            parameter.Value = Convert.ToBoolean(value) ? 1 : 0;
+        }
 
         // type conversions - used in generated stub code
 
-        public static System.Data.SqlTypes.SqlBoolean GetSqlNullableValue(object fieldValue) {
+        public static System.Data.SqlTypes.SqlBoolean GetSqlNullableValue(object fieldValue)
+        {
             if (fieldValue == null)
                 return System.Data.SqlTypes.SqlBoolean.Null;
             else
                 return new System.Data.SqlTypes.SqlBoolean((Boolean)fieldValue);
         }
 
-        public static bool GetNotNullValue(object val) {
+        public static bool GetNotNullValue(object val)
+        {
             if (val == null)
                 throw new InvalidOperationException("Attempt to read a non-null value that isn't set yet");
             return (bool)val;
         }
 
 #if DOTNET2
-        public static bool? GetNullableValue(object fieldValue) {
+        public static bool? GetNullableValue(object fieldValue)
+        {
             if (fieldValue == null)
                 return null;
             else

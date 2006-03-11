@@ -96,6 +96,9 @@
     <Compile Include="Caching\CacheUtils.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Caching\SoodaCachedCollectionKeyComplex.cs" />
+    <Compile Include="Caching\SoodaCachedCollectionKeyAllRecords.cs" />
+    <Compile Include="Caching\SoodaCachedCollectionKeySimple.cs" />
     <Compile Include="Caching\SoodaCache.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -613,6 +616,7 @@
     <Compile Include="SoodaException.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SoodaFieldUpdateDelegate.cs" />
     <Compile Include="SoodaNullable.cs" />
     <Compile Include="SoodaObject.cs">
       <SubType>Code</SubType>
@@ -715,7 +719,9 @@
     <None Include="Schema\SoodaSchema.xsx">
       <DependentUpon>SoodaSchema.xsd</DependentUpon>
     </None>
-    <EmbeddedResource Include="Schema\SoodaSchema.xsd" />
+    <EmbeddedResource Include="Schema\SoodaSchema.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

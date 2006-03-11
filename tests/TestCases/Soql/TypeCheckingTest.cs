@@ -41,11 +41,12 @@ using Sooda.QL;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.Soql {
+namespace Sooda.UnitTests.TestCases.Soql
+{
     [TestFixture]
-    public class TypeCheckingTest 
+    public class TypeCheckingTest
     {
         [Test]
-        public void TypeCheckTest() {}
+        public void TypeCheckTest() { }
     }
 }

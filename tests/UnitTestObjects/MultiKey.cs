@@ -38,22 +38,25 @@ namespace Sooda.UnitTests.Objects
     using System.Diagnostics;
     using System.Data;
     using Sooda;
-    
+
     public class MultiKey : Sooda.UnitTests.Objects.Stubs.MultiKey_Stub
     {
-        public MultiKey(SoodaConstructor c) : 
+        public MultiKey(SoodaConstructor c)
+            :
                 base(c)
         {
             // Do not modify this constructor.
         }
-        public MultiKey(SoodaTransaction transaction) : 
+        public MultiKey(SoodaTransaction transaction)
+            :
                 base(transaction)
         {
             // 
             // TODO: Add construction logic here.
             // 
         }
-        public MultiKey() : 
+        public MultiKey()
+            :
                 this(SoodaTransaction.ActiveTransaction)
         {
             // Do not modify this constructor.

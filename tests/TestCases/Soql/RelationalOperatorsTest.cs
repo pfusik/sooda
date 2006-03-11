@@ -41,35 +41,45 @@ using Sooda.QL;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.Soql {
+namespace Sooda.UnitTests.TestCases.Soql
+{
     [TestFixture]
-    public class RelationalOperatorsTest {
-        void AssumeException(object o1, SoqlRelationalOperator op, object o2) {
-            try {
+    public class RelationalOperatorsTest
+    {
+        void AssumeException(object o1, SoqlRelationalOperator op, object o2)
+        {
+            try
+            {
                 // Console.WriteLine("Checking that {0} ({1}) {2} {3} ({4}) will throw... ", o1, o1.GetType(), op, o2, o2.GetType());
                 SoqlBooleanRelationalExpression.Compare(o1, o2, op);
                 // Assert.IsTrue("Failed. Exception was expected!", false);
-            } catch (Exception) {
+            }
+            catch (Exception)
+            {
                 Assert.IsTrue(true);
             }
         }
 
-        void Assume(object o1, SoqlRelationalOperator op, object o2, bool value) {
+        void Assume(object o1, SoqlRelationalOperator op, object o2, bool value)
+        {
             // Console.WriteLine("Checking that {0} ({1}) {2} {3} ({4}) = {5}...", o1, o1.GetType(), op, o2, o2.GetType(), value);
             Assert.AreEqual(value, (bool)SoqlBooleanRelationalExpression.Compare(o1, o2, op));
         }
 
-        void AssumeSymmetric(object o1, SoqlRelationalOperator op, object o2, bool value) {
+        void AssumeSymmetric(object o1, SoqlRelationalOperator op, object o2, bool value)
+        {
             Assume(o1, op, o2, value);
             Assume(o2, op, o1, value);
         }
 
-        void AssumeAntiSymmetric(object o1, SoqlRelationalOperator op, object o2, bool value) {
+        void AssumeAntiSymmetric(object o1, SoqlRelationalOperator op, object o2, bool value)
+        {
             Assume(o1, op, o2, value);
             Assume(o2, op, o1, !value);
         }
 
-        private void CheckNumberPair(object o1, object o2) {
+        private void CheckNumberPair(object o1, object o2)
+        {
             AssumeSymmetric(o1, SoqlRelationalOperator.Equal, o1, true);
             AssumeSymmetric(o1, SoqlRelationalOperator.NotEqual, o2, true);
 
@@ -83,41 +93,49 @@ namespace Sooda.UnitTests.TestCases.Soql {
         }
 
         [Test]
-        public void TestInt8() {
+        public void TestInt8()
+        {
             CheckNumberPair((sbyte)1, (sbyte)2);
         }
 
         [Test]
-        public void TestInt16() {
+        public void TestInt16()
+        {
             CheckNumberPair((short)1, (short)2);
         }
 
         [Test]
-        public void TestInt32() {
+        public void TestInt32()
+        {
             CheckNumberPair((int)1, (int)2);
         }
 
         [Test]
-        public void TestInt64() {
+        public void TestInt64()
+        {
             CheckNumberPair((long)1, (long)2);
         }
 
         [Test]
-        public void TestDecimal() {
+        public void TestDecimal()
+        {
             CheckNumberPair((decimal)1.3, (decimal)1.4);
         }
 
         [Test]
-        public void TestFloat() {
+        public void TestFloat()
+        {
             CheckNumberPair((float)1.3, (float)1.4);
         }
 
         [Test]
-        public void TestDouble() {
+        public void TestDouble()
+        {
             CheckNumberPair((double)1.3, (double)1.4);
         }
 
-        private void CheckNumberPair(object o1_1, object o1_2, object o2_1, object o2_2) {
+        private void CheckNumberPair(object o1_1, object o1_2, object o2_1, object o2_2)
+        {
             AssumeSymmetric(o1_1, SoqlRelationalOperator.Equal, o2_1, true);
             AssumeSymmetric(o1_1, SoqlRelationalOperator.NotEqual, o2_2, true);
 
@@ -142,39 +160,46 @@ namespace Sooda.UnitTests.TestCases.Soql {
         }
 
         [Test]
-        public void TestInt32AndString() {
+        public void TestInt32AndString()
+        {
             CheckNumberPair(1, 2, "1", "2");
         }
 
         [Test]
-        public void TestInt32AndInt16() {
+        public void TestInt32AndInt16()
+        {
             CheckNumberPair(1, 2, (short)1, (short)2);
         }
 
         [Test]
-        public void TestInt32AndInt64() {
+        public void TestInt32AndInt64()
+        {
             CheckNumberPair(1, 2, (long)1, (long)2);
         }
 
         [Test]
-        public void TestInt8AndInt64() {
+        public void TestInt8AndInt64()
+        {
             CheckNumberPair((sbyte)1, (sbyte)2, (long)1, (long)2);
         }
 
         [Test]
-        public void TestDateTimeAndString() {
+        public void TestDateTimeAndString()
+        {
             CheckNumberPair(DateTime.Parse("2000-01-01"), DateTime.Parse("2001-01-01"), "2000-01-01", "2001-01-01");
         }
 
         [Test]
-        public void TestString() {
+        public void TestString()
+        {
             CheckNumberPair("aaa", "bbb");
             CheckNumberPair("AAA", "bbb");
             CheckNumberPair("aaa", "BBB");
             CheckNumberPair("AAA", "BBB");
         }
 
-        private void CheckUnsupported(object o1, object o2) {
+        private void CheckUnsupported(object o1, object o2)
+        {
             AssumeException(o1, SoqlRelationalOperator.Equal, o2);
             AssumeException(o1, SoqlRelationalOperator.NotEqual, o2);
             AssumeException(o1, SoqlRelationalOperator.Less, o2);
@@ -193,7 +218,8 @@ namespace Sooda.UnitTests.TestCases.Soql {
         }
 
         [Test]
-        public void TestUnsupported() {
+        public void TestUnsupported()
+        {
             CheckUnsupported(DateTime.Now, false);
             CheckUnsupported(DateTime.Now, (sbyte)1);
             CheckUnsupported(DateTime.Now, (short)1);

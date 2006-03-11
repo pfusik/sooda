@@ -33,14 +33,18 @@
 
 using System.Text.RegularExpressions;
 
-namespace Sooda.QL {
-    public sealed class SoqlUtils {
-        public static bool Like(string text, string pattern) {
+namespace Sooda.QL
+{
+    public sealed class SoqlUtils
+    {
+        public static bool Like(string text, string pattern)
+        {
             Regex expr = new Regex(ConvertSql2Regex(pattern), RegexOptions.IgnoreCase);
             return expr.IsMatch(text);
         }
 
-        private static string ConvertSql2Regex(string s) {
+        private static string ConvertSql2Regex(string s)
+        {
             return s.Replace("%", ".*").Replace('_', '.');
         }
     }

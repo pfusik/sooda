@@ -20,7 +20,7 @@ namespace Sooda.ObjectMapper
             return theObject._fieldValues.GetBoxedFieldValue(fieldOrdinal);
         }
 
-        public static SoodaObject GetRefFieldValue(ref SoodaObject refCache, SoodaObject theObject, int tableNumber, int fieldOrdinal, SoodaTransaction tran, ISoodaObjectFactory factory) 
+        public static SoodaObject GetRefFieldValue(ref SoodaObject refCache, SoodaObject theObject, int tableNumber, int fieldOrdinal, SoodaTransaction tran, ISoodaObjectFactory factory)
         {
             if (refCache != null)
                 return refCache;
@@ -34,7 +34,7 @@ namespace Sooda.ObjectMapper
             return refCache;
         }
 
-        public static SoodaObject TryGetRefFieldValue(ref SoodaObject refCache, object fieldValue, SoodaTransaction tran, ISoodaObjectFactory factory) 
+        public static SoodaObject TryGetRefFieldValue(ref SoodaObject refCache, object fieldValue, SoodaTransaction tran, ISoodaObjectFactory factory)
         {
             if (refCache != null)
                 return refCache;

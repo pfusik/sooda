@@ -34,9 +34,12 @@
 using System;
 using System.Data;
 
-namespace Sooda.Sql {
-    public abstract class SqlBuilderPositionalArg : SqlBuilderBase {
-        public override void BuildCommandWithParameters(IDbCommand command, bool append, string query, object[] par) {
+namespace Sooda.Sql
+{
+    public abstract class SqlBuilderPositionalArg : SqlBuilderBase
+    {
+        public override void BuildCommandWithParameters(IDbCommand command, bool append, string query, object[] par)
+        {
             throw new NotImplementedException();
         }
     }

@@ -6,8 +6,8 @@ using System.Collections.Specialized;
 
 namespace Sooda.CodeGen.CDIL
 {
-	public class CDILPrettyPrinter
-	{
+    public class CDILPrettyPrinter
+    {
         private static void PrintCustomAttributeDeclaration(TextWriter output, CodeAttributeDeclaration cad)
         {
             output.Write(cad.Name);
@@ -201,7 +201,7 @@ namespace Sooda.CodeGen.CDIL
                 else if (value.Equals(false))
                     output.Write("false");
                 else if (value is string)
-                    output.Write("'{0}'", value.ToString().Replace("'","\\'"));
+                    output.Write("'{0}'", value.ToString().Replace("'", "\\'"));
                 else
                     output.Write("{0}", value);
                 return;
@@ -512,7 +512,7 @@ namespace Sooda.CodeGen.CDIL
             output.Write("    attributes ");
             PrintMemberAttributes(output, method.Attributes);
             output.WriteLine();
-            
+
             if (method.ReturnType.BaseType != "System.Void")
             {
                 output.Write("    returns ");
@@ -642,7 +642,7 @@ namespace Sooda.CodeGen.CDIL
             output.Write("    attributes ");
             PrintMemberAttributes(output, constructor.Attributes);
             output.WriteLine();
-            
+
             foreach (CodeAttributeDeclaration cad in constructor.CustomAttributes)
             {
                 output.Write("    customattribute ");
@@ -705,7 +705,7 @@ namespace Sooda.CodeGen.CDIL
                 output.WriteLine();
                 PrintMember(output, member);
             }
-            
+
             output.WriteLine();
             output.WriteLine("end");
         }

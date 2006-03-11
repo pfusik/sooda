@@ -41,12 +41,16 @@ using Sooda.UnitTests.BaseObjects;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.ObjectMapper {
+namespace Sooda.UnitTests.TestCases.ObjectMapper
+{
     [TestFixture]
-    public class RetrievalTest {
+    public class RetrievalTest
+    {
         [Test]
-        public void Test1() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void Test1()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 Assert.AreEqual("Mary Manager", Contact.Mary.Name);
                 Assert.AreEqual("Ed Employee", Contact.Ed.Name);
                 Assert.AreEqual("Group1", (string)Contact.Mary.PrimaryGroup.Name);

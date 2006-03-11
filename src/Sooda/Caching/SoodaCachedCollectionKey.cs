@@ -34,61 +34,25 @@
 
 using Sooda.Schema;
 
-namespace Sooda.Caching 
+namespace Sooda.Caching
 {
-	public class SoodaCachedCollectionKey
-	{
-		private ClassInfo _classInfo;
-		private string _fieldName;
-		private object _matchingFieldValue;
+    public abstract class SoodaCachedCollectionKey
+    {
+        private ClassInfo _classInfo;
 
-		public SoodaCachedCollectionKey()
-		{
-		}
+        public SoodaCachedCollectionKey()
+        {
+        }
 
-		public SoodaCachedCollectionKey(ClassInfo classInfo, string fieldName, object matchingFieldValue)
-		{
-			_classInfo = classInfo;
-			_fieldName = fieldName;
-			_matchingFieldValue = matchingFieldValue;
-		}
+        public SoodaCachedCollectionKey(ClassInfo classInfo)
+        {
+            _classInfo = classInfo;
+        }
 
-		public ClassInfo ClassInfo
-		{
-			get { return _classInfo; }
-			set { _classInfo = value; }
-		}
-
-		public string FieldName
-		{
-			get { return _fieldName; }
-			set { _fieldName = value; }
-		}
-
-		public object MatchingFieldValue
-		{
-			get { return _matchingFieldValue; }
-			set { _matchingFieldValue = value; }
-		}
-
-		public override bool Equals(object obj)
-		{
-			SoodaCachedCollectionKey otherKey = obj as SoodaCachedCollectionKey;
-			if (otherKey == null)
-				return false;
-
-			return (ClassInfo == otherKey.ClassInfo) && (FieldName == otherKey.FieldName) && (MatchingFieldValue.Equals(otherKey.MatchingFieldValue));
-		}
-
-		public override int GetHashCode()
-		{
-			return ClassInfo.Name.GetHashCode() ^ FieldName.GetHashCode() ^ MatchingFieldValue.GetHashCode();
-		}
-
-		public override string ToString()
-		{
-			return "[" + ClassInfo.Name + " where " + FieldName + "=" + MatchingFieldValue + "]";
-		}
-
-	}
+        public ClassInfo ClassInfo
+        {
+            get { return _classInfo; }
+            set { _classInfo = value; }
+        }
+    }
 }

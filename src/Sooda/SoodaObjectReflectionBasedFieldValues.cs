@@ -34,7 +34,7 @@
 using System;
 using System.Reflection;
 
-namespace Sooda 
+namespace Sooda
 {
     public abstract class SoodaObjectReflectionBasedFieldValues : SoodaObjectFieldValues
     {
@@ -87,7 +87,7 @@ namespace Sooda
 
             if (rawValue == null)
                 return null;
-            
+
             // we got raw value, it's possible that it's a sqltype, nullables are already boxed here
 
             System.Data.SqlTypes.INullable sqlType = rawValue as System.Data.SqlTypes.INullable;

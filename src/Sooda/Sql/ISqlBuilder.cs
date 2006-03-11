@@ -37,11 +37,13 @@ using System.Data;
 
 using Sooda.Schema;
 
-namespace Sooda.Sql {
-    public interface ISqlBuilder {
+namespace Sooda.Sql
+{
+    public interface ISqlBuilder
+    {
         string GetSQLDataType(Sooda.Schema.FieldInfo fi);
         string GetDDLCommandTerminator();
-        SqlOuterJoinSyntax OuterJoinSyntax { get ; }
+        SqlOuterJoinSyntax OuterJoinSyntax { get; }
         SqlTopSupportMode TopSupport { get; }
 
         void BuildCommandWithParameters(IDbCommand command, bool append, string query, params object[] par);

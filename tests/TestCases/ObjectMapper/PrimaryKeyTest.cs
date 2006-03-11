@@ -40,14 +40,18 @@ using Sooda.UnitTests.Objects;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.ObjectMapper {
+namespace Sooda.UnitTests.TestCases.ObjectMapper
+{
     [TestFixture]
-    public class PrimaryKeyTest {
+    public class PrimaryKeyTest
+    {
         [Test]
-        public void Int32Test() {
+        public void Int32Test()
+        {
             string ser;
 
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 PKInt32 test = new PKInt32();
                 PKInt32 test2 = PKInt32.Load(7777777);
 
@@ -60,10 +64,12 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void Int64Test() {
+        public void Int64Test()
+        {
             string ser;
 
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 PKInt64 test = new PKInt64();
                 PKInt64 test2 = PKInt64.Load(77777777777777);
 
@@ -76,10 +82,12 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void StringTest() {
+        public void StringTest()
+        {
             string ser;
 
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 PKString test = new PKString();
                 PKString test2 = PKString.Load("zzzzzzz");
 
@@ -92,10 +100,12 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void DateTimeTest() {
+        public void DateTimeTest()
+        {
             string ser;
 
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 PKDateTime test = new PKDateTime();
                 PKDateTime test2 = PKDateTime.Load(new DateTime(2000, 1, 1, 0, 0, 0, 0));
 
@@ -108,10 +118,12 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void BooleanTest() {
+        public void BooleanTest()
+        {
             string ser;
 
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 PKBool test = new PKBool();
                 PKBool test2 = PKBool.Load(true);
 

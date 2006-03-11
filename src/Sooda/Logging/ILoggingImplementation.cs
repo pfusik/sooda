@@ -34,8 +34,8 @@
 
 namespace Sooda.Logging
 {
-	public interface ILoggingImplementation
-	{
+    public interface ILoggingImplementation
+    {
         Logger GetLogger(string name);
-	}
+    }
 }

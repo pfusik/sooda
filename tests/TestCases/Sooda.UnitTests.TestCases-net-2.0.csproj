@@ -108,6 +108,7 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Caching\CollectionTest.cs" />
     <Compile Include="ObjectMapper\AbstractTest.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -165,6 +166,7 @@
     <Compile Include="ObjectMapper\SerializationTest.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ObjectMapper\SoodaObjectReflectionBasedFieldValues.cs" />
     <Compile Include="Soql\ConstantFoldingTest.cs">
       <SubType>Code</SubType>
     </Compile>

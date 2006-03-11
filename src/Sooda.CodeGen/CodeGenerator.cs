@@ -43,7 +43,7 @@ using System.CodeDom.Compiler;
 using Sooda.Schema;
 using Sooda.CodeGen.CDIL;
 
-namespace Sooda.CodeGen 
+namespace Sooda.CodeGen
 {
     public class CodeGenerator
     {
@@ -97,13 +97,13 @@ namespace Sooda.CodeGen
                 return;
             }
             // stats.Add(new CodeCommentStatement("range: [" + min + ".." + max + "]"));
-            
+
             int mid = (min + max) / 2;
 
             CodeConditionStatement ifStatement = new CodeConditionStatement();
             ifStatement.Condition = new CodeBinaryOperatorExpression(
                             new CodeArgumentReferenceExpression("fieldOrdinal"),
-                            CodeBinaryOperatorType.LessThanOrEqual, 
+                            CodeBinaryOperatorType.LessThanOrEqual,
                             new CodePrimitiveExpression(mid));
 
             stats.Add(ifStatement);
@@ -163,7 +163,7 @@ namespace Sooda.CodeGen
             cloneMethod.Attributes = MemberAttributes.Public | MemberAttributes.Override;
             cloneMethod.Statements.Add(
                     new CodeMethodReturnStatement(
-                        new CodeObjectCreateExpression(ci.Name + "_Values", 
+                        new CodeObjectCreateExpression(ci.Name + "_Values",
                             new CodeThisReferenceExpression())));
             ctd.Members.Add(cloneMethod);
 
@@ -200,7 +200,7 @@ namespace Sooda.CodeGen
             return Char.ToLower(s[0]) + s.Substring(1);
         }
 
-        public void GenerateClassStub(CodeNamespace nspace, ClassInfo ci, bool miniStub) 
+        public void GenerateClassStub(CodeNamespace nspace, ClassInfo ci, bool miniStub)
         {
             if (!miniStub)
                 GenerateClassValues(nspace, ci, miniStub);
@@ -215,7 +215,7 @@ namespace Sooda.CodeGen
 
             string formalParameters = "";
             string actualParameters = "";
-            
+
             foreach (FieldInfo fi in ci.GetPrimaryKeyFields())
             {
                 if (formalParameters != "")
@@ -238,7 +238,7 @@ namespace Sooda.CodeGen
             else
             {
                 context["PrimaryKeyIsTuple"] = true;
-                context["PrimaryKeyActualParametersTuple"] = "new SoodaTuple(" + actualParameters + ")"; 
+                context["PrimaryKeyActualParametersTuple"] = "new SoodaTuple(" + actualParameters + ")";
             }
 
             context["ClassUnifiedFieldCount"] = ci.UnifiedFields.Count;
@@ -249,19 +249,19 @@ namespace Sooda.CodeGen
                 context["OptionalNewAttribute"] = "";
             }
 
-            if (ci.ExtBaseClassName != null && !miniStub) 
+            if (ci.ExtBaseClassName != null && !miniStub)
             {
                 context["BaseClassName"] = ci.ExtBaseClassName;
-            } 
-            else if (ci.InheritFrom != null && !miniStub) 
+            }
+            else if (ci.InheritFrom != null && !miniStub)
             {
                 context["BaseClassName"] = ci.InheritFrom;
-            } 
-            else if (Project.BaseClassName != null && !miniStub) 
+            }
+            else if (Project.BaseClassName != null && !miniStub)
             {
                 context["BaseClassName"] = Project.BaseClassName;
-            } 
-            else 
+            }
+            else
             {
                 context["BaseClassName"] = "SoodaObject";
             }
@@ -269,12 +269,12 @@ namespace Sooda.CodeGen
             CodeTypeDeclaration ctd = CDILParser.ParseClass(CDILTemplate.Get("Stub.cdil"), context);
             nspace.Types.Add(ctd);
 
-            if (miniStub) 
-                return ;
+            if (miniStub)
+                return;
 
             // class constructor
 
-            if (gen.KeyGen != "none") 
+            if (gen.KeyGen != "none")
             {
                 ctd.Members.Add(gen.Field_keyGenerator());
             }
@@ -285,26 +285,26 @@ namespace Sooda.CodeGen
             // literals
             if (ci.Constants != null && ci.GetPrimaryKeyFields().Length == 1)
             {
-                foreach (ConstantInfo constInfo in ci.Constants) 
+                foreach (ConstantInfo constInfo in ci.Constants)
                 {
-                    if (ci.GetFirstPrimaryKeyField().DataType == FieldDataType.Integer) 
+                    if (ci.GetFirstPrimaryKeyField().DataType == FieldDataType.Integer)
                     {
                         ctd.Members.Add(gen.Prop_LiteralValue(constInfo.Name, Int32.Parse(constInfo.Key)));
-                    } 
-                    else if (ci.GetFirstPrimaryKeyField().DataType == FieldDataType.String) 
+                    }
+                    else if (ci.GetFirstPrimaryKeyField().DataType == FieldDataType.String)
                     {
                         ctd.Members.Add(gen.Prop_LiteralValue(constInfo.Name, constInfo.Key));
-                    } 
-                    else if (ci.GetFirstPrimaryKeyField().DataType == FieldDataType.AnsiString) 
+                    }
+                    else if (ci.GetFirstPrimaryKeyField().DataType == FieldDataType.AnsiString)
                     {
                         ctd.Members.Add(gen.Prop_LiteralValue(constInfo.Name, constInfo.Key));
-                    } 
+                    }
                     else
                         throw new NotSupportedException("Primary key type " + ci.GetFirstPrimaryKeyField().DataType + " is not supported");
                 }
             }
 
-            foreach (FieldInfo fi in ci.LocalFields) 
+            foreach (FieldInfo fi in ci.LocalFields)
             {
                 if (fi.IsPrimaryKey)
                     continue;
@@ -318,7 +318,7 @@ namespace Sooda.CodeGen
                     ctd.Members.Add(gen.Method_TriggerFieldUpdate(fi, "AfterFieldUpdate"));
                 }
 
-                if (fi.References != null) 
+                if (fi.References != null)
                 {
                     ctd.Members.Add(gen.Method_BeforeCollectionUpdate(fi));
                     ctd.Members.Add(gen.Method_AfterCollectionUpdate(fi));
@@ -326,7 +326,7 @@ namespace Sooda.CodeGen
             }
         }
 
-        public void GenerateClassFactory(CodeNamespace nspace, ClassInfo ci) 
+        public void GenerateClassFactory(CodeNamespace nspace, ClassInfo ci)
         {
             FieldInfo fi = ci.GetFirstPrimaryKeyField();
             string pkClrTypeName = fi.GetFieldHandler().GetFieldType().FullName;
@@ -377,7 +377,7 @@ namespace Sooda.CodeGen
             nspace.Types.Add(factoryClass);
         }
 
-        public void GenerateClassSkeleton(CodeNamespace nspace, ClassInfo ci, bool useChainedConstructorCall, bool fakeSkeleton) 
+        public void GenerateClassSkeleton(CodeNamespace nspace, ClassInfo ci, bool useChainedConstructorCall, bool fakeSkeleton)
         {
             CodeTypeDeclaration ctd = new CodeTypeDeclaration(ci.Name);
             ctd.BaseTypes.Add(Project.OutputNamespace + ".Stubs." + ci.Name + "_Stub");
@@ -391,7 +391,7 @@ namespace Sooda.CodeGen
             ctd.Members.Add(gen.Constructor_Inserting(useChainedConstructorCall));
             ctd.Members.Add(gen.Constructor_Inserting2(useChainedConstructorCall));
 
-            if (!useChainedConstructorCall) 
+            if (!useChainedConstructorCall)
             {
                 ctd.Members.Add(gen.Method_InitObject());
             }
@@ -410,7 +410,7 @@ namespace Sooda.CodeGen
             }
         }
 
-        public void GenerateDatabaseSchema(CodeNamespace nspace, SchemaInfo schema) 
+        public void GenerateDatabaseSchema(CodeNamespace nspace, SchemaInfo schema)
         {
             CDILContext context = new CDILContext();
             context["OutNamespace"] = Project.OutputNamespace;
@@ -431,7 +431,7 @@ namespace Sooda.CodeGen
             nspace.Types.Add(databaseSchemaClass);
         }
 
-        public void GenerateListWrapper(CodeNamespace nspace, ClassInfo ci) 
+        public void GenerateListWrapper(CodeNamespace nspace, ClassInfo ci)
         {
             CDILContext context = new CDILContext();
             context["ClassName"] = ci.Name;
@@ -441,7 +441,7 @@ namespace Sooda.CodeGen
             nspace.Types.Add(listWrapperClass);
         }
 
-        public void GenerateRelationStub(CodeNamespace nspace, RelationInfo ri) 
+        public void GenerateRelationStub(CodeNamespace nspace, RelationInfo ri)
         {
             string relationName = ri.Name;
             string leftColumnName = ri.Table.Fields[0].DBColumnName;
@@ -554,14 +554,14 @@ namespace Sooda.CodeGen
                         continue;
 
                     prop.GetStatements.Add(new CodeMethodReturnStatement(
-                        new CodeObjectCreateExpression(fullWrapperTypeName, 
+                        new CodeObjectCreateExpression(fullWrapperTypeName,
                         new CodeObjectCreateExpression("Sooda.QL.SoqlPathExpression", new CodePrimitiveExpression(fi.Name)))));
                 }
                 else
                 {
                     fullWrapperTypeName = fi.ReferencedClass.Name + optionalNullable + "WrapperExpression";
                     prop.GetStatements.Add(new CodeMethodReturnStatement(
-                        new CodeObjectCreateExpression(fullWrapperTypeName, 
+                        new CodeObjectCreateExpression(fullWrapperTypeName,
                         new CodePrimitiveExpression(null), new CodePrimitiveExpression(fi.Name))));
                 }
 
@@ -621,14 +621,14 @@ namespace Sooda.CodeGen
                         continue;
 
                     prop.GetStatements.Add(new CodeMethodReturnStatement(
-                        new CodeObjectCreateExpression(fullWrapperTypeName, 
+                        new CodeObjectCreateExpression(fullWrapperTypeName,
                         new CodeObjectCreateExpression("Sooda.QL.SoqlPathExpression", new CodeThisReferenceExpression(), new CodePrimitiveExpression(fi.Name)))));
                 }
                 else
                 {
                     fullWrapperTypeName = fi.ReferencedClass.Name + optionalNullable + "WrapperExpression";
                     prop.GetStatements.Add(new CodeMethodReturnStatement(
-                        new CodeObjectCreateExpression(fullWrapperTypeName, 
+                        new CodeObjectCreateExpression(fullWrapperTypeName,
                         new CodeThisReferenceExpression(), new CodePrimitiveExpression(fi.Name))));
                 }
 
@@ -645,19 +645,19 @@ namespace Sooda.CodeGen
             CodeCompileUnit ccu;
             CodeNamespace nspace;
 
-            try 
+            try
             {
                 if (Project.SchemaFile == null)
                 {
                     throw new SoodaCodeGenException("No schema file specified.");
                 }
 
-                if (Project.OutputPath == null) 
+                if (Project.OutputPath == null)
                 {
                     throw new SoodaCodeGenException("No Output path specified.");
                 }
 
-                if (Project.OutputNamespace == null) 
+                if (Project.OutputNamespace == null)
                 {
                     throw new SoodaCodeGenException("No Output namespace specified.");
                 }
@@ -666,39 +666,39 @@ namespace Sooda.CodeGen
 
                 _codeProvider = codeProvider;
 
-                if (RebuildIfChanged) 
+                if (RebuildIfChanged)
                 {
                     string stubgenFile = this.GetType().Assembly.Location;
                     string outputFile;
 
-                    if (Project.SeparateStubs) 
+                    if (Project.SeparateStubs)
                     {
                         outputFile = Path.Combine(Project.OutputPath, "Stubs/_Stubs.csx");
-                    } 
-                    else 
+                    }
+                    else
                     {
                         outputFile = Path.Combine(Project.OutputPath, "_Stubs." + codeProvider.FileExtension);
                     }
 
-                    if (File.Exists(outputFile)) 
+                    if (File.Exists(outputFile))
                     {
                         DateTime stubgenDateTime = File.GetLastWriteTime(stubgenFile);
                         DateTime schemaDateTime = File.GetLastWriteTime(Project.SchemaFile);
                         DateTime outputDateTime = File.GetLastWriteTime(outputFile);
 
                         DateTime maxInputDate = schemaDateTime;
-                        if (stubgenDateTime > maxInputDate) 
+                        if (stubgenDateTime > maxInputDate)
                         {
                             maxInputDate = stubgenDateTime;
                         }
 
-                        if (maxInputDate < outputDateTime) 
+                        if (maxInputDate < outputDateTime)
                         {
                             Output.Info("{0} not changed. Not rebuilding.", Project.SchemaFile);
                             return;
                         }
-                    } 
-                    else 
+                    }
+                    else
                     {
                         Output.Info("{0} does not exist. Rebuilding.", outputFile);
                     }
@@ -707,7 +707,7 @@ namespace Sooda.CodeGen
                 if (Project.AssemblyName == null)
                     Project.AssemblyName = Project.OutputNamespace;
 
-                foreach (ExternalProjectInfo epi in Project.ExternalProjects) 
+                foreach (ExternalProjectInfo epi in Project.ExternalProjects)
                 {
                     IProjectFile projectProvider = GetProjectProvider(epi.ProjectType, codeProvider);
                     if (epi.ProjectFile != null)
@@ -720,12 +720,12 @@ namespace Sooda.CodeGen
                     }
                     epi.ProjectProvider = projectProvider;
 
-                    if (!File.Exists(epi.ActualProjectFile) || RewriteProjects) 
+                    if (!File.Exists(epi.ActualProjectFile) || RewriteProjects)
                     {
                         Output.Info("Creating Project file '{0}'.", epi.ActualProjectFile);
                         projectProvider.CreateNew(Project.OutputNamespace, Project.AssemblyName);
-                    } 
-                    else 
+                    }
+                    else
                     {
                         Output.Verbose("Opening Project file '{0}'...", epi.ActualProjectFile);
                         projectProvider.LoadFrom(epi.ActualProjectFile);
@@ -756,7 +756,7 @@ namespace Sooda.CodeGen
 
                 Output.Verbose("Loading schema file {0}...", Project.SchemaFile);
                 SchemaInfo schema = SchemaManager.ReadAndValidateSchema(
-                    new XmlTextReader(Project.SchemaFile), 
+                    new XmlTextReader(Project.SchemaFile),
                     Path.GetDirectoryName(Project.SchemaFile)
                     );
 
@@ -765,18 +765,18 @@ namespace Sooda.CodeGen
                 string dir = Project.OutputPath;
                 string fname;
 
-                if (!Directory.Exists(dir)) 
+                if (!Directory.Exists(dir))
                 {
                     Output.Verbose("Creating directory {0}", dir);
                     Directory.CreateDirectory(dir);
                 }
                 dir = Path.Combine(Project.OutputPath, "Stubs");
-                if (!Directory.Exists(dir)) 
+                if (!Directory.Exists(dir))
                 {
                     Output.Verbose("Creating directory {0}", dir);
                     Directory.CreateDirectory(dir);
                 }
-                foreach (ClassInfo ci in schema.LocalClasses) 
+                foreach (ClassInfo ci in schema.LocalClasses)
                 {
                     fname = ci.Name + "." + codeProvider.FileExtension;
                     Output.Verbose("    {0}", fname);
@@ -787,11 +787,11 @@ namespace Sooda.CodeGen
 
                     string outFile = Path.Combine(Project.OutputPath, fname);
 
-                    if (!File.Exists(outFile) || RewriteSkeletons) 
+                    if (!File.Exists(outFile) || RewriteSkeletons)
                     {
                         string code;
 
-                        using (TextWriter tw = new StringWriter()) 
+                        using (TextWriter tw = new StringWriter())
                         {
                             ccu = new CodeCompileUnit();
 
@@ -806,14 +806,14 @@ namespace Sooda.CodeGen
                         bool skip = false;
                         skip = code.IndexOf("<autogenerated>") != -1;
 
-                        using (TextReader tr = new StringReader(code)) 
+                        using (TextReader tr = new StringReader(code))
                         {
                             string line;
-                            if (skip) 
+                            if (skip)
                             {
-                                while ((line = tr.ReadLine()) != null) 
+                                while ((line = tr.ReadLine()) != null)
                                 {
-                                    if (line.IndexOf("</autogenerated>") != -1) 
+                                    if (line.IndexOf("</autogenerated>") != -1)
                                     {
                                         // skip two more lines and break
                                         tr.ReadLine();
@@ -822,9 +822,9 @@ namespace Sooda.CodeGen
                                     }
                                 }
                             }
-                            using (TextWriter tw = new StreamWriter(outFile)) 
+                            using (TextWriter tw = new StreamWriter(outFile))
                             {
-                                while ((line = tr.ReadLine()) != null) 
+                                while ((line = tr.ReadLine()) != null)
                                 {
                                     tw.WriteLine(line);
                                 };
@@ -833,7 +833,7 @@ namespace Sooda.CodeGen
                     }
                 }
 
-                if (Project.SeparateStubs) 
+                if (Project.SeparateStubs)
                 {
                     fname = Path.Combine(Project.OutputPath, "Stubs/_MiniSkeleton.csx");
                     Output.Verbose("Generating code for {0}...", fname);
@@ -844,7 +844,7 @@ namespace Sooda.CodeGen
                     nspace = CreateBaseNamespace(schema);
                     ccu.Namespaces.Add(nspace);
 
-                    foreach (ClassInfo ci in schema.LocalClasses) 
+                    foreach (ClassInfo ci in schema.LocalClasses)
                     {
                         GenerateClassSkeleton(nspace, ci, codeGenerator.Supports(GeneratorSupport.ChainedConstructorArguments) ? true : false, true);
                     }
@@ -862,7 +862,7 @@ namespace Sooda.CodeGen
                         GenerateMiniBaseClass(ccu, Project.BaseClassName);
                     }
 
-                    using (StreamWriter sw = new StreamWriter(fname)) 
+                    using (StreamWriter sw = new StreamWriter(fname))
                     {
                         csharpCodeGenerator.GenerateCodeFromCompileUnit(ccu, sw, codeGeneratorOptions);
                     }
@@ -877,11 +877,11 @@ namespace Sooda.CodeGen
                     ccu.Namespaces.Add(nspace);
 
                     Output.Verbose("    * class stubs");
-                    foreach (ClassInfo ci in schema.LocalClasses) 
+                    foreach (ClassInfo ci in schema.LocalClasses)
                     {
                         GenerateClassStub(nspace, ci, true);
                     }
-                    using (StreamWriter sw = new StreamWriter(fname)) 
+                    using (StreamWriter sw = new StreamWriter(fname))
                     {
                         csharpCodeGenerator.GenerateCodeFromCompileUnit(ccu, sw, codeGeneratorOptions);
                     }
@@ -891,28 +891,28 @@ namespace Sooda.CodeGen
                 if (Project.SeparateStubs)
                     embedBaseDir = Path.Combine(embedBaseDir, "Stubs");
 
-                if (Project.EmbedSchema == EmbedSchema.Xml) 
+                if (Project.EmbedSchema == EmbedSchema.Xml)
                 {
                     Output.Verbose("Copying schema to {0}...", Path.Combine(embedBaseDir, "_DBSchema.xml"));
                     File.Copy(Project.SchemaFile, Path.Combine(embedBaseDir, "_DBSchema.xml"), true);
-                    if (!Project.SeparateStubs) 
+                    if (!Project.SeparateStubs)
                     {
                         foreach (ExternalProjectInfo epi in Project.ExternalProjects)
                         {
                             epi.ProjectProvider.AddResource("_DBSchema.xml");
                         }
                     }
-                } 
-                else if (Project.EmbedSchema == EmbedSchema.Binary) 
+                }
+                else if (Project.EmbedSchema == EmbedSchema.Binary)
                 {
                     string binFileName = Path.Combine(embedBaseDir, "_DBSchema.bin");
                     Output.Verbose("Serializing schema to {0}...", binFileName);
                     System.Runtime.Serialization.Formatters.Binary.BinaryFormatter bf = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                    using (FileStream fileStream = File.OpenWrite(binFileName)) 
+                    using (FileStream fileStream = File.OpenWrite(binFileName))
                     {
                         bf.Serialize(fileStream, schema);
                     }
-                    if (!Project.SeparateStubs) 
+                    if (!Project.SeparateStubs)
                     {
                         foreach (ExternalProjectInfo epi in Project.ExternalProjects)
                         {
@@ -923,11 +923,11 @@ namespace Sooda.CodeGen
 
                 // codeGenerator = csharpCodeGenerator;
 
-                if (Project.SeparateStubs) 
+                if (Project.SeparateStubs)
                 {
                     fname = Path.Combine(Project.OutputPath, "Stubs/_Stubs.csx");
-                } 
-                else 
+                }
+                else
                 {
                     fname = "_Stubs." + codeProvider.FileExtension;
                     foreach (ExternalProjectInfo epi in Project.ExternalProjects)
@@ -941,14 +941,14 @@ namespace Sooda.CodeGen
                 Output.Verbose("{0}", fname);
                 ccu = new CodeCompileUnit();
                 CodeAttributeDeclaration cad = new CodeAttributeDeclaration("Sooda.SoodaObjectsAssembly");
-                cad.Arguments.Add(new CodeAttributeArgument(new CodeTypeOfExpression(Project.OutputNamespace +  "._DatabaseSchema")));
+                cad.Arguments.Add(new CodeAttributeArgument(new CodeTypeOfExpression(Project.OutputNamespace + "._DatabaseSchema")));
                 ccu.AssemblyCustomAttributes.Add(cad);
 
                 nspace = CreateBaseNamespace(schema);
                 ccu.Namespaces.Add(nspace);
 
                 Output.Verbose("    * list wrappers");
-                foreach (ClassInfo ci in schema.LocalClasses) 
+                foreach (ClassInfo ci in schema.LocalClasses)
                 {
                     GenerateListWrapper(nspace, ci);
                 }
@@ -960,23 +960,23 @@ namespace Sooda.CodeGen
                 ccu.Namespaces.Add(nspace);
 
                 Output.Verbose("    * class stubs");
-                foreach (ClassInfo ci in schema.LocalClasses) 
+                foreach (ClassInfo ci in schema.LocalClasses)
                 {
                     GenerateClassStub(nspace, ci, false);
                 }
                 Output.Verbose("    * class factories");
-                foreach (ClassInfo ci in schema.LocalClasses) 
+                foreach (ClassInfo ci in schema.LocalClasses)
                 {
                     GenerateClassFactory(nspace, ci);
                 }
                 Output.Verbose("    * N-N relation stubs");
-                foreach (RelationInfo ri in schema.LocalRelations) 
+                foreach (RelationInfo ri in schema.LocalRelations)
                 {
                     GenerateRelationStub(nspace, ri);
                 }
 
                 Output.Verbose("    * typed query wrappers (internal)");
-                foreach (ClassInfo ci in schema.LocalClasses) 
+                foreach (ClassInfo ci in schema.LocalClasses)
                 {
                     GenerateTypedInternalQueryWrappers(nspace, ci);
                 }
@@ -985,7 +985,7 @@ namespace Sooda.CodeGen
                 ccu.Namespaces.Add(nspace);
 
                 Output.Verbose("    * typed query wrappers");
-                foreach (ClassInfo ci in schema.LocalClasses) 
+                foreach (ClassInfo ci in schema.LocalClasses)
                 {
                     GenerateTypedPublicQueryWrappers(nspace, ci);
                 }
@@ -999,7 +999,7 @@ namespace Sooda.CodeGen
                     string resultString = sw.ToString();
                     resultString = resultString.Replace("[System.ParamArrayAttribute()] ", "params ");
 
-                    using (TextWriter tw = new StreamWriter(fname)) 
+                    using (TextWriter tw = new StreamWriter(fname))
                     {
                         tw.Write(resultString);
                     }
@@ -1014,31 +1014,31 @@ namespace Sooda.CodeGen
                 }
                 Output.Verbose("Saved.");
                 return;
-            } 
+            }
             catch (SoodaCodeGenException e)
             {
                 throw e;
             }
-            catch (SoodaSchemaException e) 
+            catch (SoodaSchemaException e)
             {
                 throw new SoodaCodeGenException("Schema validation error.", e);
-            } 
-            catch (ApplicationException e) 
+            }
+            catch (ApplicationException e)
             {
                 throw new SoodaCodeGenException("Error generating code.", e);
-            } 
-            catch (Exception e) 
+            }
+            catch (Exception e)
             {
                 throw new SoodaCodeGenException("Unexpected error.", e);
             }
         }
 
-        CodeDomProvider GetCodeProvider(string lang) 
+        CodeDomProvider GetCodeProvider(string lang)
         {
             if (lang == null)
                 return new Microsoft.CSharp.CSharpCodeProvider();
 
-            switch (lang.ToLower()) 
+            switch (lang.ToLower())
             {
                 case "cs":
                 case "c#":
@@ -1049,32 +1049,32 @@ namespace Sooda.CodeGen
                 case "vb":
                     return new Microsoft.VisualBasic.VBCodeProvider();
 #endif
-                
+
 #if DOTNET2
                 case "c++/cli":
                     return GetCodeProvider("Microsoft.VisualC.CppCodeProvider, CppCodeProvider, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL");
 #endif
-                
+
 #if !DOTNET2
                 case "mc++":
                     return GetCodeProvider("Microsoft.MCpp.MCppCodeProvider, MCppCodeDomProvider, Version=7.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a");
 #endif
 
-                default: 
-                {
-                    CodeDomProvider cdp = Activator.CreateInstance(Type.GetType(lang, true)) as CodeDomProvider;
-                    if (cdp == null)
-                        throw new SoodaCodeGenException("Cannot instantiate type " + lang);
-                    return cdp;
-                }
+                default:
+                    {
+                        CodeDomProvider cdp = Activator.CreateInstance(Type.GetType(lang, true)) as CodeDomProvider;
+                        if (cdp == null)
+                            throw new SoodaCodeGenException("Cannot instantiate type " + lang);
+                        return cdp;
+                    }
             }
         }
 
-        IProjectFile GetProjectProvider(string projectType, CodeDomProvider codeProvider) 
+        IProjectFile GetProjectProvider(string projectType, CodeDomProvider codeProvider)
         {
-            if (projectType == "vs2003" || projectType == "vs") 
+            if (projectType == "vs2003" || projectType == "vs")
             {
-                switch (codeProvider.FileExtension) 
+                switch (codeProvider.FileExtension)
                 {
                     case "cs":
                         return new VScsprojProjectFile("Sooda.CodeGen.Template.Template71.csproj");
@@ -1086,9 +1086,9 @@ namespace Sooda.CodeGen
                         throw new Exception("Visual Studio Project not supported for '" + codeProvider.FileExtension + "' files");
                 }
             }
-            if (projectType == "vs2005") 
+            if (projectType == "vs2005")
             {
-                switch (codeProvider.FileExtension) 
+                switch (codeProvider.FileExtension)
                 {
                     case "cs":
                         return new VS2005csprojProjectFile();
@@ -1100,7 +1100,7 @@ namespace Sooda.CodeGen
                         throw new Exception("Visual Studio 2005 Project not supported for '" + codeProvider.FileExtension + "' files");
                 }
             }
-            if (projectType == "null") 
+            if (projectType == "null")
             {
                 return new NullProjectFile();
             }
@@ -1131,7 +1131,7 @@ namespace Sooda.CodeGen
             }
         }
 
-        CodeNamespace CreateTypedQueriesNamespace(SchemaInfo schema) 
+        CodeNamespace CreateTypedQueriesNamespace(SchemaInfo schema)
         {
             CodeNamespace nspace = new CodeNamespace(Project.OutputNamespace + ".TypedQueries");
             nspace.Imports.Add(new CodeNamespaceImport("System"));
@@ -1146,7 +1146,7 @@ namespace Sooda.CodeGen
             return nspace;
         }
 
-        CodeNamespace CreateBaseNamespace(SchemaInfo schema) 
+        CodeNamespace CreateBaseNamespace(SchemaInfo schema)
         {
             CodeNamespace nspace = new CodeNamespace(Project.OutputNamespace);
             nspace.Imports.Add(new CodeNamespaceImport("System"));
@@ -1158,7 +1158,7 @@ namespace Sooda.CodeGen
             return nspace;
         }
 
-        CodeNamespace CreateStubsNamespace(SchemaInfo schema) 
+        CodeNamespace CreateStubsNamespace(SchemaInfo schema)
         {
             CodeNamespace nspace = new CodeNamespace(Project.OutputNamespace + ".Stubs");
             nspace.Imports.Add(new CodeNamespaceImport("System"));

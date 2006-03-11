@@ -33,23 +33,23 @@
 
 using System;
 
-namespace Sooda 
+namespace Sooda
 {
     [AttributeUsage(AttributeTargets.Assembly)]
-    public sealed class SoodaConfigAttribute : Attribute 
+    public sealed class SoodaConfigAttribute : Attribute
     {
         private string configFileName = null;
         private Type configProviderType = null;
 
-        public SoodaConfigAttribute() {}
+        public SoodaConfigAttribute() { }
 
         public string XmlConfigFileName
         {
-            get 
+            get
             {
                 return configFileName;
             }
-            set 
+            set
             {
                 configFileName = value;
             }
@@ -57,11 +57,11 @@ namespace Sooda
 
         public Type ProviderType
         {
-            get 
+            get
             {
                 return configProviderType;
             }
-            set 
+            set
             {
                 configProviderType = value;
             }

@@ -35,28 +35,33 @@ using System;
 
 using System.Xml.Serialization;
 
-namespace Sooda.QL {
-    public class SoqlFunctionCallExpression : SoqlExpression {
+namespace Sooda.QL
+{
+    public class SoqlFunctionCallExpression : SoqlExpression
+    {
         [XmlAttribute("name")]
         public string FunctionName;
 
         [XmlElement("param")]
         public SoqlExpressionCollection Parameters;
 
-        public SoqlFunctionCallExpression() {}
+        public SoqlFunctionCallExpression() { }
 
-        public SoqlFunctionCallExpression(string functionName, SoqlExpressionCollection parameters) {
+        public SoqlFunctionCallExpression(string functionName, SoqlExpressionCollection parameters)
+        {
             this.FunctionName = functionName;
             this.Parameters = parameters;
         }
 
-        public SoqlFunctionCallExpression(string functionName, SoqlExpression p1) {
+        public SoqlFunctionCallExpression(string functionName, SoqlExpression p1)
+        {
             this.FunctionName = functionName;
             this.Parameters = new SoqlExpressionCollection();
             this.Parameters.Add(p1);
         }
 
-        public SoqlFunctionCallExpression(string functionName, SoqlExpression p1, SoqlExpression p2) {
+        public SoqlFunctionCallExpression(string functionName, SoqlExpression p1, SoqlExpression p2)
+        {
             this.FunctionName = functionName;
             this.Parameters = new SoqlExpressionCollection();
             this.Parameters.Add(p1);
@@ -64,7 +69,8 @@ namespace Sooda.QL {
         }
 
         // visitor pattern
-        public override void Accept(ISoqlVisitor visitor) {
+        public override void Accept(ISoqlVisitor visitor)
+        {
             visitor.Visit(this);
         }
 

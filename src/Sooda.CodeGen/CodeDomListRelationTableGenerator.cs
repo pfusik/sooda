@@ -41,29 +41,34 @@ using System.CodeDom.Compiler;
 
 using Sooda.Schema;
 
-namespace Sooda.CodeGen {
-    public class CodeDomListRelationTableGenerator : CodeDomHelpers {
+namespace Sooda.CodeGen
+{
+    public class CodeDomListRelationTableGenerator : CodeDomHelpers
+    {
         private RelationInfo relationInfo;
         private SoodaProject options;
 
-        public CodeDomListRelationTableGenerator(RelationInfo ri, SoodaProject options) {
+        public CodeDomListRelationTableGenerator(RelationInfo ri, SoodaProject options)
+        {
             this.relationInfo = ri;
             this.options = options;
         }
 
-        public CodeConstructor Constructor_1() {
+        public CodeConstructor Constructor_1()
+        {
             CodeConstructor ctor = new CodeConstructor();
             ctor.Attributes = MemberAttributes.Public;
             ctor.BaseConstructorArgs.Add(new CodePrimitiveExpression(relationInfo.Table.DBTableName));
             ctor.BaseConstructorArgs.Add(new CodePrimitiveExpression(relationInfo.Table.Fields[0].DBColumnName));
             ctor.BaseConstructorArgs.Add(new CodePrimitiveExpression(relationInfo.Table.Fields[1].DBColumnName));
             ctor.BaseConstructorArgs.Add(new CodeMethodInvokeExpression(
-                        new CodeMethodInvokeExpression(new CodeTypeReferenceExpression(options.OutputNamespace + "." + "_DatabaseSchema"), "GetSchema"), 
+                        new CodeMethodInvokeExpression(new CodeTypeReferenceExpression(options.OutputNamespace + "." + "_DatabaseSchema"), "GetSchema"),
                     "FindClassByName", new CodePrimitiveExpression(relationInfo.Table.Fields[0].References)));
 
             return ctor;
         }
-        public CodeMemberMethod Method_DeserializeTupleLeft() {
+        public CodeMemberMethod Method_DeserializeTupleLeft()
+        {
             // public virtual public CLASS_NAMEList GetSnapshot() { return new CLASS_NAMEListSnapshot(this, 0, Length); }
             CodeMemberMethod method = new CodeMemberMethod();
             method.Name = "DeserializeTupleLeft";
@@ -88,7 +93,8 @@ namespace Sooda.CodeGen {
                     )));
             return method;
         }
-        public CodeMemberMethod Method_DeserializeTupleRight() {
+        public CodeMemberMethod Method_DeserializeTupleRight()
+        {
             CodeMemberMethod method = new CodeMemberMethod();
             method.Name = "DeserializeTupleRight";
             method.ReturnType = new CodeTypeReference(typeof(Object));

@@ -28,7 +28,7 @@
         <const name="Customer" key="Customer" />
     </class>
 
-    <class name="Contact" cached="true">
+    <class name="Contact" cached="true" cacheCollections="true">
         <table name="Contact">
             <field name="ContactId" dbcolumn="id" type="Integer" primaryKey="true" />
             <field name="PrimaryGroup" dbcolumn="primary_group" type="Integer" references="Group" nullable="true" onDelete="Cascade" />

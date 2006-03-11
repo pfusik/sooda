@@ -41,28 +41,28 @@ using Sooda.Schema;
 using Sooda.ObjectMapper;
 using Sooda.ObjectMapper.FieldHandlers;
 
-namespace Sooda.Sql 
+namespace Sooda.Sql
 {
-    public abstract class SqlBuilderNamedArg : SqlBuilderBase 
+    public abstract class SqlBuilderNamedArg : SqlBuilderBase
     {
-		private void SetParameterFromValue(IDbCommand command, IDbDataParameter p, object v, SoqlLiteralValueModifiers modifiers)
-		{
-			p.Direction = ParameterDirection.Input;
+        private void SetParameterFromValue(IDbCommand command, IDbDataParameter p, object v, SoqlLiteralValueModifiers modifiers)
+        {
+            p.Direction = ParameterDirection.Input;
 
-			string parName = GetNameForParameter(command.Parameters.Count);
-			p.ParameterName = parName;
-			if (modifiers != null)
-			{
-				FieldHandlerFactory.GetFieldHandler(modifiers.DataTypeOverride).SetupDBParameter(p, v);
-			}
-			else
-			{
-				SetDbTypeFromValue(p, v, modifiers);
-				p.Value = v;
-			}
-		}
-        
-        public override void BuildCommandWithParameters(System.Data.IDbCommand command, bool append, string query, object[] par) 
+            string parName = GetNameForParameter(command.Parameters.Count);
+            p.ParameterName = parName;
+            if (modifiers != null)
+            {
+                FieldHandlerFactory.GetFieldHandler(modifiers.DataTypeOverride).SetupDBParameter(p, v);
+            }
+            else
+            {
+                SetDbTypeFromValue(p, v, modifiers);
+                p.Value = v;
+            }
+        }
+
+        public override void BuildCommandWithParameters(System.Data.IDbCommand command, bool append, string query, object[] par)
         {
             if (append)
             {
@@ -82,7 +82,7 @@ namespace Sooda.Sql
             System.Text.StringBuilder sb = new System.Text.StringBuilder(query.Length * 2);
             ArrayList parameterObjects = new ArrayList();
 
-            for (int i = 0; i < query.Length; ++i) 
+            for (int i = 0; i < query.Length; ++i)
             {
                 char c = query[i];
 
@@ -91,14 +91,14 @@ namespace Sooda.Sql
                     int stringStartPos = i;
                     int stringEndPos = -1;
 
-                    for (int j = i + 1; j < query.Length; ++j) 
+                    for (int j = i + 1; j < query.Length; ++j)
                     {
-                        if (query[j] == '\'') 
+                        if (query[j] == '\'')
                         {
                             // possible end of string, need to check for double apostrophes,
                             // which don't mean EOS
 
-                            if (j + 1 < query.Length && query[j + 1] == '\'') 
+                            if (j + 1 < query.Length && query[j + 1] == '\'')
                             {
                                 j++;
                                 continue;
@@ -108,7 +108,7 @@ namespace Sooda.Sql
                         }
                     }
 
-                    if (stringEndPos == -1) 
+                    if (stringEndPos == -1)
                     {
                         throw new ArgumentException("Query has unbalanced quotes");
                     }
@@ -117,7 +117,7 @@ namespace Sooda.Sql
                     // replace double quotes with single quotes
                     stringValue = stringValue.Replace("''", "'");
                     IDbDataParameter p = command.CreateParameter();
-                    
+
                     if (stringEndPos + 1 < query.Length && query[stringEndPos + 1] == 'D')
                     {
                         // datetime literal
@@ -135,117 +135,117 @@ namespace Sooda.Sql
                     }
                     command.Parameters.Add(p);
                     sb.Append(p.ParameterName);
-                    
+
                     i = stringEndPos;
-                } 
-                else if (c == '{') 
+                }
+                else if (c == '{')
                 {
                     char c1 = query[i + 1];
-					object v;
+                    object v;
 
-					if (c1 == 'L')
-					{
-						// {L:fieldDataTypeName:value
+                    if (c1 == 'L')
+                    {
+                        // {L:fieldDataTypeName:value
 
-						int startPos = i + 3;
-						int endPos = query.IndexOf(':', startPos);
-						if (endPos < 0)
-							throw new ArgumentException("Missing ':' in literal specification");
+                        int startPos = i + 3;
+                        int endPos = query.IndexOf(':', startPos);
+                        if (endPos < 0)
+                            throw new ArgumentException("Missing ':' in literal specification");
 
-						SoqlLiteralValueModifiers modifier = SoqlParser.ParseLiteralValueModifiers(query.Substring(startPos, endPos - startPos));
-						FieldDataType fdt = modifier.DataTypeOverride;
+                        SoqlLiteralValueModifiers modifier = SoqlParser.ParseLiteralValueModifiers(query.Substring(startPos, endPos - startPos));
+                        FieldDataType fdt = modifier.DataTypeOverride;
 
-						int valueStartPos = endPos + 1;
-						bool anyEscape = false;
+                        int valueStartPos = endPos + 1;
+                        bool anyEscape = false;
 
-						for (i = valueStartPos; i < query.Length; ++i)
-						{
-							if (query[i] == '\\')
-							{
-								i++;
-								anyEscape = true;
-								continue;
-							}
-							if (query[i] == '}')
-							{
-								break;
-							}
-						}
+                        for (i = valueStartPos; i < query.Length; ++i)
+                        {
+                            if (query[i] == '\\')
+                            {
+                                i++;
+                                anyEscape = true;
+                                continue;
+                            }
+                            if (query[i] == '}')
+                            {
+                                break;
+                            }
+                        }
 
-						string literalValue = query.Substring(valueStartPos, i - valueStartPos);
-						if (anyEscape)
-						{
-							literalValue = literalValue.Replace("\\}", "}");
-							literalValue = literalValue.Replace("\\\\", "\\");
-						}
+                        string literalValue = query.Substring(valueStartPos, i - valueStartPos);
+                        if (anyEscape)
+                        {
+                            literalValue = literalValue.Replace("\\}", "}");
+                            literalValue = literalValue.Replace("\\\\", "\\");
+                        }
 
-						SoodaFieldHandler fieldHandler = FieldHandlerFactory.GetFieldHandler(fdt);
-						v = fieldHandler.RawDeserialize(literalValue);
+                        SoodaFieldHandler fieldHandler = FieldHandlerFactory.GetFieldHandler(fdt);
+                        v = fieldHandler.RawDeserialize(literalValue);
 
-						IDbDataParameter p = command.CreateParameter();
-						p.Direction = ParameterDirection.Input;
-						string parName = GetNameForParameter(command.Parameters.Count);
-						p.ParameterName = parName;
-						fieldHandler.SetupDBParameter(p, v);
-						command.Parameters.Add(p);
-						sb.Append(p.ParameterName);
-					}
-					else
-					{
-						char c2 = query[i + 2];
-						int paramNumber;
-						SoqlLiteralValueModifiers modifiers = null;
+                        IDbDataParameter p = command.CreateParameter();
+                        p.Direction = ParameterDirection.Input;
+                        string parName = GetNameForParameter(command.Parameters.Count);
+                        p.ParameterName = parName;
+                        fieldHandler.SetupDBParameter(p, v);
+                        command.Parameters.Add(p);
+                        sb.Append(p.ParameterName);
+                    }
+                    else
+                    {
+                        char c2 = query[i + 2];
+                        int paramNumber;
+                        SoqlLiteralValueModifiers modifiers = null;
 
-						if (c2 == '}' || c2 == ':') 
-						{
-							paramNumber = c1 - '0';
-							i += 2;
-						} 
-						else 
-						{
-							paramNumber = (c1 - '0') * 10 + (c2 - '0');
-							if (query[i + 3] != '}' && query[i + 3] != ':')
-								throw new NotSupportedException("Max 99 positional parameters are supported");
-							i += 3;
-						};
-						if (query[i] == ':')
-						{
-							int startPos = i + 1;
-							int endPos = query.IndexOf('}', startPos);
-							if (endPos < 0)
-								throw new ArgumentException("Missing '}' in parameter specification");
+                        if (c2 == '}' || c2 == ':')
+                        {
+                            paramNumber = c1 - '0';
+                            i += 2;
+                        }
+                        else
+                        {
+                            paramNumber = (c1 - '0') * 10 + (c2 - '0');
+                            if (query[i + 3] != '}' && query[i + 3] != ':')
+                                throw new NotSupportedException("Max 99 positional parameters are supported");
+                            i += 3;
+                        };
+                        if (query[i] == ':')
+                        {
+                            int startPos = i + 1;
+                            int endPos = query.IndexOf('}', startPos);
+                            if (endPos < 0)
+                                throw new ArgumentException("Missing '}' in parameter specification");
 
-							modifiers = SoqlParser.ParseLiteralValueModifiers(query.Substring(startPos, endPos - startPos));
-							i = endPos;
-						}
-						v = par[paramNumber];
+                            modifiers = SoqlParser.ParseLiteralValueModifiers(query.Substring(startPos, endPos - startPos));
+                            i = endPos;
+                        }
+                        v = par[paramNumber];
 
-						if (v is SoodaObject)
-						{
-							v = ((SoodaObject)v).GetPrimaryKeyValue();
-						}
+                        if (v is SoodaObject)
+                        {
+                            v = ((SoodaObject)v).GetPrimaryKeyValue();
+                        }
 
-						if (v == null)
-						{
-							sb.Append("null");
-						}
-						else
-						{
-							while (parameterObjects.Count <= paramNumber)
-								parameterObjects.Add(null);
+                        if (v == null)
+                        {
+                            sb.Append("null");
+                        }
+                        else
+                        {
+                            while (parameterObjects.Count <= paramNumber)
+                                parameterObjects.Add(null);
 
-							if (parameterObjects[paramNumber] == null)
-							{
-								IDbDataParameter p = command.CreateParameter();
-								SetParameterFromValue(command, p, v, modifiers);
-								parameterObjects[paramNumber] = p;
-								command.Parameters.Add(p);
-							}
-							sb.Append(((IDbDataParameter)parameterObjects[paramNumber]).ParameterName);
-						}
-					}
-				} 
-                else 
+                            if (parameterObjects[paramNumber] == null)
+                            {
+                                IDbDataParameter p = command.CreateParameter();
+                                SetParameterFromValue(command, p, v, modifiers);
+                                parameterObjects[paramNumber] = p;
+                                command.Parameters.Add(p);
+                            }
+                            sb.Append(((IDbDataParameter)parameterObjects[paramNumber]).ParameterName);
+                        }
+                    }
+                }
+                else
                 {
                     sb.Append(c);
                 }

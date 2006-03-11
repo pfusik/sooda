@@ -42,7 +42,7 @@ using System.CodeDom.Compiler;
 
 using Sooda.Schema;
 
-namespace Sooda.CodeGen 
+namespace Sooda.CodeGen
 {
     public enum PrimitiveRepresentation
     {
@@ -82,22 +82,26 @@ namespace Sooda.CodeGen
         public string ProjectFile;
     }
 
-    [XmlRoot("sooda-project",Namespace="http://www.sooda.org/schemas/SoodaProject.xsd")]
+    [XmlRoot("sooda-project", Namespace = "http://www.sooda.org/schemas/SoodaProject.xsd")]
     public class SoodaProject
     {
         public static string NamespaceURI = "http://www.sooda.org/schemas/SoodaProject.xsd";
 
-        public static Stream GetSoodaProjectXsdStream() {
+        public static Stream GetSoodaProjectXsdStream()
+        {
             Assembly ass = typeof(SoodaProject).Assembly;
-            foreach (string name in ass.GetManifestResourceNames()) {
-                if (name.EndsWith(".SoodaProject.xsd")) {
+            foreach (string name in ass.GetManifestResourceNames())
+            {
+                if (name.EndsWith(".SoodaProject.xsd"))
+                {
                     return ass.GetManifestResourceStream(name);
                 };
             }
             throw new SoodaSchemaException("SoodaProject.xsd not embedded in Sooda.CodeGen assembly");
         }
 
-        public static XmlReader GetSoodaProjectXsdStreamXmlReader() {
+        public static XmlReader GetSoodaProjectXsdStreamXmlReader()
+        {
             return new XmlTextReader(GetSoodaProjectXsdStream());
         }
 

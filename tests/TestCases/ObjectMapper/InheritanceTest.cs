@@ -41,12 +41,16 @@ using Sooda.UnitTests.BaseObjects;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.ObjectMapper {
+namespace Sooda.UnitTests.TestCases.ObjectMapper
+{
     [TestFixture]
-    public class InheritanceTest {
+    public class InheritanceTest
+    {
         [Test]
-        public void InsertTest() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void InsertTest()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 Vehicle v = new Car();
                 Assert.AreEqual(v.Type, 1);
                 Car c = Car.GetRef(v.Id);
@@ -57,8 +61,10 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void LoadTest() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void LoadTest()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 Assert.AreEqual(Vehicle.Load(4).GetType(), typeof(SuperBike));
                 Assert.AreEqual(Vehicle.Load(6).GetType(), typeof(MegaSuperBike));
                 Assert.AreEqual(Vehicle.Load(3).GetType(), typeof(Bike));
@@ -68,8 +74,10 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void LoadTest2() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void LoadTest2()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 Assert.AreEqual(Bike.Load(3).GetType(), typeof(Bike));
                 Assert.AreEqual(Bike.Load(4).GetType(), typeof(SuperBike));
                 Assert.AreEqual(Bike.Load(6).GetType(), typeof(MegaSuperBike));
@@ -78,18 +86,23 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
 
         [Test]
         [ExpectedException(typeof(SoodaObjectNotFoundException))]
-        public void LoadTest3() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void LoadTest3()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 Bike b = Bike.Load(1);
                 Console.WriteLine("t: {0}", b.GetType());
             }
         }
 
         [Test]
-        public void LoadTest4() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void LoadTest4()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 VehicleList list = Vehicle.GetList(tran, SoodaWhereClause.Unrestricted);
-                foreach (Vehicle v in list) {
+                foreach (Vehicle v in list)
+                {
                     Console.WriteLine("v: " + v.GetType());
                     // shouldn't throw
                 }
@@ -98,15 +111,19 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void LoadTest5() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void LoadTest5()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 BikeList list = Bike.GetList(tran, SoodaWhereClause.Unrestricted);
-                foreach (Vehicle v in list) {
-                    if (v != null) {}
+                foreach (Vehicle v in list)
+                {
+                    if (v != null) { }
                     // shouldn't throw
                 }
-                foreach (Bike v in list) {
-                    if (v != null) {}
+                foreach (Bike v in list)
+                {
+                    if (v != null) { }
                     // shouldn't throw
                 }
 
@@ -119,33 +136,41 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void LoadTest6() {
+        public void LoadTest6()
+        {
             Console.WriteLine("Test6a");
-            try {
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+            try
+            {
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
                     ExtendedBike ebk = (ExtendedBike)Vehicle.Load(10);
 
                     Console.WriteLine(ebk.ExtendedBikeInfo);
                 }
-            } finally {
+            }
+            finally
+            {
                 Console.WriteLine("Test6b");
             }
         }
 
         [Test]
-        public void LongTest() {
+        public void LongTest()
+        {
             // run multiple Sooda transactions in a single SQL transaction
             // this is achieved by a hacked SqlDataSource which ignores
             // Close(), Commit() requests
 
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) {
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
+            {
                 testDataSource.Open();
 
                 int ebKey;
                 int bikeKey;
                 int gvKey;
 
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
                     tran.RegisterDataSource(testDataSource);
 
                     Vehicle v = new Bike();
@@ -172,7 +197,8 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     tran.Commit();
                 }
 
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
                     tran.RegisterDataSource(testDataSource);
 
                     Vehicle v1 = Vehicle.GetRef(ebKey);
@@ -196,16 +222,20 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
 
                     Contact.Mary.Bikes.Remove((Bike)v1);
 
-                    try {
+                    try
+                    {
                         Vehicle v3 = ExtendedBike.GetRef(bikeKey);
                         Assert.Fail("Vehicle v3 = ExtendedBike.GetRef(bikeKey); should fail here.");
-                    } catch (SoodaObjectNotFoundException) {
+                    }
+                    catch (SoodaObjectNotFoundException)
+                    {
                         Console.WriteLine("Got exception as expected");
                     }
 
                     tran.Commit();
                 }
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
                     tran.RegisterDataSource(testDataSource);
 
                     Vehicle v1 = Vehicle.GetRef(ebKey);

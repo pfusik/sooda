@@ -59,5 +59,5 @@ namespace Sooda.CodeGen.CDIL
                 _params[name] = value;
             }
         }
-	}
+    }
 }

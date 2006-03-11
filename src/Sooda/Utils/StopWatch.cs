@@ -45,5 +45,5 @@ namespace Sooda.Utils
         public abstract void Start();
         public abstract void Stop();
         public abstract double Seconds { get; }
-   }
+    }
 }

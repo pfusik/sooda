@@ -32,8 +32,10 @@
 // 
 
 
-namespace Sooda.Config {
-    public interface ISoodaConfigProvider {
+namespace Sooda.Config
+{
+    public interface ISoodaConfigProvider
+    {
         string GetString(string key);
     }
 }

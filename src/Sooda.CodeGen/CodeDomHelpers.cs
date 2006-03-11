@@ -41,25 +41,30 @@ using System.CodeDom.Compiler;
 
 using Sooda.Schema;
 
-namespace Sooda.CodeGen {
-    public class CodeDomHelpers {
+namespace Sooda.CodeGen
+{
+    public class CodeDomHelpers
+    {
         // protec
 
         //protected public void Disable CodeAttributeDeclarationCollection
         //    NoStepThrough
 
-        protected void NoStepThrough(CodeAttributeDeclarationCollection attrs) {
+        protected void NoStepThrough(CodeAttributeDeclarationCollection attrs)
+        {
             attrs.Add(new CodeAttributeDeclaration("System.Diagnostics.DebuggerStepThroughAttribute"));
         }
 
 
-        protected static CodeFieldReferenceExpression Field(CodeExpression targetObject, string fieldName) {
+        protected static CodeFieldReferenceExpression Field(CodeExpression targetObject, string fieldName)
+        {
             return new CodeFieldReferenceExpression(targetObject, fieldName);
         }
 
         protected static CodeThisReferenceExpression This
         {
-            get {
+            get
+            {
                 return new CodeThisReferenceExpression();
             }
         }
@@ -74,52 +79,59 @@ namespace Sooda.CodeGen {
             return new CodeConditionStatement(cond, thenStats, elseStats);
         }
 
-        protected static CodePropertyReferenceExpression ThisProperty(string name) {
+        protected static CodePropertyReferenceExpression ThisProperty(string name)
+        {
             return new CodePropertyReferenceExpression(This, name);
         }
 
-        protected static CodeArgumentReferenceExpression Arg(string name) {
+        protected static CodeArgumentReferenceExpression Arg(string name)
+        {
             return new CodeArgumentReferenceExpression(name);
         }
 
-        protected static CodeMethodReturnStatement Return(CodeExpression ex) {
+        protected static CodeMethodReturnStatement Return(CodeExpression ex)
+        {
             return new CodeMethodReturnStatement(ex);
         }
 
-        protected static MemberAttributes ParseMemberAttributes(string[] parts, int from, int to) {
+        protected static MemberAttributes ParseMemberAttributes(string[] parts, int from, int to)
+        {
             MemberAttributes attr = 0;
 
-            for (int i = 0; i < parts.Length - 2; ++i) {
-                switch (parts[i]) {
-                case "override":
-                    attr = attr | MemberAttributes.Override;
-                    break;
+            for (int i = 0; i < parts.Length - 2; ++i)
+            {
+                switch (parts[i])
+                {
+                    case "override":
+                        attr = attr | MemberAttributes.Override;
+                        break;
 
-                case "public":
-                    attr = attr | MemberAttributes.Public;
-                    break;
+                    case "public":
+                        attr = attr | MemberAttributes.Public;
+                        break;
 
-                case "internal":
-                    attr = attr | MemberAttributes.Assembly;
-                    break;
+                    case "internal":
+                        attr = attr | MemberAttributes.Assembly;
+                        break;
 
-                case "protected":
-                    attr = attr | MemberAttributes.Family;
-                    break;
+                    case "protected":
+                        attr = attr | MemberAttributes.Family;
+                        break;
 
-                case "protected_internal":
-                    attr = attr | MemberAttributes.FamilyOrAssembly;
-                    break;
+                    case "protected_internal":
+                        attr = attr | MemberAttributes.FamilyOrAssembly;
+                        break;
 
-                case "private":
-                    attr = attr | MemberAttributes.Private;
-                    break;
+                    case "private":
+                        attr = attr | MemberAttributes.Private;
+                        break;
                 };
             }
 
             return attr;
         }
-        public static void SetPropertySignature(CodeMemberProperty prop, string txt) {
+        public static void SetPropertySignature(CodeMemberProperty prop, string txt)
+        {
             string[] parts = txt.Split(' ');
 
             prop.Attributes = ParseMemberAttributes(parts, 0, parts.Length - 2);

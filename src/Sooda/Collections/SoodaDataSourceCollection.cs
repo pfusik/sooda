@@ -37,7 +37,7 @@ namespace Sooda.Collections
     /// <summary>
     /// A collection of elements of type SoodaDataSource
     /// </summary>
-    public class SoodaDataSourceCollection: System.Collections.CollectionBase
+    public class SoodaDataSourceCollection : System.Collections.CollectionBase
     {
         /// <summary>
         /// Initializes a new empty instance of the SoodaDataSourceCollection class.
@@ -162,7 +162,7 @@ namespace Sooda.Collections
         {
             get
             {
-                return (SoodaDataSource) this.List[index];
+                return (SoodaDataSource)this.List[index];
             }
             set
             {
@@ -184,7 +184,7 @@ namespace Sooda.Collections
         /// <summary>
         /// Type-specific enumeration class, used by SoodaDataSourceCollection.GetEnumerator.
         /// </summary>
-        public class Enumerator: System.Collections.IEnumerator
+        public class Enumerator : System.Collections.IEnumerator
         {
             private System.Collections.IEnumerator wrapped;
 
@@ -197,7 +197,7 @@ namespace Sooda.Collections
             {
                 get
                 {
-                    return (SoodaDataSource) (this.wrapped.Current);
+                    return (SoodaDataSource)(this.wrapped.Current);
                 }
             }
 
@@ -205,7 +205,7 @@ namespace Sooda.Collections
             {
                 get
                 {
-                    return (SoodaDataSource) (this.wrapped.Current);
+                    return (SoodaDataSource)(this.wrapped.Current);
                 }
             }
 

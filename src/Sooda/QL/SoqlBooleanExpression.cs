@@ -32,7 +32,8 @@
 // 
 
 
-namespace Sooda.QL {
+namespace Sooda.QL
+{
     public abstract class SoqlBooleanExpression : SoqlExpression
     {
         public SoqlBooleanExpression And(SoqlBooleanExpression expr)
@@ -102,9 +103,9 @@ namespace Sooda.QL {
                 return right;
         }
 
-        public static SoqlBooleanExpression operator !(SoqlBooleanExpression expr) 
+        public static SoqlBooleanExpression operator !(SoqlBooleanExpression expr)
         {
-            return new SoqlBooleanNegationExpression(expr); 
+            return new SoqlBooleanNegationExpression(expr);
         }
     }
 }

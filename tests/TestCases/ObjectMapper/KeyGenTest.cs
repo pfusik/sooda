@@ -51,7 +51,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
 
         class Runner
         {
-            public ArrayList GeneratedKeys = new ArrayList(); 
+            public ArrayList GeneratedKeys = new ArrayList();
 
             public void ThreadProc()
             {
@@ -68,7 +68,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
                 }
             }
         }
-        
+
         [Test]
         public void Test1()
         {

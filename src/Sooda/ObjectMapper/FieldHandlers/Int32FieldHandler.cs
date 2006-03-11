@@ -36,78 +36,92 @@ using System.Data;
 
 using System.Globalization;
 
-namespace Sooda.ObjectMapper.FieldHandlers {
-    public class Int32FieldHandler : SoodaFieldHandler {
-        public Int32FieldHandler(bool nullable) : base(nullable) {}
+namespace Sooda.ObjectMapper.FieldHandlers
+{
+    public class Int32FieldHandler : SoodaFieldHandler
+    {
+        public Int32FieldHandler(bool nullable) : base(nullable) { }
 
         protected override string TypeName
         {
-            get {
+            get
+            {
                 return "int32";
             }
         }
 
-        public override object RawRead(IDataRecord record, int pos) {
+        public override object RawRead(IDataRecord record, int pos)
+        {
             return GetFromReader(record, pos);
         }
 
-        public static Int32 GetFromReader(IDataRecord record, int pos) {
+        public static Int32 GetFromReader(IDataRecord record, int pos)
+        {
             return record.GetInt32(pos);
         }
 
-        public override string RawSerialize(object val) {
+        public override string RawSerialize(object val)
+        {
             return SerializeToString(val);
         }
 
-        public override object RawDeserialize(string s) {
+        public override object RawDeserialize(string s)
+        {
             return DeserializeFromString(s);
         }
 
-        public static string SerializeToString(object obj) {
+        public static string SerializeToString(object obj)
+        {
             return Convert.ToInt32(obj).ToString(CultureInfo.InvariantCulture);
         }
 
-        public static object DeserializeFromString(string s) {
+        public static object DeserializeFromString(string s)
+        {
             return Int32.Parse(s, CultureInfo.InvariantCulture);
         }
 
         private static object _zeroValue = (int)0;
-        public override object ZeroValue() {
+        public override object ZeroValue()
+        {
             return _zeroValue;
         }
 
-        public override Type GetFieldType() {
+        public override Type GetFieldType()
+        {
             return typeof(Int32);
         }
 
-		public override Type GetSqlType()
-		{
-			return typeof(System.Data.SqlTypes.SqlInt32);
-		}
+        public override Type GetSqlType()
+        {
+            return typeof(System.Data.SqlTypes.SqlInt32);
+        }
 
-		public override void SetupDBParameter(IDbDataParameter parameter, object value)
-		{
-			parameter.DbType = DbType.Int32;
-			parameter.Value = value;
-		}
+        public override void SetupDBParameter(IDbDataParameter parameter, object value)
+        {
+            parameter.DbType = DbType.Int32;
+            parameter.Value = value;
+        }
 
         // type conversions - used in generated stub code
 
-        public static System.Data.SqlTypes.SqlInt32 GetSqlNullableValue(object fieldValue) {
+        public static System.Data.SqlTypes.SqlInt32 GetSqlNullableValue(object fieldValue)
+        {
             if (fieldValue == null)
                 return System.Data.SqlTypes.SqlInt32.Null;
             else
                 return new System.Data.SqlTypes.SqlInt32((Int32)fieldValue);
         }
 
-        public static int GetNotNullValue(object val) {
+        public static int GetNotNullValue(object val)
+        {
             if (val == null)
                 throw new InvalidOperationException("Attempt to read a non-null value that isn't set yet");
             return (Int32)val;
         }
 
 #if DOTNET2
-        public static Int32? GetNullableValue(object fieldValue) {
+        public static Int32? GetNullableValue(object fieldValue)
+        {
             if (fieldValue == null)
                 return null;
             else
@@ -119,5 +133,5 @@ namespace Sooda.ObjectMapper.FieldHandlers {
             return typeof(Int32?);
         }
 #endif
-	}
+    }
 }

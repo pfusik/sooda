@@ -34,7 +34,8 @@
 using System;
 
 
-namespace Sooda.ObjectMapper {
+namespace Sooda.ObjectMapper
+{
     [Flags]
     internal enum SoodaObjectFlags : int
     {

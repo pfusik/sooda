@@ -35,9 +35,9 @@ using System.Collections;
 
 using System.Xml.Serialization;
 
-namespace Sooda.QL 
+namespace Sooda.QL
 {
-    public class SoqlBooleanInExpression : SoqlBooleanExpression 
+    public class SoqlBooleanInExpression : SoqlBooleanExpression
     {
         public SoqlExpression Left;
 
@@ -45,13 +45,13 @@ namespace Sooda.QL
         [XmlArrayItem("item")]
         public SoqlExpressionCollection Right;
 
-        public SoqlBooleanInExpression() {}
-        public SoqlBooleanInExpression(SoqlExpression lhs, SoqlExpressionCollection rhs) 
+        public SoqlBooleanInExpression() { }
+        public SoqlBooleanInExpression(SoqlExpression lhs, SoqlExpressionCollection rhs)
         {
             this.Left = lhs;
             this.Right = rhs;
         }
-        public SoqlBooleanInExpression(SoqlExpression lhs, IEnumerable rhs) 
+        public SoqlBooleanInExpression(SoqlExpression lhs, IEnumerable rhs)
         {
             this.Left = lhs;
             this.Right = new SoqlExpressionCollection();
@@ -75,17 +75,17 @@ namespace Sooda.QL
 
 
         // visitor pattern
-        public override void Accept(ISoqlVisitor visitor) 
+        public override void Accept(ISoqlVisitor visitor)
         {
             visitor.Visit(this);
         }
 
-        public override SoqlExpression Simplify() 
+        public override SoqlExpression Simplify()
         {
             SoqlExpression lhsExpression = Left.Simplify();
             SoqlBooleanExpression retVal = null;
 
-            for (int i = 0; i < Right.Count; ++i) 
+            for (int i = 0; i < Right.Count; ++i)
             {
                 SoqlExpression e = (SoqlExpression)Right[i];
                 SoqlBooleanRelationalExpression bre =

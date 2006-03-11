@@ -41,17 +41,17 @@ using Sooda.UnitTests.BaseObjects;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.ObjectMapper 
+namespace Sooda.UnitTests.TestCases.ObjectMapper
 {
     [TestFixture]
     public class PersistenceTest
     {
         [Test]
-        public void Test1() 
+        public void Test1()
         {
             string s, s2;
 
-            using (SoodaTransaction tran = new SoodaTransaction()) 
+            using (SoodaTransaction tran = new SoodaTransaction())
             {
                 Contact c = Contact.Mary;
                 c.PersistentValue = "test123";
@@ -60,7 +60,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
 
             Console.WriteLine(s);
 
-            using (SoodaTransaction tran = new SoodaTransaction()) 
+            using (SoodaTransaction tran = new SoodaTransaction())
             {
                 tran.Deserialize(s);
                 Contact c = Contact.Mary;
@@ -69,7 +69,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
             }
             Assert.AreEqual(s, s2);
 
-            using (SoodaTransaction tran = new SoodaTransaction()) 
+            using (SoodaTransaction tran = new SoodaTransaction())
             {
                 tran.Deserialize(s);
                 Contact c = Contact.Mary;

@@ -34,22 +34,27 @@
 using System;
 
 
-namespace Sooda.QL {
-    public class SoqlExistsExpression : SoqlBooleanExpression {
+namespace Sooda.QL
+{
+    public class SoqlExistsExpression : SoqlBooleanExpression
+    {
         public SoqlQueryExpression Query;
 
-        public SoqlExistsExpression() {}
+        public SoqlExistsExpression() { }
 
-        public SoqlExistsExpression(SoqlQueryExpression query) {
+        public SoqlExistsExpression(SoqlQueryExpression query)
+        {
             this.Query = query;
         }
 
         // visitor pattern
-        public override void Accept(ISoqlVisitor visitor) {
+        public override void Accept(ISoqlVisitor visitor)
+        {
             visitor.Visit(this);
         }
 
-        public override SoqlExpression Simplify() {
+        public override SoqlExpression Simplify()
+        {
             return this;
         }
 

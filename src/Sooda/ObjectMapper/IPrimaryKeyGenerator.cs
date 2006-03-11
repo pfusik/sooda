@@ -32,8 +32,10 @@
 // 
 
 
-namespace Sooda.ObjectMapper {
-    public interface IPrimaryKeyGenerator {
+namespace Sooda.ObjectMapper
+{
+    public interface IPrimaryKeyGenerator
+    {
         object GetNextKeyValue();
     }
 }

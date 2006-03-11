@@ -37,8 +37,10 @@ using System.Collections;
 
 using System.Xml.Serialization;
 
-namespace Sooda.QL {
-    public class SoqlBooleanRelationalExpression : SoqlBooleanExpression {
+namespace Sooda.QL
+{
+    public class SoqlBooleanRelationalExpression : SoqlBooleanExpression
+    {
         [XmlElement("Left")]
         public SoqlExpression par1;
 
@@ -48,27 +50,30 @@ namespace Sooda.QL {
         [XmlAttribute("operator")]
         public SoqlRelationalOperator op;
 
-        public SoqlBooleanRelationalExpression() {}
+        public SoqlBooleanRelationalExpression() { }
 
-        public SoqlBooleanRelationalExpression(SoqlExpression par1, SoqlExpression par2, SoqlRelationalOperator op) {
+        public SoqlBooleanRelationalExpression(SoqlExpression par1, SoqlExpression par2, SoqlRelationalOperator op)
+        {
             this.par1 = par1;
             this.par2 = par2;
             this.op = op;
         }
 
         // visitor pattern
-        public override void Accept(ISoqlVisitor visitor) {
+        public override void Accept(ISoqlVisitor visitor)
+        {
             visitor.Visit(this);
         }
 
-        public override SoqlExpression Simplify() {
+        public override SoqlExpression Simplify()
+        {
             par1 = par1.Simplify();
             par2 = par2.Simplify();
 
             ISoqlConstantExpression cp1 = par1 as ISoqlConstantExpression;
             ISoqlConstantExpression cp2 = par2 as ISoqlConstantExpression;
 
-            if (cp1 != null && cp2 != null) 
+            if (cp1 != null && cp2 != null)
             {
                 object v1 = cp1.GetConstantValue();
                 object v2 = cp2.GetConstantValue();
@@ -163,7 +168,8 @@ namespace Sooda.QL {
             throw new Exception("Cannot promote types " + val1.GetType().Name + " and " + val2.GetType().Name + " to one type.");
         }
 
-        public static object Compare(object v1, object v2, SoqlRelationalOperator op) {
+        public static object Compare(object v1, object v2, SoqlRelationalOperator op)
+        {
             if (v1 == null || v2 == null)
                 return null;
 

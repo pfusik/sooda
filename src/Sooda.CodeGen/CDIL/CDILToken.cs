@@ -4,8 +4,8 @@ namespace Sooda.CodeGen.CDIL
 {
     // CodeDOM intermediate language tokens
 
-	public enum CDILToken
-	{
+    public enum CDILToken
+    {
         BOF,        // begin of token stream
         EOF,        // end of token stream
 
@@ -22,5 +22,5 @@ namespace Sooda.CodeGen.CDIL
         Boolean,    // true,false
 
         Keyword,    // keyword - generic
-	}
+    }
 }

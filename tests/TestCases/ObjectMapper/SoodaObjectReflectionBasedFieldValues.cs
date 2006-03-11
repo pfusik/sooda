@@ -18,7 +18,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
         public DateTime C;
         public bool D;
         public decimal E;
-        
+
         public SqlInt32 A1;
         public SqlString B1;
         public SqlDateTime C1;
@@ -26,8 +26,9 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
         public SqlDecimal E1;
 
         public TestFieldValues() : base(_fieldNames) { }
-                                   
-        public TestFieldValues(SoodaObjectReflectionBasedFieldValues values) : base(values)
+
+        public TestFieldValues(SoodaObjectReflectionBasedFieldValues values)
+            : base(values)
         {
         }
 
@@ -36,7 +37,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
             return new TestFieldValues(this);
         }
     }
-    
+
     [TestFixture]
     public class SoodaObjectReflectionBasedFieldValuesTest
     {
@@ -58,7 +59,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
             Assert.AreEqual(val.GetBoxedFieldValue(3), true);
             Assert.AreEqual(val.GetBoxedFieldValue(4), 100.0m);
         }
-            
+
         [Test]
         public void GetBoxedSqlNotNullFieldValueTest()
         {
@@ -77,7 +78,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
             Assert.AreEqual(val.GetBoxedFieldValue(8), true);
             Assert.AreEqual(val.GetBoxedFieldValue(9), 100.0m);
         }
-            
+
         [Test]
         public void GetBoxedSqlNullFieldValueTest()
         {
@@ -108,14 +109,14 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
             val.SetFieldValue(2, d0);
             val.SetFieldValue(3, true);
             val.SetFieldValue(4, 100.0m);
-            
+
             Assert.AreEqual(3, val.A);
             Assert.AreEqual("ala ma kota", val.B);
             Assert.AreEqual(d0, val.C);
             Assert.AreEqual(true, val.D);
             Assert.AreEqual(100.0m, val.E);
         }
-            
+
         [Test]
         public void SetSqlNotNullFieldValueTest()
         {
@@ -127,14 +128,14 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
             val.SetFieldValue(7, d0);
             val.SetFieldValue(8, true);
             val.SetFieldValue(9, 100.0m);
-            
+
             Assert.AreEqual((SqlInt32)3, val.A1);
             Assert.AreEqual((SqlString)"ala ma kota", val.B1);
             Assert.AreEqual((SqlDateTime)d0, val.C1);
             Assert.AreEqual((SqlBoolean)true, val.D1);
             Assert.AreEqual((SqlDecimal)100.0m, val.E1);
         }
-            
+
         [Test]
         public void SetSqlNullFieldValueTest()
         {
@@ -146,7 +147,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
             val.SetFieldValue(7, null);
             val.SetFieldValue(8, null);
             val.SetFieldValue(9, null);
-            
+
             Assert.AreEqual(SqlInt32.Null, val.A1);
             Assert.AreEqual(SqlString.Null, val.B1);
             Assert.AreEqual(SqlDateTime.Null, val.C1);

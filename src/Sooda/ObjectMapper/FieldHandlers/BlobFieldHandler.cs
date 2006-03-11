@@ -35,65 +35,76 @@ using System;
 using System.Data;
 using System.Data.SqlTypes;
 
-namespace Sooda.ObjectMapper.FieldHandlers {
-    public class BlobFieldHandler : SoodaFieldHandler {
-        public BlobFieldHandler(bool nullable) : base(nullable) {}
+namespace Sooda.ObjectMapper.FieldHandlers
+{
+    public class BlobFieldHandler : SoodaFieldHandler
+    {
+        public BlobFieldHandler(bool nullable) : base(nullable) { }
 
         protected override string TypeName
         {
-            get {
+            get
+            {
                 return "blob";
             }
         }
 
-        public override object RawRead(IDataRecord record, int pos) {
+        public override object RawRead(IDataRecord record, int pos)
+        {
             return GetFromReader(record, pos);
         }
 
-        public static byte[] GetFromReader(IDataRecord record, int pos) {
+        public static byte[] GetFromReader(IDataRecord record, int pos)
+        {
             long n = record.GetBytes(pos, 0, null, 0, 0);
             byte[] buf = new byte[n];
             record.GetBytes(pos, 0, buf, 0, buf.Length);
             return buf;
         }
 
-        public override string RawSerialize(object val) {
+        public override string RawSerialize(object val)
+        {
             return SerializeToString(val);
         }
 
-        public override object RawDeserialize(string s) {
+        public override object RawDeserialize(string s)
+        {
             return DeserializeFromString(s);
         }
 
-        public static string SerializeToString(object obj) {
-            byte[] d = (byte[]) obj;
+        public static string SerializeToString(object obj)
+        {
+            byte[] d = (byte[])obj;
             return System.Convert.ToBase64String(d);
         }
 
-        public static object DeserializeFromString(string s) {
+        public static object DeserializeFromString(string s)
+        {
             return Convert.FromBase64String(s);
         }
 
         private static object _zeroValue = new byte[0];
-        public override object ZeroValue() {
+        public override object ZeroValue()
+        {
             return _zeroValue;
         }
 
-        public override Type GetFieldType() {
+        public override Type GetFieldType()
+        {
             return typeof(byte[]);
         }
 
-		public override Type GetSqlType()
-		{
-			return typeof(SqlBinary);
-		}
+        public override Type GetSqlType()
+        {
+            return typeof(SqlBinary);
+        }
 
-		public override void SetupDBParameter(IDbDataParameter parameter, object value)
-		{
-			parameter.Value = value;
-			parameter.DbType = DbType.Binary;
-		}
-        
+        public override void SetupDBParameter(IDbDataParameter parameter, object value)
+        {
+            parameter.Value = value;
+            parameter.DbType = DbType.Binary;
+        }
+
         public override string GetTypedWrapperClass(bool nullable)
         {
             return null; // no typed wrapper for this field type
@@ -101,17 +112,19 @@ namespace Sooda.ObjectMapper.FieldHandlers {
 
         // type conversions - used in generated stub code
 
-        public static System.Data.SqlTypes.SqlBinary GetSqlNullableValue(object fieldValue) {
+        public static System.Data.SqlTypes.SqlBinary GetSqlNullableValue(object fieldValue)
+        {
             if (fieldValue == null)
                 return System.Data.SqlTypes.SqlBinary.Null;
             else
                 return new System.Data.SqlTypes.SqlBinary((byte[])fieldValue);
         }
 
-        public static byte[] GetNotNullValue(object val) {
+        public static byte[] GetNotNullValue(object val)
+        {
             if (val == null)
                 throw new InvalidOperationException("Attempt to read a non-null value that isn't set yet");
-            return (byte[]) val;
+            return (byte[])val;
         }
-	}
+    }
 }

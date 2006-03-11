@@ -32,7 +32,7 @@
 // 
 
 
-namespace Sooda.QL.TypedWrappers 
+namespace Sooda.QL.TypedWrappers
 {
     public class SoqlNullableBooleanWrapperExpression : SoqlBooleanWrapperExpression
     {

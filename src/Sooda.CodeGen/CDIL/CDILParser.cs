@@ -6,14 +6,15 @@ using System.Collections.Specialized;
 
 namespace Sooda.CodeGen.CDIL
 {
-	public class CDILParser : CDILTokenizer
-	{
+    public class CDILParser : CDILTokenizer
+    {
         private CDILContext _context;
 
-		public CDILParser(string txt, CDILContext context) : base(Preprocess(txt, context))
-		{
+        public CDILParser(string txt, CDILContext context)
+            : base(Preprocess(txt, context))
+        {
             _context = context;
-		}
+        }
 
         private static string Preprocess(string txt, CDILContext context)
         {
@@ -332,7 +333,7 @@ namespace Sooda.CodeGen.CDIL
                     Expect(CDILToken.RightParen);
                     currentValue = methodInvoke;
                     continue;
-                } 
+                }
                 else if (TokenType == CDILToken.Dollar)
                 {
                     GetNextToken();
@@ -490,7 +491,7 @@ namespace Sooda.CodeGen.CDIL
             // TODO: add support for parameters
             return decl;
         }
-        
+
         public CodeMemberMethod ParseMethod()
         {
             CodeMemberMethod method = new CodeMemberMethod();
@@ -515,13 +516,13 @@ namespace Sooda.CodeGen.CDIL
             while (TokenType != CDILToken.RightParen && TokenType != CDILToken.EOF)
             {
                 bool varargs = false;
-                
+
                 if (IsKeyword("params"))
                 {
                     varargs = true;
                     GetNextToken();
                 }
-                    
+
                 CodeTypeReference typeName = ParseType();
                 string varName = EatKeyword();
                 CodeParameterDeclarationExpression cpd = new CodeParameterDeclarationExpression(typeName, varName);

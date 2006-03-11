@@ -35,8 +35,8 @@ using System;
 
 namespace Sooda.Logging
 {
-	public abstract class Logger
-	{
+    public abstract class Logger
+    {
         public abstract bool IsTraceEnabled { get; }
         public abstract void Trace(IFormatProvider fp, string format, params object[] par);
         public abstract void Trace(string format, params object[] par);

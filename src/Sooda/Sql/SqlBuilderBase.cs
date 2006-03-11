@@ -38,44 +38,57 @@ using System.Collections;
 
 using Sooda.QL;
 
-namespace Sooda.Sql {
-	public abstract class SqlBuilderBase : ISqlBuilder {
-		public virtual string GetDDLCommandTerminator() {
-			return ";" + Environment.NewLine;
-		}
+namespace Sooda.Sql
+{
+    public abstract class SqlBuilderBase : ISqlBuilder
+    {
+        public virtual string GetDDLCommandTerminator()
+        {
+            return ";" + Environment.NewLine;
+        }
 
-		public virtual SqlOuterJoinSyntax OuterJoinSyntax
-		{
-			get {
-				return SqlOuterJoinSyntax.Ansi;
-			}
-		}
+        public virtual SqlOuterJoinSyntax OuterJoinSyntax
+        {
+            get
+            {
+                return SqlOuterJoinSyntax.Ansi;
+            }
+        }
 
-		public void GenerateCreateTableField(TextWriter xtw, Sooda.Schema.FieldInfo fieldInfo) {
-			Console.Write("\t{0} {1} {2}", fieldInfo.DBColumnName, GetSQLDataType(fieldInfo), fieldInfo.IsNullable ? "null" : "not null");
-		}
+        public void GenerateCreateTableField(TextWriter xtw, Sooda.Schema.FieldInfo fieldInfo)
+        {
+            Console.Write("\t{0} {1} {2}", fieldInfo.DBColumnName, GetSQLDataType(fieldInfo), fieldInfo.IsNullable ? "null" : "not null");
+        }
 
-		public void GenerateCreateTable(TextWriter xtw, Sooda.Schema.TableInfo tableInfo) {
-			xtw.WriteLine("create table {0} (", tableInfo.DBTableName);
-			for (int i = 0; i < tableInfo.Fields.Count; ++i) {
-				GenerateCreateTableField(xtw, tableInfo.Fields[i]);
-				if (i == tableInfo.Fields.Count - 1)
-					Console.WriteLine();
-				else
-					Console.WriteLine(",");
-			}
-			xtw.Write(")");
-			xtw.Write(GetDDLCommandTerminator());
-		}
+        public void GenerateCreateTable(TextWriter xtw, Sooda.Schema.TableInfo tableInfo)
+        {
+            xtw.WriteLine("create table {0} (", tableInfo.DBTableName);
+            for (int i = 0; i < tableInfo.Fields.Count; ++i)
+            {
+                GenerateCreateTableField(xtw, tableInfo.Fields[i]);
+                if (i == tableInfo.Fields.Count - 1)
+                    Console.WriteLine();
+                else
+                    Console.WriteLine(",");
+            }
+            xtw.Write(")");
+            xtw.Write(GetDDLCommandTerminator());
+        }
 
-		public void GeneratePrimaryKey(TextWriter xtw, Sooda.Schema.TableInfo tableInfo) {
+        public void GeneratePrimaryKey(TextWriter xtw, Sooda.Schema.TableInfo tableInfo)
+        {
             bool first = true;
-            
-            foreach (Sooda.Schema.FieldInfo fi in tableInfo.Fields) {
-                if (fi.IsPrimaryKey) {
-                    if (first) {
+
+            foreach (Sooda.Schema.FieldInfo fi in tableInfo.Fields)
+            {
+                if (fi.IsPrimaryKey)
+                {
+                    if (first)
+                    {
                         xtw.Write("alter table {0} add primary key (", tableInfo.DBTableName);
-                    } else {
+                    }
+                    else
+                    {
                         xtw.Write(", ");
                     }
                     xtw.Write(fi.DBColumnName);
@@ -87,12 +100,15 @@ namespace Sooda.Sql {
                 xtw.Write(")");
                 xtw.Write(GetDDLCommandTerminator());
             }
-		}
+        }
 
-		public void GenerateForeignKeys(TextWriter xtw, Sooda.Schema.TableInfo tableInfo) {
-            foreach (Sooda.Schema.FieldInfo fi in tableInfo.Fields) {
-                if (fi.References != null) {
-                    xtw.Write("alter table {0} add constraint FK_{0}_{1} foreign key ({2}) references {3}({4})", 
+        public void GenerateForeignKeys(TextWriter xtw, Sooda.Schema.TableInfo tableInfo)
+        {
+            foreach (Sooda.Schema.FieldInfo fi in tableInfo.Fields)
+            {
+                if (fi.References != null)
+                {
+                    xtw.Write("alter table {0} add constraint FK_{0}_{1} foreign key ({2}) references {3}({4})",
                             tableInfo.DBTableName, fi.DBColumnName, fi.DBColumnName,
                             fi.ReferencedClass.UnifiedTables[0].DBTableName, fi.ReferencedClass.GetFirstPrimaryKeyField().DBColumnName
                             );
@@ -100,46 +116,48 @@ namespace Sooda.Sql {
                 }
             }
         }
-        
-		public abstract string GetSQLDataType(Sooda.Schema.FieldInfo fi);
 
-		public abstract void BuildCommandWithParameters(IDbCommand command, bool append, string query, object[] par);
+        public abstract string GetSQLDataType(Sooda.Schema.FieldInfo fi);
 
-		protected virtual bool SetDbTypeFromValue(IDbDataParameter parameter, object value, SoqlLiteralValueModifiers modifiers) {
+        public abstract void BuildCommandWithParameters(IDbCommand command, bool append, string query, object[] par);
+
+        protected virtual bool SetDbTypeFromValue(IDbDataParameter parameter, object value, SoqlLiteralValueModifiers modifiers)
+        {
             object o = paramTypes[value.GetType()];
-			if (o == null)
-				return false;
-			parameter.DbType = (DbType)o;
-			return true;
-		}
+            if (o == null)
+                return false;
+            parameter.DbType = (DbType)o;
+            return true;
+        }
 
-		private static Hashtable paramTypes = new Hashtable();
+        private static Hashtable paramTypes = new Hashtable();
 
-		static SqlBuilderBase() {
-			paramTypes[typeof(SByte)] = DbType.SByte;
-			paramTypes[typeof(Int16)] = DbType.Int16;
-			paramTypes[typeof(Int32)] = DbType.Int32;
-			paramTypes[typeof(Int64)] = DbType.Int64;
-			paramTypes[typeof(Single)] = DbType.Single;
-			paramTypes[typeof(Double)] = DbType.Double;
-			paramTypes[typeof(String)] = DbType.String;
-			paramTypes[typeof(Boolean)] = DbType.Boolean;
-			paramTypes[typeof(Decimal)] = DbType.Decimal;
-			paramTypes[typeof(Guid)] = DbType.Guid;
+        static SqlBuilderBase()
+        {
+            paramTypes[typeof(SByte)] = DbType.SByte;
+            paramTypes[typeof(Int16)] = DbType.Int16;
+            paramTypes[typeof(Int32)] = DbType.Int32;
+            paramTypes[typeof(Int64)] = DbType.Int64;
+            paramTypes[typeof(Single)] = DbType.Single;
+            paramTypes[typeof(Double)] = DbType.Double;
+            paramTypes[typeof(String)] = DbType.String;
+            paramTypes[typeof(Boolean)] = DbType.Boolean;
+            paramTypes[typeof(Decimal)] = DbType.Decimal;
+            paramTypes[typeof(Guid)] = DbType.Guid;
             paramTypes[typeof(TimeSpan)] = DbType.Int32;
             paramTypes[typeof(byte[])] = DbType.Binary;
-			paramTypes[typeof(System.Drawing.Image)] = DbType.Binary;
-			paramTypes[typeof(System.Drawing.Bitmap)] = DbType.Binary;
-		}
+            paramTypes[typeof(System.Drawing.Image)] = DbType.Binary;
+            paramTypes[typeof(System.Drawing.Bitmap)] = DbType.Binary;
+        }
 
-		public virtual string QuoteFieldName(string s) 
-		{
-			return String.Concat("[", s, "]");
-		}
+        public virtual string QuoteFieldName(string s)
+        {
+            return String.Concat("[", s, "]");
+        }
 
-		public abstract SqlTopSupportMode TopSupport
-		{
-			get;
-		}
-	}
+        public abstract SqlTopSupportMode TopSupport
+        {
+            get;
+        }
+    }
 }

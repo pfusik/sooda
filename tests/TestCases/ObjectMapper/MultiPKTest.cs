@@ -40,34 +40,34 @@ using Sooda.UnitTests.Objects;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.ObjectMapper 
+namespace Sooda.UnitTests.TestCases.ObjectMapper
 {
     [TestFixture]
-    public class MultiPKTest 
+    public class MultiPKTest
     {
         [Test]
-        public void SimpleTest() 
+        public void SimpleTest()
         {
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) 
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
             {
                 testDataSource.Open();
 
-                using (SoodaTransaction tran = new SoodaTransaction()) 
+                using (SoodaTransaction tran = new SoodaTransaction())
                 {
                     tran.RegisterDataSource(testDataSource);
-                    Console.WriteLine(MultiKey.Load(1,1).Value);
-                    Console.WriteLine(MultiKey.Load(1,1).Value);
+                    Console.WriteLine(MultiKey.Load(1, 1).Value);
+                    Console.WriteLine(MultiKey.Load(1, 1).Value);
                 }
             }
         }
         [Test]
-        public void GetListTest() 
+        public void GetListTest()
         {
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) 
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
             {
                 testDataSource.Open();
 
-                using (SoodaTransaction tran = new SoodaTransaction()) 
+                using (SoodaTransaction tran = new SoodaTransaction())
                 {
                     tran.RegisterDataSource(testDataSource);
                     foreach (MultiKey mk in MultiKey.GetList(SoodaWhereClause.Unrestricted))
@@ -78,13 +78,13 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
             }
         }
         [Test]
-        public void MultiTableGetListTest() 
+        public void MultiTableGetListTest()
         {
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) 
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
             {
                 testDataSource.Open();
 
-                using (SoodaTransaction tran = new SoodaTransaction()) 
+                using (SoodaTransaction tran = new SoodaTransaction())
                 {
                     tran.RegisterDataSource(testDataSource);
                     foreach (MultiKey mk in MultiKey.GetList(SoodaWhereClause.Unrestricted))
@@ -95,13 +95,13 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
             }
         }
         [Test]
-        public void MultiTableGetListTestWithWhere() 
+        public void MultiTableGetListTestWithWhere()
         {
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) 
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
             {
                 testDataSource.Open();
 
-                using (SoodaTransaction tran = new SoodaTransaction()) 
+                using (SoodaTransaction tran = new SoodaTransaction())
                 {
                     tran.RegisterDataSource(testDataSource);
                     foreach (MultiKey mk in MultiKey.GetList(new SoodaWhereClause("Contact = {0}", 1)))
@@ -112,13 +112,13 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
             }
         }
         [Test]
-        public void InsertTest() 
+        public void InsertTest()
         {
             using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
             {
                 testDataSource.Open();
 
-                using (SoodaTransaction tran = new SoodaTransaction()) 
+                using (SoodaTransaction tran = new SoodaTransaction())
                 {
                     tran.RegisterDataSource(testDataSource);
                     MultiKey mk = new MultiKey();
@@ -131,7 +131,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
                     tran.Commit();
                 }
 
-                using (SoodaTransaction tran = new SoodaTransaction()) 
+                using (SoodaTransaction tran = new SoodaTransaction())
                 {
                     tran.RegisterDataSource(testDataSource);
                     MultiKey mk2 = MultiKey.Load(99, 123);
@@ -142,7 +142,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
                     tran.Commit();
                 }
 
-                using (SoodaTransaction tran = new SoodaTransaction()) 
+                using (SoodaTransaction tran = new SoodaTransaction())
                 {
                     tran.RegisterDataSource(testDataSource);
                     MultiKey mk2 = MultiKey.Load(99, 123);
