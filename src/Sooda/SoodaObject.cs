@@ -315,7 +315,7 @@ namespace Sooda
 
             if (_fieldValues == null)
             {
-                SoodaCacheEntry cachedData = SoodaCache.FindObjectData(GetClassInfo().Name, primaryKeyValue);
+                SoodaCacheEntry cachedData = GetTransaction().Cache.Find(GetClassInfo().Name, primaryKeyValue);
                 if (cachedData != null)
                 {
                     GetTransaction().Statistics.RegisterCacheHit();
@@ -323,7 +323,7 @@ namespace Sooda
 
                     if (logger.IsTraceEnabled)
                     {
-                        logger.Trace("Initializing object {0}({1}) from cache: {2}", this.GetType().Name, primaryKeyValue, cachedData);
+                        logger.Trace("Initializing object {0}({1}) from cache.", this.GetType().Name, primaryKeyValue);
                     }
                     _fieldValues = cachedData.Data;
                     _dataLoadedMask = cachedData.DataLoadedMask;
@@ -335,7 +335,7 @@ namespace Sooda
                     SoodaStatistics.Global.RegisterCacheMiss();
                     if (logger.IsTraceEnabled)
                     {
-                        logger.Trace("Object {0}({1}) not in cache. Creating uninitialized object.", this.GetType().Name, primaryKeyValue, cachedData);
+                        logger.Trace("Object {0}({1}) not in cache.", this.GetType().Name, primaryKeyValue);
                     }
                 }
             }
@@ -616,12 +616,6 @@ namespace Sooda
         protected internal virtual void AfterDeserialize() { }
         protected virtual void InitNewObject() { }
 
-        internal bool CanBeCached()
-        {
-            return true;
-            // return GetClassInfo().Cached;
-        }
-
         #region 'Loaded' state management
 
         internal bool IsAnyDataLoaded()
@@ -715,8 +709,11 @@ namespace Sooda
             }
             if (!IsObjectDirty())
             {
-                SoodaCache.AddObject(GetClassInfo().Name, GetPrimaryKeyValue(), GetCacheEntry());
-                FromCache = true;
+                if (GetTransaction().CachingPolicy.ShouldCacheObject(this))
+                {
+                    GetTransaction().Cache.Add(GetClassInfo().Name, GetPrimaryKeyValue(), GetCacheEntry());
+                    FromCache = true;
+                }
             }
 
             // if we've started with a first table and there are more to be processed
@@ -804,7 +801,7 @@ namespace Sooda
         {
             if (logger.IsTraceEnabled)
             {
-                logger.Trace("Loading data for {0}({1}) from table #{2}", GetClassInfo().Name, keyVal, tableNumber);
+                // logger.Trace("Loading data for {0}({1}) from table #{2}", GetClassInfo().Name, keyVal, tableNumber);
             };
 
             try
@@ -927,7 +924,21 @@ namespace Sooda
 
         internal void InvalidateCacheAfterCommit()
         {
-            SoodaCache.InvalidateObject(GetClassInfo().Name, GetPrimaryKeyValue());
+            SoodaCacheInvalidateReason reason = SoodaCacheInvalidateReason.Updated;
+            if (IsMarkedForDelete())
+            {
+                reason = SoodaCacheInvalidateReason.Deleted;
+            }
+            else if (IsInsertMode())
+            {
+                reason = SoodaCacheInvalidateReason.Inserted;
+            }
+            else
+            {
+                reason = SoodaCacheInvalidateReason.Updated;
+            }
+                
+            GetTransaction().Cache.Invalidate(GetClassInfo().Name, GetPrimaryKeyValue(), reason);
         }
 
         internal void PostCommit()

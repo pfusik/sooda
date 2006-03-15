@@ -190,7 +190,7 @@ namespace Sooda.ObjectMapper
                     cacheKey = SoodaCache.GetCollectionKey(classInfo, whereClause);
                 }
             }
-            IEnumerable keysCollection = SoodaCache.LoadCollection(cacheKey);
+            IEnumerable keysCollection = transaction.Cache.LoadCollection(cacheKey);
             if (keysCollection != null)
             {
                 foreach (object o in keysCollection)
@@ -240,7 +240,7 @@ namespace Sooda.ObjectMapper
                     if (cached)
                     {
                         IList primaryKeys = Sooda.Caching.CacheUtils.ConvertSoodaObjectListToKeyList(readObjects);
-                        SoodaCache.StoreCollection(cacheKey, primaryKeys, null);
+                        transaction.Cache.StoreCollection(cacheKey, primaryKeys, null);
                     }
                 }
             }

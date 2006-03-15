@@ -53,7 +53,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
             using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
             {
                 testDataSource.Open();
-                SoodaCache.Clear();
+                SoodaCache.DefaultCache.Clear();
 
                 using (SoodaTransaction tran = new SoodaTransaction())
                 {
@@ -82,8 +82,6 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
                     Console.WriteLine(Contact.Mary.Type.Description);
                     tran.Commit();
                 }
-
-                SoodaCache.Dump(Console.Out);
             }
         }
     }

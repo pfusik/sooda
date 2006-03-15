@@ -53,7 +53,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
             using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
             {
                 testDataSource.Open();
-                SoodaCache.Clear();
+                SoodaCache.DefaultCache.Clear();;
 
                 using (SoodaTransaction tran = new SoodaTransaction())
                 {
@@ -87,8 +87,6 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
                     Console.WriteLine("Comitting...");
                     tran.Commit();
                 }
-
-                SoodaCache.Dump(Console.Out);
             }
         }
 
@@ -98,7 +96,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
             using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
             {
                 testDataSource.Open();
-                SoodaCache.Clear();
+                SoodaCache.DefaultCache.Clear();;
 
                 using (SoodaTransaction tran = new SoodaTransaction())
                 {
@@ -143,8 +141,6 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
 
                     // tran.Commit();
                 }
-
-                SoodaCache.Dump(Console.Out);
             }
         }
     }

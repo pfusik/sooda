@@ -60,6 +60,7 @@ namespace Sooda.Sql
         private IsolationLevel _isolationLevel = IsolationLevel.ReadCommitted;
         private double queryTimeTraceWarn = 10.0;
         private double queryTimeTraceInfo = 2.0;
+
         public SqlDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo)
             : base(dataSourceInfo)
         {
@@ -321,6 +322,7 @@ namespace Sooda.Sql
                 StringWriter sw = new StringWriter();
                 SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, schemaInfo, SqlBuilder);
                 converter.IndentOutput = false;
+                converter.GenerateColumnAliases = false;
                 //logger.Trace("Converting {0}", queryExpression);
                 converter.ConvertQuery(queryExpression);
                 string query = sw.ToString();
@@ -418,6 +420,7 @@ namespace Sooda.Sql
                 StringWriter sw = new StringWriter();
                 SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, schemaInfo, SqlBuilder);
                 converter.IndentOutput = false;
+                converter.GenerateColumnAliases = false;
                 //logger.Trace("Converting {0}", queryExpression);
                 converter.ConvertQuery(queryExpression);
                 string query = sw.ToString();
@@ -792,6 +795,7 @@ namespace Sooda.Sql
                 StringWriter sw = new StringWriter();
                 SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, tableInfo.OwnerClass.Schema, SqlBuilder);
                 converter.IndentOutput = false;
+                converter.GenerateColumnAliases = false;
                 converter.ConvertQuery(queryExpression);
 
                 string query = sw.ToString();
@@ -819,6 +823,7 @@ namespace Sooda.Sql
                 StringWriter sw = new StringWriter();
                 SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, relationInfo.Schema, SqlBuilder);
                 converter.IndentOutput = false;
+                converter.GenerateColumnAliases = false;
                 converter.ConvertQuery(SoqlParser.ParseQuery(soqlQuery));
                 string sqlQuery = sw.ToString();
 
@@ -866,11 +871,6 @@ namespace Sooda.Sql
 
             try
             {
-                //cmd.CommandText = "aaa";
-                if (sqllogger.IsTraceEnabled)
-                {
-                    sqllogger.Trace("Executing query: {0}", LogCommand(cmd));
-                }
                 sw.Start();
                 IDataReader retval = cmd.ExecuteReader();
                 sw.Stop();
@@ -893,15 +893,15 @@ namespace Sooda.Sql
                 SoodaStatistics.Global.RegisterQueryTime(timeInSeconds);
                 if (timeInSeconds > queryTimeTraceWarn && sqllogger.IsWarnEnabled)
                 {
-                    sqllogger.Warn("Query took {0} s. Query: {1}", timeInSeconds, LogCommand(cmd));
+                    sqllogger.Warn("Query time: {0} ms. {1}", Math.Round(timeInSeconds * 1000.0, 3), LogCommand(cmd));
                 }
                 else if (timeInSeconds > queryTimeTraceInfo && sqllogger.IsInfoEnabled)
                 {
-                    sqllogger.Info("Query took {0} s. Query: {1}", timeInSeconds, LogCommand(cmd));
+                    sqllogger.Info("Query time: {0} ms: {1}", Math.Round(timeInSeconds * 1000.0, 3), LogCommand(cmd));
                 }
                 else
                 {
-                    sqllogger.Trace("Query took {0} s.", timeInSeconds);
+                    sqllogger.Trace("Query time: {0} ms. {1}", Math.Round(timeInSeconds * 1000.0, 3), LogCommand(cmd));
                 }
             }
         }

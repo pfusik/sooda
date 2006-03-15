@@ -96,6 +96,16 @@
     <Compile Include="Caching\CacheUtils.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Caching\ISoodaCacheLock.cs" />
+    <Compile Include="Caching\SoodaCacheInvalidateReason.cs" />
+    <Compile Include="Caching\SoodaInProcessCache.cs" />
+    <Compile Include="Caching\ISoodaCache.cs" />
+    <Compile Include="Caching\SoodaCacheSmallAndMediumPolicy.cs" />
+    <Compile Include="Caching\SoodaCacheSmallPolicy.cs" />
+    <Compile Include="Caching\SoodaCacheAllPolicy.cs" />
+    <Compile Include="Caching\SoodaNoCache.cs" />
+    <Compile Include="Caching\SoodaNoCachingPolicy.cs" />
+    <Compile Include="Caching\ISoodaCachingPolicy.cs" />
     <Compile Include="Caching\SoodaCachedCollectionKeyComplex.cs" />
     <Compile Include="Caching\SoodaCachedCollectionKeyAllRecords.cs" />
     <Compile Include="Caching\SoodaCachedCollectionKeySimple.cs" />

@@ -53,8 +53,6 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
             using (SoodaTransaction tran = new SoodaTransaction())
             {
                 Contact.Mary.Name = "temp1";
-                SoodaCache.Dump(Console.Out);
-
                 ContactList cl = Contact.GetList(tran, new SoodaWhereClause("Name = {0}", "Mary Manager"), SoodaOrderBy.Unsorted);
                 Assert.AreEqual(0, cl.Count);
             }

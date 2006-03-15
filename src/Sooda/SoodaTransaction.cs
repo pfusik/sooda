@@ -44,6 +44,7 @@ using Sooda.Schema;
 
 using Sooda.ObjectMapper;
 using Sooda.Collections;
+using Sooda.Caching;
 
 using Sooda.Logging;
 
@@ -88,6 +89,8 @@ namespace Sooda
         private SchemaInfo _schema;
         internal bool _savingObjects = false;
         private bool _isPrecommit = false;
+        private ISoodaCachingPolicy _cachingPolicy = SoodaCache.DefaultCachingPolicy;
+        private ISoodaCache _cache = SoodaCache.DefaultCache;
 
         public static Assembly DefaultObjectsAssembly = null;
 
@@ -540,7 +543,7 @@ namespace Sooda
                 }
             }
 
-            using (Sooda.Caching.SoodaCache.BeginCommit())
+            using (Cache.Lock())
             {
                 foreach (SoodaDataSource source in _dataSources)
                 {
@@ -1075,6 +1078,18 @@ namespace Sooda
         public SoodaObjectCollection DeletedObjects
         {
             get { return _deletedObjects; }
+        }
+
+        public ISoodaCachingPolicy CachingPolicy
+        {
+            get { return _cachingPolicy; }
+            set { _cachingPolicy = value; }
+        }
+
+        public ISoodaCache Cache
+        {
+            get { return _cache; }
+            set { _cache = value; }
         }
     }
 }

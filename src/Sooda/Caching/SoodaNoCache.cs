@@ -32,45 +32,58 @@
 // 
 
 using System;
+using System.IO;
+using System.Collections;
+using System.Threading;
 
-using Sooda.Caching;
-using Sooda.UnitTests.Objects;
+using Sooda.Logging;
+using Sooda.Schema;
+using Sooda.QL;
 
-namespace Sooda.UnitTests.TestCases
+namespace Sooda.Caching
 {
-    public class TestSqlDataSource : Sooda.Sql.SqlDataSource, IDisposable
+    public class SoodaNoCache : ISoodaCache
     {
-        public TestSqlDataSource(string name) : base(_DatabaseSchema.GetSchema().GetDataSourceInfo(name)) { }
-
-        public override void Close()
+        SoodaCacheEntry ISoodaCache.Find(string className, object primaryKeyValue)
         {
-            Console.WriteLine("TestSqlDataSource.Close({0})", Name);
+            return null;
         }
 
-        public override void Commit()
+        void ISoodaCache.Add(string className, object primaryKeyValue, SoodaCacheEntry entry)
         {
-            Console.WriteLine("TestSqlDataSource.Commit()");
-            // do nothing
         }
 
-        public override void Rollback()
+        void ISoodaCache.Invalidate(string className, object primaryKeyValue, SoodaCacheInvalidateReason reason)
         {
-            throw new NotSupportedException("Rollback not supported here!");
-            // do nothing
         }
 
-        public override void Open()
+        void ISoodaCache.Clear()
         {
-            Console.WriteLine("Opening: {0}", this.Name);
-            base.Open();
         }
 
-
-        public new void Dispose()
+        IList ISoodaCache.LoadCollection(SoodaCachedCollectionKey key)
         {
-            Console.WriteLine("TestSqlDataSource.Dispose!");
-            base.Close();
-            SoodaCache.DefaultCache.Clear();;
+            return null;
+        }
+
+        void ISoodaCache.StoreCollection(SoodaCachedCollectionKey cacheKey, IList primaryKeys, ClassInfoCollection dependentClasses)
+        {
+        }
+
+        ISoodaCacheLock ISoodaCache.Lock()
+        {
+            return new DummySoodaCacheLock();
+        }
+
+        void ISoodaCache.Unlock(ISoodaCacheLock theLock)
+        {
+        }
+
+        class DummySoodaCacheLock : ISoodaCacheLock
+        {
+            public void Dispose()
+            {
+            }
         }
     }
 }

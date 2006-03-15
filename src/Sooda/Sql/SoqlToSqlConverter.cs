@@ -52,6 +52,7 @@ namespace Sooda.Sql
         private Logger logger = LogManager.GetLogger("Sooda.Sql.SoqlToSqlConverter");
 
         public bool DisableBooleanExpansion = false;
+        public bool GenerateColumnAliases = true;
 
         public SoqlToSqlConverter(TextWriter output, SchemaInfo schema, ISqlBuilder builder)
             : base(output)
@@ -307,8 +308,11 @@ namespace Sooda.Sql
                 }
                 Output.Write(".");
                 Output.Write(fi.DBColumnName);
-                Output.Write(" as ");
-                Output.Write(_builder.QuoteFieldName(fi.Name));
+                if (GenerateColumnAliases)
+                {
+                    Output.Write(" as ");
+                    Output.Write(_builder.QuoteFieldName(fi.Name));
+                }
                 first = false;
             }
         }
@@ -628,8 +632,11 @@ namespace Sooda.Sql
                             Output.Write(v.FromAliases[0]);
                             Output.Write(".");
                             Output.Write(pkfi.DBColumnName);
-                            Output.Write(" as ");
-                            Output.Write(_builder.QuoteFieldName(pkfi.Name));
+                            if (GenerateColumnAliases)
+                            {
+                                Output.Write(" as ");
+                                Output.Write(_builder.QuoteFieldName(pkfi.Name));
+                            }
                             first = false;
                         }
                     }
@@ -656,7 +663,7 @@ namespace Sooda.Sql
                                 Output.Write(" as ");
                                 Output.Write(_builder.QuoteFieldName(v.SelectAliases[i]));
                             }
-                            else
+                            else if (GenerateColumnAliases)
                             {
                                 if (v.SelectExpressions[i] is ISoqlSelectAliasProvider)
                                 {
@@ -821,9 +828,16 @@ namespace Sooda.Sql
                         }
                         foreach (string s in (StringCollection)v.FromJoins[i])
                         {
-                            Output.WriteLine();
-                            WriteIndentString();
-                            Output.Write("         ");
+                            if (IndentOutput)
+                            {
+                                Output.WriteLine();
+                                WriteIndentString();
+                                Output.Write("         ");
+                            }
+                            else
+                            {
+                                Output.Write(" ");
+                            }
                             Output.Write(s);
                         }
                     }
