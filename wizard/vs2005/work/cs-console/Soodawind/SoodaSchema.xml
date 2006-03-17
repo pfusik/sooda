@@ -1,6 +1,5 @@
 <schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
     <datasource name="default" type="Sooda.Sql.SqlDataSource" />
-<!--
     <class name="Category">
         <table name="Categories">
             <field name="ID" dbcolumn="CategoryID" type="Integer" primaryKey="true" nullable="false" />
@@ -49,5 +48,4 @@
             <field name="Phone" dbcolumn="Phone" type="String" size="24" nullable="true" />
         </table>
     </class>
--->    
 </schema>

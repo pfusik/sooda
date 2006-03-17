@@ -33,11 +33,13 @@
 
 using System;
 
-namespace Sooda.Schema {
+namespace Sooda.Schema
+{
 
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [Serializable]
-    public class ConstantInfo {
+    public class ConstantInfo
+    {
 
         [System.Xml.Serialization.XmlAttributeAttribute("name")]
         public string Name;

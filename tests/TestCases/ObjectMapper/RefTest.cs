@@ -40,12 +40,16 @@ using Sooda.UnitTests.Objects;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.ObjectMapper {
+namespace Sooda.UnitTests.TestCases.ObjectMapper
+{
     [TestFixture]
-    public class RefTest {
+    public class RefTest
+    {
         [Test]
-        public void Int32Test() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void Int32Test()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 PKInt32 test2 = PKInt32.Load(7777778);
 
                 Assert.AreEqual(test2.Parent.Id, 7777777);
@@ -55,8 +59,10 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void Int64Test() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void Int64Test()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 PKInt64 test2 = PKInt64.Load(77777777777778);
 
                 Assert.AreEqual(test2.Parent.Id, 77777777777777);
@@ -66,8 +72,10 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void StringTest() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void StringTest()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 PKString test2 = PKString.Load("xxxxxxx");
 
                 Assert.AreEqual(test2.Parent.Id, "zzzzzzz");
@@ -77,8 +85,10 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void DateTimeTest() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void DateTimeTest()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 PKDateTime test2 = PKDateTime.Load(new DateTime(2000, 1, 1, 1, 0, 0));
 
                 Assert.AreEqual(test2.Parent.Id, new DateTime(2000, 1, 1, 0, 0, 0));
@@ -88,8 +98,10 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void BoolTest() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void BoolTest()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 PKBool test2 = PKBool.Load(false);
 
                 Assert.AreEqual(test2.Parent.Id, true);

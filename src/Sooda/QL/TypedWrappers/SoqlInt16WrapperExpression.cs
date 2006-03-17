@@ -37,7 +37,7 @@ using System;
 
 namespace Sooda.QL.TypedWrappers
 {
-    public class SoqlInt16WrapperExpression : SoqlTypedWrapperExpression 
+    public class SoqlInt16WrapperExpression : SoqlTypedWrapperExpression
     {
         public SoqlInt16WrapperExpression()
         {
@@ -57,7 +57,7 @@ namespace Sooda.QL.TypedWrappers
 
         public static SoqlBooleanExpression operator ==(SoqlInt16WrapperExpression left, SoqlInt16WrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.Equal); }
         public static SoqlBooleanExpression operator !=(SoqlInt16WrapperExpression left, SoqlInt16WrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.NotEqual); }
-        
+
         public SoqlBooleanExpression In(params SoqlInt16WrapperExpression[] inExpressions)
         {
             SoqlExpressionCollection rhs = new SoqlExpressionCollection();

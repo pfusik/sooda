@@ -59,26 +59,18 @@ using Sooda.UnitTests.BaseObjects.TypedQueries;
 [assembly: SoodaStubAssembly(typeof(Sooda.UnitTests.Objects._DatabaseSchema))]
 [assembly: SoodaConfig(XmlConfigFileName = "sooda.config.xml")]
 
-namespace ConsoleTest 
+namespace ConsoleTest
 {
-    class Class1 
+    class Class1
     {
-        ~Class1()
-        {
-            Console.WriteLine("Class1 finalizer");
-        }
-
-        static void Main(string[] args) 
+        static void Main(string[] args)
         {
             Sooda.Logging.LogManager.Implementation = new Sooda.Logging.ConsoleLoggingImplementation();
 
-            using (SoodaTransaction t = new SoodaTransaction())
-            {
-                //Group.LoadSingleObject(GroupField.Manager.Name == "Mary M}anager");
-                Contact.GetList(ContactField.Name == ContactField.Name);
-                Contact.GetList(new SoodaWhereClause(ContactField.Name == Soql.Param(0), "ala"));
-            }
-
+            Sooda.UnitTests.TestCases.Caching.CollectionTest ct = new Sooda.UnitTests.TestCases.Caching.CollectionTest();
+            ct.InvalidateTest();
+            //Sooda.UnitTests.TestCases.ObjectMapper.GetListTest t = new Sooda.UnitTests.TestCases.ObjectMapper.GetListTest();
+            //t.OrderByTest();
         }
     }
 }

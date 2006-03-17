@@ -17,15 +17,13 @@
     <target name="build">
         <mkdir dir="${soodawind.dir}" />
 
-        <loadtasks assembly="${sooda.dir}/Sooda.NAnt.Tasks.dll" />
-
         <copy todir="${soodawind.dir}">
             <fileset basedir="${sooda.dir}">
                 <include name="Sooda.dll" />
             </fileset>
         </copy>
 
-        <sooda-generate-code project="Soodawind.Objects/Soodawind.Objects.soodaproject" verbose="true" />
+        <exec program="${sooda.dir}/SoodaStubGen.exe" commandline="Soodawind.Objects/Soodawind.Objects-net-2.0.soodaproject" />
 
         <csc target="library" output="${soodawind.dir}/Soodawind.Objects.dll" debug="true">
             <references>                                  

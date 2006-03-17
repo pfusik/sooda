@@ -33,18 +33,22 @@
 
 
 
-namespace Sooda.QL {
-    public class SoqlLiteralExpression : SoqlExpression, ISoqlConstantExpression, ILiteralModifiers {
+namespace Sooda.QL
+{
+    public class SoqlLiteralExpression : SoqlExpression, ISoqlConstantExpression, ILiteralModifiers
+    {
         public readonly object LiteralValue;
         private SoqlLiteralValueModifiers _modifiers = null;
 
-        public SoqlLiteralExpression() {}
+        public SoqlLiteralExpression() { }
 
-        public SoqlLiteralExpression(object val) {
+        public SoqlLiteralExpression(object val)
+        {
             this.LiteralValue = val;
         }
 
-        public SoqlLiteralExpression(object val, SoqlLiteralValueModifiers modifiers) {
+        public SoqlLiteralExpression(object val, SoqlLiteralValueModifiers modifiers)
+        {
             this.LiteralValue = val;
             this.Modifiers = modifiers;
         }
@@ -56,11 +60,13 @@ namespace Sooda.QL {
         }
 
         // visitor pattern
-        public override void Accept(ISoqlVisitor visitor) {
+        public override void Accept(ISoqlVisitor visitor)
+        {
             visitor.Visit(this);
         }
 
-        public object GetConstantValue() {
+        public object GetConstantValue()
+        {
             return this.LiteralValue;
         }
 

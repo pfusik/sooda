@@ -3,12 +3,12 @@ using NLogLib = NLog;
 
 namespace Sooda.Logging.NLog
 {
-    
-public sealed class LoggingImplementation : Sooda.Logging.ILoggingImplementation
-{
-    public Sooda.Logging.Logger GetLogger(string name)
+
+    public sealed class LoggingImplementation : Sooda.Logging.ILoggingImplementation
     {
-        return new NLogLib.LoggerWrapper(NLogLib.LogManager.GetLogger(name));
+        public Sooda.Logging.Logger GetLogger(string name)
+        {
+            return new NLogLib.LoggerWrapper(NLogLib.LogManager.GetLogger(name));
+        }
     }
-}
 }

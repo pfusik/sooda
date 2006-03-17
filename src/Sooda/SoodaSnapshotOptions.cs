@@ -33,7 +33,8 @@
 
 using System;
 
-namespace Sooda {
+namespace Sooda
+{
     /// <summary>
     /// Specifies options for creation of object list snapshots using GetList().
     /// </summary>
@@ -77,19 +78,19 @@ namespace Sooda {
         /// </summary>
         KeysOnly = 16,
 
-		/// <summary>
-		/// Load the collection items from cache if possible.
-		/// </summary>
-		LoadFromCache = 32,
+        /// <summary>
+        /// Load the collection items from cache if possible.
+        /// </summary>
+        Cache = 32,
 
-		/// <summary>
-		/// Store the collection in cache after loading from the database.
-		/// </summary>
-		StoreInCache = 64,
+        /// <summary>
+        /// Store the collection in cache after loading from the database.
+        /// </summary>
+        NoCache = 64,
 
         /// <summary>
         /// Use prefetch definition from the schema to load related objects automatically
         /// </summary>
-        PrefetchRelated = 128
+        PrefetchRelated = 128,
     }
 }

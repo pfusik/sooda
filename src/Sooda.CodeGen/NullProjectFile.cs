@@ -35,16 +35,19 @@ using System;
 using System.Xml;
 using System.IO;
 
-namespace Sooda.CodeGen {
-    public class NullProjectFile : IProjectFile {
-        public NullProjectFile() {}
+namespace Sooda.CodeGen
+{
+    public class NullProjectFile : IProjectFile
+    {
+        public NullProjectFile() { }
 
-        public virtual void CreateNew(string outputNamespace, string assemblyName) {}
-        void IProjectFile.LoadFrom(string fileName) {}
-        void IProjectFile.SaveTo(string fileName) {}
-        void IProjectFile.AddCompileUnit(string relativeFileName) {}
-        void IProjectFile.AddResource(string relativeFileName) {}
-        string IProjectFile.GetProjectFileName(string outNamespace) {
+        public virtual void CreateNew(string outputNamespace, string assemblyName) { }
+        void IProjectFile.LoadFrom(string fileName) { }
+        void IProjectFile.SaveTo(string fileName) { }
+        void IProjectFile.AddCompileUnit(string relativeFileName) { }
+        void IProjectFile.AddResource(string relativeFileName) { }
+        string IProjectFile.GetProjectFileName(string outNamespace)
+        {
             return outNamespace + ".nullproject";
         }
     }

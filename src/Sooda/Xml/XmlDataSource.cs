@@ -35,25 +35,27 @@ using System.Data;
 
 using Sooda.Schema;
 
-namespace Sooda.Xml {
-    public class XmlDataSource : Sooda.SoodaDataSource 
+namespace Sooda.Xml
+{
+    public class XmlDataSource : Sooda.SoodaDataSource
     {
         DataSet ds = new DataSet();
 
-        public XmlDataSource(DataSourceInfo dataSourceInfo) : base(dataSourceInfo) 
+        public XmlDataSource(DataSourceInfo dataSourceInfo)
+            : base(dataSourceInfo)
         {
             // ds.Relations.Add(new DataRelation(
         }
 
-        public override void Open() {}
+        public override void Open() { }
 
-        public override void Rollback() {}
+        public override void Rollback() { }
 
-        public override void Commit() {}
+        public override void Commit() { }
 
-        public override void Close() {}
+        public override void Close() { }
 
-        public override IDataReader LoadObject(Sooda.SoodaObject obj, object keyValue, out TableInfo[] tables) 
+        public override IDataReader LoadObject(Sooda.SoodaObject obj, object keyValue, out TableInfo[] tables)
         {
             tables = null;
             // TODO:  Add XmlDataSource.LoadObject implementation
@@ -65,20 +67,21 @@ namespace Sooda.Xml {
             return null;
         }
 
-        public override IDataReader LoadObjectList(SchemaInfo schema, Sooda.Schema.ClassInfo classInfo, Sooda.SoodaWhereClause whereClause, Sooda.SoodaOrderBy orderBy, int topCount, SoodaSnapshotOptions options, out TableInfo[] tables) 
+        public override IDataReader LoadObjectList(SchemaInfo schema, Sooda.Schema.ClassInfo classInfo, Sooda.SoodaWhereClause whereClause, Sooda.SoodaOrderBy orderBy, int topCount, SoodaSnapshotOptions options, out TableInfo[] tables)
         {
             tables = null;
             // TODO:  Add XmlDataSource.LoadObjectList implementation
             return null;
         }
 
-        public override IDataReader LoadRefObjectList(SchemaInfo schema, Sooda.Schema.RelationInfo relationInfo, int masterColumn, object masterValue, out TableInfo[] tables) {
+        public override IDataReader LoadRefObjectList(SchemaInfo schema, Sooda.Schema.RelationInfo relationInfo, int masterColumn, object masterValue, out TableInfo[] tables)
+        {
             tables = null;
             // TODO:  Add XmlDataSource.LoadRefObjectList implementation
             return null;
         }
 
-        public override void MakeTuple(string tableName, string leftColumn, string rightColumn, object leftVal, object rightVal, int mode) 
+        public override void MakeTuple(string tableName, string leftColumn, string rightColumn, object leftVal, object rightVal, int mode)
         {
             // TODO:  Add XmlDataSource.MakeTuple implementation
         }
@@ -91,17 +94,19 @@ namespace Sooda.Xml {
         {
         }
 
-        public override void SaveObjectChanges(Sooda.SoodaObject obj, bool isPrecommit) 
+        public override void SaveObjectChanges(Sooda.SoodaObject obj, bool isPrecommit)
         {
             // TODO:  Add XmlDataSource.SaveObjectChanges implementation
         }
 
-        public override IDataReader LoadObjectTable(SoodaObject obj, object keyValue, int tableNumber, out TableInfo[] tables) {
+        public override IDataReader LoadObjectTable(SoodaObject obj, object keyValue, int tableNumber, out TableInfo[] tables)
+        {
             tables = null;
             return null;
         }
 
-        public override IDataReader ExecuteQuery(Sooda.QL.SoqlQueryExpression expr, SchemaInfo schema, object[] parameters) {
+        public override IDataReader ExecuteQuery(Sooda.QL.SoqlQueryExpression expr, SchemaInfo schema, object[] parameters)
+        {
             return null;
         }
 
@@ -109,7 +114,7 @@ namespace Sooda.Xml {
         {
             return null;
         }
-        
+
         public override int ExecuteNonQuery(string expr, object[] parameters)
         {
             return 0;

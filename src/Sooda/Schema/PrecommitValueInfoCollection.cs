@@ -33,12 +33,13 @@
 
 using System;
 
-namespace Sooda.Schema {
+namespace Sooda.Schema
+{
     /// <summary>
     /// A collection of elements of type PrecommitValueInfo
     /// </summary>
     [Serializable]
-    public class PrecommitValueInfoCollection: System.Collections.CollectionBase
+    public class PrecommitValueInfoCollection : System.Collections.CollectionBase
     {
         /// <summary>
         /// Initializes a new empty instance of the PrecommitValueInfoCollection class.
@@ -163,7 +164,7 @@ namespace Sooda.Schema {
         {
             get
             {
-                return (PrecommitValueInfo) this.List[index];
+                return (PrecommitValueInfo)this.List[index];
             }
             set
             {
@@ -185,7 +186,7 @@ namespace Sooda.Schema {
         /// <summary>
         /// Type-specific enumeration class, used by PrecommitValueInfoCollection.GetEnumerator.
         /// </summary>
-        public class Enumerator: System.Collections.IEnumerator
+        public class Enumerator : System.Collections.IEnumerator
         {
             private System.Collections.IEnumerator wrapped;
 
@@ -198,7 +199,7 @@ namespace Sooda.Schema {
             {
                 get
                 {
-                    return (PrecommitValueInfo) (this.wrapped.Current);
+                    return (PrecommitValueInfo)(this.wrapped.Current);
                 }
             }
 
@@ -206,7 +207,7 @@ namespace Sooda.Schema {
             {
                 get
                 {
-                    return (PrecommitValueInfo) (this.wrapped.Current);
+                    return (PrecommitValueInfo)(this.wrapped.Current);
                 }
             }
 

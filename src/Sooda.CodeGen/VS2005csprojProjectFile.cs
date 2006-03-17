@@ -34,18 +34,18 @@
 using System;
 using System.Xml;
 
-namespace Sooda.CodeGen 
+namespace Sooda.CodeGen
 {
-    public class VS2005csprojProjectFile : VS2005ProjectFileBase 
+    public class VS2005csprojProjectFile : VS2005ProjectFileBase
     {
-        public VS2005csprojProjectFile() : base(".csproj", "Sooda.CodeGen.Templates.vs2005.CSharp.csproj") {}
-        public override void CreateNew(string outputNamespace, string assemblyName) 
+        public VS2005csprojProjectFile() : base(".csproj", "Sooda.CodeGen.Templates.vs2005.CSharp.csproj") { }
+        public override void CreateNew(string outputNamespace, string assemblyName)
         {
             base.CreateNew(outputNamespace, assemblyName);
             XmlElement el = (XmlElement)doc.SelectSingleNode("msbuild:Project/msbuild:PropertyGroup/msbuild:RootNamespace", namespaceManager);
-            if (el != null && el.InnerText.Trim() == "") 
+            if (el != null && el.InnerText.Trim() == "")
             {
-                el.InnerText  = outputNamespace;
+                el.InnerText = outputNamespace;
             }
         }
     }

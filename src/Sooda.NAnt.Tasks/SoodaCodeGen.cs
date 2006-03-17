@@ -29,8 +29,8 @@ namespace Sooda.NAnt.Tasks
         /// The name of the file which will have its attributes set. This is 
         /// provided as an alternate to using the task's fileset.
         /// </summary>
-        [TaskAttribute("project",Required=true)]
-        public FileInfo ProjectFile 
+        [TaskAttribute("project", Required = true)]
+        public FileInfo ProjectFile
         {
             get { return _projectFile; }
             set { _projectFile = value; }
@@ -39,7 +39,7 @@ namespace Sooda.NAnt.Tasks
         [TaskAttribute("rebuild")]
         public bool Rebuild
         {
-            get { return _rebuild; } 
+            get { return _rebuild; }
             set { _rebuild = value; }
         }
 
@@ -47,7 +47,7 @@ namespace Sooda.NAnt.Tasks
 
         #region Override implementation of Task
 
-        protected override void ExecuteTask() 
+        protected override void ExecuteTask()
         {
             Log(Level.Verbose, "Loading Sooda project from '{0}'", _projectFile.FullName);
             SoodaProject project = SoodaProject.LoadFrom(_projectFile.FullName);

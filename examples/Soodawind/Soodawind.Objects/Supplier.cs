@@ -28,7 +28,7 @@ namespace Soodawind.Objects
 
         public bool HasHomePage()
         {
-            return !HomePage.IsNull;
+            return HomePage != null;
         }
     }
 }

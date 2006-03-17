@@ -34,39 +34,47 @@
 using System;
 using System.Data;
 
-namespace Sooda.Sql {
-    internal class DbParameterConverter {
-        public static void ConvertParameter(IDbDataParameter par, object val) {
+namespace Sooda.Sql
+{
+    internal class DbParameterConverter
+    {
+        public static void ConvertParameter(IDbDataParameter par, object val)
+        {
             Type t = val.GetType();
 
-            if (t == typeof(Int32)) {
+            if (t == typeof(Int32))
+            {
                 par.Value = val;
                 par.DbType = DbType.Int32;
-                return ;
+                return;
             }
 
-            if (t == typeof(String)) {
+            if (t == typeof(String))
+            {
                 par.Value = val;
                 par.DbType = DbType.String;
-                return ;
+                return;
             }
 
-            if (t == typeof(DateTime)) {
+            if (t == typeof(DateTime))
+            {
                 par.Value = val;
                 par.DbType = DbType.String;
-                return ;
+                return;
             }
 
-            if (t == typeof(Int64)) {
+            if (t == typeof(Int64))
+            {
                 par.Value = val;
                 par.DbType = DbType.Int64;
-                return ;
+                return;
             }
 
-            if (t == typeof(Boolean)) {
+            if (t == typeof(Boolean))
+            {
                 par.Value = val;
                 par.DbType = DbType.Boolean;
-                return ;
+                return;
             }
         }
     }

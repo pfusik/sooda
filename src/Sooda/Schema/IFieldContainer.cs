@@ -32,8 +32,10 @@
 // 
 
 
-namespace Sooda.Schema {
-    public interface IFieldContainer {
+namespace Sooda.Schema
+{
+    public interface IFieldContainer
+    {
         string Name { get; }
         bool ContainsField(string name);
         int ContainsCollection(string name);

@@ -43,9 +43,9 @@ using Sooda.Utils;
 
 using Sooda.Logging;
 
-namespace Sooda.Sql 
+namespace Sooda.Sql
 {
-    public class SqlDataSource : Sooda.SoodaDataSource 
+    public class SqlDataSource : Sooda.SoodaDataSource
     {
         static Logger logger = LogManager.GetLogger("Sooda.SqlDataSource");
         static Logger sqllogger = LogManager.GetLogger("Sooda.SQL");
@@ -60,7 +60,10 @@ namespace Sooda.Sql
         private IsolationLevel _isolationLevel = IsolationLevel.ReadCommitted;
         private double queryTimeTraceWarn = 10.0;
         private double queryTimeTraceInfo = 2.0;
-        public SqlDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo) : base(dataSourceInfo) {
+
+        public SqlDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo)
+            : base(dataSourceInfo)
+        {
             string s = GetParameter("queryTimeTraceInfo", false);
             if (s != null && s.Length > 0) queryTimeTraceInfo = Convert.ToDouble(s);
             s = GetParameter("queryTimeTraceWarn", false);
@@ -73,7 +76,7 @@ namespace Sooda.Sql
             set { _isolationLevel = value; }
         }
 
-        public override void Open() 
+        public override void Open()
         {
             Type connectionType = Type.GetType(GetParameter("connectionType", true));
             string connectionString = GetParameter("connectionString", true);
@@ -89,13 +92,13 @@ namespace Sooda.Sql
             if (dialect == null)
                 dialect = "microsoft";
 
-            switch (dialect) 
+            switch (dialect)
             {
                 default:
                 case "msde":
                 case "mssql":
                 case "microsoft":
-                this.SqlBuilder = new SqlServerBuilder();
+                    this.SqlBuilder = new SqlServerBuilder();
                     this.SupportsUpdateBatch = true;
                     break;
 
@@ -118,7 +121,7 @@ namespace Sooda.Sql
                 this.SupportsUpdateBatch = false;
 
             Connection.Open();
-            if (!DisableTransactions) 
+            if (!DisableTransactions)
             {
                 Transaction = Connection.BeginTransaction(IsolationLevel);
             };
@@ -126,12 +129,12 @@ namespace Sooda.Sql
 
         public override bool IsOpen
         {
-            get { return Connection.State == ConnectionState.Open ; }
+            get { return Connection.State == ConnectionState.Open; }
         }
 
-        public override void Rollback() 
+        public override void Rollback()
         {
-            if (!DisableTransactions) 
+            if (!DisableTransactions)
             {
                 Transaction.Rollback();
                 Transaction.Dispose();
@@ -139,9 +142,9 @@ namespace Sooda.Sql
             };
         }
 
-        public override void Commit() 
+        public override void Commit()
         {
-            if (!DisableTransactions) 
+            if (!DisableTransactions)
             {
                 Transaction.Commit();
                 Transaction.Dispose();
@@ -149,14 +152,14 @@ namespace Sooda.Sql
             };
         }
 
-        public override void Close() 
+        public override void Close()
         {
-            if (!DisableTransactions && Transaction != null) 
+            if (!DisableTransactions && Transaction != null)
             {
                 Transaction.Rollback();
                 Transaction.Dispose();
             };
-            if (Connection != null) 
+            if (Connection != null)
             {
                 Connection.Dispose();
             }
@@ -197,7 +200,7 @@ namespace Sooda.Sql
             }
         }
 
-        void DoDeletes(SoodaObject obj) 
+        void DoDeletes(SoodaObject obj)
         {
             ClassInfo ci = obj.GetClassInfo();
             object[] queryParams = new object[ci.GetPrimaryKeyFields().Length];
@@ -230,25 +233,25 @@ namespace Sooda.Sql
             }
         }
 
-        public override void SaveObjectChanges(SoodaObject obj, bool isPrecommit) 
+        public override void SaveObjectChanges(SoodaObject obj, bool isPrecommit)
         {
             if (obj.IsMarkedForDelete())
             {
                 DoDeletes(obj);
                 return;
             }
-            if (obj.IsInsertMode() && !obj.InsertedIntoDatabase) 
+            if (obj.IsInsertMode() && !obj.InsertedIntoDatabase)
             {
                 DoInserts(obj, isPrecommit);
                 obj.InsertedIntoDatabase = true;
-            } 
-            else 
+            }
+            else
             {
                 DoUpdates(obj);
             }
         }
 
-        public override IDataReader LoadObjectTable(SoodaObject obj, object keyVal, int tableNumber, out TableInfo[] loadedTables) 
+        public override IDataReader LoadObjectTable(SoodaObject obj, object keyVal, int tableNumber, out TableInfo[] loadedTables)
         {
             ClassInfo classInfo = obj.GetClassInfo();
             IDbCommand cmd = Connection.CreateCommand();
@@ -260,26 +263,26 @@ namespace Sooda.Sql
             IDataReader reader = TimedExecuteReader(cmd);
             if (reader.Read())
                 return reader;
-            else 
+            else
             {
                 reader.Dispose();
                 return null;
             }
         }
 
-        public override IDataReader LoadObject(SoodaObject obj, object keyVal, out TableInfo[] loadedTables) 
+        public override IDataReader LoadObject(SoodaObject obj, object keyVal, out TableInfo[] loadedTables)
         {
             return LoadObjectTable(obj, keyVal, 0, out loadedTables);
         }
 
-        public override void MakeTuple(string tableName, string leftColumnName, string rightColumnName, object leftVal, object rightVal, int mode) 
+        public override void MakeTuple(string tableName, string leftColumnName, string rightColumnName, object leftVal, object rightVal, int mode)
         {
             object[] parameters = new object[] { leftVal, rightVal };
             string query = "delete from " + tableName + " where " + leftColumnName + "={0} and " + rightColumnName + "={1}";
             SqlBuilder.BuildCommandWithParameters(_updateCommand, true, query, parameters);
             FlushUpdateCommand(false);
 
-            if (mode == 1) 
+            if (mode == 1)
             {
                 query = "insert into " + tableName + "(" + leftColumnName + "," + rightColumnName + ") values({0},{1})";
                 SqlBuilder.BuildCommandWithParameters(_updateCommand, true, query, parameters);
@@ -306,12 +309,12 @@ namespace Sooda.Sql
                 queryExpression.TopCount = topCount;
                 queryExpression.From.Add(classInfo.Name);
                 queryExpression.FromAliases.Add("obj");
-                if (whereClause != null && whereClause.WhereExpression != null) 
+                if (whereClause != null && whereClause.WhereExpression != null)
                 {
                     queryExpression.WhereClause = whereClause.WhereExpression;
                 }
 
-                if (orderBy != null) 
+                if (orderBy != null)
                 {
                     SoqlParser.ParseOrderBy(queryExpression, "order by " + orderBy.ToString());
                 }
@@ -319,11 +322,12 @@ namespace Sooda.Sql
                 StringWriter sw = new StringWriter();
                 SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, schemaInfo, SqlBuilder);
                 converter.IndentOutput = false;
-                logger.Trace("Converting {0}", queryExpression);
+                converter.GenerateColumnAliases = false;
+                //logger.Trace("Converting {0}", queryExpression);
                 converter.ConvertQuery(queryExpression);
                 string query = sw.ToString();
 
-                logger.Trace("Converted as {0}", query);
+                //logger.Trace("Converted as {0}", query);
 
                 IDbCommand cmd = Connection.CreateCommand();
 
@@ -341,7 +345,7 @@ namespace Sooda.Sql
             }
         }
 
-        public override IDataReader LoadObjectList(SchemaInfo schemaInfo, ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount, SoodaSnapshotOptions options, out TableInfo[] tables) 
+        public override IDataReader LoadObjectList(SchemaInfo schemaInfo, ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount, SoodaSnapshotOptions options, out TableInfo[] tables)
         {
             try
             {
@@ -361,7 +365,7 @@ namespace Sooda.Sql
                         queryExpression.SelectExpressions.Add(pathExpr);
                         queryExpression.SelectAliases.Add("");
 
-                        if (fi.ReferencedClass != null && fi.PrefetchLevel > 0 && ((options & SoodaSnapshotOptions.PrefetchRelated) != 0))  
+                        if (fi.ReferencedClass != null && fi.PrefetchLevel > 0 && ((options & SoodaSnapshotOptions.PrefetchRelated) != 0))
                         {
                             _QueueItem item = new _QueueItem();
                             item.classInfo = fi.ReferencedClass;
@@ -372,7 +376,7 @@ namespace Sooda.Sql
                     }
                 }
 
-                while (queue.Count > 0) 
+                while (queue.Count > 0)
                 {
                     _QueueItem it = (_QueueItem)queue.Dequeue();
 
@@ -380,7 +384,7 @@ namespace Sooda.Sql
                     {
                         tablesArrayList.Add(ti);
 
-                        foreach (FieldInfo fi in ti.Fields) 
+                        foreach (FieldInfo fi in ti.Fields)
                         {
                             // TODO - this relies on the fact that path expressions
                             // are never reconstructed or broken. We simply share previous prefix
@@ -391,7 +395,7 @@ namespace Sooda.Sql
                             queryExpression.SelectExpressions.Add(extendedExpression);
                             queryExpression.SelectAliases.Add("");
 
-                            if (it.level >= 1 && fi.PrefetchLevel > 0 && fi.ReferencedClass != null) 
+                            if (it.level >= 1 && fi.PrefetchLevel > 0 && fi.ReferencedClass != null)
                             {
                                 _QueueItem newItem = new _QueueItem();
                                 newItem.classInfo = fi.ReferencedClass;
@@ -403,12 +407,12 @@ namespace Sooda.Sql
                     }
                 }
 
-                if (whereClause != null && whereClause.WhereExpression != null) 
+                if (whereClause != null && whereClause.WhereExpression != null)
                 {
                     queryExpression.WhereClause = whereClause.WhereExpression;
                 }
 
-                if (orderBy != null) 
+                if (orderBy != null)
                 {
                     SoqlParser.ParseOrderBy(queryExpression, "order by " + orderBy.ToString());
                 }
@@ -416,11 +420,12 @@ namespace Sooda.Sql
                 StringWriter sw = new StringWriter();
                 SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, schemaInfo, SqlBuilder);
                 converter.IndentOutput = false;
-                logger.Trace("Converting {0}", queryExpression);
+                converter.GenerateColumnAliases = false;
+                //logger.Trace("Converting {0}", queryExpression);
                 converter.ConvertQuery(queryExpression);
                 string query = sw.ToString();
 
-                logger.Trace("Converted as {0}", query);
+                //logger.Trace("Converted as {0}", query);
 
                 IDbCommand cmd = Connection.CreateCommand();
 
@@ -439,9 +444,9 @@ namespace Sooda.Sql
             }
         }
 
-        public override IDataReader ExecuteQuery(Sooda.QL.SoqlQueryExpression query, SchemaInfo schema, object[] parameters) 
+        public override IDataReader ExecuteQuery(Sooda.QL.SoqlQueryExpression query, SchemaInfo schema, object[] parameters)
         {
-            try 
+            try
             {
                 StringWriter sw = new StringWriter();
                 SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, schema, SqlBuilder);
@@ -459,9 +464,9 @@ namespace Sooda.Sql
             }
         }
 
-        public override IDataReader ExecuteRawQuery(string queryText, object[] parameters) 
+        public override IDataReader ExecuteRawQuery(string queryText, object[] parameters)
         {
-            try 
+            try
             {
                 IDbCommand cmd = Connection.CreateCommand();
 
@@ -478,9 +483,9 @@ namespace Sooda.Sql
             }
         }
 
-        public override int ExecuteNonQuery(string queryText, object[] parameters) 
+        public override int ExecuteNonQuery(string queryText, object[] parameters)
         {
-            try 
+            try
             {
                 using (IDbCommand cmd = Connection.CreateCommand())
                 {
@@ -498,9 +503,9 @@ namespace Sooda.Sql
             }
         }
 
-        public override IDataReader LoadRefObjectList(SchemaInfo schema, RelationInfo relationInfo, int masterColumn, object masterValue, out TableInfo[] tables) 
+        public override IDataReader LoadRefObjectList(SchemaInfo schema, RelationInfo relationInfo, int masterColumn, object masterValue, out TableInfo[] tables)
         {
-            try 
+            try
             {
                 if (masterColumn == 0)
                     tables = relationInfo.GetRef1ClassInfo().UnifiedTables[0].ArraySingleton;
@@ -524,9 +529,9 @@ namespace Sooda.Sql
             }
         }
 
-        void DoInserts(SoodaObject obj, bool isPrecommit) 
+        void DoInserts(SoodaObject obj, bool isPrecommit)
         {
-            foreach (TableInfo table in obj.GetClassInfo().MergedTables) 
+            foreach (TableInfo table in obj.GetClassInfo().MergedTables)
             {
                 DoInsertsForTable(obj, table, isPrecommit);
             }
@@ -542,7 +547,7 @@ namespace Sooda.Sql
 
             ArrayList par = new ArrayList();
 
-            for (int i = 0; i < table.Fields.Count; ++i) 
+            for (int i = 0; i < table.Fields.Count; ++i)
             {
                 if (i != 0)
                     builder.Append(",");
@@ -550,7 +555,7 @@ namespace Sooda.Sql
             };
 
             builder.Append(") values (");
-            for (int i = 0; i < table.Fields.Count; ++i) 
+            for (int i = 0; i < table.Fields.Count; ++i)
             {
                 if (i > 0)
                     builder.Append(",");
@@ -589,15 +594,15 @@ namespace Sooda.Sql
             FlushUpdateCommand(false);
         }
 
-        void DoUpdates(SoodaObject obj) 
+        void DoUpdates(SoodaObject obj)
         {
-            foreach (TableInfo table in obj.GetClassInfo().MergedTables) 
+            foreach (TableInfo table in obj.GetClassInfo().MergedTables)
             {
                 DoUpdatesForTable(obj, table);
             }
         }
 
-        void DoUpdatesForTable(SoodaObject obj, TableInfo table) 
+        void DoUpdatesForTable(SoodaObject obj, TableInfo table)
         {
             ClassInfo info = obj.GetClassInfo();
             StringBuilder builder = new StringBuilder(500);
@@ -608,13 +613,13 @@ namespace Sooda.Sql
             ArrayList par = new ArrayList();
             bool anyChange = false;
 
-            for (int i = 0; i < table.Fields.Count; ++i) 
+            for (int i = 0; i < table.Fields.Count; ++i)
             {
                 int fieldNumber = table.Fields[i].ClassUnifiedOrdinal;
 
-                if (obj.IsFieldDirty(fieldNumber)) 
+                if (obj.IsFieldDirty(fieldNumber))
                 {
-                    if (anyChange) 
+                    if (anyChange)
                     {
                         builder.Append(", ");
                     }
@@ -661,15 +666,15 @@ namespace Sooda.Sql
             if (!StripWhitespaceInLogs)
                 return s;
 
-            return s.Replace("\n", " ").Replace("  "," ").Replace("  "," ").Replace("  "," ").Replace("  "," ");
+            return s.Replace("\n", " ").Replace("  ", " ").Replace("  ", " ").Replace("  ", " ").Replace("  ", " ");
         }
 
-        private string LogCommand(IDbCommand cmd) 
+        private string LogCommand(IDbCommand cmd)
         {
             StringBuilder txt = new StringBuilder();
             txt.Append(StripWhitespace(cmd.CommandText));
             txt.Append(" [");
-            foreach (IDataParameter par in cmd.Parameters) 
+            foreach (IDataParameter par in cmd.Parameters)
             {
                 txt.AppendFormat(" {0}:{1}={2}", par.ParameterName, par.DbType, par.Value);
             }
@@ -678,9 +683,9 @@ namespace Sooda.Sql
             return txt.ToString();
         }
 
-        public void ExecuteRaw(string sql) 
+        public void ExecuteRaw(string sql)
         {
-            using (IDbCommand cmd = Connection.CreateCommand()) 
+            using (IDbCommand cmd = Connection.CreateCommand())
             {
                 if (!DisableTransactions)
                     cmd.Transaction = this.Transaction;
@@ -694,16 +699,16 @@ namespace Sooda.Sql
         private Hashtable cacheLoadedTables = new Hashtable();
         private Hashtable[] cacheLoadRefObjectSelectStatement = new Hashtable[] { new Hashtable(), new Hashtable() };
 
-        class _QueueItem 
+        class _QueueItem
         {
             public ClassInfo classInfo;
             public SoqlPathExpression prefix;
             public int level;
         }
 
-        private string GetLoadingSelectStatement(ClassInfo classInfo, TableInfo tableInfo, out TableInfo[] loadedTables) 
+        private string GetLoadingSelectStatement(ClassInfo classInfo, TableInfo tableInfo, out TableInfo[] loadedTables)
         {
-            if (!cacheLoadingSelectStatement.Contains(tableInfo)) 
+            if (!cacheLoadingSelectStatement.Contains(tableInfo))
             {
                 Queue queue = new Queue();
                 ArrayList additional = new ArrayList();
@@ -713,13 +718,13 @@ namespace Sooda.Sql
                 queryExpression.From.Add(classInfo.Name);
                 queryExpression.FromAliases.Add("obj");
 
-                foreach (FieldInfo fi in tableInfo.Fields) 
+                foreach (FieldInfo fi in tableInfo.Fields)
                 {
                     SoqlPathExpression pathExpr = new SoqlPathExpression("obj", fi.Name);
                     queryExpression.SelectExpressions.Add(pathExpr);
                     queryExpression.SelectAliases.Add("");
 
-                    if (fi.ReferencedClass != null && fi.PrefetchLevel > 0) 
+                    if (fi.ReferencedClass != null && fi.PrefetchLevel > 0)
                     {
                         _QueueItem item = new _QueueItem();
                         item.classInfo = fi.ReferencedClass;
@@ -730,7 +735,7 @@ namespace Sooda.Sql
                 }
 
                 // TODO - add prefetching
-                while (queue.Count > 0) 
+                while (queue.Count > 0)
                 {
                     _QueueItem it = (_QueueItem)queue.Dequeue();
 
@@ -738,7 +743,7 @@ namespace Sooda.Sql
                     {
                         additional.Add(ti);
 
-                        foreach (FieldInfo fi in ti.Fields) 
+                        foreach (FieldInfo fi in ti.Fields)
                         {
                             // TODO - this relies on the fact that path expressions
                             // are never reconstructed or broken. We simply share previous prefix
@@ -749,7 +754,7 @@ namespace Sooda.Sql
                             queryExpression.SelectExpressions.Add(extendedExpression);
                             queryExpression.SelectAliases.Add("");
 
-                            if (it.level >= 1 && fi.PrefetchLevel > 0 && fi.ReferencedClass != null) 
+                            if (it.level >= 1 && fi.PrefetchLevel > 0 && fi.ReferencedClass != null)
                             {
                                 _QueueItem newItem = new _QueueItem();
                                 newItem.classInfo = fi.ReferencedClass;
@@ -769,7 +774,7 @@ namespace Sooda.Sql
                 {
                     if (fi.IsPrimaryKey)
                     {
-                        SoqlBooleanRelationalExpression expr = 
+                        SoqlBooleanRelationalExpression expr =
                             new SoqlBooleanRelationalExpression(
                                     new SoqlPathExpression("obj", fi.Name),
                                     new SoqlParameterLiteralExpression(parameterPos),
@@ -790,6 +795,7 @@ namespace Sooda.Sql
                 StringWriter sw = new StringWriter();
                 SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, tableInfo.OwnerClass.Schema, SqlBuilder);
                 converter.IndentOutput = false;
+                converter.GenerateColumnAliases = false;
                 converter.ConvertQuery(queryExpression);
 
                 string query = sw.ToString();
@@ -803,9 +809,9 @@ namespace Sooda.Sql
             return (string)cacheLoadingSelectStatement[tableInfo];
         }
 
-        private string GetLoadRefObjectSelectStatement(RelationInfo relationInfo, int masterColumn) 
+        private string GetLoadRefObjectSelectStatement(RelationInfo relationInfo, int masterColumn)
         {
-            if (!cacheLoadRefObjectSelectStatement[masterColumn].Contains(relationInfo)) 
+            if (!cacheLoadRefObjectSelectStatement[masterColumn].Contains(relationInfo))
             {
                 string soqlQuery = "";
 
@@ -817,6 +823,7 @@ namespace Sooda.Sql
                 StringWriter sw = new StringWriter();
                 SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, relationInfo.Schema, SqlBuilder);
                 converter.IndentOutput = false;
+                converter.GenerateColumnAliases = false;
                 converter.ConvertQuery(SoqlParser.ParseQuery(soqlQuery));
                 string sqlQuery = sw.ToString();
 
@@ -825,12 +832,12 @@ namespace Sooda.Sql
             return (string)cacheLoadRefObjectSelectStatement[masterColumn][relationInfo];
         }
 
-        private void UnifyTable(Hashtable tables, TableInfo ti) 
+        private void UnifyTable(Hashtable tables, TableInfo ti)
         {
             TableInfo baseTable;
 
             baseTable = (TableInfo)tables[ti.DBTableName];
-            if (baseTable == null) 
+            if (baseTable == null)
             {
                 baseTable = new TableInfo();
                 baseTable.DBTableName = ti.DBTableName;
@@ -838,20 +845,20 @@ namespace Sooda.Sql
                 tables[ti.DBTableName] = baseTable;
             }
 
-            foreach (FieldInfo fi in ti.Fields) 
+            foreach (FieldInfo fi in ti.Fields)
             {
                 bool found = false;
 
-                foreach (FieldInfo fi0 in baseTable.Fields) 
+                foreach (FieldInfo fi0 in baseTable.Fields)
                 {
-                    if (fi0.Name == fi.Name) 
+                    if (fi0.Name == fi.Name)
                     {
                         found = true;
                         break;
                     }
                 }
 
-                if (!found) 
+                if (!found)
                 {
                     baseTable.Fields.Add(fi);
                 }
@@ -864,11 +871,6 @@ namespace Sooda.Sql
 
             try
             {
-                //cmd.CommandText = "aaa";
-                if (sqllogger.IsTraceEnabled)
-                {
-                    sqllogger.Trace("Executing query: {0}", LogCommand(cmd));
-                }
                 sw.Start();
                 IDataReader retval = cmd.ExecuteReader();
                 sw.Stop();
@@ -891,15 +893,15 @@ namespace Sooda.Sql
                 SoodaStatistics.Global.RegisterQueryTime(timeInSeconds);
                 if (timeInSeconds > queryTimeTraceWarn && sqllogger.IsWarnEnabled)
                 {
-                    sqllogger.Warn("Query took {0} s. Query: {1}", timeInSeconds, LogCommand(cmd));
+                    sqllogger.Warn("Query time: {0} ms. {1}", Math.Round(timeInSeconds * 1000.0, 3), LogCommand(cmd));
                 }
                 else if (timeInSeconds > queryTimeTraceInfo && sqllogger.IsInfoEnabled)
                 {
-                    sqllogger.Info("Query took {0} s. Query: {1}", timeInSeconds, LogCommand(cmd));
+                    sqllogger.Info("Query time: {0} ms: {1}", Math.Round(timeInSeconds * 1000.0, 3), LogCommand(cmd));
                 }
-                else 
+                else
                 {
-                    sqllogger.Trace("Query took {0} s.", timeInSeconds);
+                    sqllogger.Trace("Query time: {0} ms. {1}", Math.Round(timeInSeconds * 1000.0, 3), LogCommand(cmd));
                 }
             }
         }
@@ -951,44 +953,44 @@ namespace Sooda.Sql
             }
         }
 
-        public virtual void GenerateDdlForSchema(SchemaInfo schema, TextWriter tw) 
+        public virtual void GenerateDdlForSchema(SchemaInfo schema, TextWriter tw)
         {
             Hashtable tables = new Hashtable();
 
-            foreach (ClassInfo ci in schema.Classes) 
+            foreach (ClassInfo ci in schema.Classes)
             {
-                foreach (TableInfo ti in ci.UnifiedTables) 
+                foreach (TableInfo ti in ci.UnifiedTables)
                 {
                     UnifyTable(tables, ti);
                 }
             }
 
-            foreach (RelationInfo ri in schema.Relations) 
+            foreach (RelationInfo ri in schema.Relations)
             {
                 UnifyTable(tables, ri.Table);
             }
 
             ArrayList names = new ArrayList();
 
-            foreach (TableInfo ti in tables.Values) 
+            foreach (TableInfo ti in tables.Values)
             {
                 names.Add(ti.DBTableName);
             }
 
             names.Sort();
 
-            foreach (string s in names) 
+            foreach (string s in names)
             {
                 tw.WriteLine("--- table {0}", s);
                 SqlBuilder.GenerateCreateTable(tw, (TableInfo)tables[s]);
             }
 
-            foreach (string s in names) 
+            foreach (string s in names)
             {
                 SqlBuilder.GeneratePrimaryKey(tw, (TableInfo)tables[s]);
             }
 
-            foreach (string s in names) 
+            foreach (string s in names)
             {
                 SqlBuilder.GenerateForeignKeys(tw, (TableInfo)tables[s]);
             }

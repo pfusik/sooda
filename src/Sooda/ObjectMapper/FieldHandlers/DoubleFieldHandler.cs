@@ -120,7 +120,8 @@ namespace Sooda.ObjectMapper.FieldHandlers
         }
 
 #if DOTNET2
-        public static Double? GetNullableValue(object fieldValue) {
+        public static Double? GetNullableValue(object fieldValue)
+        {
             if (fieldValue == null)
                 return null;
             else

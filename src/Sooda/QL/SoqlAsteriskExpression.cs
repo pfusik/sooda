@@ -34,18 +34,22 @@
 using System;
 
 
-namespace Sooda.QL {
-    public class SoqlAsteriskExpression : SoqlExpression {
+namespace Sooda.QL
+{
+    public class SoqlAsteriskExpression : SoqlExpression
+    {
         public SoqlPathExpression Left;
 
-        public SoqlAsteriskExpression() {}
+        public SoqlAsteriskExpression() { }
 
-        public SoqlAsteriskExpression(SoqlPathExpression left) {
+        public SoqlAsteriskExpression(SoqlPathExpression left)
+        {
             this.Left = left;
         }
 
         // visitor pattern
-        public override void Accept(ISoqlVisitor visitor) {
+        public override void Accept(ISoqlVisitor visitor)
+        {
             visitor.Visit(this);
         }
 

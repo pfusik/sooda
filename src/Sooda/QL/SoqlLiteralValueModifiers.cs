@@ -42,7 +42,7 @@ namespace Sooda.QL
 
         public readonly static SoqlLiteralValueModifiers AnsiString = new SoqlLiteralValueModifiers(FieldDataType.AnsiString);
 
-        public SoqlLiteralValueModifiers() {}
+        public SoqlLiteralValueModifiers() { }
         public SoqlLiteralValueModifiers(FieldDataType dataType)
         {
             _dataTypeOverride = dataType;

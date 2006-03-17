@@ -33,13 +33,15 @@
 
 using System;
 
-namespace Sooda.Schema {
+namespace Sooda.Schema
+{
     using System.Xml.Serialization;
 
     /// <remarks/>
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [Serializable]
-    public class IndexInfo {
+    public class IndexInfo
+    {
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("field")]
@@ -56,7 +58,8 @@ namespace Sooda.Schema {
 
         public bool IsUnique
         {
-            get {
+            get
+            {
                 return unique;
             }
         }

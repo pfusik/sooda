@@ -39,11 +39,13 @@ using System.Collections.Specialized;
 using Sooda.ObjectMapper;
 using Sooda.ObjectMapper.FieldHandlers;
 
-namespace Sooda.Schema {
+namespace Sooda.Schema
+{
 
     [XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [Serializable]
-    public class FieldInfo : ICloneable {
+    public class FieldInfo : ICloneable
+    {
         [XmlAttribute("name")]
         public string Name;
 
@@ -53,11 +55,11 @@ namespace Sooda.Schema {
         public FieldDataType DataType;
 
         [XmlAttribute("size")]
-        [System.ComponentModel.DefaultValueAttribute( -1)]
+        [System.ComponentModel.DefaultValueAttribute(-1)]
         public int Size = -1;
 
         [XmlAttribute("precision")]
-        [System.ComponentModel.DefaultValueAttribute( -1)]
+        [System.ComponentModel.DefaultValueAttribute(-1)]
         public int Precision = -1;
 
         [XmlAttribute("references")]
@@ -105,22 +107,26 @@ namespace Sooda.Schema {
         [XmlAttribute("dbcolumn")]
         public string DBColumnName
         {
-            get {
+            get
+            {
                 if (dbcolumn != null)
                     return dbcolumn;
                 else
                     return Name;
             }
-            set {
+            set
+            {
                 dbcolumn = value;
             }
         }
 
-        public FieldInfo Clone() {
+        public FieldInfo Clone()
+        {
             return DoClone();
         }
 
-        object ICloneable.Clone() {
+        object ICloneable.Clone()
+        {
             return DoClone();
         }
 
@@ -152,7 +158,8 @@ namespace Sooda.Schema {
         [NonSerialized]
         public RelationInfo ParentRelation;
 
-        public FieldInfo DoClone() {
+        public FieldInfo DoClone()
+        {
             FieldInfo fi = new FieldInfo();
 
             fi.Name = this.Name;
@@ -169,33 +176,38 @@ namespace Sooda.Schema {
 
         public StringCollection BackRefCollections
         {
-            get {
-                if (backRefCollections != null && backRefCollections.Count > 0) {
+            get
+            {
+                if (backRefCollections != null && backRefCollections.Count > 0)
+                {
                     return backRefCollections;
-                } else {
+                }
+                else
+                {
                     return null;
                 }
             }
         }
 
-        internal void AddBackRefCollection(string c) {
+        internal void AddBackRefCollection(string c)
+        {
             if (backRefCollections == null)
                 backRefCollections = new StringCollection();
             backRefCollections.Add(c);
         }
 
-		public SoodaFieldHandler GetFieldHandler() 
-		{
-			return FieldHandlerFactory.GetFieldHandler(DataType);
-		}
+        public SoodaFieldHandler GetFieldHandler()
+        {
+            return FieldHandlerFactory.GetFieldHandler(DataType);
+        }
 
-		internal void Resolve(TableInfo parentTable, string parentName, int ordinal) 
-		{
+        internal void Resolve(TableInfo parentTable, string parentName, int ordinal)
+        {
             this.Table = parentTable;
             this.OrdinalInTable = ordinal;
         }
 
-        internal void ResolvePrecommitValues() 
+        internal void ResolvePrecommitValues()
         {
         }
 

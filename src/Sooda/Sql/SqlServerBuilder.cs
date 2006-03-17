@@ -35,68 +35,75 @@ using System;
 
 using Sooda.Schema;
 
-namespace Sooda.Sql {
-    public class SqlServerBuilder : SqlBuilderNamedArg {
+namespace Sooda.Sql
+{
+    public class SqlServerBuilder : SqlBuilderNamedArg
+    {
         public SqlServerBuilder() { }
 
-        public override string GetDDLCommandTerminator() {
+        public override string GetDDLCommandTerminator()
+        {
             return Environment.NewLine + "GO" + Environment.NewLine + Environment.NewLine;
         }
 
-        public override string GetSQLDataType(Sooda.Schema.FieldInfo fi) {
-            switch (fi.DataType) {
-            case FieldDataType.Integer:
-                return "int";
+        public override string GetSQLDataType(Sooda.Schema.FieldInfo fi)
+        {
+            switch (fi.DataType)
+            {
+                case FieldDataType.Integer:
+                    return "int";
 
-            case FieldDataType.String:
-                if (fi.Size > 4000)
-                    return "text";
-                else
-                    return "varchar(" + fi.Size + ")";
+                case FieldDataType.String:
+                    if (fi.Size > 4000)
+                        return "text";
+                    else
+                        return "varchar(" + fi.Size + ")";
 
-            case FieldDataType.Decimal:
-                if (fi.Size < 0)
-                    return "decimal";
-                else if (fi.Precision < 0)
-                    return "decimal(" + fi.Size + ")";
-                else 
-                    return "decimal(" + fi.Size + "," + fi.Precision + ")";
+                case FieldDataType.Decimal:
+                    if (fi.Size < 0)
+                        return "decimal";
+                    else if (fi.Precision < 0)
+                        return "decimal(" + fi.Size + ")";
+                    else
+                        return "decimal(" + fi.Size + "," + fi.Precision + ")";
 
-            case FieldDataType.Double:
-                if (fi.Size < 0)
-                    return "float";
-                else if (fi.Precision < 0)
-                    return "float(" + fi.Size + ")";
-                else 
-                    return "float(" + fi.Size + "," + fi.Precision + ")";
+                case FieldDataType.Double:
+                    if (fi.Size < 0)
+                        return "float";
+                    else if (fi.Precision < 0)
+                        return "float(" + fi.Size + ")";
+                    else
+                        return "float(" + fi.Size + "," + fi.Precision + ")";
 
-            case FieldDataType.DateTime:
-                return "datetime";
+                case FieldDataType.DateTime:
+                    return "datetime";
 
-            case FieldDataType.Image:
-                return "image";
+                case FieldDataType.Image:
+                    return "image";
 
-            case FieldDataType.Long:
-                return "bigint";
+                case FieldDataType.Long:
+                    return "bigint";
 
-            case FieldDataType.BooleanAsInteger:
-                return "int";
+                case FieldDataType.BooleanAsInteger:
+                    return "int";
 
-            case FieldDataType.TimeSpan:
-                return "int";
+                case FieldDataType.TimeSpan:
+                    return "int";
 
-            default:
-                throw new NotImplementedException(String.Format("Datatype {0} not supported for this database", fi.DataType.ToString()));
+                default:
+                    throw new NotImplementedException(String.Format("Datatype {0} not supported for this database", fi.DataType.ToString()));
             }
         }
 
-        protected override string GetNameForParameter(int pos) {
+        protected override string GetNameForParameter(int pos)
+        {
             return "@p" + pos.ToString();
         }
 
         public override SqlTopSupportMode TopSupport
         {
-            get {
+            get
+            {
                 return SqlTopSupportMode.SelectTop;
             }
         }

@@ -741,7 +741,6 @@
                 <parameter name="mode" value="${web.buildmode}" />
             </parameters>
         </style>
-
     </target>
     
     <target name="coverage">
@@ -799,6 +798,36 @@
                 <include name="**/*.*proj.user" />
             </fileset>
         </delete>
+    </target>
+
+    <target name="vs2005_wizards">
+        <copy todir="tmp_dir">
+            <fileset basedir="wizard/vs2005/work/vb-console/Soodawind">
+                <include name="**/*" />
+                <exclude name="**/bin/**" />
+                <exclude name="**/obj/**" />
+                <exclude name="**/Stubs/**" />
+                <exclude name="**/_Stubs.*" />
+                <exclude name="**/_DBSchema.bin" />
+                <exclude name="**/*.suo" />
+                <exclude name="**/*.sln" />
+                <exclude name="**/*.*proj.user" />
+                <exclude name="**/*.vstemplate" />
+            </fileset>
+            <filterchain>
+                <replacestring from="Soodawind" to="$safeprojectname$" />
+            </filterchain>
+        </copy>
+        <copy todir="tmp_dir">
+            <fileset basedir="wizard/vs2005/work/vb-console/Soodawind">
+                <include name="**/*.vstemplate" />
+            </fileset>
+        </copy>
+        <zip zipfile="SoodaVBConsole.zip">
+            <fileset basedir="tmp_dir">
+                <include name="**/*" />
+            </fileset>
+        </zip>
     </target>
 
     <target name="source_snapshot">

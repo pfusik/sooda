@@ -35,8 +35,10 @@ using System;
 
 using System.Xml.Serialization;
 
-namespace Sooda.QL {
-    public class SoqlBinaryExpression : SoqlExpression {
+namespace Sooda.QL
+{
+    public class SoqlBinaryExpression : SoqlExpression
+    {
         [XmlElement("Left")]
         public SoqlExpression par1;
 
@@ -46,16 +48,18 @@ namespace Sooda.QL {
         [XmlAttribute("operator")]
         public SoqlBinaryOperator op;
 
-        public SoqlBinaryExpression() {}
+        public SoqlBinaryExpression() { }
 
-        public SoqlBinaryExpression(SoqlExpression par1, SoqlExpression par2, SoqlBinaryOperator op) {
+        public SoqlBinaryExpression(SoqlExpression par1, SoqlExpression par2, SoqlBinaryOperator op)
+        {
             this.par1 = par1;
             this.par2 = par2;
             this.op = op;
         }
 
         // visitor pattern
-        public override void Accept(ISoqlVisitor visitor) {
+        public override void Accept(ISoqlVisitor visitor)
+        {
             visitor.Visit(this);
         }
 
@@ -171,14 +175,15 @@ namespace Sooda.QL {
             return CalcValue(op, val1, val2);
         }
 
-        public override SoqlExpression Simplify() 
+        public override SoqlExpression Simplify()
         {
             par1 = par1.Simplify();
             par2 = par2.Simplify();
 
             ISoqlConstantExpression cp1 = par1 as ISoqlConstantExpression;
             ISoqlConstantExpression cp2 = par2 as ISoqlConstantExpression;
-            if (cp1 != null && cp2 != null) {
+            if (cp1 != null && cp2 != null)
+            {
                 object v1 = cp1.GetConstantValue();
                 object v2 = cp2.GetConstantValue();
 

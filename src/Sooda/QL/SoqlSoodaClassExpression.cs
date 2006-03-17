@@ -34,23 +34,29 @@
 using System.IO;
 
 
-namespace Sooda.QL {
-    public class SoqlSoodaClassExpression : SoqlExpression, ISoqlSelectAliasProvider {
+namespace Sooda.QL
+{
+    public class SoqlSoodaClassExpression : SoqlExpression, ISoqlSelectAliasProvider
+    {
         public SoqlPathExpression Path;
 
-        public SoqlSoodaClassExpression() {}
+        public SoqlSoodaClassExpression() { }
 
-        public SoqlSoodaClassExpression(SoqlPathExpression path) {
+        public SoqlSoodaClassExpression(SoqlPathExpression path)
+        {
             this.Path = path;
         }
 
         // visitor pattern
-        public override void Accept(ISoqlVisitor visitor) {
+        public override void Accept(ISoqlVisitor visitor)
+        {
             visitor.Visit(this);
         }
 
-        public void WriteDefaultSelectAlias(TextWriter output) {
-            if (this.Path != null) {
+        public void WriteDefaultSelectAlias(TextWriter output)
+        {
+            if (this.Path != null)
+            {
                 this.Path.WriteDefaultSelectAlias(output);
                 output.Write("_");
             }

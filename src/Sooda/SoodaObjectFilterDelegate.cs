@@ -32,7 +32,8 @@
 // 
 
 
-namespace Sooda {
+namespace Sooda
+{
     /// <summary>
     /// Predicate that returns true when <c>obj</c> matches some condition and
     /// should be included in object list.

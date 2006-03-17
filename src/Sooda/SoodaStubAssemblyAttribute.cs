@@ -35,26 +35,26 @@ using System;
 using System.Reflection;
 
 
-namespace Sooda 
+namespace Sooda
 {
     [AttributeUsage(AttributeTargets.Assembly)]
-    public sealed class SoodaStubAssemblyAttribute : Attribute 
+    public sealed class SoodaStubAssemblyAttribute : Attribute
     {
         private Assembly _assembly;
 
-        public SoodaStubAssemblyAttribute() 
+        public SoodaStubAssemblyAttribute()
         {
             _assembly = null;
         }
 
-        public SoodaStubAssemblyAttribute(Type sampleObject) 
+        public SoodaStubAssemblyAttribute(Type sampleObject)
         {
             _assembly = sampleObject.Assembly;
         }
 
         public Assembly Assembly
         {
-            get 
+            get
             {
                 return _assembly;
             }

@@ -37,7 +37,7 @@ using System;
 
 namespace Sooda.QL.TypedWrappers
 {
-    public class SoqlDateTimeWrapperExpression : SoqlTypedWrapperExpression 
+    public class SoqlDateTimeWrapperExpression : SoqlTypedWrapperExpression
     {
         public SoqlDateTimeWrapperExpression()
         {
@@ -57,7 +57,7 @@ namespace Sooda.QL.TypedWrappers
 
         public static SoqlBooleanExpression operator ==(SoqlDateTimeWrapperExpression left, SoqlDateTimeWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.Equal); }
         public static SoqlBooleanExpression operator !=(SoqlDateTimeWrapperExpression left, SoqlDateTimeWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.NotEqual); }
-        
+
         public SoqlBooleanExpression In(params SoqlDateTimeWrapperExpression[] inExpressions)
         {
             SoqlExpressionCollection rhs = new SoqlExpressionCollection();

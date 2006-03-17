@@ -36,28 +36,35 @@ using System.Xml;
 using System.Xml.Serialization;
 using System.Reflection;
 
-namespace Sooda.Schema {
-    public sealed class SchemaManager {
-        private SchemaManager() {}
+namespace Sooda.Schema
+{
+    public sealed class SchemaManager
+    {
+        private SchemaManager() { }
 
         public static string NamespaceURI
         {
-            get {
+            get
+            {
                 return "http://www.sooda.org/schemas/SoodaSchema.xsd";
             }
         }
 
-        public static Stream GetSchemaXsdStream() {
+        public static Stream GetSchemaXsdStream()
+        {
             Assembly ass = typeof(SchemaManager).Assembly;
-            foreach (string name in ass.GetManifestResourceNames()) {
-                if (name.EndsWith(".SoodaSchema.xsd")) {
+            foreach (string name in ass.GetManifestResourceNames())
+            {
+                if (name.EndsWith(".SoodaSchema.xsd"))
+                {
                     return ass.GetManifestResourceStream(name);
                 };
             }
             throw new SoodaSchemaException("SoodaSchema not embedded in Sooda assembly");
         }
 
-        public static XmlReader GetSchemaXsdStreamXmlReader() {
+        public static XmlReader GetSchemaXsdStreamXmlReader()
+        {
             return new XmlTextReader(GetSchemaXsdStream());
         }
 
@@ -79,7 +86,7 @@ namespace Sooda.Schema {
             }
         }
 
-        public static SchemaInfo ReadAndValidateSchema(XmlReader reader, string baseDirectoryForIncludes) 
+        public static SchemaInfo ReadAndValidateSchema(XmlReader reader, string baseDirectoryForIncludes)
         {
 #if SOODA_NO_VALIDATING_READER
             XmlSerializer ser = new XmlSerializer(typeof(Sooda.Schema.SchemaInfo));

@@ -34,8 +34,8 @@
 
 namespace Sooda.Logging
 {
-	public class NullLoggingImplementation : ILoggingImplementation
-	{
+    public class NullLoggingImplementation : ILoggingImplementation
+    {
         public Logger GetLogger(string name)
         {
             return NullLogger.TheInstance;

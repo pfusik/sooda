@@ -33,11 +33,14 @@
 
 using System;
 
-namespace Sooda.ObjectMapper.KeyGenerators {
-    public class GuidGenerator : IPrimaryKeyGenerator {
-        public GuidGenerator() {}
+namespace Sooda.ObjectMapper.KeyGenerators
+{
+    public class GuidGenerator : IPrimaryKeyGenerator
+    {
+        public GuidGenerator() { }
 
-        public object GetNextKeyValue() {
+        public object GetNextKeyValue()
+        {
             return Guid.NewGuid();
         }
     }

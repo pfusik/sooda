@@ -33,13 +33,14 @@
 
 using System;
 
-namespace Sooda {
+namespace Sooda
+{
     [AttributeUsage(AttributeTargets.Assembly)]
-    public sealed class SoodaObjectsAssemblyAttribute : Attribute 
+    public sealed class SoodaObjectsAssemblyAttribute : Attribute
     {
         private Type _databaseSchemaType;
 
-        public SoodaObjectsAssemblyAttribute(Type databaseSchemaType) 
+        public SoodaObjectsAssemblyAttribute(Type databaseSchemaType)
         {
             _databaseSchemaType = databaseSchemaType;
         }

@@ -35,19 +35,23 @@ using System;
 
 using System.Xml.Serialization;
 
-namespace Sooda.QL {
-    public class SoqlRawExpression : SoqlBooleanExpression {
+namespace Sooda.QL
+{
+    public class SoqlRawExpression : SoqlBooleanExpression
+    {
         [XmlAttribute("rawText")]
         public string Text;
 
-        public SoqlRawExpression() {}
+        public SoqlRawExpression() { }
 
-        public SoqlRawExpression(string txt) {
+        public SoqlRawExpression(string txt)
+        {
             this.Text = txt;
         }
 
         // visitor pattern
-        public override void Accept(ISoqlVisitor visitor) {
+        public override void Accept(ISoqlVisitor visitor)
+        {
             visitor.Visit(this);
         }
 

@@ -40,17 +40,19 @@ using Sooda.UnitTests.Objects;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.ObjectMapper {
+namespace Sooda.UnitTests.TestCases.ObjectMapper
+{
     [TestFixture]
-    public class DeleteTest {
+    public class DeleteTest
+    {
         [Test]
-        public void MultiTableDelete() 
+        public void MultiTableDelete()
         {
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) 
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
             {
                 testDataSource.Open();
 
-                using (SoodaTransaction tran = new SoodaTransaction()) 
+                using (SoodaTransaction tran = new SoodaTransaction())
                 {
                     tran.RegisterDataSource(testDataSource);
                     ExtendedBike.Load(10).MarkForDelete();
@@ -59,7 +61,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
 
                 try
                 {
-                    using (SoodaTransaction tran = new SoodaTransaction()) 
+                    using (SoodaTransaction tran = new SoodaTransaction())
                     {
                         tran.RegisterDataSource(testDataSource);
                         ExtendedBike b = ExtendedBike.Load(10);

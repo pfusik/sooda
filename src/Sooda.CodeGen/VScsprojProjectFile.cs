@@ -34,16 +34,16 @@
 using System;
 using System.Xml;
 
-namespace Sooda.CodeGen 
+namespace Sooda.CodeGen
 {
-    public class VScsprojProjectFile : VSProjectFileBase 
+    public class VScsprojProjectFile : VSProjectFileBase
     {
-        public VScsprojProjectFile(string templateName) : base("VisualStudioProject/CSHARP", ".csproj", templateName) {}
-        public override void CreateNew(string outputNamespace, string assemblyName) 
+        public VScsprojProjectFile(string templateName) : base("VisualStudioProject/CSHARP", ".csproj", templateName) { }
+        public override void CreateNew(string outputNamespace, string assemblyName)
         {
             base.CreateNew(outputNamespace, assemblyName);
             XmlElement el = (XmlElement)doc.SelectSingleNode(projectRoot);
-            if (!el.HasAttribute("RootNamespace")) 
+            if (!el.HasAttribute("RootNamespace"))
             {
                 el.SetAttribute("RootNamespace", outputNamespace);
             }

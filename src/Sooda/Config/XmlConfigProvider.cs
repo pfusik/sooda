@@ -40,39 +40,48 @@ using System.Collections.Specialized;
 
 using Sooda.Logging;
 
-namespace Sooda.Config {
-    public class XmlConfigProvider : ISoodaConfigProvider {
+namespace Sooda.Config
+{
+    public class XmlConfigProvider : ISoodaConfigProvider
+    {
         private static Logger logger = LogManager.GetLogger("Sooda.Config");
         private NameValueCollection dataDictionary = new NameValueCollection();
         private string fileName;
         private string baseDirectory;
 
-        public XmlConfigProvider() : this("Sooda.config.xml") {
+        public XmlConfigProvider()
+            : this("Sooda.config.xml")
+        {
         }
 
-        public XmlConfigProvider(string fileName) {
+        public XmlConfigProvider(string fileName)
+        {
             this.fileName = fileName;
             this.baseDirectory = Path.GetDirectoryName(fileName);
             LoadFromFile(fileName, null);
             FindAndLoadOverride();
         }
 
-        public XmlConfigProvider(string fileName, string xpathExpression) {
+        public XmlConfigProvider(string fileName, string xpathExpression)
+        {
             this.fileName = fileName;
             this.baseDirectory = Path.GetDirectoryName(fileName);
             LoadFromFile(fileName, xpathExpression);
             FindAndLoadOverride();
         }
 
-        public void Clear() {
+        public void Clear()
+        {
             dataDictionary.Clear();
         }
 
-        public void LoadFromFile(string fileName, string xpathExpression) {
+        public void LoadFromFile(string fileName, string xpathExpression)
+        {
             LoadFromFile(fileName, xpathExpression, "");
         }
 
-        private void LoadFromFile(string fileName, string xpathExpression, string prefix) {
+        private void LoadFromFile(string fileName, string xpathExpression, string prefix)
+        {
             XmlDocument doc = new XmlDocument();
             doc.Load(fileName);
             XmlNode startingNode = doc.DocumentElement;
@@ -83,12 +92,15 @@ namespace Sooda.Config {
             LoadFromNode(startingNode, prefix, Path.GetDirectoryName(fileName));
         }
 
-        private void LoadFromNode(XmlNode startingNode, string prefix, string baseDir) {
+        private void LoadFromNode(XmlNode startingNode, string prefix, string baseDir)
+        {
             for (XmlNode node = startingNode.FirstChild;
                     node != null;
                     node = node.NextSibling)
-                if (node.NodeType == XmlNodeType.Element) {
-                    if (node.FirstChild != null && node.FirstChild.NodeType == XmlNodeType.Element) {
+                if (node.NodeType == XmlNodeType.Element)
+                {
+                    if (node.FirstChild != null && node.FirstChild.NodeType == XmlNodeType.Element)
+                    {
                         string newPrefix;
 
                         if (prefix.Length == 0)
@@ -96,7 +108,9 @@ namespace Sooda.Config {
                         else
                             newPrefix = prefix + "." + node.Name + ".";
                         LoadFromNode(node, newPrefix, baseDir);
-                    } else {
+                    }
+                    else
+                    {
                         string keyName = prefix + node.Name;
 
                         string value = ProcessValue(node.InnerXml, baseDir);
@@ -106,34 +120,42 @@ namespace Sooda.Config {
                 }
         }
 
-        public void FindAndLoadOverride() {
+        public void FindAndLoadOverride()
+        {
             FileInfo fi = new FileInfo(fileName);
             string originalExtension = fi.Extension;
 
             string newExtension = ".site" + originalExtension;
             string newFileName = Path.ChangeExtension(fileName, newExtension);
 
-            if (File.Exists(newFileName)) {
+            if (File.Exists(newFileName))
+            {
                 logger.Debug("Loading config override from file: " + newFileName);
                 LoadFromFile(newFileName, null);
-            } else {
+            }
+            else
+            {
                 logger.Debug("Config override file " + newFileName + " not found");
             }
 
             newExtension = "." + GetMachineName().ToLower(System.Globalization.CultureInfo.CurrentCulture) + originalExtension;
             newFileName = Path.ChangeExtension(fileName, newExtension);
 
-            if (File.Exists(newFileName)) {
+            if (File.Exists(newFileName))
+            {
                 logger.Debug("Loading config override from file: " + newFileName);
                 LoadFromFile(newFileName, null);
-            } else {
+            }
+            else
+            {
                 logger.Debug("Config override file " + newFileName + " not found");
             }
 
-			OverrideFromAppConfig();
+            OverrideFromAppConfig();
         }
 
-        public string GetMachineName() {
+        public string GetMachineName()
+        {
 #if DOTNET2
             string overrideMachineName = ConfigurationManager.AppSettings["sooda.hostname"];
 #else
@@ -152,54 +174,68 @@ namespace Sooda.Config {
             return s;
         }
 
-        public string GetString(string key) {
+        public string GetString(string key)
+        {
             return dataDictionary[key];
         }
 
-        public static XmlConfigProvider FindConfigFile(string fileName) {
+        public static XmlConfigProvider FindConfigFile(string fileName)
+        {
             return FindConfigFile(fileName, 10);
         }
 
-        private static XmlConfigProvider TryFindConfigFile(string fileName, int maxParentDirectories) {
+        private static XmlConfigProvider TryFindConfigFile(string fileName, int maxParentDirectories)
+        {
             FileInfo fi;
             int depth;
 
-            try {
+            try
+            {
                 fi = new FileInfo(fileName);
                 depth = maxParentDirectories;
-                for (DirectoryInfo di = fi.Directory; (di != null) && (depth > 0); di = di.Parent, depth --) {
+                for (DirectoryInfo di = fi.Directory; (di != null) && (depth > 0); di = di.Parent, depth--)
+                {
                     string targetFileName = Path.Combine(di.FullName, fi.Name);
                     //logger.Debug("Checking for " + targetFileName);
                     if (File.Exists(targetFileName))
                         return new XmlConfigProvider(targetFileName);
                 }
                 return null;
-            } catch (UnauthorizedAccessException) {
+            }
+            catch (UnauthorizedAccessException)
+            {
                 // ignore
                 return null;
             }
         }
 
-        public static XmlConfigProvider FindConfigFile(string fileName, int maxParentDirectories) {
+        public static XmlConfigProvider FindConfigFile(string fileName, int maxParentDirectories)
+        {
             //
             // Path.Combine will either take the file name (if it's rooted) or make a relative
             // to the specified base directory
             //
 
-            try {
+            try
+            {
                 XmlConfigProvider retVal = TryFindConfigFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName), maxParentDirectories);
                 if (retVal != null)
                     return retVal;
-            } catch (SecurityException e) {
+            }
+            catch (SecurityException e)
+            {
                 // ignore
                 logger.Debug("SecurityException when scanning AppDomain.BaseDirectory", e);
             }
 
-            try {
+            try
+            {
                 XmlConfigProvider retVal = TryFindConfigFile(Path.Combine(Directory.GetCurrentDirectory(), fileName), maxParentDirectories);
                 if (retVal != null)
                     return retVal;
-            } catch (SecurityException e) {
+            }
+            catch (SecurityException e)
+            {
                 // ignore
                 logger.Debug("SecurityException when scanning Directory.GetCurrentDirectory()", e);
             }
@@ -207,8 +243,8 @@ namespace Sooda.Config {
             throw new SoodaConfigException("Config file not found in " + fileName + " and " + maxParentDirectories + " parent directories");
         }
 
-		private void OverrideFromAppConfig()
-		{
+        private void OverrideFromAppConfig()
+        {
 #if DOTNET2
             foreach (string s in ConfigurationManager.AppSettings.Keys)
             {
@@ -220,6 +256,6 @@ namespace Sooda.Config {
 				dataDictionary[s] = ConfigurationSettings.AppSettings[s];
 			}
 #endif
-		}
+        }
     }
 }

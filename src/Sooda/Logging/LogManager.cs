@@ -35,8 +35,8 @@ using System;
 
 namespace Sooda.Logging
 {
-	public sealed class LogManager
-	{
+    public sealed class LogManager
+    {
         private static ILoggingImplementation _implementation;
 
         static LogManager()
@@ -49,7 +49,7 @@ namespace Sooda.Logging
             {
                 string loggingImplementationName = SoodaConfig.GetString("sooda.logging", "null");
                 string typeName;
-                
+
                 switch (loggingImplementationName)
                 {
                     case "console":
@@ -96,5 +96,5 @@ namespace Sooda.Logging
         {
             return _implementation.GetLogger(name);
         }
-	}
+    }
 }

@@ -1,163 +1,177 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sooda="http://www.sooda.org/schemas/SoodaSchema.xsd" elementFormDefault="qualified" targetNamespace="http://www.sooda.org/schemas/SoodaSchema.xsd" xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
-	<xsd:element name="schema" type="sooda:SchemaInfo"></xsd:element>
-	<xsd:complexType name="SchemaInfo">
-		<xsd:choice minOccurs="0" maxOccurs="unbounded">
-		    <xsd:element name="namespace" type="xsd:string" minOccurs="0" maxOccurs="1" />
-		    <xsd:element name="assembly" type="xsd:string" minOccurs="0" maxOccurs="1" />
-		    <xsd:element name="include" type="sooda:IncludeInfo" minOccurs="0" maxOccurs="unbounded" />
-			<xsd:element name="datasource" type="sooda:DataSourceInfo" minOccurs="0" maxOccurs="unbounded" />
-			<xsd:element name="defaultPrecommitValues" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
-		    <xsd:element name="precommitValue" type="sooda:PrecommitValueInfo" minOccurs="0" maxOccurs="unbounded" />
-			<xsd:element name="class" type="sooda:ClassInfo" minOccurs="1" maxOccurs="unbounded" />
-			<xsd:element name="relation" type="sooda:RelationInfo" minOccurs="0" maxOccurs="unbounded" />
-		</xsd:choice>
-	</xsd:complexType>
-	<xsd:complexType name="PrecommitValueInfo">
-		<xsd:attribute name="type" type="sooda:FieldDataType" use="required" />
-		<xsd:attribute name="value" type="xsd:string" use="required" />
-	</xsd:complexType>
-	<xsd:complexType name="IncludeInfo">
-		<xsd:attribute name="schema" type="xsd:string" use="required" />
-		<xsd:attribute name="namespace" type="xsd:string" use="optional" />
-		<xsd:attribute name="assembly" type="xsd:string" use="optional" />
-	</xsd:complexType>
-	<xsd:complexType name="DataSourceInfo">
-		<xsd:sequence>
-			<xsd:any processContents="lax"  minOccurs="0" maxOccurs="unbounded" />
-		</xsd:sequence>
-	
-		<xsd:attribute name="name" type="xsd:string" use="required" />
-		<xsd:attribute name="type" type="xsd:string" use="required" />
-	</xsd:complexType>
-	<xsd:complexType name="RelationInfo">
-		<xsd:sequence>
-		    <xsd:element name="table" type="sooda:TableInfo" minOccurs="1" maxOccurs="1" />
-		</xsd:sequence>
-		<xsd:attribute name="datasource" use="optional" />
-		<xsd:attribute name="name" use="required" />
-	</xsd:complexType>
-	<xsd:complexType name="TableInfo">
-		<xsd:sequence>
-		    <xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
-			<xsd:element name="field" type="sooda:FieldInfo" minOccurs="1" maxOccurs="unbounded" />
-		</xsd:sequence>
-		<xsd:attribute name="name" use="required" />
-	</xsd:complexType>
-	<xsd:complexType name="ClassInfo">
-		<xsd:sequence>
-		    <xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
-		    <xsd:element name="table" type="sooda:TableInfo" minOccurs="0" maxOccurs="unbounded" />
-			<xsd:element name="index" type="sooda:IndexInfo" minOccurs="0" maxOccurs="unbounded" />
-			<xsd:element name="collectionOneToMany" type="sooda:CollectionOnetoManyInfo" minOccurs="0" maxOccurs="unbounded" />
-			<xsd:element name="collectionManyToMany" type="sooda:CollectionManyToManyInfo" minOccurs="0" maxOccurs="unbounded" />
-			<xsd:element name="const" type="sooda:ConstInfo" minOccurs="0" maxOccurs="unbounded" />
-			<!-- <xsd:any minOccurs="0" maxOccurs="unbounded" processContents="lax" /> -->
-		</xsd:sequence>
-		<xsd:attribute name="cardinality" use="optional" type="sooda:ClassCardinality" default="Medium" />
-		<xsd:attribute name="datasource" use="optional" />
-		<xsd:attribute name="extBaseClassName" use="optional" />
-		<xsd:attribute name="name" use="required" />
-		<xsd:attribute name="label" use="optional" />
-		<xsd:attribute name="keygen" use="optional" />
-		<xsd:attribute name="lastModifiedField" use="optional" />
-		<xsd:attribute name="inheritFrom" type="xsd:string" use="optional" />
-		<xsd:attribute name="defaultPrecommitValue" type="xsd:string" use="optional" />
-		<xsd:attribute name="subclassSelectorField" type="xsd:string" use="optional" />
-		<xsd:attribute name="subclassSelectorValue" type="xsd:string" use="optional" />
-		<xsd:attribute name="canDelete" use="optional" type="xsd:boolean" default="false" />
-		<xsd:attribute name="cached" use="optional" type="xsd:boolean" default="false" />
-		<xsd:attribute name="disableTypeCache" use="optional" type="xsd:boolean" default="false" />
-		<xsd:attribute name="loadOnDemand" use="optional" type="xsd:boolean" default="true" />
-		<xsd:attribute name="triggers" use="optional" type="xsd:boolean" default="true" />
-		<xsd:attribute name="readOnly" use="optional" type="xsd:boolean" default="false" />
-		<xsd:anyAttribute processContents="lax" />
-	</xsd:complexType>
-	<xsd:complexType name="IndexInfo">
-		<xsd:sequence>
-			<xsd:element name="field" type="sooda:IndexFieldInfo" minOccurs="1" maxOccurs="unbounded" />
-		</xsd:sequence>
-		<xsd:attribute name="name" use="optional" />
-		<xsd:attribute name="unique" type="xsd:boolean" use="optional" default="false" />
-	</xsd:complexType>
-	<xsd:complexType name="IndexFieldInfo">
-		<xsd:attribute name="name" use="required" />
-	</xsd:complexType>
-	<xsd:complexType name="CollectionOnetoManyInfo">
-        <xsd:sequence>
-		    <xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
-        </xsd:sequence>
-		<xsd:attribute name="name" use="required" />
-		<xsd:attribute name="class" use="required" />
-		<xsd:attribute name="foreignField" use="optional" />
-		<xsd:attribute name="where" use="optional" />
-		<xsd:attribute name="prefetch" use="optional" type="xsd:int" default="0" />
-		<xsd:attribute name="cache" use="optional" type="xsd:boolean" default="false" />
-	</xsd:complexType>
-	<xsd:complexType name="CollectionManyToManyInfo">
-        <xsd:sequence>
-		    <xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
-        </xsd:sequence>
-		<xsd:attribute name="name" use="required" />
-		<xsd:attribute name="relation" use="required" />
-		<xsd:attribute name="masterField" type="xsd:int" use="required" />
-		<xsd:attribute name="prefetch" use="optional" type="xsd:int" default="0" />
-	</xsd:complexType>
-	<xsd:complexType name="ConstInfo">
-		<xsd:attribute name="name" use="required" />
-		<xsd:attribute name="key" use="required" />
-	</xsd:complexType>
-	<xsd:complexType name="FieldInfo">
-        <xsd:sequence>
-		    <xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
-        </xsd:sequence>
-		<xsd:attribute name="name" use="required" />
-		<xsd:attribute name="dbcolumn" use="optional" />
-		<xsd:attribute name="type" type="sooda:FieldDataType" use="required" />
-		<xsd:attribute name="size" type="xsd:int" default="-1" use="optional" />
-		<xsd:attribute name="precision" type="xsd:int" default="-1" use="optional" />
-		<xsd:attribute name="references" use="optional" />
-		<xsd:attribute name="onDelete" use="optional" type="DeleteAction" />
-		<xsd:attribute name="prefetch" use="optional" type="xsd:int" default="0" />
-		<xsd:attribute name="nullable" type="xsd:boolean" use="optional" default="false" />
-		<xsd:attribute name="forceTrigger" use="optional" type="xsd:boolean" default="false" />
-		<xsd:attribute name="alwaysTrigger" use="optional" type="xsd:boolean" default="false" />
-		<xsd:attribute name="primaryKey" use="optional" type="xsd:boolean" default="false" />
-		<xsd:attribute name="precommitValue" type="xsd:string" use="optional" />
-        <xsd:anyAttribute processContents="lax" />
-	</xsd:complexType>
-	<xsd:simpleType name="FieldDataType">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="Integer" />
-			<xsd:enumeration value="Long" />
-			<xsd:enumeration value="Boolean" />
-			<xsd:enumeration value="BooleanAsInteger" />
-			<xsd:enumeration value="Decimal" />
-			<xsd:enumeration value="Float" />
-			<xsd:enumeration value="Double" />
-			<xsd:enumeration value="DateTime" />
-			<xsd:enumeration value="String" />
-			<xsd:enumeration value="Blob" />
-			<xsd:enumeration value="Text" />
-			<xsd:enumeration value="Guid" />
-			<xsd:enumeration value="Image" />
-			<xsd:enumeration value="TimeSpan" />
-			<xsd:enumeration value="Compound" />
-			<xsd:enumeration value="AnsiString" />
-    	</xsd:restriction>
-	</xsd:simpleType>
-	<xsd:simpleType name="ClassCardinality">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="Small" />
-			<xsd:enumeration value="Medium" />
-			<xsd:enumeration value="Large" />
-    	</xsd:restriction>
-	</xsd:simpleType>
-	<xsd:simpleType name="DeleteAction">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="Nothing" />
-			<xsd:enumeration value="Nullify" />
-			<xsd:enumeration value="Cascade" />
-    	</xsd:restriction>
-	</xsd:simpleType>
+  <xsd:element name="schema" type="sooda:SchemaInfo"></xsd:element>
+  <xsd:complexType name="SchemaInfo">
+    <xsd:choice minOccurs="0" maxOccurs="unbounded">
+      <xsd:element name="namespace" type="xsd:string" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="assembly" type="xsd:string" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="include" type="sooda:IncludeInfo" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="datasource" type="sooda:DataSourceInfo" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="cachingPolicy" type="sooda:CachingPolicy" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="defaultPrecommitValues" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="precommitValue" type="sooda:PrecommitValueInfo" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="class" type="sooda:ClassInfo" minOccurs="1" maxOccurs="unbounded" />
+      <xsd:element name="relation" type="sooda:RelationInfo" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:choice>
+  </xsd:complexType>
+  <xsd:complexType name="PrecommitValueInfo">
+    <xsd:attribute name="type" type="sooda:FieldDataType" use="required" />
+    <xsd:attribute name="value" type="xsd:string" use="required" />
+  </xsd:complexType>
+  <xsd:complexType name="IncludeInfo">
+    <xsd:attribute name="schema" type="xsd:string" use="required" />
+    <xsd:attribute name="namespace" type="xsd:string" use="optional" />
+    <xsd:attribute name="assembly" type="xsd:string" use="optional" />
+  </xsd:complexType>
+  <xsd:complexType name="CachingPolicy">
+    <xsd:attribute name="name" type="xsd:string" use="required" />
+    <xsd:attribute name="type" type="xsd:string" use="required" />
+  </xsd:complexType>
+  <xsd:complexType name="DataSourceInfo">
+    <xsd:sequence>
+      <xsd:any processContents="lax"  minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+
+    <xsd:attribute name="name" type="xsd:string" use="required" />
+    <xsd:attribute name="type" type="xsd:string" use="required" />
+  </xsd:complexType>
+  <xsd:complexType name="RelationInfo">
+    <xsd:sequence>
+      <xsd:element name="table" type="sooda:TableInfo" minOccurs="1" maxOccurs="1" />
+    </xsd:sequence>
+    <xsd:attribute name="datasource" use="optional" />
+    <xsd:attribute name="name" use="required" />
+  </xsd:complexType>
+  <xsd:complexType name="TableInfo">
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="field" type="sooda:FieldInfo" minOccurs="1" maxOccurs="unbounded" />
+    </xsd:sequence>
+    <xsd:attribute name="name" use="required" />
+  </xsd:complexType>
+  <xsd:complexType name="ClassInfo">
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="table" type="sooda:TableInfo" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="index" type="sooda:IndexInfo" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="collectionOneToMany" type="sooda:CollectionOnetoManyInfo" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="collectionManyToMany" type="sooda:CollectionManyToManyInfo" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="const" type="sooda:ConstInfo" minOccurs="0" maxOccurs="unbounded" />
+      <!-- <xsd:any minOccurs="0" maxOccurs="unbounded" processContents="lax" /> -->
+    </xsd:sequence>
+    <xsd:attribute name="cardinality" use="optional" type="sooda:ClassCardinality" default="Medium" />
+    <xsd:attribute name="datasource" use="optional" />
+    <xsd:attribute name="extBaseClassName" use="optional" />
+    <xsd:attribute name="name" use="required" />
+    <xsd:attribute name="label" use="optional" />
+    <xsd:attribute name="keygen" use="optional" />
+    <xsd:attribute name="lastModifiedField" use="optional" />
+    <xsd:attribute name="inheritFrom" type="xsd:string" use="optional" />
+    <xsd:attribute name="defaultPrecommitValue" type="xsd:string" use="optional" />
+    <xsd:attribute name="subclassSelectorField" type="xsd:string" use="optional" />
+    <xsd:attribute name="subclassSelectorValue" type="xsd:string" use="optional" />
+    <xsd:attribute name="canDelete" use="optional" type="xsd:boolean" default="false" />
+    <xsd:attribute name="cached" use="optional" type="xsd:boolean" default="false" />
+    <xsd:attribute name="cacheCollections" use="optional" type="xsd:boolean" default="false" />
+    <xsd:attribute name="cachingPolicy" use="optional" type="xsd:string" default="default" />
+    <xsd:attribute name="disableTypeCache" use="optional" type="xsd:boolean" default="false" />
+    <xsd:attribute name="loadOnDemand" use="optional" type="xsd:boolean" default="true" />
+    <xsd:attribute name="triggers" use="optional" type="xsd:boolean" default="true" />
+    <xsd:attribute name="readOnly" use="optional" type="xsd:boolean" default="false" />
+    <xsd:anyAttribute processContents="lax" />
+  </xsd:complexType>
+  <xsd:complexType name="IndexInfo">
+    <xsd:sequence>
+      <xsd:element name="field" type="sooda:IndexFieldInfo" minOccurs="1" maxOccurs="unbounded" />
+    </xsd:sequence>
+    <xsd:attribute name="name" use="optional" />
+    <xsd:attribute name="unique" type="xsd:boolean" use="optional" default="false" />
+  </xsd:complexType>
+  <xsd:complexType name="IndexFieldInfo">
+    <xsd:attribute name="name" use="required" />
+  </xsd:complexType>
+  <xsd:complexType name="CollectionOnetoManyInfo">
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
+    </xsd:sequence>
+    <xsd:attribute name="name" use="required" />
+    <xsd:attribute name="class" use="required" />
+    <xsd:attribute name="foreignField" use="optional" />
+    <xsd:attribute name="where" use="optional" />
+    <xsd:attribute name="prefetch" use="optional" type="xsd:int" default="0" />
+    <xsd:attribute name="cache" use="optional" type="xsd:boolean" default="false" />
+  </xsd:complexType>
+  <xsd:complexType name="CollectionManyToManyInfo">
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
+    </xsd:sequence>
+    <xsd:attribute name="name" use="required" />
+    <xsd:attribute name="relation" use="required" />
+    <xsd:attribute name="masterField" type="xsd:int" use="required" />
+    <xsd:attribute name="prefetch" use="optional" type="xsd:int" default="0" />
+  </xsd:complexType>
+  <xsd:complexType name="ConstInfo">
+    <xsd:attribute name="name" use="required" />
+    <xsd:attribute name="key" use="required" />
+  </xsd:complexType>
+  <xsd:complexType name="FieldInfo">
+    <xsd:sequence>
+      <xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
+    </xsd:sequence>
+    <xsd:attribute name="name" use="required" />
+    <xsd:attribute name="dbcolumn" use="optional" />
+    <xsd:attribute name="type" type="sooda:FieldDataType" use="required" />
+    <xsd:attribute name="size" type="xsd:int" default="-1" use="optional" />
+    <xsd:attribute name="precision" type="xsd:int" default="-1" use="optional" />
+    <xsd:attribute name="references" use="optional" />
+    <xsd:attribute name="onDelete" use="optional" type="DeleteAction" />
+    <xsd:attribute name="prefetch" use="optional" type="xsd:int" default="0" />
+    <xsd:attribute name="nullable" type="xsd:boolean" use="optional" default="false" />
+    <xsd:attribute name="forceTrigger" use="optional" type="xsd:boolean" default="false" />
+    <xsd:attribute name="alwaysTrigger" use="optional" type="xsd:boolean" default="false" />
+    <xsd:attribute name="primaryKey" use="optional" type="xsd:boolean" default="false" />
+    <xsd:attribute name="precommitValue" type="xsd:string" use="optional" />
+    <xsd:anyAttribute processContents="lax" />
+  </xsd:complexType>
+  <xsd:simpleType name="FieldDataType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Integer" />
+      <xsd:enumeration value="Long" />
+      <xsd:enumeration value="Boolean" />
+      <xsd:enumeration value="BooleanAsInteger" />
+      <xsd:enumeration value="Decimal" />
+      <xsd:enumeration value="Float" />
+      <xsd:enumeration value="Double" />
+      <xsd:enumeration value="DateTime" />
+      <xsd:enumeration value="String" />
+      <xsd:enumeration value="Blob" />
+      <xsd:enumeration value="Text" />
+      <xsd:enumeration value="Guid" />
+      <xsd:enumeration value="Image" />
+      <xsd:enumeration value="TimeSpan" />
+      <xsd:enumeration value="Compound" />
+      <xsd:enumeration value="AnsiString" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="ClassCardinality">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Small" />
+      <xsd:enumeration value="Medium" />
+      <xsd:enumeration value="Large" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="DeleteAction">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Nothing" />
+      <xsd:enumeration value="Nullify" />
+      <xsd:enumeration value="Cascade" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="CachingMode">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="None" />
+      <xsd:enumeration value="Eternal" />
+      <xsd:enumeration value="Normal" />
+    </xsd:restriction>
+  </xsd:simpleType>
 </xsd:schema>

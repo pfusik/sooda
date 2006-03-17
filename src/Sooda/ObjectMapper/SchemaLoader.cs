@@ -38,28 +38,39 @@ using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace Sooda.ObjectMapper {
-    public class SchemaLoader {
+namespace Sooda.ObjectMapper
+{
+    public class SchemaLoader
+    {
         private static Hashtable assembly2SchemaInfo = new Hashtable();
 
-        public static SchemaInfo GetSchemaFromAssembly(System.Reflection.Assembly ass) {
+        public static SchemaInfo GetSchemaFromAssembly(System.Reflection.Assembly ass)
+        {
             SchemaInfo schemaInfo = (SchemaInfo)assembly2SchemaInfo[ass];
 
-            if (schemaInfo == null) {
-                lock (typeof(SchemaLoader)) {
+            if (schemaInfo == null)
+            {
+                lock (typeof(SchemaLoader))
+                {
                     schemaInfo = (SchemaInfo)assembly2SchemaInfo[ass];
-                    if (schemaInfo == null) {
-                        foreach (string name in ass.GetManifestResourceNames()) {
-                            if (name.EndsWith("_DBSchema.bin")) {
+                    if (schemaInfo == null)
+                    {
+                        foreach (string name in ass.GetManifestResourceNames())
+                        {
+                            if (name.EndsWith("_DBSchema.bin"))
+                            {
                                 System.Runtime.Serialization.Formatters.Binary.BinaryFormatter bf = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                                using (Stream resourceStream = ass.GetManifestResourceStream(name)) {
+                                using (Stream resourceStream = ass.GetManifestResourceStream(name))
+                                {
                                     schemaInfo = (SchemaInfo)bf.Deserialize(resourceStream);
                                     schemaInfo.Resolve();
                                 }
                                 break;
                             };
-                            if (name.EndsWith("_DBSchema.xml")) {
-                                using (Stream resourceStream = ass.GetManifestResourceStream(name)) {
+                            if (name.EndsWith("_DBSchema.xml"))
+                            {
+                                using (Stream resourceStream = ass.GetManifestResourceStream(name))
+                                {
                                     XmlSerializer ser = new XmlSerializer(typeof(Sooda.Schema.SchemaInfo));
                                     XmlTextReader reader = new XmlTextReader(resourceStream);
 
@@ -69,7 +80,8 @@ namespace Sooda.ObjectMapper {
                                 break;
                             };
                         }
-                        if (schemaInfo == null) {
+                        if (schemaInfo == null)
+                        {
                             throw new InvalidOperationException("_DBSchema.xml not embedded in " + ass.CodeBase);
                         };
                         assembly2SchemaInfo[ass] = schemaInfo;

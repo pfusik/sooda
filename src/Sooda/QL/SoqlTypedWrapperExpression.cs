@@ -32,9 +32,9 @@
 // 
 
 
-namespace Sooda.QL 
+namespace Sooda.QL
 {
-    public class SoqlTypedWrapperExpression : SoqlExpression 
+    public class SoqlTypedWrapperExpression : SoqlExpression
     {
         private SoqlExpression _innerExpression;
 
@@ -53,7 +53,7 @@ namespace Sooda.QL
             set { _innerExpression = value; }
         }
 
-        public override SoqlExpression Simplify() 
+        public override SoqlExpression Simplify()
         {
             return this;
         }

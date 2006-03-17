@@ -5,7 +5,7 @@ namespace Sooda.CodeGen
     /// <summary>
     /// A collection of elements of type ExternalProjectInfo
     /// </summary>
-    public class ExternalProjectInfoCollection: System.Collections.CollectionBase
+    public class ExternalProjectInfoCollection : System.Collections.CollectionBase
     {
         /// <summary>
         /// Initializes a new empty instance of the ExternalProjectInfoCollection class.
@@ -130,7 +130,7 @@ namespace Sooda.CodeGen
         {
             get
             {
-                return (ExternalProjectInfo) this.List[index];
+                return (ExternalProjectInfo)this.List[index];
             }
             set
             {
@@ -152,7 +152,7 @@ namespace Sooda.CodeGen
         /// <summary>
         /// Type-specific enumeration class, used by ExternalProjectInfoCollection.GetEnumerator.
         /// </summary>
-        public class Enumerator: System.Collections.IEnumerator
+        public class Enumerator : System.Collections.IEnumerator
         {
             private System.Collections.IEnumerator wrapped;
 
@@ -165,7 +165,7 @@ namespace Sooda.CodeGen
             {
                 get
                 {
-                    return (ExternalProjectInfo) (this.wrapped.Current);
+                    return (ExternalProjectInfo)(this.wrapped.Current);
                 }
             }
 
@@ -173,7 +173,7 @@ namespace Sooda.CodeGen
             {
                 get
                 {
-                    return (ExternalProjectInfo) (this.wrapped.Current);
+                    return (ExternalProjectInfo)(this.wrapped.Current);
                 }
             }
 

@@ -36,79 +36,93 @@ using System.Data;
 
 using System.Globalization;
 
-namespace Sooda.ObjectMapper.FieldHandlers {
-    public class DateTimeFieldHandler : SoodaFieldHandler {
-        public DateTimeFieldHandler(bool nullable) : base(nullable) {}
+namespace Sooda.ObjectMapper.FieldHandlers
+{
+    public class DateTimeFieldHandler : SoodaFieldHandler
+    {
+        public DateTimeFieldHandler(bool nullable) : base(nullable) { }
 
         protected override string TypeName
         {
-            get {
+            get
+            {
                 return "datetime";
             }
         }
 
-        public override object RawRead(IDataRecord record, int pos) {
+        public override object RawRead(IDataRecord record, int pos)
+        {
             return GetFromReader(record, pos);
         }
 
-        public static DateTime GetFromReader(IDataRecord record, int pos) {
+        public static DateTime GetFromReader(IDataRecord record, int pos)
+        {
             return record.GetDateTime(pos);
         }
 
-        public override string RawSerialize(object val) {
+        public override string RawSerialize(object val)
+        {
             return SerializeToString(val);
         }
 
-        public override object RawDeserialize(string s) {
+        public override object RawDeserialize(string s)
+        {
             return DeserializeFromString(s);
         }
 
-        public static string SerializeToString(object obj) {
+        public static string SerializeToString(object obj)
+        {
             return Convert.ToDateTime(obj).ToString(CultureInfo.InvariantCulture);
         }
 
-        public static object DeserializeFromString(string s) {
+        public static object DeserializeFromString(string s)
+        {
             return DateTime.Parse(s, CultureInfo.InvariantCulture);
         }
 
         private static object _zeroValue = DateTime.MinValue;
-        public override object ZeroValue() {
+        public override object ZeroValue()
+        {
             return _zeroValue;
         }
 
-        public override Type GetFieldType() {
+        public override Type GetFieldType()
+        {
             return typeof(DateTime);
         }
 
-		public override Type GetSqlType()
-		{
-			return typeof(System.Data.SqlTypes.SqlDateTime);
-		}
+        public override Type GetSqlType()
+        {
+            return typeof(System.Data.SqlTypes.SqlDateTime);
+        }
 
 
-		public override void SetupDBParameter(IDbDataParameter parameter, object value)
-		{
-			parameter.DbType = DbType.DateTime;
-			parameter.Value = value;
-		}
+        public override void SetupDBParameter(IDbDataParameter parameter, object value)
+        {
+            parameter.DbType = DbType.DateTime;
+            parameter.Value = value;
+        }
 
         // type conversions - used in generated stub code
 
-        public static System.Data.SqlTypes.SqlDateTime GetSqlNullableValue(object fieldValue) {
+        public static System.Data.SqlTypes.SqlDateTime GetSqlNullableValue(object fieldValue)
+        {
             if (fieldValue == null)
                 return System.Data.SqlTypes.SqlDateTime.Null;
             else
                 return new System.Data.SqlTypes.SqlDateTime((DateTime)fieldValue);
         }
 
-        public static DateTime GetNotNullValue(object val) {
+        public static DateTime GetNotNullValue(object val)
+        {
             if (val == null)
                 throw new InvalidOperationException("Attempt to read a non-null value that isn't set yet");
             return (DateTime)val;
         }
 
 #if DOTNET2
-        public static DateTime? GetNullableValue(object fieldValue) {
+        public static DateTime? GetNullableValue(object fieldValue)
+        {
             if (fieldValue == null)
                 return null;
             else
@@ -121,5 +135,5 @@ namespace Sooda.ObjectMapper.FieldHandlers {
         }
 #endif
 
-	}
+    }
 }

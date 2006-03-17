@@ -35,31 +35,31 @@ using System;
 using System.Collections;
 
 
-namespace Sooda.Caching 
+namespace Sooda.Caching
 {
-	public class SoodaCachedCollection
-	{
-		private IList _primaryKeys;
-		private DateTime _lastAccessTime;
+    public class SoodaCachedCollection
+    {
+        private IList _primaryKeys;
+        private DateTime _lastAccessTime;
 
-		public SoodaCachedCollection(IList primaryKeys)
-		{
-			_lastAccessTime = DateTime.Now;
-			_primaryKeys = primaryKeys;
-		}
+        public SoodaCachedCollection(IList primaryKeys)
+        {
+            _lastAccessTime = DateTime.Now;
+            _primaryKeys = primaryKeys;
+        }
 
-		public DateTime LastAccessTime
-		{
-			get { return _lastAccessTime; }
-		}
+        public DateTime LastAccessTime
+        {
+            get { return _lastAccessTime; }
+        }
 
-		public IList PrimaryKeys
-		{
-			get 
-			{
-				_lastAccessTime = DateTime.Now;
-				return _primaryKeys; 
-			}
-		}
-	}
+        public IList PrimaryKeys
+        {
+            get
+            {
+                _lastAccessTime = DateTime.Now;
+                return _primaryKeys;
+            }
+        }
+    }
 }

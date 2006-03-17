@@ -35,76 +35,64 @@ using System;
 using System.Text;
 using System.Globalization;
 
-namespace Sooda.Caching 
+namespace Sooda.Caching
 {
-	public class SoodaCacheEntry 
-	{
-		private int _dataLoadedMask;
-		private SoodaObjectFieldValues _data;
-		private DateTime _timestamp;
+    public class SoodaCacheEntry
+    {
+        private int _dataLoadedMask;
+        private SoodaObjectFieldValues _data;
+        private DateTime _timestamp;
 
-		public SoodaCacheEntry(int dataLoadedMask, SoodaObjectFieldValues data) 
-		{
-			_dataLoadedMask = dataLoadedMask;
-			_data = data;
-			_timestamp = DateTime.Now;
-		}
+        public SoodaCacheEntry(int dataLoadedMask, SoodaObjectFieldValues data)
+        {
+            _dataLoadedMask = dataLoadedMask;
+            _data = data;
+            _timestamp = DateTime.Now;
+        }
 
-		public SoodaObjectFieldValues Data
-		{
-			get 
-			{
-				return _data;
-			}
-		}
+        public SoodaObjectFieldValues Data
+        {
+            get { return _data; }
+        }
 
-		public int DataLoadedMask
-		{
-			get 
-			{
-				return _dataLoadedMask;
-			}
-		}
+        public int DataLoadedMask
+        {
+            get { return _dataLoadedMask; }
+        }
 
-		public DateTime TimeStamp
-		{
-			get 
-			{
-				return _timestamp;
-			}
-		}
+        public DateTime TimeStamp
+        {
+            get { return _timestamp; }
+        }
 
-		public TimeSpan Age
-		{
-			get 
-			{
-				return DateTime.Now - TimeStamp;
-			}
-		}
+        public TimeSpan Age
+        {
+            get { return DateTime.Now - TimeStamp; }
+        }
 
-		public override string ToString() 
-		{
-			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < Data.Length; ++i)
-			{
-				object o = Data.GetBoxedFieldValue(i);
-				if (sb.Length != 0)
-					sb.Append(",");
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < Data.Length; ++i)
+            {
+                object o = Data.GetBoxedFieldValue(i);
+                if (sb.Length != 0)
+                    sb.Append(",");
 
-				if (o == null)
-					sb.Append("null");
-				else if (o is string) 
-				{
-					sb.Append("'");
-					sb.Append((string)o);
-					sb.Append("'");
-				} 
-				else 
-				{
-					sb.Append(Convert.ToString(o, CultureInfo.InvariantCulture));
-				}
-			}
-			return String.Format("Mask: [{0}] Data: [{1}]", DataLoadedMask, sb.ToString());
-		}
-	}
+                if (o == null)
+                    sb.Append("null");
+                else if (o is string)
+                {
+                    sb.Append("'");
+                    sb.Append((string)o);
+                    sb.Append("'");
+                }
+                else
+                {
+                    sb.Append(Convert.ToString(o, CultureInfo.InvariantCulture));
+                }
+            }
+            return String.Format("Mask: [{0}] Data: [{1}]", DataLoadedMask, sb.ToString());
+        }
+    }
 }

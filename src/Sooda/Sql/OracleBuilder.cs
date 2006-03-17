@@ -34,13 +34,17 @@
 using System;
 
 
-namespace Sooda.Sql {
-    public class OracleBuilder : SqlBuilderNamedArg {
-        public override string GetSQLDataType(Sooda.Schema.FieldInfo fi) {
+namespace Sooda.Sql
+{
+    public class OracleBuilder : SqlBuilderNamedArg
+    {
+        public override string GetSQLDataType(Sooda.Schema.FieldInfo fi)
+        {
             throw new NotImplementedException();
         }
 
-        protected override string GetNameForParameter(int pos) {
+        protected override string GetNameForParameter(int pos)
+        {
             return ":p" + pos.ToString();
         }
 

@@ -36,79 +36,93 @@ using System.Data;
 
 using System.Globalization;
 
-namespace Sooda.ObjectMapper.FieldHandlers {
-    public class Int64FieldHandler : SoodaFieldHandler {
-        public Int64FieldHandler(bool nullable) : base(nullable) {}
+namespace Sooda.ObjectMapper.FieldHandlers
+{
+    public class Int64FieldHandler : SoodaFieldHandler
+    {
+        public Int64FieldHandler(bool nullable) : base(nullable) { }
 
         protected override string TypeName
         {
-            get {
+            get
+            {
                 return "int64";
             }
         }
 
-        public override object RawRead(IDataRecord record, int pos) {
+        public override object RawRead(IDataRecord record, int pos)
+        {
             return GetFromReader(record, pos);
         }
 
-        public static Int64 GetFromReader(IDataRecord record, int pos) {
+        public static Int64 GetFromReader(IDataRecord record, int pos)
+        {
             return record.GetInt64(pos);
         }
 
-        public override string RawSerialize(object val) {
+        public override string RawSerialize(object val)
+        {
             return SerializeToString(val);
         }
 
-        public override object RawDeserialize(string s) {
+        public override object RawDeserialize(string s)
+        {
             return DeserializeFromString(s);
         }
 
 
-        public static string SerializeToString(object obj) {
+        public static string SerializeToString(object obj)
+        {
             return Convert.ToInt64(obj).ToString(CultureInfo.InvariantCulture);
         }
 
-        public static object DeserializeFromString(string s) {
+        public static object DeserializeFromString(string s)
+        {
             return Int64.Parse(s, CultureInfo.InvariantCulture);
         }
 
         private static object _zeroValue = (Int64)0;
-        public override object ZeroValue() {
+        public override object ZeroValue()
+        {
             return _zeroValue;
         }
 
-        public override Type GetFieldType() {
+        public override Type GetFieldType()
+        {
             return typeof(Int64);
         }
 
-		public override Type GetSqlType()
-		{
-			return typeof(System.Data.SqlTypes.SqlInt64);
-		}
+        public override Type GetSqlType()
+        {
+            return typeof(System.Data.SqlTypes.SqlInt64);
+        }
 
-		public override void SetupDBParameter(IDbDataParameter parameter, object value)
-		{
-			parameter.DbType = DbType.Int64;
-			parameter.Value = value;
-		}
+        public override void SetupDBParameter(IDbDataParameter parameter, object value)
+        {
+            parameter.DbType = DbType.Int64;
+            parameter.Value = value;
+        }
 
         // type conversions - used in generated stub code
 
-        public static System.Data.SqlTypes.SqlInt64 GetSqlNullableValue(object fieldValue) {
+        public static System.Data.SqlTypes.SqlInt64 GetSqlNullableValue(object fieldValue)
+        {
             if (fieldValue == null)
                 return System.Data.SqlTypes.SqlInt64.Null;
             else
                 return new System.Data.SqlTypes.SqlInt64((Int64)fieldValue);
         }
 
-        public static Int64 GetNotNullValue(object val) {
+        public static Int64 GetNotNullValue(object val)
+        {
             if (val == null)
                 throw new InvalidOperationException("Attempt to read a non-null value that isn't set yet");
             return (Int64)val;
         }
 
 #if DOTNET2
-        public static Int64? GetNullableValue(object fieldValue) {
+        public static Int64? GetNullableValue(object fieldValue)
+        {
             if (fieldValue == null)
                 return null;
             else
@@ -120,5 +134,5 @@ namespace Sooda.ObjectMapper.FieldHandlers {
             return typeof(Int64?);
         }
 #endif
-	}
+    }
 }

@@ -31,10 +31,14 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
+using System;
 using System.IO;
 using System.Xml.Serialization;
 
-namespace Sooda.QL {
+using Sooda.QL.TypedWrappers;
+
+namespace Sooda.QL
+{
     [XmlInclude(typeof(SoqlPathExpression))]
     [XmlInclude(typeof(SoqlExistsExpression))]
     [XmlInclude(typeof(SoqlPathExpression))]
@@ -53,8 +57,10 @@ namespace Sooda.QL {
     [XmlInclude(typeof(SoqlFunctionCallExpression))]
     [XmlInclude(typeof(SoqlAsteriskExpression))]
     [XmlInclude(typeof(SoqlNullLiteral))]
-    public abstract class SoqlExpression {
-        public virtual SoqlExpression Simplify() {
+    public abstract class SoqlExpression
+    {
+        public virtual SoqlExpression Simplify()
+        {
             return this;
         }
 
@@ -69,6 +75,16 @@ namespace Sooda.QL {
             pp.IndentOutput = false;
             this.Accept(pp);
             return sw.ToString();
+        }
+
+        public static SoqlExpression Unwrap(SoqlExpression expr)
+        {
+            if (expr is SoqlTypedWrapperExpression)
+                return Unwrap(((SoqlTypedWrapperExpression)expr).InnerExpression);
+            else if (expr is SoqlBooleanWrapperExpression)
+                return Unwrap(((SoqlBooleanWrapperExpression)expr).InnerExpression);
+            else
+                return expr;
         }
     }
 }

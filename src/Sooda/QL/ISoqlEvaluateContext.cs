@@ -32,7 +32,7 @@
 // 
 
 
-namespace Sooda.QL 
+namespace Sooda.QL
 {
     public interface ISoqlEvaluateContext
     {

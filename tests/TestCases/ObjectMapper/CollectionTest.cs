@@ -41,20 +41,26 @@ using Sooda.UnitTests.BaseObjects;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.ObjectMapper {
+namespace Sooda.UnitTests.TestCases.ObjectMapper
+{
     [TestFixture]
-    public class CollectionTest {
-        bool predicate1(SoodaObject c0) {
+    public class CollectionTest
+    {
+        bool predicate1(SoodaObject c0)
+        {
             Contact c = (Contact)c0;
             return (string)c.Name != "Mary Manager";
         }
 
         [Test]
-        public void GetListTest() {
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) {
+        public void GetListTest()
+        {
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
+            {
                 testDataSource.Open();
 
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
                     tran.RegisterDataSource(testDataSource);
 
                     Contact mary = Contact.Load(1);
@@ -72,7 +78,8 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     comparer.AddField("LastSalary", SortOrder.Ascending);
                     comparer.AddField("Name", SortOrder.Descending);
 
-                    foreach (Contact c in list.Sort(comparer).Filter(new SoodaObjectFilter(predicate1))) {
+                    foreach (Contact c in list.Sort(comparer).Filter(new SoodaObjectFilter(predicate1)))
+                    {
                         Console.WriteLine("Member: {0} - {2} - {1}", c.Evaluate("PrimaryGroup.Name"), c.Name, c.LastSalary);
                     }
                     tran.Commit();
@@ -81,14 +88,17 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void Collection1toNTest() {
+        public void Collection1toNTest()
+        {
             Collection1toNTest(false);
         }
 
         [Test]
         [Ignore("not implemented yet")]
-        public void SharedCollection1ToNTest() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void SharedCollection1ToNTest()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 Group g1 = Group.GetRef(10);
 
                 Contact newManager = new Contact();
@@ -110,13 +120,16 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
             }
         }
 
-        public void Collection1toNTest(bool quiet) {
+        public void Collection1toNTest(bool quiet)
+        {
             string serialized;
 
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) {
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
+            {
                 testDataSource.Open();
 
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
                     tran.RegisterDataSource(testDataSource);
                     Contact c1;
                     Group g = Group.Load(10);
@@ -138,7 +151,8 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     Assert.IsTrue(g.Members.Contains(Contact.GetRef(1)));
                     Assert.IsTrue(g.Members.Contains(Contact.GetRef(2)));
                     int times = 0;
-                    foreach (Contact c in g.Members) {
+                    foreach (Contact c in g.Members)
+                    {
                         if (!quiet)
                             Console.WriteLine("Got {0} [{1}]", c.Name, c.ContactId);
                         times++;
@@ -156,7 +170,8 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     Assert.IsTrue(g.Members.Contains(c1));
                     Assert.AreEqual(g.Members.Count, 4);
 
-                    foreach (Contact c in g.Members) {
+                    foreach (Contact c in g.Members)
+                    {
                         if (!quiet)
                             Console.WriteLine("before serialization, member: {0}", c.Name);
                     }
@@ -166,15 +181,19 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                         Console.WriteLine("Serialized as\n{0}", serialized);
                 }
 
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
                     tran.RegisterDataSource(testDataSource);
                     tran.Deserialize(serialized);
                     string serialized2 = tran.Serialize(SoodaSerializeOptions.IncludeNonDirtyFields | SoodaSerializeOptions.IncludeNonDirtyObjects | SoodaSerializeOptions.Canonical);
                     //string serialized2 = tran.Serialize();
-                    if (serialized == serialized2) {
+                    if (serialized == serialized2)
+                    {
                         if (!quiet)
                             Console.WriteLine("Serialization is stable");
-                    } else {
+                    }
+                    else
+                    {
                         if (!quiet)
                             Console.WriteLine("Serialized again as\n{0}", serialized2);
                     }
@@ -182,7 +201,8 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
 
                     Group g = Group.Load(10);
 
-                    foreach (Contact c in g.Members) {
+                    foreach (Contact c in g.Members)
+                    {
                         //if (!quiet)
                         Console.WriteLine("after deserialization, member: {0}", c.Name);
                     }
@@ -194,7 +214,8 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     Assert.IsTrue(g.Members.Contains(Contact.GetRef(1)));
                     Assert.IsTrue(g.Members.Contains(Contact.GetRef(2)));
                     int times = 0;
-                    foreach (Contact c in g.Members) {
+                    foreach (Contact c in g.Members)
+                    {
                         times++;
                         Assert.IsTrue(
                             c == Contact.GetRef(51) ||

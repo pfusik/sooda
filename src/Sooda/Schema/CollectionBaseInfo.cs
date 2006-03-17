@@ -33,15 +33,16 @@
 
 using System;
 
-namespace Sooda.Schema 
+namespace Sooda.Schema
 {
     /// <remarks/>
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [Serializable]
-    public abstract class CollectionBaseInfo {
+    public abstract class CollectionBaseInfo
+    {
         [System.Xml.Serialization.XmlAttributeAttribute("name")]
         public string Name;
 
         public abstract ClassInfo GetItemClass();
-   }
+    }
 }

@@ -40,7 +40,7 @@ namespace Sooda.Collections
     /// <summary>
     /// A dictionary with keys of type Type and values of type SoodaRelationTable
     /// </summary>
-    public class TypeToSoodaRelationTableAssociation: System.Collections.DictionaryBase
+    public class TypeToSoodaRelationTableAssociation : System.Collections.DictionaryBase
     {
         /// <summary>
         /// Initializes a new empty instance of the TypeToSoodaRelationTableAssociation class
@@ -60,7 +60,7 @@ namespace Sooda.Collections
         {
             get
             {
-                return (SoodaRelationTable) this.Dictionary[key];
+                return (SoodaRelationTable)this.Dictionary[key];
             }
             set
             {

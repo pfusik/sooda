@@ -39,7 +39,7 @@ namespace Sooda.Schema
     /// A collection of elements of type IndexInfo
     /// </summary>
     [Serializable]
-    public class IndexInfoCollection: System.Collections.CollectionBase
+    public class IndexInfoCollection : System.Collections.CollectionBase
     {
         /// <summary>
         /// Initializes a new empty instance of the IndexInfoCollection class.
@@ -164,7 +164,7 @@ namespace Sooda.Schema
         {
             get
             {
-                return (IndexInfo) this.List[index];
+                return (IndexInfo)this.List[index];
             }
             set
             {
@@ -186,7 +186,7 @@ namespace Sooda.Schema
         /// <summary>
         /// Type-specific enumeration class, used by IndexInfoCollection.GetEnumerator.
         /// </summary>
-        public class Enumerator: System.Collections.IEnumerator
+        public class Enumerator : System.Collections.IEnumerator
         {
             private System.Collections.IEnumerator wrapped;
 
@@ -199,7 +199,7 @@ namespace Sooda.Schema
             {
                 get
                 {
-                    return (IndexInfo) (this.wrapped.Current);
+                    return (IndexInfo)(this.wrapped.Current);
                 }
             }
 
@@ -207,7 +207,7 @@ namespace Sooda.Schema
             {
                 get
                 {
-                    return (IndexInfo) (this.wrapped.Current);
+                    return (IndexInfo)(this.wrapped.Current);
                 }
             }
 

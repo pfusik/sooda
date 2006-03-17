@@ -1,6 +1,6 @@
 class ${ClassName}_Stub
     extends ${BaseClassName}
-    
+
 constructor(SoodaTransaction tran)
     attributes Public
     baseArg(arg(tran))
@@ -17,7 +17,21 @@ begin
 end
 
 #ifnot MiniStub
- 
+
+method GetFieldValuesForRead(System.Int32 requiredTable)
+    attributes Private
+    returns ${ClassName}_Values
+begin
+    return cast(${ClassName}_Values, typeref(Sooda.ObjectMapper.SoodaObjectImpl).GetFieldValuesForRead(this, arg(requiredTable)))
+end
+
+method InitFieldValues(System.Int32 fieldCount, arrayof(System.String) fieldNames)
+    attributes Family,Override
+    returns SoodaObjectFieldValues
+begin
+    return new ${ClassName}_Values(arg(fieldNames))
+end
+
 method GetClassInfo()
     customattribute System.Diagnostics.DebuggerStepThroughAttribute
     attributes Public,Override

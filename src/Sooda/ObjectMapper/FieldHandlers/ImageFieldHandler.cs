@@ -37,22 +37,27 @@ using System.IO;
 
 using System.Drawing;
 
-namespace Sooda.ObjectMapper.FieldHandlers {
-    public class ImageFieldHandler : SoodaFieldHandler {
-        public ImageFieldHandler(bool nullable) : base(nullable) {}
+namespace Sooda.ObjectMapper.FieldHandlers
+{
+    public class ImageFieldHandler : SoodaFieldHandler
+    {
+        public ImageFieldHandler(bool nullable) : base(nullable) { }
 
         protected override string TypeName
         {
-            get {
+            get
+            {
                 return "image";
             }
         }
 
-        public override object RawRead(IDataRecord record, int pos) {
+        public override object RawRead(IDataRecord record, int pos)
+        {
             return GetFromReader(record, pos);
         }
 
-        public static Image GetFromReader(IDataRecord record, int pos) {
+        public static Image GetFromReader(IDataRecord record, int pos)
+        {
             long n = record.GetBytes(pos, 0, null, 0, 0);
             if (n <= 0)
                 return null;
@@ -66,15 +71,18 @@ namespace Sooda.ObjectMapper.FieldHandlers {
             return Image.FromStream(ms);
         }
 
-        public override string RawSerialize(object val) {
+        public override string RawSerialize(object val)
+        {
             return SerializeToString(val);
         }
 
-        public override object RawDeserialize(string s) {
+        public override object RawDeserialize(string s)
+        {
             return DeserializeFromString(s);
         }
 
-        public static string SerializeToString(object obj) {
+        public static string SerializeToString(object obj)
+        {
             Image img = (Image)obj;
             // tu nie moe by using() - http://support.microsoft.com/?id=814675
             MemoryStream ms = new MemoryStream();
@@ -84,39 +92,43 @@ namespace Sooda.ObjectMapper.FieldHandlers {
             return System.Convert.ToBase64String(d);
         }
 
-        public static object DeserializeFromString(string s) {
+        public static object DeserializeFromString(string s)
+        {
             byte[] data = Convert.FromBase64String(s);
             MemoryStream ms = new MemoryStream(data);
             return Image.FromStream(ms);
         }
 
         private static object _zeroValue = null;
-        public override object ZeroValue() {
+        public override object ZeroValue()
+        {
             return _zeroValue;
         }
 
-        public override Type GetFieldType() {
+        public override Type GetFieldType()
+        {
             return typeof(Image);
         }
 
-		public override Type GetSqlType()
-		{
-			return null;
-		}
-
-		public override void SetupDBParameter(IDbDataParameter parameter, object value)
-		{
-			System.Drawing.Image img = (System.Drawing.Image)value;
-
-			MemoryStream ms = new MemoryStream();
-			img.Save(ms, img.RawFormat);
-
-			parameter.DbType = DbType.Binary;
-			parameter.Value = ms.GetBuffer();
-		}
-        
-        public static Image GetNotNullValue(object val) {
-            return (Image) val;
+        public override Type GetSqlType()
+        {
+            return null;
         }
-	}
+
+        public override void SetupDBParameter(IDbDataParameter parameter, object value)
+        {
+            System.Drawing.Image img = (System.Drawing.Image)value;
+
+            MemoryStream ms = new MemoryStream();
+            img.Save(ms, img.RawFormat);
+
+            parameter.DbType = DbType.Binary;
+            parameter.Value = ms.GetBuffer();
+        }
+
+        public static Image GetNotNullValue(object val)
+        {
+            return (Image)val;
+        }
+    }
 }

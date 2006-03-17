@@ -35,31 +35,37 @@ using System;
 
 using Sooda.Schema;
 
-namespace Sooda.Sql {
-    public class MySqlBuilder : SqlBuilderNamedArg {
-        public override string GetSQLDataType(Sooda.Schema.FieldInfo fi) {
-            switch (fi.DataType) {
-            case FieldDataType.Integer:
-                return "int";
+namespace Sooda.Sql
+{
+    public class MySqlBuilder : SqlBuilderNamedArg
+    {
+        public override string GetSQLDataType(Sooda.Schema.FieldInfo fi)
+        {
+            switch (fi.DataType)
+            {
+                case FieldDataType.Integer:
+                    return "int";
 
-            case FieldDataType.String:
-                return "varchar(" + fi.Size + ")";
+                case FieldDataType.String:
+                    return "varchar(" + fi.Size + ")";
 
-            case FieldDataType.DateTime:
-                return "datetime";
+                case FieldDataType.DateTime:
+                    return "datetime";
 
-            default:
-                throw new NotImplementedException(String.Format("Datatype {0} not supported for this database", fi.DataType.ToString()));
+                default:
+                    throw new NotImplementedException(String.Format("Datatype {0} not supported for this database", fi.DataType.ToString()));
             }
         }
 
-        protected override string GetNameForParameter(int pos) {
+        protected override string GetNameForParameter(int pos)
+        {
             return "@p" + pos.ToString();
         }
 
         public override SqlTopSupportMode TopSupport
         {
-            get {
+            get
+            {
                 return SqlTopSupportMode.Limit;
             }
         }

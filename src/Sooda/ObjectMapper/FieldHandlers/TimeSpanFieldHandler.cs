@@ -36,47 +36,58 @@ using System.Data;
 
 using System.Globalization;
 
-namespace Sooda.ObjectMapper.FieldHandlers {
-    public class TimeSpanFieldHandler : SoodaFieldHandler {
-        public TimeSpanFieldHandler(bool nullable) : base(nullable) {}
+namespace Sooda.ObjectMapper.FieldHandlers
+{
+    public class TimeSpanFieldHandler : SoodaFieldHandler
+    {
+        public TimeSpanFieldHandler(bool nullable) : base(nullable) { }
 
         protected override string TypeName
         {
-            get {
+            get
+            {
                 return "timespan";
             }
         }
 
-        public override object RawRead(IDataRecord record, int pos) {
+        public override object RawRead(IDataRecord record, int pos)
+        {
             return GetFromReader(record, pos);
         }
 
-        public static TimeSpan GetFromReader(IDataRecord record, int pos) {
+        public static TimeSpan GetFromReader(IDataRecord record, int pos)
+        {
             return TimeSpan.FromSeconds(record.GetInt32(pos));
         }
 
-        public override string RawSerialize(object val) {
+        public override string RawSerialize(object val)
+        {
             return SerializeToString(val);
         }
 
-        public override object RawDeserialize(string s) {
+        public override object RawDeserialize(string s)
+        {
             return DeserializeFromString(s);
         }
 
-        public static string SerializeToString(object obj) {
+        public static string SerializeToString(object obj)
+        {
             return Convert.ToInt32(((TimeSpan)obj).TotalSeconds).ToString(CultureInfo.InvariantCulture);
         }
 
-        public static object DeserializeFromString(string s) {
+        public static object DeserializeFromString(string s)
+        {
             return TimeSpan.FromSeconds(Int32.Parse(s, CultureInfo.InvariantCulture));
         }
 
         private static object _zeroValue = TimeSpan.Zero;
-        public override object ZeroValue() {
+        public override object ZeroValue()
+        {
             return _zeroValue;
         }
 
-        public override Type GetFieldType() {
+        public override Type GetFieldType()
+        {
             return typeof(TimeSpan);
         }
 
@@ -93,7 +104,7 @@ namespace Sooda.ObjectMapper.FieldHandlers {
 
         // type conversions - used in generated stub code
 
-        public static TimeSpan GetNotNullValue(object val) 
+        public static TimeSpan GetNotNullValue(object val)
         {
             if (val == null)
                 return TimeSpan.Zero;
@@ -101,7 +112,8 @@ namespace Sooda.ObjectMapper.FieldHandlers {
         }
 
 #if DOTNET2
-        public static TimeSpan? GetNullableValue(object fieldValue) {
+        public static TimeSpan? GetNullableValue(object fieldValue)
+        {
             if (fieldValue == null)
                 return null;
             else
@@ -113,5 +125,5 @@ namespace Sooda.ObjectMapper.FieldHandlers {
             return typeof(TimeSpan?);
         }
 #endif
-	}
+    }
 }

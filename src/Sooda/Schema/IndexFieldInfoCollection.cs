@@ -33,12 +33,13 @@
 
 using System;
 
-namespace Sooda.Schema {
+namespace Sooda.Schema
+{
     /// <summary>
     /// A collection of elements of type IndexFieldInfo
     /// </summary>
     [Serializable]
-    public class IndexFieldInfoCollection: System.Collections.CollectionBase
+    public class IndexFieldInfoCollection : System.Collections.CollectionBase
     {
         /// <summary>
         /// Initializes a new empty instance of the IndexFieldInfoCollection class.
@@ -163,7 +164,7 @@ namespace Sooda.Schema {
         {
             get
             {
-                return (IndexFieldInfo) this.List[index];
+                return (IndexFieldInfo)this.List[index];
             }
             set
             {
@@ -185,7 +186,7 @@ namespace Sooda.Schema {
         /// <summary>
         /// Type-specific enumeration class, used by IndexFieldInfoCollection.GetEnumerator.
         /// </summary>
-        public class Enumerator: System.Collections.IEnumerator
+        public class Enumerator : System.Collections.IEnumerator
         {
             private System.Collections.IEnumerator wrapped;
 
@@ -198,7 +199,7 @@ namespace Sooda.Schema {
             {
                 get
                 {
-                    return (IndexFieldInfo) (this.wrapped.Current);
+                    return (IndexFieldInfo)(this.wrapped.Current);
                 }
             }
 
@@ -206,7 +207,7 @@ namespace Sooda.Schema {
             {
                 get
                 {
-                    return (IndexFieldInfo) (this.wrapped.Current);
+                    return (IndexFieldInfo)(this.wrapped.Current);
                 }
             }
 

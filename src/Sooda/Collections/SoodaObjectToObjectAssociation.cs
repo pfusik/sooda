@@ -38,7 +38,7 @@ namespace Sooda.Collections
     /// <summary>
     /// A dictionary with keys of type SoodaObject and values of type Object
     /// </summary>
-    public class SoodaObjectToObjectAssociation: System.Collections.DictionaryBase
+    public class SoodaObjectToObjectAssociation : System.Collections.DictionaryBase
     {
         /// <summary>
         /// Initializes a new empty instance of the SoodaObjectToObjectAssociation class
@@ -58,7 +58,7 @@ namespace Sooda.Collections
         {
             get
             {
-                return (Object) this.Dictionary[key];
+                return (Object)this.Dictionary[key];
             }
             set
             {

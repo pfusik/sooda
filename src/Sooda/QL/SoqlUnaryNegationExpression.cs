@@ -33,22 +33,27 @@
 
 using System;
 
-namespace Sooda.QL {
-    public class SoqlUnaryNegationExpression : SoqlExpression {
+namespace Sooda.QL
+{
+    public class SoqlUnaryNegationExpression : SoqlExpression
+    {
         public SoqlExpression par;
 
-        public SoqlUnaryNegationExpression() {}
+        public SoqlUnaryNegationExpression() { }
 
-        public SoqlUnaryNegationExpression(SoqlExpression par) {
+        public SoqlUnaryNegationExpression(SoqlExpression par)
+        {
             this.par = par;
         }
 
         // visitor pattern
-        public override void Accept(ISoqlVisitor visitor) {
+        public override void Accept(ISoqlVisitor visitor)
+        {
             visitor.Visit(this);
         }
 
-        public override SoqlExpression Simplify() {
+        public override SoqlExpression Simplify()
+        {
             par = (SoqlBooleanExpression)par.Simplify();
             return this;
         }

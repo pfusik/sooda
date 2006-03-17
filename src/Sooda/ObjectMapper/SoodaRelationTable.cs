@@ -34,13 +34,16 @@
 using System;
 using System.Xml;
 
-namespace Sooda.ObjectMapper {
-    public class SoodaRelationTupleChangedArgs : EventArgs {
+namespace Sooda.ObjectMapper
+{
+    public class SoodaRelationTupleChangedArgs : EventArgs
+    {
         public object Left;
         public object Right;
         public int Mode;
 
-        public SoodaRelationTupleChangedArgs(object left, object right, int mode) {
+        public SoodaRelationTupleChangedArgs(object left, object right, int mode)
+        {
             this.Left = left;
             this.Right = right;
             this.Mode = mode;
@@ -49,8 +52,10 @@ namespace Sooda.ObjectMapper {
 
     public delegate void SoodaRelationTupleChanged(object sender, SoodaRelationTupleChangedArgs args);
 
-    public abstract class SoodaRelationTable {
-        public struct Tuple {
+    public abstract class SoodaRelationTable
+    {
+        public struct Tuple
+        {
             public object ref1;
             public object ref2;
             public int tupleMode;       // -1 - remove, +1 - add
@@ -66,7 +71,8 @@ namespace Sooda.ObjectMapper {
 
         public event SoodaRelationTupleChanged OnTupleChanged;
 
-        protected SoodaRelationTable(string tableName, string leftColumnName, string rightColumnName, Sooda.Schema.ClassInfo dsi) {
+        protected SoodaRelationTable(string tableName, string leftColumnName, string rightColumnName, Sooda.Schema.ClassInfo dsi)
+        {
             this._dataSourceInfo = dsi.GetDataSource();
             this.tableName = tableName;
             this.leftColumnName = leftColumnName;
@@ -75,33 +81,40 @@ namespace Sooda.ObjectMapper {
 
         public int TupleCount
         {
-            get {
+            get
+            {
                 return count;
             }
         }
 
         public Tuple[] Tuples
         {
-            get {
+            get
+            {
                 return tuples;
             }
         }
 
-        public void Add(object ref1, object ref2) {
+        public void Add(object ref1, object ref2)
+        {
             SetTupleMode(ref1, ref2, 1);
         }
 
-        public void Remove(object ref1, object ref2) {
+        public void Remove(object ref1, object ref2)
+        {
             SetTupleMode(ref1, ref2, -1);
         }
 
-        void SetTupleMode(object ref1, object ref2, int tupleMode) {
-            for (int i = 0; i < count; ++i) {
-                if (tuples[i].ref1.Equals(ref1) && tuples[i].ref2.Equals(ref2)) {
+        void SetTupleMode(object ref1, object ref2, int tupleMode)
+        {
+            for (int i = 0; i < count; ++i)
+            {
+                if (tuples[i].ref1.Equals(ref1) && tuples[i].ref2.Equals(ref2))
+                {
                     tuples[i].tupleMode = tupleMode;
                     if (this.OnTupleChanged != null)
                         this.OnTupleChanged(this, new SoodaRelationTupleChangedArgs(ref1, ref2, tupleMode));
-                    return ;
+                    return;
                 }
             }
             MakeRoom();
@@ -113,8 +126,10 @@ namespace Sooda.ObjectMapper {
                 this.OnTupleChanged(this, new SoodaRelationTupleChangedArgs(ref1, ref2, tupleMode));
         }
 
-        void MakeRoom() {
-            if (tuples == null || count >= tuples.Length) {
+        void MakeRoom()
+        {
+            if (tuples == null || count >= tuples.Length)
+            {
                 int newCapacity = 64;
                 if (tuples != null)
                     newCapacity = tuples.Length * 2;
@@ -128,35 +143,41 @@ namespace Sooda.ObjectMapper {
             }
         }
 
-        public void SaveTuples(SoodaTransaction tran) {
+        public void SaveTuples(SoodaTransaction tran)
+        {
             if (count == 0)
-                return ;
+                return;
 
- 
+
             Sooda.Schema.DataSourceInfo dataSourceInfo = _dataSourceInfo;
 
             SoodaDataSource ds = tran.OpenDataSource(dataSourceInfo);
-            for (int i = 0; i < count; ++i) {
-                if (!tuples[i].saved) {
+            for (int i = 0; i < count; ++i)
+            {
+                if (!tuples[i].saved)
+                {
                     ds.MakeTuple(tableName, leftColumnName, rightColumnName, tuples[i].ref1, tuples[i].ref2, tuples[i].tupleMode);
                     tuples[i].saved = true;
                 }
             }
         }
 
-        public void Commit() {
+        public void Commit()
+        {
             count = 0;
             tuples = null;
         }
 
-        internal void Serialize(XmlWriter writer, SoodaSerializeOptions options) {
+        internal void Serialize(XmlWriter writer, SoodaSerializeOptions options)
+        {
             if (count == 0)
                 return;
 
             writer.WriteStartElement("relation");
             writer.WriteAttributeString("type", GetType().AssemblyQualifiedName);
             writer.WriteAttributeString("tupleCount", count.ToString());
-            for (int i = 0; i < count; ++i) {
+            for (int i = 0; i < count; ++i)
+            {
                 string modeString = null;
 
                 if (tuples[i].tupleMode == 1)
@@ -174,7 +195,8 @@ namespace Sooda.ObjectMapper {
             writer.WriteEndElement();
         }
 
-        internal void BeginDeserialization(int tupleCount) {
+        internal void BeginDeserialization(int tupleCount)
+        {
             tuples = new Tuple[tupleCount < 16 ? 16 : tupleCount];
             count = 0;
         }
@@ -182,15 +204,20 @@ namespace Sooda.ObjectMapper {
         protected abstract object DeserializeTupleLeft(XmlReader reader);
         protected abstract object DeserializeTupleRight(XmlReader reader);
 
-        internal void DeserializeTuple(XmlReader reader) {
+        internal void DeserializeTuple(XmlReader reader)
+        {
             string mode = reader.GetAttribute("mode");
             int modeValue = 0;
 
-            if (mode == "add") {
+            if (mode == "add")
+            {
                 modeValue = 1;
-            } else if (mode == "remove") {
+            }
+            else if (mode == "remove")
+            {
                 modeValue = -1;
-            } else
+            }
+            else
                 throw new ArgumentException("Invalid tuple mode on deserialize: " + mode);
 
             tuples[count].tupleMode = modeValue;

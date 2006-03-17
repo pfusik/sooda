@@ -33,13 +33,16 @@
 
 using System;
 
-namespace Sooda.ObjectMapper {
+namespace Sooda.ObjectMapper
+{
     [AttributeUsage(AttributeTargets.Class)]
-    public sealed class SoodaObjectFactoryAttribute : Attribute {
+    public sealed class SoodaObjectFactoryAttribute : Attribute
+    {
         public readonly string ClassName;
         public readonly Type Type;
 
-        public SoodaObjectFactoryAttribute(string className, Type type) {
+        public SoodaObjectFactoryAttribute(string className, Type type)
+        {
             this.ClassName = className;
             this.Type = type;
         }

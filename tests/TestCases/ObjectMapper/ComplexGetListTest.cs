@@ -42,23 +42,27 @@ using Sooda.Caching;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.ObjectMapper {
+namespace Sooda.UnitTests.TestCases.ObjectMapper
+{
     [TestFixture]
-    public class ComplexGetListTest {
+    public class ComplexGetListTest
+    {
         [Test]
-        public void Test1() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void Test1()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 Contact.Mary.Name = "temp1";
-                SoodaCache.Dump(Console.Out);
-
                 ContactList cl = Contact.GetList(tran, new SoodaWhereClause("Name = {0}", "Mary Manager"), SoodaOrderBy.Unsorted);
                 Assert.AreEqual(0, cl.Count);
             }
         }
 
         [Test]
-        public void Test2() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void Test2()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 Contact.Mary.Name = "temp1";
 
                 ContactList cl = Contact.GetList(tran, new SoodaWhereClause("PrimaryGroup.Manager.Name = {0}", "Mary Manager"), SoodaOrderBy.Unsorted);
@@ -67,8 +71,10 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void Test3() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void Test3()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 Contact.Mary.Name = "temp1";
 
                 ContactList cl = Contact.GetList(tran, new SoodaWhereClause("PrimaryGroup.Manager.Name = {0}", "temp1"), SoodaOrderBy.Unsorted);
@@ -77,8 +83,10 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void Test4() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void Test4()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 Group.GetRef(10).Name = "temp7";
 
                 ContactList cl = Contact.GetList(tran, new SoodaWhereClause("PrimaryGroup.Name = {0}", "temp7"), SoodaOrderBy.Unsorted);
@@ -87,8 +95,10 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void Test5() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void Test5()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 Contact c = new Contact();
                 c.Type = ContactType.Customer;
                 c.PrimaryGroup = Group.GetRef(10);
@@ -99,8 +109,10 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void Test6() {
-            using (SoodaTransaction tran = new SoodaTransaction()) {
+        public void Test6()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
                 Contact c = new Contact();
                 c.Type = ContactType.Customer;
                 c.PrimaryGroup = Group.GetRef(11);

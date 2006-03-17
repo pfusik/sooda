@@ -3,186 +3,219 @@ using System.Text;
 
 namespace Sooda
 {
-	public class SoodaStatistics
-	{
-		private static SoodaStatistics _globalStatistics = new SoodaStatistics();
-        
-		internal SoodaStatistics() { }
+    public class SoodaStatistics
+    {
+        private static SoodaStatistics _globalStatistics = new SoodaStatistics();
 
-		// query timings
+        internal SoodaStatistics() { }
 
-		private int _databaseQueries = 0;
-		private double _totalQueryTime = 0.0;
-		private double _minQueryTime = 0.0;
-		private double _maxQueryTime = 0.0;
-		private double _avgQueryTime = 0.0;
-		private double _lastQueryTime = 0.0;
-		private int _cacheMisses = 0;
-		private int _cacheHits = 0;
-		private int _extraMaterializations = 0;
-		private int _objectInserts = 0;
-		private int _objectUpdates = 0;
-		private int _objectsWithoutFields = 0;
+        // query timings
 
-		public double TotalQueryTime
-		{
-			get { return _totalQueryTime; }
-		}
+        private int _databaseQueries = 0;
+        private double _totalQueryTime = 0.0;
+        private double _minQueryTime = 0.0;
+        private double _maxQueryTime = 0.0;
+        private double _avgQueryTime = 0.0;
+        private double _lastQueryTime = 0.0;
+        private int _cacheMisses = 0;
+        private int _cacheHits = 0;
+        private int _collectionCacheMisses = 0;
+        private int _collectionCacheHits = 0;
+        private int _extraMaterializations = 0;
+        private int _objectInserts = 0;
+        private int _objectUpdates = 0;
+        private int _objectsWithoutFields = 0;
 
-		public double LastQueryTime
-		{
-			get { return _lastQueryTime; }
-		}
+        public double TotalQueryTime
+        {
+            get { return _totalQueryTime; }
+        }
 
-		public double AvgQueryTime
-		{
-			get { return _avgQueryTime; }
-		}
+        public double LastQueryTime
+        {
+            get { return _lastQueryTime; }
+        }
 
-		public double MinQueryTime
-		{
-			get { return _minQueryTime; }
-		}
+        public double AvgQueryTime
+        {
+            get { return _avgQueryTime; }
+        }
 
-		public double MaxQueryTime
-		{
-			get { return _maxQueryTime; }
-		}
+        public double MinQueryTime
+        {
+            get { return _minQueryTime; }
+        }
 
-		public int DatabaseQueries
-		{
-			get { return _databaseQueries; }
-		}
+        public double MaxQueryTime
+        {
+            get { return _maxQueryTime; }
+        }
 
-		public int CacheHits
-		{
-			get { return _cacheHits; }
-		}
+        public int DatabaseQueries
+        {
+            get { return _databaseQueries; }
+        }
 
-		public int CacheMisses
-		{
-			get { return _cacheMisses; }
-		}
+        public int CacheHits
+        {
+            get { return _cacheHits; }
+        }
 
-		public double CacheHitRatio
-		{
-			get
-			{
-				int total = _cacheHits + _cacheMisses;
-				if (total == 0)
-					return 0.0;
+        public int CacheMisses
+        {
+            get { return _cacheMisses; }
+        }
 
-				return (double)_cacheHits / total;
-			}
-		}
+        public int CollectionCacheHits
+        {
+            get { return _collectionCacheHits; }
+        }
 
-		public int ExtraMaterializations
-		{
-			get { return _extraMaterializations; }
-		}
+        public int CollectionCacheMisses
+        {
+            get { return _collectionCacheMisses; }
+        }
 
-		public int ObjectInserts
-		{
-			get { return _objectInserts; }
-		}
+        public double CacheHitRatio
+        {
+            get
+            {
+                int total = _cacheHits + _cacheMisses;
+                if (total == 0)
+                    return 0.0;
 
-		public int ObjectUpdates
-		{
-			get { return _objectUpdates; }
-		}
+                return (double)_cacheHits / total;
+            }
+        }
 
-		public int ObjectsWithoutFields
-		{
-			get { return _objectsWithoutFields; }
-		}
+        public double CollectionCacheHitRatio
+        {
+            get
+            {
+                int total = _collectionCacheHits + _collectionCacheMisses;
+                if (total == 0)
+                    return 0.0;
 
-		public double ObjectsWithoutFieldsRatio
-		{
-			get 
-			{ 
-				int totalObjects = ObjectInserts + ObjectUpdates;
-				if (totalObjects == 0)
-					return 0.0;
-				else
-					return (double)_objectsWithoutFields / totalObjects;
-			}
-		}
+                return (double)_collectionCacheHits / total;
+            }
+        }
 
-		public static SoodaStatistics Global
-		{
-			get { return _globalStatistics; }
-		}
+        public int ExtraMaterializations
+        {
+            get { return _extraMaterializations; }
+        }
 
-		internal void RegisterQueryTime(double timeInSeconds)
-		{
-			_databaseQueries++;
-			_totalQueryTime += timeInSeconds;
-			_lastQueryTime = timeInSeconds;
-			_avgQueryTime = _totalQueryTime / _databaseQueries;
+        public int ObjectInserts
+        {
+            get { return _objectInserts; }
+        }
 
-			if (_databaseQueries == 1)
-			{
-				_minQueryTime = timeInSeconds;
-				_maxQueryTime = timeInSeconds;
-			}
-			else
-			{
-				_maxQueryTime = Math.Max(_maxQueryTime, timeInSeconds);
-				_minQueryTime = Math.Min(_minQueryTime, timeInSeconds);
-			}
-		}
+        public int ObjectUpdates
+        {
+            get { return _objectUpdates; }
+        }
 
-		internal void RegisterCacheHit()
-		{
-			_cacheHits++;
-		}
+        public int ObjectsWithoutFields
+        {
+            get { return _objectsWithoutFields; }
+        }
 
-		internal void RegisterCacheMiss()
-		{
-			_cacheMisses++;
-		}
+        public double ObjectsWithoutFieldsRatio
+        {
+            get
+            {
+                int totalObjects = ObjectInserts + ObjectUpdates;
+                if (totalObjects == 0)
+                    return 0.0;
+                else
+                    return (double)_objectsWithoutFields / totalObjects;
+            }
+        }
 
-		internal void RegisterExtraMaterialization()
-		{
-			_extraMaterializations++;
-		}
+        public static SoodaStatistics Global
+        {
+            get { return _globalStatistics; }
+        }
 
-		internal void RegisterObjectUpdate()
-		{
-			_objectUpdates++;
-			_objectsWithoutFields++;
-		}
+        internal void RegisterQueryTime(double timeInSeconds)
+        {
+            _databaseQueries++;
+            _totalQueryTime += timeInSeconds;
+            _lastQueryTime = timeInSeconds;
+            _avgQueryTime = _totalQueryTime / _databaseQueries;
 
-		internal void RegisterObjectInsert()
-		{
-			_objectInserts++;
-			_objectsWithoutFields++;
-		}
+            if (_databaseQueries == 1)
+            {
+                _minQueryTime = timeInSeconds;
+                _maxQueryTime = timeInSeconds;
+            }
+            else
+            {
+                _maxQueryTime = Math.Max(_maxQueryTime, timeInSeconds);
+                _minQueryTime = Math.Min(_minQueryTime, timeInSeconds);
+            }
+        }
 
-		internal void RegisterFieldsInited()
-		{
-			_objectsWithoutFields--;
-		}
+        internal void RegisterCacheHit()
+        {
+            _cacheHits++;
+        }
 
-		public override string ToString()
-		{
-			StringBuilder sb = new StringBuilder();
+        internal void RegisterCacheMiss()
+        {
+            _cacheMisses++;
+        }
 
-			sb.AppendFormat("Total Queries:          {0}\n", DatabaseQueries);
-			sb.AppendFormat("Total Query Time:       {0}\n", TotalQueryTime);
-			sb.AppendFormat("Avg. Query Time:        {0}\n", AvgQueryTime);
-			sb.AppendFormat("Min. Query Time:        {0}\n", MinQueryTime);
-			sb.AppendFormat("Max. Query Time:        {0}\n", MaxQueryTime);
-			sb.AppendFormat("Last Query Time:        {0}\n", LastQueryTime);
-			sb.AppendFormat("Cache Hits:             {0}\n", CacheHits);
-			sb.AppendFormat("Cache Misses:           {0}\n", CacheMisses);
-			sb.AppendFormat("Cache Hit Ratio:        {0}%\n", CacheHitRatio * 100.0);
-			sb.AppendFormat("Extra materializations: {0}\n", ExtraMaterializations);
-			sb.AppendFormat("Objects I-created:      {0}\n", ObjectInserts);
-			sb.AppendFormat("Objects U-created:      {0}\n", ObjectUpdates);
-			sb.AppendFormat("Objects without fields: {0} ({1}%)\n", ObjectsWithoutFields, ObjectsWithoutFieldsRatio * 100.0);
+        internal void RegisterCollectionCacheHit()
+        {
+            _collectionCacheHits++;
+        }
 
-			return sb.ToString();
-		}
+        internal void RegisterCollectionCacheMiss()
+        {
+            _collectionCacheMisses++;
+        }
+
+        internal void RegisterExtraMaterialization()
+        {
+            _extraMaterializations++;
+        }
+
+        internal void RegisterObjectUpdate()
+        {
+            _objectUpdates++;
+            _objectsWithoutFields++;
+        }
+
+        internal void RegisterObjectInsert()
+        {
+            _objectInserts++;
+            _objectsWithoutFields++;
+        }
+
+        internal void RegisterFieldsInited()
+        {
+            _objectsWithoutFields--;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendFormat("Queries:          count={0} total={1}ms avg={2}ms min={3}ms max={4}ms last={5}ms\n",
+                DatabaseQueries,
+                Math.Round(TotalQueryTime * 1000.0, 3),
+                Math.Round(AvgQueryTime * 1000.0, 3),
+                Math.Round(MinQueryTime * 1000.0, 3),
+                Math.Round(MaxQueryTime * 1000.0, 3),
+                Math.Round(LastQueryTime * 1000.0, 3));
+            sb.AppendFormat("Object Cache:     hits={0} misses={1} ratio={2}%\n", CacheHits, CacheMisses, Math.Round(CacheHitRatio * 100.0, 2));
+            sb.AppendFormat("Collection Cache: hits={0} misses={1} ratio={2}%\n", CollectionCacheHits, CollectionCacheMisses, Math.Round(CollectionCacheHitRatio * 100.0, 2));
+            sb.AppendFormat("Objects:          inserted={0} updated={1} extra={2} nofields={3} ({4}%)\n",
+                ObjectInserts, ObjectUpdates,
+                ExtraMaterializations, ObjectsWithoutFields, Math.Round(ObjectsWithoutFieldsRatio * 100.0, 2));
+
+            return sb.ToString();
+        }
     }
 }

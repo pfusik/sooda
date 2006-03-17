@@ -33,12 +33,13 @@
 
 using System;
 
-namespace Sooda.Schema {
+namespace Sooda.Schema
+{
     /// <summary>
     /// A collection of elements of type DataSourceInfo
     /// </summary>
     [Serializable]
-    public class DataSourceInfoCollection: System.Collections.CollectionBase
+    public class DataSourceInfoCollection : System.Collections.CollectionBase
     {
         /// <summary>
         /// Initializes a new empty instance of the DataSourceInfoCollection class.
@@ -163,7 +164,7 @@ namespace Sooda.Schema {
         {
             get
             {
-                return (DataSourceInfo) this.List[index];
+                return (DataSourceInfo)this.List[index];
             }
             set
             {
@@ -185,7 +186,7 @@ namespace Sooda.Schema {
         /// <summary>
         /// Type-specific enumeration class, used by DataSourceInfoCollection.GetEnumerator.
         /// </summary>
-        public class Enumerator: System.Collections.IEnumerator
+        public class Enumerator : System.Collections.IEnumerator
         {
             private System.Collections.IEnumerator wrapped;
 
@@ -198,7 +199,7 @@ namespace Sooda.Schema {
             {
                 get
                 {
-                    return (DataSourceInfo) (this.wrapped.Current);
+                    return (DataSourceInfo)(this.wrapped.Current);
                 }
             }
 
@@ -206,7 +207,7 @@ namespace Sooda.Schema {
             {
                 get
                 {
-                    return (DataSourceInfo) (this.wrapped.Current);
+                    return (DataSourceInfo)(this.wrapped.Current);
                 }
             }
 

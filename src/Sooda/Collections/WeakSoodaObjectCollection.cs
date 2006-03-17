@@ -39,7 +39,7 @@ namespace Sooda.Collections
     /// <summary>
     /// A collection of elements of type WeakSoodaObject
     /// </summary>
-    public class WeakSoodaObjectCollection: System.Collections.CollectionBase, ICloneable
+    public class WeakSoodaObjectCollection : System.Collections.CollectionBase, ICloneable
     {
         /// <summary>
         /// Initializes a new empty instance of the WeakSoodaObjectCollection class.
@@ -164,7 +164,7 @@ namespace Sooda.Collections
         {
             get
             {
-                return (WeakSoodaObject) this.List[index];
+                return (WeakSoodaObject)this.List[index];
             }
             set
             {
@@ -186,7 +186,7 @@ namespace Sooda.Collections
         /// <summary>
         /// Type-specific enumeration class, used by WeakSoodaObjectCollection.GetEnumerator.
         /// </summary>
-        public class Enumerator: System.Collections.IEnumerator
+        public class Enumerator : System.Collections.IEnumerator
         {
             private System.Collections.IEnumerator wrapped;
 
@@ -199,7 +199,7 @@ namespace Sooda.Collections
             {
                 get
                 {
-                    return (WeakSoodaObject) (this.wrapped.Current);
+                    return (WeakSoodaObject)(this.wrapped.Current);
                 }
             }
 
@@ -207,7 +207,7 @@ namespace Sooda.Collections
             {
                 get
                 {
-                    return (WeakSoodaObject) (this.wrapped.Current);
+                    return (WeakSoodaObject)(this.wrapped.Current);
                 }
             }
 

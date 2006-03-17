@@ -34,9 +34,9 @@
 
 using Sooda.QL.TypedWrappers;
 
-namespace Sooda.QL 
+namespace Sooda.QL
 {
-    public interface ISoqlVisitor 
+    public interface ISoqlVisitor
     {
         void Visit(SoqlBinaryExpression v);
         void Visit(SoqlBooleanAndExpression v);

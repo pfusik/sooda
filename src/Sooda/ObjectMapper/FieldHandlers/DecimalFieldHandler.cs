@@ -35,78 +35,92 @@ using System;
 using System.Data;
 using System.Globalization;
 
-namespace Sooda.ObjectMapper.FieldHandlers {
-    public class DecimalFieldHandler : SoodaFieldHandler {
-        public DecimalFieldHandler(bool nullable) : base(nullable) {}
+namespace Sooda.ObjectMapper.FieldHandlers
+{
+    public class DecimalFieldHandler : SoodaFieldHandler
+    {
+        public DecimalFieldHandler(bool nullable) : base(nullable) { }
 
         protected override string TypeName
         {
-            get {
+            get
+            {
                 return "decimal";
             }
         }
 
-        public override object RawRead(IDataRecord record, int pos) {
+        public override object RawRead(IDataRecord record, int pos)
+        {
             return GetFromReader(record, pos);
         }
 
-        public static Decimal GetFromReader(IDataRecord record, int pos) {
+        public static Decimal GetFromReader(IDataRecord record, int pos)
+        {
             return record.GetDecimal(pos);
         }
 
-        public override string RawSerialize(object val) {
+        public override string RawSerialize(object val)
+        {
             return SerializeToString(val);
         }
 
-        public override object RawDeserialize(string s) {
+        public override object RawDeserialize(string s)
+        {
             return DeserializeFromString(s);
         }
 
-        public static string SerializeToString(object obj) {
+        public static string SerializeToString(object obj)
+        {
             return Convert.ToDecimal(obj).ToString(CultureInfo.InvariantCulture);
         }
 
-        public static object DeserializeFromString(string s) {
+        public static object DeserializeFromString(string s)
+        {
             return Decimal.Parse(s, CultureInfo.InvariantCulture);
         }
 
         private static object _zeroValue = (decimal)0.0m;
-        public override object ZeroValue() {
+        public override object ZeroValue()
+        {
             return _zeroValue;
         }
 
-        public override Type GetFieldType() {
+        public override Type GetFieldType()
+        {
             return typeof(Decimal);
         }
 
-		public override Type GetSqlType()
-		{
-			return typeof(System.Data.SqlTypes.SqlDecimal);
-		}
+        public override Type GetSqlType()
+        {
+            return typeof(System.Data.SqlTypes.SqlDecimal);
+        }
 
-		public override void SetupDBParameter(IDbDataParameter parameter, object value)
-		{
-			parameter.DbType = DbType.Decimal;
-			parameter.Value = value;
-		}
+        public override void SetupDBParameter(IDbDataParameter parameter, object value)
+        {
+            parameter.DbType = DbType.Decimal;
+            parameter.Value = value;
+        }
 
         // type conversions - used in generated stub code
 
-        public static System.Data.SqlTypes.SqlDecimal GetSqlNullableValue(object fieldValue) {
+        public static System.Data.SqlTypes.SqlDecimal GetSqlNullableValue(object fieldValue)
+        {
             if (fieldValue == null)
                 return System.Data.SqlTypes.SqlDecimal.Null;
             else
                 return new System.Data.SqlTypes.SqlDecimal((Decimal)fieldValue);
         }
 
-        public static decimal GetNotNullValue(object val) {
+        public static decimal GetNotNullValue(object val)
+        {
             if (val == null)
                 throw new InvalidOperationException("Attempt to read a non-null value that isn't set yet");
             return (decimal)val;
         }
 
 #if DOTNET2
-        public static decimal? GetNullableValue(object fieldValue) {
+        public static decimal? GetNullableValue(object fieldValue)
+        {
             if (fieldValue == null)
                 return null;
             else
@@ -119,5 +133,5 @@ namespace Sooda.ObjectMapper.FieldHandlers {
         }
 #endif
 
-	}
+    }
 }

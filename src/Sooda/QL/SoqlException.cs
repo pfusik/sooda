@@ -68,29 +68,35 @@ THE POSSIBILITY OF SUCH DAMAGE.
 using System;
 using System.Runtime.Serialization;
 
-namespace Sooda.QL {
+namespace Sooda.QL
+{
     [Serializable]
-    public class SoqlException : SoodaException {
+    public class SoqlException : SoodaException
+    {
         private int _p0;
         private int _p1;
 
-        public SoqlException(string desc) : this(desc, -1, -1) {}
+        public SoqlException(string desc) : this(desc, -1, -1) { }
 
-        public SoqlException(string desc, int p) : this(desc, p, p) {}
+        public SoqlException(string desc, int p) : this(desc, p, p) { }
 
-        public SoqlException(string desc, int p0, int p1) : base(desc) {
+        public SoqlException(string desc, int p0, int p1)
+            : base(desc)
+        {
             _p0 = p0;
             _p1 = p1;
         }
 
-        public SoqlException(string desc, Exception inner) : this(desc, -1, -1, inner) {}
+        public SoqlException(string desc, Exception inner) : this(desc, -1, -1, inner) { }
 
-        public SoqlException(string desc, int p, Exception inner) : this(desc, p, p, inner) {}
+        public SoqlException(string desc, int p, Exception inner) : this(desc, p, p, inner) { }
 
-        public SoqlException(string desc, int p0, int p1, Exception inner) : base(desc, inner) {
+        public SoqlException(string desc, int p0, int p1, Exception inner)
+            : base(desc, inner)
+        {
             _p0 = p0;
             _p1 = p1;
         }
-		protected SoqlException(SerializationInfo info, StreamingContext context) : base(info, context) {}
+        protected SoqlException(SerializationInfo info, StreamingContext context) : base(info, context) { }
     }
 }

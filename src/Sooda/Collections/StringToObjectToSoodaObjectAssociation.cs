@@ -39,7 +39,7 @@ namespace Sooda.Collections
     /// <summary>
     /// A dictionary with keys of type String and values of type ObjectToSoodaObjectAssociation
     /// </summary>
-    public class StringToObjectToSoodaObjectAssociation: System.Collections.DictionaryBase
+    public class StringToObjectToSoodaObjectAssociation : System.Collections.DictionaryBase
     {
         /// <summary>
         /// Initializes a new empty instance of the StringToObjectToSoodaObjectAssociation class
@@ -59,7 +59,7 @@ namespace Sooda.Collections
         {
             get
             {
-                return (ObjectToSoodaObjectAssociation) this.Dictionary[key];
+                return (ObjectToSoodaObjectAssociation)this.Dictionary[key];
             }
             set
             {

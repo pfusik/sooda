@@ -31,7 +31,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-namespace Sooda.Schema 
+namespace Sooda.Schema
 {
     using System;
     using System.Collections;
@@ -41,7 +41,7 @@ namespace Sooda.Schema
 
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [Serializable]
-    public class IncludeInfo 
+    public class IncludeInfo
     {
         [XmlAttribute("schema")]
         public string SchemaFile;

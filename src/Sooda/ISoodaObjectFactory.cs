@@ -35,9 +35,9 @@
 using Sooda.ObjectMapper;
 using Sooda.Schema;
 
-namespace Sooda 
+namespace Sooda
 {
-    public interface ISoodaObjectFactory 
+    public interface ISoodaObjectFactory
     {
         SoodaObject CreateNew(SoodaTransaction tran);
         SoodaObject GetRef(SoodaTransaction tran, object keyValue);

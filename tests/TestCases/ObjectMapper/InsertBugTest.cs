@@ -41,16 +41,21 @@ using Sooda.UnitTests.BaseObjects;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.ObjectMapper {
+namespace Sooda.UnitTests.TestCases.ObjectMapper
+{
     [TestFixture]
-    public class InsertBugTest {
+    public class InsertBugTest
+    {
 
         [Test]
-        public void BugTest() {
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) {
+        public void BugTest()
+        {
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
+            {
                 testDataSource.Open();
 
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
                     tran.RegisterDataSource(testDataSource);
 
                     Contact c = new Contact();

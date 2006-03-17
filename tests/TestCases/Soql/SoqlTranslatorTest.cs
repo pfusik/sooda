@@ -41,10 +41,13 @@ using Sooda.UnitTests.Objects;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.Soql {
+namespace Sooda.UnitTests.TestCases.Soql
+{
     [TestFixture]
-    public class QueryTranslatorTest {
-        private string Normalize(string s) {
+    public class QueryTranslatorTest
+    {
+        private string Normalize(string s)
+        {
             string s1;
 
             s = s.Replace('\n', ' ');
@@ -52,7 +55,8 @@ namespace Sooda.UnitTests.TestCases.Soql {
             s = s.Replace('\t', ' ');
 
             s1 = s;
-            do {
+            do
+            {
                 s = s1;
                 s1 = s.Replace("  ", " ");
             } while (s1 != s);
@@ -62,7 +66,8 @@ namespace Sooda.UnitTests.TestCases.Soql {
             return s;
         }
 
-        private void AssertTranslation(string input, string output) {
+        private void AssertTranslation(string input, string output)
+        {
             StringWriter sw = new StringWriter();
             Sooda.Sql.SoqlToSqlConverter converter = new Sooda.Sql.SoqlToSqlConverter(sw, _DatabaseSchema.GetSchema(), new Sooda.Sql.SqlServerBuilder());
             Sooda.QL.SoqlPrettyPrinter prettyPrinter = new Sooda.QL.SoqlPrettyPrinter(Console.Out);
@@ -79,9 +84,10 @@ namespace Sooda.UnitTests.TestCases.Soql {
 
             o = Normalize(o);
 
-            if (output == null) {
+            if (output == null)
+            {
                 Console.WriteLine("AssertTranslation(\n\t\"{0}\",\n\t\"{1}\");", input, o);
-                return ;
+                return;
             }
             output = Normalize(output);
 
@@ -89,7 +95,8 @@ namespace Sooda.UnitTests.TestCases.Soql {
         }
 
         [Test]
-        public void SimpleTest1() {
+        public void SimpleTest1()
+        {
             AssertTranslation(
                 "select * from Contact",
                 @"
@@ -103,95 +110,110 @@ from     Contact t0"
 );
         }
         [Test]
-        public void SimpleTest2() {
+        public void SimpleTest2()
+        {
             AssertTranslation(
                 "select ContactId from Contact",
                 "select t0.id as ContactId from Contact t0");
         }
         [Test]
-        public void SimpleTest3() {
+        public void SimpleTest3()
+        {
             AssertTranslation(
                 "select PrimaryGroup.Id from Contact",
                 "select t1.id as PrimaryGroup_Id from Contact t0 left outer join _Group t1 on (t0.primary_group = t1.id)");
         }
         [Test]
-        public void SimpleTest4() {
+        public void SimpleTest4()
+        {
             AssertTranslation(
                 "select Id from Group",
                 "select t0.id as Id from _Group t0");
         }
         [Test]
-        public void SimpleTest5() {
+        public void SimpleTest5()
+        {
             AssertTranslation(
                 "select id from Group",
                 "select t0.id as id from _Group t0");
         }
         [Test]
-        public void OneToManyCountTest3() {
+        public void OneToManyCountTest3()
+        {
             AssertTranslation(
                 "select Name,Members.Count from Group",
                 "select t0.name as Name, (select count(*) from Contact where primary_group=t0.id) as Members_Count from _Group t0");
         }
         [Test]
-        public void OneToManyCountTest1() {
+        public void OneToManyCountTest1()
+        {
             AssertTranslation(
                 "select Name,Members.Count from Group where Members.Count = 0",
                 "select t0.name as Name, (select count(*) from Contact where primary_group=t0.id) as Members_Count from _Group t0 where ((select count(*) from Contact where primary_group=t0.id) = 0)");
         }
         [Test]
-        public void OneToManyCountTest2() {
+        public void OneToManyCountTest2()
+        {
             AssertTranslation(
                 "select Name,Members.Count from Group where Members.Count <> Members.Count",
                 "select t0.name as Name, (select count(*) from Contact where primary_group=t0.id) as Members_Count from _Group t0 where ((select count(*) from Contact where primary_group=t0.id) <> (select count(*) from Contact where primary_group=t0.id))");
         }
         [Test]
-        public void SelectFromRelationTest1() {
+        public void SelectFromRelationTest1()
+        {
             AssertTranslation(
                 "select c.Contact.Name,c.Role.Name from ContactToRole c where c.Contact.PrimaryGroup.Manager.Name = 'Mary Manager'",
                 "select t0.name as c_Contact_Name, t1.name as c_Role_Name from ContactRole c left outer join Contact t0 on (c.contact_id = t0.id) left outer join _Role t1 on (c.role_id = t1.id) left outer join _Group t2 on (t0.primary_group = t2.id) left outer join Contact t3 on (t2.manager = t3.id) where (t3.name = {L:AnsiString:Mary Manager})");
         }
         [Test]
-        public void SelectCountAsteriskTest1() {
+        public void SelectCountAsteriskTest1()
+        {
             AssertTranslation(
                 "select count(*) from Contact",
                 "select count(*) from Contact t0");
         }
         [Test]
-        public void ManyToManyCountTest1() {
+        public void ManyToManyCountTest1()
+        {
             AssertTranslation(
                 "select Name,Roles.Count from Contact",
                 "select t0.name as Name, (select count(*) from ContactRole where contact_id=t0.id) as Roles_Count from Contact t0");
         }
         [Test]
-        public void ManyToManyCountTest2() {
+        public void ManyToManyCountTest2()
+        {
             AssertTranslation(
                 "select Name,Roles.Count from Contact where Roles.Count > 3",
                 "select t0.name as Name, (select count(*) from ContactRole where contact_id=t0.id) as Roles_Count from Contact t0 where ((select count(*) from ContactRole where contact_id=t0.id) > 3)");
         }
 
         [Test]
-        public void ManyToManyCountTest3() {
+        public void ManyToManyCountTest3()
+        {
             AssertTranslation(
                 "select Name,Roles.Count from Contact where Roles.Count < Roles.Count + 1",
                 "select t0.name as Name, (select count(*) from ContactRole where contact_id=t0.id) as Roles_Count from Contact t0 where ((select count(*) from ContactRole where contact_id=t0.id) < ((select count(*) from ContactRole where contact_id=t0.id) + 1))");
         }
 
         [Test]
-        public void OneToManyContainsTest() {
+        public void OneToManyContainsTest()
+        {
             AssertTranslation(
                 "select Name from Group where Members.Contains(1)",
                 "select t0.name as Name from _Group t0 where exists (select * from Contact where primary_group=t0.id and id in (1))");
         }
 
         [Test]
-        public void OneToManyContainsTest2() {
+        public void OneToManyContainsTest2()
+        {
             AssertTranslation(
                 "select Name from Group where Members.Contains(select ContactId from Contact where Name='Mary Manager')",
                 "select t0.name as Name from _Group t0 where exists (select * from Contact where primary_group=t0.id and id in (select t1.id as ContactId from Contact t1 where (t1.name = {L:AnsiString:Mary Manager})))");
         }
 
         [Test]
-        public void OneToManyContainsTest3() {
+        public void OneToManyContainsTest3()
+        {
             AssertTranslation(
                 "select Name from Group where Members.Contains(Contact where Name='Mary Manager')",
                 @"
@@ -205,28 +227,32 @@ where    exists (select * from Contact where primary_group=t0.id and id in (
         }
 
         [Test]
-        public void ManyToManyContainsTest() {
+        public void ManyToManyContainsTest()
+        {
             AssertTranslation(
                 "select Name from Contact where Roles.Contains(3)",
                 "select t0.name as Name from Contact t0 where exists (select * from ContactRole where contact_id=t0.id and role_id in (3))");
         }
 
         [Test]
-        public void ManyToManyContainsTest2() {
+        public void ManyToManyContainsTest2()
+        {
             AssertTranslation(
                 "select Name from Contact where Roles.Contains(select Id from Role where Name like 'Man%')",
                 "select t0.name as Name from Contact t0 where exists (select * from ContactRole where contact_id=t0.id and role_id in (select t1.id as Id from _Role t1 where (t1.name like {L:String:Man%})))");
         }
 
         [Test]
-        public void ManyToManyContainsTest3() {
+        public void ManyToManyContainsTest3()
+        {
             AssertTranslation(
                 "select Name from Contact where Roles.Contains(select Id from Role where Name like 'Man%' and Members.Contains(1))",
                 "select t0.name as Name from Contact t0 where exists (select * from ContactRole where contact_id=t0.id and role_id in (select t1.id as Id from _Role t1 where ((t1.name like {L:String:Man%}) and exists (select * from ContactRole where role_id=t1.id and contact_id in (1)))))");
         }
 
         [Test]
-        public void ManyToManyContainsTest4() {
+        public void ManyToManyContainsTest4()
+        {
             AssertTranslation(
                 "select Name from Contact where Roles.Contains(Role where Name like 'Man%' and Members.Contains(1))",
                 @"
@@ -241,14 +267,16 @@ where    exists (select * from ContactRole where contact_id=t0.id and role_id in
         }
 
         [Test]
-        public void ComplexTest1() {
+        public void ComplexTest1()
+        {
             AssertTranslation(
                 "select * from Contact where Roles.Contains(Role where Name like 'Manag%')",
                 null);
         }
 
         [Test]
-        public void ComplexTest2() {
+        public void ComplexTest2()
+        {
             AssertTranslation(
                 @"
                 select c2.Name
@@ -258,7 +286,8 @@ where    exists (select * from ContactRole where contact_id=t0.id and role_id in
         }
 
         [Test]
-        public void ComplexTest3() {
+        public void ComplexTest3()
+        {
             AssertTranslation(
                 @"
                 select * from ContactToRole cr where cr.Role.Name = 'Manager' and cr.Contact = 1",
@@ -266,7 +295,8 @@ where    exists (select * from ContactRole where contact_id=t0.id and role_id in
         }
 
         [Test]
-        public void ComplexTest4() {
+        public void ComplexTest4()
+        {
             AssertTranslation(
                 @"
                 select *
@@ -276,7 +306,8 @@ where    exists (select * from ContactRole where contact_id=t0.id and role_id in
         }
 
         [Test]
-        public void ComplexTest5() {
+        public void ComplexTest5()
+        {
             AssertTranslation(
                 @"
                 select *
@@ -321,7 +352,8 @@ where    ((((t2.name = {L:AnsiString:zzz}) and exists (
         }
 
         [Test]
-        public void HavingTest1() {
+        public void HavingTest1()
+        {
             AssertTranslation(
                 @"
                 select   c0.Name,count(*)
@@ -333,7 +365,8 @@ where    ((((t2.name = {L:AnsiString:zzz}) and exists (
         }
 
         [Test]
-        public void BooleanExprTest() {
+        public void BooleanExprTest()
+        {
             AssertTranslation(@"select c.Name from Contact c where not true and false", null);
         }
 #if A

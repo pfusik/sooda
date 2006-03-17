@@ -41,21 +41,27 @@ using Sooda.UnitTests.BaseObjects;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.ObjectMapper {
+namespace Sooda.UnitTests.TestCases.ObjectMapper
+{
     [TestFixture]
-    public class NtoNCollectionTest {
+    public class NtoNCollectionTest
+    {
         [Test]
-        public void CollectionNtoNTest() {
+        public void CollectionNtoNTest()
+        {
             string serialized;
 
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) {
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
+            {
                 testDataSource.Open();
 
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
                     tran.RegisterDataSource(testDataSource);
                     Assert.IsTrue(!Contact.Mary.Roles.Contains(Role.Customer));
 
-                    foreach (SoodaObject r in Contact.Mary.Roles) {
+                    foreach (SoodaObject r in Contact.Mary.Roles)
+                    {
                         Console.WriteLine("00 serialization mary has role: {0}", r.GetObjectKeyString());
                     }
                     Contact.Mary.Roles.Add(Role.Customer);
@@ -65,25 +71,30 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                     Contact.Mary.Roles.Add(Role.Customer);
                     Assert.IsTrue(Contact.Mary.Roles.Contains(Role.Customer));
 
-                    foreach (SoodaObject r in Contact.Mary.Roles) {
+                    foreach (SoodaObject r in Contact.Mary.Roles)
+                    {
                         Console.WriteLine("Before serialization mary has role: {0}", r.GetObjectKeyString());
                     }
                     serialized = tran.Serialize(SoodaSerializeOptions.IncludeNonDirtyFields | SoodaSerializeOptions.IncludeNonDirtyObjects);
                 }
                 Console.WriteLine("serialized: {0}", serialized);
 
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
                     tran.RegisterDataSource(testDataSource);
                     tran.Deserialize(serialized);
                     string serialized2 = tran.Serialize(SoodaSerializeOptions.IncludeNonDirtyFields | SoodaSerializeOptions.IncludeNonDirtyObjects);
-                    if (serialized == serialized2) {
+                    if (serialized == serialized2)
+                    {
                         Console.WriteLine("Serialization is stable");
-                    } else {
+                    }
+                    else
+                    {
                         Console.WriteLine("Serialized again as\n{0}", serialized2);
                     }
                     Assert.AreEqual(serialized, serialized2, "Serialization preserves state");
 
-                    foreach (SoodaObject r in Contact.Mary.Roles) 
+                    foreach (SoodaObject r in Contact.Mary.Roles)
                     {
                         Console.WriteLine("After deserialization mary has role: {0}", r.GetObjectKeyString());
                     }
@@ -94,13 +105,16 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void CollectionNtoNSharedTest() {
+        public void CollectionNtoNSharedTest()
+        {
             string serialized;
 
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) {
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
+            {
                 testDataSource.Open();
 
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
                     tran.RegisterDataSource(testDataSource);
                     Contact.Mary.Roles.Add(Role.Customer);
                     Assert.IsTrue(Role.Customer.Members.Contains(Contact.Mary));
@@ -111,13 +125,17 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
                 }
                 Console.WriteLine("serialized: {0}", serialized);
 
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
                     tran.RegisterDataSource(testDataSource);
                     tran.Deserialize(serialized);
                     string serialized2 = tran.Serialize(SoodaSerializeOptions.IncludeNonDirtyFields | SoodaSerializeOptions.IncludeNonDirtyObjects);
-                    if (serialized == serialized2) {
+                    if (serialized == serialized2)
+                    {
                         Console.WriteLine("Serialization is stable");
-                    } else {
+                    }
+                    else
+                    {
                         Console.WriteLine("Serialized again as\n{0}", serialized2);
                     }
                     Assert.AreEqual(serialized, serialized2, "Serialization preserves state");

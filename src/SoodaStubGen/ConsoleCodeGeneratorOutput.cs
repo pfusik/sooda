@@ -3,8 +3,8 @@ using Sooda.CodeGen;
 
 namespace SoodaStubGen
 {
-	public class ConsoleCodeGeneratorOutput : ICodeGeneratorOutput
-	{
+    public class ConsoleCodeGeneratorOutput : ICodeGeneratorOutput
+    {
         public void Verbose(string s, params object[] p)
         {
             Console.WriteLine(s, p);

@@ -42,15 +42,20 @@ using Sooda.UnitTests.BaseObjects;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.ObjectMapper {
+namespace Sooda.UnitTests.TestCases.ObjectMapper
+{
     [TestFixture]
-    public class DataTypesTest {
+    public class DataTypesTest
+    {
         [Test]
-        public void DecimalTest() {
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) {
+        public void DecimalTest()
+        {
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
+            {
                 testDataSource.Open();
 
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
                     tran.RegisterDataSource(testDataSource);
                     Assert.AreEqual(123.1234567890m, (decimal)Contact.Mary.LastSalary);
                     Assert.AreEqual(234.0000000000m, (decimal)Contact.Ed.LastSalary);
@@ -64,13 +69,16 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void AllDataTypesMaxTest() {
+        public void AllDataTypesMaxTest()
+        {
             string ser;
 
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) {
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
+            {
                 testDataSource.Open();
 
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
                     tran.RegisterDataSource(testDataSource);
                     AllDataTypes adt = new AllDataTypes();
 
@@ -105,13 +113,16 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void AllDataTypesMinTest() {
+        public void AllDataTypesMinTest()
+        {
             string ser;
 
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) {
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
+            {
                 testDataSource.Open();
 
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
                     tran.RegisterDataSource(testDataSource);
                     AllDataTypes adt = new AllDataTypes();
 
@@ -148,13 +159,16 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         [Test]
-        public void AllDataTypesNullTest() {
+        public void AllDataTypesNullTest()
+        {
             string ser;
 
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) {
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
+            {
                 testDataSource.Open();
 
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
                     tran.RegisterDataSource(testDataSource);
                     AllDataTypes adt = new AllDataTypes();
 
@@ -189,11 +203,14 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper {
         }
 
         //[Test]
-        public void AllDataTypesNotNullDefaults() {
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) {
+        public void AllDataTypesNotNullDefaults()
+        {
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
+            {
                 testDataSource.Open();
 
-                using (SoodaTransaction tran = new SoodaTransaction()) {
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
                     tran.RegisterDataSource(testDataSource);
                     AllDataTypes adt = new AllDataTypes();
 

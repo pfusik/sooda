@@ -38,22 +38,25 @@ namespace Sooda.UnitTests.Objects
     using System.Diagnostics;
     using System.Data;
     using Sooda;
-    
+
     public abstract class AbstractMegaSuperBike : Sooda.UnitTests.Objects.Stubs.AbstractMegaSuperBike_Stub
     {
-        public AbstractMegaSuperBike(SoodaConstructor c) : 
+        public AbstractMegaSuperBike(SoodaConstructor c)
+            :
                 base(c)
         {
             // Do not modify this constructor.
         }
-        public AbstractMegaSuperBike(SoodaTransaction transaction) : 
+        public AbstractMegaSuperBike(SoodaTransaction transaction)
+            :
                 base(transaction)
         {
             // 
             // TODO: Add construction logic here.
             // 
         }
-        public AbstractMegaSuperBike() : 
+        public AbstractMegaSuperBike()
+            :
                 this(SoodaTransaction.ActiveTransaction)
         {
             // Do not modify this constructor.

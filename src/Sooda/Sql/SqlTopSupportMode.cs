@@ -32,7 +32,8 @@
 // 
 
 
-namespace Sooda.Sql {
+namespace Sooda.Sql
+{
     public enum SqlTopSupportMode
     {
         None,

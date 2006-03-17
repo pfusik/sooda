@@ -41,20 +41,20 @@ using System.CodeDom.Compiler;
 
 using Sooda.Schema;
 
-namespace Sooda.CodeGen 
+namespace Sooda.CodeGen
 {
-    public class CodeDomClassSkeletonGenerator : CodeDomHelpers 
+    public class CodeDomClassSkeletonGenerator : CodeDomHelpers
     {
         private ClassInfo classInfo;
         private SoodaProject options;
 
-        public CodeDomClassSkeletonGenerator(ClassInfo ci, SoodaProject options) 
+        public CodeDomClassSkeletonGenerator(ClassInfo ci, SoodaProject options)
         {
             this.classInfo = ci;
             this.options = options;
         }
 
-        public CodeConstructor Constructor_Raw() 
+        public CodeConstructor Constructor_Raw()
         {
             CodeConstructor ctor = new CodeConstructor();
 
@@ -67,20 +67,20 @@ namespace Sooda.CodeGen
             return ctor;
         }
 
-        public CodeConstructor Constructor_Inserting(bool useChainedCall) 
+        public CodeConstructor Constructor_Inserting(bool useChainedCall)
         {
             CodeConstructor ctor = new CodeConstructor();
             ctor = new CodeConstructor();
             ctor.Attributes = MemberAttributes.Public;
             ctor.Parameters.Add(new CodeParameterDeclarationExpression("SoodaTransaction", "transaction"));
             ctor.BaseConstructorArgs.Add(Arg("transaction"));
-            if (useChainedCall) 
+            if (useChainedCall)
             {
                 ctor.Statements.Add(new CodeCommentStatement(""));
                 ctor.Statements.Add(new CodeCommentStatement("TODO: Add construction logic here."));
                 ctor.Statements.Add(new CodeCommentStatement(""));
-            } 
-            else 
+            }
+            else
             {
                 ctor.Statements.Add(new CodeCommentStatement("Do not modify this constructor."));
                 ctor.Statements.Add(new CodeMethodInvokeExpression(new CodeThisReferenceExpression(), "InitObject"));
@@ -88,27 +88,27 @@ namespace Sooda.CodeGen
             return ctor;
         }
 
-        public CodeConstructor Constructor_Inserting2(bool useChainedCall) 
+        public CodeConstructor Constructor_Inserting2(bool useChainedCall)
         {
             CodeConstructor ctor = new CodeConstructor();
             ctor.Attributes = MemberAttributes.Public;
-            if (useChainedCall) 
+            if (useChainedCall)
             {
                 ctor.ChainedConstructorArgs.Add(new CodePropertyReferenceExpression(new CodeTypeReferenceExpression("SoodaTransaction"), "ActiveTransaction"));
-            } 
-            else 
+            }
+            else
             {
                 ctor.BaseConstructorArgs.Add(new CodePropertyReferenceExpression(new CodeTypeReferenceExpression("SoodaTransaction"), "ActiveTransaction"));
             }
             ctor.Statements.Add(new CodeCommentStatement("Do not modify this constructor."));
-            if (!useChainedCall) 
+            if (!useChainedCall)
             {
                 ctor.Statements.Add(new CodeMethodInvokeExpression(new CodeThisReferenceExpression(), "InitObject"));
             }
             return ctor;
         }
 
-        public CodeMemberMethod Method_InitObject() 
+        public CodeMemberMethod Method_InitObject()
         {
             CodeMemberMethod method = new CodeMemberMethod();
             method.Name = "InitObject";

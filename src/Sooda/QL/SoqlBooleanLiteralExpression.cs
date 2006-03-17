@@ -34,32 +34,36 @@
 
 using System.Xml.Serialization;
 
-namespace Sooda.QL {
-    public class SoqlBooleanLiteralExpression : SoqlBooleanExpression, ISoqlConstantExpression, ILiteralModifiers {
+namespace Sooda.QL
+{
+    public class SoqlBooleanLiteralExpression : SoqlBooleanExpression, ISoqlConstantExpression, ILiteralModifiers
+    {
         [XmlAttribute("boolValue")]
         public bool Value;
 
-		private SoqlLiteralValueModifiers _modifiers = null;
+        private SoqlLiteralValueModifiers _modifiers = null;
 
-        public SoqlBooleanLiteralExpression() {}
+        public SoqlBooleanLiteralExpression() { }
 
-        public SoqlBooleanLiteralExpression(bool val) {
+        public SoqlBooleanLiteralExpression(bool val)
+        {
             this.Value = val;
         }
 
-		public SoqlLiteralValueModifiers Modifiers
-		{
-			get { return _modifiers; }
-			set { _modifiers = value; }
-		}
+        public SoqlLiteralValueModifiers Modifiers
+        {
+            get { return _modifiers; }
+            set { _modifiers = value; }
+        }
 
-		// visitor pattern
-        public override void Accept(ISoqlVisitor visitor) 
-		{
+        // visitor pattern
+        public override void Accept(ISoqlVisitor visitor)
+        {
             visitor.Visit(this);
         }
 
-        public object GetConstantValue() {
+        public object GetConstantValue()
+        {
             return this.Value;
         }
 

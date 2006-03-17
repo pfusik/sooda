@@ -96,6 +96,19 @@
     <Compile Include="Caching\CacheUtils.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Caching\ISoodaCacheLock.cs" />
+    <Compile Include="Caching\SoodaCacheInvalidateReason.cs" />
+    <Compile Include="Caching\SoodaInProcessCache.cs" />
+    <Compile Include="Caching\ISoodaCache.cs" />
+    <Compile Include="Caching\SoodaCacheSmallAndMediumPolicy.cs" />
+    <Compile Include="Caching\SoodaCacheSmallPolicy.cs" />
+    <Compile Include="Caching\SoodaCacheAllPolicy.cs" />
+    <Compile Include="Caching\SoodaNoCache.cs" />
+    <Compile Include="Caching\SoodaNoCachingPolicy.cs" />
+    <Compile Include="Caching\ISoodaCachingPolicy.cs" />
+    <Compile Include="Caching\SoodaCachedCollectionKeyComplex.cs" />
+    <Compile Include="Caching\SoodaCachedCollectionKeyAllRecords.cs" />
+    <Compile Include="Caching\SoodaCachedCollectionKeySimple.cs" />
     <Compile Include="Caching\SoodaCache.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -613,6 +626,8 @@
     <Compile Include="SoodaException.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SoodaFieldUpdateDelegate.cs" />
+    <Compile Include="SoodaNullable.cs" />
     <Compile Include="SoodaObject.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -634,6 +649,7 @@
     <Compile Include="SoodaObjectNotFoundException.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SoodaObjectReflectionBasedFieldValues.cs" />
     <Compile Include="SoodaObjectsAssemblyAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -713,7 +729,9 @@
     <None Include="Schema\SoodaSchema.xsx">
       <DependentUpon>SoodaSchema.xsd</DependentUpon>
     </None>
-    <EmbeddedResource Include="Schema\SoodaSchema.xsd" />
+    <EmbeddedResource Include="Schema\SoodaSchema.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

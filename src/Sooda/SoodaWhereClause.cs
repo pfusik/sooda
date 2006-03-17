@@ -34,34 +34,34 @@
 
 using Sooda.QL;
 
-namespace Sooda 
+namespace Sooda
 {
     public class SoodaWhereClause
     {
         private SoqlBooleanExpression whereExpression;
         private object[] parameters = null;
 
-        public SoodaWhereClause() : this((string)null, null) {}
-        public SoodaWhereClause(string whereText) : this(whereText, null) {}
-        public SoodaWhereClause(string whereText, params object[] par) 
+        public SoodaWhereClause() : this((string)null, null) { }
+        public SoodaWhereClause(string whereText) : this(whereText, null) { }
+        public SoodaWhereClause(string whereText, params object[] par)
         {
             this.Parameters = par;
-            if (whereText != null) 
+            if (whereText != null)
             {
                 this.WhereExpression = SoqlParser.ParseWhereClause(whereText);
-            } 
-            else 
+            }
+            else
             {
                 this.WhereExpression = null;
             }
         }
 
-        public SoodaWhereClause(SoqlBooleanExpression whereExpression) 
+        public SoodaWhereClause(SoqlBooleanExpression whereExpression)
         {
             this.WhereExpression = whereExpression;
         }
 
-        public SoodaWhereClause(SoqlBooleanExpression whereExpression, params object[] par) 
+        public SoodaWhereClause(SoqlBooleanExpression whereExpression, params object[] par)
         {
             this.Parameters = par;
             this.WhereExpression = whereExpression;
@@ -69,11 +69,11 @@ namespace Sooda
 
         public SoqlBooleanExpression WhereExpression
         {
-            get 
+            get
             {
                 return whereExpression;
             }
-            set 
+            set
             {
                 whereExpression = value;
             }
@@ -81,17 +81,17 @@ namespace Sooda
 
         public object[] Parameters
         {
-            get 
+            get
             {
                 return this.parameters;
             }
-            set 
+            set
             {
-                if (value != null && value.Length != 0) 
+                if (value != null && value.Length != 0)
                 {
                     this.parameters = value;
-                } 
-                else 
+                }
+                else
                 {
                     this.parameters = null;
                 }
@@ -99,7 +99,7 @@ namespace Sooda
         }
 
 
-        public SoodaWhereClause Append(SoodaWhereClause other) 
+        public SoodaWhereClause Append(SoodaWhereClause other)
         {
             if (other.WhereExpression == null)
                 return this;
@@ -126,7 +126,7 @@ namespace Sooda
             object val = this.WhereExpression.Evaluate(context);
             if (val == null && throwOnUnknown)
                 throw new SoqlException("Cannot evaluate expression '" + this.whereExpression.ToString() + " ' in memory.");
-                
+
             if (val is bool)
                 return (bool)val;
             else

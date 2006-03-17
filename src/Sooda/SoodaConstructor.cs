@@ -32,7 +32,8 @@
 // 
 
 
-namespace Sooda {
+namespace Sooda
+{
     public class SoodaConstructor
     {
         private SoodaConstructor()

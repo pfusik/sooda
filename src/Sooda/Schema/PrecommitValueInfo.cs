@@ -33,12 +33,14 @@
 
 using System;
 
-namespace Sooda.Schema {
+namespace Sooda.Schema
+{
     using System.Xml.Serialization;
 
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [Serializable]
-    public class PrecommitValueInfo {
+    public class PrecommitValueInfo
+    {
         [XmlAttribute("dataType")]
         public FieldDataType DataType;
 
@@ -50,8 +52,8 @@ namespace Sooda.Schema {
 
         public object Value
         {
-            get 
-            { 
+            get
+            {
                 if (!_haveValue)
                     _value = CalculateValue();
                 return _value;

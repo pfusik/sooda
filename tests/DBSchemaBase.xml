@@ -4,7 +4,7 @@
     <datasource name="default" type="Sooda.Sql.SqlDataSource" />
     <datasource name="xmldata1" type="Sooda.Xml.XmlDataSource" />
 
-    <class name="Role" cached="false" readOnly="true" precacheAll="false">
+    <class name="Role" cached="false" readOnly="true" precacheAll="false" triggers="false">
         <table name="_Role">
             <field name="Id" dbcolumn="id" type="Integer" primaryKey="true" />
             <field name="Name" dbcolumn="name" type="String" size="64" nullable="true" />
@@ -17,7 +17,7 @@
         <const name="Customer" key="3" />
     </class>
 
-    <class name="ContactType" cached="true" precacheAll="false" defaultPrecommitValue="Customer">
+    <class name="ContactType" cached="true" precacheAll="false" defaultPrecommitValue="Customer" triggers="false">
         <table name="ContactType">
             <field name="Code" dbcolumn="code" type="String" size="16" primaryKey="true" />
             <field name="Description" dbcolumn="description" type="String" size="64" nullable="true" />
@@ -28,7 +28,7 @@
         <const name="Customer" key="Customer" />
     </class>
 
-    <class name="Contact" cached="true">
+    <class name="Contact" cached="true" cacheCollections="true">
         <table name="Contact">
             <field name="ContactId" dbcolumn="id" type="Integer" primaryKey="true" />
             <field name="PrimaryGroup" dbcolumn="primary_group" type="Integer" references="Group" nullable="true" onDelete="Cascade" />

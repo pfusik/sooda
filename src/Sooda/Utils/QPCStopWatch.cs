@@ -49,12 +49,12 @@ namespace Sooda.Utils
             StopWatch callibration = new QPCStopWatch();
             long totalOverhead = 0;
             int loopCount = 0;
-			for (int i = 0; i < 10; ++i)
-			{
-				callibration.Start();
-				callibration.Stop();
-			}
-			for (int i = 0; i < 10; ++i)
+            for (int i = 0; i < 10; ++i)
+            {
+                callibration.Start();
+                callibration.Stop();
+            }
+            for (int i = 0; i < 10; ++i)
             {
                 callibration.Start();
                 callibration.Stop();

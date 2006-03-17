@@ -33,7 +33,8 @@
 
 
 
-namespace Sooda.Sql {
+namespace Sooda.Sql
+{
     public enum SqlOuterJoinSyntax
     {
         Unsupported,

@@ -42,49 +42,47 @@ using Sooda.Caching;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.ObjectMapper 
+namespace Sooda.UnitTests.TestCases.ObjectMapper
 {
-	[TestFixture]
-	public class CacheTest 
-	{
-		[Test]
-		public void Test1() 
-		{
-			using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) 
-			{
-				testDataSource.Open();
-				SoodaCache.Clear();
+    [TestFixture]
+    public class CacheTest
+    {
+        [Test]
+        public void Test1()
+        {
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
+            {
+                testDataSource.Open();
+                SoodaCache.DefaultCache.Clear();
 
-				using (SoodaTransaction tran = new SoodaTransaction()) 
-				{
-					tran.RegisterDataSource(testDataSource);
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
+                    tran.RegisterDataSource(testDataSource);
 
-					Console.WriteLine(Contact.Mary.Name);
-					Console.WriteLine(Contact.Mary.Type.Description);
+                    Console.WriteLine(Contact.Mary.Name);
+                    Console.WriteLine(Contact.Mary.Type.Description);
 
-					foreach (Contact c in Contact.Mary.PrimaryGroup.Members) 
-					{
-						Console.WriteLine(c.Name);
-					}
-					tran.Commit();
-				}
+                    foreach (Contact c in Contact.Mary.PrimaryGroup.Members)
+                    {
+                        Console.WriteLine(c.Name);
+                    }
+                    tran.Commit();
+                }
 
-				using (SoodaTransaction tran = new SoodaTransaction()) 
-				{
-					tran.RegisterDataSource(testDataSource);
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
+                    tran.RegisterDataSource(testDataSource);
 
-					foreach (Contact c in Contact.Mary.PrimaryGroup.Members) 
-					{
-						Console.WriteLine(c.Name);
-					}
+                    foreach (Contact c in Contact.Mary.PrimaryGroup.Members)
+                    {
+                        Console.WriteLine(c.Name);
+                    }
 
-					Console.WriteLine(Contact.Mary.Name);
-					Console.WriteLine(Contact.Mary.Type.Description);
-					tran.Commit();
-				}
-
-				SoodaCache.Dump(Console.Out);
-			}
-		}
-	}
+                    Console.WriteLine(Contact.Mary.Name);
+                    Console.WriteLine(Contact.Mary.Type.Description);
+                    tran.Commit();
+                }
+            }
+        }
+    }
 }

@@ -33,8 +33,10 @@
 
 using System;
 
-namespace Sooda.CodeGen {
-    public interface IProjectFile {
+namespace Sooda.CodeGen
+{
+    public interface IProjectFile
+    {
         string GetProjectFileName(string outNamespace);
         void CreateNew(string outNamespace, string assemblyName);
         void LoadFrom(string fileName);

@@ -35,8 +35,10 @@ using System;
 using System.Collections;
 using System.Collections.Specialized;
 
-namespace Sooda.QL {
-    public class SoqlQueryExpression : SoqlExpression {
+namespace Sooda.QL
+{
+    public class SoqlQueryExpression : SoqlExpression
+    {
         public bool Distinct = false;
         public int TopCount = -1;
 
@@ -55,10 +57,11 @@ namespace Sooda.QL {
         public SoqlExpressionCollection OrderByExpressions = new SoqlExpressionCollection();
         public StringCollection OrderByOrder = new StringCollection();
 
-        public SoqlQueryExpression() {}
+        public SoqlQueryExpression() { }
 
         // visitor pattern
-        public override void Accept(ISoqlVisitor visitor) {
+        public override void Accept(ISoqlVisitor visitor)
+        {
             visitor.Visit(this);
         }
 

@@ -15,7 +15,7 @@ namespace NLog
 
         #region Trace
 
-        public override bool IsTraceEnabled 
+        public override bool IsTraceEnabled
         {
             get { return _logger.IsTraceEnabled; }
         }
@@ -39,7 +39,7 @@ namespace NLog
 
         #region Debug
 
-        public override bool IsDebugEnabled 
+        public override bool IsDebugEnabled
         {
             get { return _logger.IsDebugEnabled; }
         }
@@ -63,7 +63,7 @@ namespace NLog
 
         #region Info
 
-        public override bool IsInfoEnabled 
+        public override bool IsInfoEnabled
         {
             get { return _logger.IsInfoEnabled; }
         }
@@ -87,7 +87,7 @@ namespace NLog
 
         #region Warn
 
-        public override bool IsWarnEnabled 
+        public override bool IsWarnEnabled
         {
             get { return _logger.IsWarnEnabled; }
         }
@@ -111,7 +111,7 @@ namespace NLog
 
         #region Error
 
-        public override bool IsErrorEnabled 
+        public override bool IsErrorEnabled
         {
             get { return _logger.IsErrorEnabled; }
         }
@@ -135,7 +135,7 @@ namespace NLog
 
         #region Fatal
 
-        public override bool IsFatalEnabled 
+        public override bool IsFatalEnabled
         {
             get { return _logger.IsFatalEnabled; }
         }

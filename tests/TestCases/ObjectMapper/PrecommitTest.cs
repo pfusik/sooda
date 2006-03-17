@@ -42,20 +42,20 @@ using Sooda.Caching;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.ObjectMapper 
+namespace Sooda.UnitTests.TestCases.ObjectMapper
 {
     [TestFixture]
-    public class PrecommitTest 
+    public class PrecommitTest
     {
         [Test]
-        public void Test1() 
+        public void Test1()
         {
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) 
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
             {
                 testDataSource.Open();
-                SoodaCache.Clear();
+                SoodaCache.DefaultCache.Clear();;
 
-                using (SoodaTransaction tran = new SoodaTransaction()) 
+                using (SoodaTransaction tran = new SoodaTransaction())
                 {
                     tran.RegisterDataSource(testDataSource);
 
@@ -87,20 +87,18 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
                     Console.WriteLine("Comitting...");
                     tran.Commit();
                 }
-
-                SoodaCache.Dump(Console.Out);
             }
         }
 
         [Test]
-        public void Test2() 
+        public void Test2()
         {
-            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default")) 
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
             {
                 testDataSource.Open();
-                SoodaCache.Clear();
+                SoodaCache.DefaultCache.Clear();;
 
-                using (SoodaTransaction tran = new SoodaTransaction()) 
+                using (SoodaTransaction tran = new SoodaTransaction())
                 {
                     tran.RegisterDataSource(testDataSource);
 
@@ -112,7 +110,7 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
                     // force precommit
                     // the 'type' field precommits as 'Customer'
                     ContactList cl = Contact.GetList(new SoodaWhereClause("Type={0} and ContactId={1}", "Customer", nc.ContactId));
-                    
+
                     // we get one record
                     Assert.AreEqual(1, cl.Count, "#1");
 
@@ -140,11 +138,9 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
                     // we use SoodaSnapshotOptions.Verify to check in-memory
                     // values after the load
                     Assert.AreEqual(0, cl4.Count, "#4");
-                   
+
                     // tran.Commit();
                 }
-
-                SoodaCache.Dump(Console.Out);
             }
         }
     }

@@ -37,7 +37,7 @@ using System;
 
 namespace Sooda.QL.TypedWrappers
 {
-    public class SoqlDecimalWrapperExpression : SoqlTypedWrapperExpression 
+    public class SoqlDecimalWrapperExpression : SoqlTypedWrapperExpression
     {
         public SoqlDecimalWrapperExpression()
         {
@@ -57,7 +57,7 @@ namespace Sooda.QL.TypedWrappers
 
         public static SoqlBooleanExpression operator ==(SoqlDecimalWrapperExpression left, SoqlDecimalWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.Equal); }
         public static SoqlBooleanExpression operator !=(SoqlDecimalWrapperExpression left, SoqlDecimalWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.NotEqual); }
-        
+
         public SoqlBooleanExpression In(params SoqlDecimalWrapperExpression[] inExpressions)
         {
             SoqlExpressionCollection rhs = new SoqlExpressionCollection();

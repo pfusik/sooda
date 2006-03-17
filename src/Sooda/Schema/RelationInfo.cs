@@ -33,12 +33,14 @@
 
 using System;
 
-namespace Sooda.Schema {
+namespace Sooda.Schema
+{
     using System.Xml.Serialization;
 
     [XmlType(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [Serializable]
-    public class RelationInfo : IFieldContainer {
+    public class RelationInfo : IFieldContainer
+    {
         [XmlAttribute("datasource")]
         public string DataSourceName = null;
 
@@ -47,10 +49,12 @@ namespace Sooda.Schema {
         [XmlAttribute("name")]
         public string Name
         {
-            get {
+            get
+            {
                 return _name;
             }
-            set {
+            set
+            {
                 _name = value;
             }
         }
@@ -58,13 +62,15 @@ namespace Sooda.Schema {
         [XmlElement("table")]
         public TableInfo Table = new TableInfo();
 
-        public RelationInfo() {}
+        public RelationInfo() { }
 
-        public ClassInfo GetRef1ClassInfo() {
+        public ClassInfo GetRef1ClassInfo()
+        {
             return Table.Fields[0].ReferencedClass;
         }
 
-        public ClassInfo GetRef2ClassInfo() {
+        public ClassInfo GetRef2ClassInfo()
+        {
             return Table.Fields[1].ReferencedClass;
         }
 
@@ -73,12 +79,14 @@ namespace Sooda.Schema {
 
         public SchemaInfo Schema
         {
-            get {
+            get
+            {
                 return parentSchema;
             }
         }
 
-        internal void Resolve(SchemaInfo schemaInfo) {
+        internal void Resolve(SchemaInfo schemaInfo)
+        {
             parentSchema = schemaInfo;
 
             Table.Resolve(this.Name, true);
@@ -92,23 +100,28 @@ namespace Sooda.Schema {
                 throw new SoodaSchemaException("Class " + Table.Fields[1].References + " not found in " + this.Name + "." + Table.Fields[1].Name);
         }
 
-        public DataSourceInfo GetDataSource() {
+        public DataSourceInfo GetDataSource()
+        {
             return parentSchema.GetDataSourceInfo(DataSourceName);
         }
 
-        public int ContainsCollection(string name) {
+        public int ContainsCollection(string name)
+        {
             return 0;
         }
 
-        public bool ContainsField(string name) {
+        public bool ContainsField(string name)
+        {
             return Table.ContainsField(name);
         }
 
-        public FieldInfo FindFieldByName(string name) {
+        public FieldInfo FindFieldByName(string name)
+        {
             return Table.FindFieldByName(name);
         }
 
-        public FieldInfoCollection GetAllFields() {
+        public FieldInfoCollection GetAllFields()
+        {
             return Table.Fields;
         }
 

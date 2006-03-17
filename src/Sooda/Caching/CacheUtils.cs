@@ -34,18 +34,18 @@
 using System.Collections;
 
 
-namespace Sooda.Caching 
+namespace Sooda.Caching
 {
-	internal class CacheUtils 
-	{
-		public static IList ConvertSoodaObjectListToKeyList(IList list)
-		{
-			object[] keys = new object[list.Count];
-			for (int i = 0; i < list.Count; ++i)
-			{
-				keys[i] = ((SoodaObject)list[i]).GetPrimaryKeyValue();
-			}
-			return keys;
-		}
-	}
+    internal class CacheUtils
+    {
+        public static IList ConvertSoodaObjectListToKeyList(IList list)
+        {
+            object[] keys = new object[list.Count];
+            for (int i = 0; i < list.Count; ++i)
+            {
+                keys[i] = ((SoodaObject)list[i]).GetPrimaryKeyValue();
+            }
+            return keys;
+        }
+    }
 }

@@ -38,7 +38,7 @@ namespace Soodawind.ConsoleApp
             Console.WriteLine();
             foreach (Supplier s in suppliers)
             {
-                Console.WriteLine("\"{0}\" {1} {2} {3} {4}", s.Company, s.Address, s.PostalCode, s.City, s.Region.IsNull ? "" : s.Region.Value);
+                Console.WriteLine("\"{0}\" {1} {2} {3} {4}", s.Company, s.Address, s.PostalCode, s.City, s.Region);
                 Console.WriteLine("Phone: {0} Fax: {1}", s.Phone, s.Fax);
 
                 // because Supplier is an object, we can even call methods on it!

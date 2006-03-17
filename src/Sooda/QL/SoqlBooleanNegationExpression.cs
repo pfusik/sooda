@@ -32,22 +32,27 @@
 // 
 
 
-namespace Sooda.QL {
-    public class SoqlBooleanNegationExpression : SoqlBooleanExpression {
+namespace Sooda.QL
+{
+    public class SoqlBooleanNegationExpression : SoqlBooleanExpression
+    {
         public SoqlBooleanExpression par;
 
-        public SoqlBooleanNegationExpression() {}
+        public SoqlBooleanNegationExpression() { }
 
-        public SoqlBooleanNegationExpression(SoqlBooleanExpression par) {
+        public SoqlBooleanNegationExpression(SoqlBooleanExpression par)
+        {
             this.par = par;
         }
 
         // visitor pattern
-        public override void Accept(ISoqlVisitor visitor) {
+        public override void Accept(ISoqlVisitor visitor)
+        {
             visitor.Visit(this);
         }
 
-        public override SoqlExpression Simplify() {
+        public override SoqlExpression Simplify()
+        {
             par = (SoqlBooleanExpression)par.Simplify();
             return this;
         }

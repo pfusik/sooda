@@ -33,8 +33,10 @@
 
 using System.IO;
 
-namespace Sooda.QL {
-    public interface ISoqlSelectAliasProvider {
+namespace Sooda.QL
+{
+    public interface ISoqlSelectAliasProvider
+    {
         void WriteDefaultSelectAlias(TextWriter output);
     }
 }

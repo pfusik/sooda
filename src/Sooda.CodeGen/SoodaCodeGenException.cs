@@ -37,11 +37,11 @@ using System.Runtime.Serialization;
 namespace Sooda.CodeGen
 {
     [Serializable]
-    public class SoodaCodeGenException : Exception 
+    public class SoodaCodeGenException : Exception
     {
-        public SoodaCodeGenException() {}
-        public SoodaCodeGenException(string message) : base(message) {}
-        public SoodaCodeGenException(string message, Exception inner) : base(message, inner) {}
-        protected SoodaCodeGenException(SerializationInfo info, StreamingContext context) : base(info, context) {}
+        public SoodaCodeGenException() { }
+        public SoodaCodeGenException(string message) : base(message) { }
+        public SoodaCodeGenException(string message, Exception inner) : base(message, inner) { }
+        protected SoodaCodeGenException(SerializationInfo info, StreamingContext context) : base(info, context) { }
     }
 }

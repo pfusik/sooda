@@ -32,7 +32,9 @@
 // 
 
 
-namespace Sooda.ObjectMapper {
-    public class RefCache {
+namespace Sooda.ObjectMapper
+{
+    public class RefCache
+    {
     }
 }

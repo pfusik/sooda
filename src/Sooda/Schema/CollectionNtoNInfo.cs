@@ -31,13 +31,15 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-namespace Sooda.Schema {
+namespace Sooda.Schema
+{
     using System.Xml.Serialization;
     using System;
 
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [Serializable]
-    public class CollectionManyToManyInfo : CollectionBaseInfo {
+    public class CollectionManyToManyInfo : CollectionBaseInfo
+    {
 
         [System.Xml.Serialization.XmlAttributeAttribute("relation")]
         public string Relation;
@@ -47,16 +49,18 @@ namespace Sooda.Schema {
 
         private RelationInfo relationInfo = null;
 
-        public RelationInfo GetRelationInfo() {
+        public RelationInfo GetRelationInfo()
+        {
             return relationInfo;
         }
 
-        internal void Resolve(SchemaInfo schemaInfo) {
+        internal void Resolve(SchemaInfo schemaInfo)
+        {
             relationInfo = schemaInfo.FindRelationByName(Relation);
-            if(relationInfo == null)
+            if (relationInfo == null)
                 throw new SoodaSchemaException("Relation " + this.Name + " not found.");
         }
-        
+
         public override ClassInfo GetItemClass()
         {
             return relationInfo.Table.Fields[MasterField].ReferencedClass;

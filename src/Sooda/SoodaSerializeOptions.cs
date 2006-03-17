@@ -33,7 +33,8 @@
 
 using System;
 
-namespace Sooda {
+namespace Sooda
+{
     /// <summary>
     /// Specifies options for serializing transactions and objects to XML.
     /// </summary>

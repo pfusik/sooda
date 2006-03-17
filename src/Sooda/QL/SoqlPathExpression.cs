@@ -38,9 +38,9 @@ using System.Xml.Serialization;
 
 using Sooda.Schema;
 
-namespace Sooda.QL 
+namespace Sooda.QL
 {
-    public class SoqlPathExpression : SoqlExpression, ISoqlSelectAliasProvider 
+    public class SoqlPathExpression : SoqlExpression, ISoqlSelectAliasProvider
     {
         public SoqlPathExpression Left;
 
@@ -50,30 +50,30 @@ namespace Sooda.QL
         [XmlAttribute("property")]
         public string PropertyName;
 
-        public SoqlPathExpression() {}
+        public SoqlPathExpression() { }
 
-        public SoqlPathExpression(string propertyName) 
+        public SoqlPathExpression(string propertyName)
         {
             this.PropertyName = propertyName;
         }
 
-        public SoqlPathExpression(string p1, string p2) 
+        public SoqlPathExpression(string p1, string p2)
         {
             this.Left = new SoqlPathExpression(p1);
             this.PropertyName = p2;
         }
 
-        public SoqlPathExpression(string p1, string p2, string p3) 
+        public SoqlPathExpression(string p1, string p2, string p3)
         {
             this.Left = new SoqlPathExpression(p1, p2);
             this.PropertyName = p3;
         }
 
-        public SoqlPathExpression(string[] parts) 
+        public SoqlPathExpression(string[] parts)
         {
             SoqlPathExpression l = null;
 
-            for (int i = 0; i < parts.Length - 1; ++i) 
+            for (int i = 0; i < parts.Length - 1; ++i)
             {
                 l = new SoqlPathExpression(l, parts[i]);
             }
@@ -81,15 +81,15 @@ namespace Sooda.QL
             this.Left = l;
         }
 
-        public SoqlPathExpression(SoqlPathExpression left, string propertyName) 
+        public SoqlPathExpression(SoqlPathExpression left, string propertyName)
         {
             this.Left = left;
             this.PropertyName = propertyName;
         }
 
-        public void WriteDefaultSelectAlias(TextWriter output) 
+        public void WriteDefaultSelectAlias(TextWriter output)
         {
-            if (Left != null) 
+            if (Left != null)
             {
                 Left.WriteDefaultSelectAlias(output);
                 output.Write("_");
@@ -97,7 +97,7 @@ namespace Sooda.QL
             output.Write(PropertyName);
         }
 
-        public override void Accept(ISoqlVisitor visitor) 
+        public override void Accept(ISoqlVisitor visitor)
         {
             visitor.Visit(this);
         }
@@ -144,7 +144,7 @@ namespace Sooda.QL
 
             if (val == null)
                 return null;
-            
+
             return val.GetType().GetProperty(PropertyName).GetValue(val, null);
         }
     }

@@ -35,7 +35,8 @@ using System;
 using System.Text;
 using System.Collections;
 
-namespace Sooda {
+namespace Sooda
+{
     public enum SortOrder
     {
         None,
@@ -43,16 +44,19 @@ namespace Sooda {
         Descending,
     }
 
-    public class SoodaObjectFieldComparer : IComparer {
+    public class SoodaObjectFieldComparer : IComparer
+    {
         private string[] _propertyChain;
         private SortOrder _sortOrder;
 
-        public SoodaObjectFieldComparer(string propertyName, SortOrder sortOrder) {
+        public SoodaObjectFieldComparer(string propertyName, SortOrder sortOrder)
+        {
             this._propertyChain = propertyName.Split('.');
             this._sortOrder = sortOrder;
         }
 
-        public SoodaObjectFieldComparer(string[] propertyChain, SortOrder sortOrder) {
+        public SoodaObjectFieldComparer(string[] propertyChain, SortOrder sortOrder)
+        {
             this._propertyChain = propertyChain;
             this._sortOrder = sortOrder;
         }
@@ -65,11 +69,11 @@ namespace Sooda {
             sb.Append(" ");
             sb.Append(_sortOrder);
             sb.Append("]");
-            return sb.ToString ();
+            return sb.ToString();
         }
 
 
-        int IComparer.Compare(object o1, object o2) 
+        int IComparer.Compare(object o1, object o2)
         {
             SoodaObject dbo1 = o1 as SoodaObject;
             SoodaObject dbo2 = o2 as SoodaObject;
@@ -77,7 +81,8 @@ namespace Sooda {
             return Compare(dbo1, dbo2);
         }
 
-        public int Compare(SoodaObject dbo1, SoodaObject dbo2) {
+        public int Compare(SoodaObject dbo1, SoodaObject dbo2)
+        {
             object v1 = dbo1.Evaluate(_propertyChain, false);
             object v2 = dbo2.Evaluate(_propertyChain, false);
 
@@ -87,19 +92,23 @@ namespace Sooda {
                 return -DoCompare(v1, v2, dbo1, dbo2);
         }
 
-        private static int PrimaryKeyCompare(SoodaObject dbo1, SoodaObject dbo2) {
+        private static int PrimaryKeyCompare(SoodaObject dbo1, SoodaObject dbo2)
+        {
             return ((IComparable)dbo1.GetPrimaryKeyValue()).CompareTo(dbo2.GetPrimaryKeyValue());
         }
 
-        private static int DoCompare(object v1, object v2, SoodaObject dbo1, SoodaObject dbo2) {
-            if (v1 == null) {
+        private static int DoCompare(object v1, object v2, SoodaObject dbo1, SoodaObject dbo2)
+        {
+            if (v1 == null)
+            {
                 if (v2 == null)
                     return PrimaryKeyCompare(dbo1, dbo2);
                 else
                     return -1;  // null is less than anything
             };
 
-            if (v2 == null) {
+            if (v2 == null)
+            {
                 return 1;   // not null is greater than anything
             }
 
