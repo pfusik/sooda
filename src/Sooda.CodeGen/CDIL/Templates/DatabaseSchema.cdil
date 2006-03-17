@@ -2,6 +2,10 @@ class _DatabaseSchema
     implements Sooda.ObjectMapper.ISoodaSchema
     
     field arrayof(Sooda.ISoodaObjectFactory) _factories
+        attributes Private
+    end
+
+    field Sooda.Schema.SchemaInfo _theSchema
         attributes Private,Static
     end
 
@@ -16,6 +20,13 @@ class _DatabaseSchema
         returns Sooda.Schema.SchemaInfo
         attributes Public,Static
     begin
+        return defaultscope._theSchema
+    end
+    
+    method LoadSchema()
+        returns Sooda.Schema.SchemaInfo
+        attributes Private,Static
+    begin
         return typeref(Sooda.ObjectMapper.SchemaLoader).GetSchemaFromAssembly(typeof(${OutNamespace}._DatabaseSchema).Assembly)
     end
     
@@ -24,6 +35,6 @@ class _DatabaseSchema
         attributes Public
         implements Sooda.ObjectMapper.ISoodaSchema
     begin
-        return defaultscope._factories
+        return this._factories
     end
 end    

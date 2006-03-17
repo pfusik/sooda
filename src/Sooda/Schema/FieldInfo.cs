@@ -156,6 +156,10 @@ namespace Sooda.Schema
 
         [XmlIgnore]
         [NonSerialized]
+        internal string NameTag;
+
+        [XmlIgnore]
+        [NonSerialized]
         public RelationInfo ParentRelation;
 
         public FieldInfo DoClone()
@@ -172,28 +176,9 @@ namespace Sooda.Schema
             return fi;
         }
 
-        private StringCollection backRefCollections;
-
-        public StringCollection BackRefCollections
+        public StringCollection GetBackRefCollections(SchemaInfo schema)
         {
-            get
-            {
-                if (backRefCollections != null && backRefCollections.Count > 0)
-                {
-                    return backRefCollections;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-
-        internal void AddBackRefCollection(string c)
-        {
-            if (backRefCollections == null)
-                backRefCollections = new StringCollection();
-            backRefCollections.Add(c);
+            return schema.GetBackRefCollections(this);
         }
 
         public SoodaFieldHandler GetFieldHandler()
@@ -205,6 +190,7 @@ namespace Sooda.Schema
         {
             this.Table = parentTable;
             this.OrdinalInTable = ordinal;
+            this.NameTag = parentTable.NameToken + "/" + ordinal;
         }
 
         internal void ResolvePrecommitValues()

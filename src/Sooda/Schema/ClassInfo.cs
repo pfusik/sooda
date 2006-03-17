@@ -485,7 +485,7 @@ namespace Sooda.Schema
                     if (fi == null)
                         throw new SoodaSchemaException("Collection " + Name + "." + cinfo.Name + " cannot find field " + cinfo.ClassName + "." + cinfo.ForeignFieldName);
 
-                    fi.AddBackRefCollection(cinfo.Name);
+                    schema.AddBackRefCollection(fi, cinfo.Name);
                     cinfo.ForeignField2 = fi;
                     cinfo.Class = ci;
                 }

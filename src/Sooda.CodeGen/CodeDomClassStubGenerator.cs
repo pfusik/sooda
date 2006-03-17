@@ -125,65 +125,6 @@ namespace Sooda.CodeGen
             return field;
         }
 
-        public CodeMemberMethod Method_BeforeCollectionUpdate(FieldInfo fi)
-        {
-            CodeMemberMethod method = new CodeMemberMethod();
-            method.Name = "BeforeCollectionUpdate_" + fi.Name;
-            method.Parameters.Add(new CodeParameterDeclarationExpression("SoodaObject", "oldValue"));
-            method.Parameters.Add(new CodeParameterDeclarationExpression("SoodaObject", "newValue"));
-            method.Attributes = MemberAttributes.Public | MemberAttributes.Final;
-
-            if (fi.BackRefCollections != null)
-            {
-                foreach (string s in fi.BackRefCollections)
-                {
-                    method.Statements.Add(new CodeConditionStatement(
-                        new CodeBinaryOperatorExpression(Arg("oldValue"), CodeBinaryOperatorType.IdentityInequality, new CodePrimitiveExpression(null)),
-                        new CodeStatement[] {
-                                                new CodeExpressionStatement(
-                                                new CodeMethodInvokeExpression(
-                                                new CodeCastExpression(typeof(Sooda.ObjectMapper.ISoodaObjectListInternal),
-                                                new CodePropertyReferenceExpression(new CodeCastExpression(fi.References, Arg("oldValue")), s)), "InternalRemove", new CodeCastExpression(options.OutputNamespace + "." + classInfo.Name, new CodeThisReferenceExpression()))
-                                                )
-                                            },
-                        new CodeStatement[] {
-                                            }
-                        ));
-                };
-            }
-
-            return method;
-        }
-
-        public CodeMemberMethod Method_AfterCollectionUpdate(FieldInfo fi)
-        {
-            CodeMemberMethod method = new CodeMemberMethod();
-            method.Name = "AfterCollectionUpdate_" + fi.Name;
-            method.Parameters.Add(new CodeParameterDeclarationExpression("SoodaObject", "oldValue"));
-            method.Parameters.Add(new CodeParameterDeclarationExpression("SoodaObject", "newValue"));
-            method.Attributes = MemberAttributes.Public | MemberAttributes.Final;
-            if (fi.BackRefCollections != null)
-            {
-                foreach (string s in fi.BackRefCollections)
-                {
-                    method.Statements.Add(new CodeConditionStatement(
-                        new CodeBinaryOperatorExpression(Arg("newValue"), CodeBinaryOperatorType.IdentityInequality, new CodePrimitiveExpression(null)),
-                        new CodeStatement[] {
-                                                new CodeExpressionStatement(
-                                                new CodeMethodInvokeExpression(
-                                                new CodeCastExpression(typeof(Sooda.ObjectMapper.ISoodaObjectListInternal),
-                                                new CodePropertyReferenceExpression(new CodeCastExpression(fi.References, Arg("newValue")), s)), "InternalAdd", new CodeCastExpression(options.OutputNamespace + "." + classInfo.Name, new CodeThisReferenceExpression()))
-                                                )
-                                            },
-                        new CodeStatement[] {
-                                            }
-                        ));
-                }
-            }
-
-            return method;
-        }
-
         public CodeMemberMethod Method_TriggerFieldUpdate(FieldInfo fi, string methodPrefix)
         {
             CodeMemberMethod method = new CodeMemberMethod();
@@ -611,8 +552,8 @@ namespace Sooda.CodeGen
                                         new CodePrimitiveExpression(fi.ClassUnifiedOrdinal),
                                         new CodePropertySetValueReferenceExpression(),
                                         new CodeDirectionExpression(FieldDirection.Ref, new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), "_refCache_" + fi.Name)),
-                                        new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(returnType.BaseType + "_Factory"), "TheFactory"
-                                            ))));
+                                        new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(returnType.BaseType + "_Factory"), "TheFactory")
+                                        )));
                     }
                 }
                 else

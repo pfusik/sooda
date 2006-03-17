@@ -33,6 +33,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Xml.Serialization;
 using System.Text;
 
@@ -84,7 +85,11 @@ namespace Sooda.Schema
 
         [XmlIgnore]
         [NonSerialized]
-        private Hashtable _subclasses = new Hashtable();
+        private Hashtable _subclasses;
+
+        [XmlIgnore]
+        [NonSerialized]
+        private Hashtable _backRefCollections;
 
         public bool Contains(string className)
         {
@@ -136,6 +141,9 @@ namespace Sooda.Schema
 #endif
 
             Rehash();
+
+            _backRefCollections = new Hashtable();
+
             foreach (ClassInfo ci in Classes)
             {
                 ci.ResolveInheritance(this);
@@ -340,6 +348,22 @@ namespace Sooda.Schema
                 return FieldHandlerFactory.GetFieldHandler(dataType).DefaultPrecommitValue();
             }
             return null;
+        }
+
+        public StringCollection GetBackRefCollections(FieldInfo fi)
+        {
+            return (StringCollection)_backRefCollections[fi.NameTag];
+        }
+
+        internal void AddBackRefCollection(FieldInfo fi, string name)
+        {
+            StringCollection sc = GetBackRefCollections(fi);
+            if (sc == null)
+            {
+                sc = new StringCollection();
+                _backRefCollections[fi.NameTag] = sc;
+            }
+            sc.Add(name);
         }
     }
 }

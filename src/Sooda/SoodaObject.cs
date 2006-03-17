@@ -1176,52 +1176,59 @@ namespace Sooda
             EnsureDataLoaded(tableNumber);
             CopyOnWrite();
 
-            try
+            SoodaObject oldValue = null;
+
+            SoodaObjectImpl.GetRefFieldValue(ref oldValue, this, tableNumber, fieldOrdinal, GetTransaction(), factory);
+            if (Object.Equals(oldValue, newValue))
+                return;
+            object[] triggerArgs = new object[] { oldValue, newValue };
+
+            if (!DisableTriggers)
             {
-                SoodaObject oldValue = null;
-
-                SoodaObjectImpl.GetRefFieldValue(ref oldValue, this, tableNumber, fieldOrdinal, GetTransaction(), factory);
-                if (Object.Equals(oldValue, newValue))
-                    return;
-                object[] triggerArgs = new object[] { oldValue, newValue };
-
-                if (!DisableTriggers)
-                {
-                    MethodInfo mi = this.GetType().GetMethod("BeforeFieldUpdate_" + fieldName, BindingFlags.Instance | BindingFlags.FlattenHierarchy | BindingFlags.NonPublic | BindingFlags.Public);
-                    if (mi != null)
-                        mi.Invoke(this, triggerArgs);
-                }
-                if (oldValue != null)
-                {
-                    MethodInfo mi = this.GetType().GetMethod("BeforeCollectionUpdate_" + fieldName, BindingFlags.Instance | BindingFlags.FlattenHierarchy | BindingFlags.NonPublic | BindingFlags.Public);
+                MethodInfo mi = this.GetType().GetMethod("BeforeFieldUpdate_" + fieldName, BindingFlags.Instance | BindingFlags.FlattenHierarchy | BindingFlags.NonPublic | BindingFlags.Public);
+                if (mi != null)
                     mi.Invoke(this, triggerArgs);
-                }
-                if (newValue == null)
+            }
+            Sooda.Schema.FieldInfo fieldInfo = GetClassInfo().UnifiedFields[fieldOrdinal];
+            StringCollection backRefCollections = GetTransaction().Schema.GetBackRefCollections(fieldInfo);
+            if (oldValue != null && backRefCollections != null)
+            {
+                foreach (string collectionName in backRefCollections)
                 {
-                    _fieldValues.SetFieldValue(fieldOrdinal, null);
-                }
-                else
-                {
-                    _fieldValues.SetFieldValue(fieldOrdinal, newValue.GetPrimaryKeyValue());
-                }
-                SetFieldDirty(fieldOrdinal, true);
-                refcache = null;
-                SetObjectDirty();
-                if (newValue != null)
-                {
-                    MethodInfo mi = this.GetType().GetMethod("AfterCollectionUpdate_" + fieldName, BindingFlags.Instance | BindingFlags.FlattenHierarchy | BindingFlags.NonPublic | BindingFlags.Public);
-                    mi.Invoke(this, triggerArgs);
-                }
-                if (!DisableTriggers)
-                {
-                    MethodInfo mi = this.GetType().GetMethod("AfterFieldUpdate_" + fieldName, BindingFlags.Instance | BindingFlags.FlattenHierarchy | BindingFlags.NonPublic | BindingFlags.Public);
-                    if (mi != null)
-                        mi.Invoke(this, triggerArgs);
+                    PropertyInfo coll = oldValue.GetType().GetProperty(collectionName, BindingFlags.Instance | BindingFlags.FlattenHierarchy | BindingFlags.Public);
+                    if (coll == null)
+                        throw new Exception(collectionName + " not found in " + oldValue.GetType().Name + " while setting " + this.GetType().Name + "." + fieldName);
+                    ISoodaObjectListInternal listInternal = (ISoodaObjectListInternal)coll.GetValue(oldValue, null);
+                    listInternal.InternalRemove(this);
                 }
             }
-            catch (Exception e)
+            if (newValue == null)
             {
-                throw new Exception("BeforeFieldUpdate raised an exception: ", e);
+                _fieldValues.SetFieldValue(fieldOrdinal, null);
+            }
+            else
+            {
+                _fieldValues.SetFieldValue(fieldOrdinal, newValue.GetPrimaryKeyValue());
+            }
+            SetFieldDirty(fieldOrdinal, true);
+            refcache = null;
+            SetObjectDirty();
+            if (newValue != null && backRefCollections != null)
+            {
+                foreach (string collectionName in backRefCollections)
+                {
+                    PropertyInfo coll = newValue.GetType().GetProperty(collectionName, BindingFlags.Instance | BindingFlags.FlattenHierarchy | BindingFlags.Public);
+                    if (coll == null)
+                        throw new Exception(collectionName + " not found in " + newValue.GetType().Name + " while setting " + this.GetType().Name + "." + fieldName);
+                    ISoodaObjectListInternal listInternal = (ISoodaObjectListInternal)coll.GetValue(newValue, null);
+                    listInternal.InternalAdd(this);
+                }
+            }
+            if (!DisableTriggers)
+            {
+                MethodInfo mi = this.GetType().GetMethod("AfterFieldUpdate_" + fieldName, BindingFlags.Instance | BindingFlags.FlattenHierarchy | BindingFlags.NonPublic | BindingFlags.Public);
+                if (mi != null)
+                    mi.Invoke(this, triggerArgs);
             }
         }
 

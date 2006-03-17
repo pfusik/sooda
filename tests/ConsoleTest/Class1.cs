@@ -67,9 +67,10 @@ namespace ConsoleTest
         {
             Sooda.Logging.LogManager.Implementation = new Sooda.Logging.ConsoleLoggingImplementation();
 
-            Sooda.UnitTests.TestCases.Caching.CollectionTest ct = new Sooda.UnitTests.TestCases.Caching.CollectionTest();
-            ct.InvalidateTest();
-            //Sooda.UnitTests.TestCases.ObjectMapper.GetListTest t = new Sooda.UnitTests.TestCases.ObjectMapper.GetListTest();
+            //Sooda.UnitTests.TestCases.Caching.CollectionTest ct = new Sooda.UnitTests.TestCases.Caching.CollectionTest();
+            //ct.InvalidateTest();
+            Sooda.UnitTests.TestCases.ObjectMapper.SerializationTest t = new Sooda.UnitTests.TestCases.ObjectMapper.SerializationTest();
+            t.Collection1toNTest();
             //t.OrderByTest();
         }
     }

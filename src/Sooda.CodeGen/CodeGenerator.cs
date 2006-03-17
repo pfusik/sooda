@@ -317,12 +317,6 @@ namespace Sooda.CodeGen
                     ctd.Members.Add(gen.Method_TriggerFieldUpdate(fi, "BeforeFieldUpdate"));
                     ctd.Members.Add(gen.Method_TriggerFieldUpdate(fi, "AfterFieldUpdate"));
                 }
-
-                if (fi.References != null)
-                {
-                    ctd.Members.Add(gen.Method_BeforeCollectionUpdate(fi));
-                    ctd.Members.Add(gen.Method_AfterCollectionUpdate(fi));
-                }
             }
         }
 
@@ -416,17 +410,25 @@ namespace Sooda.CodeGen
             context["OutNamespace"] = Project.OutputNamespace;
 
             CodeTypeDeclaration databaseSchemaClass = CDILParser.ParseClass(CDILTemplate.Get("DatabaseSchema.cdil"), context);
-            foreach (CodeTypeMember ctm in databaseSchemaClass.Members)
-            {
-                if (ctm.Name == "_factories")
-                {
-                    CodeMemberField fld = ctm as CodeMemberField;
 
-                    CodeArrayCreateExpression cace = new CodeArrayCreateExpression("ISoodaObjectFactory");
-                    OutputFactories(cace, Project.OutputNamespace, schema);
-                    fld.InitExpression = cace;
-                }
-            }
+            CodeArrayCreateExpression cace = new CodeArrayCreateExpression("ISoodaObjectFactory");
+            OutputFactories(cace, Project.OutputNamespace, schema);
+
+            CodeTypeConstructor ctc = new CodeTypeConstructor();
+            ctc.Statements.Add(
+                    new CodeAssignStatement(
+                        new CodeFieldReferenceExpression(null, "_theSchema"),
+                        new CodeMethodInvokeExpression(null,"LoadSchema")));
+
+            databaseSchemaClass.Members.Add(ctc);
+
+            CodeConstructor ctor = new CodeConstructor();
+            ctor.Attributes = MemberAttributes.Public;
+            ctor.Statements.Add(
+                    new CodeAssignStatement(
+                        new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), "_factories"), cace));
+
+            databaseSchemaClass.Members.Add(ctor);
 
             nspace.Types.Add(databaseSchemaClass);
         }
