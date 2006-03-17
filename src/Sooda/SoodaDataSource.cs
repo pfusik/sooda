@@ -41,23 +41,23 @@ namespace Sooda
 {
     public abstract class SoodaDataSource : IDisposable
     {
-        private DataSourceInfo _dataSourceInfo;
+        private string _name;
+
+        protected SoodaDataSource(string name)
+        {
+            _name = name;
+        }
 
         protected SoodaDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo)
         {
-            _dataSourceInfo = dataSourceInfo;
-        }
-
-        public DataSourceInfo DataSourceInfo
-        {
-            get { return _dataSourceInfo; }
+            _name = dataSourceInfo.Name;
         }
 
         public string Name
         {
             get
             {
-                return _dataSourceInfo.Name;
+                return _name;
             }
         }
 

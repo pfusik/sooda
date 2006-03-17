@@ -61,13 +61,16 @@ namespace Sooda.Sql
         private double queryTimeTraceWarn = 10.0;
         private double queryTimeTraceInfo = 2.0;
 
-        public SqlDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo)
-            : base(dataSourceInfo)
+        public SqlDataSource(string name) : base(name)
         {
             string s = GetParameter("queryTimeTraceInfo", false);
             if (s != null && s.Length > 0) queryTimeTraceInfo = Convert.ToDouble(s);
             s = GetParameter("queryTimeTraceWarn", false);
             if (s != null && s.Length > 0) queryTimeTraceWarn = Convert.ToDouble(s);
+        }
+
+        public SqlDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo) : this(dataSourceInfo.Name)
+        {
         }
 
         public override IsolationLevel IsolationLevel

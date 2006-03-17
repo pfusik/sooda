@@ -373,7 +373,7 @@ namespace Sooda
         {
             for (int i = 0; i < _dataSources.Count; ++i)
             {
-                if (_dataSources[i].DataSourceInfo.Name == dataSourceInfo.Name)
+                if (_dataSources[i].Name == dataSourceInfo.Name)
                     return _dataSources[i];
             }
 
