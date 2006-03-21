@@ -1232,6 +1232,47 @@ namespace Sooda
             }
         }
 
+        public object Evaluate(SoqlExpression expr)
+        {
+            return Evaluate(expr, true);
+        }
+        
+        class EvaluateContext : ISoqlEvaluateContext
+        {
+            private SoodaObject _rootObject;
+
+            public EvaluateContext(SoodaObject rootObject)
+            {
+                _rootObject = rootObject;
+            }
+
+            public object GetRootObject()
+            {
+                return _rootObject;
+            }
+
+            public object GetParameter(int position)
+            {
+                throw new Exception("No parameters allowed in evaluation.");
+            }
+        }
+
+        public object Evaluate(SoqlExpression expr, bool throwOnError)
+        {
+            try
+            {
+                EvaluateContext ec = new EvaluateContext(this);
+                return expr.Evaluate(ec);
+            }
+            catch
+            {
+                if (throwOnError)
+                    throw;
+                else
+                    return null;
+            }
+        }
+        
         public object Evaluate(string[] propertyAccessChain, bool throwOnError)
         {
             try

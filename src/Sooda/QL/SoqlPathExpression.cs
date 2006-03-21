@@ -50,6 +50,8 @@ namespace Sooda.QL
         [XmlAttribute("property")]
         public string PropertyName;
 
+        private System.Reflection.PropertyInfo _propInfoCache = null;
+
         public SoqlPathExpression() { }
 
         public SoqlPathExpression(string propertyName)
@@ -145,7 +147,12 @@ namespace Sooda.QL
             if (val == null)
                 return null;
 
-            return val.GetType().GetProperty(PropertyName).GetValue(val, null);
+            if (_propInfoCache == null)
+            {
+                _propInfoCache = val.GetType().GetProperty(PropertyName);
+            }
+
+            return _propInfoCache.GetValue(val, null);
         }
     }
 }
