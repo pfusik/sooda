@@ -58,6 +58,11 @@ namespace Sooda.QL.TypedWrappers
             return new SoqlBooleanWrapperExpression(new SoqlContainsExpression(_left, _collectionName, expr));
         }
 
+        protected Sooda.QL.TypedWrappers.SoqlBooleanWrapperExpression ContainsImpl(SoodaObject obj)
+        {
+            return new SoqlBooleanWrapperExpression(new SoqlContainsExpression(_left, _collectionName, new SoqlLiteralExpression(obj == null ? null : obj.GetPrimaryKeyValue())));
+        }
+
         protected Sooda.QL.TypedWrappers.SoqlBooleanWrapperExpression ContainsExprImpl(string fromClass, SoqlBooleanExpression expr)
         {
             SoqlQueryExpression query = new SoqlQueryExpression();
