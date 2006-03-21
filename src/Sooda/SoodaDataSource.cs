@@ -75,7 +75,7 @@ namespace Sooda
             }
 
             if (throwOnFailure)
-                throw new SoodaException("Parameter " + name + " not defined for data source " + this.Name);
+                throw new SoodaException("Parameter '" + name + "' not defined for data source '" + this.Name + "'");
             return null;
         }
 
