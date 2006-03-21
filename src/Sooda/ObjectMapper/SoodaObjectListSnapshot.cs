@@ -78,6 +78,10 @@ namespace Sooda.ObjectMapper
             }
         }
 
+        public SoodaObjectListSnapshot(IList list, SoqlBooleanExpression filterExpression) : this(list, new SoodaWhereClause(filterExpression))
+        {
+        }
+
         public SoodaObjectListSnapshot(IList list, int first, int length)
         {
             this.classInfo = null;
@@ -406,7 +410,7 @@ namespace Sooda.ObjectMapper
 
         public void CopyTo(Array array, int index)
         {
-            throw new NotImplementedException();
+            items.CopyTo(array, index);
         }
 
         public object SyncRoot
@@ -440,6 +444,11 @@ namespace Sooda.ObjectMapper
         public ISoodaObjectList Filter(SoodaObjectFilter filter)
         {
             return new SoodaObjectListSnapshot(this, filter);
+        }
+
+        public ISoodaObjectList Filter(SoqlBooleanExpression filterExpression)
+        {
+            return new SoodaObjectListSnapshot(this, filterExpression);
         }
 
         public ISoodaObjectList Filter(SoodaWhereClause whereClause)

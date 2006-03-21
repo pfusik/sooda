@@ -94,6 +94,13 @@ begin
     return new ${ClassName}List(base.Filter2(arg(f)))
 end
 
+method Filter(Sooda.QL.SoqlBooleanExpression sortExpression)
+    attributes Public,Final
+    returns ${ClassName}List
+begin
+    return new ${ClassName}List(base.Filter2(arg(sortExpression)))
+end
+
 method Filter(SoodaWhereClause whereClause)
     attributes Public,Final
     returns ${ClassName}List

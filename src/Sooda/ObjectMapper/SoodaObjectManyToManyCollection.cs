@@ -340,7 +340,7 @@ namespace Sooda.ObjectMapper
 
         public void CopyTo(Array array, int index)
         {
-            throw new NotImplementedException();
+            items.CopyTo(array, index);
         }
 
         public object SyncRoot
@@ -379,6 +379,11 @@ namespace Sooda.ObjectMapper
         public ISoodaObjectList Filter(SoodaWhereClause whereClause)
         {
             return new SoodaObjectListSnapshot(this, whereClause);
+        }
+
+        public ISoodaObjectList Filter(SoqlBooleanExpression filterExpression)
+        {
+            return new SoodaObjectListSnapshot(this, filterExpression);
         }
 
         public ISoodaObjectList Sort(IComparer comparer)

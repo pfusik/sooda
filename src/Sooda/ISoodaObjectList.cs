@@ -45,6 +45,7 @@ namespace Sooda
         ISoodaObjectList SelectLast(int n);
         ISoodaObjectList SelectRange(int from, int to);
         ISoodaObjectList Filter(SoodaObjectFilter filter);
+        ISoodaObjectList Filter(SoqlBooleanExpression filterExpression);
         ISoodaObjectList Filter(SoodaWhereClause whereClause);
         ISoodaObjectList Sort(IComparer comparer);
         ISoodaObjectList Sort(string sortOrder);

@@ -93,7 +93,7 @@ namespace Sooda.ObjectMapper
             _theList.Remove(value);
         }
 
-        public void Remove2(object value)
+        protected void Remove2(object value)
         {
             _theList.Remove(value);
         }
@@ -103,7 +103,7 @@ namespace Sooda.ObjectMapper
             return _theList.Contains(value);
         }
 
-        public bool Contains2(object value)
+        protected bool Contains2(object value)
         {
             return _theList.Contains(value);
         }
@@ -180,6 +180,11 @@ namespace Sooda.ObjectMapper
             return _theList.Filter(whereClause);
         }
 
+        ISoodaObjectList ISoodaObjectList.Filter(Sooda.QL.SoqlBooleanExpression filterExpression)
+        {
+            return _theList.Filter(filterExpression);
+        }
+
         ISoodaObjectList ISoodaObjectList.Filter(SoodaObjectFilter filter)
         {
             return _theList.Filter(filter);
@@ -188,6 +193,11 @@ namespace Sooda.ObjectMapper
         protected ISoodaObjectList Filter2(SoodaWhereClause whereClause)
         {
             return _theList.Filter(whereClause);
+        }
+
+        protected ISoodaObjectList Filter2(Sooda.QL.SoqlBooleanExpression filterExpression)
+        {
+            return _theList.Filter(filterExpression);
         }
 
         protected ISoodaObjectList Filter2(SoodaObjectFilter filter)
@@ -215,22 +225,22 @@ namespace Sooda.ObjectMapper
             return _theList.Sort(SoodaOrderBy.FromExpression(sortExpression, sortOrder).GetComparer());
         }
 
-        public ISoodaObjectList Sort2(IComparer comparer)
+        protected ISoodaObjectList Sort2(IComparer comparer)
         {
             return _theList.Sort(comparer);
         }
 
-        public ISoodaObjectList Sort2(string sortOrder)
+        protected ISoodaObjectList Sort2(string sortOrder)
         {
             return _theList.Sort(SoodaOrderBy.Parse(sortOrder).GetComparer());
         }
 
-        public ISoodaObjectList Sort2(Sooda.QL.SoqlExpression sortExpression)
+        protected ISoodaObjectList Sort2(Sooda.QL.SoqlExpression sortExpression)
         {
             return _theList.Sort(SoodaOrderBy.FromExpression(sortExpression, SortOrder.Ascending).GetComparer());
         }
 
-        public ISoodaObjectList Sort2(Sooda.QL.SoqlExpression sortExpression, SortOrder sortOrder)
+        protected ISoodaObjectList Sort2(Sooda.QL.SoqlExpression sortExpression, SortOrder sortOrder)
         {
             return _theList.Sort(SoodaOrderBy.FromExpression(sortExpression, sortOrder).GetComparer());
         }
