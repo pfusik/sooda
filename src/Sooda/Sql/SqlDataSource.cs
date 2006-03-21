@@ -57,6 +57,7 @@ namespace Sooda.Sql
         private IDbCommand _updateCommand = null;
         public bool SupportsUpdateBatch = false;
         public bool StripWhitespaceInLogs = false;
+        public bool IndentQueries = false;
         private IsolationLevel _isolationLevel = IsolationLevel.ReadCommitted;
         private double queryTimeTraceWarn = 10.0;
         private double queryTimeTraceInfo = 2.0;
@@ -81,7 +82,22 @@ namespace Sooda.Sql
 
         public override void Open()
         {
-            Type connectionType = Type.GetType(GetParameter("connectionType", true));
+            string connectionTypeName = GetParameter("connectionType", false);
+            if (connectionType == null)
+                connectionType = "sqlclient";
+
+            Type connectionType = null;
+            switch (connectionTypeName)
+            {
+                case "sqlclient":
+                    connectionType = typeof(System.Data.SqlClient.SqlConnection);
+                    break;
+
+                default:
+                    connectionType = Type.GetType(connectionTypeName);
+                    break;
+            }
+            
             string connectionString = GetParameter("connectionString", true);
             Connection = (IDbConnection)Activator.CreateInstance(connectionType, new object[] { connectionString });
 
@@ -90,6 +106,9 @@ namespace Sooda.Sql
 
             if (GetParameter("stripWhitespaceInLogs", false) != null)
                 this.StripWhitespaceInLogs = true;
+
+            if (GetParameter("indentQueries", false) != null)
+                this.IndentQueries = true;
 
             string dialect = GetParameter("sqlDialect", false);
             if (dialect == null)
@@ -324,7 +343,7 @@ namespace Sooda.Sql
 
                 StringWriter sw = new StringWriter();
                 SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, schemaInfo, SqlBuilder);
-                converter.IndentOutput = false;
+                converter.IndentOutput = this.IndentQueries;
                 converter.GenerateColumnAliases = false;
                 //logger.Trace("Converting {0}", queryExpression);
                 converter.ConvertQuery(queryExpression);
@@ -422,7 +441,7 @@ namespace Sooda.Sql
 
                 StringWriter sw = new StringWriter();
                 SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, schemaInfo, SqlBuilder);
-                converter.IndentOutput = false;
+                converter.IndentOutput = this.IndentQueries;
                 converter.GenerateColumnAliases = false;
                 //logger.Trace("Converting {0}", queryExpression);
                 converter.ConvertQuery(queryExpression);
@@ -453,7 +472,7 @@ namespace Sooda.Sql
             {
                 StringWriter sw = new StringWriter();
                 SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, schema, SqlBuilder);
-                converter.IndentOutput = false;
+                converter.IndentOutput = this.IndentQueries;
                 converter.ConvertQuery(query);
 
                 string queryText = sw.ToString();
@@ -674,7 +693,10 @@ namespace Sooda.Sql
 
         private string LogCommand(IDbCommand cmd)
         {
+            
             StringBuilder txt = new StringBuilder();
+            if (IndentQueries)
+                txt.Append("\n");
             txt.Append(StripWhitespace(cmd.CommandText));
             txt.Append(" [");
             foreach (IDataParameter par in cmd.Parameters)
@@ -797,7 +819,7 @@ namespace Sooda.Sql
 
                 StringWriter sw = new StringWriter();
                 SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, tableInfo.OwnerClass.Schema, SqlBuilder);
-                converter.IndentOutput = false;
+                converter.IndentOutput = this.IndentQueries;
                 converter.GenerateColumnAliases = false;
                 converter.ConvertQuery(queryExpression);
 
@@ -825,7 +847,7 @@ namespace Sooda.Sql
 
                 StringWriter sw = new StringWriter();
                 SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, relationInfo.Schema, SqlBuilder);
-                converter.IndentOutput = false;
+                converter.IndentOutput = this.IndentQueries;
                 converter.GenerateColumnAliases = false;
                 converter.ConvertQuery(SoqlParser.ParseQuery(soqlQuery));
                 string sqlQuery = sw.ToString();
