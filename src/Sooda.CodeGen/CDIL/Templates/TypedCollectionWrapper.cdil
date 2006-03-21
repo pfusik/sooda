@@ -8,6 +8,13 @@ constructor(Sooda.QL.SoqlPathExpression left, System.String name)
 begin
 end
 
+method Contains(${ClassName} item)
+    attributes Public
+    returns Sooda.QL.TypedWrappers.SoqlBooleanWrapperExpression
+begin
+    return this.ContainsImpl(arg(item));
+end
+
 method Contains(${ClassName}WrapperExpression item)
     attributes Public
     returns Sooda.QL.TypedWrappers.SoqlBooleanWrapperExpression

@@ -538,6 +538,21 @@ namespace Sooda.CodeGen
             CodeTypeDeclaration ctd = CDILParser.ParseClass(CDILTemplate.Get("ClassField.cdil"), context);
             ns.Types.Add(ctd);
 
+            foreach (CollectionBaseInfo coll in classInfo.UnifiedCollections)
+            {
+                CodeMemberProperty prop = new CodeMemberProperty();
+
+                prop.Name = coll.Name;
+                prop.Attributes = MemberAttributes.Public | MemberAttributes.Static;
+                prop.Type = new CodeTypeReference(coll.GetItemClass().Name + "CollectionExpression");
+                prop.GetStatements.Add(
+                    new CodeMethodReturnStatement(
+                    new CodeObjectCreateExpression(prop.Type, new CodePrimitiveExpression(null), new CodePrimitiveExpression(coll.Name))
+                    ));
+
+                ctd.Members.Add(prop);
+            }
+
             foreach (FieldInfo fi in classInfo.UnifiedFields)
             {
                 CodeMemberProperty prop = new CodeMemberProperty();
@@ -977,19 +992,22 @@ namespace Sooda.CodeGen
                     GenerateRelationStub(nspace, ri);
                 }
 
-                Output.Verbose("    * typed query wrappers (internal)");
-                foreach (ClassInfo ci in schema.LocalClasses)
+                if (Project.WithTypedQueryWrappers)
                 {
-                    GenerateTypedInternalQueryWrappers(nspace, ci);
-                }
+                    Output.Verbose("    * typed query wrappers (internal)");
+                    foreach (ClassInfo ci in schema.LocalClasses)
+                    {
+                        GenerateTypedInternalQueryWrappers(nspace, ci);
+                    }
 
-                nspace = CreateTypedQueriesNamespace(schema);
-                ccu.Namespaces.Add(nspace);
+                    nspace = CreateTypedQueriesNamespace(schema);
+                    ccu.Namespaces.Add(nspace);
 
-                Output.Verbose("    * typed query wrappers");
-                foreach (ClassInfo ci in schema.LocalClasses)
-                {
-                    GenerateTypedPublicQueryWrappers(nspace, ci);
+                    Output.Verbose("    * typed query wrappers");
+                    foreach (ClassInfo ci in schema.LocalClasses)
+                    {
+                        GenerateTypedPublicQueryWrappers(nspace, ci);
+                    }
                 }
 
                 using (StringWriter sw = new StringWriter())
