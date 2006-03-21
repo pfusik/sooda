@@ -38,6 +38,7 @@ using System.Collections;
 using Sooda.Schema;
 using Sooda.Collections;
 using Sooda.Caching;
+using Sooda.QL;
 
 namespace Sooda.ObjectMapper
 {
@@ -377,6 +378,21 @@ namespace Sooda.ObjectMapper
         public ISoodaObjectList Sort(IComparer comparer)
         {
             return new SoodaObjectListSnapshot(this, comparer);
+        }
+
+        public ISoodaObjectList Sort(string sortOrder)
+        {
+            return new SoodaObjectListSnapshot(this).Sort(sortOrder);
+        }
+        
+        public ISoodaObjectList Sort(SoqlExpression expression, SortOrder sortOrder)
+        {
+            return new SoodaObjectListSnapshot(this).Sort(expression, sortOrder);
+        }
+        
+        public ISoodaObjectList Sort(SoqlExpression expression)
+        {
+            return new SoodaObjectListSnapshot(this).Sort(expression, SortOrder.Ascending);
         }
     }
 }

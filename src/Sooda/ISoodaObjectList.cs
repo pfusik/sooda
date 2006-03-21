@@ -32,6 +32,7 @@
 // 
 
 using System.Collections;
+using Sooda.QL;
 
 namespace Sooda
 {
@@ -46,6 +47,8 @@ namespace Sooda
         ISoodaObjectList Filter(SoodaObjectFilter filter);
         ISoodaObjectList Filter(SoodaWhereClause whereClause);
         ISoodaObjectList Sort(IComparer comparer);
-
+        ISoodaObjectList Sort(string sortOrder);
+        ISoodaObjectList Sort(SoqlExpression sortExpression);
+        ISoodaObjectList Sort(SoqlExpression sortExpression, SortOrder sortOrder);
     }
 }

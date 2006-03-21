@@ -38,11 +38,32 @@ begin
     return base.Contains2(arg(obj))
 end
 
-method Sort(IComparer comp)
-    attributes Public,Final,New
+method Sort(IComparer comparer)
+    attributes Public,Final
     returns ${ClassName}List
 begin
-    return new ${ClassName}List(base.Sort(arg(comp)))
+    return new ${ClassName}List(base.Sort2(arg(comparer)))
+end
+
+method Sort(System.String sortOrder)
+    attributes Public,Final
+    returns ${ClassName}List
+begin
+    return new ${ClassName}List(base.Sort2(arg(sortOrder)))
+end
+
+method Sort(Sooda.QL.SoqlExpression sortExpression)
+    attributes Public,Final
+    returns ${ClassName}List
+begin
+    return new ${ClassName}List(base.Sort2(arg(sortExpression)))
+end
+
+method Sort(Sooda.QL.SoqlExpression sortExpression, Sooda.SortOrder sortOrder)
+    attributes Public,Final
+    returns ${ClassName}List
+begin
+    return new ${ClassName}List(base.Sort2(arg(sortExpression),arg(sortOrder)))
 end
 
 method SelectFirst(System.Int32 count)

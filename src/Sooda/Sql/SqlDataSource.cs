@@ -83,8 +83,8 @@ namespace Sooda.Sql
         public override void Open()
         {
             string connectionTypeName = GetParameter("connectionType", false);
-            if (connectionType == null)
-                connectionType = "sqlclient";
+            if (connectionTypeName == null)
+                connectionTypeName = "sqlclient";
 
             Type connectionType = null;
             switch (connectionTypeName)

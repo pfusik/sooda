@@ -195,9 +195,44 @@ namespace Sooda.ObjectMapper
             return _theList.Filter(filter);
         }
 
-        public ISoodaObjectList Sort(IComparer comparer)
+        ISoodaObjectList ISoodaObjectList.Sort(IComparer comparer)
         {
             return _theList.Sort(comparer);
+        }
+
+        ISoodaObjectList ISoodaObjectList.Sort(string sortOrder)
+        {
+            return _theList.Sort(SoodaOrderBy.Parse(sortOrder).GetComparer());
+        }
+
+        ISoodaObjectList ISoodaObjectList.Sort(Sooda.QL.SoqlExpression sortExpression)
+        {
+            return _theList.Sort(SoodaOrderBy.FromExpression(sortExpression, SortOrder.Ascending).GetComparer());
+        }
+
+        ISoodaObjectList ISoodaObjectList.Sort(Sooda.QL.SoqlExpression sortExpression, SortOrder sortOrder)
+        {
+            return _theList.Sort(SoodaOrderBy.FromExpression(sortExpression, sortOrder).GetComparer());
+        }
+
+        public ISoodaObjectList Sort2(IComparer comparer)
+        {
+            return _theList.Sort(comparer);
+        }
+
+        public ISoodaObjectList Sort2(string sortOrder)
+        {
+            return _theList.Sort(SoodaOrderBy.Parse(sortOrder).GetComparer());
+        }
+
+        public ISoodaObjectList Sort2(Sooda.QL.SoqlExpression sortExpression)
+        {
+            return _theList.Sort(SoodaOrderBy.FromExpression(sortExpression, SortOrder.Ascending).GetComparer());
+        }
+
+        public ISoodaObjectList Sort2(Sooda.QL.SoqlExpression sortExpression, SortOrder sortOrder)
+        {
+            return _theList.Sort(SoodaOrderBy.FromExpression(sortExpression, sortOrder).GetComparer());
         }
 
         public ISoodaObjectList SelectFirst(int count)

@@ -35,68 +35,59 @@ using System;
 using System.Text;
 using System.Collections;
 
+using Sooda.QL;
+
 namespace Sooda
 {
     public class SoodaOrderBy
     {
-        private string[] columnName;
-        private SortOrder[] sortOrder;
+        private IComparer _comparer;
 
         public SoodaOrderBy(string columnName, SortOrder sortOrder)
         {
-            this.columnName = new string[1];
-            this.sortOrder = new SortOrder[1];
-            this.columnName[0] = columnName;
-            this.sortOrder[0] = sortOrder;
+            _comparer = new SoodaObjectFieldComparer(columnName, sortOrder);
         }
 
         public SoodaOrderBy(string columnName1, SortOrder sortOrder1,
             string columnName2, SortOrder sortOrder2)
         {
-            this.columnName = new string[2];
-            this.sortOrder = new SortOrder[2];
-            this.columnName[0] = columnName1;
-            this.sortOrder[0] = sortOrder1;
-            this.columnName[1] = columnName2;
-            this.sortOrder[1] = sortOrder2;
+            SoodaObjectMultiFieldComparer mfc = new SoodaObjectMultiFieldComparer();
+            mfc.AddField(columnName1, sortOrder1);
+            mfc.AddField(columnName2, sortOrder2);
+            _comparer = mfc;
         }
 
         public SoodaOrderBy(string columnName1, SortOrder sortOrder1,
             string columnName2, SortOrder sortOrder2,
             string columnName3, SortOrder sortOrder3)
         {
-            this.columnName = new string[3];
-            this.sortOrder = new SortOrder[3];
-            this.columnName[0] = columnName1;
-            this.sortOrder[0] = sortOrder1;
-            this.columnName[1] = columnName2;
-            this.sortOrder[1] = sortOrder2;
-            this.columnName[2] = columnName3;
-            this.sortOrder[2] = sortOrder3;
+            SoodaObjectMultiFieldComparer mfc = new SoodaObjectMultiFieldComparer();
+            mfc.AddField(columnName1, sortOrder1);
+            mfc.AddField(columnName2, sortOrder2);
+            mfc.AddField(columnName3, sortOrder3);
+            _comparer = mfc;
         }
 
         public SoodaOrderBy(string[] columnNames, SortOrder[] sortOrders)
         {
-            this.columnName = columnNames;
-            this.sortOrder = sortOrders;
+            SoodaObjectMultiFieldComparer mfc = new SoodaObjectMultiFieldComparer();
+            for (int i = 0; i < columnNames.Length; ++i)
+            {
+                mfc.AddField(columnNames[i], sortOrders[i]);
+            }
+            _comparer = mfc;
         }
 
-        public IComparer GetComparer()
+        public SoodaOrderBy(SoqlExpression expression, SortOrder sortOrder)
         {
-            if (columnName.Length == 1)
-            {
-                return new SoodaObjectFieldComparer(columnName[0], sortOrder[0]);
-            }
-            else
-            {
-                SoodaObjectMultiFieldComparer retVal = new SoodaObjectMultiFieldComparer();
+            SoodaObjectExpressionComparer ec = new SoodaObjectExpressionComparer();
+            ec.AddExpression(expression, sortOrder);
+            _comparer = ec;
+        }
 
-                for (int i = 0; i < sortOrder.Length; ++i)
-                {
-                    retVal.AddField(columnName[i], sortOrder[i]);
-                }
-                return retVal;
-            }
+        public virtual IComparer GetComparer()
+        {
+            return _comparer;
         }
 
         public static SoodaOrderBy Ascending(string columnName)
@@ -139,25 +130,17 @@ namespace Sooda
             return new SoodaOrderBy(columnNames, sortOrders);
         }
 
-        public static readonly SoodaOrderBy Unsorted = null;
-
-        public override string ToString()
+        public static SoodaOrderBy FromExpression(SoqlExpression sortExpression)
         {
-            StringBuilder sb = new StringBuilder(40);
-
-            for (int i = 0; i < columnName.Length; ++i)
-            {
-                if (i != 0)
-                    sb.Append(", ");
-                sb.Append(columnName[i]);
-                if (sortOrder[i] == SortOrder.Descending)
-                {
-                    sb.Append(" desc");
-                }
-            }
-
-            return sb.ToString();
+            return FromExpression(sortExpression, SortOrder.Ascending);
         }
+            
+        public static SoodaOrderBy FromExpression(SoqlExpression sortExpression, SortOrder sortOrder)
+        {
+            return new SoodaOrderBy(sortExpression, sortOrder);
+        }
+
+        public static readonly SoodaOrderBy Unsorted = null;
     }
 }
 
