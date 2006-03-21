@@ -13,7 +13,7 @@ for $rawtype (@types)
     
 print OUT <<EOT ;
 // 
-// Copyright (c) 2002-2006 Jaroslaw Kowalski <jaak@jkowalski.net>
+// Copyright (c) 2002-2006 Jaroslaw Kowalski <jaak\@jkowalski.net>
 // 
 // All rights reserved.
 // 
@@ -82,6 +82,16 @@ namespace Sooda.QL.TypedWrappers
             return new SoqlBooleanInExpression(this, rhs);
         }
 
+        public SoqlBooleanExpression In(params ${rawtype}[] inExpressions)
+        {
+            SoqlExpressionCollection rhs = new SoqlExpressionCollection();
+            foreach (${rawtype} e in inExpressions)
+            {
+                rhs.Add(new SoqlLiteralExpression(e));
+            }
+            return new SoqlBooleanInExpression(this, rhs);
+        }
+
         public override bool Equals(object o) { return Object.ReferenceEquals(this, o); }
         public override int GetHashCode() { return base.GetHashCode(); }
 EOT
@@ -123,7 +133,7 @@ close(OUT);
     
 print OUT <<EOT ;
 // 
-// Copyright (c) 2002-2006 Jaroslaw Kowalski <jaak@jkowalski.net>
+// Copyright (c) 2002-2006 Jaroslaw Kowalski <jaak\@jkowalski.net>
 // 
 // All rights reserved.
 // 

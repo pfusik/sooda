@@ -61,9 +61,7 @@ namespace Sooda.CodeGen
             ctor.BaseConstructorArgs.Add(new CodePrimitiveExpression(relationInfo.Table.DBTableName));
             ctor.BaseConstructorArgs.Add(new CodePrimitiveExpression(relationInfo.Table.Fields[0].DBColumnName));
             ctor.BaseConstructorArgs.Add(new CodePrimitiveExpression(relationInfo.Table.Fields[1].DBColumnName));
-            ctor.BaseConstructorArgs.Add(new CodeMethodInvokeExpression(
-                        new CodeMethodInvokeExpression(new CodeTypeReferenceExpression(options.OutputNamespace + "." + "_DatabaseSchema"), "GetSchema"),
-                    "FindClassByName", new CodePrimitiveExpression(relationInfo.Table.Fields[0].References)));
+            ctor.BaseConstructorArgs.Add(new CodeFieldReferenceExpression(null, "theRelationInfo"));
 
             return ctor;
         }

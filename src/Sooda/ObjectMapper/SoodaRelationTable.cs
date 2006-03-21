@@ -34,6 +34,9 @@
 using System;
 using System.Xml;
 
+// TODO - this is very hackish - needs to be cleaned up
+// original intention was preserving memory, but this has gone too far
+
 namespace Sooda.ObjectMapper
 {
     public class SoodaRelationTupleChangedArgs : EventArgs
@@ -67,13 +70,13 @@ namespace Sooda.ObjectMapper
         private string tableName;
         private string leftColumnName;
         private string rightColumnName;
-        private Sooda.Schema.DataSourceInfo _dataSourceInfo;
+        private Sooda.Schema.RelationInfo relationInfo;
 
         public event SoodaRelationTupleChanged OnTupleChanged;
 
-        protected SoodaRelationTable(string tableName, string leftColumnName, string rightColumnName, Sooda.Schema.ClassInfo dsi)
+        protected SoodaRelationTable(string tableName, string leftColumnName, string rightColumnName, Sooda.Schema.RelationInfo relationInfo)
         {
-            this._dataSourceInfo = dsi.GetDataSource();
+            this.relationInfo = relationInfo;
             this.tableName = tableName;
             this.leftColumnName = leftColumnName;
             this.rightColumnName = rightColumnName;
@@ -143,19 +146,28 @@ namespace Sooda.ObjectMapper
             }
         }
 
-        public void SaveTuples(SoodaTransaction tran)
+        public void SaveTuples(SoodaTransaction tran, bool isPrecommit)
         {
             if (count == 0)
                 return;
 
+            SoodaDataSource ds = tran.OpenDataSource(relationInfo.GetDataSource());
+            
+            ISoodaObjectFactory leftFactory = tran.GetFactory(relationInfo.GetRef1ClassInfo());
+            ISoodaObjectFactory rightFactory = tran.GetFactory(relationInfo.GetRef2ClassInfo());
 
-            Sooda.Schema.DataSourceInfo dataSourceInfo = _dataSourceInfo;
-
-            SoodaDataSource ds = tran.OpenDataSource(dataSourceInfo);
             for (int i = 0; i < count; ++i)
             {
                 if (!tuples[i].saved)
                 {
+                    if (isPrecommit)
+                    {
+                        SoodaObject leftObject = leftFactory.GetRef(tran, tuples[i].ref1);
+                        SoodaObject rightObject = rightFactory.GetRef(tran, tuples[i].ref2);
+                        tran.PrecommitObject(leftObject);
+                        tran.PrecommitObject(rightObject);
+                    }
+                                            
                     ds.MakeTuple(tableName, leftColumnName, rightColumnName, tuples[i].ref1, tuples[i].ref2, tuples[i].tupleMode);
                     tuples[i].saved = true;
                 }

@@ -69,8 +69,9 @@ namespace ConsoleTest
 
             //Sooda.UnitTests.TestCases.Caching.CollectionTest ct = new Sooda.UnitTests.TestCases.Caching.CollectionTest();
             //ct.InvalidateTest();
-            Sooda.UnitTests.TestCases.ObjectMapper.SerializationTest t = new Sooda.UnitTests.TestCases.ObjectMapper.SerializationTest();
-            t.Collection1toNTest();
+            Sooda.UnitTests.TestCases.ObjectMapper.GetListTest t = new Sooda.UnitTests.TestCases.ObjectMapper.GetListTest();
+            t.OrderByTest();
+            //t.Collection1toNTest();
             //t.OrderByTest();
         }
     }

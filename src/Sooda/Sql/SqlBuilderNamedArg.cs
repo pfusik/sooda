@@ -90,9 +90,15 @@ namespace Sooda.Sql
                 {
                     int stringStartPos = i;
                     int stringEndPos = -1;
+                    bool requireParameter = false;
 
                     for (int j = i + 1; j < query.Length; ++j)
                     {
+                        if (query[j] == '\\' || (int)query[i] < 32)
+                        {
+                            requireParameter = true;
+                        }
+                        
                         if (query[j] == '\'')
                         {
                             // possible end of string, need to check for double apostrophes,
@@ -100,9 +106,11 @@ namespace Sooda.Sql
 
                             if (j + 1 < query.Length && query[j + 1] == '\'')
                             {
+                                requireParameter = true;
                                 j++;
                                 continue;
                             }
+
                             stringEndPos = j;
                             break;
                         }
@@ -113,30 +121,43 @@ namespace Sooda.Sql
                         throw new ArgumentException("Query has unbalanced quotes");
                     }
 
-                    string stringValue = query.Substring(stringStartPos + 1, stringEndPos - stringStartPos - 1);
-                    // replace double quotes with single quotes
-                    stringValue = stringValue.Replace("''", "'");
-                    IDbDataParameter p = command.CreateParameter();
-
-                    if (stringEndPos + 1 < query.Length && query[stringEndPos + 1] == 'D')
+                    if (stringEndPos + 1 < query.Length && (query[stringEndPos + 1] == 'D' || query[stringEndPos + 1] == 'A'))
                     {
-                        // datetime literal
-                        SetParameterFromValue(command, p, DateTime.ParseExact(stringValue, "yyyyMMddHH:mm:ss", CultureInfo.InvariantCulture), null);
-                        stringEndPos++;
+                        requireParameter = true;
                     }
-                    else if (stringEndPos + 1 < query.Length && query[stringEndPos + 1] == 'A')
+
+                    if (requireParameter)
                     {
-                        SetParameterFromValue(command, p, stringValue, SoqlLiteralValueModifiers.AnsiString);
-                        stringEndPos++;
+                        string stringValue = query.Substring(stringStartPos + 1, stringEndPos - stringStartPos - 1);
+                        // replace double quotes with single quotes
+                        stringValue = stringValue.Replace("''", "'");
+                        IDbDataParameter p = command.CreateParameter();
+
+                        if (stringEndPos + 1 < query.Length && query[stringEndPos + 1] == 'D')
+                        {
+                            // datetime literal
+                            SetParameterFromValue(command, p, DateTime.ParseExact(stringValue, "yyyyMMddHH:mm:ss", CultureInfo.InvariantCulture), null);
+                            stringEndPos++;
+                        }
+                        else if (stringEndPos + 1 < query.Length && query[stringEndPos + 1] == 'A')
+                        {
+                            SetParameterFromValue(command, p, stringValue, SoqlLiteralValueModifiers.AnsiString);
+                            stringEndPos++;
+                        }
+                        else
+                        {
+                            SetParameterFromValue(command, p, stringValue, null);
+                        }
+                        command.Parameters.Add(p);
+                        sb.Append(p.ParameterName);
+
+                        i = stringEndPos;
                     }
                     else
                     {
-                        SetParameterFromValue(command, p, stringValue, null);
+                        sb.Append(query, stringStartPos, stringEndPos - stringStartPos + 1);
+                        i = stringEndPos;
                     }
-                    command.Parameters.Add(p);
-                    sb.Append(p.ParameterName);
-
-                    i = stringEndPos;
                 }
                 else if (c == '{')
                 {

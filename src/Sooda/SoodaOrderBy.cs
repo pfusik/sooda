@@ -41,41 +41,43 @@ namespace Sooda
 {
     public class SoodaOrderBy
     {
-        private IComparer _comparer;
+        private SoodaObjectExpressionComparer _comparer;
 
         public SoodaOrderBy(string columnName, SortOrder sortOrder)
         {
-            _comparer = new SoodaObjectFieldComparer(columnName, sortOrder);
+            SoodaObjectExpressionComparer ec = new SoodaObjectExpressionComparer();
+            ec.AddExpression(new SoqlPathExpression(columnName), sortOrder);
+            _comparer = ec;
         }
 
         public SoodaOrderBy(string columnName1, SortOrder sortOrder1,
             string columnName2, SortOrder sortOrder2)
         {
-            SoodaObjectMultiFieldComparer mfc = new SoodaObjectMultiFieldComparer();
-            mfc.AddField(columnName1, sortOrder1);
-            mfc.AddField(columnName2, sortOrder2);
-            _comparer = mfc;
+            SoodaObjectExpressionComparer ec = new SoodaObjectExpressionComparer();
+            ec.AddExpression(new SoqlPathExpression(columnName1), sortOrder1);
+            ec.AddExpression(new SoqlPathExpression(columnName2), sortOrder2);
+            _comparer = ec;
         }
 
         public SoodaOrderBy(string columnName1, SortOrder sortOrder1,
             string columnName2, SortOrder sortOrder2,
             string columnName3, SortOrder sortOrder3)
         {
-            SoodaObjectMultiFieldComparer mfc = new SoodaObjectMultiFieldComparer();
-            mfc.AddField(columnName1, sortOrder1);
-            mfc.AddField(columnName2, sortOrder2);
-            mfc.AddField(columnName3, sortOrder3);
-            _comparer = mfc;
+            SoodaObjectExpressionComparer ec = new SoodaObjectExpressionComparer();
+            ec.AddExpression(new SoqlPathExpression(columnName1), sortOrder1);
+            ec.AddExpression(new SoqlPathExpression(columnName2), sortOrder2);
+            ec.AddExpression(new SoqlPathExpression(columnName3), sortOrder3);
+            _comparer = ec;
         }
 
         public SoodaOrderBy(string[] columnNames, SortOrder[] sortOrders)
         {
-            SoodaObjectMultiFieldComparer mfc = new SoodaObjectMultiFieldComparer();
+            SoodaObjectExpressionComparer ec = new SoodaObjectExpressionComparer();
             for (int i = 0; i < columnNames.Length; ++i)
             {
-                mfc.AddField(columnNames[i], sortOrders[i]);
+                ec.AddExpression(new SoqlPathExpression(columnNames[i]), sortOrders[i]);
             }
-            _comparer = mfc;
+            _comparer = ec;
         }
 
         public SoodaOrderBy(SoqlExpression expression, SortOrder sortOrder)
@@ -138,6 +140,16 @@ namespace Sooda
         public static SoodaOrderBy FromExpression(SoqlExpression sortExpression, SortOrder sortOrder)
         {
             return new SoodaOrderBy(sortExpression, sortOrder);
+        }
+
+        public SoqlExpression[] OrderByExpressions
+        {
+            get { return _comparer.OrderByExpressions; }
+        }
+
+        public SortOrder[] SortOrders
+        {
+            get { return _comparer.SortOrders; }
         }
 
         public static readonly SoodaOrderBy Unsorted = null;

@@ -142,5 +142,32 @@ namespace Sooda
         {
             return ((IComparable)dbo1.GetPrimaryKeyValue()).CompareTo(dbo2.GetPrimaryKeyValue());
         }
+
+
+        public SoqlExpression[] OrderByExpressions
+        {
+            get
+            {
+                ArrayList al = new ArrayList();
+                foreach (ExpressionCompareInfo eci in expressions)
+                {
+                    al.Add(eci.Expression);
+                }
+                return (SoqlExpression[])al.ToArray(typeof(SoqlExpression));
+            }
+        }
+
+        public SortOrder[] SortOrders
+        {
+            get
+            {
+                ArrayList al = new ArrayList();
+                foreach (ExpressionCompareInfo eci in expressions)
+                {
+                    al.Add(eci.SortOrder);
+                }
+                return (SortOrder[])al.ToArray(typeof(SortOrder));
+            }
+        }
     }
 }

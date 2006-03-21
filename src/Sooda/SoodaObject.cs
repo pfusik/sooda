@@ -46,6 +46,7 @@ using Sooda.QL;
 
 using Sooda.Logging;
 using Sooda.Caching;
+using Sooda.Collections;
 
 namespace Sooda
 {
@@ -371,21 +372,29 @@ namespace Sooda
                 int newDeletePosition = GetTransaction().DeletedObjects.Count;
                 if (newDeletePosition != oldDeletePosition)
                 {
+                    GetTransaction().SaveObjectChanges(true, null);
                     GetTransaction()._savingObjects = true;
 
                     foreach (SoodaDataSource source in GetTransaction()._dataSources)
                     {
                         source.BeginSaveChanges();
                     }
+
+                    SoodaObjectCollection deleted = GetTransaction().DeletedObjects;
+
                     for (int i = oldDeletePosition; i < newDeletePosition; ++i)
                     {
                         // logger.Debug("Actually deleting {0}", GetTransaction().DeletedObjects[i].GetObjectKeyString());
-                        GetTransaction().DeletedObjects[i].CommitObjectChanges();
-                        GetTransaction().DeletedObjects[i].SetObjectDirty();
+                        deleted[i].CommitObjectChanges();
+                        deleted[i].SetObjectDirty();
                     }
                     foreach (SoodaDataSource source in GetTransaction()._dataSources)
                     {
                         source.FinishSaveChanges();
+                    }
+                    for (int i = oldDeletePosition; i < newDeletePosition; ++i)
+                    {
+                        deleted[i].AfterObjectDelete();
                     }
                 }
             }
@@ -399,6 +408,7 @@ namespace Sooda
         {
             if (DeleteMarker != delete)
             {
+                BeforeObjectDelete();
                 DeleteMarker = delete;
 
                 if (recurse)

@@ -1,5 +1,5 @@
 // 
-// Copyright (c) 2002-2005 Jaroslaw Kowalski <jkowalski.sourceforge.net>
+// Copyright (c) 2002-2006 Jaroslaw Kowalski <jaak@jkowalski.net>
 // 
 // All rights reserved.
 // 
@@ -37,7 +37,7 @@ using System;
 
 namespace Sooda.QL.TypedWrappers
 {
-    public class SoqlInt32WrapperExpression : SoqlTypedWrapperExpression
+    public class SoqlInt32WrapperExpression : SoqlTypedWrapperExpression 
     {
         public SoqlInt32WrapperExpression()
         {
@@ -57,13 +57,23 @@ namespace Sooda.QL.TypedWrappers
 
         public static SoqlBooleanExpression operator ==(SoqlInt32WrapperExpression left, SoqlInt32WrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.Equal); }
         public static SoqlBooleanExpression operator !=(SoqlInt32WrapperExpression left, SoqlInt32WrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.NotEqual); }
-
+        
         public SoqlBooleanExpression In(params SoqlInt32WrapperExpression[] inExpressions)
         {
             SoqlExpressionCollection rhs = new SoqlExpressionCollection();
             foreach (SoqlInt32WrapperExpression e in inExpressions)
             {
                 rhs.Add(e);
+            }
+            return new SoqlBooleanInExpression(this, rhs);
+        }
+
+        public SoqlBooleanExpression In(params Int32[] inExpressions)
+        {
+            SoqlExpressionCollection rhs = new SoqlExpressionCollection();
+            foreach (Int32 e in inExpressions)
+            {
+                rhs.Add(new SoqlLiteralExpression(e));
             }
             return new SoqlBooleanInExpression(this, rhs);
         }

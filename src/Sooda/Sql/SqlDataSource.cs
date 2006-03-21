@@ -229,8 +229,10 @@ namespace Sooda.Sql
             for (int i = 0; i < queryParams.Length; ++i)
                 queryParams[i] = SoodaTuple.GetValue(obj.GetPrimaryKeyValue(), i);
 
-            foreach (TableInfo table in ci.UnifiedTables)
+            for (int i = ci.UnifiedTables.Count - 1; i >= 0; --i)
             {
+                TableInfo table = ci.UnifiedTables[i];
+
                 StringBuilder query = new StringBuilder();
                 query.Append("delete from ");
                 query.Append(table.DBTableName);
@@ -338,7 +340,7 @@ namespace Sooda.Sql
 
                 if (orderBy != null)
                 {
-                    SoqlParser.ParseOrderBy(queryExpression, "order by " + orderBy.ToString());
+                    queryExpression.SetOrderBy(orderBy);
                 }
 
                 StringWriter sw = new StringWriter();
@@ -436,7 +438,7 @@ namespace Sooda.Sql
 
                 if (orderBy != null)
                 {
-                    SoqlParser.ParseOrderBy(queryExpression, "order by " + orderBy.ToString());
+                    queryExpression.SetOrderBy(orderBy);
                 }
 
                 StringWriter sw = new StringWriter();

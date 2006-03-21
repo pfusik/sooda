@@ -634,6 +634,7 @@
     <Compile Include="SoodaObjectArrayFieldValues.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SoodaObjectExpressionComparer.cs" />
     <Compile Include="SoodaObjectFieldComparer.cs">
       <SubType>Code</SubType>
     </Compile>

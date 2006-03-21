@@ -70,5 +70,18 @@ namespace Sooda.QL
             throw new NotImplementedException();
         }
 
+        public void SetOrderBy(SoodaOrderBy orderBy)
+        {
+            OrderByExpressions.AddRange(orderBy.OrderByExpressions);
+            foreach (SortOrder so in orderBy.SortOrders)
+            {
+                if (so == SortOrder.Ascending)
+                    OrderByOrder.Add("asc");
+                else
+                    OrderByOrder.Add("desc");
+            }
+
+        }
+
     }
 }

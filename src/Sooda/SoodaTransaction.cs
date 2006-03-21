@@ -435,6 +435,15 @@ namespace Sooda
             SaveObjectChanges(true, null);
         }
 
+        internal void PrecommitObject(SoodaObject o)
+        {
+            if (!o.VisitedOnCommit && !o.IsMarkedForDelete())
+            {
+                _precommittedClass[o.GetClassInfo()] = true;
+                o.SaveObjectChanges();
+            }
+        }
+
         internal void SaveObjectChanges(bool isPrecommit, SoodaObjectCollection objectsToPrecommit)
         {
             try
@@ -464,14 +473,11 @@ namespace Sooda
                     }
                 }
 
-                if (!isPrecommit)
+                if (_relationTables != null)
                 {
-                    if (_relationTables != null)
+                    foreach (SoodaRelationTable rel in _relationTables.Values)
                     {
-                        foreach (SoodaRelationTable rel in _relationTables.Values)
-                        {
-                            rel.SaveTuples(this);
-                        }
+                        rel.SaveTuples(this, isPrecommit);
                     }
                 }
 
@@ -529,7 +535,6 @@ namespace Sooda
             CheckCommitConditions();
 
             _postCommitQueue = new SoodaObjectCollection();
-            // TODO - prealloc
 
             SaveObjectChanges(false, _dirtyObjects);
 

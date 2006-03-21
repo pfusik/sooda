@@ -88,7 +88,7 @@ namespace Sooda.Schema
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool AlwaysTrigger = false;
 
-        [XmlAttribute("ondelete")]
+        [XmlAttribute("onDelete")]
         [System.ComponentModel.DefaultValueAttribute(DeleteAction.Nothing)]
         public DeleteAction DeleteAction = DeleteAction.Nothing;
 
