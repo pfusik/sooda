@@ -50,6 +50,7 @@ namespace Sooda.CodeGen
         SqlType,
         Raw,
         Nullable,
+        RawWithIsNull
     }
 
     public class ExternalProjectInfo

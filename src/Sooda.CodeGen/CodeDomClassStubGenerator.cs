@@ -195,6 +195,7 @@ namespace Sooda.CodeGen
                     else
                         return new CodeTypeReference(t);
 
+                case PrimitiveRepresentation.RawWithIsNull:
                 case PrimitiveRepresentation.Raw:
                     return new CodeTypeReference(fi.GetFieldHandler().GetFieldType());
 
@@ -231,6 +232,7 @@ namespace Sooda.CodeGen
                         CodeBinaryOperatorType.IdentityEquality,
                         new CodePrimitiveExpression(null));
 
+                case PrimitiveRepresentation.RawWithIsNull:
                 case PrimitiveRepresentation.Raw:
                     return new CodePrimitiveExpression(false);
 
@@ -365,7 +367,7 @@ namespace Sooda.CodeGen
 
                 if (fi.IsNullable)
                 {
-                    if (options.NullableRepresentation == PrimitiveRepresentation.Raw)
+                    if (options.NullableRepresentation == PrimitiveRepresentation.RawWithIsNull)
                     {
                         ctd.Members.Add(_IsNull(fi));
                         if (!ci.ReadOnly)
@@ -376,7 +378,7 @@ namespace Sooda.CodeGen
                 }
                 else
                 {
-                    if (options.NotNullRepresentation == PrimitiveRepresentation.Raw)
+                    if (options.NotNullRepresentation == PrimitiveRepresentation.RawWithIsNull)
                     {
                         if (!ci.ReadOnly)
                         {
