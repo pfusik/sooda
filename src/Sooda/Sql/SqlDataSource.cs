@@ -101,13 +101,13 @@ namespace Sooda.Sql
             string connectionString = GetParameter("connectionString", true);
             Connection = (IDbConnection)Activator.CreateInstance(connectionType, new object[] { connectionString });
 
-            if (GetParameter("disableTransactions", false) != null)
+            if (GetParameter("disableTransactions", false) == "true")
                 this.DisableTransactions = true;
 
-            if (GetParameter("stripWhitespaceInLogs", false) != null)
+            if (GetParameter("stripWhitespaceInLogs", false) == "true")
                 this.StripWhitespaceInLogs = true;
 
-            if (GetParameter("indentQueries", false) != null)
+            if (GetParameter("indentQueries", false) == "true")
                 this.IndentQueries = true;
 
             string dialect = GetParameter("sqlDialect", false);
@@ -138,6 +138,12 @@ namespace Sooda.Sql
                     this.SqlBuilder = new OracleBuilder();
                     break;
             }
+
+            if (GetParameter("useSafeLiterals", false) != null)
+                this.SqlBuilder.UseSafeLiterals = true;
+
+            if (GetParameter("indentQueries", false) != null)
+                this.IndentQueries = true;
 
             if (GetParameter("disableUpdateBatch", false) != null)
                 this.SupportsUpdateBatch = false;
@@ -695,18 +701,20 @@ namespace Sooda.Sql
 
         private string LogCommand(IDbCommand cmd)
         {
-            
             StringBuilder txt = new StringBuilder();
             if (IndentQueries)
                 txt.Append("\n");
             txt.Append(StripWhitespace(cmd.CommandText));
-            txt.Append(" [");
-            foreach (IDataParameter par in cmd.Parameters)
+            if (cmd.Parameters.Count > 0)
             {
-                txt.AppendFormat(" {0}:{1}={2}", par.ParameterName, par.DbType, par.Value);
+                txt.Append(" [");
+                foreach (IDataParameter par in cmd.Parameters)
+                {
+                    txt.AppendFormat(" {0}:{1}={2}", par.ParameterName, par.DbType, par.Value);
+                }
+                txt.AppendFormat(" ]", Connection.GetHashCode());
             }
-            txt.AppendFormat(" ] {0}", Connection.GetHashCode());
-            txt.AppendFormat(" DataSource: {0}", this.Name);
+            // txt.AppendFormat(" DataSource: {0}", this.Name);
             return txt.ToString();
         }
 
@@ -939,10 +947,6 @@ namespace Sooda.Sql
 
             try
             {
-                if (sqllogger.IsTraceEnabled)
-                {
-                    sqllogger.Trace("Executing non-query: {0}", LogCommand(cmd));
-                }
                 sw.Start();
                 int retval = cmd.ExecuteNonQuery();
                 sw.Stop();
@@ -967,15 +971,15 @@ namespace Sooda.Sql
                 SoodaStatistics.Global.RegisterQueryTime(timeInSeconds);
                 if (timeInSeconds > queryTimeTraceWarn && sqllogger.IsWarnEnabled)
                 {
-                    sqllogger.Warn("Non-query took {0} s. Query: {1}", timeInSeconds, LogCommand(cmd));
+                    sqllogger.Warn("Non-query time: {0} ms. {1}", Math.Round(timeInSeconds * 1000.0, 3), LogCommand(cmd));
                 }
                 else if (timeInSeconds > queryTimeTraceInfo && sqllogger.IsInfoEnabled)
                 {
-                    sqllogger.Info("Non-query took {0} s. Query: {1}", timeInSeconds, LogCommand(cmd));
+                    sqllogger.Info("Non-query time: {0} ms. {1}", Math.Round(timeInSeconds * 1000.0, 3), LogCommand(cmd));
                 }
                 else
                 {
-                    sqllogger.Trace("Non-query took {0} s.", timeInSeconds);
+                    sqllogger.Trace("Non-query time: {0} ms.", Math.Round(timeInSeconds * 1000.0, 3));
                 }
             }
         }

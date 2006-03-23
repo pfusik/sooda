@@ -45,6 +45,7 @@ namespace Sooda.Sql
         string GetDDLCommandTerminator();
         SqlOuterJoinSyntax OuterJoinSyntax { get; }
         SqlTopSupportMode TopSupport { get; }
+        bool UseSafeLiterals { get; set; }
 
         void BuildCommandWithParameters(IDbCommand command, bool append, string query, params object[] par);
 

@@ -69,7 +69,7 @@ namespace Sooda.Sql
                 if (command.CommandText == null)
                     command.CommandText = "";
                 if (command.CommandText != "")
-                    command.CommandText += ";";
+                    command.CommandText += ";\n";
             }
             else
             {
@@ -90,15 +90,9 @@ namespace Sooda.Sql
                 {
                     int stringStartPos = i;
                     int stringEndPos = -1;
-                    bool requireParameter = false;
 
                     for (int j = i + 1; j < query.Length; ++j)
                     {
-                        if (query[j] == '\\' || (int)query[i] < 32)
-                        {
-                            requireParameter = true;
-                        }
-                        
                         if (query[j] == '\'')
                         {
                             // possible end of string, need to check for double apostrophes,
@@ -106,7 +100,6 @@ namespace Sooda.Sql
 
                             if (j + 1 < query.Length && query[j + 1] == '\'')
                             {
-                                requireParameter = true;
                                 j++;
                                 continue;
                             }
@@ -121,14 +114,19 @@ namespace Sooda.Sql
                         throw new ArgumentException("Query has unbalanced quotes");
                     }
 
+                    string stringValue = query.Substring(stringStartPos + 1, stringEndPos - stringStartPos - 1);
+                    bool requireParameter = IsStringSafeForLiteral(stringValue) ? false : true;
+
                     if (stringEndPos + 1 < query.Length && (query[stringEndPos + 1] == 'D' || query[stringEndPos + 1] == 'A'))
                     {
                         requireParameter = true;
                     }
 
+                    if (!UseSafeLiterals)
+                        requireParameter = true;
+
                     if (requireParameter)
                     {
-                        string stringValue = query.Substring(stringStartPos + 1, stringEndPos - stringStartPos - 1);
                         // replace double quotes with single quotes
                         stringValue = stringValue.Replace("''", "'");
                         IDbDataParameter p = command.CreateParameter();
@@ -155,7 +153,9 @@ namespace Sooda.Sql
                     }
                     else
                     {
-                        sb.Append(query, stringStartPos, stringEndPos - stringStartPos + 1);
+                        sb.Append("'");
+                        sb.Append(stringValue);
+                        sb.Append("'");
                         i = stringEndPos;
                     }
                 }
@@ -203,13 +203,30 @@ namespace Sooda.Sql
                         SoodaFieldHandler fieldHandler = FieldHandlerFactory.GetFieldHandler(fdt);
                         v = fieldHandler.RawDeserialize(literalValue);
 
-                        IDbDataParameter p = command.CreateParameter();
-                        p.Direction = ParameterDirection.Input;
-                        string parName = GetNameForParameter(command.Parameters.Count);
-                        p.ParameterName = parName;
-                        fieldHandler.SetupDBParameter(p, v);
-                        command.Parameters.Add(p);
-                        sb.Append(p.ParameterName);
+                        if (v == null)
+                        {
+                            sb.Append("null");
+                        }
+                        else if (UseSafeLiterals && v is int)
+                        {
+                            sb.Append((int)v);
+                        }
+                        else if (UseSafeLiterals && v is string && IsStringSafeForLiteral((string)v))
+                        {
+                            sb.Append("'");
+                            sb.Append((string)v);
+                            sb.Append("'");
+                        }
+                        else
+                        {
+                            IDbDataParameter p = command.CreateParameter();
+                            p.Direction = ParameterDirection.Input;
+                            string parName = GetNameForParameter(command.Parameters.Count);
+                            p.ParameterName = parName;
+                            fieldHandler.SetupDBParameter(p, v);
+                            command.Parameters.Add(p);
+                            sb.Append(p.ParameterName);
+                        }
                     }
                     else
                     {
@@ -250,6 +267,16 @@ namespace Sooda.Sql
                         {
                             sb.Append("null");
                         }
+                        else if (UseSafeLiterals && v is int)
+                        {
+                            sb.Append((int)v);
+                        }
+                        else if (UseSafeLiterals && v is string && IsStringSafeForLiteral((string)v))
+                        {
+                            sb.Append("'");
+                            sb.Append((string)v);
+                            sb.Append("'");
+                        }
                         else
                         {
                             while (parameterObjects.Count <= paramNumber)
@@ -273,6 +300,8 @@ namespace Sooda.Sql
             }
             command.CommandText += sb.ToString();
         }
+
+            
         protected abstract string GetNameForParameter(int pos);
     }
 }

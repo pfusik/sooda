@@ -42,6 +42,14 @@ namespace Sooda.Sql
 {
     public abstract class SqlBuilderBase : ISqlBuilder
     {
+        private bool _useSafeLiterals = false;
+
+        public bool UseSafeLiterals
+        {
+            get { return _useSafeLiterals; }
+            set { _useSafeLiterals = value; }
+        }
+
         public virtual string GetDDLCommandTerminator()
         {
             return ";" + Environment.NewLine;
@@ -131,6 +139,7 @@ namespace Sooda.Sql
         }
 
         private static Hashtable paramTypes = new Hashtable();
+        private static bool[] _isCharSafe = new bool[128];
 
         static SqlBuilderBase()
         {
@@ -148,6 +157,21 @@ namespace Sooda.Sql
             paramTypes[typeof(byte[])] = DbType.Binary;
             paramTypes[typeof(System.Drawing.Image)] = DbType.Binary;
             paramTypes[typeof(System.Drawing.Bitmap)] = DbType.Binary;
+
+            // we-re very conservative about what 'safe' means
+            for(char c = 'A'; c <= 'Z'; ++c)
+                _isCharSafe[(int)c] = true;
+            for(char c = 'a'; c <= 'z'; ++c)
+                _isCharSafe[(int)c] = true;
+            for(char c = '0'; c <= '9'; ++c)
+                _isCharSafe[(int)c] = true;
+            _isCharSafe[(int)' '] = true;
+            _isCharSafe[(int)'.'] = true;
+            _isCharSafe[(int)','] = true;
+            _isCharSafe[(int)'-'] = true;
+            _isCharSafe[(int)'%'] = true;
+            _isCharSafe[(int)'_'] = true;
+            _isCharSafe[(int)'@'] = true;
         }
 
         public virtual string QuoteFieldName(string s)
@@ -158,6 +182,23 @@ namespace Sooda.Sql
         public abstract SqlTopSupportMode TopSupport
         {
             get;
+        }
+
+        protected bool IsStringSafeForLiteral(string v)
+        {
+            if (v.Length > 500)
+                return false;
+            for (int i = 0; i < v.Length; ++i)
+            {
+                int ch = (int)v[i];
+                if (ch < 32)
+                    return false; // ASCII control characters
+                if (ch >= 128)
+                    return false; // high code characters - may require some quoting
+                if (!_isCharSafe[ch])
+                    return false;
+            }
+            return true;
         }
     }
 }
