@@ -16,7 +16,15 @@
         </p>
     </p>
     <h2>News</h2>
-    <p style="font-size: 16px">
+    <p>
+        <b>2006-03-23</b> Sooda has been presented at <a href="http://wawadotnet.aspweb.cz">Warsaw .NET Group</a>'s first meeting.<br/>
+        The slides (in Polish) can be downloaded <a href="presentations/WarsawDotNet_PL.ppt">here</a>. 
+        The source code and sample database is <a href="presentations/WarsawDotNet-Sample.zip">here</a>. They also include
+        a version of Sooda that was presented. English translation of the slides is available <a href="presentations/WarsawDotNet_EN.ppt">here</a>. 
+        You should also expect a new stable Sooda release soon (big changes are coming as described
+        on the meeting).
+    </p> 
+    <p>
         <b>2005-05-21</b> Sooda 0.7 has been released. This is the first public release after 2 years of development. Download the source or binary <link href="download">here</link>.
     </p>
     <h2>Features</h2>
