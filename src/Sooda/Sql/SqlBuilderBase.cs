@@ -42,7 +42,7 @@ namespace Sooda.Sql
 {
     public abstract class SqlBuilderBase : ISqlBuilder
     {
-        private bool _useSafeLiterals = false;
+        private bool _useSafeLiterals = true;
 
         public bool UseSafeLiterals
         {

@@ -139,13 +139,13 @@ namespace Sooda.Sql
                     break;
             }
 
-            if (GetParameter("useSafeLiterals", false) != null)
-                this.SqlBuilder.UseSafeLiterals = true;
+            if (GetParameter("useSafeLiterals", false) == "false")
+                this.SqlBuilder.UseSafeLiterals = false;
 
-            if (GetParameter("indentQueries", false) != null)
+            if (GetParameter("indentQueries", false) == "true")
                 this.IndentQueries = true;
 
-            if (GetParameter("disableUpdateBatch", false) != null)
+            if (GetParameter("disableUpdateBatch", false) == "true")
                 this.SupportsUpdateBatch = false;
 
             Connection.Open();
@@ -157,7 +157,7 @@ namespace Sooda.Sql
 
         public override bool IsOpen
         {
-            get { return Connection.State == ConnectionState.Open; }
+            get { return (Connection != null) && (Connection.State == ConnectionState.Open); }
         }
 
         public override void Rollback()
