@@ -57,7 +57,7 @@ namespace Sooda.ObjectMapper.FieldHandlers
 
         public static Int32 GetFromReader(IDataRecord record, int pos)
         {
-            return record.GetInt32(pos);
+            return Convert.ToInt32(record.GetValue(pos));
         }
 
         public override string RawSerialize(object val)

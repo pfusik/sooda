@@ -1370,7 +1370,8 @@ namespace Sooda
                 // used for object creation
 
                 int selectorFieldOrdinal = factory.GetClassInfo().SubclassSelectorField.OrdinalInTable;
-                object selectorActualValue = record.GetValue(firstColumnIndex + selectorFieldOrdinal);
+                object selectorActualValue = factory.GetFieldHandler(selectorFieldOrdinal).RawRead(record, firstColumnIndex + selectorFieldOrdinal);
+
                 IComparer comparer = Comparer.DefaultInvariant;
                 if (selectorActualValue is string)
                     comparer = CaseInsensitiveComparer.DefaultInvariant;
@@ -1462,7 +1463,7 @@ namespace Sooda
                 // we have the selector field value as the last one in the record
 
                 int selectorFieldOrdinal = record.FieldCount - 1;
-                object selectorActualValue = record.GetValue(selectorFieldOrdinal);
+                object selectorActualValue = factory.GetFieldHandler(selectorFieldOrdinal).RawRead(record, selectorFieldOrdinal);
                 IComparer comparer = Comparer.DefaultInvariant;
                 if (selectorActualValue is string)
                     comparer = CaseInsensitiveComparer.DefaultInvariant;

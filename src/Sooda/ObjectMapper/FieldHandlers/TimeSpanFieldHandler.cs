@@ -57,7 +57,7 @@ namespace Sooda.ObjectMapper.FieldHandlers
 
         public static TimeSpan GetFromReader(IDataRecord record, int pos)
         {
-            return TimeSpan.FromSeconds(record.GetInt32(pos));
+            return TimeSpan.FromSeconds(Convert.ToInt32(record.GetValue(pos)));
         }
 
         public override string RawSerialize(object val)
