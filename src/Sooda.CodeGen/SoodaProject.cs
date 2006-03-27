@@ -139,7 +139,8 @@ namespace Sooda.CodeGen
         public string BaseClassName = null;
 
         [XmlElement("with-typed-queries")]
-        public bool WithTypedQueryWrappers = false;
+        [System.ComponentModel.DefaultValue(true)]
+        public bool WithTypedQueryWrappers = true;
 
         [XmlElement("stubs-compiled-separately")]
         [System.ComponentModel.DefaultValue(false)]
