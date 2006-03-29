@@ -38,7 +38,7 @@ namespace Sooda.Sql
 {
     public abstract class SqlBuilderPositionalArg : SqlBuilderBase
     {
-        public override void BuildCommandWithParameters(IDbCommand command, bool append, string query, object[] par)
+        public override void BuildCommandWithParameters(IDbCommand command, bool append, string query, object[] par, bool isRaw)
         {
             throw new NotImplementedException();
         }

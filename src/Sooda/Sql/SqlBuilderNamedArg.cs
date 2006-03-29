@@ -62,7 +62,7 @@ namespace Sooda.Sql
             }
         }
 
-        public override void BuildCommandWithParameters(System.Data.IDbCommand command, bool append, string query, object[] par)
+        public override void BuildCommandWithParameters(System.Data.IDbCommand command, bool append, string query, object[] par, bool isRaw)
         {
             if (append)
             {
@@ -115,14 +115,21 @@ namespace Sooda.Sql
                     }
 
                     string stringValue = query.Substring(stringStartPos + 1, stringEndPos - stringStartPos - 1);
-                    bool requireParameter = IsStringSafeForLiteral(stringValue) ? false : true;
+                    bool requireParameter = false;
 
+                    // dates and ansi-string definitely require parameters
                     if (stringEndPos + 1 < query.Length && (query[stringEndPos + 1] == 'D' || query[stringEndPos + 1] == 'A'))
                     {
                         requireParameter = true;
                     }
 
-                    if (!UseSafeLiterals)
+                    if (!requireParameter)
+                    {
+                        if (!IsStringSafeForLiteral(stringValue) && !isRaw)
+                            requireParameter = true;
+                    }
+
+                    if (!UseSafeLiterals && !isRaw)
                         requireParameter = true;
 
                     if (requireParameter)

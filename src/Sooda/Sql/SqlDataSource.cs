@@ -258,7 +258,7 @@ namespace Sooda.Sql
                     query.Append(")");
                 }
 
-                SqlBuilder.BuildCommandWithParameters(_updateCommand, true, query.ToString(), queryParams);
+                SqlBuilder.BuildCommandWithParameters(_updateCommand, true, query.ToString(), queryParams, true);
                 FlushUpdateCommand(false);
             }
         }
@@ -289,7 +289,7 @@ namespace Sooda.Sql
             if (!DisableTransactions)
                 cmd.Transaction = this.Transaction;
 
-            SqlBuilder.BuildCommandWithParameters(cmd, false, GetLoadingSelectStatement(classInfo, classInfo.UnifiedTables[tableNumber], out loadedTables), SoodaTuple.GetValuesArray(keyVal));
+            SqlBuilder.BuildCommandWithParameters(cmd, false, GetLoadingSelectStatement(classInfo, classInfo.UnifiedTables[tableNumber], out loadedTables), SoodaTuple.GetValuesArray(keyVal), false);
             IDataReader reader = TimedExecuteReader(cmd);
             if (reader.Read())
                 return reader;
@@ -309,13 +309,13 @@ namespace Sooda.Sql
         {
             object[] parameters = new object[] { leftVal, rightVal };
             string query = "delete from " + tableName + " where " + leftColumnName + "={0} and " + rightColumnName + "={1}";
-            SqlBuilder.BuildCommandWithParameters(_updateCommand, true, query, parameters);
+            SqlBuilder.BuildCommandWithParameters(_updateCommand, true, query, parameters, false);
             FlushUpdateCommand(false);
 
             if (mode == 1)
             {
                 query = "insert into " + tableName + "(" + leftColumnName + "," + rightColumnName + ") values({0},{1})";
-                SqlBuilder.BuildCommandWithParameters(_updateCommand, true, query, parameters);
+                SqlBuilder.BuildCommandWithParameters(_updateCommand, true, query, parameters, false);
                 FlushUpdateCommand(false);
             }
         }
@@ -364,7 +364,7 @@ namespace Sooda.Sql
                 if (!DisableTransactions)
                     cmd.Transaction = this.Transaction;
 
-                SqlBuilder.BuildCommandWithParameters(cmd, false, query, whereClause.Parameters);
+                SqlBuilder.BuildCommandWithParameters(cmd, false, query, whereClause.Parameters, false);
 
                 return TimedExecuteReader(cmd);
             }
@@ -462,7 +462,7 @@ namespace Sooda.Sql
                 if (!DisableTransactions)
                     cmd.Transaction = this.Transaction;
 
-                SqlBuilder.BuildCommandWithParameters(cmd, false, query, whereClause.Parameters);
+                SqlBuilder.BuildCommandWithParameters(cmd, false, query, whereClause.Parameters, false);
 
                 tables = (TableInfo[])tablesArrayList.ToArray(typeof(TableInfo));
                 return TimedExecuteReader(cmd);
@@ -503,7 +503,7 @@ namespace Sooda.Sql
                 if (!DisableTransactions)
                     cmd.Transaction = this.Transaction;
 
-                SqlBuilder.BuildCommandWithParameters(cmd, false, queryText, parameters);
+                SqlBuilder.BuildCommandWithParameters(cmd, false, queryText, parameters, true);
                 return TimedExecuteReader(cmd);
             }
             catch (Exception ex)
@@ -522,7 +522,7 @@ namespace Sooda.Sql
                     if (!DisableTransactions)
                         cmd.Transaction = this.Transaction;
 
-                    SqlBuilder.BuildCommandWithParameters(cmd, false, queryText, parameters);
+                    SqlBuilder.BuildCommandWithParameters(cmd, false, queryText, parameters, true);
                     return TimedExecuteNonQuery(cmd);
                 }
             }
@@ -549,7 +549,7 @@ namespace Sooda.Sql
                 if (!DisableTransactions)
                     cmd.Transaction = this.Transaction;
 
-                SqlBuilder.BuildCommandWithParameters(cmd, false, query, new object[] { masterValue });
+                SqlBuilder.BuildCommandWithParameters(cmd, false, query, new object[] { masterValue }, false);
                 return TimedExecuteReader(cmd);
             }
             catch (Exception ex)
@@ -620,7 +620,7 @@ namespace Sooda.Sql
                 builder.Append('}');
             };
             builder.Append(")");
-            SqlBuilder.BuildCommandWithParameters(_updateCommand, true, builder.ToString(), par.ToArray());
+            SqlBuilder.BuildCommandWithParameters(_updateCommand, true, builder.ToString(), par.ToArray(), false);
             FlushUpdateCommand(false);
         }
 
@@ -686,7 +686,7 @@ namespace Sooda.Sql
             }
             if (anyChange)
             {
-                SqlBuilder.BuildCommandWithParameters(_updateCommand, true, builder.ToString(), par.ToArray());
+                SqlBuilder.BuildCommandWithParameters(_updateCommand, true, builder.ToString(), par.ToArray(), false);
                 FlushUpdateCommand(false);
             }
         }

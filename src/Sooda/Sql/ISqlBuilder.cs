@@ -47,7 +47,7 @@ namespace Sooda.Sql
         SqlTopSupportMode TopSupport { get; }
         bool UseSafeLiterals { get; set; }
 
-        void BuildCommandWithParameters(IDbCommand command, bool append, string query, params object[] par);
+        void BuildCommandWithParameters(IDbCommand command, bool append, string query, object[] par, bool isRaw);
 
         void GenerateCreateTable(TextWriter tw, TableInfo tableInfo);
         void GeneratePrimaryKey(TextWriter tw, TableInfo tableInfo);

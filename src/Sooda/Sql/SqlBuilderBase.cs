@@ -127,7 +127,7 @@ namespace Sooda.Sql
 
         public abstract string GetSQLDataType(Sooda.Schema.FieldInfo fi);
 
-        public abstract void BuildCommandWithParameters(IDbCommand command, bool append, string query, object[] par);
+        public abstract void BuildCommandWithParameters(IDbCommand command, bool append, string query, object[] par, bool isRaw);
 
         protected virtual bool SetDbTypeFromValue(IDbDataParameter parameter, object value, SoqlLiteralValueModifiers modifiers)
         {
