@@ -61,6 +61,7 @@ namespace Sooda.Sql
         private IsolationLevel _isolationLevel = IsolationLevel.ReadCommitted;
         private double queryTimeTraceWarn = 10.0;
         private double queryTimeTraceInfo = 2.0;
+        public int CommandTimeout = 30;
 
         public SqlDataSource(string name) : base(name)
         {
@@ -109,6 +110,10 @@ namespace Sooda.Sql
 
             if (GetParameter("indentQueries", false) == "true")
                 this.IndentQueries = true;
+
+            string s = GetParameter("commandTimeout", false);
+            if (s != null)
+                CommandTimeout = Convert.ToInt32(s);
 
             string dialect = GetParameter("sqlDialect", false);
             if (dialect == null)
@@ -196,6 +201,7 @@ namespace Sooda.Sql
         public override void BeginSaveChanges()
         {
             _updateCommand = Connection.CreateCommand();
+            _updateCommand.CommandTimeout = CommandTimeout;
             if (!DisableTransactions)
                 _updateCommand.Transaction = this.Transaction;
             _updateCommand.CommandText = "";
@@ -285,6 +291,7 @@ namespace Sooda.Sql
         {
             ClassInfo classInfo = obj.GetClassInfo();
             IDbCommand cmd = Connection.CreateCommand();
+            cmd.CommandTimeout = CommandTimeout;
 
             if (!DisableTransactions)
                 cmd.Transaction = this.Transaction;
@@ -360,6 +367,7 @@ namespace Sooda.Sql
                 //logger.Trace("Converted as {0}", query);
 
                 IDbCommand cmd = Connection.CreateCommand();
+                cmd.CommandTimeout = CommandTimeout;
 
                 if (!DisableTransactions)
                     cmd.Transaction = this.Transaction;
@@ -458,6 +466,7 @@ namespace Sooda.Sql
                 //logger.Trace("Converted as {0}", query);
 
                 IDbCommand cmd = Connection.CreateCommand();
+                cmd.CommandTimeout = CommandTimeout;
 
                 if (!DisableTransactions)
                     cmd.Transaction = this.Transaction;
@@ -499,6 +508,7 @@ namespace Sooda.Sql
             try
             {
                 IDbCommand cmd = Connection.CreateCommand();
+                cmd.CommandTimeout = CommandTimeout;
 
                 if (!DisableTransactions)
                     cmd.Transaction = this.Transaction;
@@ -519,6 +529,7 @@ namespace Sooda.Sql
             {
                 using (IDbCommand cmd = Connection.CreateCommand())
                 {
+                    cmd.CommandTimeout = CommandTimeout;
                     if (!DisableTransactions)
                         cmd.Transaction = this.Transaction;
 
@@ -545,6 +556,7 @@ namespace Sooda.Sql
                 string query = GetLoadRefObjectSelectStatement(relationInfo, masterColumn);
 
                 IDbCommand cmd = Connection.CreateCommand();
+                cmd.CommandTimeout = CommandTimeout;
 
                 if (!DisableTransactions)
                     cmd.Transaction = this.Transaction;
@@ -722,6 +734,7 @@ namespace Sooda.Sql
         {
             using (IDbCommand cmd = Connection.CreateCommand())
             {
+                cmd.CommandTimeout = CommandTimeout;
                 if (!DisableTransactions)
                     cmd.Transaction = this.Transaction;
 
