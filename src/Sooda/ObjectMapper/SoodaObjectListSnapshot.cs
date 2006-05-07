@@ -46,7 +46,7 @@ namespace Sooda.ObjectMapper
 {
     public class SoodaObjectListSnapshot : ISoodaObjectList
     {
-        private static Logger logger = LogManager.GetLogger("SoodaObjectListSnapshot");
+        private static Logger logger = LogManager.GetLogger("Sooda.ObjectMapper.SoodaObjectListSnapshot");
 
         public SoodaObjectListSnapshot()
         {
@@ -148,12 +148,22 @@ namespace Sooda.ObjectMapper
             items.Add(o);
         }
 
+        private static string[] GetClassNames(ClassInfoCollection cic)
+        {
+            string[] result = new string[cic.Count];
+            for (int i = 0; i < cic.Count; ++i)
+            {
+                result[i] = cic[i].Name;
+            }
+            return result;
+        }
+
         public SoodaObjectListSnapshot(SoodaTransaction t, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount, SoodaSnapshotOptions options, ClassInfo ci)
         {
             this.classInfo = ci;
-            ClassInfoCollection involvedClasses = null;
+            string[] involvedClasses = null;
 
-            bool useCache = ci.CacheCollections;
+            bool useCache = t.CachingPolicy.ShouldCacheCollection(ci, whereClause, orderBy, topCount);
 
             if ((options & SoodaSnapshotOptions.Cache) != 0)
                 useCache = true;
@@ -169,7 +179,7 @@ namespace Sooda.ObjectMapper
                     {
                         GetInvolvedClassesVisitor gic = new GetInvolvedClassesVisitor(classInfo);
                         gic.GetInvolvedClasses(whereClause.WhereExpression);
-                        involvedClasses = gic.Results;
+                        involvedClasses = GetClassNames(gic.Results);
                     }
                     catch
                     {
@@ -184,8 +194,7 @@ namespace Sooda.ObjectMapper
             {
                 // no where clause
 
-                involvedClasses = new ClassInfoCollection();
-                involvedClasses.Add(ci);
+                involvedClasses = new string[] { ci.Name };
             }
 
             if ((options & SoodaSnapshotOptions.NoWriteObjects) == 0)
@@ -196,9 +205,9 @@ namespace Sooda.ObjectMapper
 
                     // precommit objects
 
-                    foreach (ClassInfo involvedClass in involvedClasses)
+                    foreach (string involvedClassName in involvedClasses)
                     {
-                        WeakSoodaObjectCollection dirtyObjects = t.GetDirtyObjectsByClassName(involvedClass.Name);
+                        WeakSoodaObjectCollection dirtyObjects = t.GetDirtyObjectsByClassName(involvedClassName);
                         if (dirtyObjects != null)
                         {
                             foreach (WeakSoodaObject wr in dirtyObjects)
@@ -221,10 +230,10 @@ namespace Sooda.ObjectMapper
             LoadList(t, whereClause, orderBy, topCount, options, involvedClasses, useCache);
         }
 
-        private void LoadList(SoodaTransaction transaction, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount, SoodaSnapshotOptions options, ClassInfoCollection involvedClasses, bool useCache)
+        private void LoadList(SoodaTransaction transaction, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount, SoodaSnapshotOptions options, string[] involvedClassNames, bool useCache)
         {
             ISoodaObjectFactory factory = transaction.GetFactory(classInfo);
-            SoodaCachedCollectionKey cacheKey = null;
+            string cacheKey = null;
 
             if (useCache)
             {
@@ -242,6 +251,8 @@ namespace Sooda.ObjectMapper
                     foreach (object o in keysCollection)
                     {
                         SoodaObject obj = factory.GetRef(transaction, o);
+                        // this binds to cache
+                        obj.EnsureFieldsInited();
                         items.Add(obj);
                     }
 
@@ -259,9 +270,12 @@ namespace Sooda.ObjectMapper
                 }
                 else
                 {
-                    // logger.Debug("Collection cache miss: {0}", cacheKey);
-                    SoodaStatistics.Global.RegisterCollectionCacheMiss();
-                    transaction.Statistics.RegisterCollectionCacheMiss();
+                    if (cacheKey != null)
+                    {
+                        logger.Debug("Cache miss. {0} not found in cache.", cacheKey);
+                        SoodaStatistics.Global.RegisterCollectionCacheMiss();
+                        transaction.Statistics.RegisterCollectionCacheMiss();
+                    }
                 }
             }
 
@@ -302,7 +316,7 @@ namespace Sooda.ObjectMapper
                     }
                 }
 
-                if (cacheKey != null && useCache && (topCount == -1) && (involvedClasses != null))
+                if (cacheKey != null && useCache && (topCount == -1) && (involvedClassNames != null))
                 {
                     object[] keys = new object[items.Count];
                     int p = 0;
@@ -311,7 +325,12 @@ namespace Sooda.ObjectMapper
                     {
                         keys[p++] = obj.GetPrimaryKeyValue();
                     }
-                    transaction.Cache.StoreCollection(cacheKey, keys, involvedClasses);
+
+                    transaction.Cache.StoreCollection(cacheKey,
+                        classInfo.GetRootClass().Name,
+                        keys,
+                        involvedClassNames,
+                        ((options & SoodaSnapshotOptions.KeysOnly) != 0) ? false : true);
                 }
             }
         }

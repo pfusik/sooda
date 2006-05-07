@@ -39,11 +39,14 @@ using Sooda.Schema;
 using Sooda.Collections;
 using Sooda.Caching;
 using Sooda.QL;
+using Sooda.Logging;
 
 namespace Sooda.ObjectMapper
 {
     public class SoodaObjectOneToManyCollection : IList, ISoodaObjectList, ISoodaObjectListInternal
     {
+        private static Logger logger = LogManager.GetLogger("Sooda.ObjectMapper.SoodaObjectOneToManyCollection");
+
         private SoodaObjectToInt32Association items = null;
         private SoodaObjectToObjectAssociation tempItems = null;
         private SoodaObjectCollection itemsArray = null;
@@ -181,12 +184,12 @@ namespace Sooda.ObjectMapper
             if (additionalWhereClause != null)
                 whereClause = whereClause.Append(additionalWhereClause);
 
-            SoodaCachedCollectionKey cacheKey = null;
+            string cacheKey = null;
 
             if (cached)
             {
                 // cache makes sense only on clean database
-                if (!transaction.HasBeenPrecommitted(classInfo))
+                if (!transaction.HasBeenPrecommitted(classInfo.GetRootClass()))
                 {
                     cacheKey = SoodaCache.GetCollectionKey(classInfo, whereClause);
                 }
@@ -197,6 +200,8 @@ namespace Sooda.ObjectMapper
                 foreach (object o in keysCollection)
                 {
                     SoodaObject obj = factory.GetRef(transaction, o);
+                    // this binds to cache
+                    obj.EnsureFieldsInited();
 
                     if (tempItems != null)
                     {
@@ -213,6 +218,13 @@ namespace Sooda.ObjectMapper
             }
             else
             {
+                if (cacheKey != null)
+                {
+                    logger.Debug("Cache miss. {0} not found in cache.", cacheKey);
+                    SoodaStatistics.Global.RegisterCollectionCacheMiss();
+                    transaction.Statistics.RegisterCollectionCacheMiss();
+                }
+
                 using (IDataReader reader = ds.LoadObjectList(transaction.Schema, classInfo, whereClause, null, -1, SoodaSnapshotOptions.Default, out loadedTables))
                 {
                     SoodaObjectCollection readObjects = null;
@@ -241,7 +253,7 @@ namespace Sooda.ObjectMapper
                     if (cached)
                     {
                         IList primaryKeys = Sooda.Caching.CacheUtils.ConvertSoodaObjectListToKeyList(readObjects);
-                        transaction.Cache.StoreCollection(cacheKey, primaryKeys, null);
+                        transaction.Cache.StoreCollection(cacheKey, classInfo.GetRootClass().Name, primaryKeys, null, true);
                     }
                 }
             }

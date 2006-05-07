@@ -61,12 +61,16 @@ namespace Sooda.Caching
         {
         }
 
-        IList ISoodaCache.LoadCollection(SoodaCachedCollectionKey key)
+        void ISoodaCache.Sweep()
+        {
+        }
+
+        IList ISoodaCache.LoadCollection(string key)
         {
             return null;
         }
 
-        void ISoodaCache.StoreCollection(SoodaCachedCollectionKey cacheKey, IList primaryKeys, ClassInfoCollection dependentClasses)
+        void ISoodaCache.StoreCollection(string cacheKey, string rootClassName, IList primaryKeys, string[] dependentClasses, bool evictWhenItemRemoved)
         {
         }
 
@@ -84,6 +88,14 @@ namespace Sooda.Caching
             public void Dispose()
             {
             }
+        }
+
+        public void Evict(string className, object primaryKeyValue)
+        {
+        }
+
+        public void EvictCollection(string cacheKey)
+        {
         }
     }
 }

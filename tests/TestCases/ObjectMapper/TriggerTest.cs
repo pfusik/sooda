@@ -31,28 +31,44 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
+using System;
+using System.Diagnostics;
+using System.Data;
 
-using Sooda.Schema;
+using Sooda.ObjectMapper;
+using Sooda.UnitTests.Objects;
+using Sooda.UnitTests.BaseObjects;
 
-namespace Sooda.Caching
+using NUnit.Framework;
+
+namespace Sooda.UnitTests.TestCases.ObjectMapper
 {
-    public abstract class SoodaCachedCollectionKey
+    [TestFixture]
+    public class TriggerTest
     {
-        private ClassInfo _classInfo;
-
-        public SoodaCachedCollectionKey()
+        [Test]
+        public void TriggerBug1()
         {
-        }
+            using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
+            {
+                testDataSource.Open();
 
-        public SoodaCachedCollectionKey(ClassInfo classInfo)
-        {
-            _classInfo = classInfo;
-        }
+                using (SoodaTransaction tran = new SoodaTransaction())
+                {
+                    tran.RegisterDataSource(testDataSource);
 
-        public ClassInfo ClassInfo
-        {
-            get { return _classInfo; }
-            set { _classInfo = value; }
+                    Contact c = new Contact();
+                    c.Name = "a";
+                    c.Type = ContactType.Customer;
+
+                    Contact.GetList(true);
+                    Contact.GetList(true);
+                    Contact.GetList(true);
+                    Contact.GetList(true);
+                    tran.Commit();
+                    Console.WriteLine("a: {0}", c.AfterInsertCalled);
+                }
+            }
         }
     }
 }

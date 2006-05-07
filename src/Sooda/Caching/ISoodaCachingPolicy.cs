@@ -9,5 +9,6 @@ namespace Sooda.Caching
     {
         bool ShouldCacheObject(SoodaObject theObject);
         bool ShouldCacheCollection(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount);
+        bool ShouldCacheRelation(RelationInfo relation, ClassInfo resultClass);
     }
 }

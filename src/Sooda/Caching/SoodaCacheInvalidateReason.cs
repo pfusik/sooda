@@ -46,6 +46,7 @@ namespace Sooda.Caching
     {
         Inserted,
         Deleted,
-        Updated
+        Updated,
+        ManyToManyModified,
     }
 }

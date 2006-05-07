@@ -291,7 +291,7 @@ img.thinborder
     position: absolute;
     top: 90px;
     left: 190px;
-    right: 150px;
+    right: 10px;
     font-family: Tahoma, Trebuchet MS, Helv, Arial;
     font-size: 12px;
     text-align: left;
@@ -502,4 +502,62 @@ td.logobutton
 tr.navtablespacer
 {
     height: 100px;
+}
+
+
+table.toc
+{
+    font-size: 12px;
+}
+
+.heading1
+{
+    font-size: 150%;
+    font-family: Tahoma;
+    font-weight: bold;
+}
+
+.heading2
+{
+    padding-top: 20px;
+    font-size: 120%;
+    font-family: Tahoma;
+    font-weight: bold;
+}
+
+div.body2
+{
+    margin-left: 10px;
+    padding-left: 10px;
+}
+
+table.toc
+{
+    margin-left: 20px;
+    margin-bottom: 50px;
+}
+
+table.toc td.sectionnumber
+{
+}
+
+.toc a
+{
+    text-decoration: none;
+}
+
+.toc a:hover
+{
+    text-decoration: underline;
+}
+
+.toc1
+{
+    font-size: 120%;
+    font-weight: bold;
+}
+
+.toc2
+{
+    padding-left: 30px;
 }

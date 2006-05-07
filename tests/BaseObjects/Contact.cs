@@ -8,6 +8,8 @@ namespace Sooda.UnitTests.BaseObjects
 
     public class Contact : Sooda.UnitTests.BaseObjects.Stubs.Contact_Stub
     {
+        public bool AfterInsertCalled;
+
         public string PersistentValue
         {
             get { return (string)GetTransactionPersistentValue("PersistentValue"); }
@@ -32,6 +34,12 @@ namespace Sooda.UnitTests.BaseObjects
                 this(SoodaTransaction.ActiveTransaction)
         {
             // Do not modify this constructor.
+        }
+
+        protected override void AfterObjectInsert()
+        {
+            base.AfterObjectInsert();
+            AfterInsertCalled = true;
         }
     }
 }

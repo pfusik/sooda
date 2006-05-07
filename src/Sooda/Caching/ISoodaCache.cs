@@ -10,10 +10,13 @@ namespace Sooda.Caching
     {
         void Clear();
         void Invalidate(string className, object primaryKeyValue, SoodaCacheInvalidateReason reason);
+        void Evict(string className, object primaryKeyValue);
         void Add(string className, object primaryKeyValue, SoodaCacheEntry entry);
         SoodaCacheEntry Find(string className, object primaryKeyValue);
-        IList LoadCollection(SoodaCachedCollectionKey key);
-        void StoreCollection(SoodaCachedCollectionKey cacheKey, IList primaryKeys, ClassInfoCollection dependentClasses);
+        IList LoadCollection(string cacheKey);
+        void StoreCollection(string cacheKey, string rootClassName, IList primaryKeys, string[] dependentClasses, bool evictWhenItemRemoved);
+        void EvictCollection(string cacheKey);
+        void Sweep();
 
         ISoodaCacheLock Lock();
         void Unlock(ISoodaCacheLock theLock);

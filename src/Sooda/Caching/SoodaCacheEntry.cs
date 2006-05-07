@@ -33,6 +33,7 @@
 
 using System;
 using System.Text;
+using System.Collections;
 using System.Globalization;
 
 namespace Sooda.Caching
@@ -41,13 +42,13 @@ namespace Sooda.Caching
     {
         private int _dataLoadedMask;
         private SoodaObjectFieldValues _data;
-        private DateTime _timestamp;
+        private IList _dependentCollections;
 
         public SoodaCacheEntry(int dataLoadedMask, SoodaObjectFieldValues data)
         {
             _dataLoadedMask = dataLoadedMask;
             _data = data;
-            _timestamp = DateTime.Now;
+            _dependentCollections = null;
         }
 
         public SoodaObjectFieldValues Data
@@ -60,14 +61,16 @@ namespace Sooda.Caching
             get { return _dataLoadedMask; }
         }
 
-        public DateTime TimeStamp
+        public IList GetDependentCollections()
         {
-            get { return _timestamp; }
+            return _dependentCollections;
         }
 
-        public TimeSpan Age
+        public void RegisterDependentCollection(SoodaCachedCollection key)
         {
-            get { return DateTime.Now - TimeStamp; }
+            if (_dependentCollections == null)
+                _dependentCollections = new ArrayList();
+            _dependentCollections.Add(key);
         }
 
         public override string ToString()

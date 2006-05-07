@@ -36,51 +36,42 @@ using Sooda.Schema;
 
 namespace Sooda.Caching
 {
-    public class SoodaCachedCollectionKeySimple : SoodaCachedCollectionKey
+    public class SoodaCacheKey
     {
-        private string _fieldName;
-        private object _matchingFieldValue;
+        public readonly string ClassName;
+        public readonly object KeyValue;
+        private int Hash;
 
-        public SoodaCachedCollectionKeySimple()
+        public SoodaCacheKey(string className, object keyValue)
         {
-        }
-
-        public SoodaCachedCollectionKeySimple(ClassInfo classInfo, string fieldName, object matchingFieldValue)
-            : base(classInfo)
-        {
-            _fieldName = fieldName;
-            _matchingFieldValue = matchingFieldValue;
-        }
-
-        public string FieldName
-        {
-            get { return _fieldName; }
-            set { _fieldName = value; }
-        }
-
-        public object MatchingFieldValue
-        {
-            get { return _matchingFieldValue; }
-            set { _matchingFieldValue = value; }
+            ClassName = className;
+            Hash = className.GetHashCode() ^ keyValue.GetHashCode();
+            KeyValue = keyValue;
         }
 
         public override bool Equals(object obj)
         {
-            SoodaCachedCollectionKeySimple otherKey = obj as SoodaCachedCollectionKeySimple;
-            if (otherKey == null)
+            SoodaCacheKey ck = obj as SoodaCacheKey;
+            if (ck == null)
                 return false;
 
-            return (ClassInfo == otherKey.ClassInfo) && (FieldName == otherKey.FieldName) && (MatchingFieldValue.Equals(otherKey.MatchingFieldValue));
+            if (Hash != ck.Hash)
+                return false;
+
+            if (!KeyValue.Equals(ck.KeyValue))
+                return false;
+
+            return ClassName.Equals(ck.ClassName);
         }
 
         public override int GetHashCode()
         {
-            return ClassInfo.Name.GetHashCode() ^ FieldName.GetHashCode() ^ MatchingFieldValue.GetHashCode();
+            return Hash;
         }
 
         public override string ToString()
         {
-            return "[" + ClassInfo.Name + " where " + FieldName + "=" + MatchingFieldValue + "]";
+            return ClassName + "(" + KeyValue + ")";
         }
     }
 }

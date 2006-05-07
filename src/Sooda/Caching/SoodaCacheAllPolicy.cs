@@ -16,5 +16,10 @@ namespace Sooda.Caching
         {
             return true;
         }
+
+        public bool ShouldCacheRelation(RelationInfo relation, ClassInfo classInfo)
+        {
+            return true;
+        }
     }
 }

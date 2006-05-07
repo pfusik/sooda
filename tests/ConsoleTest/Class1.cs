@@ -63,16 +63,16 @@ namespace ConsoleTest
 {
     class Class1
     {
+        static void Removed(object sender, LruCacheEventArgs args)
+        {
+            //Console.WriteLine("removed: {0}", args.Key);
+        }
+
         static void Main(string[] args)
         {
             Sooda.Logging.LogManager.Implementation = new Sooda.Logging.ConsoleLoggingImplementation();
-
-            //Sooda.UnitTests.TestCases.Caching.CollectionTest ct = new Sooda.UnitTests.TestCases.Caching.CollectionTest();
-            //ct.InvalidateTest();
-            Sooda.UnitTests.TestCases.ObjectMapper.GetListTest t = new Sooda.UnitTests.TestCases.ObjectMapper.GetListTest();
-            t.OrderByTest();
-            //t.Collection1toNTest();
-            //t.OrderByTest();
+            Sooda.UnitTests.TestCases.Caching.CachingTest ct = new Sooda.UnitTests.TestCases.Caching.CachingTest();
+            ct.Test6();
         }
     }
 }

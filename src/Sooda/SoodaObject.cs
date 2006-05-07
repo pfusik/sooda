@@ -266,8 +266,38 @@ namespace Sooda
             return new SoodaObjectArrayFieldValues(fieldCount);
         }
 
-        private void InitFieldData()
+        private void InitFieldData(bool justLoading)
         {
+            if (!InsertMode)
+            {
+                SoodaCacheEntry cachedData = GetTransaction().Cache.Find(GetClassInfo().GetRootClass().Name, _primaryKeyValue);
+                if (cachedData != null)
+                {
+                    GetTransaction().Statistics.RegisterCacheHit();
+                    SoodaStatistics.Global.RegisterCacheHit();
+
+                    if (logger.IsTraceEnabled)
+                    {
+                        logger.Trace("Initializing object {0}({1}) from cache.", this.GetType().Name, _primaryKeyValue);
+                    }
+                    _fieldValues = cachedData.Data;
+                    _dataLoadedMask = cachedData.DataLoadedMask;
+                    FromCache = true;
+                    return;
+                }
+
+                // we don't register a cache miss when we're just loading
+                if (!justLoading)
+                {
+                    GetTransaction().Statistics.RegisterCacheMiss();
+                    SoodaStatistics.Global.RegisterCacheMiss();
+                    if (logger.IsTraceEnabled)
+                    {
+                        logger.Trace("Cache miss. Object {0}({1}) not found in cache.", this.GetType().Name, _primaryKeyValue);
+                    }
+                }
+            }
+
             ClassInfo ci = GetClassInfo();
 
             int fieldCount = ci.UnifiedFields.Count;
@@ -314,32 +344,6 @@ namespace Sooda
             SetPrimaryKeyValue(primaryKeyValue);
             SetAllDataNotLoaded();
 
-            if (_fieldValues == null)
-            {
-                SoodaCacheEntry cachedData = GetTransaction().Cache.Find(GetClassInfo().Name, primaryKeyValue);
-                if (cachedData != null)
-                {
-                    GetTransaction().Statistics.RegisterCacheHit();
-                    SoodaStatistics.Global.RegisterCacheHit();
-
-                    if (logger.IsTraceEnabled)
-                    {
-                        logger.Trace("Initializing object {0}({1}) from cache.", this.GetType().Name, primaryKeyValue);
-                    }
-                    _fieldValues = cachedData.Data;
-                    _dataLoadedMask = cachedData.DataLoadedMask;
-                    FromCache = true;
-                }
-                else
-                {
-                    GetTransaction().Statistics.RegisterCacheMiss();
-                    SoodaStatistics.Global.RegisterCacheMiss();
-                    if (logger.IsTraceEnabled)
-                    {
-                        logger.Trace("Object {0}({1}) not in cache.", this.GetType().Name, primaryKeyValue);
-                    }
-                }
-            }
         }
 
         public SoodaTransaction GetTransaction()
@@ -672,9 +676,10 @@ namespace Sooda
             int recordPos = firstColumnIndex;
             bool first = true;
 
-            EnsureFieldsInited();
+            EnsureFieldsInited(true);
 
             int i;
+            int oldDataLoadedMask = _dataLoadedMask;
 
             for (i = tableIndex; i < tables.Length; ++i)
             {
@@ -717,11 +722,11 @@ namespace Sooda
                 SetDataLoaded(table.OrdinalInClass);
                 first = false;
             }
-            if (!IsObjectDirty())
+            if (!IsObjectDirty() && (!FromCache || (_dataLoadedMask != oldDataLoadedMask)))
             {
                 if (GetTransaction().CachingPolicy.ShouldCacheObject(this))
                 {
-                    GetTransaction().Cache.Add(GetClassInfo().Name, GetPrimaryKeyValue(), GetCacheEntry());
+                    GetTransaction().Cache.Add(GetClassInfo().GetRootClass().Name, GetPrimaryKeyValue(), GetCacheEntry());
                     FromCache = true;
                 }
             }
@@ -764,8 +769,13 @@ namespace Sooda
 
         internal void EnsureFieldsInited()
         {
+            EnsureFieldsInited(false);
+        }
+
+        internal void EnsureFieldsInited(bool justLoading)
+        {
             if (_fieldValues == null)
-                InitFieldData();
+                InitFieldData(justLoading);
         }
 
         internal void EnsureDataLoaded(int tableNumber)
@@ -809,6 +819,11 @@ namespace Sooda
 
         protected void LoadDataWithKey(object keyVal, int tableNumber)
         {
+            EnsureFieldsInited();
+
+            if (IsDataLoaded(tableNumber))
+                return;
+
             if (logger.IsTraceEnabled)
             {
                 // logger.Trace("Loading data for {0}({1}) from table #{2}", GetClassInfo().Name, keyVal, tableNumber);
@@ -948,7 +963,7 @@ namespace Sooda
                 reason = SoodaCacheInvalidateReason.Updated;
             }
                 
-            GetTransaction().Cache.Invalidate(GetClassInfo().Name, GetPrimaryKeyValue(), reason);
+            GetTransaction().Cache.Invalidate(GetClassInfo().GetRootClass().Name, GetPrimaryKeyValue(), reason);
         }
 
         internal void PostCommit()

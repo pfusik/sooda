@@ -45,13 +45,13 @@ namespace Sooda.Caching
     public class SoodaInProcessCache : ISoodaCache
     {
         private ReaderWriterLock _rwlock = new ReaderWriterLock();
-        private Hashtable _objectCache = new Hashtable();
+        private LruCache _objectCache = new LruCache(-1, TimeSpan.FromMinutes(5), false);
 
-        // string -> (SoodaCachedCollectionKey->object)
-        private Hashtable _class2keys = new Hashtable();
+        // string -> (LruCache(SoodaCachedCollectionKey))
+        private Hashtable _collectionsDependentOnClass = new Hashtable();
         private object _marker = new object();
 
-        private SoodaCachedCollectionHash _collectionCache = new SoodaCachedCollectionHash();
+        private LruCache _collectionCache = new LruCache(-1, TimeSpan.FromMinutes(5), false);
         private static Logger logger = LogManager.GetLogger("Sooda.Cache");
 
         private TimeSpan _expirationTimeout = TimeSpan.FromMinutes(1);
@@ -59,31 +59,42 @@ namespace Sooda.Caching
 
         public TimeSpan ExpirationTimeout
         {
-            get { return _expirationTimeout; }
-            set { _expirationTimeout = value; }
+            get { return _objectCache.TimeToLive; }
+            set { _objectCache.TimeToLive = value; }
         }
 
-        SoodaCacheEntry ISoodaCache.Find(string className, object primaryKeyValue)
+        public SoodaInProcessCache()
+        {
+            _objectCache.ItemRemoved += new LruCacheDelegate(_objectCache_ItemRemoved);
+            _collectionCache.ItemRemoved += new LruCacheDelegate(_collectionCache_ItemRemoved);
+        }
+
+        void _collectionCache_ItemRemoved(object sender, LruCacheEventArgs args)
+        {
+            logger.Trace("Collection removed: {0}", args.Key);
+        }
+
+        void _objectCache_ItemRemoved(object sender, LruCacheEventArgs args)
+        {
+            SoodaCacheEntry e = (SoodaCacheEntry)args.Value;
+            logger.Trace("Item removed: {0}. Invalidating dependent collections...", e);
+            IList l = e.GetDependentCollections();
+            if (l != null)
+            {
+                foreach (SoodaCachedCollection ck in e.GetDependentCollections())
+                {
+                    InvalidateCollection(ck);
+                }
+            }
+        }
+
+        public SoodaCacheEntry Find(string className, object primaryKeyValue)
         {
             _rwlock.AcquireReaderLock(-1);
             try
             {
-                Hashtable ht = (Hashtable)_objectCache[className];
-                SoodaCacheEntry retVal = null;
-
-                if (ht != null)
-                {
-                    retVal = (SoodaCacheEntry)ht[primaryKeyValue];
-                    if (retVal != null)
-                    {
-                        if (retVal.Age > ExpirationTimeout)
-                        {
-                            ht.Remove(primaryKeyValue);
-                            retVal = null;
-                        }
-                    }
-                }
-                return retVal;
+                SoodaCacheKey cacheKey = new SoodaCacheKey(className, primaryKeyValue);
+                return (SoodaCacheEntry)_objectCache[cacheKey];
             }
             finally
             {
@@ -91,24 +102,17 @@ namespace Sooda.Caching
             }
         }
 
-        void ISoodaCache.Add(string className, object primaryKeyValue, SoodaCacheEntry entry)
+        public void Add(string className, object primaryKeyValue, SoodaCacheEntry entry)
         {
             _rwlock.AcquireWriterLock(-1);
             try
             {
-                Hashtable ht = (Hashtable)_objectCache[className];
-                if (ht == null)
-                {
-                    ht = new Hashtable();
-                    _objectCache[className] = ht;
-                }
-
+                SoodaCacheKey cacheKey = new SoodaCacheKey(className, primaryKeyValue);
+                _objectCache[cacheKey] = entry;
                 if (logger.IsTraceEnabled)
                 {
-                    logger.Trace("Add {0}({1}): {2}", className, primaryKeyValue, entry.ToString());
+                    logger.Trace("Adding {0} to cache.", cacheKey);
                 }
-
-                ht[primaryKeyValue] = entry;
             }
             finally
             {
@@ -116,33 +120,38 @@ namespace Sooda.Caching
             }
         }
 
-        void ISoodaCache.Invalidate(string className, object primaryKeyValue, SoodaCacheInvalidateReason reason)
+        public void InvalidateCollection(SoodaCachedCollection collection)
+        {
+            LruCache cachedCollectionsDependentOnClass = 
+                (LruCache)_collectionsDependentOnClass[collection.RootClassName];
+            cachedCollectionsDependentOnClass.Remove(collection.CollectionKey);
+            _collectionCache.Remove(collection.CollectionKey);
+        }
+
+        public void Invalidate(string className, object primaryKeyValue, SoodaCacheInvalidateReason reason)
         {
             if (!Enabled)
                 return;
 
             if (logger.IsTraceEnabled)
             {
-                logger.Trace("Invalidating object {0}[{1}]. Reason: {2}", className, primaryKeyValue, reason);
+                logger.Trace("Invalidating object {0}({1}). Reason: {2}", className, primaryKeyValue, reason);
             }
 
             _rwlock.AcquireWriterLock(-1);
             try
             {
-                Hashtable ht = (Hashtable)_objectCache[className];
-                if (ht != null)
+                SoodaCacheKey cacheKey = new SoodaCacheKey(className, primaryKeyValue);
+                _objectCache.Remove(cacheKey);
+
+                LruCache cachedCollectionsDependentOnClass = (LruCache)_collectionsDependentOnClass[className];
+                if (cachedCollectionsDependentOnClass != null)
                 {
-                    // no exception when the key doesn't exist
-                    ht.Remove(primaryKeyValue);
-                }
-                ht = (Hashtable)_class2keys[className];
-                if (ht != null)
-                {
-                    _class2keys.Remove(className);
-                    foreach (SoodaCachedCollectionKey key in ht.Keys)
+                    foreach (string key in cachedCollectionsDependentOnClass.Keys)
                     {
                         _collectionCache.Remove(key);
                     }
+                    cachedCollectionsDependentOnClass.Clear();
                 }
             }
             finally
@@ -151,14 +160,14 @@ namespace Sooda.Caching
             }
         }
 
-        void ISoodaCache.Clear()
+        public void Clear()
         {
             _rwlock.AcquireWriterLock(-1);
             try
             {
                 _objectCache.Clear();
                 _collectionCache.Clear();
-                _class2keys.Clear();
+                _collectionsDependentOnClass.Clear();
             }
             finally
             {
@@ -166,52 +175,79 @@ namespace Sooda.Caching
             }
         }
 
-        IList ISoodaCache.LoadCollection(SoodaCachedCollectionKey key)
+
+        public void Evict(string className, object primaryKeyValue)
+        {
+            _objectCache.Remove(new SoodaCacheKey(className, primaryKeyValue));
+        }
+
+        public void EvictCollection(string cacheKey)
+        {
+            _collectionCache.Remove(cacheKey);
+        }
+
+        public IList LoadCollection(string key)
         {
             if (key == null)
                 return null;
 
-            SoodaCachedCollection coll = _collectionCache[key];
-            if (coll == null)
+            SoodaCachedCollection cc = (SoodaCachedCollection)_collectionCache[key];
+            if (cc == null)
                 return null;
 
-            return coll.PrimaryKeys;
+            IList retval = cc.PrimaryKeys;
+            logger.Trace("Collection: {0} retrieved from cache: {1} items", key, retval.Count);
+            return retval;
         }
 
-        private void RegisterDependentCollectionClass(SoodaCachedCollectionKey cacheKey, ClassInfo dependentClass)
+        private void RegisterDependentCollectionClass(string cacheKey, string dependentClassName)
         {
-            Hashtable ht = (Hashtable)_class2keys[dependentClass.Name];
-            if (ht == null)
+            LruCache cache = (LruCache)_collectionsDependentOnClass[dependentClassName];
+            if (cache == null)
             {
-                ht = new Hashtable();
-                _class2keys[dependentClass.Name] = ht;
+                cache = new LruCache(-1, ExpirationTimeout, false);
+                _collectionsDependentOnClass[dependentClassName] = cache;
             }
 
             // this is actually a set
-            ht[cacheKey] = _marker;
+            cache[cacheKey] = _marker;
         }
 
-        void ISoodaCache.StoreCollection(SoodaCachedCollectionKey cacheKey, IList primaryKeys, ClassInfoCollection dependentClasses)
+        public void StoreCollection(string cacheKey, string rootClassName, IList primaryKeys, string[] dependentClassNames, bool evictWhenItemRemoved)
         {
             if (cacheKey != null)
             {
                 _rwlock.AcquireWriterLock(-1);
                 try
                 {
-                    logger.Debug("Storing collection: {0} {1} items", cacheKey, primaryKeys.Count);
-                    if (dependentClasses != null)
+                    if (logger.IsTraceEnabled)
                     {
-                        logger.Debug("Dependent classes: {0}", dependentClasses.Count);
+                        logger.Trace("Storing collection: {0} {1} items. Dependent on: [ {2} ]", cacheKey, primaryKeys.Count, String.Join(",",dependentClassNames));
                     }
-                    SoodaCachedCollection value = new SoodaCachedCollection(primaryKeys);
-                    _collectionCache[cacheKey] = value;
 
-                    RegisterDependentCollectionClass(cacheKey, cacheKey.ClassInfo);
-                    if (dependentClasses != null)
+                    SoodaCachedCollection cc = new SoodaCachedCollection(cacheKey, rootClassName, primaryKeys);
+
+                    if (evictWhenItemRemoved)
                     {
-                        for (int i = 0; i < dependentClasses.Count; ++i)
+                        foreach (object o in primaryKeys)
                         {
-                            RegisterDependentCollectionClass(cacheKey, dependentClasses[i]);
+                            SoodaCacheKey k = new SoodaCacheKey(rootClassName, o);
+                            SoodaCacheEntry e = (SoodaCacheEntry)_objectCache[k];
+                            if (e != null)
+                            {
+                                //logger.Trace("Registering {0} as dependent of {1}", cacheKey, e);
+                                e.RegisterDependentCollection(cc);
+                            };
+                        }
+                    }
+                    _collectionCache[cacheKey] = cc;
+
+                    RegisterDependentCollectionClass(cacheKey, rootClassName);
+                    if (dependentClassNames != null)
+                    {
+                        for (int i = 0; i < dependentClassNames.Length; ++i)
+                        {
+                            RegisterDependentCollectionClass(cacheKey, dependentClassNames[i]);
                         }
                     }
                 }
@@ -224,46 +260,32 @@ namespace Sooda.Caching
 
         public void Dump(TextWriter output)
         {
-            output.WriteLine("CACHE DUMP:");
-            foreach (string className in _objectCache.Keys)
-            {
-                output.WriteLine(className);
-
-                foreach (DictionaryEntry de in (Hashtable)_objectCache[className])
-                {
-                    SoodaCacheEntry entry = (SoodaCacheEntry)de.Value;
-
-                    output.Write("{0,8} [", de.Key);
-                    bool first = true;
-                    for (int i = 0; i < entry.Data.Length; ++i)
-                    {
-                        object fd = entry.Data.GetBoxedFieldValue(i);
-                        if (!first)
-                            output.Write("|");
-                        output.Write(fd);
-                        first = false;
-                    }
-                    output.Write("]");
-                    output.WriteLine();
-                }
-                output.WriteLine();
-            }
-            output.WriteLine();
+            output.WriteLine("Item cache");
+            _objectCache.Dump(output);
+            output.WriteLine("Collections:");
+            _collectionCache.Dump(output);
         }
 
-        ISoodaCacheLock ISoodaCache.Lock()
+        public ISoodaCacheLock Lock()
         {
             _rwlock.AcquireWriterLock(-1);
             return new EndCommitCaller(this);
         }
 
-        void ISoodaCache.Unlock(ISoodaCacheLock theLock)
+        public void Unlock(ISoodaCacheLock theLock)
         {
             ((EndCommitCaller)theLock).Dispose();
         }
 
         internal void DoUnlock()
         {
+            _rwlock.ReleaseWriterLock();
+        }
+
+        public void Sweep()
+        {
+            _rwlock.AcquireWriterLock(-1);
+            _objectCache.Sweep();
             _rwlock.ReleaseWriterLock();
         }
 

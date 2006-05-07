@@ -72,7 +72,7 @@ namespace Sooda
         private WeakSoodaObjectCollection _objectList = new WeakSoodaObjectCollection();
         private Queue _precommitQueue = null;
         private SoodaObjectCollection _deletedObjects = new SoodaObjectCollection();
-        private Hashtable _precommittedClass = new Hashtable();
+        private Hashtable _precommittedClassOrRelation = new Hashtable();
         private SoodaObjectCollection _postCommitQueue = null;
         private SoodaObjectCollection _dirtyObjects = new SoodaObjectCollection();
         private SoodaObjectCollection _strongReferences = new SoodaObjectCollection();
@@ -439,9 +439,14 @@ namespace Sooda
         {
             if (!o.VisitedOnCommit && !o.IsMarkedForDelete())
             {
-                _precommittedClass[o.GetClassInfo()] = true;
+                _precommittedClassOrRelation[o.GetClassInfo().GetRootClass().Name] = true;
                 o.SaveObjectChanges();
             }
+        }
+
+        internal void PrecommitRelation(RelationInfo ri)
+        {
+            _precommittedClassOrRelation[ri.Name] = true;
         }
 
         internal void SaveObjectChanges(bool isPrecommit, SoodaObjectCollection objectsToPrecommit)
@@ -468,7 +473,7 @@ namespace Sooda
                 {
                     if (!o.VisitedOnCommit && !o.IsMarkedForDelete())
                     {
-                        _precommittedClass[o.GetClassInfo()] = true;
+                        _precommittedClassOrRelation[o.GetClassInfo().GetRootClass().Name] = true;
                         o.SaveObjectChanges();
                     }
                 }
@@ -559,9 +564,16 @@ namespace Sooda
                 {
                     o.InvalidateCacheAfterCommit();
                 }
+                if (_relationTables != null)
+                {
+                    foreach (SoodaRelationTable rel in _relationTables.Values)
+                    {
+                        rel.InvalidateCacheAfterCommit(Cache);
+                    }
+                }
             }
 
-            _precommittedClass.Clear();
+            _precommittedClassOrRelation.Clear();
 
             CallPostcommits();
 
@@ -580,7 +592,7 @@ namespace Sooda
             _objectsByClass.Clear();
             _precommitQueue.Clear();
             _relationTables.Clear();
-            _precommittedClass.Clear();
+            _precommittedClassOrRelation.Clear();
         }
 
         private static object[] relationTableConstructorArguments = new object[0] { };
@@ -1077,7 +1089,12 @@ namespace Sooda
 
         internal bool HasBeenPrecommitted(ClassInfo ci)
         {
-            return _precommittedClass.Contains(ci);
+            return _precommittedClassOrRelation.Contains(ci.GetRootClass().Name);
+        }
+
+        internal bool HasBeenPrecommitted(RelationInfo ri)
+        {
+            return _precommittedClassOrRelation.Contains(ri.Name);
         }
 
         public SoodaObjectCollection DeletedObjects

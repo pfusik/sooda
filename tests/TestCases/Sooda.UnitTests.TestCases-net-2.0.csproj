@@ -109,6 +109,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Caching\CollectionTest.cs" />
+    <Compile Include="Caching\CachingTest.cs" />
+    <Compile Include="Caching\CollectionEvictTest.cs" />
     <Compile Include="ObjectMapper\AbstractTest.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -121,6 +123,7 @@
     <Compile Include="ObjectMapper\ComplexGetListTest.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ObjectMapper\TriggerTest.cs" />
     <Compile Include="ObjectMapper\DataTypesTest.cs">
       <SubType>Code</SubType>
     </Compile>

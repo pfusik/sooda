@@ -8,7 +8,7 @@
     <xsl:variable name="page_id" select="concat(/*[position()=1]/@id,$page_id_override)" />
     <xsl:variable name="subpage_id" select="concat(/*[position()=1]/@subid,$subpage_id_override)" />
     <xsl:variable name="common" select="document(concat($mode,'menu.xml'))" />
-    
+
     <xsl:output method="xml" 
         indent="no" 
         doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" 
@@ -32,159 +32,208 @@
                     <xsl:call-template name="controls" />
                 </div>
                 <div id="{$mode}content">
-                    <span class="underconstruction">
-                        This web site is under construction. Some sections may be missing or not up-to-date.
-                    </span>
+                    <xsl:comment>#include virtual="/dynamic/snippet.cgi?vertbanner"</xsl:comment>
+                    <xsl:comment>#include virtual="/dynamic/snippet.cgi?topbanner"</xsl:comment>
                     <xsl:apply-templates select="content" />
+                    <xsl:comment>#include virtual="/dynamic/snippet.cgi?bottombanner"</xsl:comment>
                 </div>
                 <xsl:if test="$mode = 'web'">
-                <div id="googlesearch">
-                    <!-- SiteSearch Google -->
-                    <form method="get" action="http://www.google.com/custom" target="_top">
-                        <table border="0">
-                            <tr><td nowrap="nowrap" valign="top" align="left" height="32">
-<input type="hidden" name="domains" value="www.sooda.org"></input>
-<input type="text" name="q" size="20" maxlength="255" value=""></input>
-<input type="submit" name="sa" value="Google Search"></input>
-</td></tr>
-<tr>
-<td nowrap="nowrap">
-<table>
-<tr>
-<td>
-<input type="radio" name="sitesearch" value=""></input>
-<font size="-1" color="#000000">Web</font>
-</td>
-<td>
-<input type="radio" name="sitesearch" value="www.sooda.org" checked="checked"></input>
-<font size="-1" color="#000000">www.sooda.org</font>
-</td>
-</tr>
-</table>
-<input type="hidden" name="client" value="pub-2535373996863248"></input>
-<input type="hidden" name="forid" value="1"></input>
-<input type="hidden" name="ie" value="UTF-8"></input>
-<input type="hidden" name="oe" value="UTF-8"></input>
-<input type="hidden" name="cof" value="GALT:#0066CC;GL:1;DIV:#999999;VLC:336633;AH:center;BGC:FFFFFF;LBGC:FF9900;ALC:0066CC;LC:0066CC;T:000000;GFNT:666666;GIMP:666666;FORID:1;"></input>
-<input type="hidden" name="hl" value="en"></input>
-</td></tr></table>
-</form>
-<!-- SiteSearch Google -->
-                </div>
+                    <div id="googlesearch">
+                        <!-- SiteSearch Google -->
+                        <form method="get" action="http://www.google.com/custom" target="_top">
+                            <table border="0">
+                                <tr><td nowrap="nowrap" valign="top" align="left" height="32">
+                                        <input type="hidden" name="domains" value="www.sooda.org"></input>
+                                        <input type="text" name="q" size="20" maxlength="255" value=""></input>
+                                        <input type="submit" name="sa" value="Google Search"></input>
+                                </td></tr>
+                                <tr>
+                                    <td nowrap="nowrap">
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <input type="radio" name="sitesearch" value=""></input>
+                                                    <font size="-1" color="#000000">Web</font>
+                                                </td>
+                                                <td>
+                                                    <input type="radio" name="sitesearch" value="www.sooda.org" checked="checked"></input>
+                                                    <font size="-1" color="#000000">www.sooda.org</font>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <input type="hidden" name="forid" value="1"></input>
+                                        <input type="hidden" name="ie" value="UTF-8"></input>
+                                        <input type="hidden" name="oe" value="UTF-8"></input>
+                                        <input type="hidden" name="cof" value="GALT:#0066CC;GL:1;DIV:#999999;VLC:336633;AH:center;BGC:FFFFFF;LBGC:FF9900;ALC:0066CC;LC:0066CC;T:000000;GFNT:666666;GIMP:666666;FORID:1;"></input>
+                                        <input type="hidden" name="hl" value="en"></input>
+                            </td></tr></table>
+                        </form>
+                        <!-- SiteSearch Google -->
+                    </div>
+                </xsl:if>
+            </body>
+        </html>
+    </xsl:template>
+
+    <xsl:template match="section">
+        <xsl:if test="@id"><a name="{@id}" /></xsl:if>
+        <xsl:if test="not(@id)"><a name="sect{generate-id(.)}" /></xsl:if>
+        <p>
+            <xsl:attribute name="class">heading<xsl:apply-templates select="." mode="section-level" /></xsl:attribute>
+            <xsl:apply-templates select="." mode="section-number" />. <xsl:apply-templates select="title" />
+        </p>
+        <div>
+            <xsl:attribute name="class">body<xsl:apply-templates select="." mode="section-level" /></xsl:attribute>
+            <xsl:apply-templates select="body|section" />
+        </div>
+    </xsl:template>
+
+    <xsl:template match="title">
+        <xsl:apply-templates />
+    </xsl:template>
+
+    <xsl:template match="section" mode="section-number">
+        <xsl:variable name="otherSections" select="../section" />
+        <xsl:variable name="thisSection" select="generate-id(.)" />
+        <xsl:variable name="suffix" />
+
+        <xsl:variable name="parent" select="ancestor::section[position()=1]" />
+        <xsl:if test="$parent"><xsl:apply-templates select="$parent" mode="section-number" />.</xsl:if>
+        <xsl:for-each select="$otherSections">
+            <xsl:if test="generate-id(.) = $thisSection">
+                <xsl:value-of select="position()" />
             </xsl:if>
-            <xsl:if test="$mode = 'web'">
-                <div id="googleads">
-                    <script type="text/javascript"><xsl:comment>
-                            google_ad_client = "pub-2535373996863248";
-                            google_ad_width = 120;
-                            google_ad_height = 600;
-                            google_ad_format = "120x600_as";
-                            google_ad_type = "text_image";
-                            google_ad_channel ="";
-                            google_color_border = "5290ee";
-                            google_color_bg = "FFFFFF";
-                            google_color_link = "0000FF";
-                            google_color_url = "008000";
-                            google_color_text = "000000";
-                            //</xsl:comment></script>
-                    <script type="text/javascript"
-                        src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
-                    </script>
-                </div>
-            </xsl:if>
-                </body>
-            </html>
-        </xsl:template>
+        </xsl:for-each>
+    </xsl:template>
 
-        <xsl:template match="@* | node()">
-            <xsl:copy>
-                <xsl:apply-templates select="@* | node()" />
-            </xsl:copy>
-        </xsl:template>
+    <xsl:template match="section" mode="section-level">
+        <xsl:variable name="otherSections" select="../section" />
+        <xsl:variable name="thisSection" select="generate-id(.)" />
+        <xsl:variable name="suffix" />
 
-        <xsl:template match="content">
-            <xsl:apply-templates />
-        </xsl:template>
+        <xsl:variable name="parent" select="ancestor::section[position()=1]" />
+        <xsl:choose>
+            <xsl:when test="$parent">
+                <xsl:variable name="parentLevel">
+                    <xsl:apply-templates select="$parent" mode="section-level" />
+                </xsl:variable>
+                <xsl:value-of select="$parentLevel + 1" />
+            </xsl:when>
+            <xsl:otherwise>1</xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
 
-        <xsl:template name="controls">
-            <xsl:apply-templates select="$common/common/navigation" />
-        </xsl:template>
+    <xsl:template match="table-of-contents">
+        <table class="toc">
+            <xsl:apply-templates select="//section" mode="toc" />
+        </table>
+    </xsl:template>
 
-        <xsl:template match="navigation">
-            <table border="0" cellpadding="0" cellspacing="0" class="navtable">
-                <xsl:apply-templates select="nav" />
-                <tr>
-                    <td class="logobutton">
-                        <table style="table-layout: fixed; width: 160px">
-                            <xsl:if test="$mode = 'web'">
-                                <tr>
-                                    <td align="right">
-                                        <a href="http://www.cenqua.com/clover.net"><img src="http://www.cenqua.com/images/cloverednet1.gif" width="89" height="33" border="0" alt="Code Coverage by Clover.NET"/></a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="right">
-                                        <script type="text/javascript" language="javascript">
-                                            var sc_project=575055; 
-                                            var sc_partition=4; 
-                                            var sc_security="e249d6a5"; 
-                                        </script>
+    <xsl:template match="section" mode="toc">
+        <tr>
+            <td>
+                <xsl:attribute name="class">toc<xsl:apply-templates select="." mode="section-level" /></xsl:attribute>
+                <xsl:apply-templates select="." mode="section-number" />.
 
-                                        <script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><a href="http://www.statcounter.com/" target="_blank"><img  src="http://c5.statcounter.com/counter.php?sc_project=575055&amp;amp;java=0&amp;amp;security=e249d6a5" alt="free web stats" border="0" /></a> </noscript>
+                <xsl:if test="@id">
+                    <a href="#{@id}"><xsl:apply-templates select="title" /></a>
+                </xsl:if>
+                <xsl:if test="not(@id)">
+                    <a href="#sect{generate-id(.)}"><xsl:apply-templates select="title" /></a>
+                </xsl:if>
+            </td>
+        </tr>
+    </xsl:template>
 
-<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
-</script>
-<script type="text/javascript">
-_uacct = "UA-256960-1";
-urchinTracker();
-</script>
-                                        
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="right">
-                                        <a href="http://validator.w3.org/check?uri=referer"><img
-                                                src="http://www.w3.org/Icons/valid-xhtml10"
-                                                border="0" 
-                                                alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
-                                    </td>
-                                </tr>
-                            </xsl:if>
+    <xsl:template match="@* | node()">
+        <xsl:copy>
+            <xsl:apply-templates select="@* | node()" />
+        </xsl:copy>
+    </xsl:template>
+
+    <xsl:template match="content">
+        <xsl:apply-templates />
+    </xsl:template>
+
+    <xsl:template name="controls">
+        <xsl:apply-templates select="$common/common/navigation" />
+    </xsl:template>
+
+    <xsl:template match="navigation">
+        <table border="0" cellpadding="0" cellspacing="0" class="navtable">
+            <xsl:apply-templates select="nav" />
+            <tr>
+                <td class="logobutton">
+                    <table style="table-layout: fixed; width: 160px">
+                        <xsl:if test="$mode = 'web'">
                             <tr>
-                                <td align="right" style="font-family: Tahoma; color: white; font-size: 10px">Copyright (c) 2003-2006<br/><a style="color: white" href="mailto:jaak@jkowalski.net">Jaroslaw Kowalski</a></td>
+                                <td align="right">
+                                    <a href="http://www.cenqua.com/clover.net"><img src="http://www.cenqua.com/images/cloverednet1.gif" width="89" height="33" border="0" alt="Code Coverage by Clover.NET"/></a>
+                                </td>
                             </tr>
+                            <tr>
+                                <td align="right">
+                                    <script type="text/javascript" language="javascript">
+                                        var sc_project=575055; 
+                                        var sc_partition=4; 
+                                        var sc_security="e249d6a5"; 
+                                    </script>
+
+                                    <script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><a href="http://www.statcounter.com/" target="_blank"><img  src="http://c5.statcounter.com/counter.php?sc_project=575055&amp;amp;java=0&amp;amp;security=e249d6a5" alt="free web stats" border="0" /></a> </noscript>
+
+                                    <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+                                    </script>
+                                    <script type="text/javascript">
+                                        _uacct = "UA-256960-1";
+                                        urchinTracker();
+                                    </script>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="right">
+                                    <a href="http://validator.w3.org/check?uri=referer"><img
+                                            src="http://www.w3.org/Icons/valid-xhtml10"
+                                            border="0" 
+                                            alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
+                                </td>
+                            </tr>
+                        </xsl:if>
+                        <tr>
+                            <td align="right" style="font-family: Tahoma; color: white; font-size: 10px">Copyright (c) 2003-2006<br/><a style="color: white" href="mailto:jaak@jkowalski.net">Jaroslaw Kowalski</a></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr class="navtablespacer"><td></td></tr>
+        </table>
+    </xsl:template>
+
+    <xsl:template match="nav">
+        <xsl:choose>
+            <xsl:when test="$page_id = @href and subnav">
+                <tr>
+                    <td class="nav_selected">
+                        <table class="submenu" cellpadding="0" cellspacing="0">
+                            <tr><td>
+                                    <a class="nav_selected">
+                                        <xsl:attribute name="href"><xsl:value-of select="@href" />.<xsl:value-of select="$file_extension" /></xsl:attribute>
+                                        <xsl:value-of select="@label" />
+                                    </a>
+                            </td></tr>
+                            <xsl:if test="subnav">
+                                <xsl:apply-templates select="subnav" />
+                            </xsl:if>
                         </table>
                     </td>
                 </tr>
-                <tr class="navtablespacer"><td></td></tr>
-            </table>
-        </xsl:template>
-
-        <xsl:template match="nav">
-            <xsl:choose>
-                <xsl:when test="$page_id = @href and subnav">
-                    <tr>
-                        <td class="nav_selected">
-                            <table class="submenu" cellpadding="0" cellspacing="0">
-                                <tr><td>
-                                        <a class="nav_selected">
-                                            <xsl:attribute name="href"><xsl:value-of select="@href" />.<xsl:value-of select="$file_extension" /></xsl:attribute>
-                                            <xsl:value-of select="@label" />
-                                        </a>
-                                </td></tr>
-                                <xsl:if test="subnav">
-                                    <xsl:apply-templates select="subnav" />
-                                </xsl:if>
-                            </table>
-                        </td>
-                    </tr>
-                </xsl:when>
-                <xsl:when test="$page_id = @href">
-                    <tr>
-                        <td class="nav_selected">
-                            <a class="nav_selected">
-                                <xsl:attribute name="href"><xsl:value-of select="@href" />.<xsl:value-of select="$file_extension" /></xsl:attribute>
-                                <xsl:value-of select="@label" />
+            </xsl:when>
+            <xsl:when test="$page_id = @href">
+                <tr>
+                    <td class="nav_selected">
+                        <a class="nav_selected">
+                            <xsl:attribute name="href"><xsl:value-of select="@href" />.<xsl:value-of select="$file_extension" /></xsl:attribute>
+                            <xsl:value-of select="@label" />
                         </a>
                     </td>
                 </tr>
@@ -284,4 +333,5 @@ urchinTracker();
         </h5>
         <xsl:apply-templates />
     </xsl:template>
+
 </xsl:stylesheet>

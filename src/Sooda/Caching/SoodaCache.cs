@@ -93,21 +93,24 @@ namespace Sooda.Caching
             set { _defaultCache = value; }
         }
 
-        public static SoodaCachedCollectionKey GetCollectionKey(ClassInfo ci, SoodaWhereClause wc)
+        public static string GetCollectionKey(ClassInfo classInfo, SoodaWhereClause wc)
+        {
+            return GetCollectionKey(classInfo.Name, wc);
+        }
+
+        public static string GetCollectionKey(string className, SoodaWhereClause wc)
         {
             if (wc == null)
-                return new SoodaCachedCollectionKeyAllRecords(ci);
+                return "ALL " + className;
 
             if (wc.WhereExpression == null)
-                return new SoodaCachedCollectionKeyAllRecords(ci);
+                return "ALL " + className;
 
             StringWriter sw = new StringWriter();
             SoqlPrettyPrinter pp = new SoqlPrettyPrinter(sw, wc.Parameters);
             pp.PrintExpression(wc.WhereExpression);
             string canonicalWhereClause = sw.ToString();
-            SoodaCachedCollectionKey key = new SoodaCachedCollectionKeyComplex(ci, canonicalWhereClause);
-
-            return key;
+            return className + " where " + canonicalWhereClause;
         }
 
         [Obsolete("Configure SoodaCache.DefaultCache accordingly.", true)]

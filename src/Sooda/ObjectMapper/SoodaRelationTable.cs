@@ -33,6 +33,7 @@
 
 using System;
 using System.Xml;
+using Sooda.Caching;
 
 // TODO - this is very hackish - needs to be cleaned up
 // original intention was preserving memory, but this has gone too far
@@ -71,6 +72,7 @@ namespace Sooda.ObjectMapper
         private string leftColumnName;
         private string rightColumnName;
         private Sooda.Schema.RelationInfo relationInfo;
+        private bool _dirty = false;
 
         public event SoodaRelationTupleChanged OnTupleChanged;
 
@@ -110,6 +112,7 @@ namespace Sooda.ObjectMapper
 
         void SetTupleMode(object ref1, object ref2, int tupleMode)
         {
+            _dirty = true;
             for (int i = 0; i < count; ++i)
             {
                 if (tuples[i].ref1.Equals(ref1) && tuples[i].ref2.Equals(ref2))
@@ -156,6 +159,7 @@ namespace Sooda.ObjectMapper
             ISoodaObjectFactory leftFactory = tran.GetFactory(relationInfo.GetRef1ClassInfo());
             ISoodaObjectFactory rightFactory = tran.GetFactory(relationInfo.GetRef2ClassInfo());
 
+            bool first = true;
             for (int i = 0; i < count; ++i)
             {
                 if (!tuples[i].saved)
@@ -166,6 +170,11 @@ namespace Sooda.ObjectMapper
                         SoodaObject rightObject = rightFactory.GetRef(tran, tuples[i].ref2);
                         tran.PrecommitObject(leftObject);
                         tran.PrecommitObject(rightObject);
+                        if (first)
+                        {
+                            first = false;
+                            tran.PrecommitRelation(this.relationInfo);
+                        }
                     }
                                             
                     ds.MakeTuple(tableName, leftColumnName, rightColumnName, tuples[i].ref1, tuples[i].ref2, tuples[i].tupleMode);
@@ -211,6 +220,18 @@ namespace Sooda.ObjectMapper
         {
             tuples = new Tuple[tupleCount < 16 ? 16 : tupleCount];
             count = 0;
+            _dirty = false;
+        }
+
+        internal void InvalidateCacheAfterCommit(ISoodaCache cache)
+        {
+            if (_dirty)
+            {
+                cache.Invalidate(this.relationInfo.Name, "", SoodaCacheInvalidateReason.ManyToManyModified);
+                //cache
+                //cache
+            }
+            _dirty = false;
         }
 
         protected abstract object DeserializeTupleLeft(XmlReader reader);

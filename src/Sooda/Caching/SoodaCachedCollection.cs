@@ -39,27 +39,32 @@ namespace Sooda.Caching
 {
     public class SoodaCachedCollection
     {
+        private string _rootClassName;
+        private string _collectionKey;
         private IList _primaryKeys;
         private DateTime _lastAccessTime;
 
-        public SoodaCachedCollection(IList primaryKeys)
+        public SoodaCachedCollection(string collectionKey, string rootClassName, IList primaryKeys)
         {
+            _collectionKey = collectionKey;
+            _rootClassName = rootClassName;
             _lastAccessTime = DateTime.Now;
             _primaryKeys = primaryKeys;
         }
 
-        public DateTime LastAccessTime
+        public string CollectionKey
         {
-            get { return _lastAccessTime; }
+            get { return _collectionKey; }
+        }
+
+        public string RootClassName
+        {
+            get { return _rootClassName; }
         }
 
         public IList PrimaryKeys
         {
-            get
-            {
-                _lastAccessTime = DateTime.Now;
-                return _primaryKeys;
-            }
+            get { return _primaryKeys; }
         }
     }
 }

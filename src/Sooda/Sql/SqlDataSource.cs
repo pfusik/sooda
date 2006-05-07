@@ -947,7 +947,7 @@ namespace Sooda.Sql
                 {
                     sqllogger.Info("Query time: {0} ms: {1}", Math.Round(timeInSeconds * 1000.0, 3), LogCommand(cmd));
                 }
-                else
+                else if (sqllogger.IsTraceEnabled)
                 {
                     sqllogger.Trace("Query time: {0} ms. {1}", Math.Round(timeInSeconds * 1000.0, 3), LogCommand(cmd));
                 }
@@ -990,9 +990,9 @@ namespace Sooda.Sql
                 {
                     sqllogger.Info("Non-query time: {0} ms. {1}", Math.Round(timeInSeconds * 1000.0, 3), LogCommand(cmd));
                 }
-                else
+                else if (sqllogger.IsTraceEnabled)
                 {
-                    sqllogger.Trace("Non-query time: {0} ms.", Math.Round(timeInSeconds * 1000.0, 3));
+                    sqllogger.Trace("Non-query time: {0} ms.{1}", Math.Round(timeInSeconds * 1000.0, 3), LogCommand(cmd));
                 }
             }
         }

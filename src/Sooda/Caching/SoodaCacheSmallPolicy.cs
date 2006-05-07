@@ -22,5 +22,13 @@ namespace Sooda.Caching
             else
                 return false;
         }
+
+        public bool ShouldCacheRelation(RelationInfo relation, ClassInfo classInfo)
+        {
+            if (classInfo.Cardinality == ClassCardinality.Small)
+                return true;
+            else
+                return false;
+        }
     }
 }

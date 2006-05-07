@@ -37,6 +37,7 @@ using System.Collections;
 
 using Sooda.Collections;
 using Sooda.QL;
+using Sooda.Logging;
 
 using Sooda.Schema;
 
@@ -44,6 +45,7 @@ namespace Sooda.ObjectMapper
 {
     public class SoodaObjectManyToManyCollection : IList, ISoodaObjectList
     {
+        private static Logger logger = LogManager.GetLogger("Sooda.ObjectMapper.SoodaObjectManyToManyCollection");
         protected SoodaTransaction transaction;
         protected SoodaObjectToInt32Association items = null;
         protected SoodaObjectCollection itemsArray = null;
@@ -52,6 +54,8 @@ namespace Sooda.ObjectMapper
         protected Type relationType;
         protected Sooda.Schema.RelationInfo relationInfo;
         private SoodaRelationTable relationTable = null;
+        private ClassInfo _classInfo;
+        private ISoodaObjectFactory _factory;
 
         public SoodaObjectManyToManyCollection(SoodaTransaction transaction, int masterColumn, object masterValue, Type relationType, Sooda.Schema.RelationInfo relationInfo)
         {
@@ -60,6 +64,9 @@ namespace Sooda.ObjectMapper
             this.masterValue = masterValue;
             this.masterColumn = masterColumn;
             this.relationType = relationType;
+
+            _classInfo = (masterColumn == 0) ? relationInfo.GetRef1ClassInfo() : relationInfo.GetRef2ClassInfo();
+            _factory = transaction.GetFactory(_classInfo);
         }
 
         public SoodaObject GetItem(int pos)
@@ -161,15 +168,17 @@ namespace Sooda.ObjectMapper
             return items.Contains(obj);
         }
 
-        protected void LoadDataFromReader(ISoodaObjectFactory factory, IDataReader reader, TableInfo[] loadedTables)
+        protected void LoadDataFromReader()
         {
-            items = new SoodaObjectToInt32Association();
-            itemsArray = new SoodaObjectCollection();
-
-            while (reader.Read())
+            SoodaDataSource ds = transaction.OpenDataSource(relationInfo.GetDataSource());
+            TableInfo[] loadedTables;
+            using (IDataReader reader = ds.LoadRefObjectList(transaction.Schema, relationInfo, masterColumn, masterValue, out loadedTables))
             {
-                SoodaObject obj = SoodaObject.GetRefFromRecordHelper(transaction, factory, reader, 0, loadedTables, 0);
-                InternalAdd(obj);
+                while (reader.Read())
+                {
+                    SoodaObject obj = SoodaObject.GetRefFromRecordHelper(transaction, _factory, reader, 0, loadedTables, 0);
+                    InternalAdd(obj);
+                }
             }
         }
 
@@ -184,17 +193,15 @@ namespace Sooda.ObjectMapper
 
         void OnTupleChanged(object sender, SoodaRelationTupleChangedArgs args)
         {
-            ClassInfo classInfo = (masterColumn == 0) ? relationInfo.GetRef1ClassInfo() : relationInfo.GetRef2ClassInfo();
-            ISoodaObjectFactory factory = transaction.GetFactory(classInfo);
             SoodaObject obj;
 
             if (masterColumn == 0)
             {
-                obj = factory.GetRef(transaction, args.Left);
+                obj = _factory.GetRef(transaction, args.Left);
             }
             else
             {
-                obj = factory.GetRef(transaction, args.Right);
+                obj = _factory.GetRef(transaction, args.Right);
             }
 
             if (args.Mode == 1)
@@ -205,14 +212,49 @@ namespace Sooda.ObjectMapper
 
         protected void LoadData()
         {
-            SoodaDataSource ds = transaction.OpenDataSource(relationInfo.GetDataSource());
-            TableInfo[] loadedTables;
-            ClassInfo classInfo = (masterColumn == 0) ? relationInfo.GetRef1ClassInfo() : relationInfo.GetRef2ClassInfo();
-            ISoodaObjectFactory factory = transaction.GetFactory(classInfo);
-            using (IDataReader reader = ds.LoadRefObjectList(transaction.Schema, relationInfo, masterColumn, masterValue, out loadedTables))
+            bool useCache = transaction.CachingPolicy.ShouldCacheRelation(relationInfo, _classInfo);
+            string cacheKey = null;
+
+            items = new SoodaObjectToInt32Association();
+            itemsArray = new SoodaObjectCollection();
+
+            if (useCache)
             {
-                LoadDataFromReader(factory, reader, loadedTables);
+                if (!transaction.HasBeenPrecommitted(relationInfo) && !transaction.HasBeenPrecommitted(_classInfo))
+                {
+                    cacheKey = relationInfo.Name + " where " + relationInfo.Table.Fields[1 - masterColumn].Name + " = " + masterValue;
+                }
             }
+
+            IEnumerable keysCollection = transaction.Cache.LoadCollection(cacheKey);
+            if (keysCollection != null)
+            {
+                SoodaStatistics.Global.RegisterCollectionCacheHit();
+                transaction.Statistics.RegisterCollectionCacheHit();
+                foreach (object o in keysCollection)
+                {
+                    SoodaObject obj = _factory.GetRef(transaction, o);
+                    // this binds to cache
+                    obj.EnsureFieldsInited();
+                    InternalAdd(obj);
+                }
+            }
+            else
+            {
+                if (cacheKey != null)
+                {
+                    logger.Debug("Cache miss. {0} not found in cache.", cacheKey);
+                    SoodaStatistics.Global.RegisterCollectionCacheMiss();
+                    transaction.Statistics.RegisterCollectionCacheMiss();
+                }
+                LoadDataFromReader();
+                if (cacheKey != null)
+                {
+                    IList primaryKeys = Sooda.Caching.CacheUtils.ConvertSoodaObjectListToKeyList(itemsArray);
+                    transaction.Cache.StoreCollection(cacheKey, _classInfo.GetRootClass().Name, primaryKeys, new string[] { relationInfo.Name }, true);
+                }
+            }
+
             SoodaRelationTable rel = GetSoodaRelationTable();
             rel.OnTupleChanged += new SoodaRelationTupleChanged(this.OnTupleChanged);
             if (rel.TupleCount != 0)
@@ -226,7 +268,7 @@ namespace Sooda.ObjectMapper
                     {
                         if (tuples[i].ref1.Equals(masterValue))
                         {
-                            SoodaObject obj = factory.GetRef(transaction, tuples[i].ref2);
+                            SoodaObject obj = _factory.GetRef(transaction, tuples[i].ref2);
                             if (tuples[i].tupleMode > 0)
                             {
                                 InternalAdd(obj);
@@ -244,7 +286,7 @@ namespace Sooda.ObjectMapper
                     {
                         if (tuples[i].ref2.Equals(masterValue))
                         {
-                            SoodaObject obj = factory.GetRef(transaction, tuples[i].ref1);
+                            SoodaObject obj = _factory.GetRef(transaction, tuples[i].ref1);
                             if (tuples[i].tupleMode > 0)
                             {
                                 InternalAdd(obj);
@@ -301,10 +343,7 @@ namespace Sooda.ObjectMapper
 
         public bool IsFixedSize
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         int IList.Add(object o)
@@ -324,18 +363,12 @@ namespace Sooda.ObjectMapper
 
         public bool IsSynchronized
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public int Count
         {
-            get
-            {
-                return this.Length;
-            }
+            get { return this.Length; }
         }
 
         public void CopyTo(Array array, int index)
