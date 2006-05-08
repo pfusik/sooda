@@ -41,7 +41,7 @@ namespace Sooda.ObjectMapper
 {
     public class SoodaObjectManyToManyCollection : IList, ISoodaObjectList
     {
-        private static Logger logger = LogManager.GetLogger("Sooda.ObjectMapper.SoodaObjectManyToManyCollection");
+        private static Logger logger = LogManager.GetLogger("Sooda.ManyToManyCollection");
         protected SoodaTransaction transaction;
         protected SoodaObjectToInt32Association items = null;
         protected SoodaObjectCollection itemsArray = null;

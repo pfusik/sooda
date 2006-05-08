@@ -97,10 +97,10 @@ namespace Sooda.Caching
         public static string GetCollectionKey(string className, SoodaWhereClause wc)
         {
             if (wc == null)
-                return "ALL " + className;
+                return className + " where True";
 
             if (wc.WhereExpression == null)
-                return "ALL " + className;
+                return className + " where True";
 
             StringWriter sw = new StringWriter();
             SoqlPrettyPrinter pp = new SoqlPrettyPrinter(sw, wc.Parameters);

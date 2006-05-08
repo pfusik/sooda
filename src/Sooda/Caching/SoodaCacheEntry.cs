@@ -72,6 +72,7 @@ namespace Sooda.Caching
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
+            /*
             for (int i = 0; i < Data.Length; ++i)
             {
                 object o = Data.GetBoxedFieldValue(i);
@@ -92,6 +93,8 @@ namespace Sooda.Caching
                 }
             }
             return String.Format("Mask: [{0}] Data: [{1}]", DataLoadedMask, sb.ToString());
+            */
+            return String.Format("Mask: {0} {1} columns", DataLoadedMask, Data.Length);
         }
     }
 }

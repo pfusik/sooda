@@ -29,43 +29,15 @@
 
 using System;
 using System.Collections;
+using System.Text;
 
+using Sooda.Schema;
+using System.Data;
 
 namespace Sooda.Caching
 {
-    public class SoodaCachedCollection
+    public interface ISoodaCacheView
     {
-        private string _rootClassName;
-        private string _collectionKey;
-        private IList _primaryKeys;
-        private DateTime _lastAccessTime;
-
-        public SoodaCachedCollection(string collectionKey, string rootClassName, IList primaryKeys)
-        {
-            _collectionKey = collectionKey;
-            _rootClassName = rootClassName;
-            _lastAccessTime = DateTime.Now;
-            _primaryKeys = primaryKeys;
-        }
-
-        public string CollectionKey
-        {
-            get { return _collectionKey; }
-        }
-
-        public string RootClassName
-        {
-            get { return _rootClassName; }
-        }
-
-        public IList PrimaryKeys
-        {
-            get { return _primaryKeys; }
-        }
-
-        public override string ToString()
-        {
-            return _primaryKeys.Count + " items";
-        }
+        DataSet GetSnapshot();
     }
 }

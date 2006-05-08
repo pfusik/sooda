@@ -31,6 +31,7 @@ using System;
 using System.IO;
 using System.Collections;
 using System.Threading;
+using System.Data;
 
 using Sooda.Logging;
 using Sooda.Schema;
@@ -38,7 +39,7 @@ using Sooda.QL;
 
 namespace Sooda.Caching
 {
-    public class SoodaInProcessCache : ISoodaCache
+    public class SoodaInProcessCache : ISoodaCache, ISoodaCacheView
     {
         private ReaderWriterLock _rwlock = new ReaderWriterLock();
         private LruCache _objectCache = new LruCache(-1, TimeSpan.FromMinutes(5), false);
@@ -180,6 +181,14 @@ namespace Sooda.Caching
         public void EvictCollection(string cacheKey)
         {
             _collectionCache.Remove(cacheKey);
+        }
+
+        public DataSet GetSnapshot()
+        {
+            DataSet dataSet = new DataSet();
+            _objectCache.FillSnapshotTable(dataSet, "Objects");
+            _collectionCache.FillSnapshotTable(dataSet, "Collections");
+            return dataSet;
         }
 
         public IList LoadCollection(string key)

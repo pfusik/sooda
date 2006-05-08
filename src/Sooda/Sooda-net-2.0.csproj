@@ -96,6 +96,7 @@
     <Compile Include="Caching\CacheUtils.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Caching\ISoodaCacheView.cs" />
     <Compile Include="Caching\SoodaCacheKey.cs" />
     <Compile Include="Caching\LruCache.cs" />
     <Compile Include="Caching\ISoodaCacheLock.cs" />

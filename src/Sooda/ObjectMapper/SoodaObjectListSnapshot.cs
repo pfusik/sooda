@@ -42,7 +42,7 @@ namespace Sooda.ObjectMapper
 {
     public class SoodaObjectListSnapshot : ISoodaObjectList
     {
-        private static Logger logger = LogManager.GetLogger("Sooda.ObjectMapper.SoodaObjectListSnapshot");
+        private static Logger logger = LogManager.GetLogger("Sooda.ListSnapshot");
 
         public SoodaObjectListSnapshot()
         {

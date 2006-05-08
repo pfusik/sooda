@@ -33,6 +33,7 @@ using System.Text;
 using System.IO;
 
 using Sooda.Schema;
+using System.Data;
 
 namespace Sooda.Caching
 {
@@ -56,6 +57,8 @@ namespace Sooda.Caching
         {
             public LruCacheNode Previous;
             public LruCacheNode Next;
+            public DateTime AddedTime;
+            public DateTime LastAccessTime;
             public DateTime ExpirationTime;
             public int UsedCount;
             public object Key;
@@ -246,8 +249,10 @@ namespace Sooda.Caching
                 node.Previous = null;
                 _lruHead = node;
             }
+            DateTime now = DateTime.Now;
+            node.LastAccessTime = now;
             if (_slidingExpiration)
-                node.ExpirationTime = DateTime.Now + _timeToLive;
+                node.ExpirationTime = now + _timeToLive;
             node.UsedCount++;
             //Dump("After MoveToLruHead()");
         }
@@ -323,6 +328,8 @@ namespace Sooda.Caching
 
                 LruCacheNode node = new LruCacheNode();
 
+                node.AddedTime = now;
+                node.LastAccessTime = now;
                 node.Previous = null;
                 node.Next = _lruHead;
                 node.Key = key;
@@ -387,6 +394,64 @@ namespace Sooda.Caching
                 throw new Exception("LRU assertion failed #5, was " + cnt + " should be " + _hash.Count);
             }
             Console.WriteLine();
+        }
+
+        public void FillSnapshotTable(DataSet dataSet, string tableName)
+        {
+            lock (this)
+            {
+                DataTable dt = dataSet.Tables.Add(tableName);
+                dt.Columns.Add("LruPosition",typeof(int));
+                dt.Columns.Add("Class",typeof(string));
+                dt.Columns.Add("Key",typeof(string));
+                dt.Columns.Add("Value",typeof(string));
+                dt.Columns.Add("AddedTime",typeof(DateTime));
+                dt.Columns.Add("LastAccessTime",typeof(DateTime));
+                dt.Columns.Add("ExpirationTime",typeof(DateTime));
+                dt.Columns.Add("UsedCount",typeof(int));
+
+                int pos = 0;
+
+                for (LruCacheNode node = _lruHead; node != null; node = node.Next)
+                {
+                    DataRow row = dt.NewRow();
+
+                    string className;
+                    string keyValue;
+
+                    SoodaCacheKey ck1 = node.Key as SoodaCacheKey;
+                    SoodaCachedCollection scc = node.Value as SoodaCachedCollection;
+
+                    if (ck1 != null)
+                    {
+                        className = ck1.ClassName;
+                        keyValue = Convert.ToString(ck1.KeyValue);
+                    }
+                    else if (scc != null)
+                    {
+                        className = scc.RootClassName;
+                        keyValue = scc.CollectionKey;
+                    }
+                    else
+                    {
+                        className = Convert.ToString(node.Key);
+                        keyValue = null;
+                    }
+
+                    row.ItemArray = new object[]
+                    {
+                        pos++,
+                        className,
+                        keyValue,
+                        Convert.ToString(node.Value),
+                        node.AddedTime,
+                        node.LastAccessTime,
+                        node.ExpirationTime,
+                        node.UsedCount
+                    };
+                    dt.Rows.Add(row);
+                }
+            }
         }
     }
 }
