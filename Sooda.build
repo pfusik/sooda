@@ -32,7 +32,7 @@
     <target name="build" depends="build-${nant.settings.currentframework}" />
     <target name="build-net-1.0" depends="build-common, tools" />
     <target name="build-net-1.1" depends="build-common, tools" />
-    <target name="build-net-2.0" depends="build-common, tools" />
+    <target name="build-net-2.0" depends="build-common, tools, Sooda.Web" />
     <target name="build-netcf-1.0" depends="build-common" />
     <target name="build-mono-1.0" depends="build-common, minitools" />
 
@@ -120,6 +120,22 @@
                 <include name="**/*.cs" />
             </sources>
             <arg value="${sooda.csc.args}"/>
+        </csc>
+    </target>
+
+    <target name="Sooda.Web" depends="configure, Sooda">
+        <csc target="library" output="${sooda.dir}/Sooda.Web.dll" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
+            <references>                                  
+                <include name="mscorlib.dll" />
+                <include name="System.dll" />
+                <include name="System.XML.dll" />
+                <include name="System.Data.dll" />
+                <include name="System.Drawing.dll" />
+                <include name="${sooda.dir}/Sooda.dll" />
+            </references>
+            <sources basedir="src/Sooda.Web">
+                <include name="**/*.cs" />
+            </sources>
         </csc>
     </target>
 
@@ -454,7 +470,7 @@
         
         <call target="installer" />
     </target>
-    <target name="installer">
+    <target name="installer" depends="vs2005_wizards">
         <exec program="nant" commandline="-t:net-1.1 build doc" />
         <exec program="nant" commandline="-t:net-2.0 build" />
 

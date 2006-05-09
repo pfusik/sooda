@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaStubGen-net-2.0", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web-net-2.0", "web\Web-net-2.0.csproj", "{2D11C6FF-FF8C-4517-8546-C81C621CFF7C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.Web", "src\Sooda.Web\Sooda.Web.csproj", "{EF2E38CE-C8B9-489B-B537-DF5F0081C900}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,10 @@ Global
 		{2D11C6FF-FF8C-4517-8546-C81C621CFF7C}.Debug|Any CPU.ActiveCfg = Release|Any CPU
 		{2D11C6FF-FF8C-4517-8546-C81C621CFF7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D11C6FF-FF8C-4517-8546-C81C621CFF7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF2E38CE-C8B9-489B-B537-DF5F0081C900}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF2E38CE-C8B9-489B-B537-DF5F0081C900}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF2E38CE-C8B9-489B-B537-DF5F0081C900}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF2E38CE-C8B9-489B-B537-DF5F0081C900}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
