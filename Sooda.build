@@ -7,7 +7,7 @@
 
     <property name="release.version" value="${tstamp.date}" unless="${property::exists('release.version')}" />
 
-    <property name="ndoc.console.exe" value="C:\Program Files\NDoc 1.3\bin\net\1.1\ndocconsole.exe" />
+    <property name="ndoc.console.exe" value="D:\Apps\NDoc\1.1\ndocconsole.exe" />
     <property name="prettyprinter.exe" value="tools/PrettyPrinter.exe" />
 
     <property name="scp.program" value="pscp" />
@@ -802,13 +802,11 @@
 
     <target name="vs2005_wizards">
         <copy todir="tmp_dir">
-            <fileset basedir="wizard/vs2005/work/vb-console/Soodawind">
+            <fileset basedir="wizard/vs2005/work/cs-console/Soodawind">
                 <include name="**/*" />
                 <exclude name="**/bin/**" />
                 <exclude name="**/obj/**" />
                 <exclude name="**/Stubs/**" />
-                <exclude name="**/_Stubs.*" />
-                <exclude name="**/_DBSchema.bin" />
                 <exclude name="**/*.suo" />
                 <exclude name="**/*.sln" />
                 <exclude name="**/*.*proj.user" />
@@ -819,11 +817,14 @@
             </filterchain>
         </copy>
         <copy todir="tmp_dir">
-            <fileset basedir="wizard/vs2005/work/vb-console/Soodawind">
+            <fileset basedir="wizard/vs2005/work/cs-console/Soodawind">
                 <include name="**/*.vstemplate" />
             </fileset>
+            <filterchain>                                             
+                <replacestring from="&quot;Soodawind.soodaproject&quot;" to="&quot;$safeprojectname$.soodaproject&quot;" />
+            </filterchain>
         </copy>
-        <zip zipfile="SoodaVBConsole.zip">
+        <zip zipfile="CSSoodaConsoleProject.zip">
             <fileset basedir="tmp_dir">
                 <include name="**/*" />
             </fileset>

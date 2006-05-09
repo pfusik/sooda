@@ -722,8 +722,14 @@ namespace Sooda
             {
                 if (GetTransaction().CachingPolicy.ShouldCacheObject(this))
                 {
-                    GetTransaction().Cache.Add(GetClassInfo().GetRootClass().Name, GetPrimaryKeyValue(), GetCacheEntry());
-                    FromCache = true;
+                    TimeSpan expirationTimeout;
+                    bool slidingExpiration;
+
+                    if (GetTransaction().CachingPolicy.GetExpirationTimeout(this, out expirationTimeout, out slidingExpiration))
+                    {
+                        GetTransaction().Cache.Add(GetClassInfo().GetRootClass().Name, GetPrimaryKeyValue(), GetCacheEntry(), expirationTimeout, slidingExpiration);
+                        FromCache = true;
+                    }
                 }
             }
 

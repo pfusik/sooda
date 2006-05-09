@@ -322,11 +322,21 @@ namespace Sooda.ObjectMapper
                         keys[p++] = obj.GetPrimaryKeyValue();
                     }
 
-                    transaction.Cache.StoreCollection(cacheKey,
-                        classInfo.GetRootClass().Name,
-                        keys,
-                        involvedClassNames,
-                        ((options & SoodaSnapshotOptions.KeysOnly) != 0) ? false : true);
+                    TimeSpan expirationTimeout;
+                    bool slidingExpiration;
+
+                    if (transaction.CachingPolicy.GetExpirationTimeout(
+                        classInfo, whereClause, orderBy, topCount, keys.Length,
+                        out expirationTimeout, out slidingExpiration))
+                    {
+                        transaction.Cache.StoreCollection(cacheKey,
+                            classInfo.GetRootClass().Name,
+                            keys,
+                            involvedClassNames,
+                            ((options & SoodaSnapshotOptions.KeysOnly) != 0) ? false : true,
+                            expirationTimeout,
+                            slidingExpiration);
+                    }
                 }
             }
         }

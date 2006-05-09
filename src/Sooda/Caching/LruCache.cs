@@ -60,6 +60,8 @@ namespace Sooda.Caching
             public DateTime AddedTime;
             public DateTime LastAccessTime;
             public DateTime ExpirationTime;
+            public bool SlidingExpiration;
+            public TimeSpan ExpirationTimeout;
             public int UsedCount;
             public object Key;
             public object Value;
@@ -68,8 +70,6 @@ namespace Sooda.Caching
         private Hashtable _hash = new Hashtable();
         private LruCacheNode _lruHead = null;
         private LruCacheNode _lruTail = null;
-        private TimeSpan _timeToLive;
-        private bool _slidingExpiration;
         private int _maxItems;
         private DateTime _nextSweepTime = DateTime.MinValue;
         private TimeSpan _sweepEvery;
@@ -78,11 +78,9 @@ namespace Sooda.Caching
         public event LruCacheDelegate ItemRemoved;
         public event LruCacheDelegate ItemUsed;
 
-        public LruCache(int maxItems, TimeSpan timeToLive, bool slidingExpiration)
+        public LruCache(int maxItems)
         {
             _maxItems = maxItems;
-            _timeToLive = timeToLive;
-            _slidingExpiration = slidingExpiration;
             SweepEvery = TimeSpan.Zero;
         }
 
@@ -93,22 +91,6 @@ namespace Sooda.Caching
             {
                 _maxItems = value;
                 Clear();
-            }
-        }
-
-        public bool SlidingExpiration
-        {
-            get { return _slidingExpiration; }
-            set { _slidingExpiration = value; }
-        }
-
-        public TimeSpan TimeToLive
-        {
-            get { return _timeToLive; }
-            set
-            {
-                Clear();
-                _timeToLive = value;
             }
         }
 
@@ -133,7 +115,6 @@ namespace Sooda.Caching
         public object this[object key]
         {
             get { return Get(key); }
-            set { Set(key, value); }
         }
 
         public object Get(object key)
@@ -251,8 +232,8 @@ namespace Sooda.Caching
             }
             DateTime now = DateTime.Now;
             node.LastAccessTime = now;
-            if (_slidingExpiration)
-                node.ExpirationTime = now + _timeToLive;
+            if (node.SlidingExpiration)
+                node.ExpirationTime = now + node.ExpirationTimeout;
             node.UsedCount++;
             //Dump("After MoveToLruHead()");
         }
@@ -293,7 +274,7 @@ namespace Sooda.Caching
             }
         }
 
-        public void Set(object key, object value)
+        public void Set(object key, object value, TimeSpan expirationTimeout, bool slidingExpiration)
         {
             lock (this)
             {
@@ -302,7 +283,7 @@ namespace Sooda.Caching
                 LruCacheNode node = (LruCacheNode)_hash[key];
                 if (node == null)
                 {
-                    Add(key, value);
+                    Add(key, value, expirationTimeout, slidingExpiration);
                 }
                 else
                 {
@@ -313,7 +294,7 @@ namespace Sooda.Caching
             }
         }
 
-        public void Add(object key, object value)
+        public void Add(object key, object value, TimeSpan expirationTimeout, bool slidingExpiration)
         {
             lock (this)
             {
@@ -329,12 +310,14 @@ namespace Sooda.Caching
                 LruCacheNode node = new LruCacheNode();
 
                 node.AddedTime = now;
+                node.SlidingExpiration = slidingExpiration;
+                node.ExpirationTimeout = expirationTimeout;
                 node.LastAccessTime = now;
                 node.Previous = null;
                 node.Next = _lruHead;
                 node.Key = key;
                 node.Value = value;
-                node.ExpirationTime = now + _timeToLive;
+                node.ExpirationTime = now + expirationTimeout;
 
                 if (_lruHead != null)
                 {

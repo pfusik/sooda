@@ -35,6 +35,7 @@ using System.Threading;
 using Sooda.Logging;
 using Sooda.Schema;
 using Sooda.QL;
+using System.Globalization;
 
 namespace Sooda.Caching
 {
@@ -74,6 +75,14 @@ namespace Sooda.Caching
             if (_defaultCache == null)
                 _defaultCache = new SoodaInProcessCache();
 
+            ISoodaCachingPolicyFixedTimeout sft = _defaultCachingPolicy as ISoodaCachingPolicyFixedTimeout;
+            if (sft != null)
+            {
+                sft.SlidingExpiration = Convert.ToBoolean(SoodaConfig.GetString("sooda.cachingPolicy.slidingExpiration", "true"), CultureInfo.InvariantCulture);
+                sft.ExpirationTimeout = TimeSpan.FromSeconds(
+                    Convert.ToInt32(SoodaConfig.GetString("sooda.cachingPolicy.expirationTimeout", "120"), CultureInfo.InvariantCulture));
+            }
+
             logger.Debug("Default cache: {0} Policy: {1}", _defaultCache.GetType().Name, _defaultCachingPolicy.GetType().Name);
         }
 
@@ -108,11 +117,5 @@ namespace Sooda.Caching
             string canonicalWhereClause = sw.ToString();
             return className + " where " + canonicalWhereClause;
         }
-
-        [Obsolete("Configure SoodaCache.DefaultCache accordingly.", true)]
-        public static bool Enabled;
-
-        [Obsolete("Configure SoodaCache.DefaultCache accordingly.", true)]
-        public static TimeSpan ExpirationTimeout;
     }
 }

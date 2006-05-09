@@ -34,21 +34,46 @@ using Sooda.Schema;
 
 namespace Sooda.Caching
 {
-    public class SoodaCacheAllPolicy : SimpleCachingPolicy
+    public abstract class SimpleCachingPolicy : ISoodaCachingPolicy, ISoodaCachingPolicyFixedTimeout
     {
-        public override bool ShouldCacheObject(SoodaObject theObject)
+        private bool _slidingExpiration = true;
+        private TimeSpan _expirationTimeout = TimeSpan.FromMinutes(1);
+
+        public bool SlidingExpiration
         {
+            get { return _slidingExpiration; }
+            set { _slidingExpiration = value; }
+        }
+
+        public TimeSpan ExpirationTimeout
+        {
+            get { return _expirationTimeout; }
+            set { _expirationTimeout = value; }
+        }
+
+        public bool GetExpirationTimeout(SoodaObject theObject, out TimeSpan expirationTimeout, out bool slidingExpiration)
+        {
+            expirationTimeout = _expirationTimeout;
+            slidingExpiration = _slidingExpiration;
             return true;
         }
 
-        public override bool ShouldCacheCollection(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount)
+        public bool GetExpirationTimeout(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount, int itemCount, out TimeSpan expirationTimeout, out bool slidingExpiration)
         {
+            expirationTimeout = _expirationTimeout;
+            slidingExpiration = _slidingExpiration;
             return true;
         }
 
-        public override bool ShouldCacheRelation(RelationInfo relation, ClassInfo classInfo)
+        public bool GetExpirationTimeout(RelationInfo relation, ClassInfo resultClass, int itemCount, out TimeSpan expirationTimeout, out bool slidingExpiration)
         {
+            expirationTimeout = _expirationTimeout;
+            slidingExpiration = _slidingExpiration;
             return true;
         }
+
+        public abstract bool ShouldCacheObject(SoodaObject theObject);
+        public abstract bool ShouldCacheCollection(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount);
+        public abstract bool ShouldCacheRelation(RelationInfo relation, ClassInfo resultClass);
     }
 }

@@ -34,9 +34,9 @@ using Sooda.Schema;
 
 namespace Sooda.Caching
 {
-    public class SoodaCacheSmallPolicy : ISoodaCachingPolicy
+    public class SoodaCacheSmallPolicy : SimpleCachingPolicy
     {
-        public bool ShouldCacheObject(SoodaObject theObject)
+        public override bool ShouldCacheObject(SoodaObject theObject)
         {
             if (theObject.GetClassInfo().Cardinality == ClassCardinality.Small)
                 return true;
@@ -44,7 +44,7 @@ namespace Sooda.Caching
                 return false;
         }
 
-        public bool ShouldCacheCollection(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount)
+        public override bool ShouldCacheCollection(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount)
         {
             if (classInfo.Cardinality == ClassCardinality.Small)
                 return true;
@@ -52,7 +52,7 @@ namespace Sooda.Caching
                 return false;
         }
 
-        public bool ShouldCacheRelation(RelationInfo relation, ClassInfo classInfo)
+        public override bool ShouldCacheRelation(RelationInfo relation, ClassInfo classInfo)
         {
             if (classInfo.Cardinality == ClassCardinality.Small)
                 return true;

@@ -1,0 +1,29 @@
+<VSTemplate Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+  <TemplateData>
+    <Name>SoodaConsoleApplication</Name>
+    <Description>Sooda Console Application</Description>
+    <ProjectType>CSharp</ProjectType>
+    <ProjectSubType>
+    </ProjectSubType>
+    <SortOrder>1000</SortOrder>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>SoodaConsoleApplication</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+    <LocationField>Enabled</LocationField>
+    <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+    <Icon>__TemplateIcon.ico</Icon>
+  </TemplateData>
+  <TemplateContent>
+    <Project TargetFileName="Soodawind.csproj" File="Soodawind.csproj" ReplaceParameters="true">
+      <ProjectItem ReplaceParameters="false" TargetFileName="_DBSchema.bin">_DBSchema.bin</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="_Stubs.cs">_Stubs.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Program.cs">Program.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="App.config">App.config</ProjectItem>
+      <Folder Name="Properties" TargetFolderName="Properties">
+        <ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.cs">AssemblyInfo.cs</ProjectItem>
+      </Folder>
+      <ProjectItem ReplaceParameters="true" TargetFileName="SoodaSchema.xml">SoodaSchema.xml</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Soodawind.soodaproject">Soodawind.soodaproject</ProjectItem>
+    </Project>
+  </TemplateContent>
+</VSTemplate>

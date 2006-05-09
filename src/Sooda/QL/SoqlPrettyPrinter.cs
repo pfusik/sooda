@@ -104,7 +104,6 @@ namespace Sooda.QL
             Output.Write(" and ");
             v.Right.Accept(this);
             Output.Write(")");
-
         }
 
         public virtual void Visit(SoqlBooleanInExpression v)

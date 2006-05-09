@@ -34,21 +34,21 @@ using Sooda.Schema;
 
 namespace Sooda.Caching
 {
-    public class SoodaNoCachingPolicy : ISoodaCachingPolicy
+    public class SoodaNoCachingPolicy : SimpleCachingPolicy
     {
-        public bool ShouldCacheObject(SoodaObject theObject)
+        public override bool ShouldCacheObject(SoodaObject theObject)
         {
-            return false;
+            return true;
         }
 
-        public bool ShouldCacheCollection(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount)
+        public override bool ShouldCacheCollection(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount)
         {
-            return false;
+            return true;
         }
 
-        public bool ShouldCacheRelation(RelationInfo relation, ClassInfo classInfo)
+        public override bool ShouldCacheRelation(RelationInfo relation, ClassInfo classInfo)
         {
-            return false;
+            return true;
         }
     }
 }

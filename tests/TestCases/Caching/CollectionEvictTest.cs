@@ -55,7 +55,7 @@ namespace Sooda.UnitTests.TestCases.Caching
         {
             ISoodaCache c = new SoodaInProcessCache();
             string ck = "Contact where 1=2";
-            c.StoreCollection(ck, "Contact", new int[] { 1, 2, 3 }, new string[0], true);
+            c.StoreCollection(ck, "Contact", new int[] { 1, 2, 3 }, new string[0], true, TimeSpan.FromHours(1), false);
             Assert.IsNotNull(c.LoadCollection(ck));
             Assert.AreEqual(3, c.LoadCollection(ck).Count);
             c.Evict("Contact", 3);
@@ -66,11 +66,11 @@ namespace Sooda.UnitTests.TestCases.Caching
         public void Test6()
         {
             ISoodaCache c = new SoodaInProcessCache();
-            c.Add("Contact", 1, DummyEntry(1));
-            c.Add("Contact", 2, DummyEntry(2));
-            c.Add("Contact", 3, DummyEntry(3));
+            c.Add("Contact", 1, DummyEntry(1), TimeSpan.FromHours(1), false);
+            c.Add("Contact", 2, DummyEntry(2), TimeSpan.FromHours(1), false);
+            c.Add("Contact", 3, DummyEntry(3), TimeSpan.FromHours(1), false);
             string ck = "Contact where 1=2";
-            c.StoreCollection(ck, "Contact", new int[] { 1, 2, 3 }, new string[] { "Contact", "Group", "Role" }, true);
+            c.StoreCollection(ck, "Contact", new int[] { 1, 2, 3 }, new string[] { "Contact", "Group", "Role" }, true, TimeSpan.FromHours(1), false);
             Assert.IsNotNull(c.LoadCollection(ck));
             Assert.AreEqual(3, c.LoadCollection(ck).Count);
             c.Invalidate("Group", 3, SoodaCacheInvalidateReason.Updated);
@@ -81,8 +81,7 @@ namespace Sooda.UnitTests.TestCases.Caching
         public void Test7()
         {
             SoodaInProcessCache c = new SoodaInProcessCache();
-            c.ExpirationTimeout = TimeSpan.FromMilliseconds(50);
-            c.Add("Contact", 3, DummyEntry(3));
+            c.Add("Contact", 3, DummyEntry(3), TimeSpan.FromMilliseconds(50), false);
             Assert.IsNotNull(c.Find("Contact", 3));
             System.Threading.Thread.Sleep(100);
             c.Sweep();
@@ -93,12 +92,11 @@ namespace Sooda.UnitTests.TestCases.Caching
         public void Test8()
         {
             SoodaInProcessCache c = new SoodaInProcessCache();
-            c.ExpirationTimeout = TimeSpan.FromMilliseconds(150);
-            c.Add("Contact", 1, DummyEntry(1));
-            c.Add("Contact", 2, DummyEntry(2));
-            c.Add("Contact", 3, DummyEntry(3));
+            c.Add("Contact", 1, DummyEntry(1), TimeSpan.FromMilliseconds(150), false);
+            c.Add("Contact", 2, DummyEntry(2), TimeSpan.FromMilliseconds(150), false);
+            c.Add("Contact", 3, DummyEntry(3), TimeSpan.FromMilliseconds(150), false);
             string ck = "Contact where 1=2";
-            c.StoreCollection(ck, "Contact", new int[] { 1, 2, 3 }, new string[] { "Contact", "Group", "Role" }, true);
+            c.StoreCollection(ck, "Contact", new int[] { 1, 2, 3 }, new string[] { "Contact", "Group", "Role" }, true, TimeSpan.FromMilliseconds(150), false);
             Assert.IsNotNull(c.Find("Contact", 3));
             System.Threading.Thread.Sleep(200);
             Console.WriteLine("*** Sweeping ***");
@@ -115,7 +113,6 @@ namespace Sooda.UnitTests.TestCases.Caching
                 testDataSource.Open();
 
                 SoodaInProcessCache myCache = new SoodaInProcessCache();
-                myCache.ExpirationTimeout = TimeSpan.FromHours(1);
                 using (SoodaTransaction tran = new SoodaTransaction())
                 {
                     tran.RegisterDataSource(testDataSource);
@@ -154,7 +151,6 @@ namespace Sooda.UnitTests.TestCases.Caching
                 testDataSource.Open();
 
                 SoodaInProcessCache myCache = new SoodaInProcessCache();
-                myCache.ExpirationTimeout = TimeSpan.FromHours(1);
                 using (SoodaTransaction tran = new SoodaTransaction())
                 {
                     tran.RegisterDataSource(testDataSource);
@@ -194,7 +190,6 @@ namespace Sooda.UnitTests.TestCases.Caching
                 testDataSource.Open();
 
                 SoodaInProcessCache myCache = new SoodaInProcessCache();
-                myCache.ExpirationTimeout = TimeSpan.FromHours(1);
                 using (SoodaTransaction tran = new SoodaTransaction())
                 {
                     tran.RegisterDataSource(testDataSource);

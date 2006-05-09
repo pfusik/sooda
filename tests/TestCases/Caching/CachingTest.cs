@@ -61,7 +61,7 @@ namespace Sooda.UnitTests.TestCases.Caching
         public void Test2()
         {
             ISoodaCache c = new SoodaInProcessCache();
-            c.Add("Contact", 2, DummyEntry(2));
+            c.Add("Contact", 2, DummyEntry(2), TimeSpan.FromHours(1), false);
             c.Invalidate("Contact", 2, SoodaCacheInvalidateReason.Updated);
             Assert.IsNull(c.Find("Contact", 2));
         }
@@ -70,7 +70,7 @@ namespace Sooda.UnitTests.TestCases.Caching
         public void Test3()
         {
             ISoodaCache c = new SoodaInProcessCache();
-            c.Add("Contact", 2, DummyEntry(2));
+            c.Add("Contact", 2, DummyEntry(2), TimeSpan.FromHours(1), false);
             //c.Invalidate("Contact", 2, SoodaCacheInvalidateReason.Updated);
             Assert.IsNotNull(c.Find("Contact", 2));
             Assert.AreEqual(2, c.Find("Contact", 2).DataLoadedMask);
@@ -80,8 +80,8 @@ namespace Sooda.UnitTests.TestCases.Caching
         public void Test4()
         {
             ISoodaCache c = new SoodaInProcessCache();
-            c.Add("Contact", 2, DummyEntry(2));
-            c.Add("Contact", 2, DummyEntry(3));
+            c.Add("Contact", 2, DummyEntry(2), TimeSpan.FromHours(1), false);
+            c.Add("Contact", 2, DummyEntry(3), TimeSpan.FromHours(1), false);
             Assert.AreEqual(3, c.Find("Contact", 2).DataLoadedMask);
         }
 
@@ -93,7 +93,6 @@ namespace Sooda.UnitTests.TestCases.Caching
                 testDataSource.Open();
 
                 SoodaInProcessCache myCache = new SoodaInProcessCache();
-                myCache.ExpirationTimeout = TimeSpan.FromHours(1);
                 using (SoodaTransaction tran = new SoodaTransaction())
                 {
                     tran.RegisterDataSource(testDataSource);
@@ -128,7 +127,6 @@ namespace Sooda.UnitTests.TestCases.Caching
                 testDataSource.Open();
 
                 SoodaInProcessCache myCache = new SoodaInProcessCache();
-                myCache.ExpirationTimeout = TimeSpan.FromHours(1);
                 using (SoodaTransaction tran = new SoodaTransaction())
                 {
                     tran.RegisterDataSource(testDataSource);

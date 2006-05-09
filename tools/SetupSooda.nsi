@@ -151,6 +151,10 @@ Section "Visual Studio 2005 Support"
   SetOutPath "$0\xml\schemas"
   File src\Sooda\Schema\SoodaSchema.xsd
   File src\Sooda.CodeGen\SoodaProject.xsd
+
+  SetOutPath "$DOCUMENTS\Visual Studio 2005\Templates\ProjectTemplates\Visual C#"
+  File CSSoodaConsoleProject.zip
+
   Return
 
 novsnet:

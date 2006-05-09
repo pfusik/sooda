@@ -42,23 +42,16 @@ namespace Sooda.Caching
     public class SoodaInProcessCache : ISoodaCache, ISoodaCacheView
     {
         private ReaderWriterLock _rwlock = new ReaderWriterLock();
-        private LruCache _objectCache = new LruCache(-1, TimeSpan.FromMinutes(5), false);
+        private LruCache _objectCache = new LruCache(-1);
 
         // string -> (LruCache(SoodaCachedCollectionKey))
         private Hashtable _collectionsDependentOnClass = new Hashtable();
         private object _marker = new object();
 
-        private LruCache _collectionCache = new LruCache(-1, TimeSpan.FromMinutes(5), false);
+        private LruCache _collectionCache = new LruCache(-1);
         private static Logger logger = LogManager.GetLogger("Sooda.Cache");
 
         private TimeSpan _expirationTimeout = TimeSpan.FromMinutes(1);
-        private static bool Enabled = true;
-
-        public TimeSpan ExpirationTimeout
-        {
-            get { return _objectCache.TimeToLive; }
-            set { _objectCache.TimeToLive = value; }
-        }
 
         public SoodaInProcessCache()
         {
@@ -91,7 +84,7 @@ namespace Sooda.Caching
             try
             {
                 SoodaCacheKey cacheKey = new SoodaCacheKey(className, primaryKeyValue);
-                return (SoodaCacheEntry)_objectCache[cacheKey];
+                return (SoodaCacheEntry)_objectCache.Get(cacheKey);
             }
             finally
             {
@@ -99,13 +92,13 @@ namespace Sooda.Caching
             }
         }
 
-        public void Add(string className, object primaryKeyValue, SoodaCacheEntry entry)
+        public void Add(string className, object primaryKeyValue, SoodaCacheEntry entry, TimeSpan expirationTimeout, bool slidingExpiration)
         {
             _rwlock.AcquireWriterLock(-1);
             try
             {
                 SoodaCacheKey cacheKey = new SoodaCacheKey(className, primaryKeyValue);
-                _objectCache[cacheKey] = entry;
+                _objectCache.Set(cacheKey, entry, expirationTimeout, slidingExpiration);
                 if (logger.IsTraceEnabled)
                 {
                     logger.Trace("Adding {0} to cache.", cacheKey);
@@ -127,9 +120,6 @@ namespace Sooda.Caching
 
         public void Invalidate(string className, object primaryKeyValue, SoodaCacheInvalidateReason reason)
         {
-            if (!Enabled)
-                return;
-
             if (logger.IsTraceEnabled)
             {
                 logger.Trace("Invalidating object {0}({1}). Reason: {2}", className, primaryKeyValue, reason);
@@ -205,20 +195,20 @@ namespace Sooda.Caching
             return retval;
         }
 
-        private void RegisterDependentCollectionClass(string cacheKey, string dependentClassName)
+        private void RegisterDependentCollectionClass(string cacheKey, string dependentClassName, TimeSpan expirationTimeout, bool slidingExpiration)
         {
             LruCache cache = (LruCache)_collectionsDependentOnClass[dependentClassName];
             if (cache == null)
             {
-                cache = new LruCache(-1, ExpirationTimeout, false);
+                cache = new LruCache(-1);
                 _collectionsDependentOnClass[dependentClassName] = cache;
             }
 
             // this is actually a set
-            cache[cacheKey] = _marker;
+            cache.Set(cacheKey, _marker, expirationTimeout, slidingExpiration);
         }
 
-        public void StoreCollection(string cacheKey, string rootClassName, IList primaryKeys, string[] dependentClassNames, bool evictWhenItemRemoved)
+        public void StoreCollection(string cacheKey, string rootClassName, IList primaryKeys, string[] dependentClassNames, bool evictWhenItemRemoved, TimeSpan expirationTimeout, bool slidingExpiration)
         {
             if (cacheKey != null)
             {
@@ -245,14 +235,14 @@ namespace Sooda.Caching
                             };
                         }
                     }
-                    _collectionCache[cacheKey] = cc;
+                    _collectionCache.Set(cacheKey, cc, expirationTimeout, slidingExpiration);
 
-                    RegisterDependentCollectionClass(cacheKey, rootClassName);
+                    RegisterDependentCollectionClass(cacheKey, rootClassName, expirationTimeout, slidingExpiration);
                     if (dependentClassNames != null)
                     {
                         for (int i = 0; i < dependentClassNames.Length; ++i)
                         {
-                            RegisterDependentCollectionClass(cacheKey, dependentClassNames[i]);
+                            RegisterDependentCollectionClass(cacheKey, dependentClassNames[i], expirationTimeout, slidingExpiration);
                         }
                     }
                 }

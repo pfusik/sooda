@@ -40,12 +40,24 @@ namespace Sooda.Caching
 {
     public class SoodaNoCache : ISoodaCache
     {
+        public bool DefaultSlidingExpiration
+        {
+            get { return false; }
+            set { } 
+        }
+
+        public TimeSpan DefaultExpirationTimeout
+        {
+            get { return TimeSpan.Zero; }
+            set { }
+        }
+
         SoodaCacheEntry ISoodaCache.Find(string className, object primaryKeyValue)
         {
             return null;
         }
 
-        void ISoodaCache.Add(string className, object primaryKeyValue, SoodaCacheEntry entry)
+        void ISoodaCache.Add(string className, object primaryKeyValue, SoodaCacheEntry entry, TimeSpan expirationTimeout, bool slidingExpiration)
         {
         }
 
@@ -66,7 +78,7 @@ namespace Sooda.Caching
             return null;
         }
 
-        void ISoodaCache.StoreCollection(string cacheKey, string rootClassName, IList primaryKeys, string[] dependentClasses, bool evictWhenItemRemoved)
+        void ISoodaCache.StoreCollection(string cacheKey, string rootClassName, IList primaryKeys, string[] dependentClasses, bool evictWhenItemRemoved, TimeSpan expirationTimeout, bool slidingExpiration)
         {
         }
 
