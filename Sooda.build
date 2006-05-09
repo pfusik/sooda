@@ -800,7 +800,8 @@
         </delete>
     </target>
 
-    <target name="vs2005_wizards">
+    <target name="vs2005_wizards" depends="clean_wizards">
+        <delete dir="tmp_dir" failonerror="false" />
         <copy todir="tmp_dir">
             <fileset basedir="wizard/vs2005/work/cs-console/Soodawind">
                 <include name="**/*" />
@@ -816,6 +817,8 @@
                 <replacestring from="Soodawind" to="$safeprojectname$" />
             </filterchain>
         </copy>
+        <echo message="This is just a placeholder. Rebuild your project to generate stubs." file="tmp_dir/_DBSchema.bin" />
+        <echo message="This is just a placeholder. Rebuild your project to generate stubs." file="tmp_dir/_Stubs.cs" />
         <copy todir="tmp_dir">
             <fileset basedir="wizard/vs2005/work/cs-console/Soodawind">
                 <include name="**/*.vstemplate" />
