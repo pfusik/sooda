@@ -31,9 +31,9 @@
     <class name="Contact" cached="true" cacheCollections="true">
         <table name="Contact">
             <field name="ContactId" dbcolumn="id" type="Integer" primaryKey="true" />
-            <field name="PrimaryGroup" dbcolumn="primary_group" type="Integer" references="Group" nullable="true" onDelete="Cascade" />
-            <field name="Type" dbcolumn="type" type="String" size="16" references="ContactType" />
-            <field name="Name" dbcolumn="name" type="AnsiString" size="64" nullable="false" />
+            <field name="PrimaryGroup" dbcolumn="primary_group" type="Integer" references="Group" nullable="true" onDelete="Cascade" find="true" />
+            <field name="Type" dbcolumn="type" type="String" size="16" references="ContactType" findList="true" />
+            <field name="Name" dbcolumn="name" type="AnsiString" size="64" nullable="false" find="true" findList="true" />
             <field name="Active" dbcolumn="active" type="BooleanAsInteger" />
         </table>
         <table name="Contact">

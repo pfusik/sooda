@@ -278,6 +278,77 @@ namespace Sooda.CodeGen
             gen.GenerateFields(ctd, ci);
             gen.GenerateProperties(ctd, ci);
 
+            foreach (FieldInfo fi in ci.LocalFields)
+            {
+                for (int withTransaction = 0; withTransaction <= 1; ++withTransaction)
+                {
+                    for (int list = 0; list <= 1; list++)
+                    {
+                        for (int reference = 0; reference <= 1; reference++)
+                        {
+                            if (reference == 1 && fi.ReferencedClass == null)
+                                continue;
+
+                            if (list == 0 && !fi.FindMethod)
+                                continue;
+
+                            if (list == 1 && !fi.FindListMethod)
+                                continue;
+
+                            CodeMemberMethod findMethod = new CodeMemberMethod();
+                            findMethod.Name = "Find" + ((list == 1) ? "List" : "") + "By" + fi.Name;
+                            findMethod.Attributes = MemberAttributes.Public | MemberAttributes.Static;
+                            findMethod.ReturnType = new CodeTypeReference(Project.OutputNamespace + "." + ci.Name + ((list == 1) ? "List" : ""));
+
+                            if (withTransaction == 1)
+                            {
+                                findMethod.Parameters.Add(
+                                    new CodeParameterDeclarationExpression(
+                                    new CodeTypeReference(typeof(SoodaTransaction)), "transaction")
+                                    );
+                            }
+
+                            if (reference == 1)
+                            {
+                                findMethod.Parameters.Add(
+                                    new CodeParameterDeclarationExpression(
+                                        fi.ReferencedClass.Name, MakeCamelCase(fi.Name))
+                                        );
+                            }
+                            else
+                            {
+                                findMethod.Parameters.Add(
+                                    new CodeParameterDeclarationExpression(
+                                        fi.GetFieldHandler().GetFieldType(), MakeCamelCase(fi.Name))
+                                        );
+                            }
+
+                            CodeExpression whereClause =
+                                new CodeObjectCreateExpression(
+                                new CodeTypeReference(typeof(SoodaWhereClause)),
+                                new CodePrimitiveExpression(fi.Name + " = {0}"),
+                                new CodeArgumentReferenceExpression(MakeCamelCase(fi.Name)));
+
+                            CodeExpression transaction = new CodeArgumentReferenceExpression("transaction");
+                            if (withTransaction == 0)
+                            {
+                                transaction = new CodePropertyReferenceExpression(
+                                    new CodeTypeReferenceExpression(typeof(SoodaTransaction)),
+                                    "ActiveTransaction");
+                            }
+
+                            findMethod.Statements.Add(
+                                new CodeMethodReturnStatement(
+                                    new CodeMethodInvokeExpression(
+                                    null, ((list == 1) ? "GetList" : "LoadSingleObject"),
+                                    transaction,
+                                    whereClause)));
+                            ctd.Members.Add(findMethod);
+                        }
+                    }
+                }
+            }
+
             // literals
             if (ci.Constants != null && ci.GetPrimaryKeyFields().Length == 1)
             {

@@ -100,6 +100,14 @@ namespace Sooda.Schema
         [DefaultValue(0)]
         public int PrefetchLevel = 0;
 
+        [XmlAttribute("find")]
+        [DefaultValue(false)]
+        public bool FindMethod = false;
+
+        [XmlAttribute("findList")]
+        [DefaultValue(false)]
+        public bool FindListMethod = false;
+
         [XmlAttribute("dbcolumn")]
         public string DBColumnName
         {
