@@ -56,7 +56,8 @@ namespace Sooda
     public class SoodaTransaction : IDisposable
     {
         private static Logger transactionLogger = LogManager.GetLogger("Sooda.Transaction");
-        private static LocalDataStoreSlot g_activeTransactionDataStoreSlot = System.Threading.Thread.AllocateDataSlot();
+        private static IDefaultSoodaTransactionStrategy _defaultTransactionStrategy = new SoodaThreadBoundTransactionStrategy();
+
 
         private SoodaTransaction previousTransaction;
 
@@ -123,8 +124,7 @@ namespace Sooda
             this.transactionOptions = options;
             if ((options & SoodaTransactionOptions.Implicit) != 0)
             {
-                previousTransaction = (SoodaTransaction)System.Threading.Thread.GetData(g_activeTransactionDataStoreSlot);
-                System.Threading.Thread.SetData(g_activeTransactionDataStoreSlot, this);
+                previousTransaction = _defaultTransactionStrategy.SetDefaultTransaction(this);
             }
         }
 
@@ -153,11 +153,10 @@ namespace Sooda
                 };
                 if ((transactionOptions & SoodaTransactionOptions.Implicit) != 0)
                 {
-                    if (System.Threading.Thread.GetData(g_activeTransactionDataStoreSlot) != this)
+                    if (this != _defaultTransactionStrategy.SetDefaultTransaction(previousTransaction))
                     {
                         transactionLogger.Warn("ActiveTransactionDataStoreSlot has been overwritten by someone.");
                     }
-                    System.Threading.Thread.SetData(g_activeTransactionDataStoreSlot, previousTransaction);
                 }
                 // transactionLogger.Debug("Transaction stats:\n\n{0}", Statistics);
                 // transactionLogger.Debug("Disposed.");
@@ -177,17 +176,20 @@ namespace Sooda
             set { _useWeakReferences = value; }
         }
 
+        public static IDefaultSoodaTransactionStrategy DefaultTransactionStrategy
+        {
+            get { return _defaultTransactionStrategy; }
+            set { _defaultTransactionStrategy = value; }
+        }
+
         public static SoodaTransaction ActiveTransaction
         {
             [DebuggerStepThrough]
             get
             {
-                SoodaTransaction retVal = (SoodaTransaction)System.Threading.Thread.GetData(g_activeTransactionDataStoreSlot);
-
+                SoodaTransaction retVal = _defaultTransactionStrategy.GetDefaultTransaction();
                 if (retVal == null)
-                {
                     throw new InvalidOperationException("There's no implicit transaction currently active. Either use explicit transactions or create a new implicit one.");
-                }
 
                 return retVal;
             }

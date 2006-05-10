@@ -129,7 +129,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>$(SolutionDir)..\src\SoodaStubGen\bin\$(ConfigurationName)\SoodaStubGen.exe $(ProjectDir)Sooda.UnitTests.BaseObjects.soodaproject</PreBuildEvent>
+    <PreBuildEvent>$(ProjectDir)..\..\src\SoodaStubGen\bin\$(ConfigurationName)\SoodaStubGen.exe $(ProjectDir)Sooda.UnitTests.BaseObjects.soodaproject</PreBuildEvent>
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
