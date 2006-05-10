@@ -149,10 +149,15 @@ namespace Sooda.Web
             }
             else
             {
+                SoodaOrderBy orderBy = SoodaOrderBy.Unsorted;
+
+                if (arguments.SortExpression != "")
+                    orderBy = SoodaOrderBy.Parse(arguments.SortExpression);
+
                 value = factory.GetList(
                     SoodaTransaction.ActiveTransaction,
                     new SoodaWhereClause(_owner.WhereClause),
-                    SoodaOrderBy.Unsorted,
+                    orderBy,
                     SoodaSnapshotOptions.Default);
             }
             if (value is IEnumerable)

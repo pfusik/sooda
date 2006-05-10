@@ -10,7 +10,7 @@ using System.Web.UI.WebControls.WebParts;
 using System.Web.UI.HtmlControls;
 
 using Sooda.Web;
-using Sooda.UnitTests.BaseObjects;
+using Sooda.UnitTests.Objects;
 
 namespace Sooda.Web.Tests
 {

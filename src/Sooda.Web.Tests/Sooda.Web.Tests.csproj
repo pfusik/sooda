@@ -59,6 +59,10 @@
       <Project>{A1D122ED-CF84-4EF0-A138-72922DD50409}</Project>
       <Name>Sooda.UnitTests.BaseObjects-net-2.0</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\tests\UnitTestObjects\Sooda.UnitTests.Objects-net-2.0.csproj">
+      <Project>{3574E1EF-2272-4474-85D9-0718B3D452E3}</Project>
+      <Name>Sooda.UnitTests.Objects-net-2.0</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Sooda.Web\Sooda.Web.csproj">
       <Project>{EF2E38CE-C8B9-489B-B537-DF5F0081C900}</Project>
       <Name>Sooda.Web</Name>
