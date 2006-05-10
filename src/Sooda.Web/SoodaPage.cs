@@ -56,5 +56,17 @@ namespace Sooda.Web
                 _transaction.Dispose();
             }
         }
+
+        public void Commit()
+        {
+            _transaction.Commit();
+            ViewState["SoodaTransaction"] = null;
+        }
+
+        public void Rollback()
+        {
+            _transaction.Rollback();
+            ViewState["SoodaTransaction"] = null;
+        }
     }
 }

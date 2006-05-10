@@ -7,7 +7,9 @@
 </head>
 <body>
     <form id="form1" runat="server">
-        <asp:Button ID="Button1" runat="server" Text="Button" OnClick="Button1_Click" />
+        <asp:Button ID="Button1" runat="server" Text="Change something" OnClick="Button1_Click" />
+        <asp:Button ID="Button2" runat="server" Text="Commit" OnClick="Button2_Click" />
+        <asp:Button ID="Button3" runat="server" OnClick="Button3_Click" Text="Button" />
         <asp:gridview ID="Gridview1" runat="server" Height="195px" Width="251px" AutoGenerateColumns="false">
             <Columns>
                 <asp:BoundField HeaderText="Id" DataField="ContactId" />
