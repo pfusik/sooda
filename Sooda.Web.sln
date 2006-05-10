@@ -23,6 +23,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web-net-2.0", "web\Web-net-2.0.csproj", "{2D11C6FF-FF8C-4517-8546-C81C621CFF7C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.UnitTests.BaseObjects-net-2.0", "tests\BaseObjects\Sooda.UnitTests.BaseObjects-net-2.0.csproj", "{A1D122ED-CF84-4EF0-A138-72922DD50409}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5F89F8D0-39BC-49F8-92E3-3A7F5F3FF55F} = {5F89F8D0-39BC-49F8-92E3-3A7F5F3FF55F}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.Web.Tests", "src\Sooda.Web.Tests\Sooda.Web.Tests.csproj", "{0490E09C-126E-4E44-8A23-92D673C3A89C}"
 EndProject
