@@ -84,6 +84,20 @@ begin
     return cast(${ClassName}, typeref(Sooda.ObjectMapper.SoodaObjectImpl).SelectSingleObject(arg(where), defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, arg(where), typeref(SoodaOrderBy).Unsorted$, 2, typeref(SoodaSnapshotOptions).Default$)))
 end
 
+method GetAllObjects()
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, new SoodaWhereClause('1=1'), typeref(SoodaOrderBy).Unsorted$, -1, typeref(SoodaSnapshotOptions).Default$)
+end
+
+method GetAllObjects(SoodaTransaction transaction)
+    attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns ${ClassName}List
+begin
+    return defaultscope.DoGetList(arg(transaction), null, typeref(SoodaOrderBy).Unsorted$, -1, typeref(SoodaSnapshotOptions).Default$)
+end
+
 method GetList(SoodaWhereClause where)
     attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
     returns ${ClassName}List
