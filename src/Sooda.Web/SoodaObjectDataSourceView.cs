@@ -12,7 +12,22 @@ namespace Sooda.Web
     {
         private SoodaObjectDataSource _owner;
 
+        public override bool CanInsert
+        {
+            get { return true; }
+        }
+
         public override bool CanUpdate
+        {
+            get { return true; }
+        }
+
+        public override bool CanDelete
+        {
+            get { return true; }
+        }
+
+        public override bool CanSort
         {
             get { return true; }
         }
@@ -41,6 +56,7 @@ namespace Sooda.Web
                 {
                     SoodaObject obj = SoodaTransaction.ActiveTransaction.GetObject(_owner.ClassName,
                         Convert.ToString(de.Value));
+
                     Type type = obj.GetType();
 
                     foreach (DictionaryEntry v in values)
@@ -62,7 +78,59 @@ namespace Sooda.Web
             {
                 callback(0, ex);
             }
-            HttpContext.Current.Trace.Write(SoodaTransaction.ActiveTransaction.Serialize());
+        }
+
+        public override void Insert(IDictionary values, DataSourceViewOperationCallback callback)
+        {
+            try
+            {
+                ISoodaObjectFactory fact = SoodaTransaction.ActiveTransaction.GetFactory(_owner.ClassName);
+                SoodaObject obj = fact.CreateNew(SoodaTransaction.ActiveTransaction);
+                Type type = obj.GetType();
+
+                foreach (DictionaryEntry v in values)
+                {
+                    PropertyInfo pi = type.GetProperty((string)v.Key, BindingFlags.Public | BindingFlags.Instance);
+                    if (pi == null)
+                        throw new SoodaException(v.Key + " not found in " + type.FullName);
+
+                    pi.SetValue(obj, v.Value, null);
+                }
+                callback(1, null);
+            }
+            catch (Exception ex)
+            {
+                callback(0, ex);
+            }
+        }
+
+        public override void Delete(IDictionary keys, IDictionary oldValues, DataSourceViewOperationCallback callback)
+        {
+            try
+            {
+                if (keys.Count == 0)
+                    throw new SoodaException("No keys passed to SoodaObjectDataSourceView.Update");
+
+                if (keys.Count > 1)
+                    throw new SoodaException("More than one key passed to SoodaObjectDataSourceView.Update");
+
+                ISoodaObjectFactory fact = SoodaTransaction.ActiveTransaction.GetFactory(_owner.ClassName);
+
+                // we just want to get the first key from "keys"
+                // therefore we break at the end of the loop
+
+                foreach (DictionaryEntry de in keys)
+                {
+                    SoodaObject obj = SoodaTransaction.ActiveTransaction.GetObject(_owner.ClassName, Convert.ToString(de.Value));
+                    obj.MarkForDelete();
+                    break;
+                }
+                callback(1, null);
+            }
+            catch (Exception ex)
+            {
+                callback(0, ex);
+            }
         }
 
         protected override IEnumerable ExecuteSelect(System.Web.UI.DataSourceSelectArguments arguments)
