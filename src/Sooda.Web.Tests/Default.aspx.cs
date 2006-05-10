@@ -27,6 +27,7 @@ namespace Sooda.Web.Tests
             //Gridview1.DataSource = lds;
             //Gridview1.AllowPaging = true;
             //Gridview1.PageSize = 3;
+            //Gridview1.DataSource = contacts;
         }
 
         protected void Button1_Click(object sender, EventArgs e)

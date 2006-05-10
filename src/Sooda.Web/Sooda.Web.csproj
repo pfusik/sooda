@@ -34,7 +34,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SoodaObjectDataSourceView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SoodaObjectDataSource.cs" />
     <Compile Include="SoodaPage.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>

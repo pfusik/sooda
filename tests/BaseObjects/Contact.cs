@@ -70,5 +70,10 @@ namespace Sooda.UnitTests.BaseObjects
             base.AfterObjectInsert();
             AfterInsertCalled = true;
         }
+
+        public void Update(Contact contact)
+        {
+            
+        }
     }
 }
