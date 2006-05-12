@@ -172,7 +172,7 @@ namespace Sooda.CodeGen
             prop.GetStatements.Add(
                 new CodeMethodReturnStatement(
                 new CodeMethodInvokeExpression(
-                new CodeTypeReferenceExpression(options.OutputNamespace + "." + classInfo.Name + "_Stub"), "GetRef", new CodePrimitiveExpression(val))));
+                new CodeTypeReferenceExpression(options.OutputNamespace + ".Stubs." + classInfo.Name + "_Stub"), "GetRef", new CodePrimitiveExpression(val))));
 
             return prop;
         }
