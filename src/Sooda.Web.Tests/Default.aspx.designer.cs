@@ -17,6 +17,7 @@ namespace Sooda.Web.Tests {
         protected System.Web.UI.WebControls.Button Button2;
         protected System.Web.UI.WebControls.Button Button3;
         protected System.Web.UI.WebControls.GridView Gridview1;
+        protected System.Web.UI.WebControls.DetailsView DetailsView1;
         protected System.Web.UI.WebControls.Label serialized;
     }
 }

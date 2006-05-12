@@ -32,8 +32,10 @@ body
             <HeaderStyle BackColor="#1C5E55" Font-Bold="True" ForeColor="White" />
             <AlternatingRowStyle BackColor="White" />
         </asp:gridview>
-        <pre>
-            <asp:Label ID="serialized" runat="server"></asp:Label>
+        <asp:DetailsView ID="DetailsView1" runat="server" DataSourceID="contacts" Height="50px"
+            Width="125px">
+        </asp:DetailsView>
+        <pre>            <asp:Label ID="serialized" runat="server"></asp:Label>
         </pre>
     </form>
 </body>

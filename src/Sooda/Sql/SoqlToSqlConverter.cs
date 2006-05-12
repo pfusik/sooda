@@ -49,6 +49,7 @@ namespace Sooda.Sql
 
         public bool DisableBooleanExpansion = false;
         public bool GenerateColumnAliases = true;
+        public StringCollection ActualFromAliases = new StringCollection();
 
         public SoqlToSqlConverter(TextWriter output, SchemaInfo schema, ISqlBuilder builder)
             : base(output)
@@ -625,7 +626,7 @@ namespace Sooda.Sql
                         {
                             if (!first)
                                 Output.Write(", ");
-                            Output.Write(v.FromAliases[0]);
+                            Output.Write(ActualFromAliases[0]);
                             Output.Write(".");
                             Output.Write(pkfi.DBColumnName);
                             if (GenerateColumnAliases)
@@ -684,7 +685,7 @@ namespace Sooda.Sql
                         if (ci == null)
                             continue;
 
-                        SoqlBooleanExpression restriction = BuildClassRestriction(v.FromAliases[i], ci);
+                        SoqlBooleanExpression restriction = BuildClassRestriction(ActualFromAliases[i], ci);
 
                         if (restriction != null)
                         {
@@ -817,10 +818,10 @@ namespace Sooda.Sql
                         }
 
                         Output.Write(FindContainerByName(v.From[i]).GetAllFields()[0].Table.DBTableName);
-                        if (v.FromAliases[i].Length > 0)
+                        if (ActualFromAliases[i].Length > 0)
                         {
                             Output.Write(" ");
-                            Output.Write(v.FromAliases[i]);
+                            Output.Write(ActualFromAliases[i]);
                         }
                         foreach (string s in (StringCollection)v.FromJoins[i])
                         {
@@ -872,8 +873,8 @@ namespace Sooda.Sql
                 if (alias.Length == 0)
                 {
                     alias = GetNextTablePrefix();
-                    query.FromAliases[i] = alias;
                 }
+                ActualFromAliases.Add(alias);
 
                 if (!ExpressionPrefixToTableAlias.ContainsKey(alias))
                 {
@@ -1031,15 +1032,7 @@ namespace Sooda.Sql
                     classInfo.UnifiedTables[fieldToReach.Table.OrdinalInClass].Fields[0].DBColumnName));
             }
 
-            int foundPos = -1;
-            for (int i = 0; i < Query.FromAliases.Count; ++i)
-            {
-                if (Query.FromAliases[i] == fromTableAlias)
-                {
-                    foundPos = i;
-                    break;
-                }
-            }
+            int foundPos = ActualFromAliases.IndexOf(fromTableAlias);
 
             if (foundPos == -1)
                 throw new NotSupportedException();
@@ -1059,15 +1052,7 @@ namespace Sooda.Sql
             string tbl = GetNextTablePrefix();
             ExpressionPrefixToTableAlias.Add(newPrefix, tbl);
 
-            int foundPos = -1;
-            for (int i = 0; i < Query.FromAliases.Count; ++i)
-            {
-                if (Query.FromAliases[i] == fromTableAlias)
-                {
-                    foundPos = i;
-                    break;
-                }
-            }
+            int foundPos = ActualFromAliases.IndexOf(fromTableAlias);
 
             if (foundPos == -1)
                 throw new NotSupportedException();
