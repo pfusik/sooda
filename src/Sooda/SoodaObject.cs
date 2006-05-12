@@ -59,24 +59,30 @@ namespace Sooda
         private SoodaObjectFlags _flags;
         private object _primaryKeyValue;
 
-        public bool DisableTriggers
+        public bool AreFieldUpdateTriggersEnabled()
         {
-            get
-            {
-                return (_flags & SoodaObjectFlags.DisableTriggers) != 0;
-            }
-            set
-            {
-                if (value)
-                    _flags |= SoodaObjectFlags.DisableTriggers;
-                else
-                    _flags &= ~SoodaObjectFlags.DisableTriggers;
-            }
+            return (_flags & SoodaObjectFlags.DisableTriggers) != 0;
         }
 
-        protected bool AreFieldUpdateTriggersEnabled()
+        public bool EnableFieldUpdateTriggers()
         {
-            return !DisableTriggers;
+            return EnableFieldUpdateTriggers(true);
+        }
+
+        public bool DisableFieldUpdateTriggers()
+        {
+            return EnableFieldUpdateTriggers(false);
+        }
+
+        public bool EnableFieldUpdateTriggers(bool enable)
+        {
+            bool oldValue = AreFieldUpdateTriggersEnabled();
+
+            if (!enable)
+                _flags |= SoodaObjectFlags.DisableTriggers;
+            else
+                _flags &= ~SoodaObjectFlags.DisableTriggers;
+            return oldValue;
         }
 
         private bool InsertMode
@@ -224,10 +230,10 @@ namespace Sooda
             SetAllDataLoaded();
             if (GetClassInfo().SubclassSelectorValue != null)
             {
-                DisableTriggers = true;
+                DisableFieldUpdateTriggers();
                 Sooda.Schema.FieldInfo selectorField = GetClassInfo().SubclassSelectorField;
                 SetPlainFieldValue(0, selectorField.Name, selectorField.ClassUnifiedOrdinal, GetClassInfo().SubclassSelectorValue, null, null);
-                DisableTriggers = false;
+                EnableFieldUpdateTriggers();
             }
         }
 
@@ -1079,7 +1085,7 @@ namespace Sooda
                 xw.WriteAttributeString("transaction", (_transaction != null) ? "notnull" : "null");
                 xw.WriteAttributeString("objectDirty", IsObjectDirty() ? "true" : "false");
                 xw.WriteAttributeString("dataLoaded", IsAllDataLoaded() ? "true" : "false");
-                xw.WriteAttributeString("disableTriggers", DisableTriggers ? "true" : "false");
+                xw.WriteAttributeString("disableTriggers", AreFieldUpdateTriggersEnabled() ? "false" : "true");
                 xw.WriteEndElement();
             }
             NameValueCollection persistentValues = GetTransaction().GetPersistentValues(this);
@@ -1154,7 +1160,7 @@ namespace Sooda
         {
             EnsureFieldsInited();
 
-            if (!DisableTriggers)
+            if (AreFieldUpdateTriggersEnabled())
             {
                 EnsureDataLoaded(tableNumber);
                 try
@@ -1210,7 +1216,7 @@ namespace Sooda
                 return;
             object[] triggerArgs = new object[] { oldValue, newValue };
 
-            if (!DisableTriggers)
+            if (AreFieldUpdateTriggersEnabled())
             {
                 MethodInfo mi = this.GetType().GetMethod("BeforeFieldUpdate_" + fieldName, BindingFlags.Instance | BindingFlags.FlattenHierarchy | BindingFlags.NonPublic | BindingFlags.Public);
                 if (mi != null)
@@ -1251,7 +1257,7 @@ namespace Sooda
                     listInternal.InternalAdd(this);
                 }
             }
-            if (!DisableTriggers)
+            if (AreFieldUpdateTriggersEnabled())
             {
                 MethodInfo mi = this.GetType().GetMethod("AfterFieldUpdate_" + fieldName, BindingFlags.Instance | BindingFlags.FlattenHierarchy | BindingFlags.NonPublic | BindingFlags.Public);
                 if (mi != null)

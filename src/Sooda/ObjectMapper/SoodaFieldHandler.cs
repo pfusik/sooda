@@ -89,7 +89,7 @@ namespace Sooda.ObjectMapper
         public abstract Type GetSqlType();
         public virtual Type GetNullableType()
         {
-            return null;
+            return GetFieldType();
         }
 
         public abstract void SetupDBParameter(IDbDataParameter parameter, object value);

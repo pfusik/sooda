@@ -886,7 +886,7 @@ namespace Sooda
                                 {
                                     // end deserialization
 
-                                    currentObject.DisableTriggers = false;
+                                    currentObject.EnableFieldUpdateTriggers();
                                     currentObject = null;
                                 };
 
@@ -933,7 +933,7 @@ namespace Sooda
                                     currentObject = BeginObjectDeserialization(objectFactory, primaryKey, objectMode);
                                     if (objectForcePostCommit)
                                         currentObject.ForcePostCommit();
-                                    currentObject.DisableTriggers = true;
+                                    currentObject.DisableFieldUpdateTriggers();
                                     if (objectDelete)
                                     {
                                         DeletedObjects.Add(currentObject);
@@ -974,7 +974,7 @@ namespace Sooda
                         }
                         else if (reader.Name == "object")
                         {
-                            currentObject.DisableTriggers = false;
+                            currentObject.EnableFieldUpdateTriggers();
                         }
                     }
                 }
