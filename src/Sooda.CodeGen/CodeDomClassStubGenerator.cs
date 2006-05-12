@@ -195,6 +195,11 @@ namespace Sooda.CodeGen
                 case PrimitiveRepresentation.Raw:
                     return new CodeTypeReference(fi.GetFieldHandler().GetFieldType());
 
+#if DOTNET2
+                case PrimitiveRepresentation.Nullable:
+                    return new CodeTypeReference(fi.GetFieldHandler().GetNullableType());
+#endif
+
                 default:
                     throw new NotImplementedException("Unknown PrimitiveRepresentation: " + rep);
             }
@@ -231,6 +236,15 @@ namespace Sooda.CodeGen
                 case PrimitiveRepresentation.RawWithIsNull:
                 case PrimitiveRepresentation.Raw:
                     return new CodePrimitiveExpression(false);
+
+#if DOTNET2
+                case PrimitiveRepresentation.Nullable:
+                    return new CodeBinaryOperatorExpression(
+                        new CodePropertyReferenceExpression(
+                        new CodePropertySetValueReferenceExpression(),"HasValue"),
+                        CodeBinaryOperatorType.ValueEquality,
+                        new CodePrimitiveExpression(true));
+#endif
 
                 default:
                     throw new NotSupportedException();
