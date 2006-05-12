@@ -43,11 +43,9 @@ namespace Sooda.QL
 
         public StringCollection From = new StringCollection();
         public StringCollection FromAliases = new StringCollection();
-        public ArrayList FromJoins = new ArrayList();
 
         public SoqlBooleanExpression WhereClause = null;
         public SoqlBooleanExpression Having = null;
-        public StringCollection WhereJoins = new StringCollection();
 
         public SoqlExpressionCollection GroupByExpressions = new SoqlExpressionCollection();
         public SoqlExpressionCollection OrderByExpressions = new SoqlExpressionCollection();

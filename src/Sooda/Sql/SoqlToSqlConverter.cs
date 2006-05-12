@@ -36,6 +36,7 @@ using Sooda.QL.TypedWrappers;
 using Sooda.QL;
 
 using Sooda.Logging;
+using System.Collections;
 
 namespace Sooda.Sql
 {
@@ -50,6 +51,8 @@ namespace Sooda.Sql
         public bool DisableBooleanExpansion = false;
         public bool GenerateColumnAliases = true;
         public StringCollection ActualFromAliases = new StringCollection();
+        public ArrayList FromJoins = new ArrayList();
+        public StringCollection WhereJoins = new StringCollection();
 
         public SoqlToSqlConverter(TextWriter output, SchemaInfo schema, ISqlBuilder builder)
             : base(output)
@@ -699,7 +702,7 @@ namespace Sooda.Sql
                             }
                         }
                     }
-                    if (limitedWhere != null || v.WhereJoins.Count > 0)
+                    if (limitedWhere != null || WhereJoins.Count > 0)
                     {
                         if (IndentOutput)
                         {
@@ -716,7 +719,7 @@ namespace Sooda.Sql
                         if (limitedWhere != null)
                             first = false;
 
-                        foreach (string s in v.WhereJoins)
+                        foreach (string s in WhereJoins)
                         {
                             if (!first)
                                 Output.Write(" and ");
@@ -823,7 +826,7 @@ namespace Sooda.Sql
                             Output.Write(" ");
                             Output.Write(ActualFromAliases[i]);
                         }
-                        foreach (string s in (StringCollection)v.FromJoins[i])
+                        foreach (string s in (StringCollection)FromJoins[i])
                         {
                             if (IndentOutput)
                             {
@@ -865,7 +868,7 @@ namespace Sooda.Sql
 
             for (int i = 0; i < query.From.Count; ++i)
             {
-                query.FromJoins.Add(new StringCollection());
+                FromJoins.Add(new StringCollection());
 
                 string table = query.From[i];
                 string alias = query.FromAliases[i];
@@ -1023,7 +1026,7 @@ namespace Sooda.Sql
                     fieldToReach.Table.DBTableName,
                     newPrefix);
 
-                Query.WhereJoins.Add(
+                WhereJoins.Add(
                     String.Format("({1}.{3} = {2}.{4} (+))",
                     fieldToReach.Table.DBTableName,
                     rootPrefix,
@@ -1037,7 +1040,7 @@ namespace Sooda.Sql
             if (foundPos == -1)
                 throw new NotSupportedException();
 
-            StringCollection coll = (StringCollection)Query.FromJoins[foundPos];
+            StringCollection coll = (StringCollection)FromJoins[foundPos];
             coll.Add(s);
 
             return newPrefix;
@@ -1074,7 +1077,7 @@ namespace Sooda.Sql
                     field.ReferencedClass.UnifiedTables[0].DBTableName,
                     tbl);
 
-                Query.WhereJoins.Add(String.Format("({2}.{3} = {1}.{4} (+))",
+                WhereJoins.Add(String.Format("({2}.{3} = {1}.{4} (+))",
                     field.ReferencedClass.UnifiedTables[0].DBTableName,
                     tbl,
                     lastTableAlias,
@@ -1082,7 +1085,7 @@ namespace Sooda.Sql
                     field.ReferencedClass.GetFirstPrimaryKeyField().DBColumnName));
             }
 
-            StringCollection coll = (StringCollection)Query.FromJoins[foundPos];
+            StringCollection coll = (StringCollection)FromJoins[foundPos];
             coll.Add(s);
         }
 

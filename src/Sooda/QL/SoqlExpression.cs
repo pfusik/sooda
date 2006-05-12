@@ -53,6 +53,8 @@ namespace Sooda.QL
     [XmlInclude(typeof(SoqlFunctionCallExpression))]
     [XmlInclude(typeof(SoqlAsteriskExpression))]
     [XmlInclude(typeof(SoqlNullLiteral))]
+    [XmlInclude(typeof(SoqlContainsExpression))]
+    [XmlInclude(typeof(SoqlCountExpression))]
     public abstract class SoqlExpression
     {
         public virtual SoqlExpression Simplify()
