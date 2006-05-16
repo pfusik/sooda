@@ -61,7 +61,7 @@ namespace Sooda
 
         public bool AreFieldUpdateTriggersEnabled()
         {
-            return (_flags & SoodaObjectFlags.DisableTriggers) != 0;
+            return (_flags & SoodaObjectFlags.DisableTriggers) == 0;
         }
 
         public bool EnableFieldUpdateTriggers()

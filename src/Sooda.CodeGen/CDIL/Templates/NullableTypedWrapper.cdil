@@ -12,5 +12,19 @@ constructor(Sooda.QL.SoqlPathExpression left, System.String name)
     baseArg(arg(name))
 begin
 end
+    
+method IsNull()
+    attributes Public
+    returns Sooda.QL.SoqlBooleanExpression
+begin
+    return new Sooda.QL.SoqlBooleanIsNullExpression(this, false);
+end
+
+method IsNotNull()
+    attributes Public
+    returns Sooda.QL.SoqlBooleanExpression
+begin
+    return new Sooda.QL.SoqlBooleanIsNullExpression(this, true);
+end
 
 end
