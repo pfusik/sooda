@@ -38,17 +38,17 @@ namespace Sooda.Caching
     {
         public override bool ShouldCacheObject(SoodaObject theObject)
         {
-            return true;
+            return false;
         }
 
         public override bool ShouldCacheCollection(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount)
         {
-            return true;
+            return false;
         }
 
         public override bool ShouldCacheRelation(RelationInfo relation, ClassInfo classInfo)
         {
-            return true;
+            return false;
         }
     }
 }

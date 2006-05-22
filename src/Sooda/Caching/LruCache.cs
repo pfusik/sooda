@@ -119,20 +119,23 @@ namespace Sooda.Caching
 
         public object Get(object key)
         {
-            DateTime now = DateTime.Now;
-
-            CheckForPeriodicSweep(now);
-
-            LruCacheNode node = (LruCacheNode)_hash[key];
-            if (node == null)
-                return null;
-            if (now >= node.ExpirationTime)
+            lock (this)
             {
-                TrimBeforeNode(node);
-                return null;
+                DateTime now = DateTime.Now;
+
+                CheckForPeriodicSweep(now);
+
+                LruCacheNode node = (LruCacheNode)_hash[key];
+                if (node == null)
+                    return null;
+                if (now >= node.ExpirationTime)
+                {
+                    TrimBeforeNode(node);
+                    return null;
+                }
+                MoveToLruHead(node);
+                return node.Value;
             }
-            MoveToLruHead(node);
-            return node.Value;
         }
 
         private void CheckForPeriodicSweep(DateTime now)
@@ -146,16 +149,19 @@ namespace Sooda.Caching
 
         public void Sweep()
         {
-            DateTime now = DateTime.Now;
-
-            //Dump("Before Sweep()");
-
-            for (LruCacheNode node = _lruHead; node != null; node = node.Next)
+            lock (this)
             {
-                if (now >= node.ExpirationTime)
+                DateTime now = DateTime.Now;
+
+                //Dump("Before Sweep()");
+
+                for (LruCacheNode node = _lruHead; node != null; node = node.Next)
                 {
-                    TrimBeforeNode(node);
-                    return;
+                    if (now >= node.ExpirationTime)
+                    {
+                        TrimBeforeNode(node);
+                        return;
+                    }
                 }
             }
 
@@ -164,17 +170,20 @@ namespace Sooda.Caching
 
         public void Clear()
         {
-            //Dump("Before Clear()");
-            _hash.Clear();
-            if (ItemRemoved != null)
+            lock (this)
             {
-                for (LruCacheNode n = _lruHead; n != null; n = n.Next)
+                //Dump("Before Clear()");
+                _hash.Clear();
+                if (ItemRemoved != null)
                 {
-                    ItemRemoved(this, new LruCacheEventArgs(n.Key, n.Value));
+                    for (LruCacheNode n = _lruHead; n != null; n = n.Next)
+                    {
+                        ItemRemoved(this, new LruCacheEventArgs(n.Key, n.Value));
+                    }
                 }
+                _lruHead = _lruTail = null;
+                //Dump("After Clear()");
             }
-            _lruHead = _lruTail = null;
-            //Dump("After Clear()");
         }
 
         private void TrimBeforeNode(LruCacheNode node)
