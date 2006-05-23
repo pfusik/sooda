@@ -43,20 +43,33 @@ namespace Sooda.ObjectMapper
             ObjectToSoodaObjectFactoryAssociation dict = _classes[className];
             if (dict == null)
             {
-                dict = new ObjectToSoodaObjectFactoryAssociation();
-                _classes[className] = dict;
+                lock (this)
+                {
+                    dict = _classes[className];
+                    if (dict == null)
+                    {
+                        dict = new ObjectToSoodaObjectFactoryAssociation();
+                        _classes[className] = dict;
+                    }
+                }
             }
             return dict;
         }
 
         private void AddObjectWithKey(string className, object keyValue, ISoodaObjectFactory factory)
         {
-            GetObjectFactoryDictionaryForClass(className).Add(keyValue, factory);
+            lock (this)
+            {
+                GetObjectFactoryDictionaryForClass(className)[keyValue] = factory;
+            }
         }
 
         private void UnregisterObjectWithKey(string className, object keyValue)
         {
-            GetObjectFactoryDictionaryForClass(className).Remove(keyValue);
+            lock (this)
+            {
+                GetObjectFactoryDictionaryForClass(className).Remove(keyValue);
+            }
         }
 
         internal bool ExistsObjectWithKey(string className, object keyValue)

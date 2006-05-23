@@ -1581,7 +1581,7 @@ namespace Sooda
                     }
 
                     SoodaWhereClause whereClause = new SoodaWhereClause(query.ToString(), par);
-                    IList list = factory.GetList(tran, whereClause, null, SoodaSnapshotOptions.NoTransaction | SoodaSnapshotOptions.NoWriteObjects);
+                    IList list = factory.GetList(tran, whereClause, null, SoodaSnapshotOptions.NoTransaction | SoodaSnapshotOptions.NoWriteObjects | SoodaSnapshotOptions.NoCache);
                     if (list.Count == 1)
                         return (SoodaObject)list[0];
                     else

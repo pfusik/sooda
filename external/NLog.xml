@@ -623,6 +623,15 @@
             Flushes any pending log messages on all appenders.
             </summary>
         </member>
+        <member name="M:NLog.Config.LoggingConfiguration.GetConfiguredNamedTargets">
+            <summary>
+            Returns a collection of named targets specified in the configuration.
+            </summary>
+            <returns>A <see cref="T:NLog.TargetCollection"/> object that contains a list of named targets.</returns>
+            <remarks>
+            Unnamed targets (such as those wrapped by other targets) are not returned.
+            </remarks>
+        </member>
         <member name="M:NLog.Config.LoggingConfiguration.Close">
             <summary>
             Closes all targets and releases any unmanaged resources.
@@ -869,6 +878,58 @@
             Returns the current object.
             </summary>
         </member>
+        <member name="T:NLog.Config.NotSupportedRuntimeAttribute">
+            <summary>
+            Marks classes and properties as NOT supporting particular runtime framework 
+            and operating system.
+            </summary>
+        </member>
+        <member name="T:NLog.Config.SupportedRuntimeAttributeBase">
+            <summary>
+            Marks classes and properties as supporting particular runtime framework 
+            and operating system.
+            </summary>
+        </member>
+        <member name="M:NLog.Config.SupportedRuntimeAttributeBase.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Config.SupportedRuntimeAttributeBase"/>.
+            </summary>
+        </member>
+        <member name="P:NLog.Config.SupportedRuntimeAttributeBase.Framework">
+            <summary>
+            Supported runtime framework.
+            </summary>
+        </member>
+        <member name="P:NLog.Config.SupportedRuntimeAttributeBase.OS">
+            <summary>
+            Supported operating system.
+            </summary>
+        </member>
+        <member name="P:NLog.Config.SupportedRuntimeAttributeBase.MinRuntimeVersion">
+            <summary>
+            Minimum runtime version supported.
+            </summary>
+        </member>
+        <member name="P:NLog.Config.SupportedRuntimeAttributeBase.MaxRuntimeVersion">
+            <summary>
+            Maximum runtime version supported.
+            </summary>
+        </member>
+        <member name="P:NLog.Config.SupportedRuntimeAttributeBase.MinOSVersion">
+            <summary>
+            Minimum operating system version supported.
+            </summary>
+        </member>
+        <member name="P:NLog.Config.SupportedRuntimeAttributeBase.MaxOSVersion">
+            <summary>
+            Maximum operating system version supported.
+            </summary>
+        </member>
+        <member name="M:NLog.Config.NotSupportedRuntimeAttribute.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Config.SupportedRuntimeAttribute"/>.
+            </summary>
+        </member>
         <member name="T:NLog.Config.RequiredParameterAttribute">
             <summary>
             Attribute used to mark the required parameters for targets,
@@ -878,6 +939,79 @@
         <member name="M:NLog.Config.RequiredParameterAttribute.#ctor">
             <summary>
             Creates a new RequiredParameterAttribute object.
+            </summary>
+        </member>
+        <member name="T:NLog.Config.RuntimeFramework">
+            <summary>
+            Supported runtime frameworks.
+            </summary>
+            <remarks>
+            If you add anything here, make sure to add the appropriate detection
+            code to <see cref="T:NLog.Internal.PlatformDetector"/>
+            </remarks>
+        </member>
+        <member name="F:NLog.Config.RuntimeFramework.Any">
+            <summary>
+            Any framework.
+            </summary>
+        </member>
+        <member name="F:NLog.Config.RuntimeFramework.DotNetCompactFramework">
+            <summary>
+            .NET Compact Framework
+            </summary>
+        </member>
+        <member name="F:NLog.Config.RuntimeFramework.DotNetFramework">
+            <summary>
+            .NET Framework
+            </summary>
+        </member>
+        <member name="F:NLog.Config.RuntimeFramework.Mono">
+            <summary>
+            Mono Project
+            </summary>
+        </member>
+        <member name="F:NLog.Config.RuntimeFramework.Unknown">
+            <summary>
+            Unknown
+            </summary>
+        </member>
+        <member name="T:NLog.Config.RuntimeOS">
+            <summary>
+            Supported operating systems.
+            </summary>
+            <remarks>
+            If you add anything here, make sure to add the appropriate detection
+            code to <see cref="T:NLog.Internal.PlatformDetector"/>
+            </remarks>
+        </member>
+        <member name="F:NLog.Config.RuntimeOS.Any">
+            <summary>
+            Any operating system.
+            </summary>
+        </member>
+        <member name="F:NLog.Config.RuntimeOS.Unix">
+            <summary>
+            Unix/Linux operating systems
+            </summary>
+        </member>
+        <member name="F:NLog.Config.RuntimeOS.WindowsCE">
+            <summary>
+            Windows CE
+            </summary>
+        </member>
+        <member name="F:NLog.Config.RuntimeOS.Windows">
+            <summary>
+            Desktop versions of Windows (95,98,ME)
+            </summary>
+        </member>
+        <member name="F:NLog.Config.RuntimeOS.WindowsNT">
+            <summary>
+            Windows NT, 2000, 2003 and future versions based on NT technology
+            </summary>
+        </member>
+        <member name="F:NLog.Config.RuntimeOS.Unknown">
+            <summary>
+            Unknown operating system
             </summary>
         </member>
         <member name="T:NLog.Config.SimpleConfigurator">
@@ -927,6 +1061,17 @@
             </summary>
             <param name="fileName">Log file name.</param>
             <param name="minLevel">The minimal logging level.</param>
+        </member>
+        <member name="T:NLog.Config.SupportedRuntimeAttribute">
+            <summary>
+            Marks classes and properties as supporting particular runtime framework 
+            and operating system.
+            </summary>
+        </member>
+        <member name="M:NLog.Config.SupportedRuntimeAttribute.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Config.SupportedRuntimeAttribute"/>.
+            </summary>
         </member>
         <member name="T:NLog.Config.XmlLoggingConfiguration">
             <summary>
@@ -1203,88 +1348,145 @@
             Ignore case when comparing strings.
             </summary>
         </member>
-        <member name="T:NLog.Internal.AsyncRequestQueue">
+        <member name="T:NLog.Internal.FileAppenders.IFileOpener">
             <summary>
-            Asynchronous request queue
+            Abstract file-opening.
             </summary>
         </member>
-        <member name="M:NLog.Internal.AsyncRequestQueue.#ctor(System.Int32,NLog.Internal.AsyncRequestQueue.OverflowAction)">
+        <member name="T:NLog.Internal.FileAppenders.MutexMultiProcessFileAppender">
             <summary>
-            Creates a new instance of <see cref="T:NLog.Internal.AsyncRequestQueue"/> and
-            sets the request limit and overflow action.
+            Provides a multiprocess-safe atomic file appends while
+            keeping the files open.
             </summary>
-            <param name="requestLimit">Request limit.</param>
-            <param name="overflowAction">The overflow action.</param>
+            <remarks>
+            On Unix you can get all the appends to be atomic, even when multiple 
+            processes are trying to write to the same file, because setting the file
+            pointer to the end of the file and appending can be made one operation.
+            On Win32 we need to maintain some synchronization between processes
+            (global named mutex is used for this)
+            </remarks>
         </member>
-        <member name="M:NLog.Internal.AsyncRequestQueue.Enqueue(System.Object)">
+        <member name="T:NLog.Internal.NetworkSenders.HttpNetworkSender">
             <summary>
-            Enqueues another item. If the queue is overflown the appropriate
-            action is taken as specified by <see cref="P:NLog.Internal.AsyncRequestQueue.OnOverflow"/>.
-            </summary>
-            <param name="o">The item to be queued.</param>
-        </member>
-        <member name="M:NLog.Internal.AsyncRequestQueue.DequeueBatch(System.Int32)">
-            <summary>
-            Dequeues a maximum of <c>count</c> items from the queue
-            and adds returns the <see cref="T:System.Collections.ArrayList"/> containing them.
-            </summary>
-            <param name="count">Maximum number of items to be dequeued.</param>
-        </member>
-        <member name="M:NLog.Internal.AsyncRequestQueue.BatchProcessed(System.Collections.ArrayList)">
-            <summary>
-            Notifies the queue that the request batch has been processed.
-            </summary>
-            <param name="batch">The batch.</param>
-        </member>
-        <member name="M:NLog.Internal.AsyncRequestQueue.Clear">
-            <summary>
-            Clears the queue.
+            Sends one-way messages over the HTTP protocol.
             </summary>
         </member>
-        <member name="P:NLog.Internal.AsyncRequestQueue.RequestLimit">
+        <member name="T:NLog.Internal.NetworkSenders.NetworkSender">
             <summary>
-            The request limit.
+            A base class for all network senders. Supports one-way sending of messages
+            over various protocols.
             </summary>
         </member>
-        <member name="P:NLog.Internal.AsyncRequestQueue.OnOverflow">
+        <member name="M:NLog.Internal.NetworkSenders.NetworkSender.#ctor(System.String)">
             <summary>
-            Action to be taken when there's no more room in
-            the queue and another request is enqueued.
+            Creates a new instance of the <see cref="T:NLog.Internal.NetworkSenders.NetworkSender"/> and initializes
+            it with the specified URL.
+            </summary>
+            <param name="url">URL.</param>
+        </member>
+        <member name="M:NLog.Internal.NetworkSenders.NetworkSender.Finalize">
+            <summary>
+            Disposes the <see cref="T:NLog.Internal.NetworkSenders.NetworkSender"/> object.
             </summary>
         </member>
-        <member name="P:NLog.Internal.AsyncRequestQueue.OverflowActionString">
+        <member name="M:NLog.Internal.NetworkSenders.NetworkSender.Create(System.String)">
             <summary>
-            The string representation of <see cref="P:NLog.Internal.AsyncRequestQueue.OnOverflow"/>.
+            Creates a new instance of the network sender based on a network URL:
+            </summary>
+            <param name="url">URL that determines the network sender to be created.</param>
+            <returns>A newly created network sender.</returns>
+            <remarks>
+            If the url starts with <c>tcp://</c> - a new <see cref="T:NLog.Internal.NetworkSenders.TcpNetworkSender"/> is created.<br/>
+            If the url starts with <c>udp://</c> - a new <see cref="T:NLog.Internal.NetworkSenders.UdpNetworkSender"/> is created.<br/>
+            If the url starts with <c>http://</c> or <c>https://</c>- a new <see cref="T:NLog.Internal.NetworkSenders.HttpNetworkSender"/> is created.<br/>
+            </remarks>
+        </member>
+        <member name="M:NLog.Internal.NetworkSenders.NetworkSender.Close">
+            <summary>
+            Closes the sender and releases any unmanaged resources.
             </summary>
         </member>
-        <member name="P:NLog.Internal.AsyncRequestQueue.RequestCount">
+        <member name="M:NLog.Internal.NetworkSenders.NetworkSender.Send(System.String)">
             <summary>
-            Number of requests currently in the queue.
+            Send the given text over the specified protocol.
+            </summary>
+            <param name="text">Text to be sent.</param>
+        </member>
+        <member name="M:NLog.Internal.NetworkSenders.NetworkSender.DoSend(System.String)">
+            <summary>
+            Actually sends the given text over the specified protocol.
+            </summary>
+            <param name="text">The text to be sent.</param>
+            <remarks>To be overridden in inheriting classes.</remarks>
+        </member>
+        <member name="M:NLog.Internal.NetworkSenders.NetworkSender.Dispose">
+            <summary>
+            Closes the sender and releases any unmanaged resources.
             </summary>
         </member>
-        <member name="P:NLog.Internal.AsyncRequestQueue.UnprocessedRequestCount">
+        <member name="P:NLog.Internal.NetworkSenders.NetworkSender.Address">
             <summary>
-            Number of requests currently being processed (in the queue + batched)
+            The address of the network endpoint.
             </summary>
         </member>
-        <member name="T:NLog.Internal.AsyncRequestQueue.OverflowAction">
+        <member name="M:NLog.Internal.NetworkSenders.HttpNetworkSender.#ctor(System.String)">
             <summary>
-            The action to be taken when the queue overflows
+            Creates a new instance of <see cref="T:NLog.Internal.NetworkSenders.HttpNetworkSender"/> and initializes
+            it with the specified URL.
+            </summary>
+            <param name="url">URL. Must start with http:// or https://</param>
+        </member>
+        <member name="M:NLog.Internal.NetworkSenders.HttpNetworkSender.DoSend(System.String)">
+            <summary>
+            Sends the given text over HTTP.
+            </summary>
+            <param name="text">The text to be sent.</param>
+            <remarks>The method uses HTTP <c>POST</c> method to connect to the server.</remarks>
+        </member>
+        <member name="T:NLog.Internal.NetworkSenders.TcpNetworkSender">
+            <summary>
+            Sends messages over a TCP network connection.
             </summary>
         </member>
-        <member name="F:NLog.Internal.AsyncRequestQueue.OverflowAction.None">
+        <member name="M:NLog.Internal.NetworkSenders.TcpNetworkSender.#ctor(System.String)">
             <summary>
-            Do no action - accept another item into the queue.
+            Creates a new instance of <see cref="T:NLog.Internal.NetworkSenders.TcpNetworkSender"/> and initializes
+            it with the specified URL. Connects to the server specified in the URL.
+            </summary>
+            <param name="url">URL. Must start with tcp://</param>
+        </member>
+        <member name="M:NLog.Internal.NetworkSenders.TcpNetworkSender.DoSend(System.String)">
+            <summary>
+            Sends the specified text over the connected socket.
+            </summary>
+            <param name="text"></param>
+        </member>
+        <member name="M:NLog.Internal.NetworkSenders.TcpNetworkSender.Close">
+            <summary>
+            Closes the socket.
             </summary>
         </member>
-        <member name="F:NLog.Internal.AsyncRequestQueue.OverflowAction.Discard">
+        <member name="T:NLog.Internal.NetworkSenders.UdpNetworkSender">
             <summary>
-            Discard the overflowing item.
+            Sends messages over the network as UDP datagrams.
             </summary>
         </member>
-        <member name="F:NLog.Internal.AsyncRequestQueue.OverflowAction.Block">
+        <member name="M:NLog.Internal.NetworkSenders.UdpNetworkSender.#ctor(System.String)">
             <summary>
-            Block until there's more room in the queue.
+            Creates a new instance of <see cref="T:NLog.Internal.NetworkSenders.UdpNetworkSender"/> and initializes
+            it with the specified URL.
+            </summary>
+            <param name="url">URL. Must start with udp://</param>
+        </member>
+        <member name="M:NLog.Internal.NetworkSenders.UdpNetworkSender.DoSend(System.String)">
+            <summary>
+            Sends the specified text as a UDP datagram.
+            </summary>
+            <param name="text"></param>
+        </member>
+        <member name="M:NLog.Internal.NetworkSenders.UdpNetworkSender.Close">
+            <summary>
+            Closes the socket.
             </summary>
         </member>
         <member name="T:NLog.ExtensionUtils">
@@ -1380,78 +1582,6 @@
             <summary>
             Gets a collection containing the values in this FilterDictionary.
             </summary>
-        </member>
-        <member name="T:NLog.Internal.HttpNetworkSender">
-            <summary>
-            Sends one-way messages over the HTTP protocol.
-            </summary>
-        </member>
-        <member name="T:NLog.Internal.NetworkSender">
-            <summary>
-            A base class for all network senders. Supports one-way sending of messages
-            over various protocols.
-            </summary>
-        </member>
-        <member name="M:NLog.Internal.NetworkSender.#ctor(System.String)">
-            <summary>
-            Creates a new instance of the <see cref="T:NLog.Internal.NetworkSender"/> and initializes
-            it with the specified URL.
-            </summary>
-            <param name="url">URL.</param>
-        </member>
-        <member name="M:NLog.Internal.NetworkSender.Create(System.String)">
-            <summary>
-            Creates a new instance of the network sender based on a network URL:
-            </summary>
-            <param name="url">URL that determines the network sender to be created.</param>
-            <returns>A newly created network sender.</returns>
-            <remarks>
-            If the url starts with <c>tcp://</c> - a new <see cref="T:NLog.Internal.TcpNetworkSender"/> is created.<br/>
-            If the url starts with <c>udp://</c> - a new <see cref="T:NLog.Internal.UdpNetworkSender"/> is created.<br/>
-            If the url starts with <c>http://</c> or <c>https://</c>- a new <see cref="T:NLog.Internal.HttpNetworkSender"/> is created.<br/>
-            </remarks>
-        </member>
-        <member name="M:NLog.Internal.NetworkSender.Close">
-            <summary>
-            Closes the sender and releases any unmanaged resources.
-            </summary>
-        </member>
-        <member name="M:NLog.Internal.NetworkSender.Send(System.String)">
-            <summary>
-            Send the given text over the specified protocol.
-            </summary>
-            <param name="text">Text to be sent.</param>
-        </member>
-        <member name="M:NLog.Internal.NetworkSender.DoSend(System.String)">
-            <summary>
-            Actually sends the given text over the specified protocol.
-            </summary>
-            <param name="text">The text to be sent.</param>
-            <remarks>To be overridden in inheriting classes.</remarks>
-        </member>
-        <member name="M:NLog.Internal.NetworkSender.Dispose">
-            <summary>
-            Closes the sender and releases any unmanaged resources.
-            </summary>
-        </member>
-        <member name="P:NLog.Internal.NetworkSender.Address">
-            <summary>
-            The address of the network endpoint.
-            </summary>
-        </member>
-        <member name="M:NLog.Internal.HttpNetworkSender.#ctor(System.String)">
-            <summary>
-            Creates a new instance of <see cref="T:NLog.Internal.HttpNetworkSender"/> and initializes
-            it with the specified URL.
-            </summary>
-            <param name="url">URL. Must start with http:// or https://</param>
-        </member>
-        <member name="M:NLog.Internal.HttpNetworkSender.DoSend(System.String)">
-            <summary>
-            Sends the given text over HTTP.
-            </summary>
-            <param name="text">The text to be sent.</param>
-            <remarks>The method uses HTTP <c>POST</c> method to connect to the server.</remarks>
         </member>
         <member name="T:NLog.Internal.InternalLogger">
             <summary>
@@ -1618,16 +1748,16 @@
             Log internal messages to the console.
             </summary>
         </member>
+        <member name="P:NLog.Internal.InternalLogger.LogToConsoleError">
+            <summary>
+            Log internal messages to the console error stream.
+            </summary>
+        </member>
         <member name="P:NLog.Internal.InternalLogger.LogFile">
             <summary>
             The name of the internal log file.
             </summary>
             <remarks><see langword="null" /> value disables internal logging to a file.</remarks>
-        </member>
-        <member name="P:NLog.Internal.InternalLogger.LoadExtensions">
-            <summary>
-            Defines whether the platform specific extensions are loaded at startup.
-            </summary>
         </member>
         <member name="P:NLog.Internal.InternalLogger.IsTraceEnabled">
             <summary>
@@ -2108,29 +2238,6 @@
             Gets a collection containing the values in this TargetDictionary.
             </summary>
         </member>
-        <member name="T:NLog.Internal.TcpNetworkSender">
-            <summary>
-            Sends messages over a TCP network connection.
-            </summary>
-        </member>
-        <member name="M:NLog.Internal.TcpNetworkSender.#ctor(System.String)">
-            <summary>
-            Creates a new instance of <see cref="T:NLog.Internal.TcpNetworkSender"/> and initializes
-            it with the specified URL. Connects to the server specified in the URL.
-            </summary>
-            <param name="url">URL. Must start with tcp://</param>
-        </member>
-        <member name="M:NLog.Internal.TcpNetworkSender.DoSend(System.String)">
-            <summary>
-            Sends the specified text over the connected socket.
-            </summary>
-            <param name="text"></param>
-        </member>
-        <member name="M:NLog.Internal.TcpNetworkSender.Close">
-            <summary>
-            Closes the socket.
-            </summary>
-        </member>
         <member name="T:NLog.Internal.TypeDictionary">
             <summary>
             A dictionary with keys of type string and values of type Type
@@ -2297,29 +2404,6 @@
             Gets a collection containing the values in this TypeToPropertyInfoDictionaryAssociation.
             </summary>
         </member>
-        <member name="T:NLog.Internal.UdpNetworkSender">
-            <summary>
-            Sends messages over the network as UDP datagrams.
-            </summary>
-        </member>
-        <member name="M:NLog.Internal.UdpNetworkSender.#ctor(System.String)">
-            <summary>
-            Creates a new instance of <see cref="T:NLog.Internal.UdpNetworkSender"/> and initializes
-            it with the specified URL.
-            </summary>
-            <param name="url">URL. Must start with udp://</param>
-        </member>
-        <member name="M:NLog.Internal.UdpNetworkSender.DoSend(System.String)">
-            <summary>
-            Sends the specified text as a UDP datagram.
-            </summary>
-            <param name="text"></param>
-        </member>
-        <member name="M:NLog.Internal.UdpNetworkSender.Close">
-            <summary>
-            Closes the socket.
-            </summary>
-        </member>
         <member name="T:NLog.LayoutRenderers.ASPNETApplicationValueLayoutRenderer">
             <summary>
             ASP.NET Application variable.
@@ -2393,6 +2477,15 @@
             </summary>
             <param name="s">The text to be post-processed.</param>
             <returns>Padded, trimmed, and case-converted string.</returns>
+        </member>
+        <member name="M:NLog.LayoutRenderer.IsAppDomainFixed">
+            <summary>
+            Determines whether the value produced by the layout renderer
+            is fixed per current app-domain.
+            </summary>
+            <returns>The boolean value. <c>true</c> makes the value
+            of the layout renderer be precalculated and inserted as a literal
+            in the resulting layout string.</returns>
         </member>
         <member name="P:NLog.LayoutRenderer.Padding">
             <summary>
@@ -2619,6 +2712,11 @@
             The current application domain's base directory.
             </summary>
         </member>
+        <member name="M:NLog.LayoutRenderers.BaseDirLayoutRenderer.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.LayoutRenderers.BaseDirLayoutRenderer"/>.
+            </summary>
+        </member>
         <member name="M:NLog.LayoutRenderers.BaseDirLayoutRenderer.GetEstimatedBufferSize(NLog.LogEventInfo)">
             <summary>
             Returns the estimated number of characters that are needed to
@@ -2638,6 +2736,13 @@
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
             <param name="logEvent">Logging event.</param>
+        </member>
+        <member name="M:NLog.LayoutRenderers.BaseDirLayoutRenderer.IsAppDomainFixed">
+            <summary>
+            Determines whether the value produced by the layout renderer
+            is fixed per current app-domain.
+            </summary>
+            <returns><see langword="true"/></returns>
         </member>
         <member name="P:NLog.LayoutRenderers.BaseDirLayoutRenderer.File">
             <summary>
@@ -2795,6 +2900,13 @@
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
             <param name="logEvent">Logging event.</param>
         </member>
+        <member name="M:NLog.LayoutRenderers.EnvironmentLayoutRenderer.IsAppDomainFixed">
+            <summary>
+            Determines whether the value produced by the layout renderer
+            is fixed per current app-domain.
+            </summary>
+            <returns><see langword="true"/></returns>
+        </member>
         <member name="P:NLog.LayoutRenderers.EnvironmentLayoutRenderer.Variable">
             <summary>
             Name of the environment variable.
@@ -2947,6 +3059,12 @@
         <member name="P:NLog.LayoutRenderers.IdentityLayoutRenderer.IsAuthenticated">
             <summary>
             Render Thread.CurrentPrincipal.Identity.IsAuthenticated.
+            </summary>
+        </member>
+        <member name="P:NLog.LayoutRenderers.IdentityLayoutRenderer.FSNormalize">
+            <summary>
+            When true the output of this renderer is modified so it can be used as a part of file path
+            (illegal characters are replaced with '_')
             </summary>
         </member>
         <member name="T:NLog.LayoutRenderers.LevelLayoutRenderer">
@@ -3152,6 +3270,13 @@
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
             <param name="logEvent">Logging event.</param>
         </member>
+        <member name="M:NLog.LayoutRenderers.MachineNameLayoutRenderer.IsAppDomainFixed">
+            <summary>
+            Determines whether the value produced by the layout renderer
+            is fixed per current app-domain.
+            </summary>
+            <returns><see langword="true"/></returns>
+        </member>
         <member name="T:NLog.LayoutRenderers.MDCLayoutRenderer">
             <summary>
             Mapped Diagnostic Context item. Provided for compatibility with log4net.
@@ -3297,6 +3422,13 @@
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
             <param name="logEvent">Logging event.</param>
         </member>
+        <member name="M:NLog.LayoutRenderers.NLogDirLayoutRenderer.IsAppDomainFixed">
+            <summary>
+            Determines whether the value produced by the layout renderer
+            is fixed per current app-domain.
+            </summary>
+            <returns><see langword="true"/></returns>
+        </member>
         <member name="P:NLog.LayoutRenderers.NLogDirLayoutRenderer.File">
             <summary>
             The name of the file to be Path.Combine()'d with the directory name.
@@ -3382,6 +3514,13 @@
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
             <param name="logEvent">Logging event.</param>
         </member>
+        <member name="M:NLog.LayoutRenderers.ProcessIDLayoutRenderer.IsAppDomainFixed">
+            <summary>
+            Determines whether the value produced by the layout renderer
+            is fixed per current app-domain.
+            </summary>
+            <returns><see langword="true"/></returns>
+        </member>
         <member name="T:NLog.LayoutRenderers.ProcessNameLayoutRenderer">
             <summary>
             The name of the current process.
@@ -3406,6 +3545,13 @@
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
             <param name="logEvent">Logging event.</param>
+        </member>
+        <member name="M:NLog.LayoutRenderers.ProcessNameLayoutRenderer.IsAppDomainFixed">
+            <summary>
+            Determines whether the value produced by the layout renderer
+            is fixed per current app-domain.
+            </summary>
+            <returns><see langword="true"/></returns>
         </member>
         <member name="P:NLog.LayoutRenderers.ProcessNameLayoutRenderer.FullName">
             <summary>
@@ -3461,6 +3607,26 @@
             </summary>
             <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
             <param name="logEvent">Logging event.</param>
+        </member>
+        <member name="T:NLog.LayoutRenderers.StackTraceFormat">
+            <summary>
+            Format of the ${stacktrace} layout renderer output.
+            </summary>
+        </member>
+        <member name="F:NLog.LayoutRenderers.StackTraceFormat.Raw">
+            <summary>
+            Raw format (multiline - as returned by StackFrame.ToString() method)
+            </summary>
+        </member>
+        <member name="F:NLog.LayoutRenderers.StackTraceFormat.Flat">
+            <summary>
+            Flat format (class and method names displayed in a single line)
+            </summary>
+        </member>
+        <member name="F:NLog.LayoutRenderers.StackTraceFormat.DetailedFlat">
+            <summary>
+            Detailed flat format (method signatures displayed in a single line)
+            </summary>
         </member>
         <member name="T:NLog.LayoutRenderers.StackTraceLayoutRenderer">
             <summary>
@@ -3943,6 +4109,26 @@
             The maximum number of log events that the buffer can keep.
             </summary>
         </member>
+        <member name="T:NLog.Targets.Wrappers.AsyncTargetWrapperOverflowAction">
+            <summary>
+            The action to be taken when the queue overflows
+            </summary>
+        </member>
+        <member name="F:NLog.Targets.Wrappers.AsyncTargetWrapperOverflowAction.None">
+            <summary>
+            Do no action - accept another item into the queue.
+            </summary>
+        </member>
+        <member name="F:NLog.Targets.Wrappers.AsyncTargetWrapperOverflowAction.Discard">
+            <summary>
+            Discard the overflowing item.
+            </summary>
+        </member>
+        <member name="F:NLog.Targets.Wrappers.AsyncTargetWrapperOverflowAction.Block">
+            <summary>
+            Block until there's more room in the queue.
+            </summary>
+        </member>
         <member name="T:NLog.Targets.Wrappers.AsyncTargetWrapper">
             <summary>
             A target wrapper that provides asynchronous, buffered execution of target writes.
@@ -4029,15 +4215,69 @@
             The action to be taken when the lazy writer thread request queue count
             exceeds the set limit.
             </summary>
-            <remarks>
-            Can be <c>none</c> - do nothing, add another request to the queue
-            <c>discard</c> - discard the request, <c>block</c> - block the logging
-            thread to give the processing thread more time.
-            </remarks>
         </member>
         <member name="P:NLog.Targets.Wrappers.AsyncTargetWrapper.QueueLimit">
             <summary>
             The limit on the number of requests in the lazy writer thread request queue.
+            </summary>
+        </member>
+        <member name="T:NLog.Targets.Wrappers.AsyncTargetWrapper.AsyncRequestQueue">
+            <summary>
+            Asynchronous request queue
+            </summary>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.AsyncTargetWrapper.AsyncRequestQueue.#ctor(System.Int32,NLog.Targets.Wrappers.AsyncTargetWrapperOverflowAction)">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Targets.Wrappers.AsyncTargetWrapper.AsyncRequestQueue"/> and
+            sets the request limit and overflow action.
+            </summary>
+            <param name="requestLimit">Request limit.</param>
+            <param name="overflowAction">The overflow action.</param>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.AsyncTargetWrapper.AsyncRequestQueue.Enqueue(System.Object)">
+            <summary>
+            Enqueues another item. If the queue is overflown the appropriate
+            action is taken as specified by <see cref="P:NLog.Targets.Wrappers.AsyncTargetWrapper.AsyncRequestQueue.OnOverflow"/>.
+            </summary>
+            <param name="o">The item to be queued.</param>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.AsyncTargetWrapper.AsyncRequestQueue.DequeueBatch(System.Int32)">
+            <summary>
+            Dequeues a maximum of <c>count</c> items from the queue
+            and adds returns the <see cref="T:System.Collections.ArrayList"/> containing them.
+            </summary>
+            <param name="count">Maximum number of items to be dequeued.</param>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.AsyncTargetWrapper.AsyncRequestQueue.BatchProcessed(System.Collections.ArrayList)">
+            <summary>
+            Notifies the queue that the request batch has been processed.
+            </summary>
+            <param name="batch">The batch.</param>
+        </member>
+        <member name="M:NLog.Targets.Wrappers.AsyncTargetWrapper.AsyncRequestQueue.Clear">
+            <summary>
+            Clears the queue.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.Wrappers.AsyncTargetWrapper.AsyncRequestQueue.RequestLimit">
+            <summary>
+            The request limit.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.Wrappers.AsyncTargetWrapper.AsyncRequestQueue.OnOverflow">
+            <summary>
+            Action to be taken when there's no more room in
+            the queue and another request is enqueued.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.Wrappers.AsyncTargetWrapper.AsyncRequestQueue.RequestCount">
+            <summary>
+            Number of requests currently in the queue.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.Wrappers.AsyncTargetWrapper.AsyncRequestQueue.UnprocessedRequestCount">
+            <summary>
+            Number of requests currently being processed (in the queue + batched)
             </summary>
         </member>
         <member name="T:NLog.Targets.Wrappers.AutoFlushTargetWrapper">
@@ -4685,11 +4925,13 @@
         </member>
         <member name="M:NLog.Targets.ConsoleTarget.Write(NLog.LogEventInfo)">
             <summary>
-            Writes the specified logging event to the console <see cref="P:System.Console.Out"/> or
-            <see cref="P:System.Console.Error"/> depending on the value of the
-            <see cref="P:NLog.Targets.ConsoleTarget.Error"/> flag.
+            Writes the specified logging event to the Console.Out or
+            Console.Error depending on the value of the Error flag.
             </summary>
             <param name="logEvent">The logging event.</param>
+            <remarks>
+            Note that the Error option is not supported on .NET Compact Framework.
+            </remarks>
         </member>
         <member name="P:NLog.Targets.ConsoleTarget.Error">
             <summary>
@@ -5159,11 +5401,6 @@
             </summary>
             <param name="logEvent">The logging event.</param>
         </member>
-        <member name="M:NLog.Targets.FileTarget.Close">
-            <summary>
-            Closes the file.
-            </summary>
-        </member>
         <member name="M:NLog.Targets.FileTarget.Write(NLog.LogEventInfo[])">
             <summary>
             Writes the specified array of logging events to a file specified in the FileName 
@@ -5176,17 +5413,33 @@
             and can help improve performance.
             </remarks>
         </member>
-        <member name="M:NLog.Targets.FileTarget.WriteToFile(System.IO.StreamWriter,System.String)">
+        <member name="M:NLog.Targets.FileTarget.Initialize">
             <summary>
-            Writes the specified text to the specified file.
+            Initializes file logging by creating data structures that
+            enable efficient multi-file logging.
             </summary>
-            <param name="file">file to write to</param>
-            <param name="text">text to be written</param>
+        </member>
+        <member name="M:NLog.Targets.FileTarget.TransformBytes(System.Byte[])">
+            <summary>
+            Modifies the specified byte array before it gets sent to a file.
+            </summary>
+            <param name="bytes">The byte array</param>
+            <returns>The modified byte array. The function can do the modification in-place.</returns>
+        </member>
+        <member name="M:NLog.Targets.FileTarget.Flush(System.TimeSpan)">
+            <summary>
+            Flushes all pending file operations.
+            </summary>
+            <param name="timeout">The timeout</param>
             <remarks>
-            You can override this method to additional things before
-            the text is actually written to the file. For example this
-            is a way to add encryption support.
+            The timeout parameter is ignored, because file APIs don't provide
+            the needed functionality.
             </remarks>
+        </member>
+        <member name="M:NLog.Targets.FileTarget.Close">
+            <summary>
+            Closes the file(s) opened for writing.
+            </summary>
         </member>
         <member name="P:NLog.Targets.FileTarget.FileName">
             <summary>
@@ -5208,15 +5461,36 @@
             <summary>
             Create directories if they don't exist.
             </summary>
+            <remarks>
+            Setting this to false may improve performance a bit, but you'll receive an error
+            when attempting to write to a directory that's not present.
+            </remarks>
+        </member>
+        <member name="P:NLog.Targets.FileTarget.OpenFileCacheSize">
+            <summary>
+            The number of files to be kept open. Setting this to a higher value may improve performance
+            in a situation where a single File target is writing to many files
+            (such as splitting by level or by logger).
+            </summary>
+            <remarks>
+            The files are managed on a LRU (least recently used) basis, which flushes
+            the files that have not been used for the longest period of time should the
+            cache become full. As a rule of thumb, you shouldn't set this parameter to 
+            a very high value. A number like 10-15 shouldn't be exceeded, because you'd
+            be keeping a large number of files open which consumes system resources.
+            </remarks>
+        </member>
+        <member name="P:NLog.Targets.FileTarget.OpenFileCacheTimeout">
+            <summary>
+            Maximum number of seconds that files are kept open.
+            </summary>
         </member>
         <member name="P:NLog.Targets.FileTarget.KeepFileOpen">
             <summary>
             Keep log file open instead of opening and closing it on each logging event.
             </summary>
             <remarks>
-            Setting this property to <c>True</c> helps improve performance but is not recommended in multithreaded or multiprocess
-            scenarios because the file is kept locked and other processes cannot write to it which
-            effectively prevents logging.
+            Setting this property to <c>True</c> helps improve performance.
             </remarks>
         </member>
         <member name="P:NLog.Targets.FileTarget.AutoFlush">
@@ -5238,18 +5512,56 @@
         </member>
         <member name="P:NLog.Targets.FileTarget.ConcurrentWrites">
             <summary>
-            Enables concurrent writes to the log file by multiple processes.
+            Enables concurrent writes to the log file by multiple processes on the same host.
             </summary>
             <remarks>
-            This prevents the log files from being kept open and makes NLog
-            retry file writes until a write succeeds. This allows for logging in
-            multiprocess environment.
+            This makes multi-process logging possible. NLog uses a special technique
+            that lets it keep the files open for writing.
             </remarks>
+        </member>
+        <member name="P:NLog.Targets.FileTarget.NetworkWrites">
+            <summary>
+            Disables open-fi
+            </summary>
         </member>
         <member name="P:NLog.Targets.FileTarget.ConcurrentWriteAttempts">
             <summary>
             The number of times the write is appended on the file before NLog
             discards the log message.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.FileTarget.ArchiveAboveSize">
+            <summary>
+            Automatically <a href="filearchive.html">archive log files</a> that exceed the specified size in bytes.
+            </summary>
+            <remarks>
+            Caution: Enabling this option can considerably slow down your file 
+            logging in multi-process scenarios. If only one process is going to
+            be writing to the file, consider setting <c>ConcurrentWrites</c>
+            to <c>false</c> for maximum performance.
+            </remarks>
+        </member>
+        <member name="P:NLog.Targets.FileTarget.ArchiveEvery">
+            <summary>
+            Automatically <a href="filearchive.html">archive log files</a> every time the specified time passes.
+            Possible options are: <c>year</c>, <c>month</c>, <c>day</c>, <c>hour</c>, <c>minute</c>. Files are 
+            moved to the archive as part of the write operation if the current period of time changes. For example
+            if the current <c>hour</c> changes from 10 to 11, the first write that will occur
+            on or after 11:00 will trigger the <a href="filearchive.html">archiving</a>.
+            </summary>
+            <remarks>
+            <p>
+            Caution: Enabling this option can considerably slow down your file 
+            logging in multi-process scenarios. If only one process is going to
+            be writing to the file, consider setting <c>ConcurrentWrites</c>
+            to <c>false</c> for maximum performance.
+            </p>
+            </remarks>
+        </member>
+        <member name="P:NLog.Targets.FileTarget.ArchiveFileName">
+            <summary>
+            The name of the file to be used for an archive. It may contain a special placeholder {#####}
+            that will be replaced with a sequence of numbers depending on the archiving strategy.
             </summary>
         </member>
         <member name="P:NLog.Targets.FileTarget.ConcurrentWriteAttemptDelay">
@@ -5270,6 +5582,66 @@
             ...<p/>
             and so on.
             </example>
+        </member>
+        <member name="P:NLog.Targets.FileTarget.MaxArchiveFiles">
+            <summary>
+            Maximum number of archive files that should be kept.
+            </summary>
+        </member>
+        <member name="P:NLog.Targets.FileTarget.ArchiveNumbering">
+            <summary>
+            Determines the way <a href="filearchive.html">file archives</a> are numbered. 
+            </summary>
+        </member>
+        <member name="T:NLog.Targets.FileTarget.ArchiveNumberingMode">
+            <summary>
+            Specifies the way archive numbering is performed.
+            </summary>
+        </member>
+        <member name="F:NLog.Targets.FileTarget.ArchiveNumberingMode.Sequence">
+            <summary>
+            Sequence style numbering. The most recent archive has the highest number.
+            </summary>
+        </member>
+        <member name="F:NLog.Targets.FileTarget.ArchiveNumberingMode.Rolling">
+            <summary>
+            Rolling style numbering (the most recent is always #0 then #1, ..., #N
+            </summary>
+        </member>
+        <member name="T:NLog.Targets.FileTarget.ArchiveEveryMode">
+            <summary>
+            Modes of archiving files based on time.
+            </summary>
+        </member>
+        <member name="F:NLog.Targets.FileTarget.ArchiveEveryMode.None">
+            <summary>
+            Don't archive based on time.
+            </summary>
+        </member>
+        <member name="F:NLog.Targets.FileTarget.ArchiveEveryMode.Year">
+            <summary>
+            Archive every year.
+            </summary>
+        </member>
+        <member name="F:NLog.Targets.FileTarget.ArchiveEveryMode.Month">
+            <summary>
+            Archive every month.
+            </summary>
+        </member>
+        <member name="F:NLog.Targets.FileTarget.ArchiveEveryMode.Day">
+            <summary>
+            Archive daily.
+            </summary>
+        </member>
+        <member name="F:NLog.Targets.FileTarget.ArchiveEveryMode.Hour">
+            <summary>
+            Archive every hour.
+            </summary>
+        </member>
+        <member name="F:NLog.Targets.FileTarget.ArchiveEveryMode.Minute">
+            <summary>
+            Archive every minute.
+            </summary>
         </member>
         <member name="T:NLog.Targets.MailTarget">
             <summary>
@@ -5386,18 +5758,10 @@
             <summary>
             SMTP Authentication mode.
             </summary>
-            <remarks>
-            Possible values are:
-            <ul>
-            <li><b>none</b> - no authentication</li>
-            <li><b>basic</b> - SmtpUsername and SmtpPassword are used to provide the credentials</li>
-            <li><b>ntlm</b> - integrated Windows authentication</li>
-            </ul>
-            </remarks>
         </member>
         <member name="P:NLog.Targets.MailTarget.SmtpUsername">
             <summary>
-            The username used to connect to SMTP server (used when SmtpPAuthentication is set to "basic").
+            The username used to connect to SMTP server (used when SmtpAuthentication is set to "basic").
             </summary>
         </member>
         <member name="P:NLog.Targets.MailTarget.SmtpPassword">
@@ -5408,6 +5772,26 @@
         <member name="P:NLog.Targets.MailTarget.SmtpPort">
             <summary>
             The port that SMTP Server is listening on.
+            </summary>
+        </member>
+        <member name="T:NLog.Targets.MailTarget.SmtpAuthenticationMode">
+            <summary>
+            SMTP authentication modes.
+            </summary>
+        </member>
+        <member name="F:NLog.Targets.MailTarget.SmtpAuthenticationMode.None">
+            <summary>
+            No authentication.
+            </summary>
+        </member>
+        <member name="F:NLog.Targets.MailTarget.SmtpAuthenticationMode.Basic">
+            <summary>
+            Basic - username and password
+            </summary>
+        </member>
+        <member name="F:NLog.Targets.MailTarget.SmtpAuthenticationMode.Ntlm">
+            <summary>
+            NTLM Authentication
             </summary>
         </member>
         <member name="T:NLog.Targets.MemoryTarget">
@@ -5935,6 +6319,991 @@
             Event to be raised at the beginning of each HTTP Request.
             </summary>
         </member>
+        <member name="T:NLog.Win32.LayoutRenderers.ASPApplicationValueLayoutRenderer">
+            <summary>
+            ASP Application variable.
+            </summary>
+        </member>
+        <member name="M:NLog.Win32.LayoutRenderers.ASPApplicationValueLayoutRenderer.GetEstimatedBufferSize(NLog.LogEventInfo)">
+            <summary>
+            Returns the estimated number of characters that are needed to
+            hold the rendered value for the specified logging event.
+            </summary>
+            <param name="logEvent">Logging event information.</param>
+            <returns>The number of characters.</returns>
+            <remarks>
+            Because ASP target uses COM Interop which is quite expensive, this method always returns 64.
+            </remarks>
+        </member>
+        <member name="M:NLog.Win32.LayoutRenderers.ASPApplicationValueLayoutRenderer.Append(System.Text.StringBuilder,NLog.LogEventInfo)">
+            <summary>
+            Renders the specified ASP Application variable and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
+            </summary>
+            <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
+            <param name="logEvent">Logging event.</param>
+        </member>
+        <member name="P:NLog.Win32.LayoutRenderers.ASPApplicationValueLayoutRenderer.Variable">
+            <summary>
+            The variable name.
+            </summary>
+        </member>
+        <member name="T:NLog.Win32.LayoutRenderers.ASPRequestValueLayoutRenderer">
+            <summary>
+            ASP Request variable
+            </summary>
+        </member>
+        <member name="M:NLog.Win32.LayoutRenderers.ASPRequestValueLayoutRenderer.GetEstimatedBufferSize(NLog.LogEventInfo)">
+            <summary>
+            Returns the estimated number of characters that are needed to
+            hold the rendered value for the specified logging event.
+            </summary>
+            <param name="logEvent">Logging event information.</param>
+            <returns>The number of characters.</returns>
+            <remarks>
+            Because ASP target uses COM Interop which is quite expensive, this method always returns 64.
+            </remarks>
+        </member>
+        <member name="M:NLog.Win32.LayoutRenderers.ASPRequestValueLayoutRenderer.Append(System.Text.StringBuilder,NLog.LogEventInfo)">
+            <summary>
+            Renders the specified ASP Request variable and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
+            </summary>
+            <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
+            <param name="logEvent">Logging event.</param>
+        </member>
+        <member name="P:NLog.Win32.LayoutRenderers.ASPRequestValueLayoutRenderer.Item">
+            <summary>
+            The item name. The QueryString, Form, Cookies, or ServerVariables collection variables having the specified name are rendered.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.LayoutRenderers.ASPRequestValueLayoutRenderer.QueryString">
+            <summary>
+            The QueryString variable to be rendered.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.LayoutRenderers.ASPRequestValueLayoutRenderer.Form">
+            <summary>
+            The form variable to be rendered.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.LayoutRenderers.ASPRequestValueLayoutRenderer.Cookie">
+            <summary>
+            The cookie to be rendered.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.LayoutRenderers.ASPRequestValueLayoutRenderer.ServerVariable">
+            <summary>
+            The ServerVariables item to be rendered.
+            </summary>
+        </member>
+        <member name="T:NLog.Win32.LayoutRenderers.ASPSessionValueLayoutRenderer">
+            <summary>
+            ASP Session variable.
+            </summary>
+        </member>
+        <member name="M:NLog.Win32.LayoutRenderers.ASPSessionValueLayoutRenderer.GetEstimatedBufferSize(NLog.LogEventInfo)">
+            <summary>
+            Returns the estimated number of characters that are needed to
+            hold the rendered value for the specified logging event.
+            </summary>
+            <param name="logEvent">Logging event information.</param>
+            <returns>The number of characters.</returns>
+            <remarks>
+            Because ASP target uses COM Interop which is quite expensive, this method always returns 64.
+            </remarks>
+        </member>
+        <member name="M:NLog.Win32.LayoutRenderers.ASPSessionValueLayoutRenderer.Append(System.Text.StringBuilder,NLog.LogEventInfo)">
+            <summary>
+            Renders the specified ASP Session variable and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
+            </summary>
+            <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
+            <param name="logEvent">Logging event.</param>
+        </member>
+        <member name="P:NLog.Win32.LayoutRenderers.ASPSessionValueLayoutRenderer.Variable">
+            <summary>
+            Session variable name.
+            </summary>
+        </member>
+        <member name="T:NLog.Win32.LayoutRenderers.RegistryLayoutRenderer">
+            <summary>
+            A value from the Registry.
+            </summary>
+        </member>
+        <member name="M:NLog.Win32.LayoutRenderers.RegistryLayoutRenderer.GetEstimatedBufferSize(NLog.LogEventInfo)">
+            <summary>
+            Returns the estimated number of characters that are needed to
+            hold the rendered value for the specified logging event.
+            </summary>
+            <param name="logEvent">Logging event information.</param>
+            <returns>The number of characters.</returns>
+            <remarks>
+            This function always returns 32.
+            </remarks>
+        </member>
+        <member name="M:NLog.Win32.LayoutRenderers.RegistryLayoutRenderer.Append(System.Text.StringBuilder,NLog.LogEventInfo)">
+            <summary>
+            Reads the specified registry key and value and appends it to
+            the passed <see cref="T:System.Text.StringBuilder"/>.
+            </summary>
+            <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
+            <param name="logEvent">Logging event. Ignored.</param>
+        </member>
+        <member name="P:NLog.Win32.LayoutRenderers.RegistryLayoutRenderer.Value">
+            <summary>
+            Registry value.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.LayoutRenderers.RegistryLayoutRenderer.DefaultValue">
+            <summary>
+            The value to be output when the specified registry key or value is not found.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.LayoutRenderers.RegistryLayoutRenderer.Key">
+            <summary>
+            Registry key.
+            </summary>
+            <remarks>
+            Must have one of the forms:
+            <ul>
+            <li>HKLM\Key\Full\Name</li>
+            <li>HKEY_LOCAL_MACHINE\Key\Full\Name</li>
+            <li>HKCU\Key\Full\Name</li>
+            <li>HKEY_CURRENT_USER\Key\Full\Name</li>
+            </ul>
+            </remarks>
+        </member>
+        <member name="T:NLog.Win32.LayoutRenderers.WindowsIdentityLayoutRenderer">
+            <summary>
+            Thread Windows identity information (username)
+            </summary>
+        </member>
+        <member name="M:NLog.Win32.LayoutRenderers.WindowsIdentityLayoutRenderer.GetEstimatedBufferSize(NLog.LogEventInfo)">
+            <summary>
+            Returns the estimated number of characters that are needed to
+            hold the rendered value for the specified logging event.
+            </summary>
+            <param name="logEvent">Logging event information.</param>
+            <returns>The number of characters.</returns>
+            <remarks>
+            If the exact number is not known or
+            expensive to calculate this function should return a rough estimate
+            that's big enough in most cases, but not too big, in order to conserve memory.
+            </remarks>
+        </member>
+        <member name="M:NLog.Win32.LayoutRenderers.WindowsIdentityLayoutRenderer.Append(System.Text.StringBuilder,NLog.LogEventInfo)">
+            <summary>
+            Renders the current thread windows identity information and appends it to the specified <see cref="T:System.Text.StringBuilder"/>.
+            </summary>
+            <param name="builder">The <see cref="T:System.Text.StringBuilder"/> to append the rendered data to.</param>
+            <param name="logEvent">Logging event.</param>
+        </member>
+        <member name="P:NLog.Win32.LayoutRenderers.WindowsIdentityLayoutRenderer.Domain">
+            <summary>
+            Whether domain name should be included.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.LayoutRenderers.WindowsIdentityLayoutRenderer.UserName">
+            <summary>
+            Whether username should be included.
+            </summary>
+        </member>
+        <member name="T:NLog.Win32.Targets.ASPResponseTarget">
+            <summary>
+            Outputs logging messages through the ASP Response object.
+            </summary>
+        </member>
+        <member name="M:NLog.Win32.Targets.ASPResponseTarget.Write(NLog.LogEventInfo)">
+            <summary>
+            Outputs the rendered logging event through the <c>OutputDebugString()</c> Win32 API.
+            </summary>
+            <param name="logEvent">The logging event.</param>
+        </member>
+        <member name="P:NLog.Win32.Targets.ASPResponseTarget.AddComments">
+            <summary>
+            Add &lt;!-- --&gt; comments around all written texts.
+            </summary>
+        </member>
+        <member name="T:NLog.Win32.Targets.ColoredConsoleTarget">
+            <summary>
+            Writes logging messages to the console with customizable coloring.
+            </summary>
+            <example>
+            <p>
+            To set up the target in the <a href="config.html">configuration file</a>, 
+            use the following syntax:
+            </p>
+            <xml src="examples/targets/ColoredConsole/ConsoleTarget.nlog" />
+            <p>
+            This assumes just one target and a single rule. More configuration
+            options are described <a href="config.html">here</a>.
+            </p>
+            <p>
+            To set up the log target programmatically use code like this:
+            </p>
+            <cs src="examples/targets/ColoredConsole/ConsoleTarget.cs" />
+            <p>
+            The result is a colorful console, where each color represents a single log level.
+            </p>
+            <img src="examples/targets/ColoredConsole/ColoredConsoleTarget.gif" />
+            <p>
+            In addition you can configure your own word highlighting rules so that 
+            particular words or regular expressions will be marked with 
+            a distinguished color:
+            </p>
+            <xml src="examples/targets/ColoredConsole/ColoredConsoleTargetWordHighlighting.nlog" />
+            <p>Programmatic equivalent of the above configuration:</p>
+            <cs src="examples/targets/ColoredConsole/ColoredConsoleTargetWordHighlighting.cs" />
+            <p>
+            Here's the result:
+            </p>
+            <img src="examples/targets/ColoredConsole/ColoredConsoleTargetWordHighlighting.gif" />
+            <p>
+            Custom row highlighting lets you colorize the output by any <a href="conditions.html">condition</a>.
+            This example shows how to mark all entries containing the word "serious" with white color on red background
+            and mark all entries coming from a particular logger with yellow on blue.
+            </p>
+            <xml src="examples/targets/ColoredConsole/ColoredConsoleTargetRowHighlighting.nlog" />
+            <p>Programmatic equivalent of the above configuration:</p>
+            <cs src="examples/targets/ColoredConsole/ColoredConsoleTargetRowHighlighting.cs" />
+            <p>
+            Here's the result:
+            </p>
+            <img src="examples/targets/ColoredConsole/ColoredConsoleTargetRowHighlighting.gif" />
+            </example>
+        </member>
+        <member name="M:NLog.Win32.Targets.ColoredConsoleTarget.Write(NLog.LogEventInfo)">
+            <summary>
+            Writes the specified log event to the console highlighting entries
+            and words based on a set of defined rules.
+            </summary>
+            <param name="logEvent">Log event.</param>
+        </member>
+        <member name="P:NLog.Win32.Targets.ColoredConsoleTarget.ErrorStream">
+            <summary>
+            Determines whether the error stream (stderr) should be used instead of the output stream (stdout).
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.Targets.ColoredConsoleTarget.UseDefaultRowHighlightingRules">
+            <summary>
+            Use default row highlighting rules.
+            </summary>
+            <remarks>
+            The default rules are:
+            <table class="subparamtable">
+            <tr>
+            <th>Condition</th>
+            <th>Foreground Color</th>
+            <th>Background Color</th>
+            </tr>
+            <tr>
+            <td>level == LogLevel.Fatal</td>
+            <td>Red</td>
+            <td>NoChange</td>
+            </tr>
+            <tr>
+            <td>level == LogLevel.Error</td>
+            <td>Yellow</td>
+            <td>NoChange</td>
+            </tr>
+            <tr>
+            <td>level == LogLevel.Warn</td>
+            <td>Magenta</td>
+            <td>NoChange</td>
+            </tr>
+            <tr>
+            <td>level == LogLevel.Info</td>
+            <td>White</td>
+            <td>NoChange</td>
+            </tr>
+            <tr>
+            <td>level == LogLevel.Debug</td>
+            <td>Gray</td>
+            <td>NoChange</td>
+            </tr>
+            <tr>
+            <td>level == LogLevel.Trace</td>
+            <td>DarkGray</td>
+            <td>NoChange</td>
+            </tr>
+            </table>
+            </remarks>
+        </member>
+        <member name="P:NLog.Win32.Targets.ColoredConsoleTarget.RowHighlightingRules">
+            <summary>
+            Row highlighting rules.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.Targets.ColoredConsoleTarget.WordHighlightingRules">
+            <summary>
+            Word highlighting rules.
+            </summary>
+        </member>
+        <member name="T:NLog.Win32.Targets.ConsoleOutputColor">
+            <summary>
+            Colored console output color.
+            </summary>
+            <remarks>
+            Note that this enumeration is defined to be binary compatible with 
+            .NET 2.0 System.ConsoleColor + some additions
+            </remarks>
+        </member>
+        <member name="F:NLog.Win32.Targets.ConsoleOutputColor.Black">
+            <summary>
+            Black (#000000)
+            </summary>
+        </member>
+        <member name="F:NLog.Win32.Targets.ConsoleOutputColor.DarkBlue">
+            <summary>
+            Dark blue (#000080)
+            </summary>
+        </member>
+        <member name="F:NLog.Win32.Targets.ConsoleOutputColor.DarkGreen">
+            <summary>
+            Dark green (#008000)
+            </summary>
+        </member>
+        <member name="F:NLog.Win32.Targets.ConsoleOutputColor.DarkCyan">
+            <summary>
+            Dark Cyan (#008080)
+            </summary>
+        </member>
+        <member name="F:NLog.Win32.Targets.ConsoleOutputColor.DarkRed">
+            <summary>
+            Dark Red (#800000)
+            </summary>
+        </member>
+        <member name="F:NLog.Win32.Targets.ConsoleOutputColor.DarkMagenta">
+            <summary>
+            Dark Magenta (#800080)
+            </summary>
+        </member>
+        <member name="F:NLog.Win32.Targets.ConsoleOutputColor.DarkYellow">
+            <summary>
+            Dark Yellow (#808000)
+            </summary>
+        </member>
+        <member name="F:NLog.Win32.Targets.ConsoleOutputColor.Gray">
+            <summary>
+            Gray (#C0C0C0)
+            </summary>
+        </member>
+        <member name="F:NLog.Win32.Targets.ConsoleOutputColor.DarkGray">
+            <summary>
+            Dark Gray (#808080)
+            </summary>
+        </member>
+        <member name="F:NLog.Win32.Targets.ConsoleOutputColor.Blue">
+            <summary>
+            Blue (#0000FF)
+            </summary>
+        </member>
+        <member name="F:NLog.Win32.Targets.ConsoleOutputColor.Green">
+            <summary>
+            Green (#00FF00)
+            </summary>
+        </member>
+        <member name="F:NLog.Win32.Targets.ConsoleOutputColor.Cyan">
+            <summary>
+            Cyan (#00FFFF)
+            </summary>
+        </member>
+        <member name="F:NLog.Win32.Targets.ConsoleOutputColor.Red">
+            <summary>
+            Red (#FF0000)
+            </summary>
+        </member>
+        <member name="F:NLog.Win32.Targets.ConsoleOutputColor.Magenta">
+            <summary>
+            Magenta (#FF00FF)
+            </summary>
+        </member>
+        <member name="F:NLog.Win32.Targets.ConsoleOutputColor.Yellow">
+            <summary>
+            Yellow (#FFFF00)
+            </summary>
+        </member>
+        <member name="F:NLog.Win32.Targets.ConsoleOutputColor.White">
+            <summary>
+            White (#FFFFFF)
+            </summary>
+        </member>
+        <member name="F:NLog.Win32.Targets.ConsoleOutputColor.NoChange">
+            <summary>
+            Don't change the color.
+            </summary>
+        </member>
+        <member name="T:NLog.Win32.Targets.ConsoleRowHighlightingRule">
+            <summary>
+            The row-highlighting condition.
+            </summary>
+        </member>
+        <member name="F:NLog.Win32.Targets.ConsoleRowHighlightingRule.Default">
+            <summary>
+            Default highlighting rule. Doesn't change the color.
+            </summary>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleRowHighlightingRule.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Win32.Targets.ConsoleRowHighlightingRule"/>
+            </summary>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleRowHighlightingRule.#ctor(System.String,NLog.Win32.Targets.ConsoleOutputColor,NLog.Win32.Targets.ConsoleOutputColor)">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Win32.Targets.ConsoleRowHighlightingRule"/> and
+            assigns Condition, ForegroundColor and BackgroundColor properties.
+            </summary>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleRowHighlightingRule.CheckCondition(NLog.LogEventInfo)">
+            <summary>
+            Checks whether the specified log event matches the condition (if any)
+            </summary>
+            <param name="logEvent">log event</param>
+            <returns><see langword="true"/> if the condition is not defined or 
+            if it matches, <see langword="false"/> otherwise</returns>
+        </member>
+        <member name="P:NLog.Win32.Targets.ConsoleRowHighlightingRule.Condition">
+            <summary>
+            The condition that must be met in order to set the specified foreground and background color.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.Targets.ConsoleRowHighlightingRule.ForegroundColor">
+            <summary>
+            The foreground color.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.Targets.ConsoleRowHighlightingRule.BackgroundColor">
+            <summary>
+            The background color.
+            </summary>
+        </member>
+        <member name="T:NLog.Win32.Targets.ConsoleRowHighlightingRuleCollection">
+            <summary>
+            A collection of elements of type ConsoleRowHighlightingRule
+            </summary>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleRowHighlightingRuleCollection.#ctor">
+            <summary>
+            Initializes a new empty instance of the ConsoleRowHighlightingRuleCollection class.
+            </summary>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleRowHighlightingRuleCollection.#ctor(NLog.Win32.Targets.ConsoleRowHighlightingRule[])">
+            <summary>
+            Initializes a new instance of the ConsoleRowHighlightingRuleCollection class, containing elements
+            copied from an array.
+            </summary>
+            <param name="items">
+            The array whose elements are to be added to the new ConsoleRowHighlightingRuleCollection.
+            </param>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleRowHighlightingRuleCollection.#ctor(NLog.Win32.Targets.ConsoleRowHighlightingRuleCollection)">
+            <summary>
+            Initializes a new instance of the ConsoleRowHighlightingRuleCollection class, containing elements
+            copied from another instance of ConsoleRowHighlightingRuleCollection
+            </summary>
+            <param name="items">
+            The ConsoleRowHighlightingRuleCollection whose elements are to be added to the new ConsoleRowHighlightingRuleCollection.
+            </param>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleRowHighlightingRuleCollection.AddRange(NLog.Win32.Targets.ConsoleRowHighlightingRule[])">
+            <summary>
+            Adds the elements of an array to the end of this ConsoleRowHighlightingRuleCollection.
+            </summary>
+            <param name="items">
+            The array whose elements are to be added to the end of this ConsoleRowHighlightingRuleCollection.
+            </param>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleRowHighlightingRuleCollection.AddRange(NLog.Win32.Targets.ConsoleRowHighlightingRuleCollection)">
+            <summary>
+            Adds the elements of another ConsoleRowHighlightingRuleCollection to the end of this ConsoleRowHighlightingRuleCollection.
+            </summary>
+            <param name="items">
+            The ConsoleRowHighlightingRuleCollection whose elements are to be added to the end of this ConsoleRowHighlightingRuleCollection.
+            </param>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleRowHighlightingRuleCollection.Add(NLog.Win32.Targets.ConsoleRowHighlightingRule)">
+            <summary>
+            Adds an instance of type ConsoleRowHighlightingRule to the end of this ConsoleRowHighlightingRuleCollection.
+            </summary>
+            <param name="value">
+            The ConsoleRowHighlightingRule to be added to the end of this ConsoleRowHighlightingRuleCollection.
+            </param>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleRowHighlightingRuleCollection.Contains(NLog.Win32.Targets.ConsoleRowHighlightingRule)">
+            <summary>
+            Determines whether a specfic ConsoleRowHighlightingRule value is in this ConsoleRowHighlightingRuleCollection.
+            </summary>
+            <param name="value">
+            The ConsoleRowHighlightingRule value to locate in this ConsoleRowHighlightingRuleCollection.
+            </param>
+            <returns>
+            true if value is found in this ConsoleRowHighlightingRuleCollection;
+            false otherwise.
+            </returns>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleRowHighlightingRuleCollection.IndexOf(NLog.Win32.Targets.ConsoleRowHighlightingRule)">
+            <summary>
+            Return the zero-based index of the first occurrence of a specific value
+            in this ConsoleRowHighlightingRuleCollection
+            </summary>
+            <param name="value">
+            The ConsoleRowHighlightingRule value to locate in the ConsoleRowHighlightingRuleCollection.
+            </param>
+            <returns>
+            The zero-based index of the first occurrence of the _ELEMENT value if found;
+            -1 otherwise.
+            </returns>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleRowHighlightingRuleCollection.Insert(System.Int32,NLog.Win32.Targets.ConsoleRowHighlightingRule)">
+            <summary>
+            Inserts an element into the ConsoleRowHighlightingRuleCollection at the specified index
+            </summary>
+            <param name="index">
+            The index at which the ConsoleRowHighlightingRule is to be inserted.
+            </param>
+            <param name="value">
+            The ConsoleRowHighlightingRule to insert.
+            </param>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleRowHighlightingRuleCollection.Remove(NLog.Win32.Targets.ConsoleRowHighlightingRule)">
+            <summary>
+            Removes the first occurrence of a specific ConsoleRowHighlightingRule from this ConsoleRowHighlightingRuleCollection.
+            </summary>
+            <param name="value">
+            The ConsoleRowHighlightingRule value to remove from this ConsoleRowHighlightingRuleCollection.
+            </param>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleRowHighlightingRuleCollection.GetEnumerator">
+            <summary>
+            Returns an enumerator that can iterate through the elements of this ConsoleRowHighlightingRuleCollection.
+            </summary>
+            <returns>
+            An object that implements System.Collections.IEnumerator.
+            </returns>        
+        </member>
+        <member name="P:NLog.Win32.Targets.ConsoleRowHighlightingRuleCollection.Item(System.Int32)">
+            <summary>
+            Gets or sets the ConsoleRowHighlightingRule at the given index in this ConsoleRowHighlightingRuleCollection.
+            </summary>
+        </member>
+        <member name="T:NLog.Win32.Targets.ConsoleRowHighlightingRuleCollection.Enumerator">
+            <summary>
+            Type-specific enumeration class, used by ConsoleRowHighlightingRuleCollection.GetEnumerator.
+            </summary>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleRowHighlightingRuleCollection.Enumerator.#ctor(NLog.Win32.Targets.ConsoleRowHighlightingRuleCollection)">
+            <summary>
+            
+            </summary>
+            <param name="collection"></param>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleRowHighlightingRuleCollection.Enumerator.MoveNext">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleRowHighlightingRuleCollection.Enumerator.Reset">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.Targets.ConsoleRowHighlightingRuleCollection.Enumerator.Current">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:NLog.Win32.Targets.ConsoleWordHighlightingRule">
+            <summary>
+            Highlighting rule for Win32 colorful console.
+            </summary>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleWordHighlightingRule.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Win32.Targets.ConsoleWordHighlightingRule"/>
+            </summary>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleWordHighlightingRule.#ctor(System.String,NLog.Win32.Targets.ConsoleOutputColor,NLog.Win32.Targets.ConsoleOutputColor)">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Win32.Targets.ConsoleWordHighlightingRule"/>
+            and sets Text, BackgroundColor and ForegroundColor properties.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.Targets.ConsoleWordHighlightingRule.Regex">
+            <summary>
+            The regular expression to be matched. You must specify either <c>text</c> or <c>regex</c>.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.Targets.ConsoleWordHighlightingRule.Text">
+            <summary>
+            The text to be matched. You must specify either <c>text</c> or <c>regex</c>.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.Targets.ConsoleWordHighlightingRule.WholeWords">
+            <summary>
+            Match whole words only.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.Targets.ConsoleWordHighlightingRule.IgnoreCase">
+            <summary>
+            Ignore case when comparing texts.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.Targets.ConsoleWordHighlightingRule.CompiledRegex">
+            <summary>
+            Compiled regular expression that matches either Text or Regex property.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.Targets.ConsoleWordHighlightingRule.ForegroundColor">
+            <summary>
+            The foreground color.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.Targets.ConsoleWordHighlightingRule.BackgroundColor">
+            <summary>
+            The background color.
+            </summary>
+        </member>
+        <member name="T:NLog.Win32.Targets.ConsoleWordHighlightingRuleCollection">
+            <summary>
+            A collection of elements of type ConsoleWordHighlightingRule
+            </summary>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleWordHighlightingRuleCollection.#ctor">
+            <summary>
+            Initializes a new empty instance of the ConsoleWordHighlightingRuleCollection class.
+            </summary>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleWordHighlightingRuleCollection.#ctor(NLog.Win32.Targets.ConsoleWordHighlightingRule[])">
+            <summary>
+            Initializes a new instance of the ConsoleWordHighlightingRuleCollection class, containing elements
+            copied from an array.
+            </summary>
+            <param name="items">
+            The array whose elements are to be added to the new ConsoleWordHighlightingRuleCollection.
+            </param>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleWordHighlightingRuleCollection.#ctor(NLog.Win32.Targets.ConsoleWordHighlightingRuleCollection)">
+            <summary>
+            Initializes a new instance of the ConsoleWordHighlightingRuleCollection class, containing elements
+            copied from another instance of ConsoleWordHighlightingRuleCollection
+            </summary>
+            <param name="items">
+            The ConsoleWordHighlightingRuleCollection whose elements are to be added to the new ConsoleWordHighlightingRuleCollection.
+            </param>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleWordHighlightingRuleCollection.AddRange(NLog.Win32.Targets.ConsoleWordHighlightingRule[])">
+            <summary>
+            Adds the elements of an array to the end of this ConsoleWordHighlightingRuleCollection.
+            </summary>
+            <param name="items">
+            The array whose elements are to be added to the end of this ConsoleWordHighlightingRuleCollection.
+            </param>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleWordHighlightingRuleCollection.AddRange(NLog.Win32.Targets.ConsoleWordHighlightingRuleCollection)">
+            <summary>
+            Adds the elements of another ConsoleWordHighlightingRuleCollection to the end of this ConsoleWordHighlightingRuleCollection.
+            </summary>
+            <param name="items">
+            The ConsoleWordHighlightingRuleCollection whose elements are to be added to the end of this ConsoleWordHighlightingRuleCollection.
+            </param>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleWordHighlightingRuleCollection.Add(NLog.Win32.Targets.ConsoleWordHighlightingRule)">
+            <summary>
+            Adds an instance of type ConsoleWordHighlightingRule to the end of this ConsoleWordHighlightingRuleCollection.
+            </summary>
+            <param name="value">
+            The ConsoleWordHighlightingRule to be added to the end of this ConsoleWordHighlightingRuleCollection.
+            </param>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleWordHighlightingRuleCollection.Contains(NLog.Win32.Targets.ConsoleWordHighlightingRule)">
+            <summary>
+            Determines whether a specfic ConsoleWordHighlightingRule value is in this ConsoleWordHighlightingRuleCollection.
+            </summary>
+            <param name="value">
+            The ConsoleWordHighlightingRule value to locate in this ConsoleWordHighlightingRuleCollection.
+            </param>
+            <returns>
+            true if value is found in this ConsoleWordHighlightingRuleCollection;
+            false otherwise.
+            </returns>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleWordHighlightingRuleCollection.IndexOf(NLog.Win32.Targets.ConsoleWordHighlightingRule)">
+            <summary>
+            Return the zero-based index of the first occurrence of a specific value
+            in this ConsoleWordHighlightingRuleCollection
+            </summary>
+            <param name="value">
+            The ConsoleWordHighlightingRule value to locate in the ConsoleWordHighlightingRuleCollection.
+            </param>
+            <returns>
+            The zero-based index of the first occurrence of the _ELEMENT value if found;
+            -1 otherwise.
+            </returns>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleWordHighlightingRuleCollection.Insert(System.Int32,NLog.Win32.Targets.ConsoleWordHighlightingRule)">
+            <summary>
+            Inserts an element into the ConsoleWordHighlightingRuleCollection at the specified index
+            </summary>
+            <param name="index">
+            The index at which the ConsoleWordHighlightingRule is to be inserted.
+            </param>
+            <param name="value">
+            The ConsoleWordHighlightingRule to insert.
+            </param>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleWordHighlightingRuleCollection.Remove(NLog.Win32.Targets.ConsoleWordHighlightingRule)">
+            <summary>
+            Removes the first occurrence of a specific ConsoleWordHighlightingRule from this ConsoleWordHighlightingRuleCollection.
+            </summary>
+            <param name="value">
+            The ConsoleWordHighlightingRule value to remove from this ConsoleWordHighlightingRuleCollection.
+            </param>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleWordHighlightingRuleCollection.GetEnumerator">
+            <summary>
+            Returns an enumerator that can iterate through the elements of this ConsoleWordHighlightingRuleCollection.
+            </summary>
+            <returns>
+            An object that implements System.Collections.IEnumerator.
+            </returns>        
+        </member>
+        <member name="P:NLog.Win32.Targets.ConsoleWordHighlightingRuleCollection.Item(System.Int32)">
+            <summary>
+            Gets or sets the ConsoleWordHighlightingRule at the given index in this ConsoleWordHighlightingRuleCollection.
+            </summary>
+        </member>
+        <member name="T:NLog.Win32.Targets.ConsoleWordHighlightingRuleCollection.Enumerator">
+            <summary>
+            Type-specific enumeration class, used by ConsoleWordHighlightingRuleCollection.GetEnumerator.
+            </summary>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleWordHighlightingRuleCollection.Enumerator.#ctor(NLog.Win32.Targets.ConsoleWordHighlightingRuleCollection)">
+            <summary>
+            
+            </summary>
+            <param name="collection"></param>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleWordHighlightingRuleCollection.Enumerator.MoveNext">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NLog.Win32.Targets.ConsoleWordHighlightingRuleCollection.Enumerator.Reset">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.Targets.ConsoleWordHighlightingRuleCollection.Enumerator.Current">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:NLog.Win32.Targets.EventLogTarget">
+            <summary>
+            Writes log message to the Event Log.
+            </summary>
+            <example>
+            <p>
+            To set up the target in the <a href="config.html">configuration file</a>, 
+            use the following syntax:
+            </p>
+            <xml src="examples/targets/EventLog/EventLogTarget.nlog" />
+            <p>
+            This assumes just one target and a single rule. More configuration
+            options are described <a href="config.html">here</a>.
+            </p>
+            <p>
+            To set up the log target programmatically use code like this:
+            </p>
+            <cs src="examples/targets/EventLog/EventLogTarget.cs" />
+            </example>
+            <remarks>
+            Currently there's no way to pass EventID or Category 
+            event log parameters. This issue may be addressed
+            in future releases.
+            </remarks>
+        </member>
+        <member name="M:NLog.Win32.Targets.EventLogTarget.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Win32.Targets.EventLogTarget"/> and 
+            </summary>
+        </member>
+        <member name="M:NLog.Win32.Targets.EventLogTarget.Write(NLog.LogEventInfo)">
+            <summary>
+            Writes the specified logging event to the event log. 
+            </summary>
+            <param name="logEvent">The logging event.</param>
+        </member>
+        <member name="P:NLog.Win32.Targets.EventLogTarget.MachineName">
+            <summary>
+            Machine name on which Event Log service is running.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.Targets.EventLogTarget.Source">
+            <summary>
+            The value to be used as the event Source.
+            </summary>
+            <remarks>
+            By default this is the friendly name of the current AppDomain.
+            </remarks>
+        </member>
+        <member name="P:NLog.Win32.Targets.EventLogTarget.Log">
+            <summary>
+            Name of the Event Log to write to. This can be System, Application or 
+            any user-defined name.
+            </summary>
+        </member>
+        <member name="T:NLog.Win32.Targets.MSMQTarget">
+            <summary>
+            Writes log message to the specified message queue handled by MSMQ.
+            </summary>
+            <example>
+            <p>
+            To set up the target in the <a href="config.html">configuration file</a>, 
+            use the following syntax:
+            </p>
+            <xml src="examples/targets/MSMQ/MSMQTarget.nlog" />
+            <p>
+            You can use a single target to write to multiple queues (similar to writing to multiple files with the File target).
+            </p>
+            <xml src="examples/targets/MSMQ/MSMQTargetMultiple.nlog" />
+            <p>
+            The above examples assume just one target and a single rule. 
+            More configuration options are described <a href="config.html">here</a>.
+            </p>
+            <p>
+            To set up the log target programmatically use code like this:
+            </p>
+            <cs src="examples/targets/MSMQ/MSMQTarget.cs" />
+            </example>
+        </member>
+        <member name="M:NLog.Win32.Targets.MSMQTarget.PopulateLayouts(NLog.LayoutCollection)">
+            <summary>
+            Adds all layouts used by this target to the specified collection.
+            </summary>
+            <param name="layouts">The collection to add layouts to.</param>
+        </member>
+        <member name="M:NLog.Win32.Targets.MSMQTarget.Write(NLog.LogEventInfo)">
+            <summary>
+            Writes the specified logging event to a queue specified in the Queue 
+            parameter.
+            </summary>
+            <param name="logEvent">The logging event.</param>
+        </member>
+        <member name="M:NLog.Win32.Targets.MSMQTarget.PrepareMessage(NLog.LogEventInfo)">
+            <summary>
+            Prepares a message to be sent to the message queue.
+            </summary>
+            <param name="logEvent">The log event to be used when calculating label and text to be written.</param>
+            <returns>The message to be sent</returns>
+            <remarks>
+            You may override this method in inheriting classes
+            to provide services like encryption or message 
+            authentication.
+            </remarks>
+        </member>
+        <member name="P:NLog.Win32.Targets.MSMQTarget.Queue">
+            <summary>
+            Name of the queue to write to.
+            </summary>
+            <remarks>
+            To write to a private queue on a local machine use <c>.\private$\QueueName</c>.
+            For other available queue names, consult MSMQ documentation.
+            </remarks>
+        </member>
+        <member name="P:NLog.Win32.Targets.MSMQTarget.Label">
+            <summary>
+            The label to associate with each message.
+            </summary>
+            <remarks>
+            By default no label is associated.
+            </remarks>
+        </member>
+        <member name="P:NLog.Win32.Targets.MSMQTarget.CreateQueueIfNotExists">
+            <summary>
+            Create the queue if it doesn't exists.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.Targets.MSMQTarget.Encoding">
+            <summary>
+            Encoding to be used when writing text to the queue.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.Targets.MSMQTarget.UseXmlEncoding">
+            <summary>
+            Use the XML format when serializing message.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.Targets.MSMQTarget.Recoverable">
+            <summary>
+            Use recoverable messages (with guaranteed delivery).
+            </summary>
+        </member>
+        <member name="T:NLog.Win32.Targets.OutputDebugStringTarget">
+            <summary>
+            Outputs logging messages through the <c>OutputDebugString()</c> Win32 API.
+            </summary>
+        </member>
+        <member name="M:NLog.Win32.Targets.OutputDebugStringTarget.Write(NLog.LogEventInfo)">
+            <summary>
+            Outputs the rendered logging event through the <c>OutputDebugString()</c> Win32 API.
+            </summary>
+            <param name="logEvent">The logging event.</param>
+        </member>
+        <member name="M:NLog.Win32.Targets.OutputDebugStringTarget.OutputDebugString(System.String)">
+            <summary>
+            Stub for OutputDebugString native method
+            </summary>
+            <param name="message">the string to output</param>
+        </member>
+        <member name="T:NLog.Win32.Targets.PerfCounterTarget">
+            <summary>
+            Increments specified performance counter on each write.
+            </summary>
+            <remarks>
+            TODO:
+            1. Unable to create a category allowing multiple counter instances (.Net 2.0 API only, probably)
+            2. Is there any way of adding new counters without deleting the whole category?
+            3. There should be some mechanism of resetting the counter (e.g every day starts from 0), or auto-switching to 
+               another counter instance (with dynamic creation of new instance). This could be done with layouts. 
+            </remarks>
+        </member>
+        <member name="M:NLog.Win32.Targets.PerfCounterTarget.#ctor">
+            <summary>
+            Creates a new instance of <see cref="T:NLog.Win32.Targets.PerfCounterTarget"/>.
+            </summary>
+        </member>
+        <member name="M:NLog.Win32.Targets.PerfCounterTarget.Write(NLog.LogEventInfo)">
+            <summary>
+            Increments the configured performance counter.
+            </summary>
+            <param name="logEvent">log event</param>
+        </member>
+        <member name="P:NLog.Win32.Targets.PerfCounterTarget.AutoCreate">
+            <summary>
+            Whether performance counter should be automatically created.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.Targets.PerfCounterTarget.CategoryName">
+            <summary>
+            Performance counter category.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.Targets.PerfCounterTarget.CounterName">
+            <summary>
+            Name of the performance counter.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.Targets.PerfCounterTarget.InstanceName">
+            <summary>
+            Instance name.
+            </summary>
+        </member>
+        <member name="P:NLog.Win32.Targets.PerfCounterTarget.CounterType">
+            <summary>
+            Performance counter type.
+            </summary>
+        </member>
         <member name="T:NLog.ConditionMethodAttribute">
             <summary>
             Marks class as a log event Condition and assigns a name to it
@@ -6189,6 +7558,11 @@
             </summary>
             <param name="name">The name of the filter (e.g. <code>whenEquals</code> or <code>whenNotEqual</code>)</param>
             <returns>A new instance of the <see cref="T:NLog.Filter"/> object.</returns>
+        </member>
+        <member name="P:NLog.FilterFactory.FilterTypes">
+            <summary>
+            Collection of filter types added to the factory.
+            </summary>
         </member>
         <member name="T:NLog.FilterResult">
             <summary>
@@ -8671,6 +10045,16 @@
             Gets the name of the log level.
             </summary>
         </member>
+        <member name="P:NLog.LogLevel.UppercaseName">
+            <summary>
+            Gets the name of the logger in upper case.
+            </summary>
+        </member>
+        <member name="P:NLog.LogLevel.LowercaseName">
+            <summary>
+            Gets the name of the logger in lower case.
+            </summary>
+        </member>
         <member name="T:NLog.LogManager">
             <summary>
             Creates and manages instances of <see cref="T:NLog.Logger" /> objects.
@@ -9065,6 +10449,11 @@
             </summary>
             <param name="name">The name of the target (e.g. <code>File</code> or <code>Console</code>)</param>
             <returns>A new instance of the Target object.</returns>
+        </member>
+        <member name="P:NLog.TargetFactory.TargetTypes">
+            <summary>
+            Collection of target types added to the factory.
+            </summary>
         </member>
     </members>
 </doc>
