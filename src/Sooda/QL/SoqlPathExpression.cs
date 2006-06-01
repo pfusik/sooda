@@ -147,7 +147,7 @@ namespace Sooda.QL
             {
                 _propInfoCache = val.GetType().GetProperty(PropertyName);
                 if (_propInfoCache == null)
-                    throw new SoodaException(PropertyName + " not found in " + _propInfoCache);
+                    throw new SoodaException(PropertyName + " not found in " + val.GetType().Name);
             }
 
             return _propInfoCache.GetValue(val, null);

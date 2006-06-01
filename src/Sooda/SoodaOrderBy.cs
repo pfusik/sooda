@@ -42,7 +42,7 @@ namespace Sooda
         public SoodaOrderBy(string columnName, SortOrder sortOrder)
         {
             SoodaObjectExpressionComparer ec = new SoodaObjectExpressionComparer();
-            ec.AddExpression(new SoqlPathExpression(columnName), sortOrder);
+            ec.AddExpression(SoqlParser.ParseExpression(columnName), sortOrder);
             _comparer = ec;
         }
 
@@ -50,8 +50,8 @@ namespace Sooda
             string columnName2, SortOrder sortOrder2)
         {
             SoodaObjectExpressionComparer ec = new SoodaObjectExpressionComparer();
-            ec.AddExpression(new SoqlPathExpression(columnName1), sortOrder1);
-            ec.AddExpression(new SoqlPathExpression(columnName2), sortOrder2);
+            ec.AddExpression(SoqlParser.ParseExpression(columnName1), sortOrder1);
+            ec.AddExpression(SoqlParser.ParseExpression(columnName2), sortOrder2);
             _comparer = ec;
         }
 
@@ -60,9 +60,9 @@ namespace Sooda
             string columnName3, SortOrder sortOrder3)
         {
             SoodaObjectExpressionComparer ec = new SoodaObjectExpressionComparer();
-            ec.AddExpression(new SoqlPathExpression(columnName1), sortOrder1);
-            ec.AddExpression(new SoqlPathExpression(columnName2), sortOrder2);
-            ec.AddExpression(new SoqlPathExpression(columnName3), sortOrder3);
+            ec.AddExpression(SoqlParser.ParseExpression(columnName1), sortOrder1);
+            ec.AddExpression(SoqlParser.ParseExpression(columnName2), sortOrder2);
+            ec.AddExpression(SoqlParser.ParseExpression(columnName3), sortOrder2);
             _comparer = ec;
         }
 
@@ -71,7 +71,7 @@ namespace Sooda
             SoodaObjectExpressionComparer ec = new SoodaObjectExpressionComparer();
             for (int i = 0; i < columnNames.Length; ++i)
             {
-                ec.AddExpression(new SoqlPathExpression(columnNames[i]), sortOrders[i]);
+                ec.AddExpression(SoqlParser.ParseExpression(columnNames[i]), sortOrders[i]);
             }
             _comparer = ec;
         }
