@@ -172,7 +172,7 @@ namespace Sooda.CodeGen
             prop.GetStatements.Add(
                 new CodeMethodReturnStatement(
                 new CodeMethodInvokeExpression(
-                new CodeTypeReferenceExpression(options.OutputNamespace + ".Stubs." + classInfo.Name + "_Stub"), "GetRef", new CodePrimitiveExpression(val))));
+                new CodeTypeReferenceExpression(classInfo.Name + "_Stub"), "GetRef", new CodePrimitiveExpression(val))));
 
             return prop;
         }
@@ -531,7 +531,7 @@ namespace Sooda.CodeGen
                                     new CodeAssignStatement(
                                         new CodeFieldReferenceExpression(This, "_refCache_" + fi.Name),
                                         new CodeMethodInvokeExpression(
-                                            new CodeTypeReferenceExpression(options.OutputNamespace + "." + fi.ReferencedClass.Name),
+                                            new CodeTypeReferenceExpression(fi.ReferencedClass.Name),
                                             "GetRef",
                                             GetTransaction(),
                                             GetNotNullFieldValue(fi)

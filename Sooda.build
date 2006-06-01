@@ -105,7 +105,7 @@
         </csc>
     </target>
 
-    <target name="Sooda.Logging.NLog" depends="configure, NLog" description="Sooda">
+    <target name="Sooda.Logging.NLog" depends="configure, Sooda, NLog" description="Sooda">
         <csc target="library" output="${sooda.dir}/Sooda.Logging.NLog.dll" doc="${sooda.dir}/Sooda.Logging.NLog.xml" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
             <references>                                  
                 <include name="mscorlib.dll" />
@@ -114,7 +114,7 @@
                 <include name="System.Data.dll" />
                 <include name="System.Drawing.dll" />
                 <include name="${sooda.dir}/Sooda.dll" />
-                <include name="${sooda.dir}/NLog.dll" />
+                <include name="${sooda.nlog.dir}/NLog.dll" />
             </references>
             <sources basedir="src/Sooda.Logging.NLog">
                 <include name="**/*.cs" />
