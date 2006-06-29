@@ -48,6 +48,7 @@ namespace SoodaSchemaTool
         private bool _updatePrimaryKeys = false;
         private bool _addTables = false;
         private string _tableName = null;
+        private string _outputSchemaFile = null;
 
 		public CommandUpdateSchema()
 		{
@@ -69,6 +70,12 @@ namespace SoodaSchemaTool
         {
             get { return _schemaFile; }
             set { _schemaFile = value; }
+        }
+
+        public string OutputSchemaFile
+        {
+            get { return _outputSchemaFile; }
+            set { _outputSchemaFile = value; }
         }
 
         public bool UpdateTypes
@@ -150,9 +157,23 @@ namespace SoodaSchemaTool
             {
             }
 
-            using (FileStream fs = File.Create(SchemaFile + ".new"))
+            if (OutputSchemaFile == null)
             {
-                ser.Serialize(fs, currentSchemaInfo);
+                string oldFile = Path.ChangeExtension(SchemaFile, ".old");
+                if (File.Exists(oldFile))
+                    File.Delete(oldFile);
+                File.Move(SchemaFile, oldFile);
+                using (FileStream fs = File.Create(SchemaFile))
+                {
+                    ser.Serialize(fs, currentSchemaInfo);
+                }
+            }
+            else
+            {
+                using (FileStream fs = File.Create(OutputSchemaFile))
+                {
+                    ser.Serialize(fs, currentSchemaInfo);
+                }
             }
 
             return 0;
@@ -191,7 +212,6 @@ namespace SoodaSchemaTool
                 fi.IsNullable = dbfi.IsNullable;
             if (UpdatePrimaryKeys)
                 fi.IsPrimaryKey = dbfi.IsPrimaryKey;
-            // FieldInfo dbField = fi.Table;
         }
 	}
 }

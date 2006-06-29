@@ -109,7 +109,7 @@
     </Compile>
     <Compile Include="CommandFactory.cs" />
     <Compile Include="CommandGenSchema.cs" />
-    <Compile Include="CommandUpdateSchemaTypes.cs" />
+    <Compile Include="CommandUpdateSchema.cs" />
     <Compile Include="ISchemaImporterOptions.cs" />
     <Compile Include="MSSqlSchemaImporter.cs" />
     <Compile Include="SchemaExporter.cs">
