@@ -33,6 +33,10 @@ using System.Xml;
 using Sooda.Schema;
 using Sooda.Sql;
 
-namespace SoodaSchemaTool {
-    public class SchemaImporter {}
+namespace SoodaSchemaTool
+{
+    public abstract class SchemaImporter
+    {
+        public abstract SchemaInfo GetSchemaFromDatabase(ISchemaImporterOptions options);
+    }
 }

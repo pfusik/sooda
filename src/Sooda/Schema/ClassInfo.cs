@@ -212,18 +212,23 @@ namespace Sooda.Schema
         private SchemaInfo parentSchema;
 
         [NonSerialized]
+        [XmlIgnore]
         public FieldInfoCollection LocalFields;
 
         [NonSerialized]
+        [XmlIgnore]
         public FieldInfoCollection UnifiedFields;
 
         [NonSerialized]
+        [XmlIgnore]
         public TableInfoCollection MergedTables;
 
         [NonSerialized]
+        [XmlIgnore]
         public ClassInfo InheritsFromClass;
 
         [NonSerialized]
+        [XmlIgnore]
         public TableInfoCollection UnifiedTables;
 
         public ClassInfoCollection GetSubclassesForSchema(SchemaInfo schema)

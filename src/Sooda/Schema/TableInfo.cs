@@ -46,6 +46,9 @@ namespace Sooda.Schema
         [NonSerialized]
         [XmlIgnore]
         public ClassInfo OwnerClass = null;
+
+        [NonSerialized]
+        [XmlIgnore]
         public int OrdinalInClass = 0;
 
         [System.Xml.Serialization.XmlAnyAttribute()]

@@ -49,11 +49,17 @@ namespace Sooda.Sql
                 case FieldDataType.Integer:
                     return "int";
 
-                case FieldDataType.String:
+                case FieldDataType.AnsiString:
                     if (fi.Size > 4000)
                         return "text";
                     else
                         return "varchar(" + fi.Size + ")";
+
+                case FieldDataType.String:
+                    if (fi.Size > 4000)
+                        return "ntext";
+                    else
+                        return "nvarchar(" + fi.Size + ")";
 
                 case FieldDataType.Decimal:
                     if (fi.Size < 0)

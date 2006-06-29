@@ -35,15 +35,22 @@ namespace SoodaSchemaTool
 	public class CommandAttribute : Attribute
 	{
         private string _name;
+        private string _description;
 
-		public CommandAttribute(string name)
+		public CommandAttribute(string name, string description)
 		{
             _name = name;
+            _description = description;
 		}
 
         public string Name
         {
             get { return _name; }
+        }
+
+        public string Description
+        {
+            get { return _description; }
         }
 	}
 }

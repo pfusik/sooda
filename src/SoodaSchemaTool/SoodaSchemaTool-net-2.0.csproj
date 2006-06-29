@@ -98,9 +98,6 @@
     <Compile Include="CommandAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CommandDumpSchema.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="CommandGenDDL.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -110,6 +107,11 @@
     <Compile Include="ConsoleRunner.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CommandFactory.cs" />
+    <Compile Include="CommandGenSchema.cs" />
+    <Compile Include="CommandUpdateSchemaTypes.cs" />
+    <Compile Include="ISchemaImporterOptions.cs" />
+    <Compile Include="MSSqlSchemaImporter.cs" />
     <Compile Include="SchemaExporter.cs">
       <SubType>Code</SubType>
     </Compile>

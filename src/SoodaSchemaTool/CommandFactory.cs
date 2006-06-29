@@ -28,31 +28,39 @@
 // 
 
 using System;
-using System.Xml;
-using Sooda.Schema;
-using Sooda.Sql;
-using System.IO;
+using System.Collections;
+using System.Reflection;
 
 namespace SoodaSchemaTool
 {
-    [Command("genddl","generate DDL from schema")]
-	public class CommandGenDdl : Command
+	public class CommandFactory
 	{
-		public CommandGenDdl()
-		{
-		}
+        private static Hashtable _commands = new Hashtable();
 
-        public override int Run(string[] args)
+        public static Command CreateCommand(string name)
         {
-            string schemaFileName = args[0];
-
-            XmlTextReader xr = new XmlTextReader(schemaFileName);
-            SchemaInfo schemaInfo = SchemaManager.ReadAndValidateSchema(xr, Path.GetDirectoryName(schemaFileName));
-
-            SqlDataSource sds = new SqlDataSource(schemaInfo.GetDataSourceInfo("default"));
-            sds.SqlBuilder = new SqlServerBuilder();
-            sds.GenerateDdlForSchema(schemaInfo, Console.Out);
-            return 0;
+            Type t = (Type)_commands[name];
+            if (t == null)
+                throw new Exception("Unknown command: " + name);
+            Command command = (Command)Activator.CreateInstance(t);
+            return command;
         }
-	}
+
+        static CommandFactory()
+        {
+            foreach (Type t in Assembly.GetCallingAssembly().GetTypes())
+            {
+                CommandAttribute ca = (CommandAttribute)Attribute.GetCustomAttribute(t, typeof(CommandAttribute));
+                if (ca != null)
+                {
+                    _commands[ca.Name] = t;
+                }
+            }
+        }
+
+        public static Type[] RegisteredTypes
+        {
+            get { return (Type[])new ArrayList(_commands.Values).ToArray(typeof(Type)); }
+        }
+    }
 }

@@ -32,26 +32,60 @@ using System.Xml;
 using Sooda.Schema;
 using Sooda.Sql;
 using System.IO;
+using System.Xml.Serialization;
 
 namespace SoodaSchemaTool
 {
-    [Command("genddl","generate DDL from schema")]
-	public class CommandGenDdl : Command
+    [Command("genschema", "Generate schema (*.xml) from database structure")]
+    public class CommandGenSchema : Command, ISchemaImporterOptions
 	{
-		public CommandGenDdl()
+        private string _databaseType = "mssql";
+        private string _connectionString;
+        private string _outputFile;
+
+		public CommandGenSchema()
 		{
 		}
 
+        public string DatabaseType
+        {
+            get { return _databaseType; }
+            set { _databaseType = value; }
+        }
+
+        public string ConnectionString
+        {
+            get { return _connectionString; }
+            set { _connectionString = value; }
+        }
+
+        public string OutputFile
+        {
+            get { return _outputFile; }
+            set { _outputFile = value; }
+        }
+
         public override int Run(string[] args)
         {
-            string schemaFileName = args[0];
+            SchemaImporter importer = null;
 
-            XmlTextReader xr = new XmlTextReader(schemaFileName);
-            SchemaInfo schemaInfo = SchemaManager.ReadAndValidateSchema(xr, Path.GetDirectoryName(schemaFileName));
+            switch (DatabaseType)
+            {
+                case "mssql":
+                case "sqlserver":
+                    importer = new MSSqlSchemaImporter();
+                    break;
+            }
 
-            SqlDataSource sds = new SqlDataSource(schemaInfo.GetDataSourceInfo("default"));
-            sds.SqlBuilder = new SqlServerBuilder();
-            sds.GenerateDdlForSchema(schemaInfo, Console.Out);
+            SchemaInfo schemaInfo = importer.GetSchemaFromDatabase(this);
+            XmlSerializer ser = new XmlSerializer(typeof(SchemaInfo));
+
+            using (FileStream fs = File.Create(OutputFile))
+            {
+                ser.Serialize(fs, schemaInfo);
+            }
+
+
             return 0;
         }
 	}

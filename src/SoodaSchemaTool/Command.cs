@@ -37,9 +37,6 @@ namespace SoodaSchemaTool
 		{
 		}
 
-        public abstract string Description
-        {
-            get;
-        }
+        public abstract int Run(string[] args);
 	}
 }
