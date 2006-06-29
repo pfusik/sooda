@@ -33,6 +33,7 @@ using Sooda.Schema;
 using Sooda.Sql;
 using System.IO;
 using System.Xml.Serialization;
+using System.Collections;
 
 namespace SoodaSchemaTool
 {
@@ -78,6 +79,20 @@ namespace SoodaSchemaTool
             }
 
             SchemaInfo schemaInfo = importer.GetSchemaFromDatabase(this);
+            AutoDetectRelations(schemaInfo);
+            foreach (ClassInfo ci in schemaInfo.Classes)
+            {
+                int pkCount = 0;
+                foreach (FieldInfo fi in ci.LocalTables[0].Fields)
+                {
+                    if (fi.IsPrimaryKey)
+                    {
+                        pkCount++;
+                    }
+                }
+                if (pkCount == 0)
+                    Console.WriteLine("WARNING: Table {0} doesn't have a primary key.", ci.Name);
+            }
             XmlSerializer ser = new XmlSerializer(typeof(SchemaInfo));
 
             using (FileStream fs = File.Create(OutputFile))
@@ -85,8 +100,31 @@ namespace SoodaSchemaTool
                 ser.Serialize(fs, schemaInfo);
             }
 
-
             return 0;
+        }
+
+        private void AutoDetectRelations(SchemaInfo si)
+        {
+            foreach (ClassInfo ci in new ArrayList(si.Classes))
+            {
+                if (ci.LocalTables[0].Fields.Count != 2)
+                    continue;
+
+                if (!(ci.LocalTables[0].Fields[0].IsPrimaryKey && ci.LocalTables[0].Fields[1].IsPrimaryKey))
+                    continue;
+
+                if (ci.LocalTables[0].Fields[0].References == null || ci.LocalTables[0].Fields[1].References == null)
+                    continue;
+
+                RelationInfo ri = new RelationInfo();
+                ri.Name = ci.Name;
+                ri.Table.Fields.Add(ci.LocalTables[0].Fields[0]);
+                ri.Table.Fields.Add(ci.LocalTables[0].Fields[1]);
+                si.Relations.Add(ri);
+
+                Console.WriteLine("Converting {0} to a relation", ci.Name);
+                si.Classes.Remove(ci);
+            }
         }
 	}
 }

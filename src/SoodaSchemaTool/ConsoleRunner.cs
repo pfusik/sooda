@@ -66,7 +66,7 @@ namespace SoodaSchemaTool
                         string name = args[i].Substring(1);
                         PropertyInfo pi = cmd.GetType().GetProperty(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy | BindingFlags.IgnoreCase);
                         if (pi == null)
-                            throw new Exception(pi.Name + " not found in " + pi.GetType().Name);
+                            throw new Exception(name + " not found in " + cmd.GetType().Name);
 
                         if (pi.PropertyType == typeof(bool))
                         {

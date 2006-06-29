@@ -75,11 +75,16 @@ namespace SoodaSchemaTool
                 DumpTable(si, (string)dr["TABLE_OWNER"], (string)dr["TABLE_NAME"]);
             }
 
+            DumpForeignKeys(si);
+
             return si;
         }
 
         private string MakePascalCase(string str)
         {
+            if (str != str.ToUpper() && str != str.ToLower())
+                return str;
+
             string[] pieces = str.Split('_');
             StringBuilder sb = new StringBuilder();
             foreach (string s in pieces)
@@ -109,12 +114,43 @@ namespace SoodaSchemaTool
             return sb.ToString();
         }
 
+        private void DumpForeignKeys(SchemaInfo schemaInfo)
+        {
+            DataRow[] fkeys = dataSet.Tables["ForeignKeys"].Select("1=1", "SOURCE_TABLE_NAME, FKEY_NAME");
+
+            for (int i = 0; i < fkeys.Length; ++i)
+            {
+                DataRow r = fkeys[i];
+                string curSrcTableOwner = r["SOURCE_TABLE_OWNER"].ToString();
+                string curSrcTableName = r["SOURCE_TABLE_NAME"].ToString();
+                string curSrcColumnName = r["SOURCE_COLUMN_NAME"].ToString();
+                string curDstTableOwner = r["DEST_TABLE_OWNER"].ToString();
+                string curDstTableName = r["DEST_TABLE_NAME"].ToString();
+                string curDstColumnName = r["DEST_COLUMN_NAME"].ToString();
+
+                foreach (ClassInfo sourceTable in schemaInfo.Classes)
+                {
+                    if (sourceTable.LocalTables[0].DBTableName == curSrcTableName)
+                    {
+                        foreach (FieldInfo fi in sourceTable.LocalTables[0].Fields)
+                        {
+                            if (fi.DBColumnName == curSrcColumnName)
+                            {
+                                fi.References = curDstTableName;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         private void DumpTable(SchemaInfo schemaInfo, string owner, string table)
         {
             Console.WriteLine("Dumping table {0}.{1}", owner, table);
 
             ClassInfo ci = new ClassInfo();
-            ci.Name = table;
+            ci.Name = MakePascalCase(table);
 
             TableInfo ti = new TableInfo();
             ci.LocalTables = new TableInfoCollection();
