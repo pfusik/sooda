@@ -221,6 +221,14 @@ namespace SoodaSchemaTool
                             fi.DataType = FieldDataType.Blob;
                             break;
 
+                        case "bit":
+                            fi.DataType = FieldDataType.Boolean;
+                            break;
+
+                        case "uniqueidentifier":
+                            fi.DataType = FieldDataType.Guid;
+                            break;
+
                         default:
                             throw new Exception("Unsupported data type: " + typeName);
                     }
