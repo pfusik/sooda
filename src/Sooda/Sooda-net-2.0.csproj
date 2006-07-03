@@ -181,6 +181,7 @@
     <Compile Include="Config\XmlConfigProvider.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SoodaFieldSizeAttribute.cs" />
     <Compile Include="SoodaHttpContextBoundTransactionStrategy.cs" />
     <Compile Include="SoodaThreadBoundTransactionStrategy.cs" />
     <Compile Include="IDefaultSoodaTransactionStrategy.cs" />

@@ -445,6 +445,13 @@ namespace Sooda.CodeGen
                 //prop.GetStatements.Add(new CodeMethodReturnStatement(new CodeFieldReferenceExpression(null, "_FieldNames")));
                 ctd.Members.Add(prop);
 
+                if (fi.Size != -1)
+                {
+                    CodeAttributeDeclaration cad = new CodeAttributeDeclaration("Sooda.SoodaFieldSizeAttribute");
+                    cad.Arguments.Add(new CodeAttributeArgument(new CodePrimitiveExpression(fi.Size)));
+                    prop.CustomAttributes.Add(cad);
+                }
+
                 if (fi.IsPrimaryKey)
                 {
                     CodeExpression getPrimaryKeyValue = new CodeMethodInvokeExpression(new CodeThisReferenceExpression(), "GetPrimaryKeyValue");
