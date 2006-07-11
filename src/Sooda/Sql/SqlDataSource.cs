@@ -317,8 +317,12 @@ namespace Sooda.Sql
 
             if (mode == 1)
             {
-                query = "insert into " + tableName + "(" + leftColumnName + "," + rightColumnName + ") values({0},{1})";
-                SqlBuilder.BuildCommandWithParameters(_updateCommand, true, query, parameters, false);
+                StringBuilder query2 = new StringBuilder();
+
+                query2.Append(SqlBuilder.BeginInsert(tableName));
+                query2.Append("insert into " + tableName + "(" + leftColumnName + "," + rightColumnName + ") values({0},{1})");
+                query2.Append(SqlBuilder.EndInsert(tableName));
+                SqlBuilder.BuildCommandWithParameters(_updateCommand, true, query2.ToString(), parameters, false);
                 FlushUpdateCommand(false);
             }
         }
@@ -579,6 +583,7 @@ namespace Sooda.Sql
         {
             ClassInfo info = obj.GetClassInfo();
             StringBuilder builder = new StringBuilder(500);
+            builder.Append(SqlBuilder.BeginInsert(table.DBTableName));
             builder.Append("insert into ");
             builder.Append(table.DBTableName);
             builder.Append("(");
@@ -628,6 +633,7 @@ namespace Sooda.Sql
                 builder.Append('}');
             };
             builder.Append(")");
+            builder.Append(SqlBuilder.EndInsert(table.DBTableName));
             SqlBuilder.BuildCommandWithParameters(_updateCommand, true, builder.ToString(), par.ToArray(), false);
             FlushUpdateCommand(false);
         }

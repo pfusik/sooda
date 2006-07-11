@@ -73,6 +73,7 @@ namespace Sooda.Schema
         [NonSerialized]
         private SchemaInfo parentSchema;
 
+        [XmlIgnore]
         public SchemaInfo Schema
         {
             get

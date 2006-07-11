@@ -671,7 +671,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SoodaTransaction.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="SoodaTuple.cs">
       <SubType>Code</SubType>

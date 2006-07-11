@@ -196,5 +196,15 @@ namespace Sooda.Sql
             }
             return true;
         }
+
+        public virtual string EndInsert(string tableName)
+        {
+            return "";
+        }
+
+        public virtual string BeginInsert(string tableName)
+        {
+            return "";
+        }
     }
 }

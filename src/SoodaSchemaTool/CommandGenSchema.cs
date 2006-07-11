@@ -80,6 +80,13 @@ namespace SoodaSchemaTool
 
             SchemaInfo schemaInfo = importer.GetSchemaFromDatabase(this);
             AutoDetectRelations(schemaInfo);
+            schemaInfo.Resolve();
+            AutoDetectCollections(schemaInfo);
+
+            DataSourceInfo dsi = new DataSourceInfo();
+            dsi.Name = "default";
+            dsi.DataSourceType = "Sooda.Sql.SqlDataSource";
+            schemaInfo.DataSources.Add(dsi);
             foreach (ClassInfo ci in schemaInfo.Classes)
             {
                 int pkCount = 0;
@@ -94,10 +101,12 @@ namespace SoodaSchemaTool
                     Console.WriteLine("WARNING: Table {0} doesn't have a primary key.", ci.Name);
             }
             XmlSerializer ser = new XmlSerializer(typeof(SchemaInfo));
+            XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
+            ns.Add("", SchemaInfo.XmlNamespace);
 
             using (FileStream fs = File.Create(OutputFile))
             {
-                ser.Serialize(fs, schemaInfo);
+                ser.Serialize(fs, schemaInfo, ns);
             }
 
             return 0;
@@ -118,12 +127,69 @@ namespace SoodaSchemaTool
 
                 RelationInfo ri = new RelationInfo();
                 ri.Name = ci.Name;
+                ri.Table.DBTableName = ci.LocalTables[0].DBTableName;
                 ri.Table.Fields.Add(ci.LocalTables[0].Fields[0]);
                 ri.Table.Fields.Add(ci.LocalTables[0].Fields[1]);
                 si.Relations.Add(ri);
 
                 Console.WriteLine("Converting {0} to a relation", ci.Name);
                 si.Classes.Remove(ci);
+            }
+        }
+
+        private void AutoDetectCollections(SchemaInfo si)
+        {
+            foreach (ClassInfo ci in si.Classes)
+            {
+                foreach (FieldInfo fi in ci.LocalTables[0].Fields)
+                {
+                    if (fi.ReferencedClass != null)
+                    {
+                        ArrayList al = new ArrayList();
+                        if (fi.ReferencedClass.Collections1toN != null)
+                        {
+                            al.AddRange(fi.ReferencedClass.Collections1toN);
+                        }
+                        CollectionOnetoManyInfo coll = new CollectionOnetoManyInfo();
+                        coll.Name = "CollectionOf" + ci.Name + "" + al.Count;
+                        coll.ClassName = ci.Name;
+                        coll.ForeignFieldName = fi.Name;
+                        al.Add(coll);
+                        
+                        fi.ReferencedClass.Collections1toN = (CollectionOnetoManyInfo[])al.ToArray(typeof(CollectionOnetoManyInfo));
+                        // ci.Collections1toN
+                    }
+                }
+            }
+            foreach (RelationInfo ri in si.Relations)
+            {
+                CollectionManyToManyInfo mm;
+                ArrayList al;
+
+                al = new ArrayList();
+                if (ri.Table.Fields[0].ReferencedClass.CollectionsNtoN != null)
+                    al.AddRange(ri.Table.Fields[0].ReferencedClass.CollectionsNtoN);
+
+                mm = new CollectionManyToManyInfo();
+                mm.Name = "CollectionOf" + ri.Table.Fields[1].ReferencedClass.Name + "" + al.Count;
+                mm.Relation = ri.Name;
+                mm.ForeignField = ri.Table.Fields[0].Name;
+                al.Add(mm);
+
+                ri.Table.Fields[0].ReferencedClass.CollectionsNtoN = (CollectionManyToManyInfo[])al.ToArray(typeof(CollectionManyToManyInfo));
+
+                al = new ArrayList();
+                if (ri.Table.Fields[1].ReferencedClass.CollectionsNtoN != null)
+                    al.AddRange(ri.Table.Fields[1].ReferencedClass.CollectionsNtoN);
+
+                mm = new CollectionManyToManyInfo();
+                mm.Name = "CollectionOf" + ri.Table.Fields[0].ReferencedClass.Name + "" + al.Count;
+                mm.Relation = ri.Name;
+                mm.ForeignField = ri.Table.Fields[1].Name;
+                al.Add(mm);
+
+                ri.Table.Fields[1].ReferencedClass.CollectionsNtoN = (CollectionManyToManyInfo[])al.ToArray(typeof(CollectionManyToManyInfo));
+            
             }
         }
 	}

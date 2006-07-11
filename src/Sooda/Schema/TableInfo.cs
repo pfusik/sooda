@@ -120,6 +120,7 @@ namespace Sooda.Schema
         private Hashtable fieldsDBNameHash;
 
         [NonSerialized]
+        [XmlIgnore]
         public TableInfo[] ArraySingleton;
 
         internal void Rehash()

@@ -49,5 +49,7 @@ namespace Sooda.Sql
         void GeneratePrimaryKey(TextWriter tw, TableInfo tableInfo);
         void GenerateForeignKeys(TextWriter tw, TableInfo tableInfo);
         string QuoteFieldName(string name);
+        string BeginInsert(string tableName);
+        string EndInsert(string tableName);
     }
 }

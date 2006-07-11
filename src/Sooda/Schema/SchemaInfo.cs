@@ -44,6 +44,8 @@ namespace Sooda.Schema
     [Serializable]
     public class SchemaInfo
     {
+        public static readonly string XmlNamespace = "http://www.sooda.org/schemas/SoodaSchema.xsd";
+
         [XmlElement("namespace")]
         public string Namespace;
 

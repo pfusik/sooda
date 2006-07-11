@@ -42,6 +42,7 @@ namespace SoodaSchemaTool
     {
         private DataSet dataSet = new DataSet();
         private ISchemaImporterOptions _options;
+        private bool _haveIdentityColumns = false;
 
         public override SchemaInfo GetSchemaFromDatabase(ISchemaImporterOptions options)
         {
@@ -54,6 +55,10 @@ namespace SoodaSchemaTool
                 Console.WriteLine("Loading tables...");
                 dataAdapter = new SqlDataAdapter(SqlStrings.TablesQuery, conn);
                 dataAdapter.Fill(dataSet, "Tables");
+
+                Console.WriteLine("Loading datatypes...");
+                dataAdapter.SelectCommand.CommandText = "exec sp_datatype_info";
+                dataAdapter.Fill(dataSet, "DataTypes");
 
                 Console.WriteLine("Loading columns...");
                 dataAdapter.SelectCommand.CommandText = "exec sp_Columns @table_name='%'";
@@ -77,15 +82,18 @@ namespace SoodaSchemaTool
 
             DumpForeignKeys(si);
 
+            if (_haveIdentityColumns)
+                Console.WriteLine("WARNING: Identity columns are not supported. Sooda will not use them, but will provide its own pre-generated key.");
+
             return si;
         }
 
         private string MakePascalCase(string str)
         {
             if (str != str.ToUpper() && str != str.ToLower())
-                return str;
+                return str.Replace(" ","");
 
-            string[] pieces = str.Split('_');
+            string[] pieces = str.Split('_',' ');
             StringBuilder sb = new StringBuilder();
             foreach (string s in pieces)
             {
@@ -145,6 +153,98 @@ namespace SoodaSchemaTool
             }
         }
 
+        private void GetSoodaFieldAttributes(FieldInfo fi, DataRow r, bool recursive)
+        {
+            string typeName = r["TYPE_NAME"].ToString();
+
+            switch (typeName)
+            {
+                case "int":
+                case "smallint":
+                case "tinyint":
+                    fi.DataType = FieldDataType.Integer;
+                    break;
+
+                case "int identity":
+                case "tinyint identity":
+                case "smallint identity":
+                    fi.DataType = FieldDataType.Integer;
+                    _haveIdentityColumns = true;
+                    break;
+
+                case "char":
+                case "varchar":
+                    fi.DataType = FieldDataType.AnsiString;
+                    fi.Size = Convert.ToInt32(r["PRECISION"]);
+                    break;
+
+                case "text":
+                    fi.DataType = FieldDataType.AnsiString;
+                    fi.Size = unchecked((1 << 31) - 1);
+                    break;
+
+                case "ntext":
+                    fi.DataType = FieldDataType.String;
+                    fi.Size = unchecked((1 << 31) - 1);
+                    break;
+
+                case "nchar":
+                case "nvarchar":
+                    fi.DataType = FieldDataType.String;
+                    fi.Size = Convert.ToInt32(r["PRECISION"]);
+                    break;
+
+                case "datetime":
+                    fi.DataType = FieldDataType.DateTime;
+                    break;
+
+                case "smallmoney":
+                case "money":
+                case "decimal":
+                    fi.DataType = FieldDataType.Decimal;
+                    break;
+
+                case "float":
+                case "numeric":
+                case "real":
+                    fi.DataType = FieldDataType.Double;
+                    break;
+
+                case "bigint":
+                    fi.DataType = FieldDataType.Long;
+                    break;
+
+                case "image":
+                    fi.DataType = FieldDataType.Image;
+                    break;
+
+                case "binary":
+                case "varbinary":
+                case "blob":
+                    fi.DataType = FieldDataType.Blob;
+                    break;
+
+                case "bit":
+                    fi.DataType = FieldDataType.Boolean;
+                    break;
+
+                case "uniqueidentifier":
+                    fi.DataType = FieldDataType.Guid;
+                    break;
+
+                default:
+                    if (recursive)
+                        throw new Exception("Unable to determine the base type for " + typeName);
+
+                    DataRow[] udt = dataSet.Tables["DataTypes"].Select("DATA_TYPE='" + r["DATA_TYPE"] + "' and USERTYPE < 256");
+                    if (udt.Length < 1)
+                        throw new Exception("Unsupported data type: " + typeName);
+                    GetSoodaFieldAttributes(fi, udt[0], true);
+                    break;
+            }
+            fi.IsNullable = (Convert.ToInt32(r["NULLABLE"]) != 0);
+        }
+
         private void DumpTable(SchemaInfo schemaInfo, string owner, string table)
         {
             Console.WriteLine("Dumping table {0}.{1}", owner, table);
@@ -162,77 +262,11 @@ namespace SoodaSchemaTool
                 try
                 {
                     string columnName = r["COLUMN_NAME"].ToString();
-                    string typeName = r["TYPE_NAME"].ToString();
 
                     FieldInfo fi = new FieldInfo();
                     fi.Name = MakePascalCase(columnName);
                     fi.DBColumnName = columnName;
-                    fi.IsNullable = (Convert.ToInt32(r["NULLABLE"]) != 0);
-                    switch (typeName)
-                    {
-                        case "int":
-                            fi.DataType = FieldDataType.Integer;
-                            break;
-
-                        case "varchar":
-                            fi.DataType = FieldDataType.AnsiString;
-                            fi.Size = Convert.ToInt32(r["PRECISION"]);
-                            break;
-
-                        case "text":
-                            fi.DataType = FieldDataType.AnsiString;
-                            fi.Size = unchecked((1 << 31) - 1);
-                            break;
-
-                        case "ntext":
-                            fi.DataType = FieldDataType.String;
-                            fi.Size = unchecked((1 << 31) - 1);
-                            break;
-
-                        case "nvarchar":
-                            fi.DataType = FieldDataType.String;
-                            fi.Size = Convert.ToInt32(r["PRECISION"]);
-                            break;
-
-                        case "datetime":
-                            fi.DataType = FieldDataType.DateTime;
-                            break;
-
-                        case "decimal":
-                            fi.DataType = FieldDataType.Decimal;
-                            break;
-
-                        case "float":
-                        case "numeric":
-                        case "real":
-                        case "smallmoney":
-                            fi.DataType = FieldDataType.Double;
-                            break;
-
-                        case "bigint":
-                            fi.DataType = FieldDataType.Long;
-                            break;
-
-                        case "image":
-                            fi.DataType = FieldDataType.Image;
-                            break;
-
-                        case "blob":
-                            fi.DataType = FieldDataType.Blob;
-                            break;
-
-                        case "bit":
-                            fi.DataType = FieldDataType.Boolean;
-                            break;
-
-                        case "uniqueidentifier":
-                            fi.DataType = FieldDataType.Guid;
-                            break;
-
-                        default:
-                            throw new Exception("Unsupported data type: " + typeName);
-                    }
-
+                    GetSoodaFieldAttributes(fi, r, false);
                     ti.Fields.Add(fi);
                 }
                 catch (Exception ex)

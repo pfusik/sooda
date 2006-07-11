@@ -109,6 +109,15 @@ namespace Sooda.Sql
                 return SqlTopSupportMode.SelectTop;
             }
         }
-    }
 
+        public override string EndInsert(string tableName)
+        {
+            return "set identity_insert " + tableName + " off ";
+        }
+
+        public override string BeginInsert(string tableName)
+        {
+            return "set identity_insert " + tableName + " on ";
+        }
+    }
 }

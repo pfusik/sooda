@@ -431,7 +431,7 @@ namespace Sooda.CodeGen.CDIL
                 return ParseProperty();
             if (IsKeyword("typeconstructor"))
                 return ParseTypeConstructor();
-            throw BuildException("Unknown member: " + TokenType);
+            throw BuildException("Unknown member: " + TokenType + "(" + TokenValue + ")");
         }
 
         public CodeMemberField ParseField()

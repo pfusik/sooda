@@ -248,7 +248,7 @@ namespace Sooda.CodeGen.CDIL
 
         public Exception BuildException(string msg)
         {
-            return new ArgumentException(msg + " Next token: " + _input.Substring(_pos, _input.Length - _pos));
+            return new ArgumentException(msg + " Next token: " + _input.Substring(_pos, _input.Length - _pos).Substring(0,50) + " Input: " + _input);
         }
     }
 }

@@ -61,10 +61,28 @@ namespace Sooda.ObjectMapper.FieldHandlers
             byte[] buf = new byte[n];
             record.GetBytes(pos, 0, buf, 0, buf.Length);
 
-            // tu nie moe by using() - http://support.microsoft.com/?id=814675
+            return ImageFromBytes(buf);
+        }
 
-            MemoryStream ms = new MemoryStream(buf);
-            return Image.FromStream(ms);
+        private static Image ImageFromBytes(byte[] buf)
+        {
+            try
+            {
+                // must not do using() here - http://support.microsoft.com/?id=814675
+
+                MemoryStream ms = new MemoryStream(buf);
+                Image img = Image.FromStream(ms);
+                return img;
+            }
+            catch (ArgumentException)
+            {
+                // it's possible that the image has been saved 
+                // with OLE header, strip it. It's the first 78 bytes.
+
+                MemoryStream ms = new MemoryStream(buf, 78, buf.Length - 78);
+                Image img = Image.FromStream(ms);
+                return img;
+            }
         }
 
         public override string RawSerialize(object val)
@@ -80,7 +98,7 @@ namespace Sooda.ObjectMapper.FieldHandlers
         public static string SerializeToString(object obj)
         {
             Image img = (Image)obj;
-            // tu nie moe by using() - http://support.microsoft.com/?id=814675
+            // must not do using() here - http://support.microsoft.com/?id=814675
             MemoryStream ms = new MemoryStream();
             img.Save(ms, img.RawFormat);
 

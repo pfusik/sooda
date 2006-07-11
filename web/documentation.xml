@@ -2,6 +2,106 @@
 <?xml-stylesheet type="text/xsl" href="style.xsl" ?>
 <content lang="en" id="documentation">
     <h1>Documentation</h1>
-    <p>TO BE WRITTEN. </p>
-    <p>Some usage information can be found in the <link href="tutorial">Tutorial</link> and in the <link href="examples">Examples</link> section.</p>
+    <table-of-contents />
+    <section id="intro">
+        <title>Introduction to Sooda</title>
+        <section id="whatsoodais">
+            <title>What is Sooda?</title>
+            <body>
+                <p>
+                    <b>Sooda</b> (Simple Object-Oriented Data Access) is an Object-To-Relational Mapping 
+                    software for the <a href="http://msdn.microsoft.com/net">.NET</a> environment.
+                    It is a code generator, which can to generate entire Data Access Layer for your application.
+                </p>
+                <p>
+                    Each class that's generated as part of the DAL typically corresponds to a database table,
+                    its properties map to database columns and relationships map to object references and collections.
+                </p>
+                <p>
+                    Sooda supports:
+                </p>
+                <ul>
+                    <li>mapping one or more tables to a class</li>
+                    <li>one-to-many and many-to-many relationships mapped as strongly typed collections</li>
+                    <li>inheritance (two models: table-per-hierarchy (TPH) and table-per-subclass (TPS))</li>
+                    <li>strongly-typed, database-based enumerations</li>
+                    <li>lazy loading</li>
+                    <li>differential serialization and deserialization of uncommitted changes (enables long-running transactions)</li>
+                    <li>strongly typed query language (based on C# operator overloading)</li>
+                    <li>text-based query language - SOQL</li>
+                    <li>vertical partitioning of data (load-on-demand for large columns)</li>
+                </ul>
+                <p>
+                    The following development tools/build environments are supported:
+                </p>
+                <ul>
+                    <li>Visual Studio 2005 (.NET Framework 2.0)</li>
+                    <li>Visual Studio 2003 (.NET Framework 1.1)</li>
+                    <li>NAnt 0.85</li>
+                </ul>
+                <p>
+                    .NET Framework 1.0 is NOT supported.
+                </p>
+                <p>
+                    The following RDBMSes are supported:
+                </p>
+                <ul>
+                    <li>Microsoft SQL Server 2000, 2005 (including MSDE and SQL Server Express Edition)</li>
+                    <li>MySQL v4.x</li>
+                    <li>PostgreSQL v8.x</li>
+                    <li>Oracle 8i, 9i, 10g</li>
+                </ul>
+            </body>
+        </section>
+        <section id="gettingstarted">
+            <title>Getting Started</title>
+            <body>
+                <p>
+                    In order to use Sooda in your project you need to have a working database. We'll be using Microsoft
+                    SQL Server and the Northwind database. We'll also need to provide Sooda with the following information:
+                </p>
+                <ol>
+                    <li><b>Mapping schema</b> that describes the mapping between tables/columns in your database and 
+                        classes/properties. It is stored in an XML file, usually named <code>SoodaSchema.xml</code>.</li>
+                    <li><b>Code generation parameters</b> which specify various aspects of code generation. 
+                        The settings are stored in an XML file with <b>.soodaproject</b> extension.</li>
+                    <li><b>Runtime configuration parameters</b> such as database connection string, connection type and SQL dialect - typically stored in your <code>Application.exe.config</code></li>
+                </ol>
+                <p>
+                    In addition, you need to make a small modification to your database (namely add a table that
+                    will manage primary keys). The following sections will describe the required setup in detail.
+                </p>
+                <p>
+                    Sooda comes with a wizard for VS.NET 2003 and a project template for Visual Studio 2005
+                    which give you a ready-to-run Sooda environment. You should use it now to create a console
+                    application named "SoodaNorthwind".
+                </p>
+                <section id="gettingstarted-schema">
+                    <title>Mapping Schema</title>
+                    <body>
+                        <p>
+                            Assuming you've created a project using the provided wizard you should have a <code>SoodaSchema.xml</code>
+                            file in your project. This is a place where you should put the mapping schema. You can do it in two ways:
+                        </p>
+                        <ul>
+                            <li><b>the hard way</b> - manually editing the file. Sooda comes with an XML schema file that installs in Visual Studio to provide Intellisense
+                                for editing the configuration files.</li>
+                            <li><b>the easy way</b> - usign a tool to generate the file for you. Manual editing may still be required
+                                for cases that cannot be deduced by the tool, but in general this apprach lets you create a 
+                                provisional schema very quickly.</li>
+                        </ul>
+                        <p>
+                            In this tutorial we'll take the latter approach and use a command-line tool that's called SoodaSchemaTool. 
+                            Future versions of Sooda might add user-friendly wrappers to this tool, but today we need to use the command line. 
+                            So let's fire up the <code>cmd.exe</code>, switch to a directory where SoodaSchema.xml is located and type 
+                            the following commands:
+                        </p>
+                        <p>
+                            c:\path\to\SoodaSchemaTool genschema -connectionString "initial catalog=Northwind;integrated security=true" -outputFile SoodaSchema.xml
+                        </p>
+                    </body>
+                </section>
+            </body>
+        </section>
+    </section>
 </content>

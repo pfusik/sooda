@@ -107,7 +107,8 @@
     </xsd:sequence>
     <xsd:attribute name="name" use="required" />
     <xsd:attribute name="relation" use="required" />
-    <xsd:attribute name="masterField" type="xsd:int" use="required" />
+    <xsd:attribute name="masterField" type="xsd:int" use="optional" />
+    <xsd:attribute name="foreignField" type="xsd:string" use="optional" />
     <xsd:attribute name="prefetch" use="optional" type="xsd:int" default="0" />
   </xsd:complexType>
   <xsd:complexType name="ConstInfo">

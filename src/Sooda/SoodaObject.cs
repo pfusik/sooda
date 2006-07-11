@@ -715,7 +715,7 @@ namespace Sooda
                         catch (Exception ex)
                         {
                             logger.Error("Error while reading field {0}.{1}: {2}", table.NameToken, field.Name, ex);
-                            throw ex;
+                            throw;
                         }
                     }
                     recordPos++;

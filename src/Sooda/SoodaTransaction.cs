@@ -43,6 +43,7 @@ using Sooda.Collections;
 using Sooda.Caching;
 
 using Sooda.Logging;
+using System.ComponentModel;
 
 namespace Sooda
 {
@@ -53,7 +54,7 @@ namespace Sooda
         Implicit = 0x0001,
     }
 
-    public class SoodaTransaction : IDisposable
+    public class SoodaTransaction : Component, IDisposable
     {
         private static Logger transactionLogger = LogManager.GetLogger("Sooda.Transaction");
         private static IDefaultSoodaTransactionStrategy _defaultTransactionStrategy = new SoodaThreadBoundTransactionStrategy();
@@ -118,9 +119,6 @@ namespace Sooda
             if (ObjectsAssembly == null)
                 ObjectsAssembly = DefaultObjectsAssembly;
 
-            if (ObjectsAssembly == null)
-                throw new SoodaException(@"ObjectsAssembly has not been set for this SoodaTransaction. See http://www.sooda.org/en/faq.html#objectsassembly for more information.");
-
             this.transactionOptions = options;
             if ((options & SoodaTransactionOptions.Implicit) != 0)
             {
@@ -133,14 +131,15 @@ namespace Sooda
             Dispose(false);
         }
 
-        public void Dispose()
+        public new void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        private void Dispose(bool disposing)
+        private new void Dispose(bool disposing)
         {
+            base.Dispose(disposing);
             try
             {
                 // transactionLogger.Debug("Disposing transaction");
@@ -150,16 +149,14 @@ namespace Sooda
                     {
                         source.Close();
                     }
-                };
-                if ((transactionOptions & SoodaTransactionOptions.Implicit) != 0)
-                {
-                    if (this != _defaultTransactionStrategy.SetDefaultTransaction(previousTransaction))
+                    if ((transactionOptions & SoodaTransactionOptions.Implicit) != 0)
                     {
-                        transactionLogger.Warn("ActiveTransactionDataStoreSlot has been overwritten by someone.");
+                        if (this != _defaultTransactionStrategy.SetDefaultTransaction(previousTransaction))
+                        {
+                            transactionLogger.Warn("ActiveTransactionDataStoreSlot has been overwritten by someone.");
+                        }
                     }
                 }
-                // transactionLogger.Debug("Transaction stats:\n\n{0}", Statistics);
-                // transactionLogger.Debug("Disposed.");
             }
             catch (Exception ex)
             {

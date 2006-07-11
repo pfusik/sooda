@@ -31,6 +31,7 @@ namespace Sooda.Schema
 {
     using System.Xml.Serialization;
     using System;
+using System.ComponentModel;
 
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [Serializable]
@@ -41,7 +42,11 @@ namespace Sooda.Schema
         public string Relation;
 
         [System.Xml.Serialization.XmlAttributeAttribute("masterField")]
-        public int MasterField;
+        [DefaultValue(-1)]
+        public int MasterField = -1;
+
+        [System.Xml.Serialization.XmlAttributeAttribute("foreignField")]
+        public string ForeignField;
 
         private RelationInfo relationInfo = null;
 
@@ -55,6 +60,16 @@ namespace Sooda.Schema
             relationInfo = schemaInfo.FindRelationByName(Relation);
             if (relationInfo == null)
                 throw new SoodaSchemaException("Relation " + this.Name + " not found.");
+
+            if (ForeignField != null)
+            {
+                if (relationInfo.Table.Fields[0].Name == ForeignField)
+                    MasterField = 1;
+                else
+                    MasterField = 0;
+            }
+            if (MasterField == -1)
+                throw new SoodaConfigException("You need to set either masterField or foreignField in <collectionManyToMany name='" + this.Name + "' />");
         }
 
         public override ClassInfo GetItemClass()

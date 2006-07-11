@@ -88,8 +88,6 @@
     <Content Include="howitworks.xml" />
     <Content Include="index.html" />
     <Content Include="introduction.xml" />
-    <Content Include="lang_en.gif" />
-    <Content Include="lang_pl.gif" />
     <Content Include="LICENSE.txt" />
     <Content Include="links.xml" />
     <Content Include="mailinglist.xml" />
@@ -114,8 +112,6 @@
     <Content Include="tutorial.xml" />
     <Content Include="users.xml" />
     <Content Include="webmenu.xml" />
-    <None Include="new_logo.psp" />
-    <None Include="poweredby_sooda.psp" />
     <None Include="sooda.psp" />
     <None Include="sooda_mini.psp" />
     <None Include="sooda_nav.psp" />
