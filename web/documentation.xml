@@ -5,7 +5,7 @@
     <table-of-contents />
     <section id="intro">
         <title>Introduction to Sooda</title>
-        <section id="whatsoodais">
+        <section id="whatissooda">
             <title>What is Sooda?</title>
             <body>
                 <p>
@@ -71,37 +71,342 @@
                     In addition, you need to make a small modification to your database (namely add a table that
                     will manage primary keys). The following sections will describe the required setup in detail.
                 </p>
-                <p>
-                    Sooda comes with a wizard for VS.NET 2003 and a project template for Visual Studio 2005
-                    which give you a ready-to-run Sooda environment. You should use it now to create a console
-                    application named "SoodaNorthwind".
+                <p style="color: red">
+                    TODO - OPISAÆ WIZARDA
                 </p>
-                <section id="gettingstarted-schema">
-                    <title>Mapping Schema</title>
+            </body>
+        </section>
+    </section>
+    <section id="schema">
+        <title>O/R Mapping Schema</title>
+        <body>
+            <p>
+                O/R Mapping Schema defines the mapping between CLI classes and database tables. You typically map
+                each table in the database to a class, but you can also designate some table to be used for
+                resolving the many-to-many relationship, specify that a class is to be based on multiple tables
+                or describe a inheritance (<i>"is-a"</i>) relationship.
+            </p>
+            <p>
+                The schema is contained in an XML file that is the input to <a href="#soodastubgen">SoodaStubGen</a> utility which
+                generates class stubs. You can write the XML file by hand or you can use a tool, such as 
+                <a href="#soodaschematool">SoodaSchemaTool</a> to generate it for you by reverse-engineering the database.
+                Note that it's not possible to generate the mapping schema in a automated manner, because there are 
+                things that simply aren't stored in the database, but the tools can give you a good approximation of the actual schema.
+            </p>
+            <p>
+                The schema is defined in an XML file, whose root is the <x><schema /></x> element with the appropriate namespace.
+                The child elements of the <x><schema /></x> define classes, relations and so on, as described below.
+            </p>
+            <code lang="XML">
+                <![CDATA[
+                <schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
+                    <datasource />
+
+                    <class />
+                    <class />
+                    <class />
+                    <class />
+
+                    <relation />
+                    <relation />
+                </schema>
+                ]]>
+            </code>
+        </body>
+        <section id="schemadatasources">
+            <title>Data Sources</title>
+            <body>
+                <p>
+                    Data Sources are defined with the <x><datasource /></x> element. A data source represents a 
+                    connection to the database (or other store) where entities are stored. Each data source has a name and type. 
+                    Sooda currently supports only <a href="#sqldatasource">Sql Data Source</a>, but
+                    it is (theoretically) possible to add more data source types. Unless specified otherwise, the 
+                    default data source for a class or relation is "<code>default</code>", which you need to have defined.
+                </p>
+                <p>
+                    Until Sooda supports other data source types, the typical declaration that should occur at the beginning of each
+                    mapping schema is:
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                    <schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
+                        <datasource name="default" type="Sooda.Sql.SqlDataSource" />
+                    </schema>
+                    ]]>
+                </code>
+                <p>
+                    You can define additional SQL-based data sources for example to connect to multiple databases at once. Sooda
+                    will keep a single connection to each data source, but won't create one until you use an object that's based on
+                    the data source.
+                </p>
+            </body>
+        </section>
+        <section id="schemaclasses">
+            <title>Classes</title>
+            <body>
+                <p>
+                    Classes are defined using the <x><class /></x> element. Each class is based on a number of tables, each represented
+                    by a <x><table /></x> element. Each <x><class /></x> has a name, which is used during code generation to produce the 
+                    a set of C# or VB classes and other attributes which specify its runtime behavior. The following table lists available
+                    attributes of the <x><class /></x> element.
+                </p>
+                <div class="table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>cardinality</td>
+                                <td>ClassCardinality</td>
+                                <td>Specifies the approximate number of instances of this class (number of rows in a table).
+                                    Possible values are:
+                                    <ul>
+                                        <li><b>Small</b> - up to 20-30</li>
+                                        <li><b>Medium</b> - more than Small, up to 200-300</li>
+                                        <li><b>Large</b> - more than few hundred</li>
+                                    </ul>
+                                    The default value is <b>Medium</b>. You may want to specify other values as a hint to the cache optimizer.
+                                    Other than that, this value is not used.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>datasource</td>
+                                <td>string</td>
+                                <td>Specifies the name of the <a href="#datasources">data source</a> for this class. The default</td>
+                        </tbody>
+                    </table>
+                </div>
+            </body>
+        </section>
+        <section id="schemaconst">
+            <title>Named Constants</title>
+            <body>
+            </body>
+        </section>
+        <section id="schema11">
+            <title>One-To-One Relationships</title>
+            <body>
+            </body>
+        </section>
+        <section id="schema1N">
+            <title>One-To-Many Relationships</title>
+            <body>
+            </body>
+        </section>
+        <section id="schemaNN">
+            <title>Many-To-Many Relationships</title>
+            <body>
+            </body>
+        </section>
+        <section id="schemainheritance">
+            <title>Inheritance</title>
+            <body>
+            </body>
+        </section>
+        <section id="schemaprecommitvalues">
+            <title>Precommit Values</title>
+            <body>
+            </body>
+        </section>
+        <section id="schemainclude">
+            <title>Include Files</title>
+            <body>
+            </body>
+        </section>
+    </section>
+    <section id="compilation">
+        <title>Compilation</title>
+        <section id="compilationprocess">
+            <title>Compilation Process</title>
+            <section id="compilationprocessnant">
+                <title>NAnt</title>
+                <body>
+                </body>
+            </section>
+            <section id="compilationvisualstudio">
+                <title>Visual Studio</title>
+                <body>
+                </body>
+            </section>
+        </section>
+        <section id="typical">
+            <title>Sooda Project Files - *.soodaproject</title>
+            <body>
+            </body>
+        </section>
+    </section>
+    <section id="api">
+        <title>API</title>
+        <section id="soodatransaction">
+            <title>SoodaTransaction</title>
+            <body>
+            </body>
+        </section>
+        <section id="soodaobject">
+            <title>SoodaObject</title>
+            <body>
+            </body>
+        </section>
+        <section id="schema">
+            <title>Schema API</title>
+            <body>
+            </body>
+        </section>
+        <section id="ql">
+            <title>Query API</title>
+            <body>
+            </body>
+        </section>
+        <section id="fieldhandlers">
+            <title>Field Handlers</title>
+            <body>
+            </body>
+        </section>
+        <section id="keygenerators">
+            <title>Key Generators</title>
+            <body>
+            </body>
+        </section>
+        <section id="caching">
+            <title>Caching</title>
+            <body>
+            </body>
+        </section>
+        <section id="datasources">
+            <title>Data Sources API</title>
+            <body>
+                <section id="sqldatasource">
+                    <title>SQL Data Source</title>
                     <body>
-                        <p>
-                            Assuming you've created a project using the provided wizard you should have a <code>SoodaSchema.xml</code>
-                            file in your project. This is a place where you should put the mapping schema. You can do it in two ways:
-                        </p>
-                        <ul>
-                            <li><b>the hard way</b> - manually editing the file. Sooda comes with an XML schema file that installs in Visual Studio to provide Intellisense
-                                for editing the configuration files.</li>
-                            <li><b>the easy way</b> - usign a tool to generate the file for you. Manual editing may still be required
-                                for cases that cannot be deduced by the tool, but in general this apprach lets you create a 
-                                provisional schema very quickly.</li>
-                        </ul>
-                        <p>
-                            In this tutorial we'll take the latter approach and use a command-line tool that's called SoodaSchemaTool. 
-                            Future versions of Sooda might add user-friendly wrappers to this tool, but today we need to use the command line. 
-                            So let's fire up the <code>cmd.exe</code>, switch to a directory where SoodaSchema.xml is located and type 
-                            the following commands:
-                        </p>
-                        <p>
-                            c:\path\to\SoodaSchemaTool genschema -connectionString "initial catalog=Northwind;integrated security=true" -outputFile SoodaSchema.xml
-                        </p>
+                    </body>
+                </section>
+                <section id="otherdatasources">
+                    <title>Implementing other Data Sources</title>
+                    <body>
+                    </body>
+                </section>
+                <section id="configuringdatasources">
+                    <title>Configuring Data Source</title>
+                    <body>
                     </body>
                 </section>
             </body>
         </section>
+    </section>
+    <section id="generatedcode">
+        <title>Generated Code</title>
+        <body>
+            <section id="generatedclasses">
+                <title>Classes</title>
+                <body>
+                </body>
+                <section id="generatedproperties">
+                    <title>Properties</title>
+                    <body>
+                    </body>
+                    <section id="generatedpropertiesboxed">
+                        <title>Boxed</title>
+                        <body>
+                        </body>
+                    </section>
+                    <section id="generatedpropertiessqltypes">
+                        <title>SqlTypes</title>
+                        <body>
+                        </body>
+                    </section>
+                    <section id="generatedpropertiesraw">
+                        <title>Raw</title>
+                        <body>
+                        </body>
+                    </section>
+                    <section id="generatedpropertiesrawwithisnull">
+                        <title>RawWithIsNull</title>
+                        <body>
+                        </body>
+                    </section>
+                    <section id="generatedpropertiesnullable">
+                        <title>Nullable&lt;&gt;</title>
+                        <body>
+                        </body>
+                    </section>
+                </section>
+            </section>
+            <section id="generatedlistwrappers">
+                <title>Collections</title>
+                <body>
+                </body>
+            </section>
+            <section id="generatedfactories">
+                <title>Factories</title>
+                <body>
+                </body>
+            </section>
+            <section id="generatedtypedqueries">
+                <title>Typed Queries</title>
+                <body>
+                </body>
+            </section>
+            <section id="generatedschema">
+                <title>Schema</title>
+                <body>
+                </body>
+            </section>
+        </body>
+    </section>
+    <section id="soql">
+        <title>Query Language - SOQL</title>
+        <section id="soqltext">
+            <title>Text-based Queries</title>
+            <body>
+            </body>
+        </section>
+        <section id="soqltypedqueries">
+            <title>Typed Queries</title>
+            <body>
+            </body>
+        </section>
+    </section>
+    <section id="tools">
+        <title>Tools</title>
+        <section id="soodastubgen">
+            <title>SoodaStubGen</title>
+            <body>
+            </body>
+        </section>
+        <section id="soodacompilestubs">
+            <title>SoodaCompileStubs</title>
+            <body>
+            </body>
+        </section>
+        <section id="soodafixkeygen">
+            <title>SoodaFixKeygen</title>
+            <body>
+            </body>
+        </section>
+        <section id="soodaschematool">
+            <title>SoodaSchemaTool</title>
+            <body>
+            </body>
+        </section>
+        <section id="soodaaddin">
+            <title>SoodaAddin</title>
+            <body>
+            </body>
+        </section>
+    </section>
+    <section id="configuration">
+        <title>Configuration</title>
+        <body>
+        </body>
+    </section>
+    <section id="logging">
+        <title>Logging</title>
+        <body>
+        </body>
     </section>
 </content>

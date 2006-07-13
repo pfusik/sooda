@@ -267,6 +267,12 @@
         </code>
     </xsl:template>
 
+    <xsl:template match="code[@lang]">
+        <pre>
+            <xsl:apply-templates />
+        </pre>
+    </xsl:template>
+
     <xsl:include href="syntax.xsl" />
 
     <xsl:template match="*" mode="xml-example">

@@ -525,6 +525,14 @@ table.toc
     font-weight: bold;
 }
 
+.heading3
+{
+    padding-top: 20px;
+    font-size: 100%;
+    font-family: Tahoma;
+    font-weight: bold;
+}
+
 div.body2
 {
     margin-left: 10px;
@@ -560,4 +568,14 @@ table.toc td.sectionnumber
 .toc2
 {
     padding-left: 30px;
+}
+
+.toc3
+{
+    padding-left: 50px;
+}
+
+.toc4
+{
+    padding-left: 60px;
 }
