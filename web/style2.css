@@ -325,6 +325,7 @@ img.thinborder
 @media print
 {
     #controls { display: none; }
+    #webcontent { left: 0px; border: none; }
     #content { left: 0px; border: none; }
 }
 

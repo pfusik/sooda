@@ -71,9 +71,7 @@
                     In addition, you need to make a small modification to your database (namely add a table that
                     will manage primary keys). The following sections will describe the required setup in detail.
                 </p>
-                <p style="color: red">
-                    TODO - OPISAÆ WIZARDA
-                </p>
+                <font size="+2" color="red">**** TODO OPISAÆ WIZARDA ****</font>
             </body>
         </section>
     </section>
@@ -114,7 +112,7 @@
             </code>
         </body>
         <section id="schemadatasources">
-            <title>Data Sources</title>
+            <title>Data Sources - <x><datasource /></x></title>
             <body>
                 <p>
                     Data Sources are defined with the <x><datasource /></x> element. A data source represents a 
@@ -142,7 +140,7 @@
             </body>
         </section>
         <section id="schemaclasses">
-            <title>Classes</title>
+            <title>Classes - <x><class /></x></title>
             <body>
                 <p>
                     Classes are defined using the <x><class /></x> element. Each class is based on a number of tables, each represented
@@ -161,6 +159,13 @@
                         </thead>
                         <tbody>
                             <tr>
+                                <td>name</td>
+                                <td>string</td>
+                                <td>Class name - used by <a href="#soodastubgen">SoodaStubGen</a> to generate 
+                                    the class skeleton, stub, a number of related classes (factory, list wrapper, typed queries and so on)
+                                </td>
+                            </tr>
+                            <tr>
                                 <td>cardinality</td>
                                 <td>ClassCardinality</td>
                                 <td>Specifies the approximate number of instances of this class (number of rows in a table).
@@ -177,29 +182,149 @@
                             <tr>
                                 <td>datasource</td>
                                 <td>string</td>
-                                <td>Specifies the name of the <a href="#datasources">data source</a> for this class. The default</td>
+                                <td>Specifies the name of the <a href="#datasources">data source</a> for this class. The default name is "default".</td>
+                            </tr>
+                            <tr>
+                                <td>extBaseClassName</td>
+                                <td>string</td>
+                                <td>Specifies the name of the base class that this class should inherit from. By default each class N inherits 
+                                    from N_Stub which in turn inherits from SoodaObject. Set this option to make the stub class inherit from some other class.
+                                    Note that the class must ultimately inherit from SoodaObject (either directly or indirectly).
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>label</td>
+                                <td>string</td>
+                                <td>Name of the property that provides the displayable "identity" of the object. For example the 
+                                    "Person" class might have a label of "Name" or "Email", the "Location" might have a label of "Address".
+                                    This is used to generate the default implementation of ToString() for object.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>keygen</td>
+                                <td>string</td>
+                                <td>Specifies a method that will be used to generate primary keys for newly created objects. 
+                                    The following options are supported:
+                                    <ul>
+                                        <li><b>guid</b> - generate GUID keys in-memory by calling Guid.NewGuid()</li>
+                                        <li><b>integer</b> - pregenerates integer keys in the database by storing them in the KeyGen table. This is the default.</li>
+                                        <li><b>long</b> - pregenerates long (64-bit) keys in the database by storing them in the KeyGen table.</li>
+                                        <li>alternatively you can provide a name of the class that implements IPrimaryKeyGenerator that will provide primary keys. This can call a 
+                                            webservice or use other means necessary to generate keys in a coordinated manner, guaranteeing that
+                                            no two sessions will ever get the same primary key.</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>lastModifiedField</td>
+                                <td>string</td>
+                                <td>
+                                    <font size="+2" color="red">**** TODO - IMPLEMENTOWAÆ CZY WYRZUCIÆ ?****</font>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>inheritFrom</td>
+                                <td>string</td>
+                                <td>
+                                    Inherits from the specified class. This parameter 
+                                    is explained in the <a href="#schemainheritance">section</a>.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>defaultPrecommitValue</td>
+                                <td>depends on primary key type</td>
+                                <td>
+                                    Specifies the default precommit value for this class. This is the value that will be INSERT'ed into
+                                    the database for each not-nullable column that doesn't have a value specified. You can override it on the
+                                    <a href="#schemafield"><x><field /></x></a> level.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>subclassSelectorValue</td>
+                                <td>depends on primary key type</td>
+                                <td>
+                                    Specifies the value of the subclass selector field that determines this object type. This parameter 
+                                    is explained in the <a href="#schemainheritance">inheritance section</a>.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>subclassSelectorField</td>
+                                <td>string</td>
+                                <td>
+                                    Specifies the name of the subclass selector field that determines this object type. This parameter 
+                                    is explained in the <a href="#schemainheritance">inheritance section</a>.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>cached</td>
+                                <td>bool</td>
+                                <td>
+                                    Caching hint. The actual interpretation depends on the <a href="caching">caching policy</a> that's in place.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>cacheCollections</td>
+                                <td>bool</td>
+                                <td>
+                                    Collection caching hint. The actual interpretation depends on the <a href="caching">caching policy</a> that's in place.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>disableTypeCache</td>
+                                <td>bool</td>
+                                <td>Disable type cache for this type. This parameter is described in the <a href="#schemainheritance">inheritance section</a></td>
+                            </tr>
+                            <tr>
+                                <td>triggers</td>
+                                <td>bool</td>
+                                <td>Determines whether <a href="#triggers">triggers</a> should be generated for this class.</td>
+                            </tr>
+                            <tr>
+                                <td>readOnly</td>
+                                <td>boolean</td>
+                                <td>
+                                    Determines whether instances of this class should be read-only. No property setters are generated
+                                    in such case and some scenarios are optimized.
+                                    <font size="+2" color="red">**** TODO - TO NIE DZIA£A - IMPLEMENTOWAÆ CZY WYRZUCIÆ ?****</font>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
             </body>
         </section>
+        <section id="schematable">
+            <title>Tables - <x><table /></x></title>
+            <body>
+            </body>
+        </section>
+        <section id="schemafield">
+            <title>Fields - <x><field /></x></title>
+            <body>
+            </body>
+        </section>
         <section id="schemaconst">
-            <title>Named Constants</title>
+            <title>Named Constants - <x><const /></x></title>
             <body>
             </body>
         </section>
         <section id="schema11">
-            <title>One-To-One Relationships</title>
+            <title>One-To-One Relationships - references</title>
             <body>
             </body>
         </section>
         <section id="schema1N">
-            <title>One-To-Many Relationships</title>
+            <title>One-To-Many Relationships - <x><collectionOneToMany /></x></title>
             <body>
             </body>
         </section>
         <section id="schemaNN">
-            <title>Many-To-Many Relationships</title>
+            <title>Many-To-Many Relationships - <x><collectionManyToMany /></x></title>
+            <body>
+            </body>
+        </section>
+        <section id="schemainclude">
+            <title>Include Files - <x><include /></x></title>
             <body>
             </body>
         </section>
@@ -210,11 +335,6 @@
         </section>
         <section id="schemaprecommitvalues">
             <title>Precommit Values</title>
-            <body>
-            </body>
-        </section>
-        <section id="schemainclude">
-            <title>Include Files</title>
             <body>
             </body>
         </section>
@@ -334,6 +454,11 @@
                         <body>
                         </body>
                     </section>
+                </section>
+                <section id="generatedproperties">
+                    <title>Triggers</title>
+                    <body>
+                    </body>
                 </section>
             </section>
             <section id="generatedlistwrappers">

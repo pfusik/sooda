@@ -53,7 +53,6 @@
     <xsd:sequence>
       <xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
       <xsd:element name="table" type="sooda:TableInfo" minOccurs="0" maxOccurs="unbounded" />
-      <xsd:element name="index" type="sooda:IndexInfo" minOccurs="0" maxOccurs="unbounded" />
       <xsd:element name="collectionOneToMany" type="sooda:CollectionOnetoManyInfo" minOccurs="0" maxOccurs="unbounded" />
       <xsd:element name="collectionManyToMany" type="sooda:CollectionManyToManyInfo" minOccurs="0" maxOccurs="unbounded" />
       <xsd:element name="const" type="sooda:ConstInfo" minOccurs="0" maxOccurs="unbounded" />
@@ -70,25 +69,12 @@
     <xsd:attribute name="defaultPrecommitValue" type="xsd:string" use="optional" />
     <xsd:attribute name="subclassSelectorField" type="xsd:string" use="optional" />
     <xsd:attribute name="subclassSelectorValue" type="xsd:string" use="optional" />
-    <xsd:attribute name="canDelete" use="optional" type="xsd:boolean" default="false" />
     <xsd:attribute name="cached" use="optional" type="xsd:boolean" default="false" />
     <xsd:attribute name="cacheCollections" use="optional" type="xsd:boolean" default="false" />
-    <xsd:attribute name="cachingPolicy" use="optional" type="xsd:string" default="default" />
     <xsd:attribute name="disableTypeCache" use="optional" type="xsd:boolean" default="false" />
-    <xsd:attribute name="loadOnDemand" use="optional" type="xsd:boolean" default="true" />
     <xsd:attribute name="triggers" use="optional" type="xsd:boolean" default="true" />
     <xsd:attribute name="readOnly" use="optional" type="xsd:boolean" default="false" />
     <xsd:anyAttribute processContents="lax" />
-  </xsd:complexType>
-  <xsd:complexType name="IndexInfo">
-    <xsd:sequence>
-      <xsd:element name="field" type="sooda:IndexFieldInfo" minOccurs="1" maxOccurs="unbounded" />
-    </xsd:sequence>
-    <xsd:attribute name="name" use="optional" />
-    <xsd:attribute name="unique" type="xsd:boolean" use="optional" default="false" />
-  </xsd:complexType>
-  <xsd:complexType name="IndexFieldInfo">
-    <xsd:attribute name="name" use="required" />
   </xsd:complexType>
   <xsd:complexType name="CollectionOnetoManyInfo">
     <xsd:sequence>

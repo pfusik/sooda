@@ -50,10 +50,6 @@ namespace Sooda.Schema
         [System.Xml.Serialization.XmlElementAttribute("table")]
         public TableInfoCollection LocalTables;
 
-        [System.Xml.Serialization.XmlElementAttribute("index")]
-        [CLSCompliant(false)]
-        public IndexInfoCollection Indexes = new IndexInfoCollection();
-
         [System.Xml.Serialization.XmlElementAttribute("collectionOneToMany")]
         public CollectionOnetoManyInfo[] Collections1toN;
 
@@ -113,10 +109,6 @@ namespace Sooda.Schema
         [System.Xml.Serialization.XmlAttributeAttribute("triggers")]
         [System.ComponentModel.DefaultValueAttribute(true)]
         public bool Triggers = true;
-
-        [System.Xml.Serialization.XmlAttributeAttribute("canDelete")]
-        [System.ComponentModel.DefaultValueAttribute(false)]
-        public bool CanDelete = false;
 
         [System.Xml.Serialization.XmlAttributeAttribute("readOnly")]
         [System.ComponentModel.DefaultValueAttribute(false)]
