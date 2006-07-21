@@ -11,17 +11,18 @@
                 <p>
                     <b>Sooda</b> (Simple Object-Oriented Data Access) is an Object-To-Relational Mapping 
                     software for the <a href="http://msdn.microsoft.com/net">.NET</a> environment.
-                    It is a code generator, which can to generate entire Data Access Layer for your application.
+                    O/R Mapping Software enables you to express your business rules without using SQL at all.
                 </p>
                 <p>
+                    Sooda is a code generator, which can to generate entire Data Access Layer for your application.
                     Each class that's generated as part of the DAL typically corresponds to a database table,
                     its properties map to database columns and relationships map to object references and collections.
                 </p>
                 <p>
-                    Sooda supports:
+                    Sooda supports the following features, which are explained in the following sections:
                 </p>
                 <ul>
-                    <li>mapping one or more tables to a class</li>
+                    <li><a href="#mappingtablestoclasses">mapping</a> one or <a href="#mappingmultipletablestoclasses">more tables</a> to a class</li>
                     <li>one-to-many and many-to-many relationships mapped as strongly typed collections</li>
                     <li>inheritance (two models: table-per-hierarchy (TPH) and table-per-subclass (TPS))</li>
                     <li>strongly-typed, database-based enumerations</li>
@@ -52,6 +53,185 @@
                     <li>Oracle 8i, 9i, 10g</li>
                 </ul>
             </body>
+        </section>
+        <section id="basicconcepts">
+            <title>Basic Concepts</title>
+            <section id="mappingtablestoclasses">
+                <title>Mapping Tables to Classes</title>
+                <body>
+                    <p>
+                        Most applications written in high-level languages use the object-oriented 
+                        approach. It is incompatible with the relational(tabular) model used in the databases 
+                        and mapping from tables to objects is required. 
+                        Traditionally programmers have written their own data access layers 
+                        (DALs) which encapsulated the details of the underlying database and table-to-class mapping
+                        and provided object-oriented interface.
+                    </p>
+                    <p>
+                        The goal of the mapping is to store the values of object properties in the appropriate
+                        columns of database tables. Assuming your object's properties are all primitive values
+                        (such as integers, strings, date/time, booleans) we could provide a "natural" mapping
+                        where:
+                    </p>
+
+                    <ul>
+                        <li>each object is stored in a single row in a particular table</li>
+                        <li>each property is stored in a single column</li>
+                        <li>the type of the column reflects the type of the property</li>
+                    </ul>
+                    <p>
+                        Assuming we have the following database table:
+                    </p>
+                    <code lang="SQL">
+                        create table Customer
+                        (
+                            ID int primary key not null,
+                            Name varchar(64),
+                            Salary decimal,
+                            HireDate datetime,
+                            Active bit
+                        );
+                    </code>
+                    <p>
+                        The natural mapping turns it into a class which implements the following interface:
+                    </p>
+                    <code lang="C#">
+                        class Person
+                        {
+                            int ID { get; set; }
+                            string Name { get; set; }
+                            decimal Salary { get; set; }
+                            DateTime HireDate { get; set; }
+                            bool Active { get; set; }
+                        }
+                    </code>
+                    <p>
+                        Natural mapping is not always possible/desirable and therefore we need a <a href="#schema">mapping schema</a> to
+                        fully describe the mapping for tables/columns/datatypes and more. We can for example:
+                    </p>
+                        <ul>
+                            <li>use other name for database table (for example TblPerson instead of Person). 
+                                There are some reserved SQL keywords which cannot be used as table names (SELECT, FROM, WHERE, GROUP)</li>
+                            <li>use other names for database columns (for example hire_date instead of HireDate). Some databases have limitations on the
+                            maximum column names so you might want to make them shorter.</li>
+                            <li>use other datatypes (such as a column of type "integer" instead of "bit" to store the 
+                                value of the "Active" property where "true" is represented by 1 and "false" is represented by 0)</li>
+                        </ul>
+                </body>
+            </section>
+            <section id="primarykeys">
+                <title>Primary Keys and Object Identity</title>
+                <body>
+                    <p>
+                        The identity of entities in the database is established by their primary keys. In object-oriented
+                        languages we refer to objects by using their references. The references are
+                        short-lived and are usually valid only for a single execution of the program and as such
+                        they cannot be stored in a database directly, so the O/R mapper needs to convert
+                        between primary/foreign key values and object references when loading or storing the data.</p>
+                    <p>
+                        This implies that in order to participate in O/R mapping
+                        each database table needs to have one or more primary key columns (either natural or surrogate)
+                        and you need to tell the mapper which columns are primary keys. The primary keys
+                        must be properly maintained in the database (the best way is to create a UNIQUE index on primary
+                        key columns). If you fail to do so (for example when there are many rows sharing the same
+                        value in the primary key column), you may get all sorts of undefined behavior.
+                    </p>
+                    <p>
+                        Sooda provides reference identity guarantee for objects retrieved from the database. That means
+                        that if we make 2 or more  queries which retrieve a particular row from the 
+                        database in the same <a href="#transactions">transaction</a>
+                        they are guaranteed to be be mapped to the same object so 
+                        <code lang="C#">
+                            Object.ReferenceEquals(o1, o2) == true
+                        </code>
+                        There are other O/R Mapping products which only guarantee object value equality, so the same
+                        row retrieved from the database in multiple queries can be mapped to more than
+                        one row, so you only get:
+                        <code lang="C#">
+                            o1.Equals(o2)
+                            o2.Equals(o1)
+                        </code>
+                        but
+                        <code lang="C#">
+                            Object.ReferenceEquals(o1, o2) == false
+                        </code>
+                    </p>
+                </body>
+            </section>
+            <section id="mappingonetomany">
+                <title>One-To-Many Relationships</title>
+                <body>
+                    One-to-many relationalships are typically represented as collections of objects related
+                    to some particular object (only one). Typical examples are:
+                    <ul>
+                        <li>customer has a collection of orders (each order has exactly one customer)</li>
+                        <li>group has members (each member belongs to exactly one group)</li>
+                        <li>mother has children (each child has exactly one mother)</li>
+                    </ul>
+                    In databases we usually represent relationships as foreign key columns stored in the
+                    "child" objects, so to represent the customer-to-orders relatioship we have a foreign
+                    key column (perhaps called "customer") stored in the "Order" table. The value stored
+                    in this column must match the primary key value of the Customer. The following
+                    piece of SQL code demonstrates this:
+                    <code lang="SQL">
+                        <![CDATA[
+                        create table Customer
+                        (
+                            ID int primary key not null,
+                            Name varchar(64)
+                            -- more columns here
+                        );
+
+                        create table Order
+                        (
+                            ID int primary key not null,
+                            -- more columns here
+                            Customer int not null references Customer(ID)
+                        );
+                        ]]>
+                    </code>
+                    Sooda makes the task of managing foreign key relationships rather simple by providing
+                    a dual view of the relationship: reference from a "child" to its "parent" and a collection
+                    of "children" that's a member of the "parent". Sooda can generate the following APIs:
+                    <code lang="C#">
+                        class Customer
+                        {
+                            int ID { get; set; }
+                            string Name { get; set; }
+                            ...
+                            OrderList Orders { get; }
+                        }
+
+                        class Order
+                        {
+                            int ID { get; set; }
+                            Customer Customer { get; set; }
+                        }
+                    </code>
+                        
+                </body>
+            </section>
+            <section id="mappingmanytomany">
+                <title>Many-To-Many Relationships</title>
+            </section>
+            <section id="lazyloading">
+                <title>Lazy Loading</title>
+            </section>
+            <section id="mappingmultipletablestoclasses">
+                <title>Mapping Multiple Tables to a Single Class</title>
+            </section>
+            <section id="inheritance">
+                <title>Inheritance</title>
+            </section>
+            <section id="transactions">
+                <title>Transactions</title>
+            </section>
+            <section id="querylanguage">
+                <title>Query Language</title>
+            </section>
+            <section id="querylanguage">
+                <title>Precommit</title>
+            </section>
         </section>
         <section id="gettingstarted">
             <title>Getting Started</title>
@@ -296,11 +476,229 @@
         <section id="schematable">
             <title>Tables - <x><table /></x></title>
             <body>
+                <p>
+                    <x><table /></x> elements are used to define the mapping from database tables to classes and relations. Each
+                    class is based on at least one <x><table /></x> element. Each table consists of a number of <x><field /></x> 
+                    elements which represent columns in a database and properties in C#/VB. Each table must have at least one
+                    field which is marked as primary key. It can have more than one (they are then called compound primary keys),
+                    but tables with zero primary keys are not allowed.
+                </p>
+                <p>
+                    The typical definition of a class that's based on a single table looks like this:
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                    <class name="Person">
+                        <table name="Person">
+                            <field name="Id" type="Integer" primaryKey="true" />
+                            <field name="Name" type="String" size="40" />
+                            <field name="Location" type="String" size="40" />
+                            <field name="PictureBlob" type="Image" />
+                        </table>
+                    </class>
+                    ]]>
+                </code>
+                <p>
+                    The details about the <x><field /></x> elements are discussed in the <a href="#schemafield">next section</a>.
+                </p>
+                <p>
+                    Objects may need to be stored in multiple tables for efficiency reasons. In the following example we have
+                    two tables - one has person's ID, Name and Location, the other holds her PictureBlob (potentially very large piece of
+                    binary data that encodes the person's photo). By storing the picture in a separate table we can avoid reading
+                    from it until the data is actually needed.
+                </p>
+                <img src="doc_tables.png" />
+                <p>
+                    This piece of schema might represent it:
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                    <class name="Person">
+                        <table name="Person">
+                            <field name="Id" type="Integer" primaryKey="true" />
+                            <field name="Name" type="String" size="40" />
+                            <field name="Location" type="String" size="40" />
+                        </table>
+                        <table name="PersonPictures">
+                            <field name="Id" type="Integer" primaryKey="true" />
+                            <field name="PictureBlob" type="Image" />
+                        </table>
+                    </class>
+                    ]]>
+                </code>
+                <p>
+                    Each <x><table /></x> is a unit for 
+                    the load operation, which means whenever you access
+                    one field from a table, the entire table gets loaded and is cached for further accesses. This is easy way 
+                    to implement fine-grained lazy loading by splitting your fields in groups that are always accessed together.
+                </p>
+                <p>
+                    We can even have two <x><table /></x> elements that are bound to the same physical database table. You only need to repeat
+                    the primary key field in each <x><table /></x>. This allows for column-based lazy loading without the need to create
+                    additional database tables.
+                </p>
+                <p>
+                    We have 4 objects: Adam (with primary key 1), Eva (with primary key 2), 
+                    Mary (with primary key 3), John (with primary key 4). Let's assume they are represented by the 
+                    corresponding variable names and see how lazy loading works as we access their properties and
+                    display them.
+                </p>
+
+                <code lang="C#">
+                    <![CDATA[
+                    Person adam;
+                    Person eva;
+                    Person mary;
+                    Person john;
+
+                    // 1. read Adam's name - this causes a SELECT on a database.
+                    Console.WriteLine(adam.Name); 
+
+                    // 2. read Adam's address - database access is not needed because the appropriate row
+                    // from the database has been loaded in step #1
+                    Console.WriteLine(adam.Location); 
+
+                    // 3. access the picture of Adam - we need to access a database
+                    Console.WriteLine(adam.PictureBlob); 
+
+                    // 4. we load PictureBlob for Eva (note that neiter Name nor Location is loaded yet)
+                    Console.WriteLine(eva.PictureBlob); 
+
+                    // 5. access the Name of Eva - we load it along with her Location
+                    Console.WriteLine(eva.Name); 
+
+                    // 6. location already loaded in step #5 - no database read here
+                    Console.WriteLine(eva.Location); 
+
+                    // 7. read Adam's name - no database access - already loaded in step #1
+                    Console.WriteLine(adam.Name); 
+
+                    // 8. read Adam's picture - no database access - already loaded #3
+                    Console.WriteLine(adam.PictureBlob); 
+                    ]]>
+                </code>
             </body>
         </section>
         <section id="schemafield">
             <title>Fields - <x><field /></x></title>
             <body>
+                <p>
+                    <x><field /></x> elements define the mapping between database columns and object properties.
+                    Each field represents a single column.
+                </p>
+
+                <p>
+                    The following attributes are available on the <x><field /></x> element:
+                </p>
+                <div class="table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>name</td>
+                                <td>string</td>
+                                <td>Field name - used by <a href="#soodastubgen">SoodaStubGen</a> to generate 
+                                    the C#/VB.NET property 
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>dbcolumn</td>
+                                <td>string</td>
+                                <td>Name of the database column. If it is not specified, Sooda assumes this is the same
+                                    as 'name'</td>
+                            </tr>
+                            <tr>
+                                <td>type</td>
+                                <td>FieldDataType</td>
+                                <td>Data type. The following data types are supported:
+                                    <p/>
+                                    <table>
+                                        <thead>
+                                            <th>Name</th>
+                                            <th>C# Type</th>
+                                            <th>Database Type</th>
+                                            <th>Comments</th>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td valign="top">Integer</td>
+                                                <td valign="top">
+                                                    <ul>
+                                                        <li>int</li>
+                                                        <li>SqlInt32</li>
+                                                        <li>Nullable&lt;int&gt;</li>
+                                                    </ul>
+                                                </td>
+                                                <td valign="top">int (32-bit)</td>
+                                                <td valign="top">For databases that dont't support 32-bit integers (such as Oracle) you can use the appropriate numeric type</td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="top">Long</td>
+                                                <td valign="top">
+                                                    <ul>
+                                                        <li>long</li>
+                                                        <li>SqlInt64</li>
+                                                        <li>Nullable&lt;long&gt;</li>
+                                                    </ul>
+                                                </td>
+                                                <td valign="top">bigint (64-bit)</td>
+                                                <td valign="top">For databases that dont't support 64-bit integers (such as Oracle) you can use the appropriate numeric type</td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="top">Boolean</td>
+                                                <td valign="top">
+                                                    <ul>
+                                                        <li>bool</li>
+                                                        <li>SqlBoolean</li>
+                                                        <li>Nullable&lt;bool&gt;</li>
+                                                    </ul>
+                                                </td>
+                                                <td valign="top">bit</td>
+                                                <td valign="top">The data provider should return the value in response to calling IDataReader.GetBoolean().</td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="top">BooleanAsInteger</td>
+                                                <td valign="top">
+                                                    <ul>
+                                                        <li>bool</li>
+                                                        <li>SqlBoolean</li>
+                                                        <li>Nullable&lt;bool&gt;</li>
+                                                    </ul>
+                                                </td>
+                                                <td valign="top">int</td>
+                                                <td valign="top">The database stores true as 1 and false as 0. When reading any value other than zero is considered "true" and zero is considered "false"</td>
+                                            </tr>
+                                            <tr>
+                                                <td valign="top">Decimal</td>
+                                                <td valign="top">
+                                                    <ul>
+                                                        <li>decimal</li>
+                                                        <li>SqlDecimal</li>
+                                                        <li>Nullable&lt;decimal&gt;</li>
+                                                    </ul>
+                                                </td>
+                                                <td valign="top">decimal</td>
+                                                <td valign="top"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <font size="+2" color="red">**** TODO OPISAÆ ATRYBUTY ****</font>
+                <p>
+                    There's no support for compound properties (that would
+                    map to more than one field), but it's relatively easy to do it by hand by adding a new property of the
+                    required type.
+                </p>
             </body>
         </section>
         <section id="schemaconst">
