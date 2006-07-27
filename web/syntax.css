@@ -7,8 +7,8 @@ html, body.example
 
 pre.csharp
 {
-    font-family: Courier New;
-    font-size: 8pt;
+    font-family: Consolas, Courier New;
+    font-size: 9pt;
     font-color: #606060;
     /* border: 1px solid #e0e0e0; */
     white-space: -moz-pre-wrap;  /* Mozilla, supported since 1999 */
@@ -22,8 +22,8 @@ pre.csharp
 
 pre.xml
 {
-    font-family: Courier New;
-    font-size: 8pt;
+    font-family: Consolas, Courier New;
+    font-size: 9pt;
     font-color: #606060;
     white-space: -moz-pre-wrap;  /* Mozilla, supported since 1999 */
     white-space: -pre-wrap;      /* Opera 4 - 6 */
@@ -36,8 +36,8 @@ pre.xml
 
 pre.sql
 {
-    font-family: Courier New;
-    font-size: 8pt;
+    font-family: Consolas, Courier New;
+    font-size: 9pt;
     font-color: #606060;
     white-space: -moz-pre-wrap;  /* Mozilla, supported since 1999 */
     white-space: -pre-wrap;      /* Opera 4 - 6 */

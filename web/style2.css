@@ -333,6 +333,7 @@ img.thinborder
     #content { left: 0px; border: none; }
     a { color: black; text-decoration: none; }
     a:visited { color: black; text-decoration: none; }
+    thead { display: table-header-group; }
 }
 
 table.page

@@ -14,13 +14,7 @@
         <nav href="http://www.nabble.com/Sooda-Forum-f6382.html" noext="true" label="Forum" />
         <nav href="http://trac.sav.net/sooda/" noext="true" label="Report a Bug" />
 
-        <nav href="documentation" label="Documentation">
-            <subnav href="howitworks" label="How it works" />
-            <subnav href="tools" label="Tools" />
-            <subnav href="classes" label="Class Libraries" />
-            <subnav href="soodaproject" label="Sooda Project Files" />
-            <subnav href="schema" label="Database Schema Files" />
-        </nav>
+        <nav href="documentation" label="Documentation" />
         <nav href="development" label="Development" />
         <nav href="mailinglist" label="Mailing Lists" />
         <nav href="technical" label="Technical">

@@ -3,7 +3,7 @@
     <xsl:param name="page_id_override"></xsl:param>
     <xsl:param name="subpage_id_override"></xsl:param>
     <xsl:param name="file_extension">xml</xsl:param>
-    <xsl:param name="mode">plain</xsl:param>
+    <xsl:param name="mode">web</xsl:param>
 
     <xsl:variable name="page_id" select="concat(/*[position()=1]/@id,$page_id_override)" />
     <xsl:variable name="subpage_id" select="concat(/*[position()=1]/@subid,$subpage_id_override)" />
@@ -86,6 +86,9 @@
         </p>
         <div>
             <xsl:attribute name="class">body<xsl:apply-templates select="." mode="section-level" /></xsl:attribute>
+            <xsl:if test="count(body/*)=0 and count(section)=0">
+                <p style="color: red">TODO: Write me</p>
+            </xsl:if>
             <xsl:apply-templates select="body|section" />
         </div>
     </xsl:template>

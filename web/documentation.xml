@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="windows-1250" ?>
 <?xml-stylesheet type="text/xsl" href="style.xsl" ?>
 <content lang="en" id="documentation">
+    <p style="font-size: 12pt; color: red">
+        This documentation is under construction. Many sections are missing. Please report any grammar, spelling or inacurracy issues to the <a href="http://www.sooda.org/mailinglist.html">mailing lists</a>.
+    </p>
     <table-of-contents />
     <section id="intro">
         <title>Introduction to Sooda</title>
