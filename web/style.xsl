@@ -289,6 +289,12 @@
         </a>
         <xsl:if test="$sect"> (<img src="rightarrow.gif" /><xsl:apply-templates select="$sect" mode="section-number" />)
         </xsl:if>
+        <xsl:if test="not($sect)">
+            <xsl:message terminate="yes">No such anchor: <xsl:value-of select="@href" /></xsl:message>
+        </xsl:if>
+        <xsl:if test="count($sect) != 1">
+            <xsl:message terminate="yes">More than one anchor: <xsl:value-of select="@href" /></xsl:message>
+        </xsl:if>
     </xsl:template>
 
     <xsl:include href="syntax.xsl" />

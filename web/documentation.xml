@@ -953,26 +953,28 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     The details about the <x><field /></x> elements are discussed in the <a href="#schemafield">next section</a>.
                 </p>
                 <p>
-                    Objects may need to be <a href="#mappingmultipletablestoclasses">stored in multiple tables</a> for efficiency reasons. In the following example we have
-                    two tables - one has person's ID, Name and Location, the other holds her PictureBlob (potentially very large piece of
-                    binary data that encodes the person's photo). By storing the picture in a separate table we can avoid reading
-                    from it until the data is actually needed.
+                    Objects may need to be <a href="#mappingmultipletablestoclasses">stored in multiple tables</a> for efficiency reasons. 
+                    In the following example we have two tables - one has employee ID, Name, Salary, HireDate and Active flag, 
+                    the other holds her Picture (potentially very large piece of binary data that encodes the person's photo). 
+                    By storing the picture in a separate table we can avoid reading from it until the data is actually needed.
                 </p>
-                <img src="doc_tables.png" />
+                <img src="doc5.gif" />
                 <p>
                     This piece of schema might represent it:
                 </p>
                 <code lang="XML">
                     <![CDATA[
-                    <class name="Person">
-                        <table name="Person">
-                            <field name="Id" type="Integer" primaryKey="true" />
+                    <class name="Employee">
+                        <table name="Employee">
+                            <field name="ID" type="Integer" primaryKey="true" />
                             <field name="Name" type="String" size="40" />
-                            <field name="Location" type="String" size="40" />
+                            <field name="Salary" type="Decimal" />
+                            <field name="HireDate" type="DateTime" />
+                            <field name="Active" type="BooleanAsInteger" />
                         </table>
-                        <table name="PersonPictures">
-                            <field name="Id" type="Integer" primaryKey="true" />
-                            <field name="PictureBlob" type="Image" />
+                        <table name="EmployeePicture">
+                            <field name="ID" type="Integer" primaryKey="true" />
+                            <field name="Picture" type="Image" />
                         </table>
                     </class>
                     ]]>
@@ -985,8 +987,34 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 <p>
                     We can even have two <x><table /></x> elements that are bound to the same physical database table. You only need to repeat
                     the primary key field in each <x><table /></x>. This allows for column-based lazy loading without the need to create
-                    additional database tables.
+                    additional database tables. For example, the followin Employee class uses mentioned partitioning feature
+                    to avoid loading Picture and VoiceSample with other columns.
                 </p>
+                <code lang="XML">
+                    <![CDATA[
+                    <class name="Employee">
+                        <table name="Employee">
+                            <field name="ID" type="Integer" primaryKey="true" />
+                            <field name="Name" type="String" size="40" />
+                            <field name="Salary" type="Decimal" />
+                            <field name="HireDate" type="DateTime" />
+                            <field name="Active" type="BooleanAsInteger" />
+                        </table>
+                        <table name="Employee">
+                            <field name="ID" type="Integer" primaryKey="true" />
+                            <field name="Picture" type="Image" />
+                        </table>
+                        <table name="Employee">
+                            <field name="ID" type="Integer" primaryKey="true" />
+                            <field name="VoiceSample" type="Blob" />
+                        </table>
+                    </class>
+                    ]]>
+                </code>
+                <p>
+                    The table definition looks like this (different lazy loading groups are marked with different colors):
+                </p>
+                <img src="doc11.gif" />
                 <p>
                     Example: We have 4 objects: Adam (Person, with primary key 1), Eva (with primary key 2), 
                     Mary (with primary key 3), John (with primary key 4). Let's assume they are represented by the 
@@ -1009,10 +1037,10 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     Console.WriteLine(adam.Location); 
 
                     // 3. access the picture of Adam - we need to access a database
-                    Console.WriteLine(adam.PictureBlob); 
+                    Console.WriteLine(adam.Picture); 
 
                     // 4. we load PictureBlob for Eva (note that neiter Name nor Location is loaded yet)
-                    Console.WriteLine(eva.PictureBlob); 
+                    Console.WriteLine(eva.Picture); 
 
                     // 5. access the Name of Eva - we load it along with her Location
                     Console.WriteLine(eva.Name); 
@@ -1024,7 +1052,10 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     Console.WriteLine(adam.Name); 
 
                     // 8. read Adam's picture - no database access - already loaded #3
-                    Console.WriteLine(adam.PictureBlob); 
+                    Console.WriteLine(adam.Picture); 
+
+                    // 9. read Adam's voice sample - causes a select on a database
+                    Console.WriteLine(adam.VoiceSample.Length); 
                     ]]>
                 </code>
             </body>
@@ -1068,21 +1099,73 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <td>FieldDataType</td>
                                 <td>Data type. See the <a href="#schemadatatypes">supported data types</a> for more information.</td>
                             </tr>
+                            <tr>
+                                <td>size</td>
+                                <td>integer</td>
+                                <td>Data type size.</td>
+                            </tr>
+                            <tr>
+                                <td>precision</td>
+                                <td>integer</td>
+                                <td>Data type precision.</td>
+                            </tr>
+                            <tr>
+                                <td>references</td>
+                                <td>string</td>
+                                <td>Name of the class that this field references. The referenced class must have a single-field (i.e. not
+                                    compound) primary key. It's not possible to automatically generate references to classes 
+                                    with compound primary keys, but it is possible to do it in code.</td>
+                            </tr>
+                            <tr>
+                                <td>onDelete</td>
+                                <td>DeleteAction</td>
+                                <td>The action to be taken when the referenced object is deleted (valid when <b>references</b> is not empty).
+                                    <ul>
+                                        <li><b>Nothing</b> - do nothing, the programmer will take care of updating/deleting the 
+                                            appropriate object references. Failing to do so will result in referential integrity violation</li>
+                                        <li><b>Nullify</b> - set this field value to null (possible only for nullable fields)</li>
+                                        <li><b>Cascade</b> - delete this object</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>prefetch</td>
+                                <td>integer</td>
+                                <td>Prefetch level for this field. See the <a href="#prefetch">prefetching objects</a> section for more information.</td>
+                            </tr>
+                            <tr>
+                                <td>nullable</td>
+                                <td>boolean</td>
+                                <td>Allow this field to hold the null value. Exact <a href="#generatedproperties">representation of the null value</a> depends on options passed to <a href="#soodastubgen">SoodaStubGen</a>.</td>
+                            </tr>
+                            <tr>
+                                <td>forceTrigger</td>
+                                <td>boolean</td>
+                                <td>Always generate <a href="#generatedtriggers">triggers</a> for this field even if <code>triggers</code> attribute for the enclosing class is set to <code>false</code>.</td>
+                            </tr>
+                            <tr>
+                                <td>primaryKey</td>
+                                <td>boolean</td>
+                                <td>Mark this field as primary key. Each <a href="#schematable"><x><table /></x></a> must have at least one field marked as primary key.</td>
+                            </tr>
+                            <tr>
+                                <td>precommitValue</td>
+                                <td>depends on data type</td>
+                                <td>The value to be used when <a href="#precommit">precommitting</a> not-nullable field and the value is not yet provided. Makes sense only for not-null fields.</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
-                <font size="+2" color="red">**** TODO OPISAÆ ATRYBUTY ****</font>
                 <p>
-                    There's no support for compound properties (that would
-                    map to more than one field), but it's relatively easy to do it by hand by adding a new property of the
-                    required type.
+                    There's no support for compound properties (that would map to more than one field), but it's relatively easy 
+                    to do it by hand by adding a new property of the required type.
                 </p>
             </body>
-            <section name="schemadatatypes">
+            <section id="schemadatatypes">
                 <title>Supported data types</title>
                 <body>
                     <p>
-                        The following data types are supported:
+                        The following data types are supported for the <code>type</code> attribute of <a href="#schemafield"><x><field /></x></a>:
                     </p>
                     <div class="table">
                         <table>
@@ -1262,11 +1345,36 @@ foreach (WorkItem wi in WorkItem.GetList(true))
         <section id="schemaconst">
             <title>Named Constants - <x><const /></x></title>
             <body>
-            </body>
-        </section>
-        <section id="schema11">
-            <title>One-To-One Relationships - references</title>
-            <body>
+                <p>
+                    The <x><const /></x> element defines <a href="#generatedenums">named constants</a> to be generated. 
+                    Each constant has a name and value, whose type depends on the primary key type of this class. Constants are
+                    not supported for classes with compound primary keys or where the type of the primary key is other than Integer or
+                    String.
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                    <class name="User">
+                        <table name="User">
+                            <field name="ID" type="Integer" primaryKey="true" />
+                            <field name="Name" type="String" size="40" />
+                        </table>
+
+                        <const name="Administrator" value="1" />
+                        <const name="Guest" value="2" />
+                        <const name="SystemUser" value="2" />
+                    </class>
+                    ]]>
+                </code>
+                <p>
+                    Once you've defined the constants you may use them instead of calling classname.GetRef(). Note that you cannot
+                    pass the instance of <a href="#soodatransaction">SoodaTransaction</a> so constants are limited to 
+                    be used in the context of implicit transaction.
+                </p>
+                <code lang="C#">
+                    User.GetRef(1) == User.Administrator
+                    User.GetRef(2) == User.Guest
+                    User.GetRef(3) == User.SystemUser
+                </code>
             </body>
         </section>
         <section id="schema1N">
@@ -1328,7 +1436,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
             <body>
             </body>
         </section>
-        <section id="schema">
+        <section id="schemaapi">
             <title>Schema API</title>
             <body>
             </body>
@@ -1340,11 +1448,6 @@ foreach (WorkItem wi in WorkItem.GetList(true))
         </section>
         <section id="fieldhandlers">
             <title>Field Handlers</title>
-            <body>
-            </body>
-        </section>
-        <section id="keygenerators">
-            <title>Key Generators</title>
             <body>
             </body>
         </section>
@@ -1411,11 +1514,16 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         </body>
                     </section>
                 </section>
-                <section id="generatedproperties">
+                <section id="generatedtriggers">
                     <title>Triggers</title>
                     <body>
                     </body>
                 </section>
+            </section>
+            <section id="generatedenums">
+                <title>Constants/Enumerations</title>
+                <body>
+                </body>
             </section>
             <section id="generatedlistwrappers">
                 <title>Collections</title>
@@ -1436,6 +1544,61 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 <title>Schema</title>
                 <body>
                 </body>
+            </section>
+        </body>
+    </section>
+    <section id="runtimeoperation">
+        <title>Runtime operation</title>
+        <body>
+            <section id="loadingobjects">
+                <title>Loading objects</title>
+                <body>
+                </body>
+            </section>
+            <section id="modifyingobjects">
+                <title>Modifying objects</title>
+                <body>
+                </body>
+            </section>
+            <section id="loadingcollections">
+                <title>Loading collections</title>
+                <body>
+                </body>
+            </section>
+            <section id="modifyingcollections">
+                <title>Modifying collections</title>
+                <body>
+                </body>
+            </section>
+            <section id="keygeneration">
+                <title>Key Generation</title>
+                <body>
+                </body>
+            </section>
+            <section id="precommit">
+                <title>Precommitting objects in transactions</title>
+                <body>
+                </body>
+            </section>
+            <section id="triggers">
+                <title>Triggers</title>
+                <body>
+                </body>
+            </section>
+            <section id="optimizations">
+                <title>Optimizations</title>
+                <body>
+                </body>
+                <section id="prefetch">
+                    <title>Prefetching</title>
+                    <body>
+                    </body>
+                </section>
+                <section id="runtimecaching">
+                    <title>Level 2 Caching</title>
+                    <body>
+                    </body>
+                </section>
             </section>
         </body>
     </section>

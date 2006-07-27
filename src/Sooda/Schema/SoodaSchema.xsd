@@ -114,7 +114,6 @@
     <xsd:attribute name="prefetch" use="optional" type="xsd:int" default="0" />
     <xsd:attribute name="nullable" type="xsd:boolean" use="optional" default="false" />
     <xsd:attribute name="forceTrigger" use="optional" type="xsd:boolean" default="false" />
-    <xsd:attribute name="alwaysTrigger" use="optional" type="xsd:boolean" default="false" />
     <xsd:attribute name="primaryKey" use="optional" type="xsd:boolean" default="false" />
     <xsd:attribute name="precommitValue" type="xsd:string" use="optional" />
     <xsd:anyAttribute processContents="lax" />
