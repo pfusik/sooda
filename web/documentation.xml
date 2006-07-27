@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="windows-1250" ?>
 <?xml-stylesheet type="text/xsl" href="style.xsl" ?>
 <content lang="en" id="documentation">
-    <h1>Documentation</h1>
     <table-of-contents />
     <section id="intro">
         <title>Introduction to Sooda</title>
@@ -23,14 +22,17 @@
                 </p>
                 <ul>
                     <li><a href="#mappingtablestoclasses">mapping</a> one or <a href="#mappingmultipletablestoclasses">more tables</a> to a class</li>
-                    <li>one-to-many and many-to-many relationships mapped as strongly typed collections</li>
-                    <li>inheritance (two models: table-per-hierarchy (TPH) and table-per-subclass (TPS))</li>
+                    <li><a href="#mappingonetomany">one-to-many</a> and <a href="#mappingmanytomany">many-to-many</a> relationships</li>
+                    <li><a href="#pathexpressions">path expressions</a>, both in code and in query language</li>
+                    <li><a href="#primarykeys">identity management through L1 caching</a></li>
+                    <li><a href="#inheritance">inheritance</a> (two models: table-per-hierarchy (TPH) and table-per-subclass (TPS))</li>
                     <li>strongly-typed, database-based enumerations</li>
-                    <li>lazy loading</li>
-                    <li>differential serialization and deserialization of uncommitted changes (enables long-running transactions)</li>
-                    <li>strongly typed query language (based on C# operator overloading)</li>
-                    <li>text-based query language - SOQL</li>
-                    <li>vertical partitioning of data (load-on-demand for large columns)</li>
+                    <li><a href="#lazyloading">lazy loading</a></li>
+                    <li><a href="#transactions">differential serialization and deserialization</a> of uncommitted changes (enables long-running transactions)</li>
+                    <li>strongly typed <a href="#querylanguage">query language</a> (based on C# operator overloading)</li>
+                    <li>text-based <a href="#querylanguage">query language</a> - SOQL</li>
+                    <li><a href="#mappingmultipletablestoclasses">vertical partitioning</a> of data (load-on-demand for large columns)</li>
+                    <li>cross-transaction <a href="#caching">(L2 caching)</a></li>
                 </ul>
                 <p>
                     The following development tools/build environments are supported:
@@ -52,10 +54,19 @@
                     <li>PostgreSQL v8.x</li>
                     <li>Oracle 8i, 9i, 10g</li>
                 </ul>
+                <p>
+                    Sooda has been used in production systems for at least 3 years and things are generally working smooth.
+                    Some graphical and command line tools to support the development are available, but they are generally
+                    newer and still require some work.
+                </p>
             </body>
         </section>
         <section id="basicconcepts">
             <title>Basic Concepts</title>
+            <body>
+                This section explains basic O/R mapping concepts and provides general overview of Sooda features.
+            </body>
+
             <section id="mappingtablestoclasses">
                 <title>Mapping Tables to Classes</title>
                 <body>
@@ -82,8 +93,12 @@
                     <p>
                         Assuming we have the following database table:
                     </p>
+                    <img src="doc1.gif" />
+                    <p>
+                        Which can be created with the following piece of SQL:
+                    </p>
                     <code lang="SQL">
-                        create table Customer
+                        create table Employee
                         (
                             ID int primary key not null,
                             Name varchar(64),
@@ -96,7 +111,7 @@
                         The natural mapping turns it into a class which implements the following interface:
                     </p>
                     <code lang="C#">
-                        class Person
+                        class Employee
                         {
                             int ID { get; set; }
                             string Name { get; set; }
@@ -106,17 +121,35 @@
                         }
                     </code>
                     <p>
+                        In addition to properties Sooda generates some <a href="#generatedclasses">convenience methods</a> for each class, such as Load(), 
+                        MarkForDelete(), constructor, and so on. For example, the code to create a new object of type Employee,
+                        set its properties and save the object into the database is:
+                    </p>
+                    <code lang="C#">
+using (SoodaTransaction t = new SoodaTransaction())
+{
+    Employee p = new Employee();
+
+    p.Name = "Mary Manager";
+    p.Salary = 1000.0;
+    p.HireDate = DateTime.Now;
+    p.Active = true;
+
+    transaction.Commit();
+}
+                    </code>
+                    <p>
                         Natural mapping is not always possible/desirable and therefore we need a <a href="#schema">mapping schema</a> to
                         fully describe the mapping for tables/columns/datatypes and more. We can for example:
                     </p>
-                        <ul>
-                            <li>use other name for database table (for example TblPerson instead of Person). 
-                                There are some reserved SQL keywords which cannot be used as table names (SELECT, FROM, WHERE, GROUP)</li>
-                            <li>use other names for database columns (for example hire_date instead of HireDate). Some databases have limitations on the
+                    <ul>
+                        <li>use other name for database table (for example TblEmployee instead of Employee). 
+                            There are some reserved SQL keywords which cannot be used as table names (SELECT, FROM, WHERE, GROUP)</li>
+                        <li>use other names for database columns (for example hire_date instead of HireDate). Some databases have limitations on the
                             maximum column names so you might want to make them shorter.</li>
-                            <li>use other datatypes (such as a column of type "integer" instead of "bit" to store the 
-                                value of the "Active" property where "true" is represented by 1 and "false" is represented by 0)</li>
-                        </ul>
+                        <li>use other datatypes (such as a column of type "integer" instead of "bit" to store the 
+                            value of the "Active" property where "true" is represented by 1 and "false" is represented by 0)</li>
+                    </ul>
                 </body>
             </section>
             <section id="primarykeys">
@@ -125,7 +158,7 @@
                     <p>
                         The identity of entities in the database is established by their primary keys. In object-oriented
                         languages we refer to objects by using their references. The references are
-                        short-lived and are usually valid only for a single execution of the program and as such
+                        are valid only for a single execution of the program and as such
                         they cannot be stored in a database directly, so the O/R mapper needs to convert
                         between primary/foreign key values and object references when loading or storing the data.</p>
                     <p>
@@ -138,23 +171,17 @@
                     </p>
                     <p>
                         Sooda provides reference identity guarantee for objects retrieved from the database. That means
-                        that if we make 2 or more  queries which retrieve a particular row from the 
+                        that if we make 2 or more queries which retrieve a particular row from the 
                         database in the same <a href="#transactions">transaction</a>
-                        they are guaranteed to be be mapped to the same object so 
-                        <code lang="C#">
-                            Object.ReferenceEquals(o1, o2) == true
-                        </code>
+                        they are guaranteed to be be mapped to the same object so if we got objects o1 and o2 then <code>Object.ReferenceEquals(o1, o2) == true</code>
                         There are other O/R Mapping products which only guarantee object value equality, so the same
                         row retrieved from the database in multiple queries can be mapped to more than
                         one row, so you only get:
-                        <code lang="C#">
-                            o1.Equals(o2)
-                            o2.Equals(o1)
-                        </code>
-                        but
-                        <code lang="C#">
-                            Object.ReferenceEquals(o1, o2) == false
-                        </code>
+                        <code>o1.Equals(o2) &amp;&amp; o2.Equals(o1)</code> but <code>Object.ReferenceEquals(o1, o2)</code> can be <code>false</code>
+                    </p>
+                    <p>
+                        Mechanism that ensures object identity is called L1 (transaction-level) caching. It also ensures that
+                        object is never loaded from a database twice.
                     </p>
                 </body>
             </section>
@@ -171,89 +198,522 @@
                     In databases we usually represent relationships as foreign key columns stored in the
                     "child" objects, so to represent the customer-to-orders relatioship we have a foreign
                     key column (perhaps called "customer") stored in the "Order" table. The value stored
-                    in this column must match the primary key value of the Customer. The following
-                    piece of SQL code demonstrates this:
+                    in this column must match the primary key value of the Customer. 
+                    
+                    The following piece of SQL code demonstrates this for a simple Customer to Order relationship:
+
                     <code lang="SQL">
                         <![CDATA[
-                        create table Customer
-                        (
-                            ID int primary key not null,
-                            Name varchar(64)
-                            -- more columns here
-                        );
+create table Customer
+(
+    ID int primary key not null,
+    Name varchar(64),
+    Address1 varchar(64),
+    Address2 varchar(64)
+);
 
-                        create table Order
-                        (
-                            ID int primary key not null,
-                            -- more columns here
-                            Customer int not null references Customer(ID)
-                        );
+create table Order
+(
+    ID int primary key not null,
+    -- more columns here
+    CustomerID int not null references Customer(ID)
+);
                         ]]>
                     </code>
-                    Sooda makes the task of managing foreign key relationships rather simple by providing
-                    a dual view of the relationship: reference from a "child" to its "parent" and a collection
-                    of "children" that's a member of the "parent". Sooda can generate the following APIs:
-                    <code lang="C#">
-                        class Customer
-                        {
-                            int ID { get; set; }
-                            string Name { get; set; }
-                            ...
-                            OrderList Orders { get; }
-                        }
 
-                        class Order
-                        {
-                            int ID { get; set; }
-                            Customer Customer { get; set; }
-                        }
+                    <img src="doc2.gif" />
+                    <p>
+                    </p>
+
+                    <p>
+                        Sooda makes the task of managing foreign key relationships rather simple by providing
+                        a dual view of the relationship: reference from a "child" to its "parent" and a collection
+                        of "children" that's a member of the "parent". You only need to specify which property in the
+                        "child" object is a reference to the "parent" object. Code generated by Sooda includes the following APIs:
+                    </p>
+                    <code lang="C#">
+class Customer
+{
+    int ID { get; set; }
+    string Name { get; set; }
+    ...
+    OrderList Orders { get; }
+}
+
+class Order
+{
+    int ID { get; set; }
+    Customer Customer { get; set; }
+}
                     </code>
-                        
+                    <p>
+                        The OrderList is functionally equivalent to IList&lt;Order&gt; with some filtering
+                        and sorting methods <a href="#generatedlistwrappers">added for convenience</a>. MadeBy is
+                        a reference to the Customer class and Sooda lets you write:
+                    </p>
+                    <code lang="C#">
+Customer c;
+
+// create new order
+Order o = new Order()
+c.Orders.Add(o);
+// this is equivalent to the above
+o.Customer = c; 
+c.Orders.Remove(o);
+// get order count
+c.Orders.Count; 
+// check it the orders contains the specified one
+c.Orders.Contains(o); 
+// return a sorted collection
+c.Orders.OrderBy(sortExpression); 
+
+                    </code>
+                    <p>
+                        Collections provide more convenience methods which will be <a href="#generatedlistwrappers">discussed later</a>.
+                    </p>
                 </body>
             </section>
             <section id="mappingmanytomany">
                 <title>Many-To-Many Relationships</title>
+                <body>
+                    <p>
+                        Many-to-many relationalships are used in many situations, such as these:
+                    </p>
+                    <ul>
+                        <li>person-to-permission (each person has many permissions, each permission is held by many persons)</li>
+                        <li>lecture-to-student (each student attends many lectures, each lecture is attended by many students)</li>
+                        <li>and so on</li>
+                    </ul>
+                    <p>
+                        Database representation of many-to-many relationships requires a separate table that will
+                        hold pairs of primary keys that are in relationship, such as the Employee2Permission table in the following
+                        picture:
+                    </p>
+                    <img src="doc3.gif" />
+                    <p>
+                        The SQL used to create this database is:
+                    </p>
+                    <code lang="SQL">
+                        <![CDATA[
+create table Employee
+(
+    ID int primary key not null,
+    Name varchar(64),
+    Address1 varchar(64),
+    Address2 varchar(64)
+);
+
+create table Permission
+(
+    ID int primary key not null,
+    PermissionName varchar(64),
+);
+
+create table Employee2Permission
+(
+    EmployeeID int not null references Employee(ID),
+    PermissionID int not null references Permission(ID)
+)
+
+alter table Employee2Permission add primary key (EmployeeID,PermissionID);
+                        ]]>
+                    </code>
+                    <p>
+                        Sooda generates a pair of collection which provide access to objects in the relationship. In this example, we have:
+                    </p>
+                    <code lang="C#">
+class Employee
+{
+    ...
+    PermissionList Permissions { get; }
+}
+
+class Permission
+{
+    ...
+    EmployeeList Employees { get; }
+}
+                    </code>
+                    <p>
+                        The collections support the same set of operations as one-to-many collections, namely Add(), Remove(), 
+                        Contains(), Count and others. The collections are synchronized, so it doesn't matter which object you
+                        use to modify the relationships, the results are the same. In this example you could (conceptually):
+                        <ul>
+                            <li>add a Permission to a collection of permissions held by Employee</li>
+                            <li>add an Employee to a collection of employeees which hold the permission</li>
+                        </ul>
+                    </p>
+                    <code lang="C#">
+using (SoodaTransaction t = new SoodaTransaction())
+{
+    Employee emp = ...;
+    Permission perm = ...;
+
+    // the following two lines are equivalent
+    emp.Permissions.Add(perm); // add permission to the emp's permission collection
+    perm.Employees.Add(emp); // add employee to perm's employees collection
+
+    if (emp.Permissions.Contains(perm))
+    {
+        Console.WriteLine("Employee is authorized.");
+    }
+
+    // this tests essentially the same thing
+    if (perm.Employees.Contains(emp))
+    {
+        Console.WriteLine("Employee is authorized.");
+    }    
+}
+</code>
+                </body>
             </section>
             <section id="lazyloading">
                 <title>Lazy Loading</title>
+                <body>
+                    <p>
+                        Often you need to operate on the object but you don't need an access to its properties.
+                        It would be very inefficient to load full record from a database each time
+                        a reference to it is needed. For example you don't need to know employee's name to be 
+                        able to check if he is in relationship with some other objects.
+                    </p>
+                    <p>
+                        Sooda supports lazy loading by maintaining a data structure that separates object from its data. It 
+                        loads the data and initializes the data structures on as-needed basis, which means objects don't allocate 
+                        memory for their data values until the properties have been accessed.
+                    </p>
+                    <p>
+                        Each object managed by Sooda can be in one of the four states:
+                    </p>
+                    <ul>
+                        <li><b>Data Not Loaded</b> - no properties have been accessed</li>
+                        <li><b>Data Loaded</b> - some properties have been read from</li>
+                        <li><b>Data Not Loaded - Modified</b> - some properties have been written to, but not read from</li>
+                        <li><b>Data Loaded - Modified</b> - some properties have been written to, and some have been read from</li>
+                    </ul>
+                    <img src="doc4.png" />
+                    <p>
+                        Each time a property is read from in <b>Data Not Loaded</b> or <b>Data Not Loaded-Modified</b> state
+                        Sooda needs to access the database to load the data. If a property is only written to, there's no need
+                        to even load the data from the database.
+                    </p>
+                    <p>
+                        Sooda provides 2 ways to get a reference to an object given its primary key:
+                    </p>
+                    <ul>
+                        <li><code>ClassName.GetRef()</code> - gets a reference to an object without loading its data (initial state is Data Not Loaded)</li>
+                        <li><code>ClassName.Load()</code> - gets a reference to an object and loads its data (initial state is Data Loaded)</li>
+                    </ul>
+                    <p>
+                        Reference fields use GetRef() internally so that when you access a property that returns another object
+                        this object usually starts in Data Not Loaded status.
+                    </p>
+                    <p>
+                        The following example demonstrates basic concepts of lazy loading:
+                    </p>
+                    <code lang="C#">
+using (SoodaTransaction t = new SoodaTransaction())
+{
+    Employee emp;
+
+    //////////////////////////////////////////
+
+
+    // get a reference to an object - no database access here
+    emp = Employee.GetRef(3);
+
+    // first READ - this causes the object to be loaded
+    // (roughly equivalent to select * from Employee where id = 3)
+    Console.WriteLine(emp.Name);
+
+    // display hire date - no need to access the database 
+    // as the data is already loaded
+    Console.WriteLine(emp.HireDate);
+
+    //////////////////////////////////////////
+
+    // get a reference and load object data
+    emp = Employee.Load(5);
+
+    // no database access here - data is already in memory
+    Console.WriteLine(emp.Name);
+
+    // no database access here - data is already in memory
+    Console.WriteLine(emp.HireDate);
+
+    //////////////////////////////////////////
+
+    // get a reference to another object
+
+    emp = Employee.GetRef(7);
+
+    // change the state of the object
+    // we don't need to load the object at all!
+    emp.Active = false;
+
+    // commit changes. this sends the following SQL to the database:
+    // UPDATE Employee SET Active=false WHERE ID=7
+    t.Commit();
+
+}
+                    </code>
+                    <p>
+                        There are some more advanced use cases of lazy loading, but they will be presented in later sections.
+                    </p>
+                </body>
+            </section>
+            <section id="pathexpressions">
+                <title>Path expressions and managing referenced objects</title>
+                <body>
+                    <p>
+                        Objects in memory may form graphs: they may include properties which are
+                        references to other objects and these objects may have references to other objects 
+                        and so on.
+                    </p>
+                    <p>
+                        Sooda supports path expressions both in code and in <a href="#querylanguage">query language</a>
+                        which let you access related objects' properties easily. 
+                        For example to access the last name of the manager of a person's organization unit:
+                    </p>
+                    <code lang="C#">
+                        // display the last name of person's org unit
+                        Console.WriteLine(person.OrganizationUnit.Manager.LastName);
+                    </code>
+                    <p>
+                        You can of course access the collections in the same manner:
+                    </p>
+                    <code lang="C#">
+                        // display the number of org unit members
+                        Console.WriteLine(person.OrganizationUnit.Members.Count);
+                    </code>
+                    <p>
+                        Object references are fully lazy-loaded and managed by <a href="#primarykeys">transaction L1 cache</a>
+                        so that the number of database accesses is optimized.
+                    </p>
+                </body>
             </section>
             <section id="mappingmultipletablestoclasses">
                 <title>Mapping Multiple Tables to a Single Class</title>
+                <body>
+                    <p>
+                        A class can be mapped to more than one table in the database or it can be split into many logical "tables" which
+                        are actually mapped to the same physical table. We may want to do it for a number of reasons:
+                    </p>
+                    <ul>
+                        <li>database engine limitations - some databases have maximum row size limit, and you may not be able to store
+                            long texts in a single table because of this limit. Splitting table in two and performing joins by primary key
+                            may be the only option</li>
+                        <li>performance - imagine you have some large field which you access infrequently (such as a person's picture). 
+                            Loading the field from the database would not be efficient because it would consume time and memory.
+                            Lazy loading mechanism works on a table level which means that it loads the entire row from a table each
+                            time a single column is accessed. Putting the large column in a separate table helps remediate this issue.
+                        </li>
+                    </ul>
+                    <p>This is the most typical situation where some columns may be placed in a separate table for performance:</p>
+                    <img src="doc5.gif" />
+                    <p>If the data row size is not a problem, we may still want to do the logical partitioning of data while
+                        keeping them in a single table. We only need to tell Sooda to keep some fields together by grouping them in
+                        a logical Table.</p>
+                    <p>
+                        The following example shows the Employee table which contains two large columns which we want to load separately: 
+                        Picture which is an image and VoiceSample which is a blob. Possible partitions of this table are marked with
+                        separate colors. Note that the primary key column is not marked because it is always present in memory and
+                        doesn't need to be loaded at all.
+                    </p>
+                    <img src="doc6.gif" />
+                    <p>
+                        Sooda makes it possible to create a class based on up to 32 physical or logical tables. The only thing they
+                        need to have in common is their primary key. This feaure is used in inheritance, which will be discussed later.
+                    </p>
+                </body>
             </section>
             <section id="inheritance">
                 <title>Inheritance</title>
+                <body>
+                    <p>
+                        Inheritance ("is-a" relationship) is an object-oriented programming concept that is not present in
+                        relational databases. One of the most important features of inheritance is polymorphism (ability to
+                        act on objects through their base classes or interfaces without knowing their exact type).
+                    </p>
+                    <p>
+                        Inheriting classes may introduce additional fields (properties) and we need a way to store them in a database.
+                        There are 3 methods of storing inheritance hierarchy in database:
+                    </p>
+                    <ul>
+                        <li><b>TPT</b> or <b>TPS</b>- table per type (or table per subclass) - each class that adds member fields stores them in a separate table</li>
+                        <li><b>TPH</b> - table per hierarchy - fields for all classes in the inheritance hierarchy are stored in a single table</li>
+                        <li><b>TPC</b> - table per concrete type - each concrete type (non-abstract class) is kept in its own table.</li>
+                    </ul>
+                    <p>
+                        Assuming you have a simple hierarchy of 4 classes:
+                    </p>
+                    <img src="doc8.gif" />
+                    <p>
+                        The TPT representation of this hierarchy looks like this (note that each subclass is stored in its own table,
+                        and only fields added in that subclass are kept there, other fields are accessible through primary key join):
+                    </p>
+                    <img src="doc7.gif" />
+                    <p>
+                        TPH model (note that fields from all classes are gathered in a single table and each field from a non-root class
+                        be nullable):
+                    </p>
+                    <img src="doc9.gif" />
+                    <p>
+                        Or a TPC model (note that fields from the base class are repeated in all tables):
+                    </p>
+                    <img src="doc10.gif" />
+                    <p>
+                        Supporting polymorphism in O/R mapping requires the engine to be able to create instances
+                        of the proper subclass on load. This is required, because when you load an object from 
+                        the database you may get an instance of a subclass.
+                        Object refererences (stored as foreign keys) are also polymorphic (you only store the key value, not the 
+                        concrete type). We need a way to be able to quickly determine the concrete class that will
+                        represent the object from the database.
+                    </p>
+                    <p>
+                        TPT and TPH storage models require a special column (called discriminator column) to select between subclasses. 
+                        This column needs to provide a unique mapping between the concrete class and a integer value
+                        (like 1-QuestionWorkItem, 2-AnalysisWorkItem, 3-BugWorkItem). 
+                        Each time an object of a particular class is persisted, a value corresponding to its class is stored in
+                        this column and on load this value is used to recrete object of the proper class.
+                        TPC model doesn't need this column but makes it more difficult to access objects in a polymorphic manner,
+                        because you need to perform a UNION select or make multiple queries in order to fetch all objects.
+                    </p>
+                    <p>
+                        Polymorphic access enables you to write:
+                    </p>
+                    <code lang="C#">
+<![CDATA[
+WorkItem wi = WorkItem.Load(3);
+if (wi is QuestionWorkItem)
+{
+    QuestionWorkItem qwi = (QuestionWorkItem)wi;
+
+    Console.WriteLine("question: {0}", qwi.Question);
+}
+
+// display concrete types of all work items
+foreach (WorkItem wi in WorkItem.GetList(true))
+{
+    Console.WriteLine("wi: {0}", wi.GetType().FullName);
+}
+
+]]>
+                    </code>
+                    <p>
+                        Sooda supports TPT and TPH, but <b>doesn't support TPC model</b> because it's less efficient
+                        than the other two and requires comples SQL queries to be generated.
+                    </p>
+                    <p>
+                        Sooda extends the concept of "tables" on which each class is based to mean not only physical tables
+                        but also vertical table partitions. This way you can create a mixture of TPT and TPH in your program, for
+                        example by storing the hierarchy in TWO tables instead of one, or storing most commonly used subclasses
+                        in a single table while less frequently used concrete classes in separate tables, one for each such subclass.
+                    </p>
+                </body>
             </section>
             <section id="transactions">
                 <title>Transactions</title>
+                <body>
+                    <p>
+                        Each database-backed object in Sooda is associated in a transaction represented by 
+                        an instance of SoodaTransaction object. Transactions provide database connection management,
+                        identity management (ensuring reference-level object identity as mentioned <a href="#primarykeys">here</a>).
+                    </p>
+                    <p>
+                        In order to support identity management, transactions implement a L1 cache of all alive objects. You
+                        can retrieve objects by their references as by pairs of (class name,primary key value).
+                    </p>
+                    <p>
+                        No object can live outside the transaction and object state is not defined after the transaction
+                        has been closed. Keeping a transaction open for a longer period of time is not recommended because it consumes
+                        unmanaged resources, such as a database connections.
+                    </p>
+                    <p>
+                        Transactions need to be closed when they are no longer needed and you need to ensure that, otherwise
+                        you may get all sorts of unmanaged resource leaks. The typical usage pattern for a Sooda transaction 
+                        that makes sure that the transaction is properly closed is presented below. It makes use of the
+                        IDisosable pattern and C# using() statement:
+                    </p>
+                    <code lang="C#">
+                        using (SoodaTransaction t = new SoodaTransaction())
+                        {
+                            // perform operations on Sooda objects here
+                            t.Commit();
+                        }
+                    </code>
+                    <p>
+                        In order to support long-running transactions, Sooda supports a differential
+                        serialization mechanism, which lets you persist uncommitted changes made within transaction to an XML document, 
+                        and deserialize them later, perhaps in a different process or a different machine.
+                    </p>
+                </body>
             </section>
             <section id="querylanguage">
                 <title>Query Language</title>
+                <body>
+                    <p>
+                        We need a way to retrieve objects from the database based on the specified criteria. SQL is inappropriate for
+                        this, because it doesn't make use of concepts such as:
+                    </p>
+                    <ul>
+                        <li>path expressions (explicit joins are necessary)</li>
+                        <li>collections (both one-to-many and many-to-many)</li>
+                        <li>inheritance</li>
+                        <li>enumerations</li>
+                    </ul>
+                    <p>
+                        Sooda supports two variants of a object-oriented query language:
+                    </p>
+                    <ul>
+                        <li>text-based query language called <a href="#soqltext">SOQL</a></li>
+                        <li>a <a href="#soqltypedqueries">strongly-typed</a>, in-code variant of SOQL implemented using C# operator overloading</li>
+                    </ul>
+                    <p>
+                        They both let you use path expressions and collections to write join-free powerful
+                        object-oriented queries. They will be discussed in later sections.
+                    </p>
+                </body>
             </section>
-            <section id="querylanguage">
-                <title>Precommit</title>
+            <section id="caching">
+                <title>Cross-transaction (Level 2) Caching</title>
+                <body>
+                    <p>
+                        Frequently accessing single rows from the database (which is common for all O/R mapping products) can be
+                        expensive. The cost of a SQL server roundtrip can be quite high. Sooda implements in-memory caching of objects
+                        retrieved from the SQL database (both single rows and collections) so that the speed of processing is improved.
+                    </p>
+                    <p>
+                        Caching should be implemented carefully or it can introduce coherency problems, where different processes
+                        may see a slightly different view of the database if the cache is not properly invalidated when the data
+                        changes through other mechanism.
+                    </p>
+                    <p>
+                        The <a href="#cachingapi">Caching API section</a> explains things in detail.
+                    </p>
+                </body>
             </section>
         </section>
-        <section id="gettingstarted">
-            <title>Getting Started</title>
-            <body>
-                <p>
-                    In order to use Sooda in your project you need to have a working database. We'll be using Microsoft
-                    SQL Server and the Northwind database. We'll also need to provide Sooda with the following information:
-                </p>
-                <ol>
-                    <li><b>Mapping schema</b> that describes the mapping between tables/columns in your database and 
-                        classes/properties. It is stored in an XML file, usually named <code>SoodaSchema.xml</code>.</li>
-                    <li><b>Code generation parameters</b> which specify various aspects of code generation. 
-                        The settings are stored in an XML file with <b>.soodaproject</b> extension.</li>
-                    <li><b>Runtime configuration parameters</b> such as database connection string, connection type and SQL dialect - typically stored in your <code>Application.exe.config</code></li>
-                </ol>
-                <p>
-                    In addition, you need to make a small modification to your database (namely add a table that
-                    will manage primary keys). The following sections will describe the required setup in detail.
-                </p>
-                <font size="+2" color="red">**** TODO OPISAĆ WIZARDA ****</font>
-            </body>
-        </section>
+    </section>
+    <section id="gettingstarted">
+        <title>Getting Started</title>
+        <body>
+            <p>
+                In order to use Sooda in your project you need to have a working database. We'll be using Microsoft
+                SQL Server and the Northwind database. We'll also need to provide Sooda with the following information:
+            </p>
+            <ol>
+                <li><b>Mapping schema</b> that describes the mapping between tables/columns in your database and 
+                    classes/properties. It is stored in an XML file, usually named <code>SoodaSchema.xml</code>.</li>
+                <li><b>Code generation parameters</b> which specify various aspects of code generation. 
+                    The settings are stored in an XML file with <b>.soodaproject</b> extension.</li>
+                <li><b>Runtime configuration parameters</b> such as database connection string, connection type and SQL dialect - typically stored in your <code>Application.exe.config</code></li>
+            </ol>
+            <p>
+                In addition, you need to make a small modification to your database (namely add a table that
+                will manage primary keys). The following sections will describe the required setup in detail.
+            </p>
+            <font size="+2" color="red">**** TODO OPISAĆ WIZARDA ****</font>
+        </body>
     </section>
     <section id="schema">
         <title>O/R Mapping Schema</title>
@@ -389,25 +849,17 @@
                                         <li><b>guid</b> - generate GUID keys in-memory by calling Guid.NewGuid()</li>
                                         <li><b>integer</b> - pregenerates integer keys in the database by storing them in the KeyGen table. This is the default.</li>
                                         <li><b>long</b> - pregenerates long (64-bit) keys in the database by storing them in the KeyGen table.</li>
-                                        <li>alternatively you can provide a name of the class that implements IPrimaryKeyGenerator that will provide primary keys. This can call a 
-                                            webservice or use other means necessary to generate keys in a coordinated manner, guaranteeing that
-                                            no two sessions will ever get the same primary key.</li>
                                     </ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>lastModifiedField</td>
-                                <td>string</td>
-                                <td>
-                                    <font size="+2" color="red">**** TODO - IMPLEMENTOWAĆ CZY WYRZUCIĆ ?****</font>
+                                    Alternatively you can provide a name of the class that implements IPrimaryKeyGenerator that will provide primary keys. This can call a 
+                                    webservice or use other means necessary to generate keys in a coordinated manner, guaranteeing that
+                                    no two sessions will ever get the same primary key.
                                 </td>
                             </tr>
                             <tr>
                                 <td>inheritFrom</td>
                                 <td>string</td>
                                 <td>
-                                    Inherits from the specified class. This parameter 
-                                    is explained in the <a href="#schemainheritance">section</a>.
+                                    Inherits from the specified class. This parameter is the in the <a href="#schemainheritance">inheritance section</a>.
                                 </td>
                             </tr>
                             <tr>
@@ -439,7 +891,7 @@
                                 <td>cached</td>
                                 <td>bool</td>
                                 <td>
-                                    Caching hint. The actual interpretation depends on the <a href="caching">caching policy</a> that's in place.
+                                    Caching hint. The actual interpretation depends on the <a href="#caching">caching policy</a> that's in place.
                                 </td>
                             </tr>
                             <tr>
@@ -463,9 +915,8 @@
                                 <td>readOnly</td>
                                 <td>boolean</td>
                                 <td>
-                                    Determines whether instances of this class should be read-only. No property setters are generated
-                                    in such case and some scenarios are optimized.
-                                    <font size="+2" color="red">**** TODO - TO NIE DZIAŁA - IMPLEMENTOWAĆ CZY WYRZUCIĆ ?****</font>
+                                    Generates read-only class. No property setters are generated in such case 
+                                    and some scenarios are optimized.
                                 </td>
                             </tr>
                         </tbody>
@@ -502,7 +953,7 @@
                     The details about the <x><field /></x> elements are discussed in the <a href="#schemafield">next section</a>.
                 </p>
                 <p>
-                    Objects may need to be stored in multiple tables for efficiency reasons. In the following example we have
+                    Objects may need to be <a href="#mappingmultipletablestoclasses">stored in multiple tables</a> for efficiency reasons. In the following example we have
                     two tables - one has person's ID, Name and Location, the other holds her PictureBlob (potentially very large piece of
                     binary data that encodes the person's photo). By storing the picture in a separate table we can avoid reading
                     from it until the data is actually needed.
@@ -527,10 +978,9 @@
                     ]]>
                 </code>
                 <p>
-                    Each <x><table /></x> is a unit for 
-                    the load operation, which means whenever you access
+                    Each <x><table /></x> is a unit for the load operation, which means whenever you access
                     one field from a table, the entire table gets loaded and is cached for further accesses. This is easy way 
-                    to implement fine-grained lazy loading by splitting your fields in groups that are always accessed together.
+                    to implement fine-grained <a href="#lazyloading">lazy loading</a> by splitting your fields in groups that are always accessed together.
                 </p>
                 <p>
                     We can even have two <x><table /></x> elements that are bound to the same physical database table. You only need to repeat
@@ -538,7 +988,7 @@
                     additional database tables.
                 </p>
                 <p>
-                    We have 4 objects: Adam (with primary key 1), Eva (with primary key 2), 
+                    Example: We have 4 objects: Adam (Person, with primary key 1), Eva (with primary key 2), 
                     Mary (with primary key 3), John (with primary key 4). Let's assume they are represented by the 
                     corresponding variable names and see how lazy loading works as we access their properties and
                     display them.
@@ -616,79 +1066,7 @@
                             <tr>
                                 <td>type</td>
                                 <td>FieldDataType</td>
-                                <td>Data type. The following data types are supported:
-                                    <p/>
-                                    <table>
-                                        <thead>
-                                            <th>Name</th>
-                                            <th>C# Type</th>
-                                            <th>Database Type</th>
-                                            <th>Comments</th>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td valign="top">Integer</td>
-                                                <td valign="top">
-                                                    <ul>
-                                                        <li>int</li>
-                                                        <li>SqlInt32</li>
-                                                        <li>Nullable&lt;int&gt;</li>
-                                                    </ul>
-                                                </td>
-                                                <td valign="top">int (32-bit)</td>
-                                                <td valign="top">For databases that dont't support 32-bit integers (such as Oracle) you can use the appropriate numeric type</td>
-                                            </tr>
-                                            <tr>
-                                                <td valign="top">Long</td>
-                                                <td valign="top">
-                                                    <ul>
-                                                        <li>long</li>
-                                                        <li>SqlInt64</li>
-                                                        <li>Nullable&lt;long&gt;</li>
-                                                    </ul>
-                                                </td>
-                                                <td valign="top">bigint (64-bit)</td>
-                                                <td valign="top">For databases that dont't support 64-bit integers (such as Oracle) you can use the appropriate numeric type</td>
-                                            </tr>
-                                            <tr>
-                                                <td valign="top">Boolean</td>
-                                                <td valign="top">
-                                                    <ul>
-                                                        <li>bool</li>
-                                                        <li>SqlBoolean</li>
-                                                        <li>Nullable&lt;bool&gt;</li>
-                                                    </ul>
-                                                </td>
-                                                <td valign="top">bit</td>
-                                                <td valign="top">The data provider should return the value in response to calling IDataReader.GetBoolean().</td>
-                                            </tr>
-                                            <tr>
-                                                <td valign="top">BooleanAsInteger</td>
-                                                <td valign="top">
-                                                    <ul>
-                                                        <li>bool</li>
-                                                        <li>SqlBoolean</li>
-                                                        <li>Nullable&lt;bool&gt;</li>
-                                                    </ul>
-                                                </td>
-                                                <td valign="top">int</td>
-                                                <td valign="top">The database stores true as 1 and false as 0. When reading any value other than zero is considered "true" and zero is considered "false"</td>
-                                            </tr>
-                                            <tr>
-                                                <td valign="top">Decimal</td>
-                                                <td valign="top">
-                                                    <ul>
-                                                        <li>decimal</li>
-                                                        <li>SqlDecimal</li>
-                                                        <li>Nullable&lt;decimal&gt;</li>
-                                                    </ul>
-                                                </td>
-                                                <td valign="top">decimal</td>
-                                                <td valign="top"></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
+                                <td>Data type. See the <a href="#schemadatatypes">supported data types</a> for more information.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -700,6 +1078,186 @@
                     required type.
                 </p>
             </body>
+            <section name="schemadatatypes">
+                <title>Supported data types</title>
+                <body>
+                    <p>
+                        The following data types are supported:
+                    </p>
+                    <div class="table">
+                        <table>
+                            <thead>
+                                <th>Name</th>
+                                <th>C# Type</th>
+                                <th>Database Type</th>
+                                <th>Comments</th>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td valign="top">Integer</td>
+                                    <td valign="top">
+                                        <li>int</li>
+                                        <li>SqlInt32</li>
+                                        <li>Nullable&lt;int&gt;</li>
+                                    </td>
+                                    <td valign="top">int (32-bit)</td>
+                                    <td valign="top">For databases that dont't support 32-bit integers (such as Oracle) you can use the appropriate numeric type</td>
+                                </tr>
+                                <tr>
+                                    <td valign="top">Long</td>
+                                    <td valign="top">
+                                        <li>long</li>
+                                        <li>SqlInt64</li>
+                                        <li>Nullable&lt;long&gt;</li>
+                                    </td>
+                                    <td valign="top">bigint (64-bit)</td>
+                                    <td valign="top">For databases that dont't support 64-bit integers (such as Oracle) you can use the appropriate numeric type</td>
+                                </tr>
+                                <tr>
+                                    <td valign="top">Boolean</td>
+                                    <td valign="top">
+                                        <li>bool</li>
+                                        <li>SqlBoolean</li>
+                                        <li>Nullable&lt;bool&gt;</li>
+                                    </td>
+                                    <td valign="top">bit</td>
+                                    <td valign="top">The data provider should return the value in response to calling IDataReader.GetBoolean().</td>
+                                </tr>
+                                <tr>
+                                    <td valign="top">BooleanAsInteger</td>
+                                    <td valign="top">
+                                        <li>bool</li>
+                                        <li>SqlBoolean</li>
+                                        <li>Nullable&lt;bool&gt;</li>
+                                    </td>
+                                    <td valign="top">int</td>
+                                    <td valign="top">The database stores true as 1 and false as 0. When reading any value other than zero is considered "true" and zero is considered "false"</td>
+                                </tr>
+                                <tr>
+                                    <td valign="top">Decimal</td>
+                                    <td valign="top">
+                                        <li>decimal</li>
+                                        <li>SqlDecimal</li>
+                                        <li>Nullable&lt;decimal&gt;</li>
+                                    </td>
+                                    <td valign="top">decimal</td>
+                                    <td valign="top">
+                                        The Decimal value type is appropriate for financial calculations requiring large numbers of 
+                                        significant integral and fractional digits and no round-off errors.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td valign="top">Float</td>
+                                    <td valign="top">
+                                        <li>float</li>
+                                        <li>SqlSingle</li>
+                                        <li>Nullable&lt;float&gt;</li>
+                                    </td>
+                                    <td valign="top">float</td>
+                                    <td valign="top">32-bit precision floating point</td>
+                                </tr>
+                                <tr>
+                                    <td valign="top">Double</td>
+                                    <td valign="top">
+                                        <li>double</li>
+                                        <li>SqlDouble</li>
+                                        <li>Nullable&lt;double&gt;</li>
+                                    </td>
+                                    <td valign="top">real</td>
+                                    <td valign="top">64-bit precision floating point</td>
+                                </tr>
+                                <tr>
+                                    <td valign="top">DateTime</td>
+                                    <td valign="top">
+                                        <li>DateTime</li>
+                                        <li>SqlDateTime</li>
+                                        <li>Nullable&lt;DateTime&gt;</li>
+                                    </td>
+                                    <td valign="top">
+                                        <li>datetime</li>
+                                        <li>smalldatetime</li>
+                                        <li>timestamp</li>
+                                    </td>
+                                    <td valign="top">Date and/or time value</td>
+                                </tr>
+                                <tr>
+                                    <td valign="top">String</td>
+                                    <td valign="top">
+                                        <li>String</li>
+                                        <li>SqlString</li>
+                                    </td>
+                                    <td valign="top">
+                                        <li>nvarchar</li>
+                                        <li>ntext</li>
+                                    </td>
+                                    <td valign="top">Unicode String</td>
+                                </tr>
+                                <tr>
+                                    <td valign="top">AnsiString</td>
+                                    <td valign="top">
+                                        <li>String</li>
+                                        <li>SqlString</li>
+                                    </td>
+                                    <td valign="top">
+                                        <li>varchar</li>
+                                        <li>text</li>
+                                    </td>
+                                    <td valign="top">ANSI String (8-bit characters)</td>
+                                </tr>
+                                <tr>
+                                    <td valign="top">Blob</td>
+                                    <td valign="top">
+                                        <li>byte[]</li>
+                                        <li>SqlBinary</li>
+                                    </td>
+                                    <td valign="top">
+                                        <li>binary</li>
+                                        <li>varbinary</li>
+                                        <li>image</li>
+                                    </td>
+                                    <td valign="top">Block of bytes</td>
+                                </tr>
+                                <tr>
+                                    <td valign="top">Guid</td>
+                                    <td valign="top">
+                                        <li>Guid</li>
+                                        <li>SqlGuid</li>
+                                        <li>Nullable&lt;Guid&gt;</li>
+                                    </td>
+                                    <td valign="top">
+                                        <li>uniqueidentifier</li>
+                                    </td>
+                                    <td valign="top">128-bit randomly generated unique identifier.
+                                        GUID is not guaranteed to be unique, but the number of GUIDS (2^128) is so large that the possibility of collision is very small.</td>
+                                </tr>
+                                <tr>
+                                    <td valign="top">TimeSpan</td>
+                                    <td valign="top">
+                                        <li>TimeSpan</li>
+                                        <li>Nullable&lt;TimeSpan&gt;</li>
+                                    </td>
+                                    <td valign="top">
+                                        <li>int</li>
+                                    </td>
+                                    <td valign="top">Timespan value represented as integral number of seconds.</td>
+                                </tr>
+                                <tr>
+                                    <td valign="top">Image</td>
+                                    <td valign="top">
+                                        <li>Image</li>
+                                    </td>
+                                    <td valign="top">
+                                        <li>binary</li>
+                                        <li>varbinary</li>
+                                        <li>image</li>
+                                    </td>
+                                    <td valign="top">Block of bytes interpreted as image(picture) by the System.Drawing.Image class</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </body>
+            </section>
         </section>
         <section id="schemaconst">
             <title>Named Constants - <x><const /></x></title>
@@ -790,7 +1348,7 @@
             <body>
             </body>
         </section>
-        <section id="caching">
+        <section id="cachingapi">
             <title>Caching</title>
             <body>
             </body>

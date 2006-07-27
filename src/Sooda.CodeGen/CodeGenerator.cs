@@ -376,9 +376,6 @@ namespace Sooda.CodeGen
                 if (fi.IsPrimaryKey)
                     continue;
 
-                if (fi.Name == ci.LastModifiedFieldName && !fi.ForceTrigger)
-                    continue;
-
                 if (ci.Triggers || fi.ForceTrigger)
                 {
                     ctd.Members.Add(gen.Method_TriggerFieldUpdate(fi, "BeforeFieldUpdate"));
@@ -1011,6 +1008,26 @@ namespace Sooda.CodeGen
                 {
                     fname = Path.Combine(Project.OutputPath, "Stubs/_Stubs.csx");
                 }
+                else if (Project.FilePerNamespace)
+                {
+                    fname = "_Stubs." + Project.OutputNamespace + "." + codeProvider.FileExtension;
+                    foreach (ExternalProjectInfo epi in Project.ExternalProjects)
+                    {
+                        epi.ProjectProvider.AddCompileUnit(fname);
+                    }
+
+                    fname = "_Stubs." + Project.OutputNamespace + ".TypedQueries." + codeProvider.FileExtension;
+                    foreach (ExternalProjectInfo epi in Project.ExternalProjects)
+                    {
+                        epi.ProjectProvider.AddCompileUnit(fname);
+                    }
+
+                    fname = "_Stubs." + Project.OutputNamespace + ".Stubs." + codeProvider.FileExtension;
+                    foreach (ExternalProjectInfo epi in Project.ExternalProjects)
+                    {
+                        epi.ProjectProvider.AddCompileUnit(fname);
+                    }
+                }
                 else
                 {
                     fname = "_Stubs." + codeProvider.FileExtension;
@@ -1077,18 +1094,43 @@ namespace Sooda.CodeGen
                     }
                 }
 
-                using (StringWriter sw = new StringWriter())
+                if (Project.FilePerNamespace)
                 {
-                    Output.Verbose("Writing code...");
-                    codeGenerator.GenerateCodeFromCompileUnit(ccu, sw, codeGeneratorOptions);
-                    Output.Verbose("Done.");
-
-                    string resultString = sw.ToString();
-                    resultString = resultString.Replace("[System.ParamArrayAttribute()] ", "params ");
-
-                    using (TextWriter tw = new StreamWriter(fname))
+                    foreach (CodeNamespace ns in ccu.Namespaces)
                     {
-                        tw.Write(resultString);
+                        using (StringWriter sw = new StringWriter())
+                        {
+                            Output.Verbose("Writing code...");
+                            codeGenerator.GenerateCodeFromNamespace(ns, sw, codeGeneratorOptions);
+                            Output.Verbose("Done.");
+
+                            string resultString = sw.ToString();
+                            resultString = resultString.Replace("[System.ParamArrayAttribute()] ", "params ");
+
+                            string fileName = fname = "_Stubs." + ns.Name + "." + codeProvider.FileExtension;
+
+                            using (TextWriter tw = new StreamWriter(fileName))
+                            {
+                                tw.Write(resultString);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    using (StringWriter sw = new StringWriter())
+                    {
+                        Output.Verbose("Writing code...");
+                        codeGenerator.GenerateCodeFromCompileUnit(ccu, sw, codeGeneratorOptions);
+                        Output.Verbose("Done.");
+
+                        string resultString = sw.ToString();
+                        resultString = resultString.Replace("[System.ParamArrayAttribute()] ", "params ");
+
+                        using (TextWriter tw = new StreamWriter(fname))
+                        {
+                            tw.Write(resultString);
+                        }
                     }
                 }
 

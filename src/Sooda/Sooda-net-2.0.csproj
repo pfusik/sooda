@@ -567,18 +567,6 @@
     <Compile Include="Schema\IncludeInfoCollection.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\IndexFieldInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schema\IndexFieldInfoCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schema\IndexInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Schema\IndexInfoCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Schema\PrecommitValueInfo.cs">
       <SubType>Code</SubType>
     </Compile>

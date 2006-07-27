@@ -138,6 +138,10 @@ namespace Sooda.CodeGen
         [System.ComponentModel.DefaultValue(true)]
         public bool WithTypedQueryWrappers = true;
 
+        [XmlElement("file-per-namespace")]
+        [System.ComponentModel.DefaultValue(false)]
+        public bool FilePerNamespace = false;
+
         [XmlElement("stubs-compiled-separately")]
         [System.ComponentModel.DefaultValue(false)]
         public bool SeparateStubs = false;

@@ -59,7 +59,6 @@ namespace Sooda
         private static Logger transactionLogger = LogManager.GetLogger("Sooda.Transaction");
         private static IDefaultSoodaTransactionStrategy _defaultTransactionStrategy = new SoodaThreadBoundTransactionStrategy();
 
-
         private SoodaTransaction previousTransaction;
 
         private SoodaTransactionOptions transactionOptions;

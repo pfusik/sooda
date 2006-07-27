@@ -3,7 +3,7 @@
     <xsl:param name="page_id_override"></xsl:param>
     <xsl:param name="subpage_id_override"></xsl:param>
     <xsl:param name="file_extension">xml</xsl:param>
-    <xsl:param name="mode">web</xsl:param>
+    <xsl:param name="mode">plain</xsl:param>
 
     <xsl:variable name="page_id" select="concat(/*[position()=1]/@id,$page_id_override)" />
     <xsl:variable name="subpage_id" select="concat(/*[position()=1]/@subid,$subpage_id_override)" />
@@ -28,9 +28,11 @@
             <body>
                 <img src="sooda_nav.jpg" style="display: none" /> <!-- need this for CHM -->
                 <div id="header"><img src="sooda.jpg" alt="Sooda - Simple Object-Oriented Data Access" /></div>
-                <div id="controls">
-                    <xsl:call-template name="controls" />
-                </div>
+                <xsl:if test="$mode != 'plain'">
+                    <div id="controls">
+                        <xsl:call-template name="controls" />
+                    </div>
+                </xsl:if>
                 <div id="{$mode}content">
                     <xsl:comment>#include virtual="/dynamic/snippet.cgi?vertbanner"</xsl:comment>
                     <xsl:comment>#include virtual="/dynamic/snippet.cgi?topbanner"</xsl:comment>
@@ -268,9 +270,25 @@
     </xsl:template>
 
     <xsl:template match="code[@lang]">
-        <pre>
+        <pre class="{@lang}">
             <xsl:apply-templates />
         </pre>
+    </xsl:template>
+
+    <xsl:template match="code[@lang='C#']">
+        <pre class="csharp">
+            <xsl:apply-templates />
+        </pre>
+    </xsl:template>
+
+    <xsl:template match="a[starts-with(@href,'#')]">
+        <a href="{@href}">
+            <xsl:variable name="sectid" select="substring-after(@href,'#')" />
+            <xsl:variable name="sect" select="//section[@id=$sectid]" />
+            <xsl:apply-templates />
+        </a>
+        <xsl:if test="$sect"> (<img src="rightarrow.gif" /><xsl:apply-templates select="$sect" mode="section-number" />)
+        </xsl:if>
     </xsl:template>
 
     <xsl:include href="syntax.xsl" />

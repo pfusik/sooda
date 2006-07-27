@@ -1,12 +1,9 @@
 html, body
 {
-    margin-right: 4px;
-    margin-left: 4px;
-    margin-top: 2px;
-    margin: 0px;
+    margin: 0pt;
     background: white;
     color: black;
-    font-family: Verdana;
+    font-family: Tahoma;
     font-size: 70%;
 }
 
@@ -298,6 +295,13 @@ img.thinborder
     /* background-color: #f8f8ff; */
 }
 
+#plaincontent
+{
+    width: 100%;
+    font-size: 10pt;
+    padding: 10pt;
+}
+
 #helpcontent
 {
     position: absolute;
@@ -327,6 +331,8 @@ img.thinborder
     #controls { display: none; }
     #webcontent { left: 0px; border: none; }
     #content { left: 0px; border: none; }
+    a { color: black; text-decoration: none; }
+    a:visited { color: black; text-decoration: none; }
 }
 
 table.page
@@ -360,25 +366,28 @@ td.hostedby
 .table table {
     border: 1px solid #5A9CF0;
     border-collapse: collapse;
-    font-size: 13px;
+    font-size: 100%;
 }
 
 .table td {
     border: 1px solid #5A9CF0;
-    margin: 0px;
+    margin: 0pt;
+    padding: 0.2em;
     background-color: white;
 }
 
 .table th {
     border: 1px solid #125BB6;
     background-color: #9AC3F6;
-    margin: 0px;
+    margin: 0pt;
+    font-size: 100%;
+    padding: 0.2em;
 }
 
 .smalltable table {
     border: 1px solid #125BB6;
     border-collapse: collapse;
-    font-size: 12px;
+    font-size: 10pt;
 }
 
 .smalltable td {
@@ -513,9 +522,11 @@ table.toc
 
 .heading1
 {
+    page-break-before: always;
     font-size: 150%;
     font-family: Tahoma;
     font-weight: bold;
+    margin-top: 5cm;
 }
 
 .heading2
@@ -579,4 +590,20 @@ table.toc td.sectionnumber
 .toc4
 {
     padding-left: 60px;
+}
+
+.title
+{
+    text-align: center;
+    font-family: Verdana;
+    font-size: 60pt;
+    color: #0000ff;
+}
+
+.subtitle
+{
+    text-align: center;
+    font-family: Verdana;
+    font-size: 20pt;
+    color: #000000;
 }

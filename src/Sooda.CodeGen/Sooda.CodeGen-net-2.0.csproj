@@ -175,7 +175,9 @@
     <EmbeddedResource Include="CDIL\Templates\Stub.cdil" />
     <EmbeddedResource Include="CDIL\Templates\TypedCollectionWrapper.cdil" />
     <EmbeddedResource Include="CDIL\Templates\TypedWrapper.cdil" />
-    <EmbeddedResource Include="SoodaProject.xsd" />
+    <EmbeddedResource Include="SoodaProject.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

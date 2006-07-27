@@ -64,7 +64,6 @@
     <xsd:attribute name="name" use="required" />
     <xsd:attribute name="label" use="optional" />
     <xsd:attribute name="keygen" use="optional" />
-    <xsd:attribute name="lastModifiedField" use="optional" />
     <xsd:attribute name="inheritFrom" type="xsd:string" use="optional" />
     <xsd:attribute name="defaultPrecommitValue" type="xsd:string" use="optional" />
     <xsd:attribute name="subclassSelectorField" type="xsd:string" use="optional" />
@@ -132,11 +131,9 @@
       <xsd:enumeration value="DateTime" />
       <xsd:enumeration value="String" />
       <xsd:enumeration value="Blob" />
-      <xsd:enumeration value="Text" />
       <xsd:enumeration value="Guid" />
       <xsd:enumeration value="Image" />
       <xsd:enumeration value="TimeSpan" />
-      <xsd:enumeration value="Compound" />
       <xsd:enumeration value="AnsiString" />
     </xsd:restriction>
   </xsd:simpleType>

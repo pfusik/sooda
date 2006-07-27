@@ -126,9 +126,6 @@ namespace Sooda.Schema
         [System.Xml.Serialization.XmlAttributeAttribute("inheritFrom")]
         public string InheritFrom = null;
 
-        [System.Xml.Serialization.XmlAttributeAttribute("lastModifiedField")]
-        public string LastModifiedFieldName;
-
         [System.Xml.Serialization.XmlAttributeAttribute("keygen")]
         public string KeyGenName;
 
