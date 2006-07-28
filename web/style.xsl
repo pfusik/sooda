@@ -3,7 +3,7 @@
     <xsl:param name="page_id_override"></xsl:param>
     <xsl:param name="subpage_id_override"></xsl:param>
     <xsl:param name="file_extension">xml</xsl:param>
-    <xsl:param name="mode">web</xsl:param>
+    <xsl:param name="mode">plain</xsl:param>
 
     <xsl:variable name="page_id" select="concat(/*[position()=1]/@id,$page_id_override)" />
     <xsl:variable name="subpage_id" select="concat(/*[position()=1]/@subid,$subpage_id_override)" />
@@ -11,6 +11,7 @@
 
     <xsl:output method="xml" 
         indent="no" 
+        omit-xml-declaration="yes"
         doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN" 
         doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" />
 
@@ -23,12 +24,13 @@
                     <xsl:if test="$subpage_id"> - <xsl:value-of select="$common/common/navigation//subnav[@href=$subpage_id]/@label" /></xsl:if></title>
                 <meta name="keywords" content="Sooda, O/R mapping, .NET, C#, object relational mapper, persistence, open source, simple object oriented data access, database, sql, soql" />
                 <meta name="author" content="Jaroslaw Kowalski" />
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
                 <meta name="description" content="Sooda is an open source object-to-relational mapping software providing easy-to-use API to create,read,search,update and delete objects without the use of SQL." />
             </head>
             <body>
-                <img src="sooda_nav.jpg" style="display: none" /> <!-- need this for CHM -->
                 <div id="header"><img src="sooda.jpg" alt="Sooda - Simple Object-Oriented Data Access" /></div>
                 <xsl:if test="$mode != 'plain'">
+                    <img src="sooda_nav.jpg" style="display: none" /> <!-- need this for CHM -->
                     <div id="controls">
                         <xsl:call-template name="controls" />
                     </div>
@@ -78,18 +80,20 @@
     </xsl:template>
 
     <xsl:template match="section">
-        <xsl:if test="@id"><a name="{@id}" /></xsl:if>
-        <xsl:if test="not(@id)"><a name="sect{generate-id(.)}" /></xsl:if>
         <p>
             <xsl:attribute name="class">heading<xsl:apply-templates select="." mode="section-level" /></xsl:attribute>
-            <xsl:apply-templates select="." mode="section-number" />. <xsl:apply-templates select="title" />
+            <xsl:apply-templates select="." mode="section-number" />.
+            <a name="{@id}">&#160;</a>
+            <xsl:apply-templates select="title" />
         </p>
         <div>
             <xsl:attribute name="class">body<xsl:apply-templates select="." mode="section-level" /></xsl:attribute>
-            <xsl:if test="count(body/*)=0 and count(section)=0">
-                <p style="color: red">TODO: Write me</p>
-            </xsl:if>
-            <xsl:apply-templates select="body|section" />
+            <xsl:choose>
+                <xsl:when test="count(body/*)=0 and count(section)=0">
+                    <p style="color: red">TODO: Write me</p>
+                </xsl:when>
+                <xsl:otherwise><xsl:apply-templates select="body|section" /></xsl:otherwise>
+            </xsl:choose>
         </div>
     </xsl:template>
 
@@ -140,12 +144,7 @@
                 <xsl:attribute name="class">toc<xsl:apply-templates select="." mode="section-level" /></xsl:attribute>
                 <xsl:apply-templates select="." mode="section-number" />.
 
-                <xsl:if test="@id">
-                    <a href="#{@id}"><xsl:apply-templates select="title" /></a>
-                </xsl:if>
-                <xsl:if test="not(@id)">
-                    <a href="#sect{generate-id(.)}"><xsl:apply-templates select="title" /></a>
-                </xsl:if>
+                <a href="#{@id}"><xsl:apply-templates select="title" /></a>
             </td>
         </tr>
     </xsl:template>
@@ -285,12 +284,12 @@
     </xsl:template>
 
     <xsl:template match="a[starts-with(@href,'#')]">
+        <xsl:variable name="sectid" select="substring-after(@href,'#')" />
+        <xsl:variable name="sect" select="//section[@id=$sectid]" />
         <a href="{@href}">
-            <xsl:variable name="sectid" select="substring-after(@href,'#')" />
-            <xsl:variable name="sect" select="//section[@id=$sectid]" />
             <xsl:apply-templates />
         </a>
-        <xsl:if test="$sect"> (<img src="rightarrow.gif" /><xsl:apply-templates select="$sect" mode="section-number" />)
+        <xsl:if test="$sect"> (<img src="rightarrow.gif" alt="Section" /><xsl:apply-templates select="$sect" mode="section-number" />)
         </xsl:if>
         <xsl:if test="not($sect)">
             <xsl:message terminate="yes">No such anchor: <xsl:value-of select="@href" /></xsl:message>

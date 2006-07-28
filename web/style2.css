@@ -1,6 +1,7 @@
 html, body
 {
     margin: 0pt;
+    padding: 0pt;
     background: white;
     color: black;
     font-family: Tahoma;
@@ -297,7 +298,9 @@ img.thinborder
 
 #plaincontent
 {
-    width: 100%;
+    margin: 0pt;
+    left: 0pt;
+    right: 0pt;
     font-size: 10pt;
     padding: 10pt;
 }
@@ -329,8 +332,9 @@ img.thinborder
 @media print
 {
     #controls { display: none; }
-    #webcontent { left: 0px; border: none; }
-    #content { left: 0px; border: none; }
+    #webcontent { left: 0pt; border: none; }
+    #content { left: 0pt; border: none; }
+    #plaincontent { left: 0pt; border: none; }
     a { color: black; text-decoration: none; }
     a:visited { color: black; text-decoration: none; }
     thead { display: table-header-group; }
@@ -365,20 +369,21 @@ td.hostedby
 }
 
 .table table {
-    border: 1px solid #5A9CF0;
+    border: 1px solid #a0a0ff;
     border-collapse: collapse;
     font-size: 100%;
+    width: 100%;
 }
 
 .table td {
-    border: 1px solid #5A9CF0;
+    border: 1px solid #a0a0ff;
     margin: 0pt;
     padding: 0.2em;
     background-color: white;
 }
 
 .table th {
-    border: 1px solid #125BB6;
+    border: 1px solid #a0a0ff;
     background-color: #9AC3F6;
     margin: 0pt;
     font-size: 100%;
@@ -386,14 +391,14 @@ td.hostedby
 }
 
 .smalltable table {
-    border: 1px solid #125BB6;
+    border: 1px solid #a0a0ff;
     border-collapse: collapse;
     font-size: 10pt;
 }
 
 .smalltable td {
-    border: 1px solid #125BB6;
-    margin: 0px;
+    border: 1px solid #a0a0ff;
+    margin: 0pt;
     background-color: white;
     vertical-align: top;
 }
@@ -401,7 +406,7 @@ td.hostedby
 .smalltable th {
     border: 1px solid #c0c0c0;
     background-color: #9AC3F6;
-    margin: 0px;
+    margin: 0pt;
 }
 
 .xml-example
@@ -447,7 +452,7 @@ code.commandline
 {
     border: 1px solid #c0c0c0;
     background-color: #eff0f0;
-    margin: 0px;
+    margin: 0pt;
     color: #000040;
     font-weight: bold;
     font-size: 13px;
@@ -456,7 +461,7 @@ code.commandline
 .table tr.subheader td
 {
     border: 1px solid #c0c0c0;
-    margin: 0px;
+    margin: 0pt;
     color: #000040;
     font-weight: bold;
     font-size: 14px;
@@ -608,3 +613,12 @@ table.toc td.sectionnumber
     font-size: 20pt;
     color: #000000;
 }
+
+ul.noindent
+{
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+    padding-left: 0px;
+}
+

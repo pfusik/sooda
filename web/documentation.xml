@@ -618,7 +618,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 <title>Transactions</title>
                 <body>
                     <p>
-                        Each database-backed object in Sooda is associated in a transaction represented by 
+                        Each database-backed object in Sooda is associated with a transaction represented by 
                         an instance of SoodaTransaction object. Transactions provide database connection management,
                         identity management (ensuring reference-level object identity as mentioned <a href="#primarykeys">here</a>).
                     </p>
@@ -793,6 +793,8 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 </p>
                 <div class="table">
                     <table>
+                        <col style="font-family: Consolas, Courier New" />
+                        <col style="font-family: Consolas, Courier New" />
                         <thead>
                             <tr>
                                 <th>Name</th>
@@ -931,12 +933,38 @@ foreach (WorkItem wi in WorkItem.GetList(true))
             <title>Tables - <x><table /></x></title>
             <body>
                 <p>
-                    <x><table /></x> elements are used to define the mapping from database tables to classes and relations. Each
-                    class is based on at least one <x><table /></x> element. Each table consists of a number of <x><field /></x> 
+                    <x><table /></x> elements are used to define the mapping from database tables to classes and relations as described
+                    <a href="#mappingtablestoclasses">earlier</a>. Each class is based on at least one <x><table /></x> element. Each table consists of a number of <x><field /></x> 
                     elements which represent columns in a database and properties in C#/VB. Each table must have at least one
                     field which is marked as primary key. It can have more than one (they are then called compound primary keys),
                     but tables with zero primary keys are not allowed.
                 </p>
+                <p>
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                    <class name="className">
+                        <table name="tableName1">
+                            <field name="f1" type="t1" primaryKey="true" />
+                            <field name="f2" type="t2" />
+                            <field name="f3" type="t3" />
+                            <field name="f4" type="t4" />
+                        </table>
+                        <table name="tableName2">
+                            <field name="f1" type="t1" primaryKey="true" />
+                            <field name="f2" type="t2" />
+                            <field name="f3" type="t3" />
+                            <field name="f4" type="t4" />
+                        </table>
+                        <table name="tableName3">
+                            <field name="f1" type="t1" primaryKey="true" />
+                            <field name="f2" type="t2" />
+                            <field name="f3" type="t3" />
+                            <field name="f4" type="t4" />
+                        </table>
+                    </class>
+                    ]]>
+                </code>
                 <p>
                     The typical definition of a class that's based on a single table looks like this:
                 </p>
@@ -1067,15 +1095,48 @@ foreach (WorkItem wi in WorkItem.GetList(true))
             <title>Fields - <x><field /></x></title>
             <body>
                 <p>
-                    <x><field /></x> elements define the mapping between database columns and object properties.
-                    Each field represents a single column.
+                    <x><field /></x> elements define the mapping between database columns and object properties or fields in relation table.
+                    Each field represents a single column in the database.
                 </p>
+
+                <p>
+                    Usage in a class definition:
+                </p>
+
+                <code lang="XML">
+                    <![CDATA[
+                    <class name="class1">
+                        <table name="table1">
+                            <field name="f1" type="t1" primaryKey="true" />
+                            <field name="f2" type="t2" />
+                            <field name="f3" type="t3" />
+                            <field name="f4" type="t4" />
+                        </table>
+                    </class>
+                    ]]>
+                </code>
+
+                <p>
+                    Usage in many-to-many relation definition:
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                    <relation name="class1">
+                        <table name="table1">
+                            <field name="f1" type="t1" primaryKey="true" />
+                            <field name="f2" type="t2" primaryKey="true" />
+                        </table>
+                    </relation>
+                    ]]>
+                </code>
 
                 <p>
                     The following attributes are available on the <x><field /></x> element:
                 </p>
                 <div class="table">
                     <table>
+                        <col style="font-family: Consolas, Courier New" />
+                        <col style="font-family: Consolas, Courier New" />
                         <thead>
                             <tr>
                                 <th>Name</th>
@@ -1172,6 +1233,9 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     </p>
                     <div class="table">
                         <table>
+                            <col style="font-family: Consolas, Courier New" />
+                            <col style="font-family: Consolas, Courier New" />
+                            <col style="font-family: Consolas, Courier New" />
                             <thead>
                                 <th>Name</th>
                                 <th>C# Type</th>
@@ -1182,9 +1246,11 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <tr>
                                     <td valign="top">Integer</td>
                                     <td valign="top">
-                                        <li>int</li>
-                                        <li>SqlInt32</li>
-                                        <li>Nullable&lt;int&gt;</li>
+                                        <ul class="noindent">
+                                            <li>int</li>
+                                            <li>SqlInt32</li>
+                                            <li>Nullable&lt;int&gt;</li>
+                                        </ul>
                                     </td>
                                     <td valign="top">int (32-bit)</td>
                                     <td valign="top">For databases that dont't support 32-bit integers (such as Oracle) you can use the appropriate numeric type</td>
@@ -1192,9 +1258,11 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <tr>
                                     <td valign="top">Long</td>
                                     <td valign="top">
-                                        <li>long</li>
-                                        <li>SqlInt64</li>
-                                        <li>Nullable&lt;long&gt;</li>
+                                        <ul class="noindent">
+                                            <li>long</li>
+                                            <li>SqlInt64</li>
+                                            <li>Nullable&lt;long&gt;</li>
+                                        </ul>
                                     </td>
                                     <td valign="top">bigint (64-bit)</td>
                                     <td valign="top">For databases that dont't support 64-bit integers (such as Oracle) you can use the appropriate numeric type</td>
@@ -1202,9 +1270,11 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <tr>
                                     <td valign="top">Boolean</td>
                                     <td valign="top">
-                                        <li>bool</li>
-                                        <li>SqlBoolean</li>
-                                        <li>Nullable&lt;bool&gt;</li>
+                                        <ul class="noindent">
+                                            <li>bool</li>
+                                            <li>SqlBoolean</li>
+                                            <li>Nullable&lt;bool&gt;</li>
+                                        </ul>
                                     </td>
                                     <td valign="top">bit</td>
                                     <td valign="top">The data provider should return the value in response to calling IDataReader.GetBoolean().</td>
@@ -1212,9 +1282,11 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <tr>
                                     <td valign="top">BooleanAsInteger</td>
                                     <td valign="top">
-                                        <li>bool</li>
-                                        <li>SqlBoolean</li>
-                                        <li>Nullable&lt;bool&gt;</li>
+                                        <ul class="noindent">
+                                            <li>bool</li>
+                                            <li>SqlBoolean</li>
+                                            <li>Nullable&lt;bool&gt;</li>
+                                        </ul>
                                     </td>
                                     <td valign="top">int</td>
                                     <td valign="top">The database stores true as 1 and false as 0. When reading any value other than zero is considered "true" and zero is considered "false"</td>
@@ -1222,9 +1294,11 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <tr>
                                     <td valign="top">Decimal</td>
                                     <td valign="top">
-                                        <li>decimal</li>
-                                        <li>SqlDecimal</li>
-                                        <li>Nullable&lt;decimal&gt;</li>
+                                        <ul class="noindent">
+                                            <li>decimal</li>
+                                            <li>SqlDecimal</li>
+                                            <li>Nullable&lt;decimal&gt;</li>
+                                        </ul>
                                     </td>
                                     <td valign="top">decimal</td>
                                     <td valign="top">
@@ -1235,9 +1309,11 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <tr>
                                     <td valign="top">Float</td>
                                     <td valign="top">
-                                        <li>float</li>
-                                        <li>SqlSingle</li>
-                                        <li>Nullable&lt;float&gt;</li>
+                                        <ul class="noindent">
+                                            <li>float</li>
+                                            <li>SqlSingle</li>
+                                            <li>Nullable&lt;float&gt;</li>
+                                        </ul>
                                     </td>
                                     <td valign="top">float</td>
                                     <td valign="top">32-bit precision floating point</td>
@@ -1245,9 +1321,11 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <tr>
                                     <td valign="top">Double</td>
                                     <td valign="top">
-                                        <li>double</li>
-                                        <li>SqlDouble</li>
-                                        <li>Nullable&lt;double&gt;</li>
+                                        <ul class="noindent">
+                                            <li>double</li>
+                                            <li>SqlDouble</li>
+                                            <li>Nullable&lt;double&gt;</li>
+                                        </ul>
                                     </td>
                                     <td valign="top">real</td>
                                     <td valign="top">64-bit precision floating point</td>
@@ -1255,63 +1333,83 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <tr>
                                     <td valign="top">DateTime</td>
                                     <td valign="top">
-                                        <li>DateTime</li>
-                                        <li>SqlDateTime</li>
-                                        <li>Nullable&lt;DateTime&gt;</li>
+                                        <ul class="noindent">
+                                            <li>DateTime</li>
+                                            <li>SqlDateTime</li>
+                                            <li>Nullable&lt;DateTime&gt;</li>
+                                        </ul>
                                     </td>
                                     <td valign="top">
-                                        <li>datetime</li>
-                                        <li>smalldatetime</li>
-                                        <li>timestamp</li>
+                                        <ul class="noindent">
+                                            <li>datetime</li>
+                                            <li>smalldatetime</li>
+                                            <li>timestamp</li>
+                                        </ul>
                                     </td>
                                     <td valign="top">Date and/or time value</td>
                                 </tr>
                                 <tr>
                                     <td valign="top">String</td>
                                     <td valign="top">
-                                        <li>String</li>
-                                        <li>SqlString</li>
+                                        <ul class="noindent">
+                                            <li>String</li>
+                                            <li>SqlString</li>
+                                        </ul>
                                     </td>
                                     <td valign="top">
-                                        <li>nvarchar</li>
-                                        <li>ntext</li>
+                                        <ul class="noindent">
+                                            <li>nvarchar</li>
+                                            <li>ntext</li>
+                                        </ul>
                                     </td>
                                     <td valign="top">Unicode String</td>
                                 </tr>
                                 <tr>
                                     <td valign="top">AnsiString</td>
                                     <td valign="top">
-                                        <li>String</li>
-                                        <li>SqlString</li>
+                                        <ul class="noindent">
+                                            <li>String</li>
+                                            <li>SqlString</li>
+                                        </ul>
                                     </td>
                                     <td valign="top">
-                                        <li>varchar</li>
-                                        <li>text</li>
+                                        <ul class="noindent">
+                                            <li>varchar</li>
+                                            <li>text</li>
+                                        </ul>
                                     </td>
                                     <td valign="top">ANSI String (8-bit characters)</td>
                                 </tr>
                                 <tr>
                                     <td valign="top">Blob</td>
                                     <td valign="top">
-                                        <li>byte[]</li>
-                                        <li>SqlBinary</li>
+                                        <ul class="noindent">
+                                            <li>byte[]</li>
+                                            <li>SqlBinary</li>
+                                        </ul>
                                     </td>
                                     <td valign="top">
-                                        <li>binary</li>
-                                        <li>varbinary</li>
-                                        <li>image</li>
+                                        <ul class="noindent">
+                                            <li>binary</li>
+                                            <li>varbinary</li>
+                                            <li>image</li>
+                                        </ul>
                                     </td>
                                     <td valign="top">Block of bytes</td>
                                 </tr>
                                 <tr>
                                     <td valign="top">Guid</td>
                                     <td valign="top">
-                                        <li>Guid</li>
-                                        <li>SqlGuid</li>
-                                        <li>Nullable&lt;Guid&gt;</li>
+                                        <ul class="noindent">
+                                            <li>Guid</li>
+                                            <li>SqlGuid</li>
+                                            <li>Nullable&lt;Guid&gt;</li>
+                                        </ul>
                                     </td>
                                     <td valign="top">
-                                        <li>uniqueidentifier</li>
+                                        <ul class="noindent">
+                                            <li>uniqueidentifier</li>
+                                        </ul>
                                     </td>
                                     <td valign="top">128-bit randomly generated unique identifier.
                                         GUID is not guaranteed to be unique, but the number of GUIDS (2^128) is so large that the possibility of collision is very small.</td>
@@ -1319,23 +1417,31 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <tr>
                                     <td valign="top">TimeSpan</td>
                                     <td valign="top">
-                                        <li>TimeSpan</li>
-                                        <li>Nullable&lt;TimeSpan&gt;</li>
+                                        <ul class="noindent">
+                                            <li>TimeSpan</li>
+                                            <li>Nullable&lt;TimeSpan&gt;</li>
+                                        </ul>
                                     </td>
                                     <td valign="top">
-                                        <li>int</li>
+                                        <ul class="noindent">
+                                            <li>int</li>
+                                        </ul>
                                     </td>
                                     <td valign="top">Timespan value represented as integral number of seconds.</td>
                                 </tr>
                                 <tr>
                                     <td valign="top">Image</td>
                                     <td valign="top">
-                                        <li>Image</li>
+                                        <ul class="noindent">
+                                            <li>System.Drawing.Image</li>
+                                        </ul>
                                     </td>
                                     <td valign="top">
-                                        <li>binary</li>
-                                        <li>varbinary</li>
-                                        <li>image</li>
+                                        <ul class="noindent">
+                                            <li>binary</li>
+                                            <li>varbinary</li>
+                                            <li>image</li>
+                                        </ul>
                                     </td>
                                     <td valign="top">Block of bytes interpreted as image(picture) by the System.Drawing.Image class</td>
                                 </tr>
@@ -1353,6 +1459,17 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     Each constant has a name and value, whose type depends on the primary key type of this class. Constants are
                     not supported for classes with compound primary keys or where the type of the primary key is other than Integer or
                     String.
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                    <class>
+                        ...
+                        <const name="..." value="..." />
+                    </class>
+                    ]]>
+                </code>
+                <p>
+                    Example:
                 </p>
                 <code lang="XML">
                     <![CDATA[
@@ -1383,6 +1500,49 @@ foreach (WorkItem wi in WorkItem.GetList(true))
         <section id="schema1N">
             <title>One-To-Many Relationships - <x><collectionOneToMany /></x></title>
             <body>
+                <p>
+                    One-to-many relationships are defined using <x><collectionOneToMany /></x> which needs to be placed inside <x><class /></x> element.
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                    <class name="className">
+                        <field />
+                        <field />
+                        <field />
+                        <field />
+                        <collectionOneToMany name="COLLECTION_NAME" class="CHILD_CLASS" foreignField="FOREIGN_FIELD" />
+                    </class>
+                    ]]>
+                </code>
+                <p>
+                    In short, it defines a collection named COLLECTION_NAME whose items are of class CHILD_CLASS where the value of
+                    FOREIGN_FIELD equals to this object's primary key. In other words this is a list of objects referencing this object
+                    through the specified reference field.
+                </p>
+                <p>
+                    Sooda also supports additional attribute called <code>where</code> which can be used to define where clause to
+                    be used when fetching objects. This can be used to create filtered collections:
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                    <class name="Group">
+                        <collectionOneToMany name="Members" class="Person" foreignField="Group" />
+                        <collectionOneToMany name="VipMembers" class="Person" foreignField="Group" where="IsVip = True" />
+                    </class>
+                    ]]>
+                </code>
+                <p>
+                    The above example defines two collections in the Group class: one called <code>Members</code> holds all members of
+                    the group, the other is called <code>VipMembers</code> and holds only members who are VIPs.
+                </p>
+                <p>
+                    <b>CAUTION:</b> Collections defined with "where" are not recommended because they don't automatically reflect
+                    the state of child objects when you manually change the foreignField. Collections without where clause
+                    don't exhibit this problem.
+                </p>
+                <p>
+                    The details about generated code can be found in <a href="#generatedcollections">section below</a>.
+                </p>
             </body>
         </section>
         <section id="schemaNN">

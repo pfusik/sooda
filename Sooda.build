@@ -15,7 +15,7 @@
     <property name="ssh.server" value="jaak@sav.net" />
     <property name="scp.args" value="-q -batch" />
     <property name="ssh.args" value="-batch" />
-    <property name="webserver.deploy.dir" value="web/www.sooda.org/html" />
+    <property name="webserver.deploy.dir" value="web/www.sooda.org/html/test" />
 
     <property name="sooda.csc.args" value="/nowarn:1591" />
     <property name="sooda.external" value="${nant.project.basedir}/external" unless="${property::exists('sooda.external')}" />
@@ -675,6 +675,7 @@
 
     <target name="buildwebsite" depends="configure">
         <mkdir dir="${webbuild.dir}" />
+        <mkdir dir="build\webtmp" />
         <mkdir dir="${webbuild.dir}/examples" />
 
         <copy todir="${webbuild.dir}">
@@ -687,65 +688,18 @@
             </fileset>
         </copy>
 
+        <exec program="external/NDocSyntax.exe" 
+              commandline="-outDir build\webtmp web/*.xml" 
+              workingdir="." useruntimeengine="true" />
+
         <copy todir="${webbuild.dir}/examples">
             <fileset basedir="examples">
                 <include name="**/*" />
             </fileset>
         </copy>
 
-        <!-- syntax-hilite all *.cs files -->
-
-        <foreach item="File" property="filename">
-            <in>
-                <items basedir="${webbuild.dir}/examples">
-                    <include name="**/*.cs" />
-                </items>
-            </in>
-            <do>
-                <copy file="web/syntax.css" tofile="${path::combine(path::get-directory-name(filename),'syntax.css')}" />
-                <uptodate property="file.uptodate">
-                    <targetfiles>
-                        <include name="${filename}.html" />
-                    </targetfiles>
-                    <sourcefiles>
-                        <include name="${filename}" />
-                    </sourcefiles>
-                </uptodate>
-                <if test="${not file.uptodate}">
-                    <echo message="Syntax-highlighting ${filename}" />
-                    <exec program="${prettyprinter.exe}" commandline='-l csharp -i "${filename}" -o "${filename}.html" -s syntax.css' />
-                    <exec program="${prettyprinter.exe}" commandline='-l csharp -m xml -i "${filename}" -o "${filename}.xhtml" -s style.css' />
-                </if>
-            </do>
-        </foreach>
-
-        <foreach item="File" property="filename">
-            <in>
-                <items basedir="${webbuild.dir}/examples">
-                    <include name="**/*.config" />
-                    <include name="**/*.xml" />
-                </items>
-            </in>
-            <do>
-                <copy file="web/syntax.css" tofile="${path::combine(path::get-directory-name(filename),'syntax.css')}" />
-                <uptodate property="file.uptodate">
-                    <targetfiles>
-                        <include name="${filename}.html" />
-                    </targetfiles>
-                    <sourcefiles>
-                        <include name="${filename}" />
-                    </sourcefiles>
-                </uptodate>
-                <if test="${not file.uptodate}">
-                    <echo message="Syntax-highlighting ${filename}" />
-                    <exec program="${prettyprinter.exe}" commandline='-l xml -i "${filename}" -o "${filename}.html" -s syntax.css' />
-                    <exec program="${prettyprinter.exe}" commandline='-l xml -m xml -i "${filename}" -o "${filename}.xhtml" -s style.css' />
-                </if>
-            </do>
-        </foreach>
-
         <style destdir="${webbuild.dir}" style="web/style.xsl">
-            <infiles basedir="web">
+            <infiles basedir="build\webtmp">
                 <include name="*.xml" />
                 <exclude name="webmenu.xml" />
                 <exclude name="helpmenu.xml" />
@@ -757,6 +711,28 @@
                 <parameter name="mode" value="${web.buildmode}" />
             </parameters>
         </style>
+
+        <mkdir dir="build/doc" />
+
+        <style in="build/webtmp/documentation.xml" out="build/doc/documentation.html" style="web/style.xsl">
+            <parameters>
+                <parameter name="external-base" value="${path::combine(nant.project.basedir,webbuild.dir)}" />
+                <parameter name="file_extension" value="html" />
+                <parameter name="mode" value="plain" />
+            </parameters>
+        </style>
+
+        <copy todir="build/doc">
+            <fileset basedir="web">
+                <include name="rightarrow*.gif" />
+                <include name="doc*.gif" />
+                <include name="doc*.png" />
+                <include name="*.css" />
+                <include name="sooda.jpg" />
+            </fileset>
+        </copy>
+
+
     </target>
     
     <target name="coverage">
