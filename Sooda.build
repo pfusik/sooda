@@ -731,8 +731,6 @@
                 <include name="sooda.jpg" />
             </fileset>
         </copy>
-
-
     </target>
     
     <target name="coverage">

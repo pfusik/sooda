@@ -29,7 +29,7 @@
                     <li><a href="#pathexpressions">path expressions</a>, both in code and in query language</li>
                     <li><a href="#primarykeys">identity management through L1 caching</a></li>
                     <li><a href="#inheritance">inheritance</a> (two models: table-per-hierarchy (TPH) and table-per-subclass (TPS))</li>
-                    <li>strongly-typed, database-based enumerations</li>
+                    <li>strongly-typed, database-based <a href="#schemaconst">enumerations</a></li>
                     <li><a href="#lazyloading">lazy loading</a></li>
                     <li><a href="#transactions">differential serialization and deserialization</a> of uncommitted changes (enables long-running transactions)</li>
                     <li>strongly typed <a href="#querylanguage">query language</a> (based on C# operator overloading)</li>
@@ -1605,6 +1605,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     <table>
                         <col style="font-family: Consolas, Courier New" />
                         <col style="font-family: Consolas, Courier New" />
+                        <col style="font-family: Consolas, Courier New" />
                         <thead>
                             <tr>
                                 <th>Name</th>
@@ -1825,6 +1826,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         <col align="center" valign="top" width="10%" />
                         <col align="center" valign="top" width="10%" />
                         <col align="center" valign="top" width="10%" />
+                        <col width="70%" />
                         <thead>
                             <tr>
                                 <th>subclassSelectorField</th>
@@ -2146,6 +2148,103 @@ foreach (WorkItem wi in WorkItem.GetList(true))
         <title>Compilation</title>
         <section id="compilationprocess">
             <title>Compilation Process</title>
+            <body>
+                <p>
+                    Sooda is a source code generator, so you need to use a utility called <a href="#soodastubgen">SoodaStubGen</a>
+                    to generate the source code of stub classes. You can then compile the stub code with the rest of your
+                    program to create a working DAL (data access library). This section describes the compilation process in detail.
+                </p>
+                <p>
+                    It is recommended to run SoodaStubGen as part of your build process (preferably fully automated and repeatable) so Sooda supports 
+                    calling stub generator from a batch file, NAnt script or Visual Studio 2003/2005 solution 
+                    (Visual Studio 2002 is not supported).
+                </p>
+                <p>
+                    Sooda supports two compilation modes:
+                </p>
+                <ul>
+                    <li><a href="#compilationprocessstandard">Standard Stub Compilation</a> - stubs and business classes are compiled together in a single compiler pass. 
+                        This should be compatible with most languages and compilers, but can be slow for really large schemas (which generate huge stub classes). This mode also
+                        causes Visual Studio to slow down.
+                    </li>
+                    <li><a href="#compilationprocessseparate">Separate Stub Compilation</a> - enables stubs to be precompiled to a separate *.dll, which speeds up large builds but has some drawbacks which are described <sectionlink id="compilationprocessseparate" />.</li>
+                </ul>
+            </body>
+            <section id="compilationprocessstandard">
+                <title>Standard Stub Compilation</title>
+                <body>
+                    <p>
+                        Standard Stub Compilation is a process of building sooda data access library, which uses two utilities:
+                    </p>
+                    <ol>
+                        <li><a href="#soodastubgen">SoodaStubGen</a> which generates stub source code</li>
+                        <li>C#/VB Compiler which compiles stub and application code together</li>
+                    </ol>
+                    <p>
+                        The following picture provides an overview of the standard stub compilation process:
+                    </p>
+                    <img src="doc12.png" />
+                    <p>
+                        On input the process requires an XML document with <a href="#schema">O/R Mapping Schema</a>, typically
+                        stored in a file called <code>SoodaSchema.xml</code>. Arguments to <a href="#soodastubgen">SoodaStubGen</a> 
+                        can be either passed on the command line or through a special <a href="#soodaproject">XML project file</a> which
+                        makes it easier to pass multiple parameters.
+                    </p>
+                    <p>
+                        Build steps to produce business objects assembly are:
+                    </p>
+                    <ol>
+                        <li>SoodaStubGen produces two files:
+                            <ul>
+                                <li><b>_Stubs.cs</b> (for C# - for other languages the extension is different) - stub source file</li>
+                                <li><b>_DBSchema.bin</b> - resources file</li>
+                            </ul>
+                            In addition to this, it generates a "skeleton" file for each for each <a href="#schemaclasses">class</a> defined in the schema.
+                            The files are named <code>ClassName.cs</code> where ClassName is the name of the class.
+                            <b>The skeleton is only generated on the first run and is never automatically regenerated.
+                            </b>
+                            You can add your own properties and business methods in the skeleton and your changes will be preserved
+                            when regenerating schema. "Skeleton" inherits from a "stub" class so you get access to all its
+                            properties and methods.
+                        </li>
+                        <li>
+                            Compiler (such as csc.exe for C# or vbc.exe for Visual Basic.NET) compiles the skeleton and stub files
+                            together to produce business objects assembly (*.dll).
+                        </li>
+                    </ol>
+                </body>
+            </section>
+            <section id="compilationprocessseparate">
+                <title>Separate Stub Compilation</title>
+                <body>
+                    <p>
+                        Separate Stub Compilation is a process which lets you precompile stubs to a separate DLL and
+                        rebuild the DLL only when the schema changes. This can save compile time for very large schemas
+                        and also makes Visual Studio run faster (for some reason Visual Studio 2005 doesn't perform very
+                        well on very large source files which SoodaStubGen creates).
+                    </p>
+                    <p style="color: red">
+                        <b>CAUTION</b> Separate Stub Compilation relies on the ability of C# compiler to compile DLLs which
+                        reference each other (cyclic dependencies). SoodaCompileStubs is used to ensure the proper bootstrapping
+                        of such inter-dependent DLLs. Microsoft C# compiler (v1.1 and v2.0) is supported
+                        but Mono Project Compiler (mcs) isn't because it doesn't properly handle mutual dependencies.
+                    </p>
+                    <p>
+                        The following utilities are required:
+                    </p>
+                    <ol>
+                        <li><a href="#soodastubgen">SoodaStubGen</a> which generates stub source code and source files necessary
+                        to generate mini-stubs and full stubs.</li>
+                    <li><a href="#soodacompilestubs">SoodaCompileStubs</a> which precompiles stubs to a dll that references main
+                        application assembly.</li>
+                        <li>C#/VB Compiler which compiles application code referencing the precompiled stub dll</li>
+                    </ol>
+                    <p>
+                        The following picture provides an overview of the Separate Stub Compilation process:
+                    </p>
+                    <img src="doc13.png" />
+                </body>
+            </section>
             <section id="compilationprocessnant">
                 <title>NAnt</title>
                 <body>
@@ -2157,7 +2256,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 </body>
             </section>
         </section>
-        <section id="typical">
+        <section id="soodaproject">
             <title>Sooda Project Files - *.soodaproject</title>
             <body>
             </body>

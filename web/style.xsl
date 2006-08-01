@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="windows-1250" ?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    version="1.0">
     <xsl:param name="page_id_override"></xsl:param>
     <xsl:param name="subpage_id_override"></xsl:param>
     <xsl:param name="file_extension">xml</xsl:param>
@@ -20,6 +22,7 @@
             <head>
                 <link rel="stylesheet" href="style2.css" type="text/css" />
                 <link rel="stylesheet" href="syntax.css" type="text/css" />
+                <link rel="stylesheet" href="custom.css" type="text/css" />
                 <title>Sooda - <xsl:value-of select="$common/common/navigation/nav[@href=$page_id]/@label" />
                     <xsl:if test="$subpage_id"> - <xsl:value-of select="$common/common/navigation//subnav[@href=$subpage_id]/@label" /></xsl:if></title>
                 <meta name="keywords" content="Sooda, O/R mapping, .NET, C#, object relational mapper, persistence, open source, simple object oriented data access, database, sql, soql" />
@@ -140,7 +143,7 @@
         <xsl:variable name="number_this_sort_ordinal" select="number(substring(concat($this_sort_ordinal,'000000000000000'),1,16))" />
         <xsl:variable name="number_target_sort_ordinal" select="number(substring(concat($target_sort_ordinal,'000000000000000'),1,16))" />
 
-        <a href="#{@id}">
+        <a href="#{@id}" xlink:href="#{@id}">
             <xsl:choose>
                 <xsl:when test="$number_this_sort_ordinal &lt; $number_target_sort_ordinal">later</xsl:when>
                 <xsl:otherwise>earlier</xsl:otherwise>
