@@ -272,7 +272,7 @@ c.Orders.OrderBy(sortExpression);
 
                     </code>
                     <p>
-                        Collections provide more convenience methods which will be <a href="#generatedlistwrappers">discussed later</a>.
+                        Collections provide more convenience methods as described <sectionlink id="generatedlistwrappers" />.
                     </p>
                 </body>
             </section>
@@ -620,7 +620,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     <p>
                         Each database-backed object in Sooda is associated with a transaction represented by 
                         an instance of SoodaTransaction object. Transactions provide database connection management,
-                        identity management (ensuring reference-level object identity as mentioned <a href="#primarykeys">here</a>).
+                        identity management (ensuring reference-level object identity as mentioned <sectionlink id="primarykeys" />).
                     </p>
                     <p>
                         In order to support identity management, transactions implement a L1 cache of all alive objects. You
@@ -722,10 +722,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
         <title>O/R Mapping Schema</title>
         <body>
             <p>
-                O/R Mapping Schema defines the mapping between CLI classes and database tables. You typically map
-                each table in the database to a class, but you can also designate some table to be used for
-                resolving the many-to-many relationship, specify that a class is to be based on multiple tables
-                or describe a inheritance (<i>"is-a"</i>) relationship.
+                O/R Mapping Schema defines the mapping between CLI classes and database tables. 
             </p>
             <p>
                 The schema is contained in an XML file that is the input to <a href="#soodastubgen">SoodaStubGen</a> utility which
@@ -735,7 +732,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 things that simply aren't stored in the database, but the tools can give you a good approximation of the actual schema.
             </p>
             <p>
-                The schema is defined in an XML file, whose root is the <x><schema /></x> element with the appropriate namespace.
+                The root of the XML document is the <x><schema /></x> element with the appropriate namespace (<code>http://www.sooda.org/schemas/SoodaSchema.xsd</code>).
                 The child elements of the <x><schema /></x> define classes, relations and so on, as described below.
             </p>
             <code lang="XML">
@@ -789,7 +786,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     Classes are defined using the <x><class /></x> element. Each class is based on a number of tables, each represented
                     by a <x><table /></x> element. Each <x><class /></x> has a name, which is used during code generation to produce the 
                     a set of C# or VB classes and other attributes which specify its runtime behavior. The following table lists available
-                    attributes of the <x><class /></x> element.
+                    attributes of the <x><class /></x> element (bold ones are required).
                 </p>
                 <div class="table">
                     <table>
@@ -804,7 +801,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         </thead>
                         <tbody>
                             <tr>
-                                <td>name</td>
+                                <td><b>name</b></td>
                                 <td>string</td>
                                 <td>Class name - used by <a href="#soodastubgen">SoodaStubGen</a> to generate 
                                     the class skeleton, stub, a number of related classes (factory, list wrapper, typed queries and so on)
@@ -934,7 +931,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
             <body>
                 <p>
                     <x><table /></x> elements are used to define the mapping from database tables to classes and relations as described
-                    <a href="#mappingtablestoclasses">earlier</a>. Each class is based on at least one <x><table /></x> element. Each table consists of a number of <x><field /></x> 
+                    <sectionlink id="mappingtablestoclasses" />. Each class is based on at least one <x><table /></x> element. Each table consists of a number of <x><field /></x> 
                     elements which represent columns in a database and properties in C#/VB. Each table must have at least one
                     field which is marked as primary key. It can have more than one (they are then called compound primary keys),
                     but tables with zero primary keys are not allowed.
@@ -981,7 +978,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     ]]>
                 </code>
                 <p>
-                    The details about the <x><field /></x> elements are discussed in the <a href="#schemafield">next section</a>.
+                    The details about the <x><field /></x> elements are discussed <sectionlink id="schemafield" />.
                 </p>
                 <p>
                     Objects may need to be <a href="#mappingmultipletablestoclasses">stored in multiple tables</a> for efficiency reasons. 
@@ -1131,7 +1128,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 </code>
 
                 <p>
-                    The following attributes are available on the <x><field /></x> element:
+                    The following attributes are available on the <x><field /></x> element. Attributes marked with bold are required:
                 </p>
                 <div class="table">
                     <table>
@@ -1146,22 +1143,22 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         </thead>
                         <tbody>
                             <tr>
-                                <td>name</td>
+                                <td><b>name</b></td>
                                 <td>string</td>
                                 <td>Field name - used by <a href="#soodastubgen">SoodaStubGen</a> to generate 
                                     the C#/VB.NET property 
                                 </td>
                             </tr>
                             <tr>
+                                <td><b>type</b></td>
+                                <td>FieldDataType</td>
+                                <td>Data type. See the <a href="#schemadatatypes">supported data types</a> for more information.</td>
+                            </tr>
+                            <tr>
                                 <td>dbcolumn</td>
                                 <td>string</td>
                                 <td>Name of the database column. If it is not specified, Sooda assumes this is the same
                                     as 'name'</td>
-                            </tr>
-                            <tr>
-                                <td>type</td>
-                                <td>FieldDataType</td>
-                                <td>Data type. See the <a href="#schemadatatypes">supported data types</a> for more information.</td>
                             </tr>
                             <tr>
                                 <td>size</td>
@@ -1541,28 +1538,616 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     don't exhibit this problem.
                 </p>
                 <p>
-                    The details about generated code can be found in <a href="#generatedcollections">section below</a>.
+                    The details about generated code can be found <sectionlink id="generatedcollections" />.
                 </p>
             </body>
         </section>
         <section id="schemaNN">
-            <title>Many-To-Many Relationships - <x><collectionManyToMany /></x></title>
+            <title>Many-To-Many Relationships - <x><collectionManyToMany /></x> and <x><relation /></x></title>
             <body>
+                <p>
+                    Many-to-many relationships are defined using 
+                    <x><collectionManyToMany /></x> in cooperation with the <x><relation /></x>.
+                    The <x><collectionManyToMany /></x> needs to be placed inside <x><class /></x> element
+                    and <x><relation /></x> needs to be placed inside <x><schema /></x> element.
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                    <schema>
+                        <class name="className">
+                            ...
+                            <collectionManyToMany name="COLLECTION_NAME" relation="RELATION" foreignField="FOREIGN_FIELD" />
+                        </class>
+
+                        <relation name="RELATION">
+                            <table name="RELATION_TABLE">
+                                <field name="f1" type="t1" primaryKey="true" references="R1" />
+                                <field name="f2" type="t2" primaryKey="true" references="R2" />
+                            </table>
+                        </relation>
+                    </schema>
+                    ]]>
+                </code>
+                <p>
+                    The <x><relation /></x> element defines a relation (table) that resolves many-to-many relationships.
+                    It must include exactly two fields, which are references to other tables. 
+                </p>
+                <p>
+                    Each record in this table represents a relationships between two objects pointed at by the fields.
+                    For example, assuming we have a relation Contact2Group with 2 columns: contact_id and group_id
+                    and it contains a row where contact_id=1 and group_id=7 it means that contact[1] and group[7] are in
+                    (some) relationship. The name of the relationship is established by <x><collectionManyToMany /></x>.
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                    <relation name="Contact2Group">
+                        <table name="Contact2Group">
+                            <field name="TheContact" type="Integer" references="Contact" primaryKey="true" />
+                            <field name="TheGroup" type="Integer" references="Group" primaryKey="true" />
+                        </table>
+                    </relation>
+                    ]]>
+                </code>
+                <p>
+                    Each side of the relation has a multiplicity of "many", which means each contact may be in relationship 
+                    with many groups and each group can be in relationship with many contacts. This is represented
+                    by a pair of strongly typed collections.
+                </p>
+                <p>
+                    The collections are declared using <x><collectionManyToMany /></x>.
+                </p>
+                <code lang="C#">
+                    class Contact
+                    {
+                        GroupList Groups { get; }
+                    }
+
+                    class Group
+                    {
+                        ContactList Members { get; }
+                    }
+                </code>
+                <p>
+                    The <x><collectionManyToMany /></x> declaration accepts the following attributes:
+                </p>
+                <div class="table">
+                    <table>
+                        <col style="font-family: Consolas, Courier New" />
+                        <col style="font-family: Consolas, Courier New" />
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><b>name</b></td>
+                                <td>string</td>
+                                <td>Collection name</td>
+                            </tr>
+                            <tr>
+                                <td><b>relation</b></td>
+                                <td>string</td>
+                                <td>Name of the relation (table) that represents the relationship.</td>
+                            </tr>
+                            <tr>
+                                <td><b>foreignField</b></td>
+                                <td>string</td>
+                                <td>Name of the field defined in <x><relation /></x> that points back at the
+                                    object that declares the collection. For example, considering the Contact2Group relation defined above,
+                                    you should put this in <x><class name="Contact" /></x> to get Contact.Groups collection:
+                                    <code lang="XML">
+                                        <![CDATA[
+                                        <class name="Contact">
+                                            ...
+                                            <collectionManyToMany name="Groups" relation="Contact2Group" foreignField="TheContact" />
+                                        </class>
+                                        ]]>
+                                    </code>
+                                    Symmetrically, you should put this in <x><class name="Group" /></x> to get the Group.Members collection:
+                                    <code lang="XML">
+                                        <![CDATA[
+                                        <class name="Group">
+                                            ...
+                                            <collectionManyToMany name="Members" relation="Contact2Group" foreignField="TheGroup" />
+                                        </class>
+                                        ]]>
+                                    </code>
+                                    You can of course choose not to declare collections. This is a way to get unidirectional relationships.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>masterField</td>
+                                <td>integer (0 or 1)</td>
+                                <td>The ordinal of the field defined in <x><relation /></x> that points at the referenced object.
+                                    Specifying this attribute is equivalent to providing the appropriate value of foreignField, but
+                                    the meaning is reversed. The following declaration declares Contact.Groups and Group.Members collections:
+                                    Then you should put this in <x><class name="Contact" /></x> to get Groups collection:
+                                    <code lang="XML">
+                                        <![CDATA[
+                                        <class name="Contact">
+                                            ...
+                                            <collectionManyToMany name="Groups" relation="Contact2Group" masterField="1" />
+                                        </class>
+                                        ]]>
+                                    </code>
+                                    Symmetrically, you should put this in <x><class name="Group" /></x> to get the Members collection:
+                                    <code lang="XML">
+                                        <![CDATA[
+                                        <class name="Group">
+                                            ...
+                                            <collectionManyToMany name="Members" relation="Contact2Group" masterField="0" />
+                                        </class>
+                                        ]]>
+                                    </code>
+                                    <b>
+                                        OBSOLETE WARNING: It's recommended not to use masterField, but use foreignField instead. masterField
+                                        is provided only for compatibility purposes and may be removed in future versions.
+                                    </b>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>
+                    The details about generated code can be found in <sectionlink id="generatedcollections" />.
+                </p>
             </body>
         </section>
         <section id="schemainclude">
             <title>Include Files - <x><include /></x></title>
             <body>
+                <p>
+                    Schemas can include one another. This is a way to split complex domain models into many manageable files
+                    which are subject to separate compilation and code generation.
+                </p>
+                <p>
+                    You need to use the <x><include /></x> to include another schema. The following attributes are supported.
+                    (attributes marked with bold are required).
+                </p>
+                <div class="table">
+                    <table>
+                        <col style="font-family: Consolas, Courier New" />
+                        <col style="font-family: Consolas, Courier New" />
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><b>schema</b></td>
+                                <td>string</td>
+                                <td>Path to the included schema. 
+                                    The path is relative to the directory where the including schema is located.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>namespace</b></td>
+                                <td>string</td>
+                                <td>Namespace of the included schema. Sooda will generate the appropriate <b>using</b> clause.</td>
+                            </tr>
+                            <tr>
+                                <td><b>assembly</b></td>
+                                <td>string</td>
+                                <td>Name of the assembly (without *.dll extension) that contains classes generated from the schema</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>
+                    Example usage (assuming that SoodaSchema.xml is located in c:\MyProject the included file 
+                    should be located in c:\MyProject\SharedBusinessObjects\SoodaSchema.xml):
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                    <schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
+                        <include schema="SharedBusinessObjects/SoodaSchema.xml" namespace="MyCompany.SharedBusinessObjects" assembly="MyCompany.SharedBusinessObjects" />
+                    </schema>
+                    ]]>
+                </code>
             </body>
         </section>
         <section id="schemainheritance">
             <title>Inheritance</title>
             <body>
+                <p>
+                    In order to define <a href="#inheritance">inheritance relationship</a> you need to designate one class which will serve
+                    as a root of the inheritance hierarchy and make other inherit (directly or indirectly) from it.
+                    Attributes which control inheritance are specified at the <x><class /></x> level. They are:
+                </p>
+                <div class="table">
+                    <table>
+                        <col style="font-family: Consolas, Courier New" />
+                        <col style="font-family: Consolas, Courier New" />
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>subclassSelectorField</td>
+                                <td>string</td>
+                                <td>
+                                    <p>
+                                        Specifies the name of the subclass selector field that determines this object type. The
+                                        field must be defined in this <x><class /></x>, in the first <x><table /></x> and must
+                                        be either integer or string. Based on the value stored in this field Sooda is
+                                        able to instantiate objects of the appropriate class in a polymorphic manner.
+                                        Values stored in this field correspond to concrete (non-abstract) classes and are defined
+                                        using <code>subclassSelectorValue</code>. See examples below.
+                                    </p>
+                                    <p>
+                                        The class that defines subclassSelectorField is called the root of inheritance hierarchy.
+                                        You cannot put subclassSelectorField in any class that inherits from another class 
+                                        (to form sub-hierarchies). This feature might be added in future versions of Sooda.
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>inheritFrom</td>
+                                <td>string</td>
+                                <td>
+                                    Inherits from the specified class. The class must either be the root of the inheritance hierarchy
+                                    or inherit (directly or indirectly) from such a class. It is an error to inherit from a class
+                                    that doesn't ultimately derive from a root class (that has <code>subclassSelectorField</code> defined).
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>subclassSelectorValue</td>
+                                <td>integer or string</td>
+                                <td>
+                                    <p>
+                                        Specifies the value of the subclass selector field that determines this object type. This parameter
+                                        must be is specified for each concrete (non-abstract) class in the inheritance hierarchy.
+                                        Sooda will instantiate objects of the appropriate type based on a value of the subclassSelectorField.
+                                        If the value is equal to subclassSelectorValue for a particular class, an instance of this
+                                        class will be created to represent the object.
+                                    </p>
+                                    <p>
+                                        If you don't specify the value for subclassSelectorValue, <a href="#soodaschematool">SoodaStubGen</a>
+                                        will generate an abstract class that cannot be instantiated programmatically.
+                                    </p>
+                                    <p>
+                                        Values provided in subclassSelectorValue are also used in polymorphic queries to
+                                        limit the selected objects to instances of a particular class. For example if you
+                                        get a list of objects of a particular class you may get objects of this class (provided that they are
+                                        not abstract) and all non-abstract classes that derive from it, either directly or indirectly.
+                                    </p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>
+                    The following table summarizes possible combinations of the above attributes:
+                </p>
+                <div class="table">
+                    <table>
+                        <col align="center" valign="top" width="10%" />
+                        <col align="center" valign="top" width="10%" />
+                        <col align="center" valign="top" width="10%" />
+                        <thead>
+                            <tr>
+                                <th>subclassSelectorField</th>
+                                <th>subclassSelectorValue</th>
+                                <th>inheritFrom</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>not defined</td>
+                                <td>not defined</td>
+                                <td>not defined</td>
+                                <td>A class that doesn't participate in inheritance hierarchy</td>
+                            </tr>
+                            <tr>
+                                <td>defined</td>
+                                <td>defined</td>
+                                <td>not defined</td>
+                                <td>Root non-abstract class. Can have subclasses.</td>
+                            </tr>
+                            <tr>
+                                <td>defined</td>
+                                <td>not defined</td>
+                                <td>not defined</td>
+                                <td>Root abstract class (cannot create instances). Can have subclasses.</td>
+                            </tr>
+                            <tr>
+                                <td>not defined</td>
+                                <td>not defined</td>
+                                <td>defined</td>
+                                <td>Non-root abstract class. Can have subclasses.</td>
+                            </tr>
+                            <tr>
+                                <td>not defined</td>
+                                <td>defined</td>
+                                <td>defined</td>
+                                <td>Non-root non-abstract class. Can have subclasses. Can create instances.</td>
+                            </tr>
+                            <tr>
+                                <td>defined</td>
+                                <td>(any)</td>
+                                <td>defined</td>
+                                <td><b style="color: red">Not allowed.</b> Cannot define a class that has both subclassSelectorField and inherits from another class</td>
+                            </tr>
+                            <tr>
+                                <td>not defined</td>
+                                <td>defined</td>
+                                <td>not defined</td>
+                                <td><b style="color: red">Not allowed.</b> When providing subclassSelectorValue you need to also provide subclassSelectorField or inheritFrom</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>
+                    Sooda supports two models of inheritance mapping: table-per-hierarchy (TPH) and table-per-subclass (TPS) as described <sectionlink id="inheritance" />.
+                    They only differ in actual table names used to store fields in subclasses, so the configuration is similar. Assuming
+                    the familiar table of WorkItems structure we can map it to classes using the provided schema:
+                </p>
+                <img src="doc7.gif" />
+                <p>
+                    The schema that maps this to a class hierarchy using TPS model is:
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                        <schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
+                            <datasource name="default" type="Sooda.Sql.SqlDataSource" />
+
+                            <!-- Root class of the inheritance hierarchy. -->
+                            <!-- Note that it is abstract because it doesn't define subclassSelectorValue -->
+                            <class name="WorkItem" subclassSelectorField="Type">
+                                <table name="WorkItem">
+                                    <field name="ID" type="Integer" primaryKey="true" />
+                                    <field name="Type" type="Integer" />
+                                    <field name="AssignedTo" type="Integer" />
+                                    <field name="AssignedDate" type="DateTime" />
+                                    <field name="DueDate" type="DateTime" />
+                                </table>
+                            </class>
+
+                            <!-- Concrete class stored in QuestionWorkItem table, identified by Type=1 -->
+                            <class name="QuestionWorkItem" subclassSelectorValue="1">
+                                <table name="QuestionWorkItem">
+                                    <!-- primary key must be repeated for each table -->
+                                    <field name="ID" type="Integer" primaryKey="true" />
+                                    <field name="Question" type="String" size="40" />
+                                    <field name="Answer" type="String" size="40" />
+                                </table>
+                            </class>
+                            <!-- Concrete class stored in AnalysisWorkItem table, identified by Type=2 -->
+                            <class name="AnalysisWorkItem" subclassSelectorValue="2">
+                                <table name="AnalysisWorkItem">
+                                    <!-- primary key must be repeated for each table -->
+                                    <field name="ID" type="Integer" primaryKey="true" />
+                                    <field name="Subject" type="String" size="40" />
+                                </table>
+                            </class>
+
+                            <!-- Concrete class stored in BugWorkItem table, identified by Type=3 -->
+                            <class name="BugWorkItem" subclassSelectorValue="3">
+                                <table name="BugWorkItem">
+                                    <!-- primary key must be repeated for each table -->
+                                    <field name="ID" type="Integer" primaryKey="true" />
+                                    <field name="BugID" type="Integer" />
+                                    <field name="BugDescription" type="String" size="40" />
+                                </table>
+                            </class>
+                        </schema>
+                    ]]>
+                </code>
+                <p>
+                    The mapping in TPH model is very similar. You only need to change the table names, so
+                    that they are all "TPH_WorkItem". We'll also rename fields by prefixing them with acronyms
+                    of concrete subclasses they belong to:
+                </p>
+                <img src="doc9.gif" />
+                <code lang="XML">
+                    <![CDATA[
+                        <schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
+                            <datasource name="default" type="Sooda.Sql.SqlDataSource" />
+
+                            <!-- Root class of the inheritance hierarchy. -->
+                            <!-- Note that it is abstract because it doesn't define subclassSelectorValue -->
+                            <class name="WorkItem" subclassSelectorField="Type">
+                                <table name="TPH_WorkItem">
+                                    <field name="ID" type="Integer" primaryKey="true" />
+                                    <field name="Type" type="Integer" />
+                                    <field name="AssignedTo" type="Integer" />
+                                    <field name="AssignedDate" type="DateTime" />
+                                    <field name="DueDate" type="DateTime" />
+                                </table>
+                            </class>
+
+                            <!-- Concrete class stored in TPH_WorkItem table, identified by Type=1 -->
+                            <class name="QuestionWorkItem" subclassSelectorValue="1">
+                                <table name="TPH_WorkItem">
+                                    <!-- primary key must be repeated for each table -->
+                                    <field name="ID" type="Integer" primaryKey="true" />
+                                    <field name="Question" dbcolumn="QWI_Question" type="String" size="40" />
+                                    <field name="Answer" dbcolumn="QWI_Answer" type="String" size="40" />
+                                </table>
+                            </class>
+                            <!-- Concrete class stored in TPH_WorkItem table, identified by Type=2 -->
+                            <class name="AnalysisWorkItem" subclassSelectorValue="2">
+                                <table name="TPH_WorkItem">
+                                    <!-- primary key must be repeated for each table -->
+                                    <field name="ID" type="Integer" primaryKey="true" />
+                                    <field name="Subject" dbcolumn="AWI_Subject" type="String" size="40" />
+                                </table>
+                            </class>
+
+                            <!-- Concrete class stored in TPH_WorkItem table, identified by Type=3 -->
+                            <class name="BugWorkItem" subclassSelectorValue="3">
+                                <table name="TPH_WorkItem">
+                                    <!-- primary key must be repeated for each table -->
+                                    <field name="ID" type="Integer" primaryKey="true" />
+                                    <field name="BugID" dbcolumn="BWI_BugID" type="Integer" />
+                                    <field name="BugDescription" dbcolumn="BWI_BugDescription" type="String" size="40" />
+                                </table>
+                            </class>
+                        </schema>
+                    ]]>
+                </code>
             </body>
         </section>
         <section id="schemaprecommitvalues">
             <title>Precommit Values</title>
             <body>
+                <p>
+                    There are situations where Sooda needs to temporarily store an object in a database but the state of the object
+                    prevents it from being able to do so. Typically this is because of a not-nullable column requiring a value that
+                    has not been defined and we're executing a query that may potentially return the object. 
+                </p>
+                <p>
+                    To overcome this issue, Sooda supports a mechanism of precommit values, which can be used instead of real values
+                    just to make the object "save-able". There are 3 levels of precommit values:
+                </p>
+                <ul>
+                    <li><b>per-datatype precommit value</b> - you can decide the value for each data type. For example you 
+                        want to store -1 for all not-null integer fields or 2000-01-01 00:00:00 for all DateTime fields</li>
+                    <li><b>per-class precommit value</b> - this is used whenever you store a foreign key (which persists a reference to
+                        a class). You can specify that unspecified foreign keys to some particular class should be persisted as
+                        a specified numeric or string value</li>
+                    <li><b>per-field precommit value</b> - to be used for a particular field.</li>
+                </ul>
+                <p>
+                    Rules of precommit are described <sectionlink id="precommit" />.
+                </p>
+                <p>
+                    You can use <x><precommitValue /></x> elements in your schema to define <b>per-datatype precommit value</b>. This example
+                    defines a precommit value of -1 for Integer fields, <i>***NONE***</i> string for all String fields and <i>***NOTHING***</i>
+                    for all AnsiString fields. You should pick a value that you don't commonly search for in your queries.
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                        <schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
+                            <datasource name="default" type="Sooda.Sql.SqlDataSource" />
+
+                            <precommitValue type="Integer" value="-1" />
+                            <precommitValue type="String" value="***NONE***" />
+                            <precommitValue type="AnsiString" value="***NOTHING***" />
+                        </schema>
+                    ]]>
+                </code>
+                <p>
+                    In order to define <b>per-class precommit value</b>, you use the defaultPrecommitValue on a class.
+                    Typically you use this feature when your database uses foreign key constraints and defaultPrecommitValue
+                    is a value of an object that is known to exist in the table.
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                        <schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
+                            <datasource name="default" type="Sooda.Sql.SqlDataSource" />
+
+                            <class name="User" defaultPrecommitValue="-1">
+                                <table />
+                            </class>
+                        </schema>
+                    ]]>
+                </code>
+                <p>
+                    <b>Per-field precommit values</b> are defined on each <x><field /></x> using precommitValue attribute. The
+                    following example defines a precommitValue for User.Manager field.
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                        <schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
+                            <datasource name="default" type="Sooda.Sql.SqlDataSource" />
+
+                            <class name="User" defaultPrecommitValue="-1">
+                                <table name="_User">
+                                    <field name="ID" type="Integer" primaryKey="true" />
+                                    <field name="Name" type="String" size="40" />
+                                    <field name="Manager" type="Integer" precommitValue="1111" />
+                                </table>
+                            </class>
+                        </schema>
+                    ]]>
+                </code>
+                <p>
+                    Setting per-field precommit value has the highest precedence. If you don't
+                    provide it and the field is a reference field, the defaultPrecommitValue for the
+                    referenced class is used. It that still doesn't lead to a usable precommit value,
+                    Sooda uses the per-type default precommit value and if it isn't defined, 
+                    the default "zero" value is used based on the datatype:
+                </p>
+                <div class="table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data Type</th>
+                                <th>Default Precommit Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td valign="top">Integer</td>
+                                <td valign="top">0</td>
+                            </tr>
+                            <tr>
+                                <td valign="top">Long</td>
+                                <td valign="top">0</td>
+                            </tr>
+                            <tr>
+                                <td valign="top">Boolean</td>
+                                <td valign="top">false</td>
+                            </tr>
+                            <tr>
+                                <td valign="top">BooleanAsInteger</td>
+                                <td valign="top">0</td>
+                            </tr>
+                            <tr>
+                                <td valign="top">Decimal</td>
+                                <td valign="top">0.0</td>
+                            </tr>
+                            <tr>
+                                <td valign="top">Float</td>
+                                <td valign="top">0.0</td>
+                            </tr>
+                            <tr>
+                                <td valign="top">Double</td>
+                                <td valign="top">0.0</td>
+                            </tr>
+                            <tr>
+                                <td valign="top">DateTime</td>
+                                <td valign="top">00:00:00.0000000, January 1, 0001 (DateTime.MinValue)</td>
+                            </tr>
+                            <tr>
+                                <td valign="top">String</td>
+                                <td valign="top">(empty string)</td>
+                            </tr>
+                            <tr>
+                                <td valign="top">AnsiString</td>
+                                <td valign="top">(empty string)</td>
+                            </tr>
+                            <tr>
+                                <td valign="top">Blob</td>
+                                <td valign="top">(zero-length blob)</td>
+                            </tr>
+                            <tr>
+                                <td valign="top">Guid</td>
+                                <td valign="top">00000001-0000-0000-0000-000000000000</td>
+                            </tr>
+                            <tr>
+                                <td valign="top">TimeSpan</td>
+                                <td valign="top">00:00:00</td>
+                            </tr>
+                            <tr>
+                                <td valign="top">Image</td>
+                                <td valign="top">(zero-length blob)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </body>
         </section>
     </section>
@@ -1676,6 +2261,11 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         <body>
                         </body>
                     </section>
+                </section>
+                <section id="generatedcollections">
+                    <title>Collections</title>
+                    <body>
+                    </body>
                 </section>
                 <section id="generatedtriggers">
                     <title>Triggers</title>

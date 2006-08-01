@@ -115,6 +115,47 @@
         </xsl:for-each>
     </xsl:template>
 
+    <xsl:template match="section" mode="section-sort-ordinal">
+        <xsl:variable name="otherSections" select="../section" />
+        <xsl:variable name="thisSection" select="generate-id(.)" />
+        <xsl:variable name="suffix" />
+
+        <xsl:variable name="parent" select="ancestor::section[position()=1]" />
+        <xsl:if test="$parent"><xsl:apply-templates select="$parent" mode="section-sort-ordinal" /></xsl:if>
+        <xsl:for-each select="$otherSections">
+            <xsl:if test="generate-id(.) = $thisSection">
+                <xsl:if test="position() &lt; 100">0</xsl:if>
+                <xsl:if test="position() &lt; 10">0</xsl:if>
+                <xsl:value-of select="position()" />
+            </xsl:if>
+        </xsl:for-each>
+    </xsl:template>
+
+    <xsl:template match="sectionlink">
+        <xsl:variable name="sectid" select="@id" />
+        <xsl:variable name="sect" select="//section[@id=$sectid]" />
+
+        <xsl:variable name="this_section" select="ancestor-or-self::section[position()=1]" />
+
+        <xsl:variable name="this_sort_ordinal">1<xsl:apply-templates select="$this_section" mode="section-sort-ordinal" /></xsl:variable>
+        <xsl:variable name="target_sort_ordinal">1<xsl:apply-templates select="$sect" mode="section-sort-ordinal" /></xsl:variable>
+
+        <a href="#{@id}">
+            <xsl:choose>
+                <xsl:when test="number($this_sort_ordinal) &lt; number($target_sort_ordinal)">later</xsl:when>
+                <xsl:otherwise>earlier</xsl:otherwise>
+            </xsl:choose>
+        </a>
+        <xsl:if test="$sect"> (<img src="rightarrow.gif" alt="Section" /><xsl:apply-templates select="$sect" mode="section-number" />)
+        </xsl:if>
+        <xsl:if test="not($sect)">
+            <xsl:message terminate="yes">No such anchor: <xsl:value-of select="@href" /></xsl:message>
+        </xsl:if>
+        <xsl:if test="count($sect) != 1">
+            <xsl:message terminate="yes">More than one anchor: <xsl:value-of select="@href" /></xsl:message>
+        </xsl:if>
+    </xsl:template>
+
     <xsl:template match="section" mode="section-level">
         <xsl:variable name="otherSections" select="../section" />
         <xsl:variable name="thisSection" select="generate-id(.)" />
