@@ -5,7 +5,7 @@ html, body
     background: white;
     color: black;
     font-family: Tahoma;
-    font-size: 70%;
+    font-size: 100%;
 }
 
 h1
@@ -15,7 +15,7 @@ h1
 
 h2
 {
-    margin-top: 30px;
+    margin-top: 3em;
     font-size: 120%;
 }
 
@@ -291,7 +291,7 @@ img.thinborder
     left: 190px;
     right: 10px;
     font-family: Tahoma, Trebuchet MS, Helv, Arial;
-    font-size: 12px;
+    font-size: 10pt;
     text-align: left;
     /* background-color: #f8f8ff; */
 }
@@ -312,7 +312,7 @@ img.thinborder
     left: 190px;
     right: 10px;
     font-family: Tahoma, Trebuchet MS, Helv, Arial;
-    font-size: 12px;
+    font-size: 10pt;
     text-align: left;
     /* background-color: #f8f8ff; */
 }
@@ -338,6 +338,11 @@ img.thinborder
     a { color: black; text-decoration: none; }
     a:visited { color: black; text-decoration: none; }
     thead { display: table-header-group; }
+    .heading1
+    {
+        page-break-before: always;
+        margin-top: 5cm;
+    }
 }
 
 table.page
@@ -528,18 +533,16 @@ table.toc
 
 .heading1
 {
-    page-break-before: always;
-    font-size: 150%;
-    font-family: Tahoma;
+    font-size: 200%;
     font-weight: bold;
-    margin-top: 5cm;
+    color: #404080;
+    border-bottom: 3px solid #8080ff;
 }
 
 .heading2
 {
     padding-top: 20px;
     font-size: 120%;
-    font-family: Tahoma;
     font-weight: bold;
 }
 
@@ -547,14 +550,13 @@ table.toc
 {
     padding-top: 20px;
     font-size: 100%;
-    font-family: Tahoma;
     font-weight: bold;
 }
 
 div.body2
 {
-    margin-left: 10px;
-    padding-left: 10px;
+    margin-left: 10pt;
+    padding-left: 10pt;
 }
 
 table.toc

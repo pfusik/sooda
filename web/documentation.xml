@@ -96,7 +96,7 @@
                     <p>
                         Assuming we have the following database table:
                     </p>
-                    <img src="doc1.gif" />
+                    <img src="doc1.gif" alt="Employee Table" />
                     <p>
                         Which can be created with the following piece of SQL:
                     </p>
@@ -224,7 +224,7 @@ create table Order
                         ]]>
                     </code>
 
-                    <img src="doc2.gif" />
+                    <img src="doc2.gif" alt="One-To-Many relationship between Customer and Order" />
                     <p>
                     </p>
 
@@ -292,7 +292,7 @@ c.Orders.OrderBy(sortExpression);
                         hold pairs of primary keys that are in relationship, such as the Employee2Permission table in the following
                         picture:
                     </p>
-                    <img src="doc3.gif" />
+                    <img src="doc3.gif" alt="Many-To-Many relationship between Employee and Permission using Employee2Permission" />
                     <p>
                         The SQL used to create this database is:
                     </p>
@@ -341,11 +341,11 @@ class Permission
                         The collections support the same set of operations as one-to-many collections, namely Add(), Remove(), 
                         Contains(), Count and others. The collections are synchronized, so it doesn't matter which object you
                         use to modify the relationships, the results are the same. In this example you could (conceptually):
-                        <ul>
-                            <li>add a Permission to a collection of permissions held by Employee</li>
-                            <li>add an Employee to a collection of employeees which hold the permission</li>
-                        </ul>
                     </p>
+                    <ul>
+                        <li>add a Permission to a collection of permissions held by Employee</li>
+                        <li>add an Employee to a collection of employeees which hold the permission</li>
+                    </ul>
                     <code lang="C#">
 using (SoodaTransaction t = new SoodaTransaction())
 {
@@ -393,7 +393,7 @@ using (SoodaTransaction t = new SoodaTransaction())
                         <li><b>Data Not Loaded - Modified</b> - some properties have been written to, but not read from</li>
                         <li><b>Data Loaded - Modified</b> - some properties have been written to, and some have been read from</li>
                     </ul>
-                    <img src="doc4.png" />
+                    <img src="doc4.png" alt="Possible lazy loading states of an object" />
                     <p>
                         Each time a property is read from in <b>Data Not Loaded</b> or <b>Data Not Loaded-Modified</b> state
                         Sooda needs to access the database to load the data. If a property is only written to, there's no need
@@ -512,7 +512,7 @@ using (SoodaTransaction t = new SoodaTransaction())
                         </li>
                     </ul>
                     <p>This is the most typical situation where some columns may be placed in a separate table for performance:</p>
-                    <img src="doc5.gif" />
+                    <img src="doc5.gif" alt="Large columns moved to a separate table" />
                     <p>If the data row size is not a problem, we may still want to do the logical partitioning of data while
                         keeping them in a single table. We only need to tell Sooda to keep some fields together by grouping them in
                         a logical Table.</p>
@@ -522,10 +522,10 @@ using (SoodaTransaction t = new SoodaTransaction())
                         separate colors. Note that the primary key column is not marked because it is always present in memory and
                         doesn't need to be loaded at all.
                     </p>
-                    <img src="doc6.gif" />
+                    <img src="doc6.gif" alt="Grouping large columns for lazy loading"/>
                     <p>
                         Sooda makes it possible to create a class based on up to 32 physical or logical tables. The only thing they
-                        need to have in common is their primary key. This feaure is used in inheritance, which will be discussed later.
+                        need to have in common is their primary key. This feaure is used in inheritance, which is described <sectionlink id="inheritance" />.
                     </p>
                 </body>
             </section>
@@ -549,21 +549,21 @@ using (SoodaTransaction t = new SoodaTransaction())
                     <p>
                         Assuming you have a simple hierarchy of 4 classes:
                     </p>
-                    <img src="doc8.gif" />
+                    <img src="doc8.gif" alt="Hierarchy of classes" />
                     <p>
                         The TPT representation of this hierarchy looks like this (note that each subclass is stored in its own table,
                         and only fields added in that subclass are kept there, other fields are accessible through primary key join):
                     </p>
-                    <img src="doc7.gif" />
+                    <img src="doc7.gif" alt="TPT(TPS) representation" />
                     <p>
                         TPH model (note that fields from all classes are gathered in a single table and each field from a non-root class
                         be nullable):
                     </p>
-                    <img src="doc9.gif" />
+                    <img src="doc9.gif" alt="TPH representation" />
                     <p>
                         Or a TPC model (note that fields from the base class are repeated in all tables):
                     </p>
-                    <img src="doc10.gif" />
+                    <img src="doc10.gif" alt="TPC representation" />
                     <p>
                         Supporting polymorphism in O/R mapping requires the engine to be able to create instances
                         of the proper subclass on load. This is required, because when you load an object from 
@@ -673,7 +673,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     </ul>
                     <p>
                         They both let you use path expressions and collections to write join-free powerful
-                        object-oriented queries. They will be discussed in later sections.
+                        object-oriented queries. This is described <sectionlink id="soql" />.
                     </p>
                 </body>
             </section>
@@ -702,19 +702,8 @@ foreach (WorkItem wi in WorkItem.GetList(true))
         <body>
             <p>
                 In order to use Sooda in your project you need to have a working database. We'll be using Microsoft
-                SQL Server and the Northwind database. We'll also need to provide Sooda with the following information:
-            </p>
-            <ol>
-                <li><b>Mapping schema</b> that describes the mapping between tables/columns in your database and 
-                    classes/properties. It is stored in an XML file, usually named <code>SoodaSchema.xml</code>.</li>
-                <li><b>Code generation parameters</b> which specify various aspects of code generation. 
-                    The settings are stored in an XML file with <b>.soodaproject</b> extension.</li>
-                <li><b>Runtime configuration parameters</b> such as database connection string, connection type and SQL dialect - typically stored in your <code>Application.exe.config</code></li>
-            </ol>
-            <p>
-                In addition, you need to make a small modification to your database (namely add a table that
-                will manage primary keys). The following sections will describe the required setup in detail.
-            </p>
+                SQL Server and the Northwind database.
+            </p> 
             <font size="+2" color="red">**** TODO OPISAÆ WIZARDA ****</font>
         </body>
     </section>
@@ -986,7 +975,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     the other holds her Picture (potentially very large piece of binary data that encodes the person's photo). 
                     By storing the picture in a separate table we can avoid reading from it until the data is actually needed.
                 </p>
-                <img src="doc5.gif" />
+                <img src="doc5.gif" alt="Large columns moved to a separate table" />
                 <p>
                     This piece of schema might represent it:
                 </p>
@@ -1042,7 +1031,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 <p>
                     The table definition looks like this (different lazy loading groups are marked with different colors):
                 </p>
-                <img src="doc11.gif" />
+                <img src="doc11.gif" alt="Lazy loading groups" />
                 <p>
                     Example: We have 4 objects: Adam (Person, with primary key 1), Eva (with primary key 2), 
                     Mary (with primary key 3), John (with primary key 4). Let's assume they are represented by the 
@@ -1234,10 +1223,12 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                             <col style="font-family: Consolas, Courier New" />
                             <col style="font-family: Consolas, Courier New" />
                             <thead>
-                                <th>Name</th>
-                                <th>C# Type</th>
-                                <th>Database Type</th>
-                                <th>Comments</th>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>C# Type</th>
+                                    <th>Database Type</th>
+                                    <th>Comments</th>
+                                </tr>
                             </thead>
                             <tbody>
                                 <tr>
@@ -1893,7 +1884,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     They only differ in actual table names used to store fields in subclasses, so the configuration is similar. Assuming
                     the familiar table of WorkItems structure we can map it to classes using the provided schema:
                 </p>
-                <img src="doc7.gif" />
+                <img src="doc7.gif" alt="TPT(TPS) representation of inheritance hierarchy" />
                 <p>
                     The schema that maps this to a class hierarchy using TPS model is:
                 </p>
@@ -1949,7 +1940,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     that they are all "TPH_WorkItem". We'll also rename fields by prefixing them with acronyms
                     of concrete subclasses they belong to:
                 </p>
-                <img src="doc9.gif" />
+                <img src="doc9.gif" alt="TPH model" />
                 <code lang="XML">
                     <![CDATA[
                         <schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">

@@ -30,16 +30,13 @@
             <body>
                 <div id="header"><img src="sooda.jpg" alt="Sooda - Simple Object-Oriented Data Access" /></div>
                 <xsl:if test="$mode != 'plain'">
-                    <img src="sooda_nav.jpg" style="display: none" /> <!-- need this for CHM -->
+                    <img src="sooda_nav.jpg" style="display: none" alt="sooda_nav" /> <!-- need this for CHM -->
                     <div id="controls">
                         <xsl:call-template name="controls" />
                     </div>
                 </xsl:if>
                 <div id="{$mode}content">
-                    <xsl:comment>#include virtual="/dynamic/snippet.cgi?vertbanner"</xsl:comment>
-                    <xsl:comment>#include virtual="/dynamic/snippet.cgi?topbanner"</xsl:comment>
                     <xsl:apply-templates select="content" />
-                    <xsl:comment>#include virtual="/dynamic/snippet.cgi?bottombanner"</xsl:comment>
                 </div>
                 <xsl:if test="$mode = 'web'">
                     <div id="googlesearch">
@@ -140,9 +137,12 @@
         <xsl:variable name="this_sort_ordinal">1<xsl:apply-templates select="$this_section" mode="section-sort-ordinal" /></xsl:variable>
         <xsl:variable name="target_sort_ordinal">1<xsl:apply-templates select="$sect" mode="section-sort-ordinal" /></xsl:variable>
 
+        <xsl:variable name="number_this_sort_ordinal" select="number(substring(concat($this_sort_ordinal,'000000000000000'),1,16))" />
+        <xsl:variable name="number_target_sort_ordinal" select="number(substring(concat($target_sort_ordinal,'000000000000000'),1,16))" />
+
         <a href="#{@id}">
             <xsl:choose>
-                <xsl:when test="number($this_sort_ordinal) &lt; number($target_sort_ordinal)">later</xsl:when>
+                <xsl:when test="$number_this_sort_ordinal &lt; $number_target_sort_ordinal">later</xsl:when>
                 <xsl:otherwise>earlier</xsl:otherwise>
             </xsl:choose>
         </a>
@@ -374,6 +374,10 @@
             <xsl:value-of select="namespace::*" />
             <xsl:apply-templates mode="xml-example" />
         </xsl:copy>
+    </xsl:template>
+
+    <xsl:template match="body">
+        <xsl:apply-templates />
     </xsl:template>
 
     <!-- FAQ -->
