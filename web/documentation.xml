@@ -16,8 +16,8 @@
                     O/R Mapping Software enables you to express your business rules without using SQL at all.
                 </p>
                 <p>
-                    Sooda is a code generator, which can to generate entire Data Access Layer for your application.
-                    Each class that's generated as part of the DAL typically corresponds to a database table,
+                    Sooda is a code generator, which can generate entire Data Access Layer for your application.
+                    Each class of the DAL typically corresponds to a database table,
                     its properties map to database columns and relationships map to object references and collections.
                 </p>
                 <p>
@@ -26,16 +26,16 @@
                 <ul>
                     <li><a href="#mappingtablestoclasses">mapping</a> one or <a href="#mappingmultipletablestoclasses">more tables</a> to a class</li>
                     <li><a href="#mappingonetomany">one-to-many</a> and <a href="#mappingmanytomany">many-to-many</a> relationships</li>
-                    <li><a href="#pathexpressions">path expressions</a>, both in code and in query language</li>
+                    <li><a href="#pathexpressions">path expressions</a>, both in code and the in query language</li>
                     <li><a href="#primarykeys">identity management through L1 caching</a></li>
                     <li><a href="#inheritance">inheritance</a> (two models: table-per-hierarchy (TPH) and table-per-subclass (TPS))</li>
                     <li>strongly-typed, database-based <a href="#schemaconst">enumerations</a></li>
                     <li><a href="#lazyloading">lazy loading</a></li>
                     <li><a href="#transactions">differential serialization and deserialization</a> of uncommitted changes (enables long-running transactions)</li>
-                    <li>strongly typed <a href="#querylanguage">query language</a> (based on C# operator overloading)</li>
+                    <li>strongly-typed <a href="#querylanguage">query language</a> (based on C# operator overloading)</li>
                     <li>text-based <a href="#querylanguage">query language</a> - SOQL</li>
                     <li><a href="#mappingmultipletablestoclasses">vertical partitioning</a> of data (load-on-demand for large columns)</li>
-                    <li>cross-transaction <a href="#caching">(L2 caching)</a></li>
+                    <li><a href="#caching">cross-transaction (level-2) caching</a></li>
                 </ul>
                 <p>
                     The following development tools/build environments are supported:
@@ -71,87 +71,53 @@
             </body>
 
             <section id="mappingtablestoclasses">
-                <title>Mapping Tables to Classes</title>
+                <title>Mapping Classes to Tables</title>
                 <body>
                     <p>
                         Most applications written in high-level languages use the object-oriented 
-                        approach. It is incompatible with the relational(tabular) model used in the databases 
-                        and mapping from tables to objects is required. 
-                        Traditionally programmers have written their own data access layers 
-                        (DALs) which encapsulated the details of the underlying database and table-to-class mapping
-                        and provided object-oriented interface.
+                        approach and often they need to store data in relational databases.
+
+                        Working with objects, we use method calls, properties
+                        events, collections, inheritance, polymorphism, and so on, while working with relational data 
+                        requires us to think in terms of SELECT,INSERT,UPDATE and DELETE SQL operations
+                        on rectangular tables.
                     </p>
                     <p>
-                        The goal of the mapping is to store the values of object properties in the appropriate
-                        columns of database tables. Assuming your object's properties are all primitive values
-                        (such as integers, strings, date/time, booleans) we could provide a "natural" mapping
-                        where:
+                        Obviously the two models (object-oriented and relational) are not 
+                        compatible. Sooda lets you bridge the gap by providing an object-oriented interface to the database so that
+                        you can write code in your favourite high-level language without using SQL at all.
+                    </p>
+                    <p>
+                        Let's see how objects can be stored in a database. Assuming we have a simple class called Employee.
+                    </p>
+                    <img src="doc0.gif" alt="Employee Class" />
+                    <p>
+                        Objects of this class can be persisted when we follow the rules of so called "natural mapping", where:
                     </p>
 
                     <ul>
-                        <li>each object is stored in a single row in a particular table</li>
-                        <li>each property is stored in a single column</li>
-                        <li>the type of the column reflects the type of the property</li>
+                        <li>each object is stored in a single row of a single table whose name matches the name of the class</li>
+                        <li>each property is stored in a single column, whose name matches the name of the property/field</li>
+                        <li>the type of the column corresponds to the type of the property</li>
                     </ul>
+
                     <p>
-                        Assuming we have the following database table:
+                        Applying these "natural mapping" rules to the Employee class, we get the following table:
                     </p>
                     <img src="doc1.gif" alt="Employee Table" />
                     <p>
-                        Which can be created with the following piece of SQL:
-                    </p>
-                    <code lang="SQL">
-                        create table Employee
-                        (
-                            ID int primary key not null,
-                            Name varchar(64),
-                            Salary decimal,
-                            HireDate datetime,
-                            Active bit
-                        );
-                    </code>
-                    <p>
-                        The natural mapping turns it into a class which implements the following interface:
-                    </p>
-                    <code lang="C#">
-                        class Employee
-                        {
-                            int ID { get; set; }
-                            string Name { get; set; }
-                            decimal Salary { get; set; }
-                            DateTime HireDate { get; set; }
-                            bool Active { get; set; }
-                        }
-                    </code>
-                    <p>
-                        In addition to properties Sooda generates some <a href="#generatedclasses">convenience methods</a> for each class, such as Load(), 
-                        MarkForDelete(), constructor, and so on. For example, the code to create a new object of type Employee,
-                        set its properties and save the object into the database is:
-                    </p>
-                    <code lang="C#">
-using (SoodaTransaction t = new SoodaTransaction())
-{
-    Employee p = new Employee();
-
-    p.Name = "Mary Manager";
-    p.Salary = 1000.0;
-    p.HireDate = DateTime.Now;
-    p.Active = true;
-
-    transaction.Commit();
-}
-                    </code>
-                    <p>
-                        Natural mapping is not always possible/desirable and therefore we need a <a href="#schema">mapping schema</a> to
+                        Natural mapping as described above is not always possible/desirable and therefore we need a <a href="#schema">mapping schema</a> to
                         fully describe the mapping for tables/columns/datatypes and more. We can for example:
-                    </p>
+                        </p>
                     <ul>
-                        <li>use other name for database table (for example TblEmployee instead of Employee). 
-                            There are some reserved SQL keywords which cannot be used as table names (SELECT, FROM, WHERE, GROUP)</li>
-                        <li>use other names for database columns (for example hire_date instead of HireDate). Some databases have limitations on the
+                        <li>override database table name (for example TblEmployee instead of Employee). 
+                            There are some reserved SQL keywords which cannot be used as table names (<code>SELECT, FROM, WHERE, GROUP</code>)</li>
+                        <li>define names of database columns (for example hire_date instead of HireDate). Some databases 
+                            impose limitations on the
                             maximum column names so you might want to make them shorter.</li>
                         <li>use other datatypes (such as a column of type "integer" instead of "bit" to store the 
-                            value of the "Active" property where "true" is represented by 1 and "false" is represented by 0)</li>
+                            value of the "Active" property with "true" and "false" mapped to "1" and "0" respectively)</li>
+                        <li>objects may need to be persisted in <a href="#mappingmultipletablestoclasses">more than one table</a></li>
                     </ul>
                 </body>
             </section>
@@ -159,32 +125,27 @@ using (SoodaTransaction t = new SoodaTransaction())
                 <title>Primary Keys and Object Identity</title>
                 <body>
                     <p>
-                        The identity of entities in the database is established by their primary keys. In object-oriented
-                        languages we refer to objects by using their references. The references are
-                        are valid only for a single execution of the program and as such
-                        they cannot be stored in a database directly, so the O/R mapper needs to convert
-                        between primary/foreign key values and object references when loading or storing the data.</p>
-                    <p>
-                        This implies that in order to participate in O/R mapping
-                        each database table needs to have one or more primary key columns (either natural or surrogate)
-                        and you need to tell the mapper which columns are primary keys. The primary keys
-                        must be properly maintained in the database (the best way is to create a UNIQUE index on primary
-                        key columns). If you fail to do so (for example when there are many rows sharing the same
-                        value in the primary key column), you may get all sorts of undefined behavior.
+                        Entities in the databases are identified by their primary keys. In object-oriented
+                        languages we refer to objects by their references. The references are
+                        valid only for a single execution of the program and cannot be stored in a database directly.
+                        O/R mapper needs to convert between primary key values and object references 
+                        when loading and storing data.
                     </p>
                     <p>
-                        Sooda provides reference identity guarantee for objects retrieved from the database. That means
-                        that if we make 2 or more queries which retrieve a particular row from the 
-                        database in the same <a href="#transactions">transaction</a>
-                        they are guaranteed to be be mapped to the same object so if we got objects o1 and o2 then <code>Object.ReferenceEquals(o1, o2) == true</code>
-                        There are other O/R Mapping products which only guarantee object value equality, so the same
-                        row retrieved from the database in multiple queries can be mapped to more than
-                        one row, so you only get:
-                        <code>o1.Equals(o2) &amp;&amp; o2.Equals(o1)</code> but <code>Object.ReferenceEquals(o1, o2)</code> can be <code>false</code>
+                        Each object in Sooda knows about the primary key that represents it in the database.
+                        Transaction-level object cache (L1 cache) is used to map primary keys to objects.
+                        This two-way mapping lets Sooda provide <a href="#objectidentity">reference identity</a> for objects
+                        it manages.
                     </p>
                     <p>
-                        Mechanism that ensures object identity is called L1 (transaction-level) caching. It also ensures that
-                        object is never loaded from a database twice.
+                        When creating a new object in memory, the primary key needs to be known in advance (before
+                        the object is actually stored in the database). Because of this, we cannot use identity columns in
+                        databases to provide primary keys, other mechanism to generate primary keys is necessary.
+                    </p>
+                    <p>
+                        Sooda provides <a href="#keygeneration">key generators</a> which may be used for this purpose.
+                        The default one uses a special table in the database to manage batched key allocation. Alternatively, for primary
+                        keys which are GUIDs, you can use the standard Guid.NewGuid() generation method.
                     </p>
                 </body>
             </section>
@@ -251,8 +212,8 @@ class Order
                     </code>
                     <p>
                         The OrderList is functionally equivalent to IList&lt;Order&gt; with some filtering
-                        and sorting methods <a href="#generatedlistwrappers">added for convenience</a>. MadeBy is
-                        a reference to the Customer class and Sooda lets you write:
+                        and sorting methods <a href="#generatedlistwrappers">included for convenience</a>. Customer is
+                        a reference to the Customer class. Sooda lets you write:
                     </p>
                     <code lang="C#">
 Customer c;
@@ -272,7 +233,7 @@ c.Orders.OrderBy(sortExpression);
 
                     </code>
                     <p>
-                        Collections provide more convenience methods as described <sectionlink id="generatedlistwrappers" />.
+                       Convenience methods of Sooda collections are described <sectionlink id="generatedlistwrappers" />.
                     </p>
                 </body>
             </section>
@@ -290,7 +251,7 @@ c.Orders.OrderBy(sortExpression);
                     <p>
                         Database representation of many-to-many relationships requires a separate table that will
                         hold pairs of primary keys that are in relationship, such as the Employee2Permission table in the following
-                        picture:
+                        figure:
                     </p>
                     <img src="doc3.gif" alt="Many-To-Many relationship between Employee and Permission using Employee2Permission" />
                     <p>
@@ -338,9 +299,9 @@ class Permission
 }
                     </code>
                     <p>
-                        The collections support the same set of operations as one-to-many collections, namely Add(), Remove(), 
-                        Contains(), Count and others. The collections are synchronized, so it doesn't matter which object you
-                        use to modify the relationships, the results are the same. In this example you could (conceptually):
+                        These collections support the same set of operations as one-to-many collections, namely Add(), Remove(), 
+                        Contains(), Count and others. The collections are synchronized, no matter which object you
+                        use to modify the relationships, the result is the same. In this example you could:
                     </p>
                     <ul>
                         <li>add a Permission to a collection of permissions held by Employee</li>
@@ -374,33 +335,33 @@ using (SoodaTransaction t = new SoodaTransaction())
                 <title>Lazy Loading</title>
                 <body>
                     <p>
-                        Often you need to operate on the object but you don't need an access to its properties.
+                        Often you need to operate on an object but you don't need access to its properties.
                         It would be very inefficient to load full record from a database each time
-                        a reference to it is needed. For example you don't need to know employee's name to be 
-                        able to check if he is in relationship with some other objects.
+                        a reference to it is needed. For example you don't need to know employee's name 
+                        just to check if he is in relationship with some other objects.
                     </p>
                     <p>
-                        Sooda supports lazy loading by maintaining a data structure that separates object from its data. It 
+                        Sooda supports lazy loading by maintaining a data structure that holds object data. It 
                         loads the data and initializes the data structures on as-needed basis, which means objects don't allocate 
-                        memory for their data values until the properties have been accessed.
+                        memory for their data values until the properties are accessed.
                     </p>
                     <p>
                         Each object managed by Sooda can be in one of the four states:
                     </p>
                     <ul>
                         <li><b>Data Not Loaded</b> - no properties have been accessed</li>
-                        <li><b>Data Loaded</b> - some properties have been read from</li>
+                        <li><b>Data Loaded</b> - some properties have been read</li>
                         <li><b>Data Not Loaded - Modified</b> - some properties have been written to, but not read from</li>
                         <li><b>Data Loaded - Modified</b> - some properties have been written to, and some have been read from</li>
                     </ul>
                     <img src="doc4.png" alt="Possible lazy loading states of an object" />
                     <p>
-                        Each time a property is read from in <b>Data Not Loaded</b> or <b>Data Not Loaded-Modified</b> state
+                        Each time a property is read in <b>Data Not Loaded</b> or <b>Data Not Loaded-Modified</b> state
                         Sooda needs to access the database to load the data. If a property is only written to, there's no need
                         to even load the data from the database.
                     </p>
                     <p>
-                        Sooda provides 2 ways to get a reference to an object given its primary key:
+                        Sooda provides two ways to get a reference to an object given its primary key:
                     </p>
                     <ul>
                         <li><code>ClassName.GetRef()</code> - gets a reference to an object without loading its data (initial state is Data Not Loaded)</li>
@@ -482,7 +443,7 @@ using (SoodaTransaction t = new SoodaTransaction())
                         Console.WriteLine(person.OrganizationUnit.Manager.LastName);
                     </code>
                     <p>
-                        You can of course access the collections in the same manner:
+                        You can access collections in the same manner:
                     </p>
                     <code lang="C#">
                         // display the number of org unit members
@@ -490,7 +451,7 @@ using (SoodaTransaction t = new SoodaTransaction())
                     </code>
                     <p>
                         Object references are fully lazy-loaded and managed by <a href="#primarykeys">transaction L1 cache</a>
-                        so that the number of database accesses is optimized.
+                        so that the number of database accesses is reduced.
                     </p>
                 </body>
             </section>
@@ -499,7 +460,7 @@ using (SoodaTransaction t = new SoodaTransaction())
                 <body>
                     <p>
                         A class can be mapped to more than one table in the database or it can be split into many logical "tables" which
-                        are actually mapped to the same physical table. We may want to do it for a number of reasons:
+                        are actually mapped to the same physical table. We may want to do it for many reasons:
                     </p>
                     <ul>
                         <li>database engine limitations - some databases have maximum row size limit, and you may not be able to store
@@ -533,7 +494,7 @@ using (SoodaTransaction t = new SoodaTransaction())
                 <title>Inheritance</title>
                 <body>
                     <p>
-                        Inheritance ("is-a" relationship) is an object-oriented programming concept that is not present in
+                        Inheritance ("is-a" relationship) is an object-oriented programming concept which is not present in
                         relational databases. One of the most important features of inheritance is polymorphism (ability to
                         act on objects through their base classes or interfaces without knowing their exact type).
                     </p>
@@ -552,21 +513,21 @@ using (SoodaTransaction t = new SoodaTransaction())
                     <img src="doc8.gif" alt="Hierarchy of classes" />
                     <p>
                         The TPT representation of this hierarchy looks like this (note that each subclass is stored in its own table,
-                        and only fields added in that subclass are kept there, other fields are accessible through primary key join):
+                        and only the fields added in that subclass are kept there, the other fields are accessible through primary key join):
                     </p>
                     <img src="doc7.gif" alt="TPT(TPS) representation" />
                     <p>
                         TPH model (note that fields from all classes are gathered in a single table and each field from a non-root class
-                        be nullable):
+                        is nullable):
                     </p>
                     <img src="doc9.gif" alt="TPH representation" />
                     <p>
-                        Or a TPC model (note that fields from the base class are repeated in all tables):
+                        Or a TPC model (fields from the base class are repeated in all tables):
                     </p>
                     <img src="doc10.gif" alt="TPC representation" />
                     <p>
                         Supporting polymorphism in O/R mapping requires the engine to be able to create instances
-                        of the proper subclass on load. This is required, because when you load an object from 
+                        of the proper subclass on load. This is required because when you load an object from 
                         the database you may get an instance of a subclass.
                         Object refererences (stored as foreign keys) are also polymorphic (you only store the key value, not the 
                         concrete type). We need a way to be able to quickly determine the concrete class that will
@@ -574,10 +535,10 @@ using (SoodaTransaction t = new SoodaTransaction())
                     </p>
                     <p>
                         TPT and TPH storage models require a special column (called discriminator column) to select between subclasses. 
-                        This column needs to provide a unique mapping between the concrete class and a integer value
-                        (like 1-QuestionWorkItem, 2-AnalysisWorkItem, 3-BugWorkItem). 
+                        This column needs to provide a unique mapping between the concrete class and an integer value
+                        (for example 1-QuestionWorkItem, 2-AnalysisWorkItem, 3-BugWorkItem). 
                         Each time an object of a particular class is persisted, a value corresponding to its class is stored in
-                        this column and on load this value is used to recrete object of the proper class.
+                        this column and on load this value is used to recreate object of the proper class.
                         TPC model doesn't need this column but makes it more difficult to access objects in a polymorphic manner,
                         because you need to perform a UNION select or make multiple queries in order to fetch all objects.
                     </p>
@@ -604,13 +565,14 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     </code>
                     <p>
                         Sooda supports TPT and TPH, but <b>doesn't support TPC model</b> because it's less efficient
-                        than the other two and requires comples SQL queries to be generated.
+                        than the other two and requires complex SQL queries to be generated.
                     </p>
                     <p>
                         Sooda extends the concept of "tables" on which each class is based to mean not only physical tables
-                        but also vertical table partitions. This way you can create a mixture of TPT and TPH in your program, for
-                        example by storing the hierarchy in TWO tables instead of one, or storing most commonly used subclasses
-                        in a single table while less frequently used concrete classes in separate tables, one for each such subclass.
+                        but also vertical table partitions. This way you can create a mixture of TPT and TPH in your program.
+                        For example you can store the hierarchy in TWO tables instead of one. You can also
+                        store most commonly used subclasses in a single table but move rarely used or "heavy" data (such as blobs) 
+                        to separate physical tables.
                     </p>
                 </body>
             </section>
@@ -619,11 +581,11 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 <body>
                     <p>
                         Each database-backed object in Sooda is associated with a transaction represented by 
-                        an instance of SoodaTransaction object. Transactions provide database connection management,
+                        an instance of SoodaTransaction class. Transactions provide database connection management,
                         identity management (ensuring reference-level object identity as mentioned <sectionlink id="primarykeys" />).
                     </p>
                     <p>
-                        In order to support identity management, transactions implement a L1 cache of all alive objects. You
+                        In order to support identity management, transactions implement an L1 cache of all alive objects. You
                         can retrieve objects by their references as by pairs of (class name,primary key value).
                     </p>
                     <p>
@@ -632,10 +594,10 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         unmanaged resources, such as a database connections.
                     </p>
                     <p>
-                        Transactions need to be closed when they are no longer needed and you need to ensure that, otherwise
-                        you may get all sorts of unmanaged resource leaks. The typical usage pattern for a Sooda transaction 
-                        that makes sure that the transaction is properly closed is presented below. It makes use of the
-                        IDisosable pattern and C# using() statement:
+                        Transactions need to be closed when they are no longer needed and if you fail ensure that, otherwise
+                        you may get all sorts of unmanaged resource leaks. Typical usage pattern for a Sooda transaction 
+                        that ensures the transaction is properly closed is presented below. It makes use of the
+                        IDisosable pattern and the C# using() statement:
                     </p>
                     <code lang="C#">
                         using (SoodaTransaction t = new SoodaTransaction())
@@ -665,14 +627,14 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         <li>enumerations</li>
                     </ul>
                     <p>
-                        Sooda supports two variants of a object-oriented query language:
+                        Sooda supports two variants of its object-oriented query language:
                     </p>
                     <ul>
                         <li>text-based query language called <a href="#soqltext">SOQL</a></li>
                         <li>a <a href="#soqltypedqueries">strongly-typed</a>, in-code variant of SOQL implemented using C# operator overloading</li>
                     </ul>
                     <p>
-                        They both let you use path expressions and collections to write join-free powerful
+                        Both of them let you use path expressions and collections to write join-free powerful
                         object-oriented queries. This is described <sectionlink id="soql" />.
                     </p>
                 </body>
@@ -681,14 +643,9 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 <title>Cross-transaction (Level 2) Caching</title>
                 <body>
                     <p>
-                        Frequently accessing single rows from the database (which is common for all O/R mapping products) can be
-                        expensive. The cost of a SQL server roundtrip can be quite high. Sooda implements in-memory caching of objects
+                        Frequent use of single rows from the database (which is common for all O/R mapping products) can be
+                        expensive. The cost of an SQL server roundtrip can be quite high. Sooda implements in-memory caching of objects
                         retrieved from the SQL database (both single rows and collections) so that the speed of processing is improved.
-                    </p>
-                    <p>
-                        Caching should be implemented carefully or it can introduce coherency problems, where different processes
-                        may see a slightly different view of the database if the cache is not properly invalidated when the data
-                        changes through other mechanism.
                     </p>
                     <p>
                         The <a href="#cachingapi">Caching API section</a> explains things in detail.
@@ -714,15 +671,16 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 O/R Mapping Schema defines the mapping between CLI classes and database tables. 
             </p>
             <p>
-                The schema is contained in an XML file that is the input to <a href="#soodastubgen">SoodaStubGen</a> utility which
+                The schema is contained in an XML file that is the input to <a href="#soodastubgen">SoodaStubGen utility</a> which
                 generates class stubs. You can write the XML file by hand or you can use a tool, such as 
                 <a href="#soodaschematool">SoodaSchemaTool</a> to generate it for you by reverse-engineering the database.
-                Note that it's not possible to generate the mapping schema in a automated manner, because there are 
-                things that simply aren't stored in the database, but the tools can give you a good approximation of the actual schema.
+                Note that it's not possible to generate the mapping schema in a fully automated manner. There are 
+                things that simply cannot be retrieved from the database (such as inheritance relationships, named constants, many-to-many
+                relationship names), anyway the tools can give you a good approximation of the actual schema.
             </p>
             <p>
-                The root of the XML document is the <x><schema /></x> element with the appropriate namespace (<code>http://www.sooda.org/schemas/SoodaSchema.xsd</code>).
-                The child elements of the <x><schema /></x> define classes, relations and so on, as described below.
+                The root of the XML document is the <x><schema /></x> element with the appropriate XML namespace (<code>http://www.sooda.org/schemas/SoodaSchema.xsd</code>).
+                Child elements of the <x><schema /></x> define classes, relations and so on, as described below.
             </p>
             <code lang="XML">
                 <![CDATA[
@@ -751,7 +709,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     default data source for a class or relation is "<code>default</code>", which you need to have defined.
                 </p>
                 <p>
-                    Until Sooda supports other data source types, the typical declaration that should occur at the beginning of each
+                    While Sooda supports no other data source types, the declaration that should be present at the beginning of each
                     mapping schema is:
                 </p>
                 <code lang="XML">
@@ -764,7 +722,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 <p>
                     You can define additional SQL-based data sources for example to connect to multiple databases at once. Sooda
                     will keep a single connection to each data source, but won't create one until you use an object that's based on
-                    the data source.
+                    this data source.
                 </p>
             </body>
         </section>
@@ -772,9 +730,9 @@ foreach (WorkItem wi in WorkItem.GetList(true))
             <title>Classes - <x><class /></x></title>
             <body>
                 <p>
-                    Classes are defined using the <x><class /></x> element. Each class is based on a number of tables, each represented
-                    by a <x><table /></x> element. Each <x><class /></x> has a name, which is used during code generation to produce the 
-                    a set of C# or VB classes and other attributes which specify its runtime behavior. The following table lists available
+                    Classes are defined using <x><class /></x> elements. Each class is based on 
+                    one or more tables, each represented by a <x><table /></x> element. 
+                    The following table lists available
                     attributes of the <x><class /></x> element (bold ones are required).
                 </p>
                 <div class="table">
@@ -793,7 +751,8 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <td><b>name</b></td>
                                 <td>string</td>
                                 <td>Class name - used by <a href="#soodastubgen">SoodaStubGen</a> to generate 
-                                    the class skeleton, stub, a number of related classes (factory, list wrapper, typed queries and so on)
+                                    the class skeleton, stub and related classes (factory, list wrapper, typed queries and so on).
+                                    Details about the generated code can be found <sectionlink id="generatedcode" />.
                                 </td>
                             </tr>
                             <tr>
@@ -804,7 +763,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                     <ul>
                                         <li><b>Small</b> - up to 20-30</li>
                                         <li><b>Medium</b> - more than Small, up to 200-300</li>
-                                        <li><b>Large</b> - more than few hundred</li>
+                                        <li><b>Large</b> - more than a few hundred</li>
                                     </ul>
                                     The default value is <b>Medium</b>. You may want to specify other values as a hint to the cache optimizer.
                                     Other than that, this value is not used.
@@ -826,9 +785,10 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                             <tr>
                                 <td>label</td>
                                 <td>string</td>
-                                <td>Name of the property that provides the displayable "identity" of the object. For example the 
-                                    "Person" class might have a label of "Name" or "Email", the "Location" might have a label of "Address".
-                                    This is used to generate the default implementation of ToString() for object.
+                                <td>Name of the property that provides the human readable "identity" of the object. For example the 
+                                    "Person" class might have a label of "Name" or "Email", the "Location" class
+                                    might have a label of "Address".
+                                    The label is used to generate the default implementation of ToString() for object.
                                 </td>
                             </tr>
                             <tr>
@@ -841,8 +801,8 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                         <li><b>integer</b> - pregenerates integer keys in the database by storing them in the KeyGen table. This is the default.</li>
                                         <li><b>long</b> - pregenerates long (64-bit) keys in the database by storing them in the KeyGen table.</li>
                                     </ul>
-                                    Alternatively you can provide a name of the class that implements IPrimaryKeyGenerator that will provide primary keys. This can call a 
-                                    webservice or use other means necessary to generate keys in a coordinated manner, guaranteeing that
+                                    Alternatively you can provide a name of the class that implements IPrimaryKeyGenerator that will provide primary keys. 
+                                    This class call a webservice or use other means necessary to generate keys in a coordinated manner, guaranteeing that
                                     no two sessions will ever get the same primary key.
                                 </td>
                             </tr>
@@ -850,7 +810,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <td>inheritFrom</td>
                                 <td>string</td>
                                 <td>
-                                    Inherits from the specified class. This parameter is the in the <a href="#schemainheritance">inheritance section</a>.
+                                    Specifies the base class. This parameter is explained in the <a href="#schemainheritance">inheritance section</a>.
                                 </td>
                             </tr>
                             <tr>
@@ -882,14 +842,14 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <td>cached</td>
                                 <td>bool</td>
                                 <td>
-                                    Caching hint. The actual interpretation depends on the <a href="#caching">caching policy</a> that's in place.
+                                    Caching hint. The actual interpretation depends on the <a href="#caching">caching policy</a> that's in effect.
                                 </td>
                             </tr>
                             <tr>
                                 <td>cacheCollections</td>
                                 <td>bool</td>
                                 <td>
-                                    Collection caching hint. The actual interpretation depends on the <a href="caching">caching policy</a> that's in place.
+                                    Collection caching hint. The actual interpretation depends on the <a href="caching">caching policy</a> that's in effect.
                                 </td>
                             </tr>
                             <tr>
@@ -920,10 +880,10 @@ foreach (WorkItem wi in WorkItem.GetList(true))
             <body>
                 <p>
                     <x><table /></x> elements are used to define the mapping from database tables to classes and relations as described
-                    <sectionlink id="mappingtablestoclasses" />. Each class is based on at least one <x><table /></x> element. Each table consists of a number of <x><field /></x> 
+                    <sectionlink id="mappingtablestoclasses" />. Each class is based on at least one <x><table /></x> element. Each table consists of <x><field /></x> 
                     elements which represent columns in a database and properties in C#/VB. Each table must have at least one
-                    field which is marked as primary key. It can have more than one (they are then called compound primary keys),
-                    but tables with zero primary keys are not allowed.
+                    field which is marked as the primary key. Compound primary keys (formed by multiple fields with primaryKey attribute)
+                    are supported, but tables with zero primary keys are not allowed.
                 </p>
                 <p>
                 </p>
@@ -967,17 +927,17 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     ]]>
                 </code>
                 <p>
-                    The details about the <x><field /></x> elements are discussed <sectionlink id="schemafield" />.
+                    <x><field /></x> elements are discussed in depth <sectionlink id="schemafield" />.
                 </p>
                 <p>
                     Objects may need to be <a href="#mappingmultipletablestoclasses">stored in multiple tables</a> for efficiency reasons. 
                     In the following example we have two tables - one has employee ID, Name, Salary, HireDate and Active flag, 
-                    the other holds her Picture (potentially very large piece of binary data that encodes the person's photo). 
+                    the other stors his/her Picture (potentially very large piece of binary data that encodes the person's photo). 
                     By storing the picture in a separate table we can avoid reading from it until the data is actually needed.
                 </p>
                 <img src="doc5.gif" alt="Large columns moved to a separate table" />
                 <p>
-                    This piece of schema might represent it:
+                    This is represented by the following fragment of schema:
                 </p>
                 <code lang="XML">
                     <![CDATA[
@@ -998,12 +958,12 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 </code>
                 <p>
                     Each <x><table /></x> is a unit for the load operation, which means whenever you access
-                    one field from a table, the entire table gets loaded and is cached for further accesses. This is easy way 
+                    one field from a table, the entire table row gets loaded and is cached for further accesses. This is easy way 
                     to implement fine-grained <a href="#lazyloading">lazy loading</a> by splitting your fields in groups that are always accessed together.
                 </p>
                 <p>
-                    We can even have two <x><table /></x> elements that are bound to the same physical database table. You only need to repeat
-                    the primary key field in each <x><table /></x>. This allows for column-based lazy loading without the need to create
+                    It is possible to have two <x><table /></x> elements that are bound to the same physical database table. You only need to repeat
+                    the primary key field in each <x><table /></x> element. This allows for column-based lazy loading without the need to create
                     additional database tables. For example, the followin Employee class uses mentioned partitioning feature
                     to avoid loading Picture and VoiceSample with other columns.
                 </p>
@@ -2396,6 +2356,35 @@ foreach (WorkItem wi in WorkItem.GetList(true))
             <section id="loadingobjects">
                 <title>Loading objects</title>
                 <body>
+                </body>
+            </section>
+            <section id="objectidentity">
+                <title>Object Identity Management</title>
+                <body>
+                    <p style="font-size: 200%; color: red">TODO</p>
+                    <p>
+                        This implies that in order to participate in O/R mapping
+                        each database table needs to have one or more primary key columns (either natural or surrogate)
+                        and you need to tell the mapper which columns are primary keys. The primary keys
+                        must be properly maintained in the database (the best way is to create a UNIQUE index on primary
+                        key columns). If you fail to do so (for example when there are many rows sharing the same
+                        value in the primary key column), you may get all sorts of undefined behavior.
+                    </p>
+                    <p>
+                        Sooda guarantees reference identity for objects retrieved from a database. It means
+                        that if we make 2 or more queries which retrieve a particular row from the 
+                        database in the same <a href="#transactions">transaction</a>
+                        they are guaranteed to be be mapped to the same object so if we got objects o1 and o2 then <code>Object.ReferenceEquals(o1, o2) == true</code>
+                        Some other O/R Mapping tools only guarantee object value equality, so the same
+                        row retrieved from the database in multiple queries can be mapped to more than
+                        one object in memory, so you only get:
+                        <code>o1.Equals(o2) &amp;&amp; o2.Equals(o1)</code> but 
+                        <code>Object.ReferenceEquals(o1, o2)</code> can be <code>false</code>.
+                    </p>
+                    <p>
+                        Mechanism that ensures object identity is called L1 (transaction-level) caching. It also ensures that
+                        object is never loaded from a database twice.
+                    </p>
                 </body>
             </section>
             <section id="modifyingobjects">
