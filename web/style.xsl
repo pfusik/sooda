@@ -83,8 +83,9 @@
         <p>
             <xsl:attribute name="class">heading<xsl:apply-templates select="." mode="section-level" /></xsl:attribute>
             <xsl:apply-templates select="." mode="section-number" />.
-            <a name="{@id}">&#160;</a>
-            <xsl:apply-templates select="title" />
+            <a name="{@id}" id="{@id}">
+                <xsl:apply-templates select="title" />
+            </a>
         </p>
         <div>
             <xsl:attribute name="class">body<xsl:apply-templates select="." mode="section-level" /></xsl:attribute>
@@ -152,10 +153,10 @@
         <xsl:if test="$sect"> (<img src="rightarrow.gif" alt="Section" /><xsl:apply-templates select="$sect" mode="section-number" />)
         </xsl:if>
         <xsl:if test="not($sect)">
-            <xsl:message terminate="yes">No such anchor: <xsl:value-of select="@href" /></xsl:message>
+            <xsl:message terminate="yes">No such anchor: '<xsl:value-of select="@id" />'</xsl:message>
         </xsl:if>
         <xsl:if test="count($sect) != 1">
-            <xsl:message terminate="yes">More than one anchor: <xsl:value-of select="@href" /></xsl:message>
+            <xsl:message terminate="yes">More than one anchor: <xsl:value-of select="@id" /></xsl:message>
         </xsl:if>
     </xsl:template>
 
@@ -336,7 +337,7 @@
         <xsl:if test="$sect"> (<img src="rightarrow.gif" alt="Section" /><xsl:apply-templates select="$sect" mode="section-number" />)
         </xsl:if>
         <xsl:if test="not($sect)">
-            <xsl:message terminate="yes">No such anchor: <xsl:value-of select="@href" /></xsl:message>
+            <xsl:message terminate="yes">No such anchor: '<xsl:value-of select="@href" />'</xsl:message>
         </xsl:if>
         <xsl:if test="count($sect) != 1">
             <xsl:message terminate="yes">More than one anchor: <xsl:value-of select="@href" /></xsl:message>

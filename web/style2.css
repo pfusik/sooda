@@ -561,8 +561,9 @@ div.body2
 
 table.toc
 {
-    margin-left: 20px;
-    margin-bottom: 50px;
+    margin-left: 20pt;
+    margin-right: 20pt;
+    margin-bottom: 50pt;
 }
 
 table.toc td.sectionnumber
@@ -581,7 +582,6 @@ table.toc td.sectionnumber
 
 .toc1
 {
-    font-size: 120%;
     font-weight: bold;
 }
 
