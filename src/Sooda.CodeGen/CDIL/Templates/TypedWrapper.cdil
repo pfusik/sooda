@@ -13,6 +13,8 @@ constructor(Sooda.QL.SoqlPathExpression left, System.String name)
 begin
 end
 
+#if ParameterAttributes
+
 method In(params arrayof(${ClassName}WrapperExpression) items)
     attributes Public
     returns Sooda.QL.SoqlBooleanExpression
@@ -33,6 +35,8 @@ method In(params arrayof(${PrimaryKeyType}) items)
 begin
     return new Sooda.QL.SoqlBooleanInExpression(this, arg(items));
 end
+
+#endif
 
 #if CSharp
 

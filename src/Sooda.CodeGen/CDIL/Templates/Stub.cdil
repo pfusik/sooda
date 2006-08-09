@@ -18,7 +18,7 @@ end
 
 #ifnot MiniStub
 
-method GetFieldValuesForRead(System.Int32 requiredTable)
+method Get${ClassName}FieldValuesForRead(System.Int32 requiredTable)
     attributes Private
     returns ${ClassName}_Values
 begin
@@ -74,28 +74,29 @@ method LoadSingleObject(Sooda.QL.SoqlBooleanExpression filterExpression)
     attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
     returns ${ClassName}
 begin
-    return cast(${ClassName}, typeref(Sooda.ObjectMapper.SoodaObjectImpl).SelectSingleObject(arg(filterExpression), defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, new Sooda.SoodaWhereClause(arg(filterExpression)), typeref(SoodaOrderBy).Unsorted$, 2, typeref(SoodaSnapshotOptions).Default$)))
+    return cast(${ClassName}, typeref(Sooda.ObjectMapper.SoodaObjectImpl).SelectSingleObjectBE(arg(filterExpression), defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, new Sooda.SoodaWhereClause(arg(filterExpression)), typeref(SoodaOrderBy).Unsorted$, 2, typeref(SoodaSnapshotOptions).Default$)))
 end
 
 method LoadSingleObject(Sooda.SoodaWhereClause where)
     attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
     returns ${ClassName}
 begin
-    return cast(${ClassName}, typeref(Sooda.ObjectMapper.SoodaObjectImpl).SelectSingleObject(arg(where), defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, arg(where), typeref(SoodaOrderBy).Unsorted$, 2, typeref(SoodaSnapshotOptions).Default$)))
+
+    return cast(${ClassName}, typeref(Sooda.ObjectMapper.SoodaObjectImpl).SelectSingleObjectWC(arg(where), defaultscope.DoGetList(typeref(SoodaTransaction).ActiveTransaction, arg(where), typeref(SoodaOrderBy).Unsorted$, 2, typeref(SoodaSnapshotOptions).Default$)))
 end
 
 method LoadSingleObject(SoodaTransaction tran, Sooda.QL.SoqlBooleanExpression filterExpression)
     attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
     returns ${ClassName}
 begin
-    return cast(${ClassName}, typeref(Sooda.ObjectMapper.SoodaObjectImpl).SelectSingleObject(arg(filterExpression), defaultscope.DoGetList(arg(tran), new Sooda.SoodaWhereClause(arg(filterExpression)), typeref(SoodaOrderBy).Unsorted$, 2, typeref(SoodaSnapshotOptions).Default$)))
+    return cast(${ClassName}, typeref(Sooda.ObjectMapper.SoodaObjectImpl).SelectSingleObjectBE(arg(filterExpression), defaultscope.DoGetList(arg(tran), new Sooda.SoodaWhereClause(arg(filterExpression)), typeref(SoodaOrderBy).Unsorted$, 2, typeref(SoodaSnapshotOptions).Default$)))
 end
 
 method LoadSingleObject(SoodaTransaction tran, Sooda.SoodaWhereClause where)
     attributes Abstract,Public,Static,Overloaded,Final${OptionalNewAttribute}
     returns ${ClassName}
 begin
-    return cast(${ClassName}, typeref(Sooda.ObjectMapper.SoodaObjectImpl).SelectSingleObject(arg(where), defaultscope.DoGetList(arg(tran), arg(where), typeref(SoodaOrderBy).Unsorted$, 2, typeref(SoodaSnapshotOptions).Default$)))
+    return cast(${ClassName}, typeref(Sooda.ObjectMapper.SoodaObjectImpl).SelectSingleObjectWC(arg(where), defaultscope.DoGetList(arg(tran), arg(where), typeref(SoodaOrderBy).Unsorted$, 2, typeref(SoodaSnapshotOptions).Default$)))
 end
 
 method GetAllObjects()

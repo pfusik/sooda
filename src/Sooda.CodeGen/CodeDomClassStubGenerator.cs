@@ -346,7 +346,7 @@ namespace Sooda.CodeGen
             return new CodeFieldReferenceExpression(
                     new CodeMethodInvokeExpression(
                         new CodeThisReferenceExpression(),
-                        "GetFieldValuesForRead",
+                        "Get" + fi.ParentClass.Name + "FieldValuesForRead",
                         new CodePrimitiveExpression(fi.Table.OrdinalInClass)), fi.Name);
         }
 
@@ -364,6 +364,45 @@ namespace Sooda.CodeGen
             {
                 return GetFieldValueForRead(fi);
             }
+        }
+
+        private int GetFieldRefCacheIndex(ClassInfo ci, FieldInfo fi0)
+        {
+            int p = 0;
+
+            foreach (FieldInfo fi in ci.LocalFields)
+            {
+                if (fi == fi0)
+                    return p;
+                if (fi.ReferencedClass != null)
+                    p++;
+            }
+
+            return -1;
+        }
+
+        private int GetFieldRefCacheCount(ClassInfo ci)
+        {
+            int p = 0;
+
+            foreach (FieldInfo fi in ci.LocalFields)
+            {
+                if (fi.ReferencedClass != null)
+                    p++;
+            }
+
+            return p;
+        }
+
+        private CodeExpression RefCacheArray()
+        {
+            return new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), "_refcache");
+        }
+
+        private CodeExpression RefCacheExpression(ClassInfo ci, FieldInfo fi)
+        {
+            return new CodeArrayIndexerExpression(RefCacheArray(), 
+                new CodePrimitiveExpression(GetFieldRefCacheIndex(ci, fi)));
         }
 
         public void GenerateProperties(CodeTypeDeclaration ctd, ClassInfo ci)
@@ -526,7 +565,7 @@ namespace Sooda.CodeGen
                     prop.GetStatements.Add(
                             new CodeConditionStatement(
                                 new CodeBinaryOperatorExpression(
-                                    new CodeFieldReferenceExpression(This, "_refCache_" + fi.Name),
+                                    RefCacheExpression(ci, fi),
                                     CodeBinaryOperatorType.IdentityEquality,
                                     new CodePrimitiveExpression(null)),
                                 new CodeStatement[]
@@ -536,9 +575,9 @@ namespace Sooda.CodeGen
                                     new CodeStatement[]
                                     {
                                     new CodeAssignStatement(
-                                        new CodeFieldReferenceExpression(This, "_refCache_" + fi.Name),
+                                        RefCacheExpression(ci, fi),
                                         new CodeMethodInvokeExpression(
-                                            new CodeTypeReferenceExpression(fi.ReferencedClass.Name),
+                                            new CodeTypeReferenceExpression(fi.ReferencedClass.Name + "_Stub"),
                                             "GetRef",
                                             GetTransaction(),
                                             GetNotNullFieldValue(fi)
@@ -553,7 +592,7 @@ namespace Sooda.CodeGen
                     prop.GetStatements.Add(
                             new CodeMethodReturnStatement(
                                 new CodeCastExpression(returnType,
-                                    new CodeFieldReferenceExpression(This, "_refCache_" + fi.Name))));
+                                    RefCacheExpression(ci, fi))));
 
                     // reference field setter
                     if (!classInfo.ReadOnly)
@@ -570,7 +609,8 @@ namespace Sooda.CodeGen
                                         new CodePrimitiveExpression(fi.Name),
                                         new CodePrimitiveExpression(fi.ClassUnifiedOrdinal),
                                         new CodePropertySetValueReferenceExpression(),
-                                        new CodeDirectionExpression(FieldDirection.Ref, new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), "_refCache_" + fi.Name)),
+                                        RefCacheArray(),
+                                        new CodePrimitiveExpression(GetFieldRefCacheIndex(ci, fi)),
                                         new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(returnType.BaseType + "_Factory"), "TheFactory")
                                         )));
                     }
@@ -715,13 +755,19 @@ namespace Sooda.CodeGen
             CodeTypeReference fieldArrayType = new CodeTypeReference(
                 "Sooda.ObjectMapper.SoodaFieldHandler", 1);
 
+            if (GetFieldRefCacheCount(ci) > 0)
+            {
+                field = new CodeMemberField(new CodeTypeReference(new CodeTypeReference("SoodaObject"),1), "_refcache");
+                field.Attributes = MemberAttributes.Private;
+                field.InitExpression = new CodeArrayCreateExpression(
+                    new CodeTypeReference(typeof(SoodaObject)), new CodePrimitiveExpression(GetFieldRefCacheCount(ci)));
+                ctd.Members.Add(field);
+            }
+
             foreach (FieldInfo fi in classInfo.LocalFields)
             {
                 if (fi.References != null)
                 {
-                    field = new CodeMemberField("SoodaObject", "_refCache_" + fi.Name);
-                    field.Attributes = MemberAttributes.Private;
-                    ctd.Members.Add(field);
                 }
             }
 
@@ -774,58 +820,6 @@ namespace Sooda.CodeGen
                     ctd.Members.Add(field);
                 }
             }
-        }
-
-        public CodeMemberMethod Method_IterateOuterReferences()
-        {
-            CodeMemberMethod method;
-
-            method = new CodeMemberMethod();
-            method.Name = "IterateOuterReferences";
-            method.Parameters.Add(new CodeParameterDeclarationExpression("Sooda.ObjectMapper.SoodaObjectRefFieldIterator", "iter"));
-            method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(object), "context"));
-            method.Attributes = MemberAttributes.Override | MemberAttributes.Family;
-
-            method.Statements.Add(
-                new CodeConditionStatement(
-                new CodeBinaryOperatorExpression(
-                new CodeMethodInvokeExpression(new CodeThisReferenceExpression(), "IsObjectDirty"),
-                CodeBinaryOperatorType.ValueEquality,
-                new CodePrimitiveExpression(false)), new CodeMethodReturnStatement()));
-
-            method.Statements.Add(
-                new CodeExpressionStatement(
-                new CodeMethodInvokeExpression(
-                new CodeBaseReferenceExpression(),
-                "IterateOuterReferences",
-                Arg("iter"),
-                Arg("context"))));
-
-            bool any = false;
-            foreach (FieldInfo fi in classInfo.LocalFields)
-            {
-                if (fi.References == null)
-                    continue;
-
-                method.Statements.Add(
-                    new CodeExpressionStatement(
-                    new CodeDelegateInvokeExpression(
-                    new CodeArgumentReferenceExpression("iter"),
-                    new CodeThisReferenceExpression(),
-                    new CodePrimitiveExpression(fi.Name),
-                    GetFieldValueExpression(fi),
-                    GetFieldIsDirtyExpression(fi),
-                    new CodeDirectionExpression(FieldDirection.Ref, new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), "_refCache_" + fi.Name)),
-                    new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(fi.References + "_Factory"), "TheFactory"),
-                    new CodeArgumentReferenceExpression("context")
-                    )));
-                any = true;
-            }
-
-            if (any)
-                return method;
-            else
-                return null;
         }
     }
 }

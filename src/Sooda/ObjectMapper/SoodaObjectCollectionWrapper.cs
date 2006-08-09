@@ -166,7 +166,12 @@ namespace Sooda.ObjectMapper
             return _theList.GetEnumerator();
         }
 
-        public ISoodaObjectList GetSnapshot()
+        public ISoodaObjectList GetSnapshot2()
+        {
+            return _theList.GetSnapshot();
+        }
+
+        ISoodaObjectList ISoodaObjectList.GetSnapshot()
         {
             return _theList.GetSnapshot();
         }
@@ -241,17 +246,32 @@ namespace Sooda.ObjectMapper
             return _theList.Sort(SoodaOrderBy.FromExpression(sortExpression, sortOrder).GetComparer());
         }
 
-        public ISoodaObjectList SelectFirst(int count)
+        public ISoodaObjectList SelectFirst2(int count)
         {
             return _theList.SelectFirst(count);
         }
 
-        public ISoodaObjectList SelectLast(int count)
+        public ISoodaObjectList SelectLast2(int count)
         {
             return _theList.SelectLast(count);
         }
 
-        public ISoodaObjectList SelectRange(int from, int to)
+        public ISoodaObjectList SelectRange2(int from, int to)
+        {
+            return _theList.SelectRange(from, to);
+        }
+
+        ISoodaObjectList ISoodaObjectList.SelectFirst(int count)
+        {
+            return _theList.SelectFirst(count);
+        }
+
+        ISoodaObjectList ISoodaObjectList.SelectLast(int count)
+        {
+            return _theList.SelectLast(count);
+        }
+
+        ISoodaObjectList ISoodaObjectList.SelectRange(int from, int to)
         {
             return _theList.SelectRange(from, to);
         }

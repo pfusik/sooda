@@ -47,6 +47,12 @@ namespace Sooda.CodeGen
         private ICodeGeneratorOutput _output;
         private CodeDomProvider _codeProvider;
 
+#if DOTNET2
+        private CodeDomProvider _codeGenerator;
+#else
+        private ICodeGenerator _codeGenerator;
+#endif
+
         private bool _rebuildIfChanged = true;
         private bool _rewriteSkeletons = false;
         private bool _rewriteProjects = false;
@@ -502,6 +508,9 @@ namespace Sooda.CodeGen
             CDILContext context = new CDILContext();
             context["ClassName"] = ci.Name;
             context["OptionalNewAttribute"] = (_codeProvider is Microsoft.VisualBasic.VBCodeProvider) ? "" : ",New";
+            context["WithIndexers"] = Project.WithIndexers;
+            if (!_codeGenerator.Supports(GeneratorSupport.DeclareIndexerProperties))
+                context["WithIndexers"] = false;
 
             CodeTypeDeclaration listWrapperClass = CDILParser.ParseClass(CDILTemplate.Get("ListWrapper.cdil"), context);
             nspace.Types.Add(listWrapperClass);
@@ -665,6 +674,7 @@ namespace Sooda.CodeGen
             context["ClassName"] = classInfo.Name;
             context["PrimaryKeyType"] = classInfo.GetFirstPrimaryKeyField().GetFieldHandler().GetFieldType().FullName;
             context["CSharp"] = _codeProvider is Microsoft.CSharp.CSharpCodeProvider;
+            context["ParameterAttributes"] = _codeGenerator.Supports(GeneratorSupport.ParameterAttributes);
 
             ctd = CDILParser.ParseClass(CDILTemplate.Get("TypedWrapper.cdil"), context);
             ns.Types.Add(ctd);
@@ -828,6 +838,7 @@ namespace Sooda.CodeGen
                 ICodeGenerator codeGenerator = codeProvider.CreateGenerator();
                 ICodeGenerator csharpCodeGenerator = GetCodeProvider("c#").CreateGenerator();
 #endif
+                _codeGenerator = codeGenerator;
 
                 CodeGeneratorOptions codeGeneratorOptions = new CodeGeneratorOptions();
                 codeGeneratorOptions.BracingStyle = "Block";

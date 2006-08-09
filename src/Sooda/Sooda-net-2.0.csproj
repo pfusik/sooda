@@ -281,9 +281,6 @@
     <Compile Include="ObjectMapper\KeyGenerators\TableBasedGeneratorBigint.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\RefCache.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="ObjectMapper\SchemaLoader.cs">
       <SubType>Code</SubType>
     </Compile>

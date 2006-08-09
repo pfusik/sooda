@@ -1196,7 +1196,7 @@ namespace Sooda
             }
         }
 
-        internal void SetRefFieldValue(int tableNumber, string fieldName, int fieldOrdinal, SoodaObject newValue, ref SoodaObject refcache, ISoodaObjectFactory factory)
+        internal void SetRefFieldValue(int tableNumber, string fieldName, int fieldOrdinal, SoodaObject newValue, SoodaObject[] refcache, int refCacheOrdinal, ISoodaObjectFactory factory)
         {
             if (newValue != null)
             {
@@ -1244,7 +1244,7 @@ namespace Sooda
                 _fieldValues.SetFieldValue(fieldOrdinal, newValue.GetPrimaryKeyValue());
             }
             SetFieldDirty(fieldOrdinal, true);
-            refcache = null;
+            refcache[refCacheOrdinal] = null;
             SetObjectDirty();
             if (newValue != null && backRefCollections != null)
             {

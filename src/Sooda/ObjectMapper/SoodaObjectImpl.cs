@@ -85,12 +85,12 @@ namespace Sooda.ObjectMapper
             theObject.SetPlainFieldValue(tableNumber, fieldName, fieldOrdinal, newValue, before, after);
         }
 
-        public static void SetRefFieldValue(SoodaObject theObject, int tableNumber, string fieldName, int fieldOrdinal, SoodaObject newValue, ref SoodaObject refcache, ISoodaObjectFactory factory)
+        public static void SetRefFieldValue(SoodaObject theObject, int tableNumber, string fieldName, int fieldOrdinal, SoodaObject newValue, SoodaObject[] refcache, int refcacheOrdinal, ISoodaObjectFactory factory)
         {
-            theObject.SetRefFieldValue(tableNumber, fieldName, fieldOrdinal, newValue, ref refcache, factory);
+            theObject.SetRefFieldValue(tableNumber, fieldName, fieldOrdinal, newValue, refcache, refcacheOrdinal, factory);
         }
 
-        public static SoodaObject SelectSingleObject(Sooda.QL.SoqlBooleanExpression expr, ISoodaObjectList list)
+        public static SoodaObject SelectSingleObjectBE(Sooda.QL.SoqlBooleanExpression expr, ISoodaObjectList list)
         {
             if (list.Count == 0)
                 return null;
@@ -99,7 +99,7 @@ namespace Sooda.ObjectMapper
             return list.GetItem(0);
         }
 
-        public static SoodaObject SelectSingleObject(Sooda.SoodaWhereClause expr, ISoodaObjectList list)
+        public static SoodaObject SelectSingleObjectWC(Sooda.SoodaWhereClause expr, ISoodaObjectList list)
         {
             if (list.Count == 0)
                 return null;
