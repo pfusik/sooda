@@ -2110,12 +2110,12 @@ foreach (WorkItem wi in WorkItem.GetList(true))
             <title>Compilation Process</title>
             <body>
                 <p>
-                    Sooda is a source code generator, so you need to use a utility named <a href="#soodastubgen">SoodaStubGen</a>
-                    to generate the source code of stub classes. You can then compile the stub code with the rest of your
-                    program to create a working DAL (data access library). This section describes the compilation process in detail.
+                    Sooda provides a utility called <a href="#soodastubgen">SoodaStubGen</a> that generates stub source code for 
+                    the Data Access Layer. The generated source code needs to be compiled with a standard C#/VB compiler to 
+                    produce a working assembly. This section describes the compilation process in detail.
                 </p>
                 <p>
-                    It is recommended to run SoodaStubGen as part of your build process (preferably fully automated and repeatable) so Sooda supports 
+                    It is recommended to run SoodaStubGen as part of your (preferably fully automated and repeatable) build process so Sooda supports 
                     calling stub generator from a batch file, NAnt script or Visual Studio 2003/2005 solution 
                     (Visual Studio 2002 is not supported).
                 </p>
@@ -2127,7 +2127,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         This should be compatible with most languages and compilers, but can be slow for really large schemas (which generate huge stub classes). This mode also
                         causes Visual Studio to slow down.
                     </li>
-                    <li><a href="#compilationprocessseparate">Separate Stub Compilation</a> - enables stubs to be precompiled to a separate *.dll, which speeds up large builds but has some drawbacks which are described <sectionlink id="compilationprocessseparate" />.</li>
+                    <li><a href="#compilationprocessseparate">Separate Stub Compilation</a> - enables stubs to be precompiled to a separate *.dll, which speeds up large builds but has some drawbacks which are described.</li>
                 </ul>
                 <p>
                     Separate compilation of stubs is difficult because of cyclic dependency between stub classes and skeleton
@@ -2508,7 +2508,327 @@ foreach (WorkItem wi in WorkItem.GetList(true))
         <section id="soodaproject">
             <title>Sooda Project Files - *.soodaproject</title>
             <body>
+                <p>
+                    Sooda Project Files are used to control the generation of stub source code with the <a href="#soodastubgen">SoodaStubGen utility</a>. 
+                    Project files are easier to read and maintain than command-line arguments passed to SoodaStubGen.
+                    Visual Studio supports Intellisense so editing them is easy, even without documentation.
+                </p>
+                <p>
+                    Sooda Project file must be saved in a file with <code>*.soodaproject</code> extension.
+                    It is an XML file, whose root element is <x><sooda-project /></x> and its
+                    XML Namespace is <code>http://www.sooda.org/schemas/SoodaProject.xsd</code>
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                    <sooda-project xmlns="http://www.sooda.org/schemas/SoodaProject.xsd">
+                        <!-- parameters go here -->
+                    </sooda-project>                
+                    ]]>
+                </code>
+                <p>
+                    The following table describes elements which can be defined in Sooda Project File:
+                </p>
+                <div class="table">
+                    <table style="table-layout: fixed; width: 100%">
+                        <col style="font-family: Consolas, Courier New; width: 3cm" />
+                        <col style="font-family: Consolas, Courier New; width: 3cm" />
+                        <col />
+                        <thead>
+                            <tr>
+                                <th>XML Element</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>schema-file</td>
+                                <td>string</td>
+                                <td>Path to the file that defines the <a href="#schema">mapping schema</a>.
+                                    <p>
+                                        Example:
+                                    </p>
+                                    <pre class="XML">
+                                        <x><schema-file>MySoodaSchema.xml</schema-file></x>
+                                    </pre>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>language</td>
+                                <td>string</td>
+                                <td>Specifies the language. Possible values are (case insensitive):
+                                    <ul>
+                                        <li><b>CS, C#, CSharp</b></li>
+                                        <li><b>VB, VB.NET</b></li>
+                                        <li><b>C++/CLI</b></li>
+                                        <li><b>MC++</b> - Managed C++</li>
+                                        <li>alternatively you can provide a fully qualified class name (including assembly, primary key token) 
+                                            of the CodeDOM provider</li>
+                                    </ul>
+                                    <p>
+                                        The default is <b>C#</b>.
+                                    </p>
+                                    <p>
+                                        Example:
+                                    </p>
+                                    <pre class="XML">
+                                        <x><language>c#</language></x>
+                                    </pre>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>output-assembly</td>
+                                <td>string</td>
+                                <td>Name of the output assembly without the DLL extension.
+                                    <p>
+                                        Example:
+                                    </p>
+                                    <pre class="XML">
+                                        <x><output-assembly>MyAssembly</output-assembly></x>
+                                    </pre>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>output-namespace</td>
+                                <td>string</td>
+                                <td>Name of the output namespace.
+                                    <p>
+                                        Example:
+                                    </p>
+                                    <pre class="XML">
+                                        <x><output-namespace>MyNamespace</output-namespace></x>
+                                    </pre>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>output-path</td>
+                                <td>string</td>
+                                <td>Output path. By default it is "." which represents current working directory.
+                                    <p>
+                                        Example:
+                                    </p>
+                                    <pre class="XML">
+                                        <x><output-path>src\MyBusinessObjects</output-path></x>
+                                    </pre>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>nullable-<br/>not-null-<br/>
+                                    representation</td>
+                                <td>string</td>
+                                <td>Specifies the method of representation of nullable and not-nullable fields as properties.
+                                    Possible methods are discussed <sectionlink id="soodaprojectprimitiverep" />.
+                                    <p>
+                                        The default value for nullable representation is <b>SqlType</b> and not-null representation is <b>Raw</b>.
+                                    </p>
+                                    <p>
+                                        Example:
+                                    </p>
+                                    <pre class="XML">
+                                    <x><nullable-representation>Boxed</nullable-representation></x><br/>
+                                    <x><not-null-representation>Raw</not-null-representation></x>
+                            </pre></td>
+                            </tr>
+                            <tr>
+                                <td>with-indexers</td>
+                                <td>boolean</td>
+                                <td>
+                                    Don't generate indexers (Item in VB, this[] in C#) for list wrappers. Useful for languages that
+                                    don't have the concept of indexers (such as JScript.NET). The default value is <b>false</b>.
+                                    <pre class="XML">
+                                        <x><with-indexers>false</with-indexers></x>
+                                    </pre>
+                                    This feature is experimental and should not be used in production code.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>null propagation</td>
+                                <td>boolean</td>
+                                <td>
+                                    <p>
+                                        Enable null propagation for nullable and reference properties:
+                                    </p>
+                                    <pre class="XML">
+                                        <x><null-propagation>true</null-propagation></x>
+                                    </pre>
+                                    <p>
+                                        Enabling this option causes the following prolog code to be emitted for all "get" property
+                                        accessors:
+                                    </p>
+                                    <code lang="C#">
+                                        if (this == null)
+                                            return null;
+                                    </code>
+                                    <p>
+                                        Without this feature we would get a <code>NullReferenceException</code> when traversing a path
+                                        expression where one of the non-trailing elements is null. Consider this code:
+                                    </p>
+
+                                    <code lang="C#">
+                                        OrgUnit o = this.OrganizationUnit.Parent.Parent.Parent;
+                                    </code>
+
+                                    <p>
+                                        Assuming that <code>this.OrganizationUnit.Parent == null</code>, this code will throw a 
+                                        <code>NullReferenceException</code> when built without null propagation. When null propagation
+                                        is enabled, however, it will assign <code>null</code> to o without throwing an exception.
+                                    </p>
+                                    <p>
+                                        This feature is experimental and should be used with caution.
+                                    </p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </body>
+            <section id="soodaprojectprimitiverep">
+                <title>Primitive Representations</title>
+                <body>
+                    The following values are for <code>nullable-representation</code> and <code>not-null-representation</code>:
+                    <div class="table">
+                        <table style="table-layout: fixed; width: 100%">
+                            <col style="font-family: Consolas, Courier New; width: 3cm" />
+                            <col />
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Boxed</td>
+                                    <td>Use boxing to represent nullable values. Null value is represented 
+                                        as <code>null</code> reference, but a cast is required to get to get the value. 
+                                        This representation is not recommended because of the lack of the type safety.
+
+                                        <code lang="C#">
+                                            // test for null
+                                            if (x.Field1 != null)
+                                            {
+                                                // retrieve not-null value
+                                                int v = (int)x.Field1;
+
+                                                // WARNING - no type checking at compilation time occurs
+                                                // so the following will compile, but will fail at runtime:
+                                                bool b = (bool)x.Field1;
+
+                                                // set to null
+                                                x.Field1 = null;
+
+                                                // set to not-null
+                                                x.Field1 = 42;
+                                            }
+                                        </code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Raw</td>
+                                    <td>Represent nullable fields as properties of primitive types (int,bool,DateTime) 
+                                        completely ignoring their null value. This is suitable for not-null fields, 
+                                        but may be a bad idea for nullable fields.
+
+                                        <code lang="C#">
+                                            // retrieve not-null value
+                                            int v = (int)x.Field1;
+
+                                            // set to not null
+                                            x.Field1 = 42;
+                                        </code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>RawWithIsNull</td>
+                                    <td>Represent nullable fields as a pair of properties - one is of primitive 
+                                        type and returns the value of the field, the other called <b>FieldName_IsNull</b> returns the 
+                                        null flag for the field.
+
+                                        <code lang="C#">
+                                            // test for null
+                                            if (!x.Field1_IsNull)
+                                            {
+                                                // retrieve not-null value
+                                                int v = x.Field1;
+
+                                                // set to null
+                                                x._SetNull_Field1();
+
+                                                // set to not-null
+                                                x.Field1 = 42;
+                                            }
+                                        </code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>SqlType</td>
+                                    <td>
+                                        Represent nullable fields as the appropriate SqlTypes (value types from the System.Data.SqlTypes namespace).
+                                        The following SqlTypes are available:
+                                        <ul>
+                                            <li>SqlInt32</li>
+                                            <li>SqlInt64</li>
+                                            <li>SqlBoolean</li>
+                                            <li>SqlDateTime</li>
+                                            <li>SqlDecimal</li>
+                                            <li>SqlSingle</li>
+                                            <li>SqlDouble</li>
+                                            <li>SqlBinary</li>
+                                            <li>SqlGuid</li>
+                                        </ul>
+
+                                        <code lang="C#">
+                                            // test for null
+                                            if (!x.Field1.IsNull)
+                                            {
+                                                // retrieve not-null value
+                                                int v = x.Field1.Value;
+
+                                                // set to null
+                                                x.Field1 = SqlInt32.Null;
+
+                                                // set to not-null
+                                                x.Field1 = 42;
+                                            }
+                                        </code>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Nullable</td>
+                                    <td>Use <code>Nullable&lt;T&gt;</code> types available in .NET 2.0 and above.
+                                        The following generic types instantiations are used to represent primitive nullable values:
+                                        <ul>
+                                            <li>Nullable&lt;int&gt; - int?</li>
+                                            <li>Nullable&lt;long&gt; - long?</li>
+                                            <li>Nullable&lt;bool&gt; - bool?</li>
+                                            <li>Nullable&lt;DateTime&gt; - DateTime?</li>
+                                            <li>Nullable&lt;decimal&gt; - decimal?</li>
+                                            <li>Nullable&lt;float&gt; - float?</li>
+                                            <li>Nullable&lt;double&gt; - double?</li>
+                                            <li>Nullable&lt;Guid&gt; - Guid?</li>
+                                        </ul>
+
+                                        <code lang="C#">
+                                            // test for null
+                                            if (x.Field1 != null)
+                                            {
+                                                // retrieve not-null value, no other casts are allowed here
+                                                int v = (int)x.Field1;
+
+                                                // set to null
+                                                x.Field1 = null;
+
+                                                // set to not-null
+                                                x.Field1 = 42;
+                                            }
+                                        </code>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </body>
+            </section>
         </section>
     </section>
     <section id="api">
