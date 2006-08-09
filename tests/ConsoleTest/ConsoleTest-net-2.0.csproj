@@ -73,6 +73,10 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Sooda.UnitTests.BaseObjects.Boo, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\build\net-2.0-debug\bin\Sooda.UnitTests.BaseObjects.Boo.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -101,21 +105,6 @@
       <Project>{FCC9B644-9093-41F6-8F0D-F98F22474CB5}</Project>
       <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
     </ProjectReference>
-    <ProjectReference Include="..\BaseObjects\Sooda.UnitTests.BaseObjects-net-2.0.csproj">
-      <Name>Sooda.UnitTests.BaseObjects-net-2.0</Name>
-      <Project>{A1D122ED-CF84-4EF0-A138-72922DD50409}</Project>
-      <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
-    </ProjectReference>
-    <ProjectReference Include="..\TestCases\Sooda.UnitTests.TestCases-net-2.0.csproj">
-      <Name>Sooda.UnitTests.TestCases-net-2.0</Name>
-      <Project>{2DB9451B-8E35-45C3-94E6-32026E9DE8D1}</Project>
-      <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
-    </ProjectReference>
-    <ProjectReference Include="..\UnitTestObjects\Sooda.UnitTests.Objects-net-2.0.csproj">
-      <Name>Sooda.UnitTests.Objects-net-2.0</Name>
-      <Project>{3574E1EF-2272-4474-85D9-0718B3D452E3}</Project>
-      <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -126,12 +115,6 @@
     <Compile Include="Class1.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Form1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

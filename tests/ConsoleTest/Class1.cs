@@ -36,10 +36,8 @@ using System.Threading;
 
 using Sooda;
 using Sooda.Schema;
-using Sooda.UnitTests.TestCases;
 using Sooda.QL;
 using Sooda.ObjectMapper;
-using Sooda.UnitTests.Objects;
 
 using System.Collections;
 using System.Xml;
@@ -49,10 +47,10 @@ using Sooda.Caching;
 using System.Security.Principal;
 using System.Security.Permissions;
 
-using Sooda.UnitTests.BaseObjects;
-using Sooda.UnitTests.BaseObjects.TypedQueries;
+using Sooda.UnitTests.BaseObjects.Boo;
+using Sooda.UnitTests.BaseObjects.Boo.TypedQueries;
 
-[assembly: SoodaStubAssembly(typeof(Sooda.UnitTests.Objects._DatabaseSchema))]
+[assembly: SoodaStubAssembly(typeof(Sooda.UnitTests.BaseObjects.Boo._DatabaseSchema))]
 [assembly: SoodaConfig(XmlConfigFileName = "sooda.config.xml")]
 
 namespace ConsoleTest
@@ -66,9 +64,11 @@ namespace ConsoleTest
 
         static void Main(string[] args)
         {
-            Sooda.Logging.LogManager.Implementation = new Sooda.Logging.ConsoleLoggingImplementation();
-            Sooda.UnitTests.TestCases.Caching.CachingTest ct = new Sooda.UnitTests.TestCases.Caching.CachingTest();
-            ct.Test6();
+            using (SoodaTransaction t = new SoodaTransaction())
+            {
+                Contact c = Contact.Eva;
+                Console.WriteLine(c.Name);
+            }
         }
     }
 }

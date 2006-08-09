@@ -111,5 +111,4 @@
             <field name="Bike" dbcolumn="bike_id" type="Integer" references="Bike" />
         </table>
     </relation>
-
 </schema>

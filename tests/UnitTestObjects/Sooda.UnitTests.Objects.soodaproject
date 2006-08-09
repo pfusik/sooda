@@ -6,7 +6,7 @@
   <output-path>.</output-path>
   <nullable-representation>SqlType</nullable-representation>
   <not-null-representation>Raw</not-null-representation>
-  <with-indexers>false</with-indexers>
+  <with-indexers>true</with-indexers>
   <with-typed-queries>true</with-typed-queries>
   <embedded-schema-type>Binary</embedded-schema-type>
   <external-projects>

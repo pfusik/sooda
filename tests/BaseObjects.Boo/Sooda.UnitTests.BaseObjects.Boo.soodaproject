@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <sooda-project xmlns="http://www.sooda.org/schemas/SoodaProject.xsd">
   <schema-file>../DBSchemaBase.xml</schema-file>
-  <language>c#</language>
-  <output-namespace>Sooda.UnitTests.BaseObjects</output-namespace>
+  <language>Boo.Lang.CodeDom.BooCodeProvider, Boo.Lang.CodeDom</language>
+  <output-namespace>Sooda.UnitTests.BaseObjects.Boo</output-namespace>
   <output-path>.</output-path>
   <nullable-representation>SqlType</nullable-representation>
   <not-null-representation>Raw</not-null-representation>
-  <with-indexers>true</with-indexers>
+  <with-indexers>false</with-indexers>
   <with-typed-queries>true</with-typed-queries>
   <embedded-schema-type>Binary</embedded-schema-type>
+  <file-per-namespace>true</file-per-namespace>
   <external-projects>
-    <project type="vs2003" file="Sooda.UnitTests.BaseObjects.csproj"/>
-    <project type="vs2005" file="Sooda.UnitTests.BaseObjects-net-2.0.csproj"/>
   </external-projects>
 </sooda-project>
