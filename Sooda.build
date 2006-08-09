@@ -358,10 +358,16 @@
     </target>
 
     <target name="Sooda.UnitTests.BaseObjects.Boo" depends="Sooda, Sooda.NAnt.Tasks">
+        <copy todir="${sooda.dir}">
+            <fileset basedir="${boo.home}">
+                <include name="Boo.Lang.CodeDom.dll" />
+                <include name="Boo.Lang.dll" />
+            </fileset>
+        </copy>
         <sooda-generate-code project="tests/BaseObjects.Boo/Sooda.UnitTests.BaseObjects.Boo.soodaproject" verbose="true" />
 
         <loadtasks assembly="${boo.home}\Boo.Nant.Tasks.dll" />
-        <booc target="library" output="${sooda.dir}/Sooda.UnitTests.BaseObjects.Boo.dll" debug="true">
+        <booc target="library" output="${sooda.dir}/Sooda.UnitTests.BaseObjects.Boo.dll" debug="true" verbose="true">
             <references>                                  
                 <include name="${sooda.dir}/NLog.dll" />
                 <include name="${sooda.dir}/Sooda.dll" />
@@ -371,6 +377,48 @@
                 <include name="*.boo" />
             </sources>
         </booc>
+    </target>
+
+    <target name="Sooda.UnitTests.BaseObjects.JScript" depends="Sooda, Sooda.NAnt.Tasks">
+        <sooda-generate-code project="tests/BaseObjects.JScript/Sooda.UnitTests.BaseObjects.JScript.soodaproject" verbose="true" />
+
+        <jsc target="library" output="${sooda.dir}/Sooda.UnitTests.BaseObjects.dll" debug="true">
+            <references>                                  
+                <include name="${sooda.dir}/NLog.dll" />
+                <include name="${sooda.dir}/Sooda.dll" />
+                <include name="System.Data.dll" />
+                <include name="System.Xml.dll" />
+            </references>
+            <sources basedir="tests/BaseObjects.JScript">
+                <include name="*.js" />
+            </sources>
+            <resources basedir="tests/BaseObjects.JScript" prefix="Sooda.UnitTests.BaseObjects.JScript" dynamicprefix="true">
+                <include name="_DBSchema.*" />
+            </resources>
+        </jsc>
+    </target>
+
+    <target name="Sooda.UnitTests.BaseObjects.Nemerle" depends="Sooda, Sooda.NAnt.Tasks">
+        <sooda-generate-code project="tests/BaseObjects.Nemerle/Sooda.UnitTests.BaseObjects.Nemerle.soodaproject" verbose="true" />
+
+        <loadtasks assembly="c:/program files/nemerle/Nemerle.NAnt.Tasks.dll" />
+
+        <ncc target="library" output="${sooda.dir}/Sooda.UnitTests.BaseObjects.dll" debug="true">
+            <references>                                  
+                <include name="${sooda.dir}/NLog.dll" />
+                <include name="${sooda.dir}/Sooda.dll" />
+            </references>
+            <sources basedir="tests/BaseObjects.Nemerle">
+                <include name="*.n" />
+            </sources>
+            <resources basedir="tests/BaseObjects.Nemerle" prefix="Sooda.UnitTests.BaseObjects.Nemerle" dynamicprefix="true">
+                <include name="_DBSchema.*" />
+            </resources>
+        </ncc>
+    </target>
+
+    <target name="Sooda.UnitTests.BaseObjects.C++" depends="Sooda, Sooda.NAnt.Tasks">
+        <sooda-generate-code project="tests/BaseObjects.C++/Sooda.UnitTests.BaseObjects.C++.soodaproject" verbose="true" />
     </target>
 
     <target name="Sooda.UnitTests.Objects" depends="Sooda, SoodaStubGen, Sooda.UnitTests.BaseObjects">
