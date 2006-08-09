@@ -32,6 +32,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
 using System.Collections;
+using System.Collections.Specialized;
 
 using System.CodeDom;
 using System.CodeDom.Compiler;
@@ -46,11 +47,15 @@ namespace Sooda.CodeGen
         private SoodaProject _project;
         private ICodeGeneratorOutput _output;
         private CodeDomProvider _codeProvider;
+        private SchemaInfo _schema;
+        private CodeGeneratorOptions _codeGeneratorOptions;
 
 #if DOTNET2
         private CodeDomProvider _codeGenerator;
+        private CodeDomProvider _csharpCodeGenerator;
 #else
         private ICodeGenerator _codeGenerator;
+        private ICodeGenerator _csharpCodeGenerator;
 #endif
 
         private bool _rebuildIfChanged = true;
@@ -62,11 +67,13 @@ namespace Sooda.CodeGen
             get { return _rebuildIfChanged; }
             set { _rebuildIfChanged = value; }
         }
+
         public bool RewriteSkeletons
         {
             get { return _rewriteSkeletons; }
             set { _rewriteSkeletons = value; }
         }
+
         public bool RewriteProjects
         {
             get { return _rewriteProjects; }
@@ -509,6 +516,7 @@ namespace Sooda.CodeGen
             context["ClassName"] = ci.Name;
             context["OptionalNewAttribute"] = (_codeProvider is Microsoft.VisualBasic.VBCodeProvider) ? "" : ",New";
             context["WithIndexers"] = Project.WithIndexers;
+
             if (!_codeGenerator.Supports(GeneratorSupport.DeclareIndexerProperties))
                 context["WithIndexers"] = false;
 
@@ -731,6 +739,264 @@ namespace Sooda.CodeGen
             ns.Types.Add(nullablectd);
         }
 
+        private string GetEmbeddedSchemaFileName()
+        {
+            string ext = "bin";
+            if (Project.EmbedSchema == EmbedSchema.Xml)
+                ext = "xml";
+
+            if (Project.SeparateStubs)
+                return Path.Combine(Project.OutputPath, "Stubs/_DBSchema." + ext);
+            else
+                return Path.Combine(Project.OutputPath, "_DBSchema." + ext);
+        }
+
+        private string GetStubsFile()
+        {
+            if (Project.SeparateStubs)
+                return Path.Combine(Project.OutputPath, "Stubs/_Stubs.csx");
+            else
+                return Path.Combine(Project.OutputPath, "_Stubs." + _codeProvider.FileExtension);
+        }
+
+        private void GetInputAndOutputFiles(StringCollection inputFiles, StringCollection rewrittenOutputFiles, StringCollection shouldBePresentOutputFiles)
+        {
+            // input 
+            inputFiles.Add(Path.GetFullPath(this.GetType().Assembly.Location)); // Sooda.CodeGen.dll
+            inputFiles.Add(Path.GetFullPath(Project.SchemaFile));
+            // TODO - includes
+
+            // output
+            rewrittenOutputFiles.Add(Path.GetFullPath(GetEmbeddedSchemaFileName()));
+            rewrittenOutputFiles.Add(Path.GetFullPath(GetStubsFile()));
+
+            if (Project.FilePerNamespace)
+            {
+                rewrittenOutputFiles.Add(Path.GetFullPath(Path.Combine(Project.OutputPath, "_Stubs." + Project.OutputNamespace + "." + _codeProvider.FileExtension)));
+                rewrittenOutputFiles.Add(Path.GetFullPath(Path.Combine(Project.OutputPath, "_Stubs." + Project.OutputNamespace + ".Stubs." + _codeProvider.FileExtension)));
+                if (Project.WithTypedQueryWrappers)
+                    rewrittenOutputFiles.Add(Path.GetFullPath(Path.Combine(Project.OutputPath, "_Stubs." + Project.OutputNamespace + ".TypedQueries." + _codeProvider.FileExtension)));
+            }
+            foreach (ClassInfo ci in _schema.LocalClasses)
+            {
+                shouldBePresentOutputFiles.Add(Path.GetFullPath(Path.Combine(Project.OutputPath, ci.Name + "." + _codeProvider.FileExtension)));
+            }
+        }
+
+        private DateTime MaxDate(StringCollection files)
+        {
+            DateTime max = DateTime.MinValue;
+
+            foreach (string s in files)
+            {
+                DateTime dt;
+               
+                if (File.Exists(s))
+                    dt = File.GetLastWriteTime(s);
+                else
+                    dt = DateTime.MaxValue;
+
+                if (dt > max)
+                    max = dt;
+            }
+            // Console.WriteLine("maxDate: {0}", max);
+            return max;
+        }
+
+        private DateTime MinDate(StringCollection files)
+        {
+            DateTime min = DateTime.MaxValue;
+
+            foreach (string s in files)
+            {
+                DateTime dt;
+               
+                if (File.Exists(s))
+                    dt = File.GetLastWriteTime(s);
+                else
+                {
+                    Output.Info("{0} not found", s);
+                    dt = DateTime.MinValue;
+                }
+
+                if (dt < min)
+                    min = dt;
+            }
+            // Console.WriteLine("minDate: {0}", min);
+            return min;
+        }
+
+        private void SaveExternalProjects()
+        {
+            foreach (ExternalProjectInfo epi in Project.ExternalProjects)
+            {
+                Output.Verbose("Saving Project '{0}'...", epi.ActualProjectFile);
+                epi.ProjectProvider.SaveTo(epi.ActualProjectFile);
+            }
+            Output.Verbose("Saved.");
+        }
+
+        private void LoadExternalProjects()
+        {
+            foreach (ExternalProjectInfo epi in Project.ExternalProjects)
+            {
+                IProjectFile projectProvider = GetProjectProvider(epi.ProjectType, _codeProvider);
+                if (epi.ProjectFile != null)
+                {
+                    epi.ActualProjectFile = Path.Combine(Project.OutputPath, epi.ProjectFile);
+                }
+                else
+                {
+                    epi.ActualProjectFile = Path.Combine(Project.OutputPath, projectProvider.GetProjectFileName(Project.OutputNamespace));
+                }
+                epi.ProjectProvider = projectProvider;
+
+                if (!File.Exists(epi.ActualProjectFile) || RewriteProjects)
+                {
+                    Output.Info("Creating Project file '{0}'.", epi.ActualProjectFile);
+                    projectProvider.CreateNew(Project.OutputNamespace, Project.AssemblyName);
+                }
+                else
+                {
+                    Output.Verbose("Opening Project file '{0}'...", epi.ActualProjectFile);
+                    projectProvider.LoadFrom(epi.ActualProjectFile);
+                };
+            }
+        }
+
+        private void CreateOutputDirectories(StringCollection outputFiles)
+        {
+            foreach (string s in outputFiles)
+            {
+                string d = Path.GetDirectoryName(s);
+                if (!Directory.Exists(d))
+                {
+                    Output.Verbose("Creating directory {0}", d);
+                    Directory.CreateDirectory(d);
+                }
+            }
+        }
+
+        private void WriteMiniStubs()
+        {
+            string fname = Path.Combine(Project.OutputPath, "Stubs/_MiniStubs.csx");
+            Output.Verbose("Generating code for {0}...", fname);
+
+            CodeCompileUnit ccu = new CodeCompileUnit();
+
+            // stubs namespace
+            CodeNamespace nspace = CreateStubsNamespace(_schema);
+            ccu.Namespaces.Add(nspace);
+
+            Output.Verbose("    * class stubs");
+            foreach (ClassInfo ci in _schema.LocalClasses)
+            {
+                GenerateClassStub(nspace, ci, true);
+            }
+            using (StreamWriter sw = new StreamWriter(fname))
+            {
+                _csharpCodeGenerator.GenerateCodeFromCompileUnit(ccu, sw, _codeGeneratorOptions);
+            }
+        }
+
+        private void WriteMiniSkeleton()
+        {
+            string fname = Path.Combine(Project.OutputPath, "Stubs/_MiniSkeleton.csx");
+            Output.Verbose("Generating code for {0}...", fname);
+            // fake skeletons for first compilation only
+
+            CodeCompileUnit ccu = new CodeCompileUnit();
+            CodeNamespace nspace = CreateBaseNamespace(_schema);
+            ccu.Namespaces.Add(nspace);
+
+            foreach (ClassInfo ci in _schema.LocalClasses)
+            {
+                GenerateClassSkeleton(nspace, ci, _codeGenerator.Supports(GeneratorSupport.ChainedConstructorArguments) ? true : false, true);
+            }
+
+            foreach (ClassInfo ci in _schema.LocalClasses)
+            {
+                if (ci.ExtBaseClassName != null)
+                {
+                    GenerateMiniBaseClass(ccu, ci.ExtBaseClassName);
+                }
+            }
+
+            if (Project.BaseClassName != null)
+            {
+                GenerateMiniBaseClass(ccu, Project.BaseClassName);
+            }
+
+            using (StreamWriter sw = new StreamWriter(fname))
+            {
+                _csharpCodeGenerator.GenerateCodeFromCompileUnit(ccu, sw, _codeGeneratorOptions);
+            }
+
+        }
+
+        private void WriteSkeletonClasses()
+        {
+            foreach (ClassInfo ci in _schema.LocalClasses)
+            {
+                string fname = ci.Name + "." + _codeProvider.FileExtension;
+                Output.Verbose("    {0}", fname);
+                foreach (ExternalProjectInfo epi in Project.ExternalProjects)
+                {
+                    epi.ProjectProvider.AddCompileUnit(fname);
+                }
+
+                string outFile = Path.Combine(Project.OutputPath, fname);
+
+                if (!File.Exists(outFile) || RewriteSkeletons)
+                {
+                    using (TextWriter tw = new StreamWriter(outFile))
+                    {
+                        CodeNamespace nspace = CreateBaseNamespace(_schema);
+                        GenerateClassSkeleton(nspace, ci, _codeGenerator.Supports(GeneratorSupport.ChainedConstructorArguments) ? true : false, false);
+                        _codeGenerator.GenerateCodeFromNamespace(nspace, tw, _codeGeneratorOptions);
+                    }
+                }
+            }
+        }
+
+        private void SerializeSchema()
+        {
+            string embedBaseDir = Project.OutputPath;
+            if (Project.SeparateStubs)
+                embedBaseDir = Path.Combine(embedBaseDir, "Stubs");
+
+            if (Project.EmbedSchema == EmbedSchema.Xml)
+            {
+                Output.Verbose("Copying schema to {0}...", Path.Combine(embedBaseDir, "_DBSchema.xml"));
+                File.Copy(Project.SchemaFile, Path.Combine(embedBaseDir, "_DBSchema.xml"), true);
+                if (!Project.SeparateStubs)
+                {
+                    foreach (ExternalProjectInfo epi in Project.ExternalProjects)
+                    {
+                        epi.ProjectProvider.AddResource("_DBSchema.xml");
+                    }
+                }
+            }
+            else if (Project.EmbedSchema == EmbedSchema.Binary)
+            {
+                string binFileName = Path.Combine(embedBaseDir, "_DBSchema.bin");
+                Output.Verbose("Serializing schema to {0}...", binFileName);
+                System.Runtime.Serialization.Formatters.Binary.BinaryFormatter bf = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                using (FileStream fileStream = File.OpenWrite(binFileName))
+                {
+                    bf.Serialize(fileStream, _schema);
+                }
+                if (!Project.SeparateStubs)
+                {
+                    foreach (ExternalProjectInfo epi in Project.ExternalProjects)
+                    {
+                        epi.ProjectProvider.AddResource("_DBSchema.bin");
+                    }
+                }
+            }
+        }
+                
+
         public void Run()
         {
             CodeCompileUnit ccu;
@@ -739,89 +1005,78 @@ namespace Sooda.CodeGen
             try
             {
                 if (Project.SchemaFile == null)
-                {
                     throw new SoodaCodeGenException("No schema file specified.");
-                }
 
                 if (Project.OutputPath == null)
-                {
                     throw new SoodaCodeGenException("No Output path specified.");
-                }
 
                 if (Project.OutputNamespace == null)
-                {
                     throw new SoodaCodeGenException("No Output namespace specified.");
-                }
 
                 CodeDomProvider codeProvider = GetCodeProvider(Project.Language);
-
                 _codeProvider = codeProvider;
 
-                if (RebuildIfChanged)
+                Output.Verbose("Loading schema file {0}...", Project.SchemaFile);
+                _schema = SchemaManager.ReadAndValidateSchema(
+                    new XmlTextReader(Project.SchemaFile),
+                    Path.GetDirectoryName(Project.SchemaFile)
+                    );
+
+                StringCollection inputFiles = new StringCollection();
+                StringCollection rewrittenOutputFiles = new StringCollection();
+                StringCollection shouldBePresentOutputFiles = new StringCollection();
+
+                GetInputAndOutputFiles(inputFiles, rewrittenOutputFiles, shouldBePresentOutputFiles);
+
+                bool doRebuild = false;
+
+                if (MinDate(shouldBePresentOutputFiles) == DateTime.MaxValue)
+                    doRebuild = true;
+
+                if (MaxDate(inputFiles) > MinDate(rewrittenOutputFiles))
+                    doRebuild = true;
+
+                if (!RebuildIfChanged)
+                    doRebuild = true;
+
+                if (RewriteProjects)
+                    doRebuild = true;
+
+                if (!doRebuild)
                 {
-                    string stubgenFile = this.GetType().Assembly.Location;
-                    string outputFile;
-
-                    if (Project.SeparateStubs)
-                    {
-                        outputFile = Path.Combine(Project.OutputPath, "Stubs/_Stubs.csx");
-                    }
-                    else
-                    {
-                        outputFile = Path.Combine(Project.OutputPath, "_Stubs." + codeProvider.FileExtension);
-                    }
-
-                    if (File.Exists(outputFile))
-                    {
-                        DateTime stubgenDateTime = File.GetLastWriteTime(stubgenFile);
-                        DateTime schemaDateTime = File.GetLastWriteTime(Project.SchemaFile);
-                        DateTime outputDateTime = File.GetLastWriteTime(outputFile);
-
-                        DateTime maxInputDate = schemaDateTime;
-                        if (stubgenDateTime > maxInputDate)
-                        {
-                            maxInputDate = stubgenDateTime;
-                        }
-
-                        if (maxInputDate < outputDateTime)
-                        {
-                            Output.Info("{0} not changed. Not rebuilding.", Project.SchemaFile);
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        Output.Info("{0} does not exist. Rebuilding.", outputFile);
-                    }
+                    Output.Info("Not rebuilding.");
+                    return;
                 }
+                /*
+                foreach (string s in inputFiles)
+                {
+                    Output.Verbose("IN: {0}", s);
+                }
+                foreach (string s in outputFiles)
+                {
+                    Output.Verbose("OUT: {0}", s);
+                }
+                */
 
                 if (Project.AssemblyName == null)
                     Project.AssemblyName = Project.OutputNamespace;
 
-                foreach (ExternalProjectInfo epi in Project.ExternalProjects)
-                {
-                    IProjectFile projectProvider = GetProjectProvider(epi.ProjectType, codeProvider);
-                    if (epi.ProjectFile != null)
-                    {
-                        epi.ActualProjectFile = Path.Combine(Project.OutputPath, epi.ProjectFile);
-                    }
-                    else
-                    {
-                        epi.ActualProjectFile = Path.Combine(Project.OutputPath, projectProvider.GetProjectFileName(Project.OutputNamespace));
-                    }
-                    epi.ProjectProvider = projectProvider;
+                Output.Verbose("Loaded {0} classes, {1} relations...", _schema.LocalClasses.Count, _schema.Relations.Count);
+                LoadExternalProjects();
+                CreateOutputDirectories(rewrittenOutputFiles);
+                CreateOutputDirectories(shouldBePresentOutputFiles);
 
-                    if (!File.Exists(epi.ActualProjectFile) || RewriteProjects)
-                    {
-                        Output.Info("Creating Project file '{0}'.", epi.ActualProjectFile);
-                        projectProvider.CreateNew(Project.OutputNamespace, Project.AssemblyName);
-                    }
-                    else
-                    {
-                        Output.Verbose("Opening Project file '{0}'...", epi.ActualProjectFile);
-                        projectProvider.LoadFrom(epi.ActualProjectFile);
-                    };
-                }
+#if DOTNET2
+                CodeDomProvider codeGenerator = codeProvider;
+                CodeDomProvider csharpCodeGenerator = GetCodeProvider("c#");
+#else                
+                ICodeGenerator codeGenerator = codeProvider.CreateGenerator();
+                ICodeGenerator csharpCodeGenerator = GetCodeProvider("c#").CreateGenerator();
+#endif
+                _codeGenerator = codeGenerator;
+                _csharpCodeGenerator = csharpCodeGenerator;
+
+                string stubsFileName;
 
                 Output.Verbose("CodeProvider:      {0}", codeProvider.GetType().FullName);
                 Output.Verbose("Source extension:  {0}", codeProvider.FileExtension);
@@ -831,197 +1086,35 @@ namespace Sooda.CodeGen
                 }
                 Output.Verbose("Output Path:       {0}", Project.OutputPath);
                 Output.Verbose("Namespace:         {0}", Project.OutputNamespace);
-#if DOTNET2
-                CodeDomProvider codeGenerator = codeProvider;
-                CodeDomProvider csharpCodeGenerator = GetCodeProvider("c#");
-#else                
-                ICodeGenerator codeGenerator = codeProvider.CreateGenerator();
-                ICodeGenerator csharpCodeGenerator = GetCodeProvider("c#").CreateGenerator();
-#endif
-                _codeGenerator = codeGenerator;
+                _codeGeneratorOptions = new CodeGeneratorOptions();
+                _codeGeneratorOptions.IndentString = "  ";
+                _codeGeneratorOptions.ElseOnClosing = false;
 
-                CodeGeneratorOptions codeGeneratorOptions = new CodeGeneratorOptions();
-                codeGeneratorOptions.BracingStyle = "Block";
-                codeGeneratorOptions.IndentString = "  ";
-                codeGeneratorOptions.BlankLinesBetweenMembers = false;
-                codeGeneratorOptions.ElseOnClosing = false;
+                // write skeleton files
 
-                Output.Verbose("Loading schema file {0}...", Project.SchemaFile);
-                SchemaInfo schema = SchemaManager.ReadAndValidateSchema(
-                    new XmlTextReader(Project.SchemaFile),
-                    Path.GetDirectoryName(Project.SchemaFile)
-                    );
-
-                Output.Verbose("Loaded {0} classes, {1} relations...", schema.LocalClasses.Count, schema.Relations.Count);
-
-                string dir = Project.OutputPath;
-                string fname;
-
-                if (!Directory.Exists(dir))
-                {
-                    Output.Verbose("Creating directory {0}", dir);
-                    Directory.CreateDirectory(dir);
-                }
-                dir = Path.Combine(Project.OutputPath, "Stubs");
-                if (!Directory.Exists(dir))
-                {
-                    Output.Verbose("Creating directory {0}", dir);
-                    Directory.CreateDirectory(dir);
-                }
-                foreach (ClassInfo ci in schema.LocalClasses)
-                {
-                    fname = ci.Name + "." + codeProvider.FileExtension;
-                    Output.Verbose("    {0}", fname);
-                    foreach (ExternalProjectInfo epi in Project.ExternalProjects)
-                    {
-                        epi.ProjectProvider.AddCompileUnit(fname);
-                    }
-
-                    string outFile = Path.Combine(Project.OutputPath, fname);
-
-                    if (!File.Exists(outFile) || RewriteSkeletons)
-                    {
-                        string code;
-
-                        using (TextWriter tw = new StringWriter())
-                        {
-                            ccu = new CodeCompileUnit();
-
-                            nspace = CreateBaseNamespace(schema);
-                            ccu.Namespaces.Add(nspace);
-
-                            GenerateClassSkeleton(nspace, ci, codeGenerator.Supports(GeneratorSupport.ChainedConstructorArguments) ? true : false, false);
-                            codeGenerator.GenerateCodeFromCompileUnit(ccu, tw, codeGeneratorOptions);
-                            code = tw.ToString();
-                        }
-
-                        bool skip = false;
-                        skip = code.IndexOf("<autogenerated>") != -1;
-
-                        using (TextReader tr = new StringReader(code))
-                        {
-                            string line;
-                            if (skip)
-                            {
-                                while ((line = tr.ReadLine()) != null)
-                                {
-                                    if (line.IndexOf("</autogenerated>") != -1)
-                                    {
-                                        // skip two more lines and break
-                                        tr.ReadLine();
-                                        tr.ReadLine();
-                                        break;
-                                    }
-                                }
-                            }
-                            using (TextWriter tw = new StreamWriter(outFile))
-                            {
-                                while ((line = tr.ReadLine()) != null)
-                                {
-                                    tw.WriteLine(line);
-                                };
-                            }
-                        }
-                    }
-                }
+                WriteSkeletonClasses();
+                _codeGeneratorOptions.BracingStyle = "Block";
+                _codeGeneratorOptions.BlankLinesBetweenMembers = false;
 
                 if (Project.SeparateStubs)
                 {
-                    fname = Path.Combine(Project.OutputPath, "Stubs/_MiniSkeleton.csx");
-                    Output.Verbose("Generating code for {0}...", fname);
-                    // fake skeletons for first compilation only
-
-                    ccu = new CodeCompileUnit();
-
-                    nspace = CreateBaseNamespace(schema);
-                    ccu.Namespaces.Add(nspace);
-
-                    foreach (ClassInfo ci in schema.LocalClasses)
-                    {
-                        GenerateClassSkeleton(nspace, ci, codeGenerator.Supports(GeneratorSupport.ChainedConstructorArguments) ? true : false, true);
-                    }
-
-                    foreach (ClassInfo ci in schema.LocalClasses)
-                    {
-                        if (ci.ExtBaseClassName != null)
-                        {
-                            GenerateMiniBaseClass(ccu, ci.ExtBaseClassName);
-                        }
-                    }
-
-                    if (Project.BaseClassName != null)
-                    {
-                        GenerateMiniBaseClass(ccu, Project.BaseClassName);
-                    }
-
-                    using (StreamWriter sw = new StreamWriter(fname))
-                    {
-                        csharpCodeGenerator.GenerateCodeFromCompileUnit(ccu, sw, codeGeneratorOptions);
-                    }
-
-                    fname = Path.Combine(Project.OutputPath, "Stubs/_MiniStubs.csx");
-                    Output.Verbose("Generating code for {0}...", fname);
-
-                    ccu = new CodeCompileUnit();
-
-                    // stubs namespace
-                    nspace = CreateStubsNamespace(schema);
-                    ccu.Namespaces.Add(nspace);
-
-                    Output.Verbose("    * class stubs");
-                    foreach (ClassInfo ci in schema.LocalClasses)
-                    {
-                        GenerateClassStub(nspace, ci, true);
-                    }
-                    using (StreamWriter sw = new StreamWriter(fname))
-                    {
-                        csharpCodeGenerator.GenerateCodeFromCompileUnit(ccu, sw, codeGeneratorOptions);
-                    }
+                    WriteMiniSkeleton();
+                    WriteMiniStubs();
                 }
 
-                string embedBaseDir = Project.OutputPath;
-                if (Project.SeparateStubs)
-                    embedBaseDir = Path.Combine(embedBaseDir, "Stubs");
-
-                if (Project.EmbedSchema == EmbedSchema.Xml)
-                {
-                    Output.Verbose("Copying schema to {0}...", Path.Combine(embedBaseDir, "_DBSchema.xml"));
-                    File.Copy(Project.SchemaFile, Path.Combine(embedBaseDir, "_DBSchema.xml"), true);
-                    if (!Project.SeparateStubs)
-                    {
-                        foreach (ExternalProjectInfo epi in Project.ExternalProjects)
-                        {
-                            epi.ProjectProvider.AddResource("_DBSchema.xml");
-                        }
-                    }
-                }
-                else if (Project.EmbedSchema == EmbedSchema.Binary)
-                {
-                    string binFileName = Path.Combine(embedBaseDir, "_DBSchema.bin");
-                    Output.Verbose("Serializing schema to {0}...", binFileName);
-                    System.Runtime.Serialization.Formatters.Binary.BinaryFormatter bf = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                    using (FileStream fileStream = File.OpenWrite(binFileName))
-                    {
-                        bf.Serialize(fileStream, schema);
-                    }
-                    if (!Project.SeparateStubs)
-                    {
-                        foreach (ExternalProjectInfo epi in Project.ExternalProjects)
-                        {
-                            epi.ProjectProvider.AddResource("_DBSchema.bin");
-                        }
-                    }
-                }
+                SerializeSchema();
 
                 // codeGenerator = csharpCodeGenerator;
 
                 if (Project.SeparateStubs)
                 {
-                    fname = Path.Combine(Project.OutputPath, "Stubs/_Stubs.csx");
+                    stubsFileName = Path.Combine(Project.OutputPath, "Stubs/_Stubs.csx");
                 }
                 else if (Project.FilePerNamespace)
                 {
-                    fname = "_Stubs." + Project.OutputNamespace + "." + codeProvider.FileExtension;
+                    string fname = "_Stubs." + codeProvider.FileExtension;
+                    stubsFileName = Path.Combine(Project.OutputPath, fname);
+
                     foreach (ExternalProjectInfo epi in Project.ExternalProjects)
                     {
                         epi.ProjectProvider.AddCompileUnit(fname);
@@ -1041,48 +1134,45 @@ namespace Sooda.CodeGen
                 }
                 else
                 {
-                    fname = "_Stubs." + codeProvider.FileExtension;
+                    string fname = "_Stubs." + codeProvider.FileExtension;
                     foreach (ExternalProjectInfo epi in Project.ExternalProjects)
                     {
                         epi.ProjectProvider.AddCompileUnit(fname);
                     }
-                    fname = Path.Combine(Project.OutputPath, fname);
+                    stubsFileName = Path.Combine(Project.OutputPath, fname);
                 }
 
-                Output.Verbose("Generating code...");
-                Output.Verbose("{0}", fname);
                 ccu = new CodeCompileUnit();
                 CodeAttributeDeclaration cad = new CodeAttributeDeclaration("Sooda.SoodaObjectsAssembly");
                 cad.Arguments.Add(new CodeAttributeArgument(new CodeTypeOfExpression(Project.OutputNamespace + "._DatabaseSchema")));
                 ccu.AssemblyCustomAttributes.Add(cad);
 
-                nspace = CreateBaseNamespace(schema);
+                nspace = CreateBaseNamespace(_schema);
                 ccu.Namespaces.Add(nspace);
 
                 Output.Verbose("    * list wrappers");
-                foreach (ClassInfo ci in schema.LocalClasses)
+                foreach (ClassInfo ci in _schema.LocalClasses)
                 {
                     GenerateListWrapper(nspace, ci);
                 }
                 Output.Verbose("    * database schema");
-                GenerateDatabaseSchema(nspace, schema);
 
                 // stubs namespace
-                nspace = CreateStubsNamespace(schema);
+                nspace = CreateStubsNamespace(_schema);
                 ccu.Namespaces.Add(nspace);
 
                 Output.Verbose("    * class stubs");
-                foreach (ClassInfo ci in schema.LocalClasses)
+                foreach (ClassInfo ci in _schema.LocalClasses)
                 {
                     GenerateClassStub(nspace, ci, false);
                 }
                 Output.Verbose("    * class factories");
-                foreach (ClassInfo ci in schema.LocalClasses)
+                foreach (ClassInfo ci in _schema.LocalClasses)
                 {
                     GenerateClassFactory(nspace, ci);
                 }
                 Output.Verbose("    * N-N relation stubs");
-                foreach (RelationInfo ri in schema.LocalRelations)
+                foreach (RelationInfo ri in _schema.LocalRelations)
                 {
                     GenerateRelationStub(nspace, ri);
                 }
@@ -1090,16 +1180,16 @@ namespace Sooda.CodeGen
                 if (Project.WithTypedQueryWrappers)
                 {
                     Output.Verbose("    * typed query wrappers (internal)");
-                    foreach (ClassInfo ci in schema.LocalClasses)
+                    foreach (ClassInfo ci in _schema.LocalClasses)
                     {
                         GenerateTypedInternalQueryWrappers(nspace, ci);
                     }
 
-                    nspace = CreateTypedQueriesNamespace(schema);
+                    nspace = CreateTypedQueriesNamespace(_schema);
                     ccu.Namespaces.Add(nspace);
 
                     Output.Verbose("    * typed query wrappers");
-                    foreach (ClassInfo ci in schema.LocalClasses)
+                    foreach (ClassInfo ci in _schema.LocalClasses)
                     {
                         GenerateTypedPublicQueryWrappers(nspace, ci);
                     }
@@ -1112,47 +1202,49 @@ namespace Sooda.CodeGen
                         using (StringWriter sw = new StringWriter())
                         {
                             Output.Verbose("Writing code...");
-                            codeGenerator.GenerateCodeFromNamespace(ns, sw, codeGeneratorOptions);
+                            codeGenerator.GenerateCodeFromNamespace(ns, sw, _codeGeneratorOptions);
                             Output.Verbose("Done.");
 
                             string resultString = sw.ToString();
                             resultString = resultString.Replace("[System.ParamArrayAttribute()] ", "params ");
 
-                            string fileName = fname = "_Stubs." + ns.Name + "." + codeProvider.FileExtension;
+                            string fileName = "_Stubs." + ns.Name + "." + codeProvider.FileExtension;
+                            foreach (ExternalProjectInfo epi in Project.ExternalProjects)
+                            {
+                                epi.ProjectProvider.AddCompileUnit(fileName);
+                            }
 
-                            using (TextWriter tw = new StreamWriter(fileName))
+                            using (TextWriter tw = new StreamWriter(Path.Combine(Project.OutputPath, fileName)))
                             {
                                 tw.Write(resultString);
                             }
                         }
                     }
+                    ccu.Namespaces.Clear();
                 }
-                else
+
+                nspace = CreateBaseNamespace(_schema);
+                ccu.Namespaces.Add(nspace);
+
+                GenerateDatabaseSchema(nspace, _schema);
+
+                using (StringWriter sw = new StringWriter())
                 {
-                    using (StringWriter sw = new StringWriter())
+                    Output.Verbose("Writing code...");
+                    codeGenerator.GenerateCodeFromCompileUnit(ccu, sw, _codeGeneratorOptions);
+                    Output.Verbose("Done.");
+
+                    string resultString = sw.ToString();
+                    resultString = resultString.Replace("[System.ParamArrayAttribute()] ", "params ");
+
+                    using (TextWriter tw = new StreamWriter(stubsFileName))
                     {
-                        Output.Verbose("Writing code...");
-                        codeGenerator.GenerateCodeFromCompileUnit(ccu, sw, codeGeneratorOptions);
-                        Output.Verbose("Done.");
-
-                        string resultString = sw.ToString();
-                        resultString = resultString.Replace("[System.ParamArrayAttribute()] ", "params ");
-
-                        using (TextWriter tw = new StreamWriter(fname))
-                        {
-                            tw.Write(resultString);
-                        }
+                        tw.Write(resultString);
                     }
                 }
 
-                fname = "_FakeSkeleton." + codeProvider.FileExtension;
+                SaveExternalProjects();
 
-                foreach (ExternalProjectInfo epi in Project.ExternalProjects)
-                {
-                    Output.Verbose("Saving Project '{0}'...", epi.ActualProjectFile);
-                    epi.ProjectProvider.SaveTo(epi.ActualProjectFile);
-                }
-                Output.Verbose("Saved.");
                 return;
             }
             catch (SoodaCodeGenException e)

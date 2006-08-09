@@ -69,21 +69,21 @@ begin
 end
 
 method SelectFirst(System.Int32 count)
-    attributes Public,Final,New
+    attributes Public,Final
     returns ${ClassName}List
 begin
     return new ${ClassName}List(base.SelectFirst2(arg(count)))
 end
 
 method SelectLast(System.Int32 count)
-    attributes Public,Final,New
+    attributes Public,Final
     returns ${ClassName}List
 begin
     return new ${ClassName}List(base.SelectLast2(arg(count)))
 end
 
 method SelectRange(System.Int32 _from, System.Int32 _to)
-    attributes Public,Final,New
+    attributes Public,Final
     returns ${ClassName}List
 begin
     return new ${ClassName}List(base.SelectRange2(arg(_from),arg(_to)))
@@ -112,7 +112,7 @@ end
 
 method GetSnapshot()
     returns ${ClassName}List
-    attributes Public,Final,New
+    attributes Public,Final
 begin    
     return new ${ClassName}List(base.GetSnapshot2())
 end
