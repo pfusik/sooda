@@ -58,6 +58,8 @@ namespace Sooda.CodeGen
         private ICodeGenerator _csharpCodeGenerator;
 #endif
 
+        private string _fileExtensionWithoutPeriod;
+
         private bool _rebuildIfChanged = true;
         private bool _rewriteSkeletons = false;
         private bool _rewriteProjects = false;
@@ -756,7 +758,7 @@ namespace Sooda.CodeGen
             if (Project.SeparateStubs)
                 return Path.Combine(Project.OutputPath, "Stubs/_Stubs.csx");
             else
-                return Path.Combine(Project.OutputPath, "_Stubs." + _codeProvider.FileExtension);
+                return Path.Combine(Project.OutputPath, "_Stubs." + _fileExtensionWithoutPeriod);
         }
 
         private void GetInputAndOutputFiles(StringCollection inputFiles, StringCollection rewrittenOutputFiles, StringCollection shouldBePresentOutputFiles)
@@ -772,14 +774,14 @@ namespace Sooda.CodeGen
 
             if (Project.FilePerNamespace)
             {
-                rewrittenOutputFiles.Add(Path.GetFullPath(Path.Combine(Project.OutputPath, "_Stubs." + Project.OutputNamespace + "." + _codeProvider.FileExtension)));
-                rewrittenOutputFiles.Add(Path.GetFullPath(Path.Combine(Project.OutputPath, "_Stubs." + Project.OutputNamespace + ".Stubs." + _codeProvider.FileExtension)));
+                rewrittenOutputFiles.Add(Path.GetFullPath(Path.Combine(Project.OutputPath, "_Stubs." + Project.OutputNamespace + "." + _fileExtensionWithoutPeriod)));
+                rewrittenOutputFiles.Add(Path.GetFullPath(Path.Combine(Project.OutputPath, "_Stubs." + Project.OutputNamespace + ".Stubs." + _fileExtensionWithoutPeriod)));
                 if (Project.WithTypedQueryWrappers)
-                    rewrittenOutputFiles.Add(Path.GetFullPath(Path.Combine(Project.OutputPath, "_Stubs." + Project.OutputNamespace + ".TypedQueries." + _codeProvider.FileExtension)));
+                    rewrittenOutputFiles.Add(Path.GetFullPath(Path.Combine(Project.OutputPath, "_Stubs." + Project.OutputNamespace + ".TypedQueries." + _fileExtensionWithoutPeriod)));
             }
             foreach (ClassInfo ci in _schema.LocalClasses)
             {
-                shouldBePresentOutputFiles.Add(Path.GetFullPath(Path.Combine(Project.OutputPath, ci.Name + "." + _codeProvider.FileExtension)));
+                shouldBePresentOutputFiles.Add(Path.GetFullPath(Path.Combine(Project.OutputPath, ci.Name + "." + _fileExtensionWithoutPeriod)));
             }
         }
 
@@ -938,7 +940,7 @@ namespace Sooda.CodeGen
         {
             foreach (ClassInfo ci in _schema.LocalClasses)
             {
-                string fname = ci.Name + "." + _codeProvider.FileExtension;
+                string fname = ci.Name + "." + _fileExtensionWithoutPeriod;
                 Output.Verbose("    {0}", fname);
                 foreach (ExternalProjectInfo epi in Project.ExternalProjects)
                 {
@@ -1016,6 +1018,20 @@ namespace Sooda.CodeGen
                 CodeDomProvider codeProvider = GetCodeProvider(Project.Language);
                 _codeProvider = codeProvider;
 
+#if DOTNET2
+                CodeDomProvider codeGenerator = codeProvider;
+                CodeDomProvider csharpCodeGenerator = GetCodeProvider("c#");
+#else                
+                ICodeGenerator codeGenerator = codeProvider.CreateGenerator();
+                ICodeGenerator csharpCodeGenerator = GetCodeProvider("c#").CreateGenerator();
+#endif
+                _codeGenerator = codeGenerator;
+                _csharpCodeGenerator = csharpCodeGenerator;
+
+                _fileExtensionWithoutPeriod = _codeProvider.FileExtension;
+                if (_fileExtensionWithoutPeriod.StartsWith("."))
+                    _fileExtensionWithoutPeriod = _fileExtensionWithoutPeriod.Substring(1);            
+
                 Output.Verbose("Loading schema file {0}...", Project.SchemaFile);
                 _schema = SchemaManager.ReadAndValidateSchema(
                     new XmlTextReader(Project.SchemaFile),
@@ -1066,16 +1082,6 @@ namespace Sooda.CodeGen
                 CreateOutputDirectories(rewrittenOutputFiles);
                 CreateOutputDirectories(shouldBePresentOutputFiles);
 
-#if DOTNET2
-                CodeDomProvider codeGenerator = codeProvider;
-                CodeDomProvider csharpCodeGenerator = GetCodeProvider("c#");
-#else                
-                ICodeGenerator codeGenerator = codeProvider.CreateGenerator();
-                ICodeGenerator csharpCodeGenerator = GetCodeProvider("c#").CreateGenerator();
-#endif
-                _codeGenerator = codeGenerator;
-                _csharpCodeGenerator = csharpCodeGenerator;
-
                 string stubsFileName;
 
                 Output.Verbose("CodeProvider:      {0}", codeProvider.GetType().FullName);
@@ -1112,7 +1118,7 @@ namespace Sooda.CodeGen
                 }
                 else if (Project.FilePerNamespace)
                 {
-                    string fname = "_Stubs." + codeProvider.FileExtension;
+                    string fname = "_Stubs." + _fileExtensionWithoutPeriod;
                     stubsFileName = Path.Combine(Project.OutputPath, fname);
 
                     foreach (ExternalProjectInfo epi in Project.ExternalProjects)
@@ -1120,13 +1126,13 @@ namespace Sooda.CodeGen
                         epi.ProjectProvider.AddCompileUnit(fname);
                     }
 
-                    fname = "_Stubs." + Project.OutputNamespace + ".TypedQueries." + codeProvider.FileExtension;
+                    fname = "_Stubs." + Project.OutputNamespace + ".TypedQueries." + _fileExtensionWithoutPeriod;
                     foreach (ExternalProjectInfo epi in Project.ExternalProjects)
                     {
                         epi.ProjectProvider.AddCompileUnit(fname);
                     }
 
-                    fname = "_Stubs." + Project.OutputNamespace + ".Stubs." + codeProvider.FileExtension;
+                    fname = "_Stubs." + Project.OutputNamespace + ".Stubs." + _fileExtensionWithoutPeriod;
                     foreach (ExternalProjectInfo epi in Project.ExternalProjects)
                     {
                         epi.ProjectProvider.AddCompileUnit(fname);
@@ -1134,7 +1140,7 @@ namespace Sooda.CodeGen
                 }
                 else
                 {
-                    string fname = "_Stubs." + codeProvider.FileExtension;
+                    string fname = "_Stubs." + _fileExtensionWithoutPeriod;
                     foreach (ExternalProjectInfo epi in Project.ExternalProjects)
                     {
                         epi.ProjectProvider.AddCompileUnit(fname);
@@ -1208,7 +1214,7 @@ namespace Sooda.CodeGen
                             string resultString = sw.ToString();
                             resultString = resultString.Replace("[System.ParamArrayAttribute()] ", "params ");
 
-                            string fileName = "_Stubs." + ns.Name + "." + codeProvider.FileExtension;
+                            string fileName = "_Stubs." + ns.Name + "." + _fileExtensionWithoutPeriod;
                             foreach (ExternalProjectInfo epi in Project.ExternalProjects)
                             {
                                 epi.ProjectProvider.AddCompileUnit(fileName);

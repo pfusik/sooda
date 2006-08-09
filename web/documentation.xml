@@ -62,6 +62,18 @@
                     Some graphical and command line tools to support the development are available, but they are generally
                     newer and still require some work.
                 </p>
+                <p>
+                    Sooda supports code generation using CodeDOM technology. In theory any language should be supported,
+                    but some languages have problems with their CodeDOM or compiler implementation.
+                    The following languages have been tested:
+                </p>
+                <ul>
+                    <li><b>C#</b> - fully supported, code compiles cleanly, supports <a href="#soqltypedqueries">Typed Queries</a>.</li>
+                    <li><b>VB.NET</b> - fully supported, some warnings may be raised during compilation of the generated code, but they can be ignored.</li>
+                    <li><b><a href="http://boo.codehaus.org/">Boo</a></b> - supported - EXPERIMENTAL</li>
+                    <li><b><a href="http://www.nemerle.org/">Nemerle</a></b> - not supported - fails compilation</li>
+                    <li><b><a href="http://msdn.microsoft.com/jscript/">JScript.NET</a></b> - not supported - compilation fails with internal error</li>
+                </ul>
             </body>
         </section>
         <section id="basicconcepts">

@@ -379,6 +379,25 @@
         </booc>
     </target>
 
+    <target name="Sooda.UnitTests.BaseObjects.VJSharp" depends="Sooda, Sooda.NAnt.Tasks">
+        <sooda-generate-code project="tests/BaseObjects.VJSharp/Sooda.UnitTests.BaseObjects.VJSharp.soodaproject" verbose="true" />
+
+        <vjc target="library" output="${sooda.dir}/Sooda.UnitTests.BaseObjects.VJSharp.dll" debug="true" verbose="true">
+            <references>                                  
+                <include name="${sooda.dir}/NLog.dll" />
+                <include name="${sooda.dir}/Sooda.dll" />
+                <include name="System.Data.dll" asis="true" />
+                <include name="System.Xml.dll" />
+            </references>
+            <sources basedir="tests/BaseObjects.VJSharp">
+                <include name="*.jsl" />
+            </sources>
+            <resources basedir="tests/BaseObjects.VJSharp" prefix="Sooda.UnitTests.BaseObjects.VJSharp" dynamicprefix="true">
+                <include name="_DBSchema.*" />
+            </resources>
+        </vjc>
+    </target>
+
     <target name="Sooda.UnitTests.BaseObjects.JScript" depends="Sooda, Sooda.NAnt.Tasks">
         <sooda-generate-code project="tests/BaseObjects.JScript/Sooda.UnitTests.BaseObjects.JScript.soodaproject" verbose="true" />
 
