@@ -57,6 +57,8 @@ namespace Sooda.CodeGen.CDIL
                 {
                     startingPos = pos2 + 1;
                     string item = s.Substring(pos + 2, pos2 - pos - 2);
+                    if (_params[item] == null)
+                        throw new SoodaCodeGenException("parameter ${" + item + "} not defined in context.");
                     string replacement = Convert.ToString(_params[item]);
 
                     result.Append(replacement);

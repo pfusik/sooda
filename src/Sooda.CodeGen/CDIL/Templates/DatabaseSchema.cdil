@@ -20,7 +20,7 @@ class _DatabaseSchema
         returns Sooda.Schema.SchemaInfo
         attributes Public,Static
     begin
-        return defaultscope._theSchema
+        return defaultscope._theSchema$
     end
     
     method LoadSchema()
@@ -35,6 +35,6 @@ class _DatabaseSchema
         attributes Public
         implements Sooda.ObjectMapper.ISoodaSchema
     begin
-        return this._factories
+        return this._factories$
     end
 end    

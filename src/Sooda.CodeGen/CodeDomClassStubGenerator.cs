@@ -172,9 +172,17 @@ namespace Sooda.CodeGen
             prop.GetStatements.Add(
                 new CodeMethodReturnStatement(
                 new CodeMethodInvokeExpression(
-                new CodeTypeReferenceExpression(classInfo.Name + "_Stub"), "GetRef", new CodePrimitiveExpression(val))));
+                LoaderClass(classInfo), "GetRef", new CodePrimitiveExpression(val))));
 
             return prop;
+        }
+
+        private CodeTypeReferenceExpression LoaderClass(ClassInfo ci)
+        {
+            if (options.LoaderClass)
+                return new CodeTypeReferenceExpression(ci.Name + "Loader");
+            else
+                return new CodeTypeReferenceExpression(ci.Name + "_Stub");
         }
 
         public CodeTypeReference GetReturnType(PrimitiveRepresentation rep, FieldInfo fi)
@@ -577,7 +585,7 @@ namespace Sooda.CodeGen
                                     new CodeAssignStatement(
                                         RefCacheExpression(ci, fi),
                                         new CodeMethodInvokeExpression(
-                                            new CodeTypeReferenceExpression(fi.ReferencedClass.Name + "_Stub"),
+                                            LoaderClass(fi.ReferencedClass),
                                             "GetRef",
                                             GetTransaction(),
                                             GetNotNullFieldValue(fi)
@@ -677,7 +685,7 @@ namespace Sooda.CodeGen
                                                          new CodeTypeOfExpression(new CodeTypeReference(coli.ClassName)),
                                                          new CodeThisReferenceExpression(),
                                                          new CodePrimitiveExpression(coli.ForeignFieldName),
-                                                         new CodeFieldReferenceExpression(new CodeTypeReferenceExpression(coli.ClassName + "_Factory"), "TheClassInfo"),
+                                                         new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(coli.ClassName + "_Factory"), "TheClassInfo"),
                                                          new CodeFieldReferenceExpression(null, "_collectionWhere_" + coli.Name),
 														 new CodePrimitiveExpression(coli.Cache)
                             }))

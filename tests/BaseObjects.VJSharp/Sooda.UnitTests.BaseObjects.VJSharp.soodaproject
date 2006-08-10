@@ -7,9 +7,10 @@
   <nullable-representation>Boxed</nullable-representation>
   <not-null-representation>Boxed</not-null-representation>
   <with-indexers>false</with-indexers>
-  <with-typed-queries>true</with-typed-queries>
+  <with-typed-queries>false</with-typed-queries>
   <embedded-schema-type>Binary</embedded-schema-type>
   <file-per-namespace>true</file-per-namespace>
+  <loader-class>true</loader-class>
   <external-projects>
   </external-projects>
 </sooda-project>

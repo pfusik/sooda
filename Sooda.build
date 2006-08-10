@@ -26,6 +26,7 @@
     <property name="clover.enabled" value="false" />
     <property name="clover.home" value="C:\Program Files\Cenqua\Clover.NET" />
     <property name="boo.home" value="d:\Work\Boo\build" />
+    <property name="ironpython.home" value="d:\Apps\IronPython" />
 
     <property name="sources" value="src" />
     
@@ -357,6 +358,24 @@
         </csc>
     </target>
 
+    <target name="Sooda.UnitTests.BaseObjects.CSharpSeparate" depends="Sooda, Sooda.NAnt.Tasks, SoodaStubGen">
+        <sooda-generate-code project="tests/BaseObjects.CSharpSeparate/Sooda.UnitTests.BaseObjects.CSharpSeparate.soodaproject" verbose="true" />
+
+        <csc target="library" output="${sooda.dir}/Sooda.UnitTests.BaseObjects.CSharpSeparate.dll" debug="true">
+            <references>                                  
+                <include name="${sooda.dir}/NLog.dll" />
+                <include name="${sooda.dir}/Sooda.dll" />
+                <include name="System.Data.dll" asis="true" />
+            </references>
+            <sources basedir="tests/BaseObjects.CSharpSeparate">
+                <include name="*.cs" />
+            </sources>
+            <resources basedir="tests/BaseObjects.CSharpSeparate" prefix="Sooda.UnitTests.BaseObjects.CSharpSeparate" dynamicprefix="true">
+                <include name="_DBSchema.*" />
+            </resources>
+        </csc>
+    </target>
+
     <target name="Sooda.UnitTests.BaseObjects.Boo" depends="Sooda, Sooda.NAnt.Tasks">
         <copy todir="${sooda.dir}">
             <fileset basedir="${boo.home}">
@@ -374,6 +393,27 @@
                 <include name="System.Data.dll" asis="true" />
             </references>
             <sources basedir="tests/BaseObjects.Boo">
+                <include name="*.boo" />
+            </sources>
+        </booc>
+    </target>
+
+    <target name="Sooda.UnitTests.BaseObjects.IronPython" depends="Sooda, Sooda.NAnt.Tasks">
+        <copy todir="${sooda.dir}">
+            <fileset basedir="${ironpython.home}">
+                <include name="IronPython.dll" />
+                <include name="IronMath.dll" />
+            </fileset>
+        </copy>
+        <sooda-generate-code project="tests/BaseObjects.IronPython/Sooda.UnitTests.BaseObjects.IronPython.soodaproject" verbose="true" />
+
+        <booc target="library" output="${sooda.dir}/Sooda.UnitTests.BaseObjects.IronPython.dll" debug="true" verbose="true">
+            <references>                                  
+                <include name="${sooda.dir}/NLog.dll" />
+                <include name="${sooda.dir}/Sooda.dll" />
+                <include name="System.Data.dll" asis="true" />
+            </references>
+            <sources basedir="tests/BaseObjects.IronPython">
                 <include name="*.boo" />
             </sources>
         </booc>

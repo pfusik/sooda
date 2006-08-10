@@ -17,7 +17,8 @@
       <xs:element minOccurs="0" maxOccurs="1" default="false" name="stubs-compiled-separately" type="xs:boolean" />
       <xs:element minOccurs="1" maxOccurs="1" name="embedded-schema-type" type="tns:EmbedSchema" />
       <xs:element minOccurs="0" maxOccurs="1" name="external-projects" type="tns:ArrayOfExternalProjectInfo" />
-        <xs:element minOccurs="0" maxOccurs="1" name="file-per-namespace" type="xs:boolean" />
+    <xs:element minOccurs="0" maxOccurs="1" name="file-per-namespace" type="xs:boolean" />
+    <xs:element minOccurs="0" maxOccurs="1" name="loader-class" type="xs:boolean" />
     </xs:choice>
 </xs:complexType>
   <xs:simpleType name="PrimitiveRepresentation">

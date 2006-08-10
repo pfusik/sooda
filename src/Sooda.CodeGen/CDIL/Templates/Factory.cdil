@@ -36,20 +36,20 @@ class ${ClassName}_Factory
     property ${ClassName}_Factory TheFactory
         attributes Public,Static
     get
-        return defaultscope._theFactory;
+        return defaultscope._theFactory$;
     end
     
     property Type TheType
         attributes Public
         implements ISoodaObjectFactory
     get
-        return defaultscope._theType;
+        return defaultscope._theType$;
     end
     
     property Sooda.Schema.ClassInfo TheClassInfo
         attributes Public,Static
     get
-        return defaultscope._theClassInfo;
+        return defaultscope._theClassInfo$;
     end
     
     method GetRef(SoodaTransaction tran, System.Object keyValue)
@@ -57,7 +57,7 @@ class ${ClassName}_Factory
         attributes Public
         implements ISoodaObjectFactory
     begin
-        return typeref(${OutNamespace}.Stubs.${ClassName}_Stub).GetRef(arg(tran), cast(${GetRefArgumentType},arg(keyValue)))
+        return typeref(${LoaderClass}).GetRef(arg(tran), cast(${GetRefArgumentType},arg(keyValue)))
     end
     
     method TryGet(SoodaTransaction tran, System.Object keyValue)
@@ -65,7 +65,7 @@ class ${ClassName}_Factory
         attributes Public
         implements ISoodaObjectFactory
     begin
-        return typeref(${OutNamespace}.Stubs.${ClassName}_Stub).TryGet(arg(tran), cast(${GetRefArgumentType},arg(keyValue)))
+        return typeref(${LoaderClass}).TryGet(arg(tran), cast(${GetRefArgumentType},arg(keyValue)))
     end
     
     method GetList(SoodaTransaction tran, SoodaWhereClause whereClause, SoodaOrderBy orderBy, SoodaSnapshotOptions options)
@@ -73,7 +73,7 @@ class ${ClassName}_Factory
         attributes Public
         implements ISoodaObjectFactory
     begin
-        return typeref(${OutNamespace}.Stubs.${ClassName}_Stub).GetList(arg(tran), arg(whereClause), arg(orderBy), arg(options))
+        return typeref(${LoaderClass}).GetList(arg(tran), arg(whereClause), arg(orderBy), arg(options))
     end
     
     method GetClassInfo()
@@ -92,7 +92,7 @@ class ${ClassName}_Factory
 #if MultiColumnPrimaryKey
         throw new NotSupportedException('GetPrimaryKeyFieldHandler() makes no sense on multi-column primary keys.')
 #else
-        return defaultscope._primaryKeyFieldHandler;
+        return defaultscope._primaryKeyFieldHandler$;
 #endif
     end
     
@@ -108,7 +108,7 @@ class ${ClassName}_Factory
         returns Sooda.ObjectMapper.SoodaFieldHandler
         attributes Assembly,Static
     begin
-        return arrayitem(defaultscope._fieldHandlers, arg(ordinal))
+        return arrayitem(defaultscope._fieldHandlers$, arg(ordinal))
     end
     
     method CreateNew(SoodaTransaction tran)

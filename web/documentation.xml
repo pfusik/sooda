@@ -73,6 +73,7 @@
                     <li><b><a href="http://boo.codehaus.org/">Boo</a></b> - supported - EXPERIMENTAL</li>
                     <li><b><a href="http://www.nemerle.org/">Nemerle</a></b> - not supported - fails compilation</li>
                     <li><b><a href="http://msdn.microsoft.com/jscript/">JScript.NET</a></b> - not supported - compilation fails with internal error</li>
+                    <li><b><a href="http://msdn.microsoft.com/jscript/">VJ#</a></b> - not supported - compilation fails</li>
                 </ul>
             </body>
         </section>
@@ -673,7 +674,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 In order to use Sooda in your project you need to have a working database. We'll be using Microsoft
                 SQL Server and the Northwind database.
             </p> 
-            <font size="+2" color="red">**** TODO OPISAÆ WIZARDA ****</font>
+            <todo />
         </body>
     </section>
     <section id="schema">
@@ -1174,6 +1175,20 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <td>precommitValue</td>
                                 <td>depends on data type</td>
                                 <td>The value to be used when <a href="#precommit">precommitting</a> not-nullable field and the value is not yet provided. Makes sense only for not-null fields.</td>
+                            </tr>
+                            <tr>
+                                <td>find</td>
+                                <td>boolean</td>
+                                <td>
+                                    <todo />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>findList</td>
+                                <td>boolean</td>
+                                <td>
+                                    <todo />
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -2542,8 +2557,8 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 </p>
                 <div class="table">
                     <table style="table-layout: fixed; width: 100%">
-                        <col style="font-family: Consolas, Courier New; width: 3cm" />
-                        <col style="font-family: Consolas, Courier New; width: 3cm" />
+                        <col style="font-family: Consolas, Courier New; width: 4cm" />
+                        <col style="font-family: Consolas, Courier New; width: 2cm" />
                         <col />
                         <thead>
                             <tr>
@@ -2575,16 +2590,36 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                         <li><b>C++/CLI</b></li>
                                         <li><b>MC++</b> - Managed C++</li>
                                         <li>alternatively you can provide a fully qualified class name (including assembly, primary key token) 
-                                            of the CodeDOM provider</li>
+                                            of the CodeDOM provider.
+                                        </li>
                                     </ul>
                                     <p>
                                         The default is <b>C#</b>.
                                     </p>
                                     <p>
-                                        Example:
+                                        Examples (note that not all these languages are supported, some CodeDOM providers are buggy 
+                                        and languages are limited so they cannot properly work with Sooda). This might be changed
+                                        in future versions.
                                     </p>
+                                    <p>C#:</p>
                                     <pre class="XML">
                                         <x><language>c#</language></x>
+                                    </pre>
+                                    <p>VB.NET:</p>
+                                    <pre class="XML">
+                                        <x><language>vb#</language></x>
+                                    </pre>
+                                    <p>Boo:</p>
+                                    <pre class="XML">
+                                        <x><language>Boo.Lang.CodeDom.BooCodeProvider, Boo.Lang.CodeDom</language></x>
+                                    </pre>
+                                    <p>IronPython:</p>
+                                    <pre class="XML">
+                                        <x><language>IronPython.CodeDom.PythonProvider, IronPython</language></x>
+                                    </pre>
+                                    <p>Nemerle:</p>
+                                    <pre class="XML">
+                                        <x><language>Nemerle.Compiler.NemerleCodeProvider, Nemerle.Compiler, Version=0.9.3.0, Culture=neutral, PublicKeyToken=5291d186334f6101, processorArchitecture=MSIL</language></x>
                                     </pre>
                                 </td>
                             </tr>
@@ -2625,8 +2660,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 </td>
                             </tr>
                             <tr>
-                                <td>nullable-<br/>not-null-<br/>
-                                    representation</td>
+                                <td>nullable-representation<br/>not-null-representation</td>
                                 <td>string</td>
                                 <td>Specifies the method of representation of nullable and not-nullable fields as properties.
                                     Possible methods are discussed <sectionlink id="soodaprojectprimitiverep" />.
@@ -2654,7 +2688,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 </td>
                             </tr>
                             <tr>
-                                <td>null propagation</td>
+                                <td>null-propagation</td>
                                 <td>boolean</td>
                                 <td>
                                     <p>
@@ -2687,6 +2721,152 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                     </p>
                                     <p>
                                         This feature is experimental and should be used with caution.
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>loader-class</td>
+                                <td>boolean</td>
+                                <td>
+                                    <p>
+                                        Generate Load(), GetRef(), GetList() and finders static methods in a separate class called ClassNameLoader instead
+                                        of ClassName.
+                                    </p>
+                                    <pre class="XML">
+                                        <x><loader-class>true</loader-class></x>
+                                    </pre>
+                                    <p>
+                                        Some languages (VJ# for example) cannot properly support inherited classes having the
+                                        same public static method with different return type (which would be needed to support inheritance
+                                        in Sooda). To remedy this, this option causes the methods to be moved to a separate class.
+                                    </p>
+                                    <p>
+                                        When <x><loader-class /></x> is set to <code>false</code>, you can use the following methods to load objects:
+                                    </p>
+                                    <code lang="C#">
+                                        Contact.Load(10);
+                                        Contact.GetRef(10);
+                                        Contact.TryGet(10);
+                                        Contact.GetList(whereClause);
+                                        Contact.LoadSingleObject(whereClause);
+                                    </code>
+                                    <p>
+                                        When <x><loader-class /></x> is set to <code>true</code>, you can use the following methods to load objects:
+                                    </p>
+                                    <code lang="C#">
+                                        ContactLoader.Load(10);
+                                        ContactLoader.GetRef(10);
+                                        ContactLoader.TryGet(10);
+                                        ContactLoader.GetList(whereClause);
+                                        ContactLoader.LoadSingleObject(whereClause);
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>with-typed-queries</td>
+                                <td>boolean</td>
+                                <td>
+                                    <p>This option causes the <a href="#soodastubgen">SoodaStubGen utility</a> to 
+                                        emit <a href="#soqltypedqueries">SQOL typed queries</a>. By default it is <code>true</code>, you
+                                        can disable typed queries if you plan to use <a href="#soqltext">text-based queries</a> exclusively.
+                                    </p>
+                                    <pre class="XML">
+                                        <x><with-typed-queries>true</with-typed-queries></x>
+                                    </pre>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>stubs-compiled-separately</td>
+                                <td>boolean</td>
+                                <td>
+                                    <p>
+                                        Enables <a href="#compilationprocessseparate">separate compilation of stubs</a>.
+                                    </p>
+                                    <pre class="XML">
+                                        <x><stubs-compiled-separately>true</stubs-compiled-separately></x>
+                                    </pre>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>file-per-namespace</td>
+                                <td>boolean</td>
+                                <td>
+                                    <p>
+                                        Write each namespace to a separate file:
+                                    </p>
+                                    <ul>
+                                        <li><code>_Stubs.cs</code> - assembly-level attributes</li>
+                                        <li><code>_Stubs.OutputNamespace.cs</code> - list wrappers and class loaders</li>
+                                        <li><code>_Stubs.OutputNamespace.Stubs.cs</code> - stubs, factories, private typed query expression classes</li>
+                                        <li><code>_Stubs.OutputNamespace.TypedQueries</code> - public typed query expression classes</li>
+                                    </ul>
+                                    <p>
+                                        When this option is set to false, all files are written to <code>_Stubs.cs</code>.
+                                    </p>
+                                    <pre class="XML">
+                                        <x><file-per-namespace>true</file-per-namespace></x>
+                                    </pre>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>base-class-name</td>
+                                <td>string</td>
+                                <td>
+                                    <p>
+                                        Specifies the name of the class that all stubs should ultimately derive from. If you don't specify
+                                        this parameter, all root stubs classes will derive from SoodaObject class.
+                                    </p>
+                                    <pre class="XML">
+                                        <x><base-class-name>AdditionalBaseClass</base-class-name></x>
+                                    </pre>
+                                    <img src="doc15.png" alt="Demonstration of base-class-name effect" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>embed-schema
+                                    type</td>
+                                <td>Xml|Binary</td>
+                                <td>
+                                    <p>Specifies the method of embedding schema in the result DLL. Can be either <code>Xml</code> or <code>Binary</code>.
+                                        Binary causes the schema to be serialized in binary format, while Xml stores the schema in the XML format.
+                                        You should use <code>Binary</code> (which is the default), because it gives better startup times and smaller file sizes, but if you need to perform some 
+                                        text-level parsing of the XML, you can choose <code>Xml</code>.
+                                    </p>
+                                    <pre class="XML">
+                                        <x><embed-schema>Binary</embed-schema></x>
+                                    </pre>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>external-projects</td>
+                                <td>array</td>
+                                <td>
+                                    <p>
+                                        Defines external projects (such as Visual Studio projects) that need to be updated each time a new class is added to the schema. 
+                                        Each project is represented by <x><project type="..." file="..." /></x>. 
+                                        The following example XML defines two projects: one for Visual Studio 2003 
+                                        and Visual Studio 2005: 
+                                    </p>
+                                    <code lang="XML">
+                                        <![CDATA[
+                                        <external-projects>
+                                            <project type="vs2003" file="MyProject.vs2003.csproj" />
+                                            <project type="vs2005" file="MyProject.vs2005.csproj" />
+                                        </external-projects>
+                                        ]]>
+                                    </code>
+                                    <p>
+                                        The paths are relative to the output directory. The following project types are available:
+                                    </p>
+                                    <ul>
+                                        <li><b>vs2003</b> - Visual Studio 2003</li>
+                                        <li><b>vs2005</b> - Visual Studio 2005</li>
+                                        <li><b>null</b> - no project file</li>
+                                    </ul>
+                                    <p>
+                                        Note that files (such as source files and embedded resources) can only be added to projects, they
+                                        are never automatically removed. If you remove a class from the <a href="#schema">mapping schema</a>, 
+                                        you need to manually remove the appropriate file from your project.
                                     </p>
                                 </td>
                             </tr>
@@ -2982,7 +3162,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
             <section id="objectidentity">
                 <title>Object Identity Management</title>
                 <body>
-                    <p style="font-size: 200%; color: red">TODO</p>
+                    <todo />
                     <p>
                         This implies that in order to participate in O/R mapping
                         each database table needs to have one or more primary key columns (either natural or surrogate)

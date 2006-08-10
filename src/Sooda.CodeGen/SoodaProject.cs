@@ -142,6 +142,10 @@ namespace Sooda.CodeGen
         [System.ComponentModel.DefaultValue(false)]
         public bool FilePerNamespace = false;
 
+        [XmlElement("loader-class")]
+        [System.ComponentModel.DefaultValue(false)]
+        public bool LoaderClass = false;
+
         [XmlElement("stubs-compiled-separately")]
         [System.ComponentModel.DefaultValue(false)]
         public bool SeparateStubs = false;

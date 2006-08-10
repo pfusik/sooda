@@ -217,49 +217,11 @@ namespace Sooda.CodeGen
                 GenerateClassValues(nspace, ci, miniStub);
 
             CodeDomClassStubGenerator gen = new CodeDomClassStubGenerator(ci, Project);
-
             CDILContext context = new CDILContext();
             context["ClassName"] = ci.Name;
             context["HasBaseClass"] = ci.InheritsFromClass != null;
             context["MiniStub"] = miniStub;
             context["HasKeyGen"] = gen.KeyGen != "none";
-
-            string formalParameters = "";
-            string actualParameters = "";
-
-            foreach (FieldInfo fi in ci.GetPrimaryKeyFields())
-            {
-                if (formalParameters != "")
-                {
-                    formalParameters += ", ";
-                    actualParameters += ", ";
-                }
-                string pkClrTypeName = fi.GetFieldHandler().GetFieldType().FullName;
-                formalParameters += pkClrTypeName + " " + MakeCamelCase(fi.Name);
-                actualParameters += "arg(" + MakeCamelCase(fi.Name) + ")";
-            }
-
-            context["PrimaryKeyFormalParameters"] = formalParameters;
-            context["PrimaryKeyActualParameters"] = actualParameters;
-            if (ci.GetPrimaryKeyFields().Length == 1)
-            {
-                context["PrimaryKeyActualParametersTuple"] = actualParameters;
-                context["PrimaryKeyIsTuple"] = false;
-            }
-            else
-            {
-                context["PrimaryKeyIsTuple"] = true;
-                context["PrimaryKeyActualParametersTuple"] = "new SoodaTuple(" + actualParameters + ")";
-            }
-
-            context["ClassUnifiedFieldCount"] = ci.UnifiedFields.Count;
-            context["PrimaryKeyFieldHandler"] = ci.GetFirstPrimaryKeyField().GetFieldHandler().GetType().FullName;
-            context["OptionalNewAttribute"] = (ci.InheritsFromClass != null) ? ",New" : "";
-            if (_codeProvider is Microsoft.VisualBasic.VBCodeProvider)
-            {
-                context["OptionalNewAttribute"] = "";
-            }
-
             if (ci.ExtBaseClassName != null && !miniStub)
             {
                 context["BaseClassName"] = ci.ExtBaseClassName;
@@ -283,6 +245,16 @@ namespace Sooda.CodeGen
             if (miniStub)
                 return;
 
+            CodeTypeDeclaration ctdLoader = GetLoaderClass(ci);
+
+            if (!Project.LoaderClass)
+            {
+                foreach (CodeTypeMember m in ctdLoader.Members)
+                {
+                    ctd.Members.Add(m);
+                }
+            }
+
             // class constructor
 
             if (gen.KeyGen != "none")
@@ -293,76 +265,6 @@ namespace Sooda.CodeGen
             gen.GenerateFields(ctd, ci);
             gen.GenerateProperties(ctd, ci);
 
-            foreach (FieldInfo fi in ci.LocalFields)
-            {
-                for (int withTransaction = 0; withTransaction <= 1; ++withTransaction)
-                {
-                    for (int list = 0; list <= 1; list++)
-                    {
-                        for (int reference = 0; reference <= 1; reference++)
-                        {
-                            if (reference == 1 && fi.ReferencedClass == null)
-                                continue;
-
-                            if (list == 0 && !fi.FindMethod)
-                                continue;
-
-                            if (list == 1 && !fi.FindListMethod)
-                                continue;
-
-                            CodeMemberMethod findMethod = new CodeMemberMethod();
-                            findMethod.Name = "Find" + ((list == 1) ? "List" : "") + "By" + fi.Name;
-                            findMethod.Attributes = MemberAttributes.Public | MemberAttributes.Static;
-                            findMethod.ReturnType = new CodeTypeReference(Project.OutputNamespace + "." + ci.Name + ((list == 1) ? "List" : ""));
-
-                            if (withTransaction == 1)
-                            {
-                                findMethod.Parameters.Add(
-                                    new CodeParameterDeclarationExpression(
-                                    new CodeTypeReference(typeof(SoodaTransaction)), "transaction")
-                                    );
-                            }
-
-                            if (reference == 1)
-                            {
-                                findMethod.Parameters.Add(
-                                    new CodeParameterDeclarationExpression(
-                                        fi.ReferencedClass.Name, MakeCamelCase(fi.Name))
-                                        );
-                            }
-                            else
-                            {
-                                findMethod.Parameters.Add(
-                                    new CodeParameterDeclarationExpression(
-                                        fi.GetFieldHandler().GetFieldType(), MakeCamelCase(fi.Name))
-                                        );
-                            }
-
-                            CodeExpression whereClause =
-                                new CodeObjectCreateExpression(
-                                new CodeTypeReference(typeof(SoodaWhereClause)),
-                                new CodePrimitiveExpression(fi.Name + " = {0}"),
-                                new CodeArgumentReferenceExpression(MakeCamelCase(fi.Name)));
-
-                            CodeExpression transaction = new CodeArgumentReferenceExpression("transaction");
-                            if (withTransaction == 0)
-                            {
-                                transaction = new CodePropertyReferenceExpression(
-                                    new CodeTypeReferenceExpression(typeof(SoodaTransaction)),
-                                    "ActiveTransaction");
-                            }
-
-                            findMethod.Statements.Add(
-                                new CodeMethodReturnStatement(
-                                    new CodeMethodInvokeExpression(
-                                    null, ((list == 1) ? "GetList" : "LoadSingleObject"),
-                                    transaction,
-                                    whereClause)));
-                            ctd.Members.Add(findMethod);
-                        }
-                    }
-                }
-            }
 
             // literals
             if (ci.Constants != null && ci.GetPrimaryKeyFields().Length == 1)
@@ -420,6 +322,10 @@ namespace Sooda.CodeGen
             }
             context["PrimaryKeyHandlerType"] = pkFieldHandlerTypeName;
             context["IsAbstract"] = ci.IsAbstractClass();
+            if (Project.LoaderClass)
+                context["LoaderClass"] = Project.OutputNamespace + "." + ci.Name + "Loader";
+            else
+                context["LoaderClass"] = Project.OutputNamespace + ".Stubs." + ci.Name + "_Stub";
 
             CodeTypeDeclaration factoryClass = CDILParser.ParseClass(CDILTemplate.Get("Factory.cdil"), context);
 
@@ -519,11 +425,144 @@ namespace Sooda.CodeGen
             context["OptionalNewAttribute"] = (_codeProvider is Microsoft.VisualBasic.VBCodeProvider) ? "" : ",New";
             context["WithIndexers"] = Project.WithIndexers;
 
+#if DOTNET2
             if (!_codeGenerator.Supports(GeneratorSupport.DeclareIndexerProperties))
                 context["WithIndexers"] = false;
+#endif
 
             CodeTypeDeclaration listWrapperClass = CDILParser.ParseClass(CDILTemplate.Get("ListWrapper.cdil"), context);
             nspace.Types.Add(listWrapperClass);
+        }
+
+        public CodeTypeDeclaration GetLoaderClass(ClassInfo ci)
+        {
+            CDILContext context = new CDILContext();
+            context["ClassName"] = ci.Name;
+            context["HasBaseClass"] = ci.InheritsFromClass != null;
+
+            string formalParameters = "";
+            string actualParameters = "";
+
+            foreach (FieldInfo fi in ci.GetPrimaryKeyFields())
+            {
+                if (formalParameters != "")
+                {
+                    formalParameters += ", ";
+                    actualParameters += ", ";
+                }
+                string pkClrTypeName = fi.GetFieldHandler().GetFieldType().FullName;
+                formalParameters += pkClrTypeName + " " + MakeCamelCase(fi.Name);
+                actualParameters += "arg(" + MakeCamelCase(fi.Name) + ")";
+            }
+
+            context["PrimaryKeyFormalParameters"] = formalParameters;
+            context["PrimaryKeyActualParameters"] = actualParameters;
+            if (ci.GetPrimaryKeyFields().Length == 1)
+            {
+                context["PrimaryKeyActualParametersTuple"] = actualParameters;
+                context["PrimaryKeyIsTuple"] = false;
+            }
+            else
+            {
+                context["PrimaryKeyIsTuple"] = true;
+                context["PrimaryKeyActualParametersTuple"] = "new SoodaTuple(" + actualParameters + ")";
+            }
+
+            context["ClassUnifiedFieldCount"] = ci.UnifiedFields.Count;
+            context["PrimaryKeyFieldHandler"] = ci.GetFirstPrimaryKeyField().GetFieldHandler().GetType().FullName;
+            context["OptionalNewAttribute"] = (ci.InheritsFromClass != null) ? ",New" : "";
+            if (_codeProvider is Microsoft.VisualBasic.VBCodeProvider)
+            {
+                context["OptionalNewAttribute"] = "";
+            }
+            if (Project.LoaderClass)
+            {
+                context["LoaderClass"] = Project.OutputNamespace + "." + ci.Name + "Loader";
+                context["OptionalNewAttribute"] = "";
+            }
+            else
+                context["LoaderClass"] = Project.OutputNamespace + ".Stubs." + ci.Name + "_Stub";
+            CodeTypeDeclaration ctd = CDILParser.ParseClass(CDILTemplate.Get("Loader.cdil"), context);
+            foreach (FieldInfo fi in ci.LocalFields)
+            {
+                for (int withTransaction = 0; withTransaction <= 1; ++withTransaction)
+                {
+                    for (int list = 0; list <= 1; list++)
+                    {
+                        for (int reference = 0; reference <= 1; reference++)
+                        {
+                            if (reference == 1 && fi.ReferencedClass == null)
+                                continue;
+
+                            if (list == 0 && !fi.FindMethod)
+                                continue;
+
+                            if (list == 1 && !fi.FindListMethod)
+                                continue;
+
+                            CodeMemberMethod findMethod = new CodeMemberMethod();
+                            findMethod.Name = "Find" + ((list == 1) ? "List" : "") + "By" + fi.Name;
+                            findMethod.Attributes = MemberAttributes.Public | MemberAttributes.Static;
+                            findMethod.ReturnType = new CodeTypeReference(Project.OutputNamespace + "." + ci.Name + ((list == 1) ? "List" : ""));
+
+                            if (withTransaction == 1)
+                            {
+                                findMethod.Parameters.Add(
+                                    new CodeParameterDeclarationExpression(
+                                    new CodeTypeReference(typeof(SoodaTransaction)), "transaction")
+                                    );
+                            }
+
+                            if (reference == 1)
+                            {
+                                findMethod.Parameters.Add(
+                                    new CodeParameterDeclarationExpression(
+                                        fi.ReferencedClass.Name, MakeCamelCase(fi.Name))
+                                        );
+                            }
+                            else
+                            {
+                                findMethod.Parameters.Add(
+                                    new CodeParameterDeclarationExpression(
+                                        fi.GetFieldHandler().GetFieldType(), MakeCamelCase(fi.Name))
+                                        );
+                            }
+
+                            CodeExpression whereClause =
+                                new CodeObjectCreateExpression(
+                                new CodeTypeReference(typeof(SoodaWhereClause)),
+                                new CodePrimitiveExpression(fi.Name + " = {0}"),
+                                new CodeArrayCreateExpression(
+                                   typeof(object),
+                                   new CodeExpression[] { new CodeArgumentReferenceExpression(MakeCamelCase(fi.Name)) })
+                                   );
+
+                            CodeExpression transaction = new CodeArgumentReferenceExpression("transaction");
+                            if (withTransaction == 0)
+                            {
+                                transaction = new CodePropertyReferenceExpression(
+                                    new CodeTypeReferenceExpression(typeof(SoodaTransaction)),
+                                    "ActiveTransaction");
+                            }
+
+                            findMethod.Statements.Add(
+                                new CodeMethodReturnStatement(
+                                    new CodeMethodInvokeExpression(
+                                    null, ((list == 1) ? "GetList" : "LoadSingleObject"),
+                                    transaction,
+                                    whereClause)));
+                            ctd.Members.Add(findMethod);
+                        }
+                    }
+                }
+            }
+            return ctd;
+        }
+
+        private void GenerateLoaderClass(CodeNamespace nspace, ClassInfo ci)
+        {
+            CodeTypeDeclaration ctd = GetLoaderClass(ci);
+            nspace.Types.Add(ctd);
         }
 
         public void GenerateRelationStub(CodeNamespace nspace, RelationInfo ri)
@@ -1161,6 +1200,14 @@ namespace Sooda.CodeGen
                 {
                     GenerateListWrapper(nspace, ci);
                 }
+                if (Project.LoaderClass)
+                {
+                    Output.Verbose("    * loader class");
+                    foreach (ClassInfo ci in _schema.LocalClasses)
+                    {
+                        GenerateLoaderClass(nspace, ci);
+                    }
+                }
                 Output.Verbose("    * database schema");
 
                 // stubs namespace
@@ -1392,6 +1439,7 @@ namespace Sooda.CodeGen
             nspace.Imports.Add(new CodeNamespaceImport("System.Diagnostics"));
             nspace.Imports.Add(new CodeNamespaceImport("System.Data"));
             nspace.Imports.Add(new CodeNamespaceImport("Sooda"));
+            nspace.Imports.Add(new CodeNamespaceImport(Project.OutputNamespace + ".Stubs"));
             AddImportsFromIncludedSchema(nspace, schema.Includes, false);
             return nspace;
         }

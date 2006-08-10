@@ -91,7 +91,7 @@
             <xsl:attribute name="class">body<xsl:apply-templates select="." mode="section-level" /></xsl:attribute>
             <xsl:choose>
                 <xsl:when test="count(body/*)=0 and count(section)=0">
-                    <p style="color: red">TODO: Write me</p>
+                    <xsl:call-template name="todo" />
                 </xsl:when>
                 <xsl:otherwise><xsl:apply-templates select="body|section" /></xsl:otherwise>
             </xsl:choose>
@@ -382,6 +382,10 @@
 
     <xsl:template match="body">
         <xsl:apply-templates />
+    </xsl:template>
+
+    <xsl:template name="todo" match="todo">
+        <p style="color: red">TODO: Write me</p>
     </xsl:template>
 
     <!-- FAQ -->
