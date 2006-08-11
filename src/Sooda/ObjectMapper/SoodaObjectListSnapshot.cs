@@ -368,32 +368,23 @@ namespace Sooda.ObjectMapper
 
         public bool IsReadOnly
         {
-            get
-            {
-                return true;
-            }
+            get { return false; }
         }
 
         object IList.this[int index]
         {
-            get
-            {
-                return GetItem(index);
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
+            get { return items[index]; }
+            set { items[index] = value; }
         }
 
         public void RemoveAt(int index)
         {
-            Remove(GetItem(index));
+            items.RemoveAt(index);
         }
 
         public void Insert(int index, object value)
         {
-            throw new NotSupportedException();
+            items.Insert(index, value);
         }
 
         public void Clear()

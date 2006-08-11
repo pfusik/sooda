@@ -712,6 +712,7 @@
     <Compile Include="Xml\XmlDataSource.cs">
       <SubType>Code</SubType>
     </Compile>
+    <None Include="SoqlClasses.cd" />
     <None Include="QL\TypedWrappers\makewrappers.pl" />
     <None Include="Schema\SoodaSchema.xsx">
       <DependentUpon>SoodaSchema.xsd</DependentUpon>

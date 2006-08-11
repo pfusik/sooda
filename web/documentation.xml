@@ -2306,7 +2306,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                         </p>
                                         <p>
                                             You can put your business methods in these files. There is one skeleton class for 
-                                            each <x><class /></x> defined in the <a href="#schema">mapping schema</a>.
+                                            each <x><class /></x> as defined in the <a href="#schema">mapping schema</a>.
                                             Each class N is stored in a file named "output directory/N.cs" (for C#) 
                                             and this cannot be changed by the user.
                                         </p>
@@ -3099,18 +3099,18 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 <body>
                     <p>
                         As mentioned earlier, every object which inherits from <code>SoodaObject</code> must be associated with an instance
-                        of <code>SoodaTransaction</code>. There are 3 ways to materialize objects which will be discussed in further sections:
+                        of <code>SoodaTransaction</code>. There are three ways to materialize objects which will be discussed in further sections:
                     </p>
                     <ul>
                         <li><a href="#creatingobjects">creating new objects</a> - using <code>new</code></li>
                         <li><a href="#loadingobjects">loading objects</a>- with <code>Load()</code> and <code>GetRef()</code>, <code>FindByXXX()</code>, <code>LoadSingleObject()</code></li>
-                        <li><a href="#loadingcollections">loading collections of objects</a> - with <code>GetList()</code>, <code>FindListByXXX()</code></li>
+                        <li><a href="#loadingbyquery">loading collections of objects</a> - with <code>GetList()</code>, <code>FindListByXXX()</code></li>
                     </ul>
                     <p>
-                        You need to pass transaction object when calling any of the above methods. It would be inconvenient
+                        All these methods need a transaction object. It would be inconvenient
                         to require the transaction reference to be passed explicitly, therefore Sooda supports the concept of 
-                        implicit active transaction (returned by <code>SoodaTransaction.ActiveTransaction</code> static property).
-                        Implicit transaction is used when no explicit transaction has been provided.
+                        implicit active transaction (returned by the <code>SoodaTransaction.ActiveTransaction</code> static property).
+                        Implicit transaction is used when no explicit transaction is specified.
                     </p>
                     <p>
                         SoodaStubGen generates all APIs in two versions: one that takes <code>SoodaTransaction</code> object as 
@@ -3162,7 +3162,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         When you create a new <code>SoodaTransaction</code> object it is automatically 
                         stored in <code>SoodaTransaction.ActiveTransaction</code> unless you
                         pass <code>SoodaTransactionOptions.NoImplicit</code> argument to the constructor. 
-                        This property is restored to its old value when the transaction is closed/disposed, 
+                        The property is restored to its previous value when the transaction is closed/disposed, 
                         which means you can nest transactions in an intuitive manner:
                     </p>
                     <code lang="C#">
@@ -3186,7 +3186,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         but other storage strategies are possible, as described <sectionlink id="activetransactionstrategy" />.
                     </p>
                     <p>
-                        Examples in this document will use implicit transactions, unless mentioned otherwise.
+                        All examples in this document use implicit transactions.
                     </p>
                 </body>
             </section>
@@ -3205,7 +3205,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                        constructor should never be called by the user code and is used internally by Sooda</li>
                </ul>
                <p>
-                   Typical code to create object, set its properties and save to the database is:
+                   Typical code to create an object, set its properties and save to the database is:
                </p>
                <code lang="C#">
                    using (SoodaTransaction t = new SoodaTransaction())
@@ -3230,8 +3230,8 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                <p>
                    Sooda allows you to create more than one object in the transaction and will properly handle situations where
                    two newly created objects are dependent on one another. SQL <code>INSERT</code> operations
-                   will be properly ordered when <code>Commit()</code> is called, the to ensure that all foreign
-                   key constraints will be preserved.
+                   will be properly ordered when <code>Commit()</code> is called, to ensure that all foreign
+                   key constraints are preserved.
                    The following example demonstrates this:
                </p>
 
@@ -3270,7 +3270,8 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         // insert into OrderItem ...
                         // insert into OrderItem ...
                         //
-                        // Issuing the statements in other order may break referential identity constraints
+                        // SQL statements issued in a different order would violate
+                        // referential identity constraints
                    }
                </code>
             </body>
@@ -3282,7 +3283,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     There are various ways to load objects from the database depending on the desired result:
                 </p>
                 <ul>
-                    <li>Get a reference to the object without loading data from the database (lazy loading)</li>
+                    <li>Get a reference to the object without loading any data from the database (lazy loading)</li>
                     <li>Load single object from the database given its primary key</li>
                     <li>Load single object or list of objects that match the specified criteria</li>
                     <li>Load all objects from a collection</li>
@@ -3355,7 +3356,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     </code>
                     <p>
                         Reference fields use <code>GetRef()</code> internally so that when you access a property that returns another object
-                        this object usually starts in <code>Data Not Loaded</code> status.
+                        this object usually starts in the <code>Data Not Loaded</code> state.
                     </p>
                     <p>
                         Note that it's not always possible to provide a reference to an object without loading its data, so GetRef() 
@@ -3367,18 +3368,19 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 </body>
             </section>
             <section id="loadingbyquery">
-                <title>Loading objects matching specific criteria</title>
+                <title>Loading objects that match specific criteria</title>
                 <body>
                     <p>
-                        Sooda has a <a href="#soql">query language called SOQL</a> that can be used to select
+                        Sooda uses a <a href="#soql">query language called SOQL</a> to select
                         objects that meet the specific criteria. To get a list of matching objects you 
-                        use <code>GetList()</code> method. To load a single object by SQL query use <code>LoadSingleObject()</code>.
+                        use the <code>GetList()</code> method. 
+                        To load a single object by SQL query use <code>LoadSingleObject()</code>.
                     </p>
                     <p>
                         <code>GetList()</code> method is overloaded to support various usage scenarios.
-                        The most complex variant of the method takes 5 parameters, but <a href="soodastubgen">SoodaStubGen</a>
+                        The most complex variant of the method takes five parameters, but <a href="soodastubgen">SoodaStubGen</a>
                         also generates simplified variants of the GetList() method which only accept 1,2,3 or 4 parameters. There are
-                        32 overloads for each class.
+                        32 overloads generated for each class.
                     </p>
                     <code lang="C#">
                         GetList(transaction, whereClause, topCount, orderBy, options);
@@ -3387,13 +3389,18 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         The parameters are:
                     </p>
                     <ul>
-                        <li><code>transaction</code> - (optional) transaction reference, if omitted <code>SoodaTransaction.ActiveTransaction</code> is used</li>
-                        <li><code>whereClause</code> - filter clause, can be either <a href="#soodawhereclause">SoodaWhereClause</a> (for textual queries) or
+                        <li><code>transaction</code> - (optional) transaction reference, in case it is omitted <code>SoodaTransaction.ActiveTransaction</code> is used</li>
+                        <li><code>whereClause</code> - filter clause, either <a href="#soodawhereclause">SoodaWhereClause</a> for textual queries or
                             <a href="#soqlbooleanexpression">SoqlBooleanExpression</a> for typed queries.</li>
                         <li><code>topCount</code> - (optional) maximum number of objects to retrieve - this is equivalent to <code>SELECT TOP n</code> SQL query</li>
-                        <li><code>orderBy</code> - (optional) specifies the ordering of result objects</li>
-                        <li><code>options</code> - (optional) various flags that specify options</li>
+                        <li><code>orderBy</code> - (optional) specifies ordering of result objects</li>
+                        <li><code>options</code> - (optional) various flags</li>
                     </ul>
+                    <p>
+                        <code>ClassName.GetList()</code> returns an instance of <code>ClassNameList</code> which is a type-safe wrapper over
+                        <code>ISoodaObjectList</code> and implements <code>IList</code> and <code>IList&lt;ClassName&gt;</code>.
+                        More information about collections is given <sectionlink id="collectionapi" />.
+                    </p>
                     <p>
                         For example, you can use the following code to run <a href="#soqltext">text-based SOQL query</a> to fetch at most 5 Persons living in Redmond, WA:
                     </p>
@@ -3431,8 +3438,8 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         using (SoodaTransaction t = new SoodaTransaction())
                         {
                             foreach (Person p in Person.GetList(
-                                PersonField.City == "Redmond" && PersonField.State == "WA"), 
-                                SoodaOrderBy.Ascending("LastName"))
+                                PersonField.City == "Redmond" && PersonField.State == "WA", 
+                                SoodaOrderBy.Ascending("LastName")))
                             {
                                 Console.WriteLine("name: {0}", p.Name);
                             }
@@ -3441,26 +3448,26 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     </code>
                     <p>
                         Options you can pass to <code>GetList()</code> are flags defined in 
-                        the <code>SoodaSnapshotOptions</code> enumeration. Their meaning is described below:
+                        the <code>SoodaSnapshotOptions</code> enumeration.:
                     </p>
                     <ul>
                         <li><code>Default</code> - Default options</li>
-                        <li><code>NoTransaction</code> - Don't apply changes made in transaction. Use this option to perform a 
+                        <li><code>NoTransaction</code> - Do not apply changes made in transaction. Use this option to perform a 
                             database snapshot or when you are sure that none of transaction objects will affect the result. 
                             This helps speed things up a bit.</li>
-                        <li><code>NoWriteObjects</code> - Don't precommit objects. Precommit is described <sectionlink id="precommit" />.</li>
-                        <li><code>VerifyAfterLoad</code> - Verify after load. In the case of precommit it is possible that the result
+                        <li><code>NoWriteObjects</code> - Do not precommit objects. Precommit is described <sectionlink id="precommit" />.</li>
+                        <li><code>VerifyAfterLoad</code> - Verify after load. In case of a precommit it is possible that the result
                             list will include extra objects. Enabling this option causes the resulting objects to be re-evaluated
                             in memory</li>
                         <li><code>KeysOnly</code> - Load only the primary key values. Objects will be materialized but fields other than primary keys will require a database query.</li>
-                        <li><code>Cache</code> - Load the collection items from cache if possible.</li>
-                        <li><code>NoCache</code> - Don't load the collection from cache even if it would be possible to do so</li>
+                        <li><code>Cache</code> - Fetch collection items from cache if possible.</li>
+                        <li><code>NoCache</code> - Do not load the collection from cache even if it would be possible to do so</li>
                         <li><code>PrefetchRelated</code> - Use prefetch definition from the schema to load related objects automatically</li>
                     </ul>
                     <p>
                         The most commonly used option here is <code>NoWriteObjects</code> which can be used to disable precommit. 
                         This example demonstrates passing this option to <code>GetList()</code>. Passing SoodaSnapshotOptions.NoWriteObjects
-                        causes "<code>Nancy Newcomer</code>" to be absent from the list of returned objects. If we omitted this flag,
+                        causes "<code>Nancy Newcomer</code>" not to be included in the list of returned objects. If we omitted this flag,
                         Sooda would <a href="#precommit">precommit</a> <code>newPerson</code> object by making the SQL <code>INSERT</code> and Nancy Newcomer would be
                         returned by the <code>GetList()</code>.
                     </p>
@@ -3498,16 +3505,437 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     </code>
                 </body>
             </section>
-            <section id="loadingcollections">
-                <title>Loading collections</title>
-                <body>
-                </body>
-            </section>
+        </section>
+        <section id="collectionapi">
+            <title>Collections</title>
+            <body>
+                <p>
+                    There are 3 types of collections in Sooda:
+                </p>
+                <ul>
+                    <li>one-to-many collections</li>
+                    <li>many-to-many collections</li>
+                    <li>snapshot collections</li>
+                </ul>
+                <p>
+                    One-to-many collections are returned by properties declared with <a href="#schema1N"><x><collectionOneToMany /></x></a>.
+                    Many-to-many collections are returned by properties declared with <a href="#schemaNN"><x><collectionManyToMany /></x></a>.
+                    All other collection APIs return snapshot collections.
+                </p>
+                <p>
+                    All collection types implement unified interface named <code>ISoodaObjectList</code>
+                    but not all methods of this interface can be called in all cases. The table below summarizes that.
+                </p>
+                <p>
+                    The <code>ISoodaObjectList</code> interface has the following methods:
+                    (<i>OTM</i> means One-To-Many collections, <i>MTM</i> is Many-To-Many collections, <i>SNAP</i> - snapshots):
+                </p>
+                <div class="table">
+                    <table style="width: 100%; table-layout: fixed">
+                        <col style="width: 3cm;align=center" />
+                        <col style="width: 1cm;align=center" />
+                        <col style="width: 1cm;align=center" />
+                        <col style="width: 1cm;align=center" />
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>OTM</th>
+                                <th>MTM</th>
+                                <th>SNAP</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Indexer:get</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Gets the item at the specified position.
+                                    <code lang="C#">
+                                        o = collection[0];
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Indexer:set</td>
+                                <td>No</td>
+                                <td>No</td>
+                                <td>Yes</td>
+                                <td>Sets the item at the specified position.
+                                    <code lang="C#">
+                                        collection[0] = o;
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Add(o)</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Adds object <code>o</code> to the collection.
+                                    <code lang="C#">
+                                        collection.Add(o);
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Remove(o)</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Removes object <code>o</code> from the collection.
+                                    <code lang="C#">
+                                        collection.Remove(o);
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Contains(o)</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Determines whether specific object <code>o</code> is contained in the collection.
+                                    <code lang="C#">
+                                        if (collection.Contains(o))
+                                        {
+                                            // o is in the collection
+                                        }
+                                        else
+                                        {
+                                            // o is not in the collection
+                                        }
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>IndexOf(o)</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Gets the position of an object <code>o</code> within the collection.
+                                    <code lang="C#">
+                                        int pos = collection.IndexOf(o);
+
+                                        if (pos >= 0)
+                                        {
+                                            // o is in the collection at position 'pos'
+                                        }
+                                        else
+                                        {
+                                            // o is not in the collection
+                                        }
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Insert(p,o)</td>
+                                <td>No</td>
+                                <td>No</td>
+                                <td>Yes</td>
+                                <td>Inserts object <code>o</code> at the specified position <code>p</code>.
+                                    <code lang="C#">
+                                        collection.Insert(3,o);
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>RemoveAt(p)</td>
+                                <td>No</td>
+                                <td>No</td>
+                                <td>Yes</td>
+                                <td>Removes object at the specified position <code>p</code>.
+                                    <code lang="C#">
+                                        collection.RemoveAt(3);
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Clear()</td>
+                                <td>No</td>
+                                <td>No</td>
+                                <td>Yes</td>
+                                <td>Removes all items from the collection.
+                                    <code lang="C#">
+                                        collection.Clear();
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CopyTo(a,o)</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Copies the collection to the provided Array <code>a</code> starting at offset <code>o</code>.
+                                    <code lang="C#">
+                                        // create array to hold collection items
+                                        Person[] array = new Person[collection.Count];
+
+                                        // copy them
+                                        collection.CopyTo(array,0);
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Count</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Returns the number of objects in the collection.
+                                    <code lang="C#">
+                                        int count = collection.Count;
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>IsReadOnly</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Determines whether the collection is read only.</td>
+                            </tr>
+                            <tr>
+                                <td>IsFixedSize</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Determines whether the collection has fixed size.</td>
+                            </tr>
+                            <tr>
+                                <td>GetEnumerator</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Gets the enumerator that returns all collection items. 
+                                    This can be used with <code>foreach()</code> to iterate over the collection.
+                                    <code lang="C#">
+                                        // foreach() uses GetEnumerator() internally
+                                        foreach (Person p in collection)
+                                        {
+                                        }
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>GetItem(p)</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Gets the object at the specified position <code>p</code>.
+                                    <code lang="C#">
+                                        collection.GetItem(10);
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>GetSnapshot()</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Creates a new snapshot collection containing all objects of the collection.
+                                    <code lang="C#">
+                                        newCollection = collection.GetSnapshot();
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>SelectFirst(n)</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Creates a new collection containing first <code>n</code> objects of the original collection.
+                                    <code lang="C#">
+                                        // select first 5 objects
+                                        newCollection = collection.SelectFirst(5);
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>SelectLast(n)</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Creates a new collection containing last <code>n</code> objects of the original collection.
+                                    <code lang="C#">
+                                        // select last 5 objects
+                                        newCollection = collection.SelectLast(5);
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>SelectRange(s,e)</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Creates a new collection containing objects <code>s</code> to <code>e-1</code> of the original collection.
+                                    <code lang="C#">
+                                        // select objects 3,4,5,6 from the collection 
+                                        // (7th object is not included in the result)
+                                        newCollection = collection.SelectLast(3,7);
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Filter(f)</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Creates a new collection containing objects that match the specified filter <code>f</code> which can be:
+                                    <ul>
+                                        <li>an instance of the <b>SoodaObjectFilter</b> delegate</li>
+                                        <li>an instance of <b><a href="#soodawhereclause">SoodaWhereClause</a></b> for <a href="#soqltext">textual queries</a></li>
+                                        <li>an instance of <b><a href="#soqlbooleanexpression">SoqlBooleanExpression</a></b> for <a href="#soqltypedqueries">typed queries</a></li>
+                                    </ul>
+
+                                    <p>Examples (all filter out the person named "Mary Manager"):</p>
+                                    <code lang="C#">
+                                        bool FilterMethod(SoodaObject obj)
+                                        {
+                                            Person p = (Person)obj;
+
+                                            return p.Name != "Mary Manager";
+                                        }
+
+                                        // filter by delegate
+                                        collection2 = collection.Filter(
+                                            new SoodaObjectFilter(this.FilterMethod));
+
+                                        // filter by where clause
+                                        collection2 = collection.Filter(
+                                            new SoodaWhereClause("Name != {0}", 
+                                                "Mary Manager"));
+
+                                        // filter by typed boolean expression
+                                        collection2 = collection.Filter(
+                                            PersonField.Name != "Mary Manager");
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Sort(ex)</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Yes</td>
+                                <td>Creates a new collection with objects sorted according to the specified order expression <code>ex</code>. The order can be:
+                                    <ul>
+                                        <li>field name or <a href="#pathexpressions">path expression</a>. The string can also specify "asc" or "desc" string
+                                            for ascending/descending specification (default is "asc") and can include
+                                            multiple fields to sort by. 
+                                        </li>
+                                    </ul>
+                                    <p>Examples:</p>
+                                    <code lang="C#">
+                                        // sort by Name in ascending order
+                                        collection2 = collection.Sort("Name");
+
+                                        // sort by Name in descending order
+                                        collection2 = collection.Sort("Name desc");
+
+                                        // sort by Age in ascending order then by Name in descending order:
+                                        collection2 = collection.Sort("Age asc,Name desc");
+
+                                        // sort by the group manager's Name in ascending order:
+                                        collection2 = collection.Sort("Group.Manager.Name asc");
+                                    </code>
+                                    <ul>
+                                        <li><a href="#soqlexpression">SOQL expression</a> (typically created with <a href="#soqltypedqueries">typed queries</a> syntax)</li>
+                                        <li>SOQL expression and ascending/descending specification</li>
+                                    </ul>
+
+                                    <p>Examples:</p>
+                                    <code lang="C#">
+                                        // sort by Name in ascending order
+                                        collection2 = collection.Sort(PersonField.Name);
+
+                                        // sort by Name in descending order
+                                        collection2 = collection.Sort(PersonField.Name, SortOrder.Descending);
+
+                                        // sort by the group manager's Name in ascending order:
+                                        collection2 = collection.Sort(PersonField.Group.Manager.Name, SortOrder.Ascending);
+                                    </code>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>
+                    <a href="#soodastubgen">SoodaStubGen utility</a> generates type-safe 
+                    wrappers for each class, called <code>ClassNameList</code> where <code>ClassName</code> is the name of the 
+                    <x><class /></x> defined <sectionlink id="schema" />. Collections returned from <code>ClassName.GetList()</code>,
+                    one-to-many and many-to-many collections are wrapped with the appropriate type-safe wrappers.                    
+                    The wrappers inherits from <code>SoodaObjectCollectionWrapper</code> or <code>SoodaObjectCollectionWrapperGeneric&lt;T&gt;</code> 
+                    and implements the following set of interfaces:
+                </p>
+                <ul>
+                    <li><code>IEnumerable</code></li>
+                    <li><code>IList</code></li>
+                    <li><code>ICollection</code></li>
+                    <li><code>ISoodaObjectList</code></li>
+
+                    <li><code>IEnumerable&lt;T&gt;</code> - .NET 2.0 and above</li>
+                    <li><code>IList&lt;T&gt;</code> - .NET 2.0 and above</li>
+                    <li><code>ICollection&lt;T&gt;</code> - .NET 2.0 and above</li>
+                </ul>
+                <p>The following example shows the typical usage of collections. 
+                    As you can see the amout of boilerplate code is reduced to minimum:</p>
+                <code lang="C#">
+                    using (SoodaTransaction t = new SoodaTransaction())
+                    {
+                        // load Customer from the database
+                        Customer c = Customer.Load(10);
+
+                        // loop through the customer's orders and display their summaries
+                        // c.Orders is a one-to-many collection
+                        foreach (Order o in c.Orders)
+                        {
+                            Console.WriteLine("o.OrderDate: {0}", o.OrderDate);
+                            Console.WriteLine("o.ShipTo: {0}", o.ShipTo);
+
+                            Console.WriteLine("Item count: {0}", o.Items.Count);
+
+                            // now display the details of each ordered item
+                            foreach (OrderItem it in o.Items)
+                            {
+                                Console.WriteLine("item: {0} quantity: {1}", it.ItemType, it.Quantity);
+                            }
+                        }
+
+                        // create new order with 2 items
+
+                        Order newOrder = new Order();
+                        newOrder.ShipTo = c.Address;
+
+                        OrderItem i1 = new OrderItem();
+                        OrderItem i2 = new OrderItem();
+
+                        c.Name = "Caroline Customer";
+                        c.Address = "...";
+                        c.Orders.Add(newOrder);
+
+                        i1.ItemType = Item.Foo;
+                        i1.Quantity = 10;
+
+                        i2.ItemType = Item.Bar;
+                        i2.Quantity = 10;
+
+                        o.Items.Add(i1);
+                        o.Items.Add(i2);
+
+                        // display orders sorted by their date
+
+                        foreach (Order o in c.Orders.Sort(OrderField.Date))
+                        {
+                            Console.WriteLine("Order #{0} Date: {1}", o.OrderID, o.Date);
+                        }
+                    }
+                </code>
+            </body>
         </section>
         <section id="objectidentity">
             <title>Object Identity Management</title>
             <body>
                 <todo />
+                <!--
                 <p>
                     This implies that in order to participate in O/R mapping
                     each database table needs to have one or more primary key columns (either natural or surrogate)
@@ -3531,6 +3959,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     Mechanism that ensures object identity is called L1 (transaction-level) caching. It also ensures that
                     object is never loaded from a database twice.
                 </p>
+                -->
             </body>
         </section>
         <section id="modifyingobjects">
@@ -3592,6 +4021,11 @@ foreach (WorkItem wi in WorkItem.GetList(true))
             <title>Query API</title>
             <body>
             </body>
+            <section id="soqlexpression">
+                <title>SoqlExpression</title>
+                <body>
+                </body>
+            </section>
             <section id="soodawhereclause">
                 <title>SoodaWhereClause</title>
                 <body>
