@@ -275,68 +275,65 @@ namespace Sooda.ObjectMapper
                 }
             }
 
-            if ((options & SoodaSnapshotOptions.NoDatabase) == 0)
+            SoodaDataSource ds = transaction.OpenDataSource(classInfo.GetDataSource());
+
+            if ((options & SoodaSnapshotOptions.KeysOnly) != 0)
             {
-                SoodaDataSource ds = transaction.OpenDataSource(classInfo.GetDataSource());
-
-                if ((options & SoodaSnapshotOptions.KeysOnly) != 0)
+                using (IDataReader reader = ds.LoadMatchingPrimaryKeys(transaction.Schema, classInfo, whereClause, orderBy, topCount))
                 {
-                    using (IDataReader reader = ds.LoadMatchingPrimaryKeys(transaction.Schema, classInfo, whereClause, orderBy, topCount))
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            SoodaObject obj = SoodaObject.GetRefFromKeyRecordHelper(transaction, factory, reader);
-                            items.Add(obj);
-                        }
+                        SoodaObject obj = SoodaObject.GetRefFromKeyRecordHelper(transaction, factory, reader);
+                        items.Add(obj);
                     }
                 }
-                else
-                {
-                    TableInfo[] loadedTables;
+            }
+            else
+            {
+                TableInfo[] loadedTables;
 
-                    using (IDataReader reader = ds.LoadObjectList(transaction.Schema, classInfo, whereClause, orderBy, topCount, options, out loadedTables))
+                using (IDataReader reader = ds.LoadObjectList(transaction.Schema, classInfo, whereClause, orderBy, topCount, options, out loadedTables))
+                {
+                    while (reader.Read())
                     {
-                        while (reader.Read())
+                        SoodaObject obj = SoodaObject.GetRefFromRecordHelper(transaction, factory, reader, 0, loadedTables, 0);
+                        if ((options & SoodaSnapshotOptions.VerifyAfterLoad) != 0)
                         {
-                            SoodaObject obj = SoodaObject.GetRefFromRecordHelper(transaction, factory, reader, 0, loadedTables, 0);
-                            if ((options & SoodaSnapshotOptions.VerifyAfterLoad) != 0)
+                            if (whereClause != null && !whereClause.Matches(obj, false))
                             {
-                                if (whereClause != null && !whereClause.Matches(obj, false))
-                                {
-                                    // don't add the object
-                                    continue;
-                                }
+                                // don't add the object
+                                continue;
                             }
-                            items.Add(obj);
                         }
+                        items.Add(obj);
                     }
                 }
+            }
 
-                if (cacheKey != null && useCache && (topCount == -1) && (involvedClassNames != null))
+            if (cacheKey != null && useCache && (topCount == -1) && (involvedClassNames != null))
+            {
+                object[] keys = new object[items.Count];
+                int p = 0;
+
+                foreach (SoodaObject obj in items)
                 {
-                    object[] keys = new object[items.Count];
-                    int p = 0;
+                    keys[p++] = obj.GetPrimaryKeyValue();
+                }
 
-                    foreach (SoodaObject obj in items)
-                    {
-                        keys[p++] = obj.GetPrimaryKeyValue();
-                    }
+                TimeSpan expirationTimeout;
+                bool slidingExpiration;
 
-                    TimeSpan expirationTimeout;
-                    bool slidingExpiration;
-
-                    if (transaction.CachingPolicy.GetExpirationTimeout(
-                        classInfo, whereClause, orderBy, topCount, keys.Length,
-                        out expirationTimeout, out slidingExpiration))
-                    {
-                        transaction.Cache.StoreCollection(cacheKey,
+                if (transaction.CachingPolicy.GetExpirationTimeout(
+                            classInfo, whereClause, orderBy, topCount, keys.Length,
+                            out expirationTimeout, out slidingExpiration))
+                {
+                    transaction.Cache.StoreCollection(cacheKey,
                             classInfo.GetRootClass().Name,
                             keys,
                             involvedClassNames,
                             ((options & SoodaSnapshotOptions.KeysOnly) != 0) ? false : true,
                             expirationTimeout,
                             slidingExpiration);
-                    }
                 }
             }
         }

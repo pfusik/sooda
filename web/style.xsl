@@ -145,14 +145,13 @@
         <xsl:variable name="number_this_sort_ordinal" select="number(substring(concat($this_sort_ordinal,'000000000000000'),1,16))" />
         <xsl:variable name="number_target_sort_ordinal" select="number(substring(concat($target_sort_ordinal,'000000000000000'),1,16))" />
 
-        <a href="#{@id}" xlink:href="#{@id}">
             <xsl:choose>
                 <xsl:when test="$number_this_sort_ordinal &lt; $number_target_sort_ordinal">later</xsl:when>
                 <xsl:otherwise>earlier</xsl:otherwise>
             </xsl:choose>
-        </a>
-        <xsl:if test="$sect"> (<img src="rightarrow.gif" alt="Section" /><xsl:apply-templates select="$sect" mode="section-number" />)
-        </xsl:if>
+        in section "<a href="#{@id}" xlink:href="#{@id}">
+        <xsl:apply-templates select="$sect" mode="section-number" />.&#160;<xsl:apply-templates select="$sect/title" />
+        </a>"
         <xsl:if test="not($sect)">
             <xsl:message terminate="yes">No such anchor: '<xsl:value-of select="@id" />'</xsl:message>
         </xsl:if>

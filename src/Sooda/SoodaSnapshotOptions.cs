@@ -50,14 +50,6 @@ namespace Sooda
         NoTransaction = 1,
 
         /// <summary>
-        /// Don't make database query. This will walk all database objects of specified class, check
-        /// if they match the specified <c>whereClause</c> and add them to the snapshot.
-        /// Use this option when you're certain that all objects that you want to include in the collection
-        /// have been previously materialized.
-        /// </summary>
-        NoDatabase = 2,
-
-        /// <summary>
         /// Don't precommit modified objects
         /// </summary>
         NoWriteObjects = 4,

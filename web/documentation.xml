@@ -397,69 +397,7 @@ using (SoodaTransaction t = new SoodaTransaction())
                         Sooda needs to access the database to load the data. If a property is only written to, there's no need
                         to even load the data from the database.
                     </p>
-                    <p>
-                        Sooda provides two ways to get a reference to an object given its primary key:
-                    </p>
-                    <ul>
-                        <li><code>ClassName.GetRef()</code> - gets a reference to an object without loading its data (initial state is Data Not Loaded)</li>
-                        <li><code>ClassName.Load()</code> - gets a reference to an object and loads its data (initial state is Data Loaded)</li>
-                    </ul>
-                    <p>
-                        Reference fields use GetRef() internally so that when you access a property that returns another object
-                        this object usually starts in Data Not Loaded status.
-                    </p>
-                    <p>
-                        The following example demonstrates basic concepts of lazy loading:
-                    </p>
-                    <code lang="C#">
-using (SoodaTransaction t = new SoodaTransaction())
-{
-    Employee emp;
-
-    //////////////////////////////////////////
-
-
-    // get a reference to an object - no database access here
-    emp = Employee.GetRef(3);
-
-    // first READ - this causes the object to be loaded
-    // (roughly equivalent to select * from Employee where id = 3)
-    Console.WriteLine(emp.Name);
-
-    // display hire date - no need to access the database 
-    // as the data is already loaded
-    Console.WriteLine(emp.HireDate);
-
-    //////////////////////////////////////////
-
-    // get a reference and load object data
-    emp = Employee.Load(5);
-
-    // no database access here - data is already in memory
-    Console.WriteLine(emp.Name);
-
-    // no database access here - data is already in memory
-    Console.WriteLine(emp.HireDate);
-
-    //////////////////////////////////////////
-
-    // get a reference to another object
-
-    emp = Employee.GetRef(7);
-
-    // change the state of the object
-    // we don't need to load the object at all!
-    emp.Active = false;
-
-    // commit changes. this sends the following SQL to the database:
-    // UPDATE Employee SET Active=false WHERE ID=7
-    t.Commit();
-
-}
-                    </code>
-                    <p>
-                        There are some more advanced use cases of lazy loading, but they will be presented in later sections.
-                    </p>
+                    <p>Lazy loading is described <sectionlink id="loadingobjects" />.</p>
                 </body>
             </section>
             <section id="pathexpressions">
@@ -2867,7 +2805,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                         Defines external projects (such as Visual Studio projects) that need to be updated each time a new class is added to the schema. 
                                         Each project is represented by <x><project type="..." file="..." /></x>. 
                                         The following example XML defines two projects: one for Visual Studio 2003 
-                                        and Visual Studio 2005: 
+                                        and the other for Visual Studio 2005: 
                                     </p>
                                     <code lang="XML">
                                         <![CDATA[
@@ -2887,7 +2825,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                     </ul>
                                     <p>
                                         Note that files (such as source files and embedded resources) can only be added to projects, they
-                                        are never automatically removed. If you remove a class from the <a href="#schema">mapping schema</a>, 
+                                        are not removed automatically. If you remove a class from the <a href="#schema">mapping schema</a>, 
                                         you need to manually remove the appropriate file from your project.
                                     </p>
                                 </td>
@@ -2921,7 +2859,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                             // test for null
                                             if (x.Field1 != null)
                                             {
-                                                // retrieve not-null value
+                                                // retrieve non-null value
                                                 int v = (int)x.Field1;
 
                                                 // WARNING - no type checking at compilation time occurs
@@ -2944,7 +2882,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                         but may be a bad idea for nullable fields.
 
                                         <code lang="C#">
-                                            // retrieve not-null value
+                                            // retrieve non-null value
                                             int v = (int)x.Field1;
 
                                             // set to not null
@@ -2962,7 +2900,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                             // test for null
                                             if (!x.Field1_IsNull)
                                             {
-                                                // retrieve not-null value
+                                                // retrieve non-null value
                                                 int v = x.Field1;
 
                                                 // set to null
@@ -2977,7 +2915,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <tr>
                                     <td>SqlType</td>
                                     <td>
-                                        Represent nullable fields as the appropriate SqlTypes (value types from the System.Data.SqlTypes namespace).
+                                        Represent nullable fields as the corresponding SqlTypes (value types from the System.Data.SqlTypes namespace).
                                         The following SqlTypes are available:
                                         <ul>
                                             <li>SqlInt32</li>
@@ -2995,7 +2933,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                             // test for null
                                             if (!x.Field1.IsNull)
                                             {
-                                                // retrieve not-null value
+                                                // retrieve non-null value
                                                 int v = x.Field1.Value;
 
                                                 // set to null
@@ -3009,8 +2947,11 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 </tr>
                                 <tr>
                                     <td>Nullable</td>
-                                    <td>Use <code>Nullable&lt;T&gt;</code> types available in .NET 2.0 and above.
-                                        The following generic types instantiations are used to represent primitive nullable values:
+                                    <td>
+                                        <p>
+                                            Use <code>Nullable&lt;T&gt;</code> types available in .NET 2.0 and above.
+                                            The following nullable types are supported:
+                                        </p>
                                         <ul>
                                             <li>Nullable&lt;int&gt; - int?</li>
                                             <li>Nullable&lt;long&gt; - long?</li>
@@ -3021,12 +2962,11 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                             <li>Nullable&lt;double&gt; - double?</li>
                                             <li>Nullable&lt;Guid&gt; - Guid?</li>
                                         </ul>
-
                                         <code lang="C#">
                                             // test for null
                                             if (x.Field1 != null)
                                             {
-                                                // retrieve not-null value, no other casts are allowed here
+                                                // retrieve non-null value, no other casts are allowed here
                                                 int v = (int)x.Field1;
 
                                                 // set to null
@@ -3046,7 +2986,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
         </section>
     </section>
     <section id="api">
-        <title>API</title>
+        <title>Application Programming Interface</title>
         <section id="soodatransaction">
             <title>SoodaTransaction</title>
             <body>
@@ -3159,6 +3099,487 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     </ol>
                 </body>
             </section>
+            <section id="soodatransactionimplicit">
+                <title>Implicit transactions</title>
+                <body>
+                    <p>
+                        As mentioned earlier, every object which inherits from <code>SoodaObject</code> must be associated with an instance
+                        of <code>SoodaTransaction</code>. There are 3 ways to materialize objects which will be discussed in further sections:
+                    </p>
+                    <ul>
+                        <li><a href="#creatingobjects">creating new objects</a> - using <code>new</code></li>
+                        <li><a href="#loadingobjects">loading objects</a>- with <code>Load()</code> and <code>GetRef()</code>, <code>FindByXXX()</code>, <code>LoadSingleObject()</code></li>
+                        <li><a href="#loadingcollections">loading collections of objects</a> - with <code>GetList()</code>, <code>FindListByXXX()</code></li>
+                    </ul>
+                    <p>
+                        You need to pass transaction object when calling any of the above methods. It would be inconvenient
+                        to require the transaction reference to be passed explicitly, therefore Sooda supports the concept of 
+                        implicit active transaction (returned by <code>SoodaTransaction.ActiveTransaction</code> static property).
+                        Implicit transaction is used when no explicit transaction has been provided.
+                    </p>
+                    <p>
+                        SoodaStubGen generates all APIs in two versions: one that takes <code>SoodaTransaction</code> object as 
+                        parameter and the other that assumes implicit transaction. 
+                    </p>
+                    <p><b>Using implicit transactions:</b></p>
+                    <code lang="C#">
+                        using (SoodaTransaction transaction = new SoodaTransaction())
+                        {
+                            Person person;
+                            PersonList personList;
+
+                            // object construction - implicit transaction
+                            person = new Person();
+
+                            // load single objects
+                            person = Person.Load(10);
+                            person = Person.GetRef(10);
+                            person = Person.LoadSingleObject(PersonField.Name == "Mary Manager");
+                            person = Person.FindByName("Mary Manager");
+
+                            // load collection
+                            personList = Person.GetList(PersonField.Name == "Mary Manager");
+                            personList = Person.FindListByName("Mary%");
+                        }
+                    </code>
+                    <p><b>Explicit transactions:</b> (note that each method call receives transaction as its first argument)</p>
+                    <code lang="C#">
+                        using (SoodaTransaction transaction = new SoodaTransaction(SoodaTransactionOptions.NoImplicit))
+                        {
+                            Person person;
+                            PersonList personList;
+
+                            // object construction - explicit transaction passed to constructor
+                            person = new Person(transaction);
+
+                            // load single objects - transaction passed as first argument
+                            person = Person.Load(transaction, 10);
+                            person = Person.GetRef(transaction, 10);
+                            person = Person.LoadSingleObject(transaction, PersonField.Name == "Mary Manager");
+                            person = Person.FindByName(transaction, "Mary Manager");
+
+                            // load collection - transaction passed as first argument
+                            personList = Person.GetList(transaction, PersonField.Name == "Mary Manager");
+                            personList = Person.FindListByName(transaction, "Mary%");
+                        }
+                    </code>
+                    <p>
+                        When you create a new <code>SoodaTransaction</code> object it is automatically 
+                        stored in <code>SoodaTransaction.ActiveTransaction</code> unless you
+                        pass <code>SoodaTransactionOptions.NoImplicit</code> argument to the constructor. 
+                        This property is restored to its old value when the transaction is closed/disposed, 
+                        which means you can nest transactions in an intuitive manner:
+                    </p>
+                    <code lang="C#">
+                        using (SoodaTransaction t1 = new SoodaTransaction())
+                        {
+                            // t1 is implicit transaction
+                            using (SoodaTransaction t2 = new SoodaTransaction())
+                            {
+                                // t2 is implicit transaction
+                                using (SoodaTransaction t3 = new SoodaTransaction())
+                                {
+                                    // t3 is implicit transaction
+                                }
+                                // t2 is implicit transaction
+                            }
+                            // t1 is implicit transaction
+                        }
+                    </code>
+                    <p>
+                        <code>SoodaTransaction.ActiveTransaction</code> reference is usually stored in thread local storage, 
+                        but other storage strategies are possible, as described <sectionlink id="activetransactionstrategy" />.
+                    </p>
+                    <p>
+                        Examples in this document will use implicit transactions, unless mentioned otherwise.
+                    </p>
+                </body>
+            </section>
+        </section>
+        <section id="creatingobjects">
+            <title>Creating objects</title>
+            <body>
+                <p>
+                    To create a new persistent object in Sooda you simply invoke its constructor, optionally passing the transaction
+                    reference. There are 3 constructors generated by Sooda:
+                </p>
+                <ul>
+                    <li>default constructor - takes no arguments and associates newly created object with the implicit transaction</li>
+                    <li>default constructor which takes <code>SoodaTransaction</code> as an argument - associates newly created object with the specific transaction</li>
+                    <li>special constructor which takes <code>SoodaConstructor</code> as an argument - this 
+                       constructor should never be called by the user code and is used internally by Sooda</li>
+               </ul>
+               <p>
+                   Typical code to create object, set its properties and save to the database is:
+               </p>
+               <code lang="C#">
+                   using (SoodaTransaction t = new SoodaTransaction())
+                   {
+                        // create new object
+
+                        Person p = new Person();
+
+                        // set properties
+                        p.Name = "Nancy Newcomer";
+                        p.Sex = "F";
+                        p.Address = "1 Microsoft Way";
+                        p.ZipCode = "98052";
+                        p.City = "Redmond";
+                        p.State = "WA";
+                        p.BirthDate = new DateTime(1980, 1, 1);
+
+                        // commit
+                        t.Commit();
+                   }
+               </code>
+               <p>
+                   Sooda allows you to create more than one object in the transaction and will properly handle situations where
+                   two newly created objects are dependent on one another. SQL <code>INSERT</code> operations
+                   will be properly ordered when <code>Commit()</code> is called, the to ensure that all foreign
+                   key constraints will be preserved.
+                   The following example demonstrates this:
+               </p>
+
+               <code lang="C#">
+                   using (SoodaTransaction t = new SoodaTransaction())
+                   {
+                        // We have a new customer who whishes to make his first order of two items
+                        // We want to make this transactional
+
+                        Customer c = new Customer();
+                        Order o = new Order();
+                        OrderItem i1 = new OrderItem();
+                        OrderItem i2 = new OrderItem();
+
+                        c.Name = "Caroline Customer";
+                        c.Address = "...";
+
+                        o.ShipTo = c.Address;
+                        o.Customer = c;
+
+                        i1.ItemType = Item.Foo;
+                        i1.Quantity = 10;
+
+                        i2.ItemType = Item.Bar;
+                        i2.Quantity = 10;
+
+                        o.Items.Add(i1);
+                        o.Items.Add(i2);
+
+                        t.Commit();
+
+                        // Sooda properly orders the SQL INSERT statements:
+                        //
+                        // insert into Customer ...
+                        // insert into Order ...
+                        // insert into OrderItem ...
+                        // insert into OrderItem ...
+                        //
+                        // Issuing the statements in other order may break referential identity constraints
+                   }
+               </code>
+            </body>
+        </section>
+        <section id="loadingobjects">
+            <title>Loading objects</title>
+            <body>
+                <p>
+                    There are various ways to load objects from the database depending on the desired result:
+                </p>
+                <ul>
+                    <li>Get a reference to the object without loading data from the database (lazy loading)</li>
+                    <li>Load single object from the database given its primary key</li>
+                    <li>Load single object or list of objects that match the specified criteria</li>
+                    <li>Load all objects from a collection</li>
+                </ul>
+            </body>
+            <section id="loadingobjectsgetref">
+                <title>Loading objects by primary key</title>
+                <body>
+                    <p>
+                        Sooda provides two ways to get a reference to an object given its primary key:
+                    </p>
+                    <ul>
+                        <li><code>ClassName.GetRef()</code> - gets a reference to an object without loading its data</li>
+                        <li><code>ClassName.Load()</code> - gets a reference to an object and loads its data</li>
+                    </ul>
+                    <p>
+                        Lazy loading is a way to get a reference to the object without actually loading data from the
+                        database. Propery values will be loaded on first read access. Getting object reference is very fast
+                        and should be used when we don't need actual object data, just its reference, as 
+                        described <sectionlink id="lazyloading" />.
+                    </p>
+                    <p>
+                        The following example demonstrates basic concepts of lazy loading:
+                    </p>
+                    <code lang="C#">
+                        using (SoodaTransaction t = new SoodaTransaction())
+                        {
+                            Employee emp;
+
+                            //////////////////////////////////////////
+
+
+                            // get a reference to an object - no database access here
+                            emp = Employee.GetRef(3);
+
+                            // first READ - this causes the object to be loaded
+                            // (roughly equivalent to SELECT * FROM Employee WHERE id = 3)
+                            Console.WriteLine(emp.Name);
+
+                            // display hire date - no need to access the database 
+                            // as the data is already loaded
+                            Console.WriteLine(emp.HireDate);
+
+                            //////////////////////////////////////////
+
+                            // get a reference and load object data
+                            emp = Employee.Load(5);
+
+                            // no database access here - data is already in memory
+                            Console.WriteLine(emp.Name);
+
+                            // no database access here - data is already in memory
+                            Console.WriteLine(emp.HireDate);
+
+                            //////////////////////////////////////////
+
+                            // get a reference to another object
+
+                            emp = Employee.GetRef(7);
+
+                            // change the state of the object
+                            // we don't need to load the object at all!
+                            emp.Active = false;
+
+                            // commit changes. this sends the following SQL to the database:
+                            // UPDATE Employee SET Active=false WHERE ID=7
+                            t.Commit();
+
+                        }
+                    </code>
+                    <p>
+                        Reference fields use <code>GetRef()</code> internally so that when you access a property that returns another object
+                        this object usually starts in <code>Data Not Loaded</code> status.
+                    </p>
+                    <p>
+                        Note that it's not always possible to provide a reference to an object without loading its data, so GetRef() 
+                        may sometimes need to load the data. When you invoke <code>GetRef()</code> or <code>Load()</code> on an
+                        object of class that has subclasses, Sooda needs to load a record from the database to check the concrete type
+                        to instantiate. Fortunately Sooda has a Factory Cache mechanism to avoid loading
+                        records more than once as described <sectionlink id="factorycache" />.
+                    </p>
+                </body>
+            </section>
+            <section id="loadingbyquery">
+                <title>Loading objects matching specific criteria</title>
+                <body>
+                    <p>
+                        Sooda has a <a href="#soql">query language called SOQL</a> that can be used to select
+                        objects that meet the specific criteria. To get a list of matching objects you 
+                        use <code>GetList()</code> method. To load a single object by SQL query use <code>LoadSingleObject()</code>.
+                    </p>
+                    <p>
+                        <code>GetList()</code> method is overloaded to support various usage scenarios.
+                        The most complex variant of the method takes 5 parameters, but <a href="soodastubgen">SoodaStubGen</a>
+                        also generates simplified variants of the GetList() method which only accept 1,2,3 or 4 parameters. There are
+                        32 overloads for each class.
+                    </p>
+                    <code lang="C#">
+                        GetList(transaction, whereClause, topCount, orderBy, options);
+                    </code>
+                    <p>
+                        The parameters are:
+                    </p>
+                    <ul>
+                        <li><code>transaction</code> - (optional) transaction reference, if omitted <code>SoodaTransaction.ActiveTransaction</code> is used</li>
+                        <li><code>whereClause</code> - filter clause, can be either <a href="#soodawhereclause">SoodaWhereClause</a> (for textual queries) or
+                            <a href="#soqlbooleanexpression">SoqlBooleanExpression</a> for typed queries.</li>
+                        <li><code>topCount</code> - (optional) maximum number of objects to retrieve - this is equivalent to <code>SELECT TOP n</code> SQL query</li>
+                        <li><code>orderBy</code> - (optional) specifies the ordering of result objects</li>
+                        <li><code>options</code> - (optional) various flags that specify options</li>
+                    </ul>
+                    <p>
+                        For example, you can use the following code to run <a href="#soqltext">text-based SOQL query</a> to fetch at most 5 Persons living in Redmond, WA:
+                    </p>
+                    <code lang="C#">
+                        using (SoodaTransaction t = new SoodaTransaction())
+                        {
+                            foreach (Person p in Person.GetList(new SoodaWhereClause("City={0} and State={1}", "Redmond", "WA"), 5))
+                            {
+                                Console.WriteLine("name: {0}", p.Name);
+                            }
+                        }
+                    </code>
+                    <p>
+                        To run a typed query:
+                    </p>
+                    <code lang="C#">
+                        <![CDATA[
+                        using (SoodaTransaction t = new SoodaTransaction())
+                        {
+                            foreach (Person p in Person.GetList(PersonField.City == "Redmond" && PersonField.State == "WA"))
+                            {
+                                Console.WriteLine("name: {0}", p.Name);
+                            }
+                        }
+                        ]]>
+                    </code>
+                    <p>
+                        To order the results by last name:
+                    </p>
+                    <code lang="C#">
+                        <![CDATA[
+                        using (SoodaTransaction t = new SoodaTransaction())
+                        {
+                            foreach (Person p in Person.GetList(
+                                PersonField.City == "Redmond" && PersonField.State == "WA"), 
+                                SoodaOrderBy.Ascending("LastName"))
+                            {
+                                Console.WriteLine("name: {0}", p.Name);
+                            }
+                        }
+                        ]]>
+                    </code>
+                    <p>
+                        Options you can pass to <code>GetList()</code> are flags defined in 
+                        the <code>SoodaSnapshotOptions</code> enumeration. Their meaning is described below:
+                    </p>
+                    <ul>
+                        <li><code>Default</code> - Default options</li>
+                        <li><code>NoTransaction</code> - Don't apply changes made in transaction. Use this option to perform a 
+                            database snapshot or when you're sure that none of transaction objects will affect the result. 
+                            This helps speed things up a bit.</li>
+                        <li><code>NoWriteObjects</code> - Don't precommit objects. Precommit is described <sectionlink id="precommit" />.</li>
+                        <li><code>VerifyAfterLoad</code> - Verify after load. In the case of precommit it is possible that the result
+                            list will include extra objects. Enabling this option causes the resulting objects to be re-evaluated
+                            in memory</li>
+                        <li><code>KeysOnly</code> - Load only the primary key values. Objects will be materialized but fields other than primary keys will require a database query.</li>
+                        <li><code>Cache</code> - Load the collection items from cache if possible.</li>
+                        <li><code>NoCache</code> - Don't load the collection from cache even if it would be possible to do so</li>
+                        <li><code>PrefetchRelated</code> - Use prefetch definition from the schema to load related objects automatically</li>
+                    </ul>
+                    <p>
+                        The most commonly used option here is <code>NoWriteObjects</code> which can be used to disable precommit. 
+                        This example demonstrates passing this option to <code>GetList()</code>. Passing SoodaSnapshotOptions.NoWriteObjects
+                        causes "<code>Nancy Newcomer</code>" to be absent from the list of returned objects. If we omitted this flag,
+                        Sooda would <a href="#precommit">precommit</a> <code>newPerson</code> object by making the SQL <code>INSERT</code> and Nancy Newcomer would be
+                        returned by the <code>GetList()</code>.
+                    </p>
+                    <code lang="C#">
+                        <![CDATA[
+                        using (SoodaTransaction t = new SoodaTransaction())
+                        {
+                            // add a person, whose address matches by the following
+                            // SOQL query
+                            Person newPerson = new Person();
+
+                            newPerson.Name = "Nancy Newcomer";
+                            newPerson.City = "Redmond";
+                            newPerson.State = "WA";
+
+                            // GetList() without precommit - Nancy Newcomer is 
+                            // not returned
+
+                            foreach (Person p in Person.GetList(
+                                PersonField.City == "Redmond" && PersonField.State == "WA",
+                                SoodaSnapshotOptions.NoWriteObjects))
+                            {
+                                Console.WriteLine("name: {0}", p.Name);
+                            }
+
+                            // GetList() with precommit - Nancy Newcomer included 
+                            // in the list of matching objects
+
+                            foreach (Person p in Person.GetList(
+                                PersonField.City == "Redmond" && PersonField.State == "WA"))
+                            {
+                                Console.WriteLine("name: {0}", p.Name);
+                            }
+                        }
+                        ]]>
+                    </code>
+                </body>
+            </section>
+            <section id="loadingcollections">
+                <title>Loading collections</title>
+                <body>
+                </body>
+            </section>
+        </section>
+        <section id="objectidentity">
+            <title>Object Identity Management</title>
+            <body>
+                <todo />
+                <p>
+                    This implies that in order to participate in O/R mapping
+                    each database table needs to have one or more primary key columns (either natural or surrogate)
+                    and you need to tell the mapper which columns are primary keys. The primary keys
+                    must be properly maintained in the database (the best way is to create a UNIQUE index on primary
+                    key columns). If you fail to do so (for example when there are many rows sharing the same
+                    value in the primary key column), you may get all sorts of undefined behavior.
+                </p>
+                <p>
+                    Sooda guarantees reference identity for objects retrieved from a database. It means
+                    that if we make 2 or more queries which retrieve a particular row from the 
+                    database in the same <a href="#transactions">transaction</a>
+                    they are guaranteed to be be mapped to the same object so if we got objects o1 and o2 then <code>Object.ReferenceEquals(o1, o2) == true</code>
+                    Some other O/R Mapping tools only guarantee object value equality, so the same
+                    row retrieved from the database in multiple queries can be mapped to more than
+                    one object in memory, so you only get:
+                    <code>o1.Equals(o2) &amp;&amp; o2.Equals(o1)</code> but 
+                    <code>Object.ReferenceEquals(o1, o2)</code> can be <code>false</code>.
+                </p>
+                <p>
+                    Mechanism that ensures object identity is called L1 (transaction-level) caching. It also ensures that
+                    object is never loaded from a database twice.
+                </p>
+            </body>
+        </section>
+        <section id="modifyingobjects">
+            <title>Modifying objects</title>
+            <body>
+            </body>
+        </section>
+        <section id="modifyingcollections">
+            <title>Modifying collections</title>
+            <body>
+            </body>
+        </section>
+        <section id="keygeneration">
+            <title>Key Generation</title>
+            <body>
+            </body>
+        </section>
+        <section id="precommit">
+            <title>Precommitting objects in transactions</title>
+            <body>
+            </body>
+        </section>
+        <section id="triggers">
+            <title>Triggers</title>
+            <body>
+            </body>
+        </section>
+        <section id="optimizations">
+            <title>Optimizations</title>
+            <body>
+            </body>
+            <section id="prefetch">
+                <title>Prefetching</title>
+                <body>
+                </body>
+            </section>
+            <section id="factorycache">
+                <title>Factory Cache</title>
+                <body>
+                </body>
+            </section>
+            <section id="runtimecaching">
+                <title>Level 2 Caching</title>
+                <body>
+                </body>
+            </section>
         </section>
         <section id="soodaobject">
             <title>SoodaObject</title>
@@ -3174,6 +3595,16 @@ foreach (WorkItem wi in WorkItem.GetList(true))
             <title>Query API</title>
             <body>
             </body>
+            <section id="soodawhereclause">
+                <title>SoodaWhereClause</title>
+                <body>
+                </body>
+            </section>
+            <section id="soqlbooleanexpression">
+                <title>SoqlBooleanExpression</title>
+                <body>
+                </body>
+            </section>
         </section>
         <section id="fieldhandlers">
             <title>Field Handlers</title>
@@ -3182,6 +3613,11 @@ foreach (WorkItem wi in WorkItem.GetList(true))
         </section>
         <section id="cachingapi">
             <title>Caching</title>
+            <body>
+            </body>
+        </section>
+        <section id="activetransactionstrategy">
+            <title>ActiveTransaction strategies</title>
             <body>
             </body>
         </section>
@@ -3271,6 +3707,11 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 <body>
                 </body>
             </section>
+            <section id="generatedfindmethods">
+                <title>Find Methods</title>
+                <body>
+                </body>
+            </section>
             <section id="generatedfactories">
                 <title>Factories</title>
                 <body>
@@ -3285,90 +3726,6 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 <title>Schema</title>
                 <body>
                 </body>
-            </section>
-        </body>
-    </section>
-    <section id="runtimeoperation">
-        <title>Runtime operation</title>
-        <body>
-            <section id="loadingobjects">
-                <title>Loading objects</title>
-                <body>
-                </body>
-            </section>
-            <section id="objectidentity">
-                <title>Object Identity Management</title>
-                <body>
-                    <todo />
-                    <p>
-                        This implies that in order to participate in O/R mapping
-                        each database table needs to have one or more primary key columns (either natural or surrogate)
-                        and you need to tell the mapper which columns are primary keys. The primary keys
-                        must be properly maintained in the database (the best way is to create a UNIQUE index on primary
-                        key columns). If you fail to do so (for example when there are many rows sharing the same
-                        value in the primary key column), you may get all sorts of undefined behavior.
-                    </p>
-                    <p>
-                        Sooda guarantees reference identity for objects retrieved from a database. It means
-                        that if we make 2 or more queries which retrieve a particular row from the 
-                        database in the same <a href="#transactions">transaction</a>
-                        they are guaranteed to be be mapped to the same object so if we got objects o1 and o2 then <code>Object.ReferenceEquals(o1, o2) == true</code>
-                        Some other O/R Mapping tools only guarantee object value equality, so the same
-                        row retrieved from the database in multiple queries can be mapped to more than
-                        one object in memory, so you only get:
-                        <code>o1.Equals(o2) &amp;&amp; o2.Equals(o1)</code> but 
-                        <code>Object.ReferenceEquals(o1, o2)</code> can be <code>false</code>.
-                    </p>
-                    <p>
-                        Mechanism that ensures object identity is called L1 (transaction-level) caching. It also ensures that
-                        object is never loaded from a database twice.
-                    </p>
-                </body>
-            </section>
-            <section id="modifyingobjects">
-                <title>Modifying objects</title>
-                <body>
-                </body>
-            </section>
-            <section id="loadingcollections">
-                <title>Loading collections</title>
-                <body>
-                </body>
-            </section>
-            <section id="modifyingcollections">
-                <title>Modifying collections</title>
-                <body>
-                </body>
-            </section>
-            <section id="keygeneration">
-                <title>Key Generation</title>
-                <body>
-                </body>
-            </section>
-            <section id="precommit">
-                <title>Precommitting objects in transactions</title>
-                <body>
-                </body>
-            </section>
-            <section id="triggers">
-                <title>Triggers</title>
-                <body>
-                </body>
-            </section>
-            <section id="optimizations">
-                <title>Optimizations</title>
-                <body>
-                </body>
-                <section id="prefetch">
-                    <title>Prefetching</title>
-                    <body>
-                    </body>
-                </section>
-                <section id="runtimecaching">
-                    <title>Level 2 Caching</title>
-                    <body>
-                    </body>
-                </section>
             </section>
         </body>
     </section>
