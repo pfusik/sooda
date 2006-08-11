@@ -179,19 +179,30 @@
 
     <xsl:template match="table-of-contents">
         <table class="toc">
-            <xsl:apply-templates select="//section" mode="toc" />
+            <xsl:apply-templates select="//section" mode="toc">
+                <xsl:with-param name="maxLevel">
+                    <xsl:choose>
+                        <xsl:when test="@maxLevel"><xsl:value-of select="@maxLevel" /></xsl:when>
+                        <xsl:otherwise>2</xsl:otherwise>
+                    </xsl:choose>
+                </xsl:with-param>
+            </xsl:apply-templates>
         </table>
     </xsl:template>
 
     <xsl:template match="section" mode="toc">
-        <tr>
-            <td>
-                <xsl:attribute name="class">toc<xsl:apply-templates select="." mode="section-level" /></xsl:attribute>
-                <xsl:apply-templates select="." mode="section-number" />.
+        <xsl:param name="maxLevel">3</xsl:param>
+        <xsl:variable name="level"><xsl:apply-templates select="." mode="section-level" /></xsl:variable>
 
-                <a href="#{@id}"><xsl:apply-templates select="title" /></a>
-            </td>
-        </tr>
+        <xsl:if test="$level &lt;= $maxLevel">
+            <tr>
+                <td class="toc{$level}">
+                    <xsl:apply-templates select="." mode="section-number" />.
+
+                    <a href="#{@id}"><xsl:apply-templates select="title" /></a>
+                </td>
+            </tr>
+        </xsl:if>
     </xsl:template>
 
     <xsl:template match="@* | node()">
