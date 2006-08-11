@@ -47,7 +47,7 @@
                 <title>Supported Platforms</title>
                 <body>
                     <p>
-                        Sooda supports .NET Framework 1.1 and 2.0 and Mono profile 1.0 and 2.0.
+                        Sooda supports .NET Framework 1.1 and 2.0 and Mono profile 1.0 and 2.0. .NET Framework 1.0 is NOT supported.
                     </p>
                     <p>
                         The following development tools/build environments are supported:
@@ -57,9 +57,6 @@
                         <li>Visual Studio 2003 (.NET Framework 1.1)</li>
                         <li>NAnt 0.85</li>
                     </ul>
-                    <p>
-                        .NET Framework 1.0 is NOT supported. Supporting
-                    </p>
                 </body>
             </section>
             <section id="supportedrdbms">
@@ -2990,19 +2987,17 @@ foreach (WorkItem wi in WorkItem.GetList(true))
         <section id="soodatransaction">
             <title>SoodaTransaction</title>
             <body>
-                <p>
-                    <code>SoodaTransaction</code> objects manage object identity, database connections, 
-                    provide differential serialization and cache management. 
-                </p>
+                <todo />
             </body>
             <section id="soodatransactioncreating">
                 <title>Creating and managing transactions</title>
                 <body>
                     <p>
                         Instances of <code>SoodaTransaction</code> must be created before any operation
-                        on O/R-mapped objects. You need to properly close the transaction after you're
+                        on O/R-mapped objects. You need to properly close the transaction after you are
                         done with the objects. The best way to ensure that your transaction is closed
-                        regardless of any exceptions that may occur is to use IDisposable pattern and C# <code>using()</code> statement:
+                        regardless of any exceptions that may occur is to use the <code>IDisposable</code> 
+                        pattern and C# <code>using()</code> statement:
                     </p>
                     <code lang="C#">
                         using (SoodaTransaction t = new SoodaTransaction())
@@ -3029,7 +3024,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     <p>
                         Each transaction must be associated with a mapping schema which is embedded as a resource into the 
                         compiled DAL assembly. You need to configure the transaction to use the appropriate assembly. 
-                        There are several ways to do it depending on how you're planning to use your DAL:
+                        There are several ways to do it depending on how you are planning to use your DAL:
                     </p>
                     <ol>
                         <li>By passing the assembly as an argument to <code>SoodaTransaction</code> constructor:
@@ -3068,7 +3063,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 </configuration>
                                 ]]>
                             </code>
-                            <p>If your objects assembly is in the GAC, you need to use fully qualified assembly name:</p>
+                            <p>If your objects assembly is in the GAC, you need to use a fully qualified assembly name:</p>
                             <code lang="XML">
                                 <![CDATA[
                                 <configuration>
@@ -3205,7 +3200,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 </p>
                 <ul>
                     <li>default constructor - takes no arguments and associates newly created object with the implicit transaction</li>
-                    <li>default constructor which takes <code>SoodaTransaction</code> as an argument - associates newly created object with the specific transaction</li>
+                    <li>constructor which takes <code>SoodaTransaction</code> as an argument - associates newly created object with the specific transaction</li>
                     <li>special constructor which takes <code>SoodaConstructor</code> as an argument - this 
                        constructor should never be called by the user code and is used internally by Sooda</li>
                </ul>
@@ -3306,7 +3301,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     <p>
                         Lazy loading is a way to get a reference to the object without actually loading data from the
                         database. Propery values will be loaded on first read access. Getting object reference is very fast
-                        and should be used when we don't need actual object data, just its reference, as 
+                        and should be used when we do not need actual object data, just its reference, as 
                         described <sectionlink id="lazyloading" />.
                     </p>
                     <p>
@@ -3349,7 +3344,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                             emp = Employee.GetRef(7);
 
                             // change the state of the object
-                            // we don't need to load the object at all!
+                            // we do not need to load the object at all!
                             emp.Active = false;
 
                             // commit changes. this sends the following SQL to the database:
@@ -3405,7 +3400,9 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     <code lang="C#">
                         using (SoodaTransaction t = new SoodaTransaction())
                         {
-                            foreach (Person p in Person.GetList(new SoodaWhereClause("City={0} and State={1}", "Redmond", "WA"), 5))
+                            foreach (Person p in Person.GetList(
+                                new SoodaWhereClause("City={0} and State={1}", 
+                                    "Redmond", "WA"), 5))
                             {
                                 Console.WriteLine("name: {0}", p.Name);
                             }
@@ -3418,7 +3415,8 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         <![CDATA[
                         using (SoodaTransaction t = new SoodaTransaction())
                         {
-                            foreach (Person p in Person.GetList(PersonField.City == "Redmond" && PersonField.State == "WA"))
+                            foreach (Person p in Person.GetList(
+                                PersonField.City == "Redmond" && PersonField.State == "WA"))
                             {
                                 Console.WriteLine("name: {0}", p.Name);
                             }
@@ -3448,7 +3446,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     <ul>
                         <li><code>Default</code> - Default options</li>
                         <li><code>NoTransaction</code> - Don't apply changes made in transaction. Use this option to perform a 
-                            database snapshot or when you're sure that none of transaction objects will affect the result. 
+                            database snapshot or when you are sure that none of transaction objects will affect the result. 
                             This helps speed things up a bit.</li>
                         <li><code>NoWriteObjects</code> - Don't precommit objects. Precommit is described <sectionlink id="precommit" />.</li>
                         <li><code>VerifyAfterLoad</code> - Verify after load. In the case of precommit it is possible that the result
@@ -3470,8 +3468,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         <![CDATA[
                         using (SoodaTransaction t = new SoodaTransaction())
                         {
-                            // add a person, whose address matches by the following
-                            // SOQL query
+                            // add a person, whose address matches the following SOQL query
                             Person newPerson = new Person();
 
                             newPerson.Name = "Nancy Newcomer";
