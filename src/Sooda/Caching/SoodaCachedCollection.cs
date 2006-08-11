@@ -38,13 +38,11 @@ namespace Sooda.Caching
         private string _rootClassName;
         private string _collectionKey;
         private IList _primaryKeys;
-        private DateTime _lastAccessTime;
 
         public SoodaCachedCollection(string collectionKey, string rootClassName, IList primaryKeys)
         {
             _collectionKey = collectionKey;
             _rootClassName = rootClassName;
-            _lastAccessTime = DateTime.Now;
             _primaryKeys = primaryKeys;
         }
 

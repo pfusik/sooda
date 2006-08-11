@@ -64,14 +64,6 @@ namespace Sooda.ObjectMapper
             }
         }
 
-        private void UnregisterObjectWithKey(string className, object keyValue)
-        {
-            lock (this)
-            {
-                GetObjectFactoryDictionaryForClass(className).Remove(keyValue);
-            }
-        }
-
         internal bool ExistsObjectWithKey(string className, object keyValue)
         {
             return GetObjectFactoryDictionaryForClass(className).Contains(keyValue);

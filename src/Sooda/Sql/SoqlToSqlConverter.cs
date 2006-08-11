@@ -46,7 +46,6 @@ namespace Sooda.Sql
     public class SoqlToSqlConverter : SoqlPrettyPrinter
     {
         private ISqlBuilder _builder;
-        private Logger logger = LogManager.GetLogger("Sooda.Sql.SoqlToSqlConverter");
 
         public bool DisableBooleanExpansion = false;
         public bool GenerateColumnAliases = true;

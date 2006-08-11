@@ -579,7 +579,6 @@ namespace Sooda.Sql
 
         void DoInsertsForTable(SoodaObject obj, TableInfo table, bool isPrecommit)
         {
-            ClassInfo info = obj.GetClassInfo();
             StringBuilder builder = new StringBuilder(500);
             builder.Append("insert into ");
             builder.Append(table.DBTableName);
@@ -644,7 +643,6 @@ namespace Sooda.Sql
 
         void DoUpdatesForTable(SoodaObject obj, TableInfo table)
         {
-            ClassInfo info = obj.GetClassInfo();
             StringBuilder builder = new StringBuilder(500);
             builder.Append("update ");
             builder.Append(table.DBTableName);

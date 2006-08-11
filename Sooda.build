@@ -35,7 +35,9 @@
     <target name="build-net-1.1" depends="build-common, tools" />
     <target name="build-net-2.0" depends="build-common, tools, Sooda.Web" />
     <target name="build-netcf-1.0" depends="build-common" />
+    <target name="build-netcf-2.0" depends="build-common" />
     <target name="build-mono-1.0" depends="build-common, minitools" />
+    <target name="build-mono-2.0" depends="build-common, minitools" />
 
     <target name="build-common" depends="configure, libraries" />
     <target name="tools" depends="SoodaStubGen, SoodaQuery, SoodaSchemaTool, SoodaFixKeygen, SoodaCompileStubs" />
@@ -77,6 +79,10 @@
         <property name="sooda.define" value="${sooda.define},DOTNET2" />
     </target>
 
+    <target name="configure-mono-2.0">
+        <property name="sooda.define" value="${sooda.define},DOTNET2" />
+    </target>
+
     <target name="release">
         <property name="sooda.debug" value="false" />
         <property name="sooda.optimize" value="true" />
@@ -95,6 +101,8 @@
                 <include name="System.XML.dll" />
                 <include name="System.Data.dll" />
                 <include name="System.Drawing.dll" />
+                <include name="System.Web.dll" />
+                <include name="System.Configuration.dll" />
             </references>
             <sources basedir="src/Sooda">
                 <include name="**/*.cs" />
@@ -376,7 +384,7 @@
         </csc>
     </target>
 
-    <target name="Sooda.UnitTests.BaseObjects.Boo" depends="Sooda, Sooda.NAnt.Tasks">
+    <target name="BooTest" depends="Sooda, Sooda.NAnt.Tasks">
         <copy todir="${sooda.dir}">
             <fileset basedir="${boo.home}">
                 <include name="Boo.Lang.CodeDom.dll" />
@@ -386,7 +394,7 @@
         <sooda-generate-code project="tests/BaseObjects.Boo/Sooda.UnitTests.BaseObjects.Boo.soodaproject" verbose="true" />
 
         <loadtasks assembly="${boo.home}\Boo.Nant.Tasks.dll" />
-        <booc target="library" output="${sooda.dir}/Sooda.UnitTests.BaseObjects.Boo.dll" debug="true" verbose="true">
+        <booc target="exe" output="${sooda.dir}/Sooda.BooTest.exe" debug="true">
             <references>                                  
                 <include name="${sooda.dir}/NLog.dll" />
                 <include name="${sooda.dir}/Sooda.dll" />
@@ -395,6 +403,9 @@
             <sources basedir="tests/BaseObjects.Boo">
                 <include name="*.boo" />
             </sources>
+            <resources basedir="tests/BaseObjects.Boo" prefix="Sooda.UnitTests.BaseObjects.Boo" dynamicprefix="true">
+                <include name="_DBSchema.*" />
+            </resources>
         </booc>
     </target>
 

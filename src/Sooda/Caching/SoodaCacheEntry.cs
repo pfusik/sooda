@@ -71,8 +71,8 @@ namespace Sooda.Caching
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
             /*
+            StringBuilder sb = new StringBuilder();
             for (int i = 0; i < Data.Length; ++i)
             {
                 object o = Data.GetBoxedFieldValue(i);

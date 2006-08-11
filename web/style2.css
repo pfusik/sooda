@@ -329,10 +329,33 @@ img.thinborder
     background-repeat: no-repeat;
 }
 
+.out_link_address
+{
+    display: none;
+}
+
 @media print
 {
+    body { left: 0pt; }
     #controls { display: none; }
-    #webcontent { left: 0pt; border: none; }
+    #googlesearch { display: none; }
+    #printthis
+    { 
+        display: none; 
+    }
+    .out_link_address
+    {
+        display: inline;
+        font-family: Consolas, Courier New;
+    }
+    #webcontent { 
+        position: relative;
+        left: 0pt; 
+        border: none; 
+        top: 0pt;
+        left: 0pt;
+        right: 0pt;
+    }
     #content { left: 0pt; border: none; }
     #plaincontent { left: 0pt; border: none; }
     a { color: black; text-decoration: none; }
@@ -555,8 +578,8 @@ table.toc
 
 div.body2
 {
-    margin-left: 10pt;
-    padding-left: 10pt;
+    margin-left: 0pt;
+    padding-left: 0pt;
 }
 
 table.toc

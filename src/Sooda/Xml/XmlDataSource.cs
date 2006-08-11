@@ -35,8 +35,6 @@ namespace Sooda.Xml
 {
     public class XmlDataSource : Sooda.SoodaDataSource
     {
-        DataSet ds = new DataSet();
-
         public XmlDataSource(DataSourceInfo dataSourceInfo)
             : base(dataSourceInfo)
         {

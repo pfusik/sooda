@@ -357,12 +357,6 @@ namespace Sooda.Caching
             get { return _hash.Count; }
         }
 
-        private void Dump(string title)
-        {
-            //Console.Write("{0}: ", title);
-            //Dump(Console.Out);
-        }
-
         internal void Dump(TextWriter output)
         {
             int cnt = 0;

@@ -93,6 +93,13 @@ namespace Sooda
 
         #region Constructors, Dispose & Finalizer
 
+        static SoodaTransaction()
+        {
+            string defaultObjectsAssembly = SoodaConfig.GetString("sooda.defaultObjectsAssembly");
+            if (defaultObjectsAssembly != null)
+                DefaultObjectsAssembly = Assembly.Load(defaultObjectsAssembly);
+        }
+
         public SoodaTransaction() : this(null, SoodaTransactionOptions.Implicit, Assembly.GetCallingAssembly()) { }
 
         public SoodaTransaction(Assembly objectsAssembly) : this(objectsAssembly, SoodaTransactionOptions.Implicit, Assembly.GetCallingAssembly()) { }
@@ -288,7 +295,6 @@ namespace Sooda
 
         protected internal bool IsRegistered(SoodaObject o)
         {
-            ObjectToWeakSoodaObjectAssociation classDict = _objectDictByClass[o.GetClassInfo().Name];
             object pkValue = o.GetPrimaryKeyValue();
 
             if (ExistsObjectWithKey(o.GetClassInfo().Name, pkValue))
@@ -316,7 +322,6 @@ namespace Sooda
 
         protected internal void UnregisterObject(SoodaObject o)
         {
-            ObjectToWeakSoodaObjectAssociation classDict = _objectDictByClass[o.GetClassInfo().Name];
             object pkValue = o.GetPrimaryKeyValue();
 
             if (ExistsObjectWithKey(o.GetClassInfo().Name, pkValue))
@@ -349,6 +354,26 @@ namespace Sooda
                 // Console.WriteLine("FAILING TryGet for {0}:{1} because it's of type {2} instead of {3}", className, keyValue, o.GetType(), expectedType);
                 return null;
             }
+        }
+
+        public object FindObjectWithKey(string className, int keyValue, Type expectedType)
+        {
+            return FindObjectWithKey(className, (object)keyValue, expectedType);
+        }
+
+        public object FindObjectWithKey(string className, long keyValue, Type expectedType)
+        {
+            return FindObjectWithKey(className, (object)keyValue, expectedType);
+        }
+
+        public object FindObjectWithKey(string className, string keyValue, Type expectedType)
+        {
+            return FindObjectWithKey(className, (object)keyValue, expectedType);
+        }
+
+        public object FindObjectWithKey(string className, Guid keyValue, Type expectedType)
+        {
+            return FindObjectWithKey(className, (object)keyValue, expectedType);
         }
 
         public void RegisterDataSource(SoodaDataSource dataSource)
@@ -579,17 +604,6 @@ namespace Sooda
             _dirtyObjects.Clear();
             _dirtyObjectsByClass.Clear();
         }
-
-        private void _Reset()
-        {
-            _objectList.Clear();
-            _objectsByClass.Clear();
-            _precommitQueue.Clear();
-            _relationTables.Clear();
-            _precommittedClassOrRelation.Clear();
-        }
-
-        private static object[] relationTableConstructorArguments = new object[0] { };
 
         private SoodaObject GetObject(ISoodaObjectFactory factory, string keyString)
         {

@@ -41,13 +41,8 @@ namespace Sooda.CodeGen
 {
     public class CodeDomClassSkeletonGenerator : CodeDomHelpers
     {
-        private ClassInfo classInfo;
-        private SoodaProject options;
-
-        public CodeDomClassSkeletonGenerator(ClassInfo ci, SoodaProject options)
+        public CodeDomClassSkeletonGenerator()
         {
-            this.classInfo = ci;
-            this.options = options;
         }
 
         public CodeConstructor Constructor_Raw()

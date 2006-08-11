@@ -43,7 +43,6 @@ namespace Sooda.Config
         private static Logger logger = LogManager.GetLogger("Sooda.Config");
         private NameValueCollection dataDictionary = new NameValueCollection();
         private string fileName;
-        private string baseDirectory;
 
         public XmlConfigProvider()
             : this("Sooda.config.xml")
@@ -53,7 +52,6 @@ namespace Sooda.Config
         public XmlConfigProvider(string fileName)
         {
             this.fileName = fileName;
-            this.baseDirectory = Path.GetDirectoryName(fileName);
             LoadFromFile(fileName, null);
             FindAndLoadOverride();
         }
@@ -61,7 +59,6 @@ namespace Sooda.Config
         public XmlConfigProvider(string fileName, string xpathExpression)
         {
             this.fileName = fileName;
-            this.baseDirectory = Path.GetDirectoryName(fileName);
             LoadFromFile(fileName, xpathExpression);
             FindAndLoadOverride();
         }

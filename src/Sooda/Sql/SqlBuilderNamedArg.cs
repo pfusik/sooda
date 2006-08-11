@@ -73,8 +73,6 @@ namespace Sooda.Sql
                 command.Parameters.Clear();
             }
 
-            int startingParamNumber = command.Parameters.Count;
-
             System.Text.StringBuilder sb = new System.Text.StringBuilder(query.Length * 2);
             ArrayList parameterObjects = new ArrayList();
 

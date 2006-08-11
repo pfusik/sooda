@@ -33,12 +33,14 @@
             <body>
                 <div id="header"><img src="sooda.jpg" alt="Sooda - Simple Object-Oriented Data Access" /></div>
                 <xsl:if test="$mode != 'plain'">
-                    <img src="sooda_nav.jpg" style="display: none" alt="sooda_nav" /> <!-- need this for CHM -->
                     <div id="controls">
+                        <img src="sooda_nav.jpg" style="display: none" alt="sooda_nav" /> <!-- need this for CHM -->
                         <xsl:call-template name="controls" />
                     </div>
                 </xsl:if>
                 <div id="{$mode}content">
+                    <div id="printthis">
+                        <a href="#" onclick="window.print()">Print this page</a></div>
                     <xsl:apply-templates select="content" />
                 </div>
                 <xsl:if test="$mode = 'web'">
@@ -82,10 +84,9 @@
     <xsl:template match="section">
         <p>
             <xsl:attribute name="class">heading<xsl:apply-templates select="." mode="section-level" /></xsl:attribute>
-            <xsl:apply-templates select="." mode="section-number" />.
-            <a name="{@id}" id="{@id}">
-                <xsl:apply-templates select="title" />
-            </a>
+            <xsl:apply-templates select="." mode="section-number" />
+            <a name="{@id}" id="{@id}">.</a>
+            <xsl:apply-templates select="title" />
         </p>
         <div>
             <xsl:attribute name="class">body<xsl:apply-templates select="." mode="section-level" /></xsl:attribute>
@@ -342,6 +343,13 @@
         <xsl:if test="count($sect) != 1">
             <xsl:message terminate="yes">More than one anchor: <xsl:value-of select="@href" /></xsl:message>
         </xsl:if>
+    </xsl:template>
+
+    <xsl:template match="a[starts-with(@href,'http://')]">
+        <xsl:copy>
+            <xsl:apply-templates select="@* | node()" />
+        </xsl:copy>
+        <span class="out_link_address">&#160;(<xsl:value-of select="@href" />)</span>
     </xsl:template>
 
     <xsl:include href="syntax.xsl" />

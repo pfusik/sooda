@@ -42,8 +42,6 @@ namespace Sooda.Schema
     [Serializable]
     public class ClassInfo : IFieldContainer
     {
-        private static Logging.Logger logger = Logging.LogManager.GetLogger("Sooda.Schema.ClassInfo");
-
         [XmlAttribute("datasource")]
         public string DataSourceName;
 

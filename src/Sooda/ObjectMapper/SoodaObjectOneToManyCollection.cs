@@ -56,7 +56,6 @@ namespace Sooda.ObjectMapper
 
         private static object markerAdded = new Object();
         private static object markerRemoved = new Object();
-        private static object markerUnchanged = new Object();
 
         public SoodaObjectOneToManyCollection(SoodaTransaction tran, Type childType, SoodaObject parentObject, string childRefField, Sooda.Schema.ClassInfo classInfo, SoodaWhereClause additionalWhereClause, bool cached)
         {

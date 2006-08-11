@@ -42,12 +42,10 @@ namespace Sooda.CodeGen
     public class CodeDomListRelationTableGenerator : CodeDomHelpers
     {
         private RelationInfo relationInfo;
-        private SoodaProject options;
 
-        public CodeDomListRelationTableGenerator(RelationInfo ri, SoodaProject options)
+        public CodeDomListRelationTableGenerator(RelationInfo ri)
         {
             this.relationInfo = ri;
-            this.options = options;
         }
 
         public CodeConstructor Constructor_1()

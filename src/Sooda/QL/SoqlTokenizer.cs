@@ -294,7 +294,6 @@ namespace Sooda.QL
             };
 
         static SoqlTokenType[] charIndexToTokenType = new SoqlTokenType[128];
-        static Hashtable keywordToTokenType = System.Collections.Specialized.CollectionsUtil.CreateCaseInsensitiveHashtable();
 
         static SqlTokenizer()
         {

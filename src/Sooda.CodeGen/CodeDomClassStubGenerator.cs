@@ -213,67 +213,11 @@ namespace Sooda.CodeGen
             }
         }
 
-        private CodeExpression SetterPrimitiveValue(PrimitiveRepresentation rep, CodeTypeReference returnType)
-        {
-            switch (rep)
-            {
-                case PrimitiveRepresentation.SqlType:
-                    return new CodePropertyReferenceExpression(new CodePropertySetValueReferenceExpression(), "Value");
-
-                case PrimitiveRepresentation.Boxed:
-                    return new CodeCastExpression(returnType, new CodePropertySetValueReferenceExpression());
-
-                default:
-                    return new CodePropertySetValueReferenceExpression();
-            }
-        }
-
-        private CodeExpression IsSetterValueNull(PrimitiveRepresentation rep)
-        {
-            switch (rep)
-            {
-                case PrimitiveRepresentation.SqlType:
-                    return new CodePropertyReferenceExpression(new CodePropertySetValueReferenceExpression(), "IsNull");
-
-                case PrimitiveRepresentation.Boxed:
-                    return new CodeBinaryOperatorExpression(
-                        new CodePropertySetValueReferenceExpression(),
-                        CodeBinaryOperatorType.IdentityEquality,
-                        new CodePrimitiveExpression(null));
-
-                case PrimitiveRepresentation.RawWithIsNull:
-                case PrimitiveRepresentation.Raw:
-                    return new CodePrimitiveExpression(false);
-
-#if DOTNET2
-                case PrimitiveRepresentation.Nullable:
-                    return new CodeBinaryOperatorExpression(
-                        new CodePropertyReferenceExpression(
-                        new CodePropertySetValueReferenceExpression(),"HasValue"),
-                        CodeBinaryOperatorType.ValueEquality,
-                        new CodePrimitiveExpression(true));
-#endif
-
-                default:
-                    throw new NotSupportedException();
-            }
-        }
-
         private CodeExpression GetFieldValueExpression(FieldInfo fi)
         {
             return new CodeMethodInvokeExpression(
                 new CodeTypeReferenceExpression(typeof(Sooda.ObjectMapper.SoodaObjectImpl)),
                 "GetBoxedFieldValue",
-                new CodeThisReferenceExpression(),
-                new CodePrimitiveExpression(fi.Table.OrdinalInClass),
-                new CodePrimitiveExpression(fi.ClassUnifiedOrdinal));
-        }
-
-        private CodeExpression GetFieldIsDirtyExpression(FieldInfo fi)
-        {
-            return new CodeMethodInvokeExpression(
-                new CodeTypeReferenceExpression(typeof(Sooda.ObjectMapper.SoodaObjectImpl)),
-                "IsFieldDirty",
                 new CodeThisReferenceExpression(),
                 new CodePrimitiveExpression(fi.Table.OrdinalInClass),
                 new CodePrimitiveExpression(fi.ClassUnifiedOrdinal));
@@ -464,7 +408,6 @@ namespace Sooda.CodeGen
                 }
 
                 CodeTypeReference returnType;
-                CodeTypeReference rawReturnType;
 
                 //if (fi.Name == classInfo.PrimaryKeyFieldName)
                 //{
@@ -483,7 +426,6 @@ namespace Sooda.CodeGen
                 {
                     returnType = GetReturnType(actualNotNullRepresentation, fi);
                 }
-                rawReturnType = GetReturnType(PrimitiveRepresentation.Raw, fi);
 
                 prop = new CodeMemberProperty();
                 prop.Name = fi.Name;
@@ -703,25 +645,9 @@ namespace Sooda.CodeGen
                 foreach (CollectionManyToManyInfo coli in classInfo.CollectionsNtoN)
                 {
                     RelationInfo relationInfo = coli.GetRelationInfo();
-                    FieldInfo masterField = null;
-                    FieldInfo slaveField = null;
-                    string collectionClassName = null;
+                    // FieldInfo masterField = relationInfo.Table.Fields[1 - coli.MasterField];
 
-                    if (coli.MasterField == 1)
-                    {
-                        masterField = relationInfo.Table.Fields[0];
-                        slaveField = relationInfo.Table.Fields[1];
-                        collectionClassName = relationInfo.Name + "_R_List";
-                    }
-                    else
-                    {
-                        slaveField = relationInfo.Table.Fields[0];
-                        masterField = relationInfo.Table.Fields[1];
-                        collectionClassName = relationInfo.Name + "_L_List";
-                    };
-
-                    string relationTargetClass = slaveField.References;
-                    string relationHelperClass = options.OutputNamespace + ".Stubs." + collectionClassName;
+                    string relationTargetClass = relationInfo.Table.Fields[coli.MasterField].References;
 
                     prop = new CodeMemberProperty();
                     prop.Name = coli.Name;
@@ -760,8 +686,6 @@ namespace Sooda.CodeGen
         public void GenerateFields(CodeTypeDeclaration ctd, ClassInfo ci)
         {
             CodeMemberField field;
-            CodeTypeReference fieldArrayType = new CodeTypeReference(
-                "Sooda.ObjectMapper.SoodaFieldHandler", 1);
 
             if (GetFieldRefCacheCount(ci) > 0)
             {
@@ -811,17 +735,6 @@ namespace Sooda.CodeGen
                 foreach (CollectionManyToManyInfo coli in classInfo.CollectionsNtoN)
                 {
                     RelationInfo relationInfo = coli.GetRelationInfo();
-                    string collectionClassName = null;
-
-                    if (coli.MasterField == 1)
-                    {
-                        collectionClassName = relationInfo.Name + "_R_List";
-                    }
-                    else
-                    {
-                        collectionClassName = relationInfo.Name + "_L_List";
-                    };
-
                     field = new CodeMemberField(options.OutputNamespace + "." + relationInfo.Table.Fields[coli.MasterField].ReferencedClass.Name + "List", "_collectionCache_" + coli.Name);
                     field.Attributes = MemberAttributes.Private;
                     field.InitExpression = new CodePrimitiveExpression(null);

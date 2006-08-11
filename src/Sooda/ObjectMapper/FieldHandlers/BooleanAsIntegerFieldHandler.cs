@@ -97,7 +97,7 @@ namespace Sooda.ObjectMapper.FieldHandlers
         public override void SetupDBParameter(IDbDataParameter parameter, object value)
         {
             parameter.DbType = DbType.Int32;
-            parameter.Value = Convert.ToBoolean(value) ? 1 : 0;
+            parameter.Value = Convert.ToBoolean(value) ? _boxed1 : _boxed0;
         }
 
         // type conversions - used in generated stub code

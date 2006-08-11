@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="style.xsl" ?>
 <content lang="en" id="documentation">
     <p style="font-size: 12pt; color: red">
-        This documentation is under construction. Many sections are missing. Please report any grammar, spelling or inacurracy issues to the <a href="http://www.sooda.org/mailinglist.html">mailing lists</a>.
+        This documentation is under construction. Many sections are missing. Please report any grammar, spelling or inacurracy issues to the <a href="http://www.sooda.org/mailinglist.html">mailing list</a>.
     </p>
     <table-of-contents />
     <section id="intro">
@@ -20,62 +20,86 @@
                     Each class of the DAL typically corresponds to a database table,
                     its properties map to database columns and relationships map to object references and collections.
                 </p>
-                <p>
-                    Sooda supports the following features, which are explained in the following sections:
-                </p>
-                <ul>
-                    <li><a href="#mappingtablestoclasses">mapping</a> one or <a href="#mappingmultipletablestoclasses">more tables</a> to a class</li>
-                    <li><a href="#mappingonetomany">one-to-many</a> and <a href="#mappingmanytomany">many-to-many</a> relationships</li>
-                    <li><a href="#pathexpressions">path expressions</a>, both in code and the in query language</li>
-                    <li><a href="#primarykeys">identity management through L1 caching</a></li>
-                    <li><a href="#inheritance">inheritance</a> (two models: table-per-hierarchy (TPH) and table-per-subclass (TPS))</li>
-                    <li>strongly-typed, database-based <a href="#schemaconst">enumerations</a></li>
-                    <li><a href="#lazyloading">lazy loading</a></li>
-                    <li><a href="#transactions">differential serialization and deserialization</a> of uncommitted changes (enables long-running transactions)</li>
-                    <li>strongly-typed <a href="#querylanguage">query language</a> (based on C# operator overloading)</li>
-                    <li>text-based <a href="#querylanguage">query language</a> - SOQL</li>
-                    <li><a href="#mappingmultipletablestoclasses">vertical partitioning</a> of data (load-on-demand for large columns)</li>
-                    <li><a href="#caching">cross-transaction (level-2) caching</a></li>
-                </ul>
-                <p>
-                    The following development tools/build environments are supported:
-                </p>
-                <ul>
-                    <li>Visual Studio 2005 (.NET Framework 2.0)</li>
-                    <li>Visual Studio 2003 (.NET Framework 1.1)</li>
-                    <li>NAnt 0.85</li>
-                </ul>
-                <p>
-                    .NET Framework 1.0 is NOT supported.
-                </p>
-                <p>
-                    The following RDBMSes are supported:
-                </p>
-                <ul>
-                    <li>Microsoft SQL Server 2000, 2005 (including MSDE and SQL Server Express Edition)</li>
-                    <li>MySQL v4.x</li>
-                    <li>PostgreSQL v8.x</li>
-                    <li>Oracle 8i, 9i, 10g</li>
-                </ul>
-                <p>
-                    Sooda has been used in production systems for at least 3 years and things are generally working smooth.
-                    Some graphical and command line tools to support the development are available, but they are generally
-                    newer and still require some work.
-                </p>
-                <p>
-                    Sooda supports code generation using CodeDOM technology. In theory any language should be supported,
-                    but some languages have problems with their CodeDOM or compiler implementation.
-                    The following languages have been tested:
-                </p>
-                <ul>
-                    <li><b>C#</b> - fully supported, code compiles cleanly, supports <a href="#soqltypedqueries">Typed Queries</a>.</li>
-                    <li><b>VB.NET</b> - fully supported, some warnings may be raised during compilation of the generated code, but they can be ignored.</li>
-                    <li><b><a href="http://boo.codehaus.org/">Boo</a></b> - supported - EXPERIMENTAL</li>
-                    <li><b><a href="http://www.nemerle.org/">Nemerle</a></b> - not supported - fails compilation</li>
-                    <li><b><a href="http://msdn.microsoft.com/jscript/">JScript.NET</a></b> - not supported - compilation fails with internal error</li>
-                    <li><b><a href="http://msdn.microsoft.com/jscript/">VJ#</a></b> - not supported - compilation fails</li>
-                </ul>
             </body>
+            <section id="features">
+                <title>Features</title>
+                <body>
+                    <p>
+                        Sooda supports the following features, which are explained in the following sections:
+                    </p>
+                    <ul>
+                        <li>mapping <a href="#mappingtablestoclasses">one</a> or <a href="#mappingmultipletablestoclasses">more tables</a> to a class</li>
+                        <li><a href="#mappingonetomany">one-to-many</a> and <a href="#mappingmanytomany">many-to-many</a> relationships</li>
+                        <li><a href="#pathexpressions">path expressions</a>, both in code and the in query language</li>
+                        <li><a href="#primarykeys">identity management through L1 caching</a></li>
+                        <li><a href="#inheritance">inheritance</a> (two models: table-per-hierarchy (TPH) and table-per-subclass (TPS))</li>
+                        <li>strongly-typed, database-based <a href="#schemaconst">enumerations</a></li>
+                        <li><a href="#lazyloading">lazy loading</a></li>
+                        <li><a href="#transactions">differential serialization and deserialization</a> of uncommitted changes (enables long-running transactions)</li>
+                        <li>strongly-typed <a href="#querylanguage">query language</a> (based on C# operator overloading)</li>
+                        <li>text-based <a href="#querylanguage">query language</a> - SOQL</li>
+                        <li><a href="#mappingmultipletablestoclasses">vertical partitioning</a> of data (load-on-demand for large columns)</li>
+                        <li><a href="#caching">cross-transaction (level-2) caching</a></li>
+                    </ul>
+                </body>
+            </section>
+            <section id="supportedplatforms">
+                <title>Supported Platforms</title>
+                <body>
+                    <p>
+                        Sooda supports .NET Framework 1.1 and 2.0 and Mono profile 1.0 and 2.0.
+                    </p>
+                    <p>
+                        The following development tools/build environments are supported:
+                    </p>
+                    <ul>
+                        <li>Visual Studio 2005 (.NET Framework 2.0)</li>
+                        <li>Visual Studio 2003 (.NET Framework 1.1)</li>
+                        <li>NAnt 0.85</li>
+                    </ul>
+                    <p>
+                        .NET Framework 1.0 is NOT supported. Supporting
+                    </p>
+                </body>
+            </section>
+            <section id="supportedrdbms">
+                <title>Supported Relational Databases</title>
+                <body>
+                    <p>
+                        The following RDBMSes are supported:
+                    </p>
+                    <ul>
+                        <li>Microsoft SQL Server 2000, 2005 (including MSDE and SQL Server Express Edition)</li>
+                        <li>MySQL v4.x</li>
+                        <li>PostgreSQL v8.x</li>
+                        <li>Oracle 8i, 9i, 10g</li>
+                    </ul>
+                    <p>
+                        Sooda has been used in production systems for at least 3 years and things are generally working smooth.
+                        Some graphical and command line tools to support the development are available, but they are generally
+                        newer and still require some work.
+                    </p>
+                </body>
+            </section>
+            <section id="supportedlanguages">
+                <title>Supported Languages</title>
+                <body>
+                    <p>
+                        Sooda supports code generation using CodeDOM technology. In theory any language should be supported,
+                        but some languages have problems with their CodeDOM providers or their compilers are buggy.
+                        The following languages have been tested:
+                    </p>
+                    <ul>
+                        <li><a href="http://msdn.microsoft.com/csharp/">C#</a> - fully supported, code compiles cleanly, supports <a href="#soqltypedqueries">Typed Queries</a>.</li>
+                        <li><a href="http://msdn.microsoft.com/vbasic/">VB.NET</a> - fully supported, some warnings may be raised during compilation of the generated code, but they can be ignored.</li>
+                        <li><a href="http://boo.codehaus.org/">Boo</a>> - works - EXPERIMENTAL</li>
+                        <li><a href="http://msdn.microsoft.com/vjsharp/">VJ#</a> - works - EXPERIMENTAL</li>
+                        <li><a href="http://www.nemerle.org/">Nemerle</a> - not supported - fails compilation</li>
+                        <li><a href="http://msdn.microsoft.com/jscript/">JScript.NET</a> - not supported - compilation fails with internal error</li>
+                        <li><a href="http://www.codeplex.com/Wiki/View.aspx?ProjectName=IronPython">IronPython</a> - code generation works, needs further investigation</li>
+                    </ul>
+                </body>
+            </section>
         </section>
         <section id="basicconcepts">
             <title>Basic Concepts</title>
@@ -610,7 +634,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         Transactions need to be closed when they are no longer needed and if you fail ensure that, otherwise
                         you may get all sorts of unmanaged resource leaks. Typical usage pattern for a Sooda transaction 
                         that ensures the transaction is properly closed is presented below. It makes use of the
-                        IDisosable pattern and the C# using() statement:
+                        IDisposable pattern and the C# using() statement:
                     </p>
                     <code lang="C#">
                         using (SoodaTransaction t = new SoodaTransaction())
@@ -2553,7 +2577,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     ]]>
                 </code>
                 <p>
-                    The following table describes elements which can be defined in Sooda Project File:
+                    The following table describes elements which can be used in Sooda Project files:
                 </p>
                 <div class="table">
                     <table style="table-layout: fixed; width: 100%">
@@ -2583,7 +2607,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                             <tr>
                                 <td>language</td>
                                 <td>string</td>
-                                <td>Specifies the language. Possible values are (case insensitive):
+                                <td>Specifies the programming language. Possible (case insensitive) values are:
                                     <ul>
                                         <li><b>CS, C#, CSharp</b></li>
                                         <li><b>VB, VB.NET</b></li>
@@ -2597,9 +2621,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                         The default is <b>C#</b>.
                                     </p>
                                     <p>
-                                        Examples (note that not all these languages are supported, some CodeDOM providers are buggy 
-                                        and languages are limited so they cannot properly work with Sooda). This might be changed
-                                        in future versions.
+                                        Examples:
                                     </p>
                                     <p>C#:</p>
                                     <pre class="XML">
@@ -2607,19 +2629,15 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                     </pre>
                                     <p>VB.NET:</p>
                                     <pre class="XML">
-                                        <x><language>vb#</language></x>
+                                        <x><language>vb</language></x>
+                                    </pre>
+                                    <p>VJ#</p>
+                                    <pre class="XML">
+                                        <x><language>Microsoft.VJSharp.VJSharpCodeProvider, VJSharpCodeProvider, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=x86</language></x>
                                     </pre>
                                     <p>Boo:</p>
                                     <pre class="XML">
                                         <x><language>Boo.Lang.CodeDom.BooCodeProvider, Boo.Lang.CodeDom</language></x>
-                                    </pre>
-                                    <p>IronPython:</p>
-                                    <pre class="XML">
-                                        <x><language>IronPython.CodeDom.PythonProvider, IronPython</language></x>
-                                    </pre>
-                                    <p>Nemerle:</p>
-                                    <pre class="XML">
-                                        <x><language>Nemerle.Compiler.NemerleCodeProvider, Nemerle.Compiler, Version=0.9.3.0, Culture=neutral, PublicKeyToken=5291d186334f6101, processorArchitecture=MSIL</language></x>
                                     </pre>
                                 </td>
                             </tr>
@@ -2662,10 +2680,11 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                             <tr>
                                 <td>nullable-representation<br/>not-null-representation</td>
                                 <td>string</td>
-                                <td>Specifies the method of representation of nullable and not-nullable fields as properties.
+                                <td>Specifies how nullable and not-nullable fields are mapped to properties.
                                     Possible methods are discussed <sectionlink id="soodaprojectprimitiverep" />.
                                     <p>
-                                        The default value for nullable representation is <b>SqlType</b> and not-null representation is <b>Raw</b>.
+                                        Default value for nullable representation is <b>SqlType</b> and 
+                                        default not-null representation is <b>Raw</b>.
                                     </p>
                                     <p>
                                         Example:
@@ -2679,8 +2698,9 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <td>with-indexers</td>
                                 <td>boolean</td>
                                 <td>
-                                    Don't generate indexers (Item in VB, this[] in C#) for list wrappers. Useful for languages that
-                                    don't have the concept of indexers (such as JScript.NET). The default value is <b>false</b>.
+                                    Generate indexers (Item() in VB, this[] in C#) for list wrappers. You should set this option
+                                    to false for languages thatadon't have the concept of indexers (such as JScript.NET). 
+                                    The default value is <b>true</b>.
                                     <pre class="XML">
                                         <x><with-indexers>false</with-indexers></x>
                                     </pre>
@@ -2692,14 +2712,14 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <td>boolean</td>
                                 <td>
                                     <p>
-                                        Enable null propagation for nullable and reference properties:
+                                        Enable null propagation for nullable properties and reference properties:
                                     </p>
                                     <pre class="XML">
                                         <x><null-propagation>true</null-propagation></x>
                                     </pre>
                                     <p>
-                                        Enabling this option causes the following prolog code to be emitted for all "get" property
-                                        accessors:
+                                        Enabling this option causes the following prolog code to be emitted for all property
+                                        getters:
                                     </p>
                                     <code lang="C#">
                                         if (this == null)
@@ -2717,7 +2737,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                     <p>
                                         Assuming that <code>this.OrganizationUnit.Parent == null</code>, this code will throw a 
                                         <code>NullReferenceException</code> when built without null propagation. When null propagation
-                                        is enabled, however, it will assign <code>null</code> to o without throwing an exception.
+                                        is enabled, however, it will assign <code>null</code> to <code>o</code> without throwing an exception.
                                     </p>
                                     <p>
                                         This feature is experimental and should be used with caution.
@@ -2729,16 +2749,16 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <td>boolean</td>
                                 <td>
                                     <p>
-                                        Generate Load(), GetRef(), GetList() and finders static methods in a separate class called ClassNameLoader instead
+                                        Generate Load(), GetRef(), GetList(), FindByXXX() and FindListByXXX() static methods in a separate class called ClassNameLoader instead
                                         of ClassName.
                                     </p>
                                     <pre class="XML">
                                         <x><loader-class>true</loader-class></x>
                                     </pre>
                                     <p>
-                                        Some languages (VJ# for example) cannot properly support inherited classes having the
+                                        Some languages such as VJ# do not properly support inherited classes having the
                                         same public static method with different return type (which would be needed to support inheritance
-                                        in Sooda). To remedy this, this option causes the methods to be moved to a separate class.
+                                        in Sooda). To remedy this problem, this option causes the methods to be moved to a separate class.
                                     </p>
                                     <p>
                                         When <x><loader-class /></x> is set to <code>false</code>, you can use the following methods to load objects:
@@ -2814,12 +2834,14 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <td>
                                     <p>
                                         Specifies the name of the class that all stubs should ultimately derive from. If you don't specify
-                                        this parameter, all root stubs classes will derive from SoodaObject class.
+                                        this parameter, all root stubs classes will derive from the SoodaObject class.
                                     </p>
                                     <pre class="XML">
                                         <x><base-class-name>AdditionalBaseClass</base-class-name></x>
                                     </pre>
-                                    <img src="doc15.png" alt="Demonstration of base-class-name effect" />
+                                    <p>
+                                        More ways to override base classes are discussed <sectionlink id="generatedclasshierarchy" />.
+                                    </p>
                                 </td>
                             </tr>
                             <tr>
@@ -2828,7 +2850,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <td>Xml|Binary</td>
                                 <td>
                                     <p>Specifies the method of embedding schema in the result DLL. Can be either <code>Xml</code> or <code>Binary</code>.
-                                        Binary causes the schema to be serialized in binary format, while Xml stores the schema in the XML format.
+                                        <code>Binary</code> causes the schema to be serialized in binary format, while <code>Xml</code> stores the schema in the XML format.
                                         You should use <code>Binary</code> (which is the default), because it gives better startup times and smaller file sizes, but if you need to perform some 
                                         text-level parsing of the XML, you can choose <code>Xml</code>.
                                     </p>
@@ -3028,7 +3050,115 @@ foreach (WorkItem wi in WorkItem.GetList(true))
         <section id="soodatransaction">
             <title>SoodaTransaction</title>
             <body>
+                <p>
+                    <code>SoodaTransaction</code> objects manage object identity, database connections, 
+                    provide differential serialization and cache management. 
+                </p>
             </body>
+            <section id="soodatransactioncreating">
+                <title>Creating and managing transactions</title>
+                <body>
+                    <p>
+                        Instances of <code>SoodaTransaction</code> must be created before any operation
+                        on O/R-mapped objects. You need to properly close the transaction after you're
+                        done with the objects. The best way to ensure that your transaction is closed
+                        regardless of any exceptions that may occur is to use IDisposable pattern and C# <code>using()</code> statement:
+                    </p>
+                    <code lang="C#">
+                        using (SoodaTransaction t = new SoodaTransaction())
+                        {
+                            // perform operations on Sooda objects here
+                            t.Commit();
+                        }
+                    </code>
+                    <p>
+                        This code is equivalent to:
+                    </p>
+                    <code lang="C#">
+                        SoodaTransaction t = new SoodaTransaction();
+                        try
+                        {
+                            // operations here
+                            t.Commit();
+                        }
+                        finally
+                        {
+                            t.Dispose();
+                        }
+                    </code>
+                    <p>
+                        Each transaction must be associated with a mapping schema which is embedded as a resource into the 
+                        compiled DAL assembly. You need to configure the transaction to use the appropriate assembly. 
+                        There are several ways to do it depending on how you're planning to use your DAL:
+                    </p>
+                    <ol>
+                        <li>By passing the assembly as an argument to <code>SoodaTransaction</code> constructor:
+                            <code lang="C#">
+                                // _DatabaseSchema class is generated by StubGen.
+                                using (SoodaTransaction t = new SoodaTransaction(typeof(_DatabaseSchema).Assembly))
+                                {
+                                }
+                            </code>
+                        </li>
+                        <li>By setting the <code>ObjectsAssembly</code> property of an open transaction:
+                            <code lang="C#">
+                                using (SoodaTransaction t = new SoodaTransaction())
+                                {
+                                    t.ObjectsAssembly = typeof(_DatabaseSchema).Assembly;
+                                }
+                            </code>
+                        </li>
+                        <li>By setting the static property <code>SoodaTransaction.DefaultsObjectAssembly</code> which establishes default value for <code>ObjectsAssembly</code> on newly created transactions
+                            <code lang="C#">
+                                // you need to do it only once
+                                SoodaTransaction.DefaultObjectsAssembly = typeof(_DatabaseSchema).Assembly;
+
+                                using (SoodaTransaction t = new SoodaTransaction())
+                                {
+                                }
+                            </code>
+                        </li>
+                        <li>By setting the assembly name in the <a href="#configuration">configuration file</a>.
+                            <code lang="XML">
+                                <![CDATA[
+                                <configuration>
+                                    <appSettings>
+                                        <add key="sooda.defaultObjectsAssembly" value="MyObjectsAssembly" />
+                                    </appSettings>
+                                </configuration>
+                                ]]>
+                            </code>
+                            <p>If your objects assembly is in the GAC, you need to use fully qualified assembly name:</p>
+                            <code lang="XML">
+                                <![CDATA[
+                                <configuration>
+                                    <appSettings>
+                                        <add key="sooda.defaultObjectsAssembly" value="MyObjectsAssembly, Version=1.1.12.1512, Culture=neutral, PublicKeyToken=0123456789abcdef" />
+                                    </appSettings>
+                                </configuration>
+                                ]]>
+                            </code>
+                        </li>
+                        <li>By adding <code>SoodaStubAssemblyAttribute</code> to all assemblies that will create SoodaTransaction objects
+                            <code lang="C#">
+                                using MyBusinessObjects;
+
+                                [assembly: SoodaStubAssembly(typeof(_DatabaseSchema))]
+
+                                class C1
+                                {
+                                    public static void Main()
+                                    {
+                                        using (SoodaTransaction t = new SoodaTransaction())
+                                        {
+                                        }
+                                    }
+                                }
+                            </code>
+                        </li>
+                    </ol>
+                </body>
+            </section>
         </section>
         <section id="soodaobject">
             <title>SoodaObject</title>
@@ -3108,7 +3238,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         </body>
                     </section>
                     <section id="generatedpropertiesnullable">
-                        <title>Nullable&lt;&gt;</title>
+                        <title>Nullable</title>
                         <body>
                         </body>
                     </section>
@@ -3123,6 +3253,13 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     <body>
                     </body>
                 </section>
+            </section>
+            <section id="generatedclasshierarchy">
+                <title>Class hierarchy</title>
+                <body>
+                    <todo />
+                    <img src="doc15.png" alt="Demonstration of base-class-name effect" />
+                </body>
             </section>
             <section id="generatedenums">
                 <title>Constants/Enumerations</title>

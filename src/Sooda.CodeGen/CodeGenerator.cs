@@ -181,7 +181,7 @@ namespace Sooda.CodeGen
             nspace.Types.Add(ctd);
         }
 
-        private void CDILParserTest(CodeTypeDeclaration ctd)
+        public void CDILParserTest(CodeTypeDeclaration ctd)
         {
 #if SKIPPED
             using (StringWriter sw = new StringWriter())
@@ -364,7 +364,7 @@ namespace Sooda.CodeGen
                 ctd.TypeAttributes |= System.Reflection.TypeAttributes.Abstract;
             nspace.Types.Add(ctd);
 
-            CodeDomClassSkeletonGenerator gen = new CodeDomClassSkeletonGenerator(ci, Project);
+            CodeDomClassSkeletonGenerator gen = new CodeDomClassSkeletonGenerator();
 
             ctd.Members.Add(gen.Constructor_Raw());
             ctd.Members.Add(gen.Constructor_Inserting(useChainedConstructorCall));
@@ -431,6 +431,12 @@ namespace Sooda.CodeGen
 #endif
 
             CodeTypeDeclaration listWrapperClass = CDILParser.ParseClass(CDILTemplate.Get("ListWrapper.cdil"), context);
+#if DOTNET2
+            listWrapperClass.BaseTypes.Clear();
+            listWrapperClass.BaseTypes.Add(
+                new CodeTypeReference("Sooda.ObjectMapper.SoodaObjectCollectionWrapperGeneric", 
+                new CodeTypeReference(Project.OutputNamespace + "." + ci.Name)));
+#endif
             nspace.Types.Add(listWrapperClass);
         }
 
@@ -567,19 +573,7 @@ namespace Sooda.CodeGen
 
         public void GenerateRelationStub(CodeNamespace nspace, RelationInfo ri)
         {
-            string relationName = ri.Name;
-            string leftColumnName = ri.Table.Fields[0].DBColumnName;
-            string rightColumnName = ri.Table.Fields[1].DBColumnName;
-            string leftColumnType = ri.Table.Fields[0].GetFieldHandler().GetFieldType().Name;
-            string rightColumnType = ri.Table.Fields[1].GetFieldHandler().GetFieldType().Name;
-            string leftColumnRefType = ri.Table.Fields[0].References;
-            string rightColumnRefType = ri.Table.Fields[1].References;
-            string SoodaRelationTable = relationName + "_RelationTable";
-
-            ClassInfo ref1ClassInfo = ri.GetRef1ClassInfo();
-            ClassInfo ref2ClassInfo = ri.GetRef2ClassInfo();
-
-            CodeDomListRelationTableGenerator gen = new CodeDomListRelationTableGenerator(ri, Project);
+            CodeDomListRelationTableGenerator gen = new CodeDomListRelationTableGenerator(ri);
 
             // public class RELATION_NAME_RelationTable : SoodaRelationTable
             CodeTypeDeclaration ctd = new CodeTypeDeclaration(ri.Name + "_RelationTable");

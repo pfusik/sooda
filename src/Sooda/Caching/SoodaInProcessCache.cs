@@ -51,8 +51,6 @@ namespace Sooda.Caching
         private LruCache _collectionCache = new LruCache(-1);
         private static Logger logger = LogManager.GetLogger("Sooda.Cache");
 
-        private TimeSpan _expirationTimeout = TimeSpan.FromMinutes(1);
-
         public SoodaInProcessCache()
         {
             _objectCache.ItemRemoved += new LruCacheDelegate(_objectCache_ItemRemoved);

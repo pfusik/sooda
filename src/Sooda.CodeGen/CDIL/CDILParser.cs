@@ -37,12 +37,9 @@ namespace Sooda.CodeGen.CDIL
 {
     public class CDILParser : CDILTokenizer
     {
-        private CDILContext _context;
-
         public CDILParser(string txt, CDILContext context)
             : base(Preprocess(txt, context))
         {
-            _context = context;
         }
 
         private static string Preprocess(string txt, CDILContext context)

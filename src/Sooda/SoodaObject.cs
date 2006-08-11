@@ -1007,8 +1007,6 @@ namespace Sooda
                     continue;
 
                 SoodaFieldHandler field = GetFieldHandler(fi.ClassUnifiedOrdinal);
-                string s = fi.Name;
-
                 xw.WriteStartElement("key");
                 xw.WriteAttributeString("ordinal", fi.ClassUnifiedOrdinal.ToString());
                 field.Serialize(_fieldValues.GetBoxedFieldValue(fi.ClassUnifiedOrdinal), xw);
@@ -1530,6 +1528,26 @@ namespace Sooda
             return retVal;
         }
 
+        public static SoodaObject GetRefHelper(SoodaTransaction tran, ISoodaObjectFactory factory, int keyValue)
+        {
+            return GetRefHelper(tran, factory, (object)keyValue);
+        }
+
+        public static SoodaObject GetRefHelper(SoodaTransaction tran, ISoodaObjectFactory factory, string keyValue)
+        {
+            return GetRefHelper(tran, factory, (object)keyValue);
+        }
+
+        public static SoodaObject GetRefHelper(SoodaTransaction tran, ISoodaObjectFactory factory, long keyValue)
+        {
+            return GetRefHelper(tran, factory, (object)keyValue);
+        }
+
+        public static SoodaObject GetRefHelper(SoodaTransaction tran, ISoodaObjectFactory factory, Guid keyValue)
+        {
+            return GetRefHelper(tran, factory, (object)keyValue);
+        }
+
         public static SoodaObject GetRefHelper(SoodaTransaction tran, ISoodaObjectFactory factory, object keyValue)
         {
             SoodaObject retVal = factory.TryGet(tran, keyValue);
@@ -1628,9 +1646,6 @@ namespace Sooda
             _flags = SoodaObjectFlags.InsertMode;
             _primaryKeyValue = null;
         }
-
-        private static Type[] rawConstructorParameterTypes = new Type[] { typeof(SoodaConstructor) };
-        private static object[] rawConstructorParameterValues = new object[] { SoodaConstructor.Constructor };
 
         internal void CopyOnWrite()
         {

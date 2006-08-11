@@ -30,7 +30,9 @@
 using System;
 using System.Diagnostics;
 using System.Collections;
-
+#if DOTNET2
+using System.Collections.Generic;
+#endif
 
 namespace Sooda.ObjectMapper
 {
@@ -287,4 +289,104 @@ namespace Sooda.ObjectMapper
             ((ISoodaObjectListInternal)_theList).InternalRemove(o);
         }
     }
+
+#if DOTNET2
+    public class SoodaObjectCollectionWrapperGeneric<T> : SoodaObjectCollectionWrapper, IList<T>
+    {
+        public SoodaObjectCollectionWrapperGeneric() : base()
+        {
+        }
+
+        public SoodaObjectCollectionWrapperGeneric(ISoodaObjectList list)
+            : base(list)
+        {
+        }
+
+        #region IList<T> Members
+
+        int IList<T>.IndexOf(T item)
+        {
+            return base.IndexOf(item);
+        }
+
+        void IList<T>.Insert(int index, T item)
+        {
+            base.Insert(index, item);
+        }
+
+        void IList<T>.RemoveAt(int index)
+        {
+            base.RemoveAt(index);
+        }
+
+        T IList<T>.this[int index]
+        {
+            get { return (T)base[index]; }
+            set { base[index] = value; }
+        }
+
+        #endregion
+
+        #region ICollection<T> Members
+
+        void ICollection<T>.Add(T item)
+        {
+            base.Add2(item);
+        }
+
+        void ICollection<T>.Clear()
+        {
+            base.Clear();
+        }
+
+        bool ICollection<T>.Contains(T item)
+        {
+            return base.Contains2(item);
+        }
+
+        void ICollection<T>.CopyTo(T[] array, int arrayIndex)
+        {
+            base.CopyTo(array, arrayIndex);
+        }
+
+        int ICollection<T>.Count
+        {
+            get { return base.Count; }
+        }
+
+        bool ICollection<T>.IsReadOnly
+        {
+            get { return base.IsReadOnly; }
+        }
+
+        bool ICollection<T>.Remove(T item)
+        {
+            base.Remove2(item);
+            return true;
+        }
+
+        #endregion
+
+        #region IEnumerable<T> Members
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            for (int i = 0; i < Count; ++i)
+            {
+                yield return (T)this[i];
+            };
+        }
+
+        #endregion
+
+        #region IEnumerable Members
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return base.GetEnumerator();
+        }
+
+        #endregion
+    }
+#endif
 }
