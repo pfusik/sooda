@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="Sooda" default="build" basedir=".">
+    <tstamp />
     <property name="sooda.debug" value="true" unless="${property::exists('sooda.debug')}" />
     <property name="sooda.optimize" value="false" unless="${property::exists('sooda.optimize')}" />
-
-    <tstamp />
-
     <property name="release.version" value="${tstamp.date}" unless="${property::exists('release.version')}" />
 
     <property name="ndoc.console.exe" value="D:\Apps\NDoc\1.1\ndocconsole.exe" />
