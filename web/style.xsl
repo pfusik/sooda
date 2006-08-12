@@ -190,6 +190,11 @@
         </table>
     </xsl:template>
 
+    <xsl:template match="last-modified-date">
+        <xsl:variable name="lastUpdated"><xsl:value-of select="substring(.,18,20)" /></xsl:variable>
+        <xsl:if test="string-length($lastUpdated)=20"><xsl:value-of select="$lastUpdated" /></xsl:if>
+    </xsl:template>
+
     <xsl:template match="section" mode="toc">
         <xsl:param name="maxLevel">3</xsl:param>
         <xsl:variable name="level"><xsl:apply-templates select="." mode="section-level" /></xsl:variable>

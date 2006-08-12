@@ -838,6 +838,8 @@
             </parameters>
         </style>
 
+        <style in="build/doc/documentation.html" out="build/doc/documentation.tex" style="tools/xhtml2latex.xslt" />
+
         <copy todir="build/doc">
             <fileset basedir="web">
                 <include name="rightarrow*.gif" />
