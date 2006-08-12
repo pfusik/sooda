@@ -347,6 +347,10 @@ img.thinborder
     {
         display: inline;
     }
+    #header
+    {
+        display: none;
+    }
     #webcontent { 
         position: relative;
         left: 0pt; 
@@ -364,6 +368,29 @@ img.thinborder
     {
         page-break-before: always;
         margin-top: 5cm;
+    }
+
+    .titlepage
+    {
+        page-break-after: always;
+    }
+
+    .title
+    {
+        color: #32708E;
+        color: red;
+        margin-top: 5cm;
+        font-size: 130pt;
+        margin-bottom: -20pt;
+    }
+    .titleversion
+    {
+        margin-top: 4cm;
+    }
+
+    .titlecopyright
+    {
+        margin-top: 4cm;
     }
 }
 
@@ -622,20 +649,42 @@ table.toc td.sectionnumber
     padding-left: 60px;
 }
 
+.titlepage
+{
+}
+
 .title
 {
     text-align: center;
-    font-family: Verdana;
-    font-size: 60pt;
-    color: #0000ff;
+    font-family: Tahoma;
+    font-size: 30pt;
+    color: #32708E;
+    margin-bottom: -4pt;
+    white-space: nowrap;
 }
 
 .subtitle
 {
     text-align: center;
-    font-family: Verdana;
-    font-size: 20pt;
-    color: #000000;
+    font-family: Tahoma;
+    font-size: 22pt;
+    color: black;
+}
+
+.titleversion
+{
+    text-align: center;
+    font-family: Tahoma;
+    font-size: 12pt;
+    color: black;
+}
+
+.titlecopyright
+{
+    text-align: center;
+    font-family: Tahoma;
+    font-size: 12pt;
+    color: black;
 }
 
 ul.noindent

@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="windows-1250" ?>
 <?xml-stylesheet type="text/xsl" href="style.xsl" ?>
 <content lang="en" id="documentation">
-    <p style="font-size: 12pt; color: red">
-        This documentation is under construction. Many sections are missing. Please report any grammar, spelling or inacurracy issues to the <a href="http://www.sooda.org/mailinglist.html">mailing list</a>.
-    </p>
+    <div class="titlepage">
+        <div class="title">Sooda</div>
+        <div class="subtitle">Simple Object Oriented Data Access</div>
+        <div class="titleversion">Version 1.0<br/>Last modified: $LastChangedDate: 2006-08-12 06:30:23 +0200 (Sat, 12 Aug 2006) $</div>
+        <div class="titlecopyright">Copyright (c) 2003-2006 by Jarosław Kowalski</div>
+    </div>
     <table-of-contents />
     <section id="intro">
         <title>Introduction to Sooda</title>
