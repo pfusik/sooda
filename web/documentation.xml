@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title">Sooda</div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-08-17 15:01:44 +0200 (Thu, 17 Aug 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 353 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-08-17 16:14:46 +0200 (Thu, 17 Aug 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 354 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright (c) 2003-2006 by Jaros³aw Kowalski</div>
         <div class="pagebreak" />
     </div>
@@ -4375,6 +4375,63 @@ foreach (WorkItem wi in WorkItem.GetList(true))
         <section id="keygeneration">
             <title>Key Generation</title>
             <body>
+                <p>
+                    Key generation is a process of generating unique identifiers to be used for primary keys of newly created objects.
+                    Because primary keys must be known before objects can be committed, you cannot use SQL Server identity columns for key
+                    generation. By default Sooda uses a table-based key generator that manages primary keys by storing their values in
+                    a special database table, but you can write your own generator by creating a class that implements 
+                    the <code>IPrimaryKeyGenerator</code> interface.
+                </p>
+                <p>
+                    Table-based primary key generation uses a database table (by default called <code>KeyGen</code>) 
+                    with 2 columns: <code>key_name</code> and <code>key_value</code> which store class name and
+                    next primary key value to be generated respectively:
+                </p>
+                <img src="doc16.gif" />
+                <p>
+                    Because keys are stored in the database table, generating them requires two SQL statements to be executed. One is SELECT to
+                    fetch the current value of the primary key, the other one is to update the database table so that next 
+                    generation will not use the same value again. Because of this cost, Sooda allocates keys in batches of ten (the number is
+                    configurable) so it only needs to make 2 round-trips to the server for every ten new keys generated.
+                </p>
+                <code lang="SQL">
+                    -- fetch current value of the primary key
+                    SELECT @kv = key_value FROM KeyGen where key_name = 'ClassName';
+
+                    -- update KeyGen table with the new possible primary key
+                    UPDATE KeyGen
+                    SET key_value = @kv + 10
+                    WHERE key_name = 'ClassName' AND key_value = @kv 
+                </code>
+                <p>
+                    This algorighm is multi-process safe, so multiple processes can create new objects concurrently, 
+                    but it does not guarantee that the primary keys of newly created objects will be monotonously increasing.
+                </p>
+                <p>
+                    You can configure the name of the table and batch size on a per-datasource basis 
+                    by using the configuration parameters:
+                </p>
+                <ul>
+                    <li><code><b>datasourcename</b>.keygentable.name</code> - name of the keygen table (by default (<code>KeyGen</code>)</li>
+                    <li><code><b>datasourcename</b>.keygentable.keycolumn</code> - name of the columns that holds key names (by default <code>key_name</code>)</li>
+                    <li><code><b>datasourcename</b>.keygentable.valuecolumn</code> - name of the columns that holds values (by default <code>key_value</code>)</li>
+                    <li><code><b>datasourcename</b>.keygentable.pool_size</code> - the number of keys to allocate at one (by default <code>10</code>)</li>
+                </ul>
+                <p>
+                    The following example demonstrates using application configuration file to override default name
+                    of the KeyGen table and names of its columns.
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                    <configuration>
+                        <appSettings>
+                            <add key="default.keygentable.name" value="MyKeyGen" />
+                            <add key="default.keygentable.keycolumn" value="keys" />
+                            <add key="default.keygentable.valuecolumn" value="values" />
+                        </appSettings>
+                    </configuration>
+                    ]]>
+                </code>
             </body>
         </section>
         <section id="precommit">
