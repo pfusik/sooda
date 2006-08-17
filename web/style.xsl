@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="windows-1250" ?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-    xmlns:xlink="http://www.w3.org/1999/xlink"
     version="1.0">
     <xsl:param name="page_id_override"></xsl:param>
     <xsl:param name="subpage_id_override"></xsl:param>
@@ -39,8 +38,6 @@
                     </div>
                 </xsl:if>
                 <div id="{$mode}content">
-                    <div id="printthis">
-                        <a href="#" onclick="window.print()">Print this page</a></div>
                     <xsl:apply-templates select="content" />
                 </div>
                 <xsl:if test="$mode = 'web'">
@@ -149,7 +146,7 @@
                 <xsl:when test="$number_this_sort_ordinal &lt; $number_target_sort_ordinal">later</xsl:when>
                 <xsl:otherwise>earlier</xsl:otherwise>
             </xsl:choose>
-        in section "<a href="#{@id}" xlink:href="#{@id}">
+        in section "<a href="#{@id}">
         <xsl:apply-templates select="$sect" mode="section-number" />.&#160;<xsl:apply-templates select="$sect/title" />
         </a>"
         <xsl:if test="not($sect)">
@@ -193,6 +190,10 @@
     <xsl:template match="last-modified-date">
         <xsl:variable name="lastUpdated"><xsl:value-of select="substring(.,18,20)" /></xsl:variable>
         <xsl:if test="string-length($lastUpdated)=20"><xsl:value-of select="$lastUpdated" /></xsl:if>
+    </xsl:template>
+
+    <xsl:template match="subversion-revision">
+        <xsl:value-of select="substring-before(substring-after(.,'Revision:'),' $')" />
     </xsl:template>
 
     <xsl:template match="section" mode="toc">

@@ -334,66 +334,6 @@ img.thinborder
     display: none;
 }
 
-@media print
-{
-    body { left: 0pt; }
-    #controls { display: none; }
-    #googlesearch { display: none; }
-    #printthis
-    { 
-        display: none; 
-    }
-    .out_link_address
-    {
-        display: inline;
-    }
-    #header
-    {
-        display: none;
-    }
-    #webcontent { 
-        position: relative;
-        left: 0pt; 
-        border: none; 
-        top: 0pt;
-        left: 0pt;
-        right: 0pt;
-    }
-    #content { left: 0pt; border: none; }
-    #plaincontent { left: 0pt; border: none; }
-    a { color: black; text-decoration: none; }
-    a:visited { color: black; text-decoration: none; }
-    thead { display: table-header-group; }
-    .heading1
-    {
-        page-break-before: always;
-        margin-top: 5cm;
-    }
-
-    .titlepage
-    {
-        page-break-after: always;
-    }
-
-    .title
-    {
-        color: #32708E;
-        color: red;
-        margin-top: 5cm;
-        font-size: 130pt;
-        margin-bottom: -20pt;
-    }
-    .titleversion
-    {
-        margin-top: 4cm;
-    }
-
-    .titlecopyright
-    {
-        margin-top: 4cm;
-    }
-}
-
 table.page
 {
     width: 100%;
@@ -651,6 +591,7 @@ table.toc td.sectionnumber
 
 .titlepage
 {
+    display: none;
 }
 
 .title
@@ -693,5 +634,84 @@ ul.noindent
     margin: 0px;
     padding: 0px;
     padding-left: 0px;
+}
+
+.toctitle
+{
+    margin-top: 2cm;
+    font-size: 14pt;
+    font-weight: bold;
+}
+
+@media print
+{
+    body { left: 0pt; }
+    #controls { display: none; }
+    #googlesearch { display: none; }
+    #printthis
+    { 
+        display: none; 
+    }
+    .out_link_address
+    {
+        display: inline;
+    }
+    #header
+    {
+        display: none;
+    }
+    #webcontent { 
+        position: relative;
+        left: 0pt; 
+        border: none; 
+        top: 0pt;
+        left: 0pt;
+        right: 0pt;
+    }
+    #content { left: 0pt; border: none; }
+    #plaincontent { left: 0pt; border: none; }
+    a { color: black; text-decoration: none; }
+    a:visited { color: black; text-decoration: none; }
+    thead { display: table-header-group; }
+
+    .toctitle
+    {
+        margin-top: 5cm;
+        text-align: center;
+    }
+
+    .heading1
+    {
+        page-break-before: always;
+        margin-top: 5cm;
+    }
+
+    .titlepage
+    {
+        display: inline;
+    }
+
+    .title
+    {
+        color: #32708E;
+        margin-top: 5cm;
+        font-size: 130pt;
+        margin-bottom: -20pt;
+    }
+
+    .titleversion
+    {
+        margin-top: 4cm;
+    }
+
+    .titlecopyright
+    {
+        margin-top: 4cm;
+    }
+
+    .pagebreak
+    {
+        page-break-after: always;
+    }
 }
 
