@@ -214,5 +214,15 @@ namespace Sooda.UnitTests.TestCases.Soql
             AssertExpression("true or not (1 == 1)", true);
             AssertExpression("true or not (--1 == 1)", true);
         }
+
+        [Test]
+        public void TestAssociativity()
+        {
+            AssertExpression("3 - 2 - 1", 0);
+            AssertExpression("6 / 3 * 2", 4);
+            AssertExpression("1 + 2 * 3", 7);
+            AssertExpression("1 + 2 * 3 - 4 * 5", -13);
+            AssertExpression("1 - 4 / 2 - 4 % 2", -1);
+        }
     }
 }

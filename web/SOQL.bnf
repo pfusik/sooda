@@ -1,0 +1,104 @@
+query_expression ::=
+            SELECT     [TOP number] [DISTINCT] select_expressions
+            FROM       from_expression
+            [WHERE     boolean_expression]
+            [GROUP BY  groupby_expressions]
+            [HAVING    boolean_expression]
+            [ORDER BY  sort_expressions]
+
+relation_name ::= name
+
+class_name ::= name
+
+alias ::= name
+
+class_or_relation_name ::= class_name | relation_name
+
+select_expressions ::= select_expression {, select_expression}
+
+select_expression := expression [ AS alias ]
+
+from_expressions ::= from_expression {, from_expression}
+
+from_expression ::= class_name [ AS alias ]
+
+groupby_expressions ::= expression {, expression}
+
+sort_expressions ::= sort_expression {, sort_expression}
+
+sort_expression := expression [ ASC | DESC ]
+
+boolean_expression ::= boolean_or
+
+boolean_or ::= boolean_and { OR boolean_and }
+
+boolean_and ::= boolean_predicate { AND boolean_predicate }
+
+boolean_predicate ::= 
+            NOT boolean_expression
+            | EXISTS ( query_expression )
+            | EXISTS ( simplified_query )
+            | boolean_relation
+
+boolean_relation ::= additive_expression
+            | additive_expression = additive_expression
+            | additive_expression '&lt;&gt;' additive_expression
+            | additive_expression '&lt;' additive_expression
+            | additive_expression '&gt;' additive_expression
+            | additive_expression '&lt;=' additive_expression
+            | additive_expression '&gt;=' additive_expression
+            | additive_expression LIKE additive_expression
+            | additive_expression IS [NOT] NULL
+            | additive_expression IN '(' additive_expression {,additive_expression} ')'
+
+additive_expression ::= multiplicative_expression
+            | multiplicative_expression '+' multiplicative_expression
+            | multiplicative_expression '-' multiplicative_expression
+
+multiplicative_expression ::= literal_expression
+            | literal_expression '*' multiplicative_expression
+            | literal_expression '/' multiplicative_expression
+            | literal_expression '%' multiplicative_expression
+
+literal_expression ::= 
+            number
+            string
+            positional_parameter
+            '(' query_expression ')'
+            '(' expression ')'
+            NULL
+            TRUE
+            FALSE
+            SoodaClass
+            RAWQUERY ( raw_query )
+            function_call
+            path_expression
+            '(' class_name WHERE boolean_expression ')'
+            '-' literal_expression
+
+positional_parameter ::= '{' number [ ':' parameter_modifiers ] '}'
+
+parameter_modifiers ::= type_name
+
+function_call ::= function_name '(' [ function_arguments ] ')'
+
+function_arguments ::= expression {, expression }
+
+simplified_query ::= class_name WHERE boolean_expression
+
+expression ::= boolean_or
+
+path_expression ::= field_name
+            | path_expression '.' field_name
+            | path_expression '.' Contains '(' expression ')'
+            | path_expression '.' Contains '(' query_expression ')'
+            | path_expression '.' Contains '(' simplified_query ')'
+            | path_expression '.' Count 
+            | path_expression '.' SoodaClass 
+            | '*'
+            | path_expression '.' '*'
+
+-- the string may contain SOQL{{...}} fragments which will be
+-- inserted into the SQL sent to RDBMS
+
+raw_query ::= string

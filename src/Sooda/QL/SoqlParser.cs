@@ -253,20 +253,25 @@ namespace Sooda.QL
         {
             SoqlExpression e = ParseLiteralExpression();
 
-            if (tokenizer.IsToken(SoqlTokenType.Mul))
+            while (true)
             {
-                tokenizer.GetNextToken();
-                return new SoqlBinaryExpression(e, ParseMultiplicativeException(), SoqlBinaryOperator.Mul);
-            }
-            if (tokenizer.IsToken(SoqlTokenType.Div))
-            {
-                tokenizer.GetNextToken();
-                return new SoqlBinaryExpression(e, ParseMultiplicativeException(), SoqlBinaryOperator.Div);
-            }
-            if (tokenizer.IsToken(SoqlTokenType.Mod))
-            {
-                tokenizer.GetNextToken();
-                return new SoqlBinaryExpression(e, ParseMultiplicativeException(), SoqlBinaryOperator.Mod);
+                if (tokenizer.IsToken(SoqlTokenType.Mul))
+                {
+                    tokenizer.GetNextToken();
+                    e = new SoqlBinaryExpression(e, ParseLiteralExpression(), SoqlBinaryOperator.Mul);
+                }
+                else if (tokenizer.IsToken(SoqlTokenType.Div))
+                {
+                    tokenizer.GetNextToken();
+                    e = new SoqlBinaryExpression(e, ParseLiteralExpression(), SoqlBinaryOperator.Div);
+                }
+                else if (tokenizer.IsToken(SoqlTokenType.Mod))
+                {
+                    tokenizer.GetNextToken();
+                    e = new SoqlBinaryExpression(e, ParseLiteralExpression(), SoqlBinaryOperator.Mod);
+                }
+                else
+                    break;
             }
             return e;
         }
@@ -275,15 +280,20 @@ namespace Sooda.QL
         {
             SoqlExpression e = ParseMultiplicativeException();
 
-            if (tokenizer.IsToken(SoqlTokenType.Add))
+            while (true)
             {
-                tokenizer.GetNextToken();
-                return new SoqlBinaryExpression(e, ParseAdditiveExpression(), SoqlBinaryOperator.Add);
-            }
-            if (tokenizer.IsToken(SoqlTokenType.Sub))
-            {
-                tokenizer.GetNextToken();
-                return new SoqlBinaryExpression(e, ParseAdditiveExpression(), SoqlBinaryOperator.Sub);
+                if (tokenizer.IsToken(SoqlTokenType.Add))
+                {
+                    tokenizer.GetNextToken();
+                    e = new SoqlBinaryExpression(e, ParseMultiplicativeException(), SoqlBinaryOperator.Add);
+                }
+                else if (tokenizer.IsToken(SoqlTokenType.Sub))
+                {
+                    tokenizer.GetNextToken();
+                    e = new SoqlBinaryExpression(e, ParseMultiplicativeException(), SoqlBinaryOperator.Sub);
+                }
+                else
+                    break;
             }
             return e;
         }

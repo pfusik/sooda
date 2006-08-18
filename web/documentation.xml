@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title">Sooda</div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-08-17 16:14:46 +0200 (Thu, 17 Aug 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 354 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-08-18 09:13:44 +0200 (Fri, 18 Aug 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 356 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright (c) 2003-2006 by Jaros³aw Kowalski</div>
         <div class="pagebreak" />
     </div>
@@ -4609,6 +4609,21 @@ foreach (WorkItem wi in WorkItem.GetList(true))
     </section>
     <section id="soql">
         <title>Query Language - SOQL</title>
+        <p>
+            Sooda supports a query language called SOQL which i a RDBMS-independent variant of SQL (Structured Query Language)
+            enhanced with path expressions, collections, named constants and inheritance support. Only SELECT operations are
+            supported which means no DDL and INSERT/UPDATE support exists in SOQL.
+            The following sections describe the grammar of SOQL and demonstrate its use.
+        </p>
+        <section id="soqlgrammar">
+            <title>SOQL Grammar</title>
+            <body>
+                <code lang="SQL" src="web/SOQL.bnf">
+                    <![CDATA[
+                    ]]>
+                </code>
+            </body>
+        </section>
         <section id="soqltext">
             <title>Text-based Queries</title>
             <body>

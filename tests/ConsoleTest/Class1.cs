@@ -47,10 +47,10 @@ using Sooda.Caching;
 using System.Security.Principal;
 using System.Security.Permissions;
 
-using Sooda.UnitTests.BaseObjects.Boo;
-using Sooda.UnitTests.BaseObjects.Boo.TypedQueries;
+using Sooda.UnitTests.BaseObjects;
+using Sooda.UnitTests.BaseObjects.TypedQueries;
 
-[assembly: SoodaStubAssembly(typeof(Sooda.UnitTests.BaseObjects.Boo._DatabaseSchema))]
+[assembly: SoodaStubAssembly(typeof(Sooda.UnitTests.BaseObjects._DatabaseSchema))]
 [assembly: SoodaConfig(XmlConfigFileName = "sooda.config.xml")]
 
 namespace ConsoleTest
@@ -66,8 +66,14 @@ namespace ConsoleTest
         {
             using (SoodaTransaction t = new SoodaTransaction())
             {
-                Contact c = Contact.Eva;
-                Console.WriteLine(c.Name);
+                Console.WriteLine(SoqlParser.ParseExpression("3 - 2 - 1").Evaluate(null));
+                Console.WriteLine(SoqlParser.ParseExpression("6 / 3 * 2").Evaluate(null));
+
+                Console.WriteLine(SoqlParser.ParseExpression("1 + 2 * 3").Evaluate(null));
+                Console.WriteLine(SoqlParser.ParseExpression("1 + 2 * 3 - 4 * 5").Evaluate(null));
+                Console.WriteLine(SoqlParser.ParseExpression("1 - 4 / 2 - 4 % 2").Evaluate(null));
+                //Contact c = Contact.Eva;
+                //Console.WriteLine(c.Name);
             }
         }
     }
