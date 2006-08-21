@@ -1,6 +1,6 @@
 query_expression ::=
             SELECT     [TOP number] [DISTINCT] select_expressions
-            FROM       from_expression
+            FROM       from_expressions
             [WHERE     boolean_expression]
             [GROUP BY  groupby_expressions]
             [HAVING    boolean_expression]
@@ -52,13 +52,13 @@ boolean_relation ::= additive_expression
             | additive_expression IN '(' additive_expression {,additive_expression} ')'
 
 additive_expression ::= multiplicative_expression
-            | multiplicative_expression '+' multiplicative_expression
-            | multiplicative_expression '-' multiplicative_expression
+            | additive_expression '+' multiplicative_expression
+            | additive_expression '-' multiplicative_expression
 
 multiplicative_expression ::= literal_expression
-            | literal_expression '*' multiplicative_expression
-            | literal_expression '/' multiplicative_expression
-            | literal_expression '%' multiplicative_expression
+            | multiplicative_expression '*' literal_expression
+            | multiplicative_expression '/' literal_expression
+            | multiplicative_expression '%' literal_expression
 
 literal_expression ::= 
             number

@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title">Sooda</div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-08-18 09:13:44 +0200 (Fri, 18 Aug 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 356 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-08-21 14:16:43 +0200 (Mon, 21 Aug 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 358 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright (c) 2003-2006 by Jaros³aw Kowalski</div>
         <div class="pagebreak" />
     </div>
@@ -4609,31 +4609,817 @@ foreach (WorkItem wi in WorkItem.GetList(true))
     </section>
     <section id="soql">
         <title>Query Language - SOQL</title>
-        <p>
-            Sooda supports a query language called SOQL which i a RDBMS-independent variant of SQL (Structured Query Language)
-            enhanced with path expressions, collections, named constants and inheritance support. Only SELECT operations are
-            supported which means no DDL and INSERT/UPDATE support exists in SOQL.
-            The following sections describe the grammar of SOQL and demonstrate its use.
-        </p>
+        <body>
+            <p>
+                Sooda supports a query language named SOQL which is similar to SQL (Structured Query Language)
+                enhanced with path expressions, collections, named constants and inheritance support. Only SELECT operation is 
+                supported which means no DDL and INSERT/UPDATE support exists in SOQL.
+            </p>
+        </body>
+        <section id="soqltext">
+            <title>SOQL Queries</title>
+            <body>
+                <p>
+                    SOQL queries are smilar in structure to the SQL SELECT statements. Each query has the following form:
+                </p>
+                <code lang="SQL">
+                    SELECT     [TOP number] [DISTINCT] select_expressions
+                    FROM       from_expressions
+                    [WHERE     boolean_expression]
+                    [GROUP BY  groupby_expressions]
+                    [HAVING    boolean_expression]
+                    [ORDER BY  sort_expressions]
+                </code>
+                <p>
+                    SOQL queries are based on classes and fields as opposed to tables and columns. You should use names defined in the <a href="#schema">mapping schema</a> 
+                    with <x><class name="..." /></x> and <x><field name="..." /></x>. Let's assume you have the following class definition that
+                    maps <code>ctct</code> table to <code>Contact</code> class and remaps field names:
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                    <class name="Contact">
+                        <table name="ctct">
+                            <field name="ID" dbcolumn="contact_id" type="Integer" primaryKey="true" />
+                            <field name="Name" dbcolumn="contact_name" type="String" size="40" />
+                        </table>
+                    </class>
+                    ]]>
+                </code>
+                <p>
+                    You can write the following SOQL statement that gets the name of some particular contact:
+                </p>
+                <code lang="SQL">
+                    select Name
+                    from   Contact
+                    where  ID=123
+                </code>
+                <p>
+                    It is equivalent to the following SQL query:
+                </p>
+                <code lang="SQL">
+                    select contact_name
+                    from   ctct
+                    where  contact_id = 123
+                </code>
+                <p>
+                    The query can be based on multiple classes with JOIN specified in the where clause, which is similar to SQL, but this is
+                    rarely needed because Sooda supports <a href="#soqlpathexpressions">path expressions</a> which can greatly
+                    simplify query code. There are other useful extensions to SQL, as described <sectionlink id="soqllanguageelements" />.
+                </p>
+            </body>
+        </section>
+        <section id="soqllanguageelements">
+            <title>SOQL Language Elements</title>
+            <body>
+                <p>
+                    SOQL supports the following language constructs known from SQL:
+                </p>
+                <ul>
+                    <li>boolean relational operators (<code>=</code>, <code>!=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;=</code>, <code>&gt;</code>, <code>LIKE</code>)</li>
+                    <li>boolean operators (<code>AND</code>, <code>OR</code>)</li>
+                    <li><code>EXISTS()</code>, <code>IN()</code>, <code>IS NULL</code> and <code>IS NOT NULL</code> predicates</li>
+                    <li>arithmetic operators (<code>+</code>,<code>-</code>,<code>*</code>,<code>/</code> and <code>%</code>) with natural precedence and associativity</li>
+                    <li>unary arithmetic (<code>-</code>) and boolean (<code>NOT</code>) negation</li>
+                </ul>
+                <p>
+                    In addition the following constructs not known from SQL are supported:
+                </p>
+                <ul>
+                    <li>path expressions for specifying join-less criteria (<code>t.PrimaryGroup.Manager.Name</code>)</li>
+                    <li>one-to-many and many-to-many collections supporting <code>Count</code> and <code>Contains</code> operations</li>
+                    <li>named constants (as defined in the <a href="#schema">mapping schema</a>)</li>
+                    <li><code>TRUE</code> and <code>FALSE</code> literals</li>
+                    <li>simplified queries</li>
+                    <li>functions</li>
+                    <li>raw queries (escape to SQL)</li>
+                    <li><code>SoodaClass</code> operator</li>
+                </ul>
+                <p>
+                    SOQL is case-insensitive so keywords, class names and property names can be written regardless of their case. 
+                    For example you can write:
+                </p>
+                <code lang="SQL">
+                    select name
+                    from contact
+                </code>
+                <p>
+                    which is equivalent to app-uppercase version:
+                </p>
+                <code lang="SQL">
+                    SELECT NAME 
+                    FROM CONTACT
+                </code>
+
+                <p>
+                    For readability, it's recommended to use the same casing (typically pascal casing) when 
+                    refering to fields and classes.
+                    Case sensitivity of string comparisons and SQL <code>LIKE</code> operator are 
+                    database-dependent. SOQL grammar is described <sectionlink id="soqlgrammar" />.
+                </p>
+            </body>
+            <section id="soqlpathexpressions">
+                <title>Path Expressions</title>
+                <body>
+                    <p>
+                        Path expressions let you traverse many-to-one and one-to-one relationships
+                        without joins. To access a property of related object you simply prefix the name of the property
+                        with the path of dot-separated property names that leads to the object. The path can have arbitrary length.
+                    </p>
+                    <p>
+                        Example of a SQL query that returns all contacts who belong to groups managed by 'Mary Manager':
+                    </p>
+                    <code lang="SQL">
+                        SELECT *
+                        FROM   Contact
+                        WHERE  PrimaryGroup.Manager.Name = 'Mary Manager'
+                    </code>
+                </body>
+            </section>
+            <section id="soqlcollections">
+                <title>Collections</title>
+                <body>
+                    <p>
+                        Sooda supports one-to-many and many-to-many collections in queries. SOQL queries 
+                        can get the number of elements in a collection and as check if a particular 
+                        object or collection of objects are contained in it. The following operations are supported:
+                    </p>
+                    <ul>
+                        <li><code>collection.Count</code> - get the number of elements in a collection</li>
+                        <li><code>collection.Contains(object)</code> - check whether a particular object is included in the collection</li>
+                        <li><code>collection.Contains(ClassName where condition)</code> - check whether any object matching the specified condition is included in the collection.</li>
+                    </ul>
+                    <p>
+                        To get the number of elements in the collection, just append the <code>.Count</code> after the collection name:
+                    </p>
+                    <code lang="SQL">
+                        -- select all contacts having with than one role
+                        SELECT * 
+                        FROM Contact
+                        WHERE Roles.Count > 1
+                    </code>
+                    <p>
+                        Using <code>Count</code> is supported in select expressions, not just in the WHERE clause.
+                        <code>Count</code> can be used to get the number of elements in a collection in another object:
+                    </p>
+                    <code lang="SQL">
+                        -- return the name of each person followed by the number 
+                        -- of members in his group
+                        
+                        select  Name, 
+                                PrimaryGroup.Members.Count
+                        from    Contact
+                    </code>
+                    <p>
+                        To check if a given collection contains a particular object, use the <code>Contains(object)</code>. 
+                        The <code>object</code> can be a value of a object field, a named constant or a literal value (an integer or a string):
+                    </p>
+                    <code lang="SQL">
+                        -- get the names of all groups including Mary Manager
+                        -- Contact.Mary is a named constant
+
+                        select  Name
+                        from    Group
+                        where   Members.Contains(Contact.Mary);
+                    </code>
+                    <p>
+                        The equivalent condition can be specified by using the value of <code>1</code> instead of <code>Contact.Mary</code>.
+                    </p>
+                    <code lang="SQL">
+                        -- get the names of all groups including Mary Manager
+
+                        select  Name
+                        from    Group
+                        where   Members.Contains(1);
+                    </code>
+                    <p>
+                        More complicated queries are of course possible:
+                    </p>
+                    <code lang="SQL">
+                        -- return all groups where the manager
+                        -- is not one of the members
+
+                        select  *
+                        from    Group 
+                        where	not Members.Contains(Manager)
+                    </code>
+                    <p>
+                        The <code>Contains()</code> argument may be a subquery or a <a href="#soqlsimplifiedqueries">simplified sub query</a>. 
+                        This query returns a list of all groups having at least one female member:
+                    </p>
+                    <code lang="SQL">
+                        select  * 
+                        from    Group
+                        where   Members.Contains(Contact where Sex = 'F')
+                    </code>
+                    <p>
+                        You can nest the Contains() inside another Contains():
+                    </p>
+                    <code lang="SQL">
+                        -- find all groups having at least one contact
+                        -- in a role whose name starts with 'Admin'
+
+                        select  *
+                        from    Group
+                        where   Members.Contains(Contact 
+                                    where Roles.Contains(Role where Name like 'Admin%'))
+                    </code>
+                    <p>
+                        Hopefully you can see that <code>Count</code> and <code>Contains()</code> are 
+                        quite powerful constructs that let you write simple and complex queries without
+                        the use of explicit joins. The join-free SOQL queries can be translated to SQL
+                        thanks to a special translator provided by Sooda described <sectionlink id="soqltosqlconversion" />.
+                    </p>
+                </body>
+            </section>
+            <section id="soqlsoodaclass">
+                <title>SoodaClass</title>
+                <body>
+                    <p>
+                        <code>SoodaClass</code> is a special virtual property that is present in all classes. It returns a name
+                        of the class as defined in the <a href="#schema">mapping schema</a>. 
+                        It can be used to distinguish between subclasses in polymorhpic queries.
+                    </p>
+                    <code lang="SQL">
+                        -- select vehicles which are bikes or super bikes
+
+                        select *
+                        from   Vehicle v
+                        where  v.SoodaClass = 'Bike' or v.SoodaClass = 'SuperBike'
+                    </code>
+                </body>
+            </section>
+            <section id="soqlsimplifiedqueries">
+                <title>Simplified Subqueries</title>
+                <body>
+                    <p>
+                        SOQL provides a convenient notation for specifying subqueries being arguments to <code>EXISTS()</code> and <code>Contains()</code>
+                        Instead of full <code>SELECT id FROM class WHERE condition</code> Sooda lets you write just <code>Class WHERE condition</code>. So the following two
+                        SOQL queries are equivalent:
+                    </p>
+                    <p>
+                        Using full subqueries:
+                    </p>
+                    <code lang="SQL">
+                        select *
+                        from Group
+                        where Members.Contains(select ID from Contact where Name = 'Mary Manager')
+                    </code>
+                    <p>
+                        Using simplified subqueries:
+                    </p>
+                    <code lang="SQL">
+                        select *
+                        from Group
+                        where Members.Contains(Contact where Name = 'Mary Manager')
+                    </code>
+                    <p>
+                        The same thing applies to EXISTS():
+                    </p>
+                    <code lang="SQL">
+                        <![CDATA[
+                        select *
+                        from Group g
+                        where exists (Group g2 where g.ID <> g2.ID and g.Name = g2.Name)
+                        ]]>
+                    </code>
+                    <p>
+                        You can use simplified subqueries in all places where a collection of scalar value is required
+                        and they will return a collection of the appropriate primary keys:
+                    </p>
+                    <code lang="SQL">
+                        <![CDATA[
+                        select *
+                        from Group g
+                        where ID in (Group where Members.Count > 10)
+                        ]]>
+                    </code>
+                </body>
+            </section>
+            <section id="soqlrawqueries">
+                <title>Raw Queries</title>
+                <body>
+                    <p>
+                    Raw queries can be used to use RDBMS-specific SQL constructs, such as full-text-search, custom
+                    operators or built-in functions. Raw queries are inserted into the output of the <a href="#soqltosqlconversion">SOQL to SQL Conversion</a>.
+                    </p>
+                    <p>
+                        To write a raw query, simply use <code>RAWQUERY(text)</code>. The <code>text</code> can be any SQL, but you
+                        must be careful to correctly balance parenthesis.
+                    </p>
+                    <code lang="SQL">
+                        // use SQL Server-specific full-text search function "contains()"
+
+                        select * 
+                        from   Contact
+                        where  rawquery(contains(*,'quick'))
+                    </code>
+                    <p>
+                        Raw queries may include translated field and class names. You can escape back to SOQL by using the <code>SOQL{{...}}</code>
+                        notation:
+                    </p>
+                    <code lang="SQL">
+                        <![CDATA[
+                        -- find all contacts employed earlier than 10 years ago
+
+                        select * 
+                        from   Contact
+                        where  rawquery(datediff(y, SOQL{{HireDate}}, getdate() > 10)
+                        ]]>
+                    </code>
+                </body>
+            </section>
+        </section>
         <section id="soqlgrammar">
             <title>SOQL Grammar</title>
             <body>
+                <p>
+                    The formal description of SOQL is presented below:
+                </p>
                 <code lang="SQL" src="web/SOQL.bnf">
                     <![CDATA[
                     ]]>
                 </code>
             </body>
         </section>
-        <section id="soqltext">
-            <title>Text-based Queries</title>
+        <section id="soqlwhereclauses">
+            <title>SOQL Where Clauses</title>
             <body>
+                <p>
+                    SOQL expressions can be used to filter objects returned by the <code>GetList()</code> or 
+                    <code>LoadSingleObject()</code> methods. You simply pass the <code>WHERE</code> clause as a string 
+                    argument to the constructor of the <code>SoodaWhereClause</code> class and pass the 
+                    where clause object to the appropriate method. You cannot specify a list of columns here, <code>GetList()</code> 
+                    and <code>LoadSingleObject()</code> always operate on objects.
+                </p>
+                <code lang="C#">
+                    ContactList cl;
+
+                    // get the list of contacts whose names start with 'Mary'
+                    cl = Contact.GetList(new SoodaWhereClause("Name like 'Mary%'"));
+                </code>
+                <p>
+                    Manually concatenating string literals can be dangerous and lead 
+                    to <a href="http://en.wikipedia.org/wiki/XSS">cross-site scripting vulnerabilities</a> in web applications.
+                    Fortunately Sooda lets you separate string literals from the rest of the query code.
+                    You can use the <code>{0}, {1}, {2}</code> notation similar to <code>Console.WriteLine()</code>.
+                    Note that you don't need to quote the strings yourself nor surround <code>{0}</code> with apostrophes. In fact
+                    this would cause the '{0}' string to be treated as literal and not a parameter reference.
+                </p>
+                <code lang="C#">
+                    ContactList cl;
+                    string lookFor = "Mary Manager";
+
+                    // get the list of contacts matching the specified name
+                    // note that {0} is not enclosed in apostrophes.
+                    cl = Contact.GetList(new SoodaWhereClause("Name = {0}", lookFor));
+                </code>
             </body>
         </section>
         <section id="soqltypedqueries">
-            <title>Typed Queries</title>
+            <title>Typed SOQL Queries</title>
             <body>
+                <p>
+                    Textual queries passed to <code>SoodaWhereClause</code> have one deficiency: any property/field names
+                    that you use are not validated at compilation time. It is thus possible to write code that contains
+                    references to not existing fields and the compilation will succeed, but you will get runtime
+                    errors.
+                </p>
+                <p>
+                    When developing large systems that need to change often (such as workflow applications with
+                    ever-changing customer requirements) it may be beneficial to statically validate all queries used in 
+                    the application to make sure that you only reference correct fields. This way, when you remove a field
+                    from the schema or change its type, the application will simply not compile and the compiler will show
+                    you places that need to be fixed because of the original change.
+                </p>
+                <p>
+                    Sooda implements typed SOQL queries, which let you write SOQL-like expressions in pure C# using a technique
+                    called operator overloading. Sooda comes with a large set of classes that represent nodes in query expression
+                    trees (such as relational operation, path expressions, Count, Contains, boolean and, boolean or, and so on).
+                    These classes overload standard C# operators such as <code>+</code>,<code>-</code>,<code>&amp;&amp;</code>,
+                    <code>||</code> so that they return elements of the syntax tree instead of performing any actual computations.
+                </p>
+                <p>
+                    To properly support path expressions, some schema-specific code needs to be generated as well 
+                    and <a href="#soodastubgen">SoodaStubGen utility</a> takes care of it. It generates a set of 
+                    classes that let you build typed path expressions and typed collection expression builders. They both
+                    let you express almost 100% of all SOQL features. In some rare cases (such as SQL functions or subqueries)
+                    you can resort to text-based SOQL and even combine the two approaches in a single query.
+                </p>
+                <p>
+                    Typed queries are very concise, because you don't need to wrap them with strings or use
+                    any special objects (such as <code>SoodaWhereClause</code>) that will parse them. You don't need
+                    to use any form of string escaping and because there's no parsing involved whatsoever you can be
+                    sure that the code is cross-site-scripting-safe.
+                </p>
+                <todo />
             </body>
         </section>
+        <section id="soqltosqlconversion">
+            <title>SOQL to SQL Conversion</title>
+            <body>
+                <p>
+                    Relational databases don't understand Sooda schemas nor SOQL language, 
+                    therefore a translation from SOQL to SQL is necessary before any query can be executed.
+                    Sooda comes with a <code>SoqlToSqlConverter</code> class that does the necessary translation.
+                </p>
+                <p>
+                    The result of the conversion is dependent on the <a href="#schema">mapping schema</a>, because SOQL to SQL converter 
+                    must translate classes to database table names and named constants to literals. As database engines implement
+                    slightly different SQL dialects, you must also pass
+                    an instance of a SQL builder class that implements <code>ISqlBuilder</code> interface and abstracts the SQL dialect
+                    detail. Sooda comes with the following SQL builders for the most popular databases:
+                </p>
+                <ul>
+                    <li><code>SqlServerBuilder</code> - Microsoft SQL Server 2000 and 2005</li>
+                    <li><code>OracleBuilder</code> - Oracle 8i and above</li>
+                    <li><code>MySqlBuilder</code> - MySQL 4.x and above</li>
+                    <li><code>PostgreSqlBuilder</code> - PostrgreSQL 7.3 and above</li>
+                </ul>
+                <p>
+                    To start the conversion, you need to pass the tree representation of your SOQL query, 
+                    namely a <code>SoqlQueryExpression</code> object, obtained it by calling <code>SoqlParser.ParseQuery()</code>.
+                    SoqlToSqlConverter writes the result of conversion to the specified <code>TextWriter</code> object - you can use an 
+                    instance of the <code>StringWriter</code> class to store the result in a string variable.
+                </p>
+                <code lang="C#">
+                    string soqlQueryText = "soql query";
+                    SchemaInfo schemaInfo; // parsed schema
+
+                    // SQL-Server specific SQL Builder object
+                    ISqlBuilder builder = new SqlServerBuilder();
+
+                    // parse the query
+                    SoqlQueryExpression query = SoqlParser.ParseQuery(soqlQueryText);
+
+                    // create a StringWriter to write the results to
+                    StringWriter sw = new StringWriter();
+
+                    // create an instance of converter
+                    SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, schemaInfo, builder);
+
+                    // set various options
+                    converter.IndentOutput = this.IndentQueries;
+                    converter.GenerateColumnAliases = false;
+                    converter.ConvertQuery(queryExpression);
+
+                    // get the results into a string
+                    string sqlText = sw.ToString();
+                </code>
+            </body>
+            <section id="soqltosqlconversionpathexpressions">
+                <title>Path Expressions</title>
+                <body>
+                    <p>
+                        During the SOQL to SQL Translation, path expressions are converted to ordinary SQL joins.
+                        Consider this example query:
+                    </p>
+                    <code lang="SQL">
+                        SELECT *
+                        FROM   Contact
+                        WHERE  PrimaryGroup.Manager.Name = 'Mary Manager'
+                    </code>
+                    <p>
+                        During conversion, each path expression prefix gets a unique table alias and appropriate joins
+                        are generated:
+                    </p>
+                    <code lang="SQL">
+select   t0.id as [ContactId],
+         t0.primary_group as [PrimaryGroup],
+         t0.type as [Type],
+         t0.name as [Name],
+         t0.active as [Active],
+         t0.last_salary as [LastSalary]
+from     Contact t0
+         left outer join _Group t1 on (t0.primary_group = t1.id)
+         left outer join Contact t2 on (t1.manager = t2.id)
+where    (t2.name = 'Mary Manager')
+                </code>
+                <p>
+                    We have the following prefixes:
+                </p>
+                <ul>
+                    <li><b>(empty)</b> - maps to <code>t0</code></li>
+                    <li><b>PrimaryGroup</b> - maps to <code>t1</code></li>
+                    <li><b>PrimaryGroup.Manager</b> - maps to <code>t2</code></li>
+                </ul>
+                <p>
+                    The number of joins required is always equal to the number of dots in the path expression. 
+                    SOQL to SQL converter is smart enough to use the minimal number of joins when you reuse path expression prefixes. 
+                    A query that finds all contacts who belong to groups managed by 'Mary Manager' or whose 
+                    managers earn more than one million is:
+                </p>
+                <code lang="SQL">
+                    <![CDATA[
+select  *
+from    Contact
+where 	PrimaryGroup.Manager.Name = 'Mary Manager'
+        or PrimaryGroup.Manager.LastSalary > 1000000
+                    ]]>
+                </code>
+                <p>The same query translated to SQL has only two joins because both LastSalary and Name use the same prefix 't2':</p>
+                <code lang="SQL">
+                        <![CDATA[
+select   t0.id as [ContactId],
+         t0.primary_group as [PrimaryGroup],
+         t0.type as [Type],
+         t0.name as [Name],
+         t0.active as [Active],
+         t0.last_salary as [LastSalary]
+from     Contact t0
+         left outer join _Group t1 on (t0.primary_group = t1.id)
+         left outer join Contact t2 on (t1.manager = t2.id)
+where    ((t2.name = 'Mary Manager') OR (t2.last_salary > 1000000))
+                    ]]>
+                </code>
+            </body>
+        </section>
+        <section id="soqltosqlconversioncollections">
+            <title>Collections</title>
+            <body>
+                <p>
+                    The result of SOQL to SQL conversion of collection operators depends 
+                    on the type of collection and the operation used. There are 3 possible operations on collections:
+                </p>
+                <ul>
+                    <li><code>Count</code></li>
+                    <li><code>Contains(obj)</code> - where obj is an object</li>
+                    <li><code>Contains(subquery)</code></li>
+                </ul>
+                <p>
+                    The following sections demonstrate the result of SOQL to SQL collections for 
+                    both <a href="#soqltosqlconversioncollections1N">one-to-many</a> and 
+                    <a href="#soqltosqlconversioncollectionsMN">many-to-many</a> collections.
+                </p>
+            </body>
+            <section id="soqltosqlconversioncollections1N">
+                <title>One-To-Many Collections</title>
+                <body>
+                    <p>
+                        Operations on one-to-many collections (such as <code>Group.Members</code> where each person may belong to one group),
+                        are translated as subqueries on the "child" table (<code>Contact</code> in this example).
+                    </p>
+                    <p>
+                        The <code>Count</code> operation gets converted to a subquery containing the <code>select count(*)</code> expression.
+                        Consider this query:
+                    </p>
+                    <code lang="SQL">
+    select  * 
+    from    Group
+    where   Members.Count > 3
+                    </code>
+                    <p>
+                        It translates to:
+                    </p>
+                    <code lang="SQL">
+    select   t0.id as [Id],
+             t0.manager as [Manager],
+             t0.name as [Name]
+    from     _Group t0
+    where    ((select count(*) from Contact where primary_group=t0.id) > 3)
+                    </code>
+                    <p>
+                        Converting <code>Contains()</code> on one-to-many collections is easy, because the expression 
+                        <code>parentObject.collection.Contains(childObject)</code> for can be translated to
+                        <code>childObject.ReferenceField = parentObject</code>, so this query:
+                    </p>
+                    <code lang="SQL">
+    select * 
+    from			Group
+    where	 Members.Contains(Contact.Mary)
+                    </code>
+                    <p>
+                        translates to
+                    </p>
+                    <code lang="SQL">
+    select   t0.id as [Id],
+             t0.manager as [Manager],
+             t0.name as [Name]
+    from     _Group t0
+    where    exists (select * from Contact where primary_group=t0.id and id in (1))
+                    </code>
+                    <p>
+                        As you can see <code>Contains()</code> has
+                        been translated as SQL <code>EXISTS()</code> clause. Note that <code>Contact.Mary</code> has been replaced with <code>1</code>.
+                    </p>
+                    <p>
+                        <code>Contains(subquery)</code> translates to similar <code>EXISTS()</code> expression with numeric literals replaced
+                        with the translated subquery. SOQL code:
+                    </p>
+                    <code lang="SQL">
+    select * 
+    from     Group
+    where	 Members.Contains(Contact where Name like 'Mary%')
+                    </code>
+                    <p>
+                        And the resulting SQL query is:
+                    </p>
+                    <code lang="SQL">
+    select   t0.id as [Id],
+             t0.manager as [Manager],
+             t0.name as [Name]
+    from     _Group t0
+    where    exists (select * from Contact where primary_group=t0.id and id in (
+        select   t1.id as [ContactId]
+        from     Contact t1
+        where    (t1.name like 'Mary%')))
+                    </code>
+                </body>
+            </section>
+            <section id="soqltosqlconversioncollectionsMN">
+                <title>Many-To-Many Collections</title>
+                <body>
+                    <p>
+                        Operations on many-to-many collections (such as <code>Contact.Roles</code> where each contact may hold many roles and
+                        a role can be held by many persons), are translated as subqueries on the resolving table 
+                        (declared with the <x><relation /></x> in the <a href="#schema">mapping schema</a>).
+                    </p>
+                    <p>
+                        The <code>Count</code> operation gets converted to ta subquery containing the <code>select count(*)</code> expression.
+                        Consider this query:
+                    </p>
+                    <code lang="SQL">
+    select  * 
+    from    Contact
+    where   Roles.Count > 3
+                    </code>
+                    <p>
+                        It translates to the following SQL:
+                    </p>
+                    <code lang="SQL">
+select   t0.id as [ContactId],
+         t0.primary_group as [PrimaryGroup],
+         t0.type as [Type],
+         t0.name as [Name],
+         t0.active as [Active],
+         t0.last_salary as [LastSalary]
+from     Contact t0
+where    ((select count(*) from ContactRole where contact_id=t0.id) > 3)
+                    </code>
+                    <p>
+                        Translating <code>Contains()</code> operating on single objects is only slightly more difficult 
+                        than in one-to-many case. It gets converted to an SQL <code>EXISTS()</code> clause,
+                        but it requires additional expression to join back to the "parent" table:
+                    </p>
+                    <p>
+                        Given this SQOL:
+                    </p>
+                    <code lang="SQL">
+                    select  * 
+                    from    Contact
+                    where   Roles.Contains(Role.Manager)
+                    </code>
+                    <p>
+                        SOQL to SQL Converter produces:
+                    </p>
+                    <code lang="SQL">
+select   t0.id as [ContactId],
+         t0.primary_group as [PrimaryGroup],
+         t0.type as [Type],
+         t0.name as [Name],
+         t0.active as [Active],
+         t0.last_salary as [LastSalary]
+from     Contact t0
+where    exists (select * from ContactRole where contact_id=t0.id and role_id in (2))
+                    </code>
+                    <p>
+                        <code>Contains()</code> with subquery as an argument produces the most complicated
+                        result, still using SQL <code>EXISTS()</code> clause and a subquery.
+                    </p>
+                    <code lang="SQL">
+select  * 
+from    Contact
+where   Roles.Contains(Role where Name like 'Admin%')
+                    </code>
+                    <p>
+                        Produces:
+                    </p>
+                    <code lang="SQL">
+select   t0.id as [ContactId],
+         t0.primary_group as [PrimaryGroup],
+         t0.type as [Type],
+         t0.name as [Name],
+         t0.active as [Active],
+         t0.last_salary as [LastSalary]
+from     Contact t0
+where    exists (select * from ContactRole where contact_id=t0.id and role_id in (
+    select   t1.id as [Id]
+    from     _Role t1
+    where    (t1.name like 'Admin%')))
+                    </code>
+                </body>
+            </section>
+            <section id="soqltosqlconversionnamedconstants">
+                <title>Named constants</title>
+                <body>
+                    <p>
+                        Named constants in SOQL are simply replaced by their numeric or string values. In the following
+                        example, named constant <code>Contact.Mary</code> gets replaced with its numeric value of one.
+                    </p>
+                    <p>
+                        SOQL:
+                    </p>
+                    <code lang="SQL">
+    select  * 
+    from    Contact
+    where   PrimaryGroup.Manager = Contact.Mary
+                    </code>
+                    <p>
+                        SQL:
+                    </p>
+                    <code lang="SQL">
+select   t0.id as [ContactId],
+         t0.primary_group as [PrimaryGroup],
+         t0.type as [Type],
+         t0.name as [Name],
+         t0.active as [Active],
+         t0.last_salary as [LastSalary]
+from     Contact t0
+         left outer join _Group t1 on (t0.primary_group = t1.id)
+where    (t1.manager = 1)
+                    </code>
+                </body>
+            </section>
+            <section id="soqltosqlconversionsoodaclassandinheritance">
+                <title>SoodaClass and Inheritance</title>
+                <body>
+                    <p>
+                        <code>SoodaClass</code> returns a name of the class. In cases where the class is known statically (when the class
+                        is known not to have subclasses), it is emitted textually into the SQL output, but when the class can have
+                        subclasses, Sooda needs to resort to runtime evaluation using SQL <code>CASE ... WHEN ... END</code>
+                        construct.
+                    </p>
+                    <p>
+                        For example, this SOQL code:
+                    </p>
+                    <code lang="SQL">
+                        select SoodaClass
+                        from Contact
+                    </code>
+                    <p>
+                        Is equivalent to the following SQL, because class <code>Contact</code> doesn't have any subclasses.
+                    </p>
+                    <code lang="SQL">
+                        select   'Contact' as SoodaClass
+                        from     Contact t0
+                    </code>
+                    <p>
+                        On the contrary, the class <code>Vehicle</code> has many subclasses, so translating a similar query 
+                        returns very different result:
+                    </p>
+                    <code lang="SQL">
+                        select  SoodaClass
+                        from    Vehicle
+                    </code>
+                    <p>
+                        The result of the translation is shown below. Note the <code>CASE</code> expression that
+                        returns <code>'Car'</code> when type is <code>1</code>, <code>'Bike'</code> when type is <code>2</code>,
+                        and so on. The mapping is taken from <code>subclassSelectorValue</code> attributes 
+                        defined in the <a href="#schemainheritance">mapping schema</a>.
+                    </p>
+                    <code lang="SQL">
+                        select   (case t0.type 
+                                        when 1 then 'Car' 
+                                        when 2 then 'Bike' 
+                                        when 3 then 'SuperBike' 
+                                        when 4 then 'MegaSuperBike' 
+                                        when 5 then 'ConcreteMegaSuperBikeA' 
+                                        when 6 then 'ConcreteMegaSuperBikeB' 
+                                        when 7 then 'ExtendedBike' else null end) as SoodaClass
+                        from     Vehicle t0
+                        where    t0.type in (1,2,3,4,5,6,7)
+                    </code>
+                    <p>
+                        Pay attention to the extra <code>WHERE</code> clause that has been added by the conversion routine. This is needed to
+                        ensure that the result of this query will be limited to instances of <code>Vehicle</code> and <code>Bike</code>
+                        subclasses. The additional where clause always includes the identifiers of all concrete types that 
+                        may be returned. If we wanted to limit ourselves to the bikes, we cold have written:
+                    </p>
+                    <code lang="SQL">
+                        select   *
+                        from     Bike
+                    </code>
+                    <p>
+                        The result of the translation would be (note that the identifiers of possible subclasses are 
+                        different from the previous case, even though the Bike class is based on the same database table):
+                    </p>
+                    <code lang="SQL">
+select   t0.id as [Id],
+         t0.type as [Type],
+         t0.name as [Name],
+         t0_pkjoin_Bike.two_wheels as [TwoWheels]
+from     Vehicle t0
+         left outer join Bike t0_pkjoin_Bike on (t0.id = t0_pkjoin_Bike.id)
+where    t0.type in (3,4,5,6,7,2)
+                    </code>
+                    <p>
+                        Please also note how additional fields from the Bike class are made available in the results. There's a special
+                        join, called "primary key join" and a special table alias "tk_pkjoin_Bike" which gives access to <code>two_wheels</code>
+                        column in the <code>Bike</code> table.
+                    </p>
+                </body>
+            </section>
+        </section>
+    </section>
     </section>
     <section id="tools">
         <title>Tools</title>
