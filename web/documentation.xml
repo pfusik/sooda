@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title">Sooda</div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-08-21 14:16:43 +0200 (Mon, 21 Aug 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 358 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-08-21 15:52:05 +0200 (Mon, 21 Aug 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 359 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright (c) 2003-2006 by Jaros³aw Kowalski</div>
         <div class="pagebreak" />
     </div>
@@ -4711,7 +4711,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 </code>
 
                 <p>
-                    For readability, it's recommended to use the same casing (typically pascal casing) when 
+                    For readability, it is recommended to use the same casing (typically pascal casing) when 
                     refering to fields and classes.
                     Case sensitivity of string comparisons and SQL <code>LIKE</code> operator are 
                     database-dependent. SOQL grammar is described <sectionlink id="soqlgrammar" />.
@@ -4962,7 +4962,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     to <a href="http://en.wikipedia.org/wiki/XSS">cross-site scripting vulnerabilities</a> in web applications.
                     Fortunately Sooda lets you separate string literals from the rest of the query code.
                     You can use the <code>{0}, {1}, {2}</code> notation similar to <code>Console.WriteLine()</code>.
-                    Note that you don't need to quote the strings yourself nor surround <code>{0}</code> with apostrophes. In fact
+                    Note that you do not need to quote the strings yourself nor surround <code>{0}</code> with apostrophes. In fact
                     this would cause the '{0}' string to be treated as literal and not a parameter reference.
                 </p>
                 <code lang="C#">
@@ -5006,19 +5006,264 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     you can resort to text-based SOQL and even combine the two approaches in a single query.
                 </p>
                 <p>
-                    Typed queries are very concise, because you don't need to wrap them with strings or use
-                    any special objects (such as <code>SoodaWhereClause</code>) that will parse them. You don't need
-                    to use any form of string escaping and because there's no parsing involved whatsoever you can be
+                    Typed queries are very concise, because you do not need to wrap them with strings or use
+                    any special objects (such as <code>SoodaWhereClause</code>) that will parse them. You do not need
+                    to use any form of string escaping and because there is no parsing involved whatsoever you can be
                     sure that the code is cross-site-scripting-safe.
                 </p>
-                <todo />
+                <p>
+                    The following table compares features of typed queries and text-based SOQL. Note that other languages 
+                    supporting operator overloading may have different operator symbols: 
+                </p>
+
+                <div class="table">
+                    <table>
+                        <col style="font-family: Consolas, Courier New; width: 4cm; text-align: center" />
+                        <col style="font-family: Consolas, Courier New; width: 4cm; text-align: center" />
+                        <thead>
+                            <tr>
+                                <th>SOQL</th>
+                                <th>Typed Query</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>path expressions</td>
+                                <td>path expressions prefixed with ClassNameField</td>
+                                <td>
+                                        You need to prefix all path expressions in typed queries with the <code>ClassName<u>Field</u></code> where <code>ClassName</code> is 
+                                    the name of the class the expression applies to. For example:
+                                    <code lang="C#">
+                                        ContactField.PrimaryGroup.Manager.Name
+                                    </code>
+                                    <p>
+                                        is equivalent to the following SOQL expression:
+                                    </p>
+                                    <code lang="SQL">
+                                        PrimaryGroup.Manager.Name
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>=</td>
+                                <td>==</td>
+                                <td>Equality operator</td>
+                            </tr>
+                            <tr>
+                                <td>&lt;&gt;</td>
+                                <td>!=</td>
+                                <td>Inequality operator</td>
+                            </tr>
+                            <tr>
+                                <td>&lt;=</td>
+                                <td>&lt;=</td>
+                                <td>Less than or equal operator</td>
+                            </tr>
+                            <tr>
+                                <td>&lt;</td>
+                                <td>&lt;</td>
+                                <td>Less than</td>
+                            </tr>
+                            <tr>
+                                <td>&gt;</td>
+                                <td>&gt;</td>
+                                <td>Greater than</td>
+                            </tr>
+                            <tr>
+                                <td>&gt;=</td>
+                                <td>&gt;=</td>
+                                <td>Greater than or equal to</td>
+                            </tr>
+                            <tr>
+                                <td>and</td>
+                                <td>&amp;&amp;</td>
+                                <td>Boolean conjunction</td>
+                            </tr>
+                            <tr>
+                                <td>or</td>
+                                <td>||</td>
+                                <td>Boolean alternative</td>
+                            </tr>
+                            <tr>
+                                <td>not</td>
+                                <td>!</td>
+                                <td>Boolean negation</td>
+                            </tr>
+                            <tr>
+                                <td>+</td>
+                                <td>+</td>
+                                <td>Addition</td>
+                            </tr>
+                            <tr>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>Subtraction</td>
+                            </tr>
+                            <tr>
+                                <td>*</td>
+                                <td>*</td>
+                                <td>Multiplication</td>
+                            </tr>
+                            <tr>
+                                <td>/</td>
+                                <td>/</td>
+                                <td>Division</td>
+                            </tr>
+                            <tr>
+                                <td>%</td>
+                                <td>%</td>
+                                <td>Modulus</td>
+                            </tr>
+                            <tr>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>Unary minus</td>
+                            </tr>
+                            <tr>
+                                <td>like</td>
+                                <td>Like() function</td>
+                                <td>LIKE relational operator. Because C# does not support the definition of extra operators this is a function.
+                                    The following C# expression:
+                                    <code lang="C#">
+                                        ContactField.Name.Like("Mary%");
+                                    </code>
+                                    is equivalent to the expression in SOQL:
+                                    <code lang="SQL">
+                                        Name like 'Mary%'
+                                    </code>
+                                    </td>
+                            </tr>
+                            <tr>
+                                <td>Count</td>
+                                <td>Count</td>
+                                <td>Gets the number of elements in a collection.</td>
+                            </tr>
+                            <tr>
+                                <td>Contains(obj)</td>
+                                <td>Contains(obj)</td>
+                                <td>Determines whether obj is contained in the collection.</td>
+                            </tr>
+                            <tr>
+                                <td>Contains(ClassName where condition)</td>
+                                <td>ContainsClassNameWhere(condition)</td>
+                                <td>Determines whether any object contained in the collection meets the specified condition.</td>
+                            </tr>
+                            <tr>
+                                <td>is null</td>
+                                <td>IsNull() function</td>
+                                <td>Determines whether the expression is null. This typed query predicate can be only used on nullable fields. It fails to compile when used on fields that are known to be not-null.
+                                    The following C# expression:
+                                    <code lang="C#">
+                                        ContactField.PrimaryGroup.Manager.IsNull()
+                                    </code>
+                                    is equivalent to the expression in SOQL:
+                                    <code lang="SQL">
+                                        PrimaryGroup.Manager is null
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>is not null</td>
+                                <td>IsNotNull() function</td>
+                                <td>Determines whether the expression is not null. This typed query predicate can be only used on nullable fields. It fails to compile when used on fields that are known to be not-null.
+                                    The following C# expression:
+                                    <code lang="C#">
+                                        ContactField.PrimaryGroup.Manager.IsNoNull()
+                                    </code>
+                                    is equivalent to the expression in SOQL:
+                                    <code lang="SQL">
+                                        PrimaryGroup.Manager is not null
+                                    </code>
+                                </td>                                    
+                            </tr>
+                            <tr>
+                                <td>in (a1,a2,...,aN)</td>
+                                <td>In(a1,a2,...,aN) function</td>
+                                <td>Determines whether the left hand side of the expression equals to any value on the right hand side
+                                    of the expression.
+                                    The following C# expression:
+                                    <code lang="C#">
+                                        ContactField.PrimaryGroup.Manager.FirstName.In("Mary","Edmund")
+                                    </code>
+                                    is equivalent to the expression in SOQL:
+                                    <code lang="SQL">
+                                        PrimaryGroup.Manager.FirstName in ('Mary','Edmund')
+                                    </code>
+                                </td>                                    
+                            </tr>
+                            <tr>
+                                <td>in (subquery)</td>
+                                <td>not supported</td>
+                                <td>This feature is not supported in typed queries. You can use SoqlParser to parse it from a textual representation.</td>
+                            </tr>
+                            <tr>
+                                <td>exists (subquery)</td>
+                                <td>not supported</td>
+                                <td>This feature is not supported in typed queries. You can use SoqlParser to parse it from a textual representation.</td>
+                            </tr>
+                            <tr>
+                                <td>rawquery (subquery)</td>
+                                <td>not supported</td>
+                                <td>This feature is not supported in typed queries. You can use SoqlParser to parse it from a textual representation.</td>
+                            </tr>
+                            <tr>
+                                <td>soodaclass</td>
+                                <td>not supported</td>
+                                <td>This feature is not supported in typed queries. You can use SoqlParser to parse it from a textual representation.</td>
+                            </tr>
+                            <tr>
+                                <td>positional parameters: {0}, {1}, {2}</td>
+                                <td>Soql.Param(0), Soql.Param(1), Soql.Param(2)</td>
+                                <td>Reference to the positional parameter passed to the <code>SoodaWhereClause</code> constructor.
+                                    Positional parameters are not usually needed in typed queries because string literals
+                                    are safe by default.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>
+                    Examples of queries that can be formulated with typed queries include:
+                </p>
+                <code lang="C#">
+                    // find all contacts named 'Mary Manager'
+                    Contact.GetList(ContactField.Name == "Mary Manager");
+
+                    // find all contacts whose name starts with 'Mary' (using LIKE operator)
+                    Contact.GetList(ContactField.Name.Like("Mary%"));
+
+                    // find all employees hired in the last year
+                    Employee.GetList(EmployeeField.HireDate > DateTime.Now.AddYears(-1));
+
+                    // find all groups having at least one contact
+                    Group.GetList(GroupField.Members.Count > 1);
+
+                    // find all groups that Mary Manager is a member of
+                    Group.GetList(GroupField.Members.ContainsContactWhere(ContactField.Name == "Mary Manager"));
+
+                    // find all employees 
+                    Employee.GetList(1 == 1);
+                    Employee.GetList(true);
+
+                    // return an empty list of employees
+                    Employee.GetList(false);
+
+                    // return a list of contacts who do not belong to any group
+                    Contact.GetList(ContactField.PrimaryGroup.IsNull());
+
+                    // find all contacts where Name != FirstName + ' ' + LastName
+                    Contact.GetList(ContactField.Name != ContactField.FirstName + " " + ContactField.LastName);
+
+                    // find all groups managed by Mary Manager (using named constant)
+                    Group.GetList(GroupField.Manager == Contact.Mary);
+                </code>
             </body>
         </section>
         <section id="soqltosqlconversion">
             <title>SOQL to SQL Conversion</title>
             <body>
                 <p>
-                    Relational databases don't understand Sooda schemas nor SOQL language, 
+                    Relational databases do not understand Sooda schemas nor SOQL language, 
                     therefore a translation from SOQL to SQL is necessary before any query can be executed.
                     Sooda comes with a <code>SoqlToSqlConverter</code> class that does the necessary translation.
                 </p>
@@ -5356,7 +5601,7 @@ where    (t1.manager = 1)
                         from Contact
                     </code>
                     <p>
-                        Is equivalent to the following SQL, because class <code>Contact</code> doesn't have any subclasses.
+                        Is equivalent to the following SQL, because class <code>Contact</code> does not have any subclasses.
                     </p>
                     <code lang="SQL">
                         select   'Contact' as SoodaClass
@@ -5412,7 +5657,7 @@ from     Vehicle t0
 where    t0.type in (3,4,5,6,7,2)
                     </code>
                     <p>
-                        Please also note how additional fields from the Bike class are made available in the results. There's a special
+                        Please also note how additional fields from the Bike class are made available in the results. There is a special
                         join, called "primary key join" and a special table alias "tk_pkjoin_Bike" which gives access to <code>two_wheels</code>
                         column in the <code>Bike</code> table.
                     </p>
