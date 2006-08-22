@@ -200,6 +200,9 @@ namespace Sooda.QL
             {
                 string keyword = tokenizer.EatKeyword();
 
+                if (0 == String.Compare(keyword, "not", true, System.Globalization.CultureInfo.InvariantCulture))
+                    return new SoqlBooleanNegationExpression((SoqlBooleanExpression)ParseBooleanPredicate());
+
                 if (0 == String.Compare(keyword, "null", true, System.Globalization.CultureInfo.InvariantCulture))
                     return new SoqlNullLiteral();
 
@@ -385,12 +388,6 @@ namespace Sooda.QL
 
         private SoqlExpression ParseBooleanPredicate()
         {
-            if (tokenizer.IsKeyword("not") || tokenizer.IsToken(SoqlTokenType.Not))
-            {
-                tokenizer.GetNextToken();
-                return new SoqlBooleanNegationExpression((SoqlBooleanExpression)ParseBooleanPredicate());
-            }
-
             if (tokenizer.IsKeyword("exists"))
             {
                 SoqlQueryExpression query;
