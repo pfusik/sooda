@@ -66,7 +66,7 @@ namespace ConsoleTest
         {
             using (SoodaTransaction t = new SoodaTransaction())
             {
-                foreach (Vehicle v in Vehicle.GetList(VehicleField.SoodaClass.In("Bike", "Car")))
+                foreach (Vehicle v in Vehicle.GetList(Soql.RawQuery("1=1")))
                 {
                     Console.WriteLine(v.GetType().Name);
                 }
