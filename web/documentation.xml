@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title">Sooda</div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-08-23 09:56:06 +0200 (Wed, 23 Aug 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 361 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-08-23 10:04:06 +0200 (Wed, 23 Aug 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 364 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright (c) 2003-2006 by Jaros³aw Kowalski</div>
         <div class="pagebreak" />
     </div>
@@ -4992,7 +4992,8 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 </p>
                 <p>
                     The following table compares features of typed queries and text-based SOQL. The syntax for typed queries
-                    is based on C#. Note that other languages that support operator overloading may use different notation: 
+                    and operator precedence is based on the C# language. Note that other languages that support 
+                    operator overloading may use different notation and/or different operator precedence.
                 </p>
 
                 <div class="table">
