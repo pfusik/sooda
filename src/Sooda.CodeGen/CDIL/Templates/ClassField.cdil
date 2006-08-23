@@ -1,3 +1,8 @@
 class ${ClassName}Field
-
+    property Sooda.QL.TypedWrappers.SoqlStringWrapperExpression SoodaClass
+        attributes Public,Final
+    get
+        return new Sooda.QL.TypedWrappers.SoqlStringWrapperExpression(
+            new Sooda.QL.SoqlSoodaClassExpression(null))
+    end
 end

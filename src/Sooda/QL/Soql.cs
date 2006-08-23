@@ -35,5 +35,10 @@ namespace Sooda.QL
         {
             return new SoqlParameterLiteralExpression(parameterPos);
         }
+
+        public static SoqlRawExpression RawQuery(string text)
+        {
+            return new SoqlRawExpression(text);
+        }
     }
 }

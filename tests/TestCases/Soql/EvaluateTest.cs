@@ -213,6 +213,12 @@ namespace Sooda.UnitTests.TestCases.Soql
             AssertExpression("not (1==1)", false);
             AssertExpression("true or not (1 == 1)", true);
             AssertExpression("true or not (--1 == 1)", true);
+            AssertExpression("not true or false", false);
+            AssertExpression("not false and false", false);
+            AssertExpression("not false or false", true);
+            AssertExpression("not true and true", false);
+            AssertExpression("not true or true", true);
+            AssertExpression("not (true and false)", true);
         }
 
         [Test]

@@ -13,6 +13,13 @@ constructor(Sooda.QL.SoqlPathExpression left, System.String name)
 begin
 end
 
+property Sooda.QL.TypedWrappers.SoqlStringWrapperExpression SoodaClass
+    attributes Public,Final
+get
+    return new Sooda.QL.TypedWrappers.SoqlStringWrapperExpression(
+        new Sooda.QL.SoqlSoodaClassExpression(this))
+end
+
 #if ParameterAttributes
 
 method In(params arrayof(${ClassName}WrapperExpression) items)
