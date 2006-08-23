@@ -66,14 +66,11 @@ namespace ConsoleTest
         {
             using (SoodaTransaction t = new SoodaTransaction())
             {
-                Console.WriteLine(SoqlParser.ParseExpression("3 - 2 - 1").Evaluate(null));
-                Console.WriteLine(SoqlParser.ParseExpression("6 / 3 * 2").Evaluate(null));
+                foreach (Vehicle v in Vehicle.GetList(VehicleField.SoodaClass.In("Bike", "Car")))
+                {
+                    Console.WriteLine(v.GetType().Name);
+                }
 
-                Console.WriteLine(SoqlParser.ParseExpression("1 + 2 * 3").Evaluate(null));
-                Console.WriteLine(SoqlParser.ParseExpression("1 + 2 * 3 - 4 * 5").Evaluate(null));
-                Console.WriteLine(SoqlParser.ParseExpression("1 - 4 / 2 - 4 % 2").Evaluate(null));
-                //Contact c = Contact.Eva;
-                //Console.WriteLine(c.Name);
             }
         }
     }
