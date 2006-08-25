@@ -6,13 +6,13 @@ query_expression ::=
             [HAVING    boolean_expression]
             [ORDER BY  sort_expressions]
 
-select_expressions ::= <select_expression> {',' select_expression}
+select_expressions ::= select_expression { ',' select_expression }
 
-from_expressions ::= from_expression {',' from_expression}
+from_expressions ::= from_expression { ',' from_expression }
 
-groupby_expressions ::= expression {',' expression}
+groupby_expressions ::= expression { ',' expression }
 
-sort_expressions ::= sort_expression {, sort_expression}
+sort_expressions ::= sort_expression { ',' sort_expression }
 
 select_expression := expression [ AS alias ]
 
@@ -80,7 +80,7 @@ parameter_modifiers ::= type_name
 
 function_call ::= function_name '(' [ function_arguments ] ')'
 
-function_arguments ::= expression {',' expression }
+function_arguments ::= expression { ',' expression }
 
 simplified_query ::= class_name WHERE boolean_expression
 
@@ -112,4 +112,6 @@ number ::= /* Non-empty quence of digits with an optional decimal
              point: 123 or 3.141592 */
 
 string ::= /* String literal in apostrophes such as 'Mary Manager'.
-              You can apostrophe character itself by doubling it: 'd''Artagnan' represents d'Artagnan */
+              You can represent the apostrophe character itself by doubling it
+              thus d'Artagnan needs to be written as 'd''Artagnan' */
+

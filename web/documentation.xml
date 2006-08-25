@@ -2,9 +2,9 @@
 <?xml-stylesheet type="text/xsl" href="style.xsl" ?>
 <content lang="en" id="documentation">
     <div class="titlepage">
-        <div class="title">Sooda</div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-08-23 10:04:06 +0200 (Wed, 23 Aug 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 364 $</subversion-revision>)</div>
-        <div class="titlecopyright">Copyright (c) 2003-2006 by Jaros³aw Kowalski</div>
+        <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-08-25 14:44:25 +0200 (Fri, 25 Aug 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 365 $</subversion-revision>)</div>
+        <div class="titlecopyright">Copyright &#169; 2003-2006 by Jaros³aw Kowalski</div>
         <div class="pagebreak" />
     </div>
     <p class="toctitle">Table of Contents</p>
@@ -2460,6 +2460,27 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         </project>
                         ]]>
                     </code>
+                    <p>
+                        Once you have generated the stubs you should compile the skeleton classes, stub classes and embedded resources
+                        into a DLL. <x><csc /></x> task should be used for that. The following example is taken from Sooda
+                        unit tests:
+                    </p> 
+                    <code lang="XML">
+                        <![CDATA[
+                        <csc target="library" output="${sooda.dir}/Sooda.UnitTests.BaseObjects.dll" debug="true">
+                            <references>                                  
+                                <include name="${sooda.dir}/Sooda.dll" />
+                                <include name="System.Data.dll" asis="true" />
+                            </references>
+                            <sources basedir="tests/BaseObjects">
+                                <include name="*.cs" />
+                            </sources>
+                            <resources basedir="tests/BaseObjects" prefix="Sooda.UnitTests.BaseObjects" dynamicprefix="true">
+                                <include name="_DBSchema.*" />
+                            </resources>
+                        </csc>
+                        ]]>
+                    </code>
                 </body>
             </section>
             <section id="compilationvisualstudio">
@@ -4907,7 +4928,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     Formal syntax of SOQL is presented below. The following notation is used:
                 </p>
                 <ul>
-                    <li><code>&lt;symbol&gt; ::= expression with symbols</code></li>
+                    <li><code>&lt;symbol&gt; ::= expression</code> - production</li>
                     <li><code>[X]</code> - X is optional</li>
                     <li><code>{X}</code> - X can be repeated zero or more times</li>
                     <li><code>a | b</code> - either a or b</li>
@@ -5698,16 +5719,198 @@ where    t0.type in (3,4,5,6,7,2)
         <section id="soodastubgen">
             <title>SoodaStubGen</title>
             <body>
+                <p>
+                    SoodaStubGen utility is responsible for generating stub code for a Data Access Layer. The generated code needs
+                    to be compiled with the rest of the application code as described <sectionlink id="compilationprocess" />.
+
+                    You usually invoke SoodaStubGen as part of your automated build process to ensure that the 
+                    <a href="#generatedcode">generated code</a> is in sync with the <a href="#schema">mapping schema</a>.
+                    Using Visual Studio 2003 and 2005 is also supported.
+                </p>
+                <p>
+                    This section describes the command line options supported by SoodaStubGen and provides guidelines on
+                    its usage.
+                </p>
             </body>
+            <section id="soodastubgenlocation">
+                <title>Install Location</title>
+                <body>
+                    <p>
+                        By default SoodaStubGen is installed in two directories, one for each supported .NET Framework Version:
+                    </p>
+                    <code lang="C#">
+                        %SOODA_DIR%\bin\net-1.1\SoodaStubGen.exe
+                        %SOODA_DIR%\bin\net-2.0\SoodaStubGen.exe
+                    </code>
+                    <p>
+                        <code>%SOODA_DIR%</code> is Sooda installation path. Sooda Installer registers the <code>SOODA_DIR</code> 
+                        environment variable to point to this directory so you can use <code>%SOODA_DIR%</code> instead 
+                        of specifying the exact path in your build file.
+                    </p>
+                    <p>
+                        If your project relies on a specific version of Sooda it is recommended to create a local copy
+                        of the <code>%SOODA_DIR%\bin\net-X.Y</code> directory within your source code structure and
+                        use relative paths.
+                    </p>
+                </body>
+            </section>
+            <section id="soodastubgenoptions">
+                <title>Command-line options</title>
+                <body>
+                    <p>
+                        Options to SoodaStubGen can be passed in a <a href="#soodaproject">*.soodaproject</a> file 
+                        or directly as command line parameters. The latter option is available for compatibility with older versions
+                        of Sooda and using Sooda Project files is generally recommended.
+                    </p>
+                    <p>
+                        SoodaStubGen.exe usage is:
+                    </p>
+                    <code lang="C#">
+                        SoodaStubGen.exe path_to_soodaproject_file
+                    </code>
+                    <p>
+                        <code>path_to_soodaproject_file</code> is a full path to a *.soodaproject file. Sooda Project files are described <sectionlink id="soodaproject" />.
+                        If you prefer to use command-line options, the usage is:
+                    </p>
+                    <code lang="C#">
+                        SoodaStubGen.exe [options]
+                    </code>
+                    <p>
+                        <code>[options]</code> represents a whitespace-separated sequence of options.
+                        Most options have equivalent Sooda Project settings which are described <sectionlink id="soodaproject" />. 
+                        The following options are available:
+                    </p>
+                    <ul>
+                        <li><code>--schema schemafile.xml</code> - path to schema file - equivalent to <x><schema-file /></x></li>
+                        <li><code>--namespace NS</code> - output namespace - equivalent to <x><output-namespace /></x></li>
+                        <li><code>--output PATH</code> - output path - equivalent to <x><output-path /></x></li>
+                        <li><code>--lang N</code> or <code>-l N</code> - sets the stub language to <code>N</code> - equivalent to <x><language /></x></li>
+                        <li><code>--assembly-name assemblyname</code> - output assembly name - equivalent to <x><output-assembly /></x></li>
+                        <li><code>--project T</code> or <code>-p T</code> - sets external project type to <code>T</code> - equivalent to <x><external-projects /></x></li>
+                        <li><code>--separate-subs</code> - enable <a href="#compilationprocessseparate">separate compilation of stubs</a> - equivalent to <x><stubs-compiled-separately>true</stubs-compiled-separately></x></li>
+                        <li><code>--merged-subs</code> - enable <a href="#compilationprocessstandard">standard compilation of stubs</a><x><stubs-compiled-separately>false</stubs-compiled-separately></x></li>
+                        <li><code>--schema-embed-xml</code> - generate <code>_DBSchema.xml</code> to be embedded in the output assembly - equivalent to <x><embedded-schema-type>Xml</embedded-schema-type></x></li>
+                        <li><code>--schema-embed-bin</code> - generate <code>_DBSchema.bin</code> to be embedded in the output assembly - equivalent to <x><embedded-schema-type>Binary</embedded-schema-type></x></li>
+                        <li><code>--nullable-as Boxed|Raw|RawWithIsNull|SqlType|Nullable</code> - sets the <a href="#soodaprojectprimitiverep">representation</a> of nullable fields - equivalent to <x><nullable-representation /></x></li>
+                        <li><code>--not-null Boxed|Raw|RawWithIsNull|SqlType|Nullable</code> - sets the <a href="#soodaprojectprimitiverep">representation</a> of not-null fields - equivalent to <x><not-null-representation /></x></li>
+                        <li><code>--base-class N</code> - use N as a base class for all generated stubs - equivalent to <x><base-class-name /></x></li>
+                        <li><code>--null-propagation</code> - enable null propagation - equivalent to <x><null-propagation>true</null-propagation></x></li>
+                        <li><code>--no-null-propagation</code> - disable null propagation - equivalent to <x><null-propagation>false</null-propagation></x></li>
+                    </ul>
+                    <p>
+                        The following options have no project file equivalents:
+                    </p>
+                    <ul>
+                        <li><code>--rebuild-if-changed</code> - rebuilds the stubs if the output files don't exist or are older than
+                            the source file (schema and included files)</li>
+                        <li><code>--force-rebuild</code> - rebuilds stub files unconditionally</li>
+                        <li><code>--rewrite-skeletons</code> - rewrite all skeletons. <font color="red">This option destroys all customizations made to skeleton classes. Use with caution.</font></li>
+                        <li><code>--rewrite-projects</code> - rewrite external project files instead of updating them <font color="red">This option destroys all non-standard project settings. Use with caution.</font></li>
+                        <li><code>--write-project FN</code> - write a *.soodaproject file to the specified file</li>
+                    </ul>
+                </body>
+            </section>
         </section>
         <section id="soodacompilestubs">
             <title>SoodaCompileStubs</title>
             <body>
+                <p>
+                    SoodaCompileStubs utility can be used to precompile generated stubs into a separate DLL.
+                    Separate stub compilation is an advanced feature of Sooda and should be used with caution as described <sectionlink id="compilationprocessseparate" />. 
+                </p>
+                <p>
+                    The utility is located in the same directory as <a href="#soodastubgenlocation">SoodaStubGen</a>.
+                    It is a commmand-line program (no GUI is provided) that is meant to be part of an automated build
+                    process. You should run it after SoodaStubGen to automatically compile stub code generated by it.
+                </p>
+                <p>
+                    The usage is:
+                </p>
+                <code lang="C#">
+                    SoodaCompileStubs assembly_base_name stubs_dir [extra_files]
+                </code>
+                <ul>
+                    <li><code>assembly_base_name</code> - is the base name of the output assembly.
+                        SoodaCompileStubs will generate <code>assembly_base_name.Stubs.dll</code> that contains stubs for
+                        skeleton classes contained in <code>assembly_base_name.dll</code>.
+                    </li>
+                    <li><code>stubs_dir</code> - is the path to the generated <code>Stubs</code> directory. The directory contains the following files:
+                        <ul>
+                            <li>_DBSchema.bin</li>
+                            <li>_MiniSkeleton.csx</li>
+                            <li>_MiniStubs.csx</li>
+                            <li>_Stubs.csx</li>
+                        </ul>
+                        This set of files is generated automatically by SoodaStubGen when <x><stubs-compiled-separately /></x> parameter is set to <code>true</code>
+                        or when <code>--separate-stubs</code> command line option is passed to it.
+                    </li>
+                    <li>
+                        <code>extra_files</code> - is a list of additional source files to be compiled with the skeleton classes.
+                        The files should be written in C# and they should include the same assembly-level attributes as
+                        <code>assembly_base_name.dll</code> will have. It is recommended to reuse the same <code>AssemblyInfo.cs</code>
+                        file for separate stub compilation and normal compilation of <code>assembly_base_name.dll</code>.
+                    </li>
+                </ul>
+                <p>
+                    Assuming your output DAL assembly is DAL.dll and the source files are located in the <code>DAL</code> directory,
+                    typical command line options to generate DAL.Stubs.dll are:
+                </p>
+                <code lang="C#">
+                    SoodaCompileStubs DAL source\DAL\Stubs source\DAL\AssemblyInfo.cs
+                </code>
+                <p>
+                    When compiling the DAL.dll you should reference <code>source\DAL\Stubs\DAL.Stubs.dll</code>. It is important that
+                    not to remove the <code>source\DAL\Stubs\DAL.dll</code> file as it seems to be necessary for compilation.
+                </p>
+                <p>
+                    SoodaCompileStubs checks modification dates on source files in the Stubs directory and recompiles the output only
+                    if the files are newer than the resulting DLL or if the DLL does not exist.
+                </p>
             </body>
         </section>
         <section id="soodafixkeygen">
             <title>SoodaFixKeygen</title>
             <body>
+                <p>
+                    There are situations where you need to synchronize the contents of the <a href="#keygeneration"><code>KeyGen</code> table</a>
+                    to match actual primary key values. You may want to do this after running any SQL script that inserts new rows
+                    into mapped tables. If you fail to synchronize the <code>KeyGen</code> table, Sooda will generate primary
+                    keys which are not unique and the <code>Commit()</code> operation on <a href="#soodatransaction">SoodaTransaction</a> 
+                    will fail.
+                </p>
+                <p>
+                    SoodaFixKeygen is a command-line utility that reads a <a href="#schema">mapping schema</a> file and generates an SQL
+                    script to properly update the KeyGen table. The SQL is written to the specified file.
+                </p>
+                <p>
+                    Usage is:
+                </p>
+                <code lang="C#">
+                    SoodaFixKeygen soodaschema.xml outputFile.sql
+                </code>
+                <p>
+                    After running the command, <code>outputFile.sql</code> will contain statements similar to:
+                </p>
+                <code lang="SQL">
+delete from KeyGen;
+insert into KeyGen
+select 'Role',coalesce(max(id),0) + 1 from _Role
+union
+select 'Contact',coalesce(max(id),0) + 1 from Contact
+union
+select 'Group',coalesce(max(id),0) + 1 from _Group
+union
+select 'Vehicle',coalesce(max(id),0) + 1 from Vehicle
+union
+select 'Car',coalesce(max(id),0) + 1 from Vehicle
+union
+select 'Bike',coalesce(max(id),0) + 1 from Vehicle
+                </code>
+                <p>
+                    In order to properly update the KeyGen table, you should run the generated SQL code using any 
+                    SQL Query Analyzer or any other client utility. Note that the SQL generated is specific to MS-SQL, 
+                    other databases may require some post-processing.
+                </p>
             </body>
         </section>
         <section id="soodaschematool">
