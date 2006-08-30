@@ -108,12 +108,6 @@ namespace SoodaSchemaTool
             set { _tableName = value; }
         }
 
-        public bool AddTables
-        {
-            get { return _addTables; }
-            set { _addTables = value; }
-        }
-
         public override int Run(string[] args)
         {
             SchemaImporter importer = null;
@@ -151,10 +145,6 @@ namespace SoodaSchemaTool
                         }
                     }
                 }
-            }
-
-            if (AddTables)
-            {
             }
 
             if (OutputSchemaFile == null)

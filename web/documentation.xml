@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-08-25 14:44:25 +0200 (Fri, 25 Aug 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 365 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-08-30 13:32:10 +0200 (Wed, 30 Aug 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 366 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright &#169; 2003-2006 by Jaros³aw Kowalski</div>
         <div class="pagebreak" />
     </div>
@@ -785,6 +785,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                         <li><b>guid</b> - generate GUID keys in-memory by calling Guid.NewGuid()</li>
                                         <li><b>integer</b> - pregenerates integer keys in the database by storing them in the KeyGen table. This is the default.</li>
                                         <li><b>long</b> - pregenerates long (64-bit) keys in the database by storing them in the KeyGen table.</li>
+                                        <li><b>none</b> - don't generate a key automatically</li>
                                     </ul>
                                     Alternatively you can provide a name of the class that implements IPrimaryKeyGenerator that will provide primary keys. 
                                     This class call a webservice or use other means necessary to generate keys in a coordinated manner, guaranteeing that
@@ -5725,18 +5726,18 @@ where    t0.type in (3,4,5,6,7,2)
 
                     You usually invoke SoodaStubGen as part of your automated build process to ensure that the 
                     <a href="#generatedcode">generated code</a> is in sync with the <a href="#schema">mapping schema</a>.
-                    Using Visual Studio 2003 and 2005 is also supported.
+                    Visual Studio 2003 and 2005 are also supported.
                 </p>
                 <p>
-                    This section describes the command line options supported by SoodaStubGen and provides guidelines on
-                    its usage.
+                    This section describes command line options supported by SoodaStubGen and provides guidelines on
+                    usage of this tool.
                 </p>
             </body>
             <section id="soodastubgenlocation">
                 <title>Install Location</title>
                 <body>
                     <p>
-                        By default SoodaStubGen is installed in two directories, one for each supported .NET Framework Version:
+                        By default SoodaStubGen is installed in two directories, one for each supported version of .NET Framework Version:
                     </p>
                     <code lang="C#">
                         %SOODA_DIR%\bin\net-1.1\SoodaStubGen.exe
@@ -5787,8 +5788,8 @@ where    t0.type in (3,4,5,6,7,2)
                         <li><code>--lang N</code> or <code>-l N</code> - sets the stub language to <code>N</code> - equivalent to <x><language /></x></li>
                         <li><code>--assembly-name assemblyname</code> - output assembly name - equivalent to <x><output-assembly /></x></li>
                         <li><code>--project T</code> or <code>-p T</code> - sets external project type to <code>T</code> - equivalent to <x><external-projects /></x></li>
-                        <li><code>--separate-subs</code> - enable <a href="#compilationprocessseparate">separate compilation of stubs</a> - equivalent to <x><stubs-compiled-separately>true</stubs-compiled-separately></x></li>
-                        <li><code>--merged-subs</code> - enable <a href="#compilationprocessstandard">standard compilation of stubs</a><x><stubs-compiled-separately>false</stubs-compiled-separately></x></li>
+                        <li><code>--separate-subs</code> - enables <a href="#compilationprocessseparate">separate compilation of stubs</a> - equivalent to <x><stubs-compiled-separately>true</stubs-compiled-separately></x></li>
+                        <li><code>--merged-subs</code> - enables <a href="#compilationprocessstandard">standard compilation of stubs</a><x><stubs-compiled-separately>false</stubs-compiled-separately></x></li>
                         <li><code>--schema-embed-xml</code> - generate <code>_DBSchema.xml</code> to be embedded in the output assembly - equivalent to <x><embedded-schema-type>Xml</embedded-schema-type></x></li>
                         <li><code>--schema-embed-bin</code> - generate <code>_DBSchema.bin</code> to be embedded in the output assembly - equivalent to <x><embedded-schema-type>Binary</embedded-schema-type></x></li>
                         <li><code>--nullable-as Boxed|Raw|RawWithIsNull|SqlType|Nullable</code> - sets the <a href="#soodaprojectprimitiverep">representation</a> of nullable fields - equivalent to <x><nullable-representation /></x></li>
@@ -5801,8 +5802,8 @@ where    t0.type in (3,4,5,6,7,2)
                         The following options have no project file equivalents:
                     </p>
                     <ul>
-                        <li><code>--rebuild-if-changed</code> - rebuilds the stubs if the output files don't exist or are older than
-                            the source file (schema and included files)</li>
+                        <li><code>--rebuild-if-changed</code> - rebuilds the stubs if the output files do not exist or are older than
+                            the source file (schema and included files). This is the default behavior.</li>
                         <li><code>--force-rebuild</code> - rebuilds stub files unconditionally</li>
                         <li><code>--rewrite-skeletons</code> - rewrite all skeletons. <font color="red">This option destroys all customizations made to skeleton classes. Use with caution.</font></li>
                         <li><code>--rewrite-projects</code> - rewrite external project files instead of updating them <font color="red">This option destroys all non-standard project settings. Use with caution.</font></li>
@@ -5859,8 +5860,8 @@ where    t0.type in (3,4,5,6,7,2)
                     SoodaCompileStubs DAL source\DAL\Stubs source\DAL\AssemblyInfo.cs
                 </code>
                 <p>
-                    When compiling the DAL.dll you should reference <code>source\DAL\Stubs\DAL.Stubs.dll</code>. It is important that
-                    not to remove the <code>source\DAL\Stubs\DAL.dll</code> file as it seems to be necessary for compilation.
+                    When compiling the DAL.dll you should reference <code>source\DAL\Stubs\DAL.Stubs.dll</code>. It is important to
+                    not to remove the <code>source\DAL\Stubs\DAL.dll</code> file as it is necessary for compilation.
                 </p>
                 <p>
                     SoodaCompileStubs checks modification dates on source files in the Stubs directory and recompiles the output only
@@ -5873,10 +5874,26 @@ where    t0.type in (3,4,5,6,7,2)
             <body>
                 <p>
                     There are situations where you need to synchronize the contents of the <a href="#keygeneration"><code>KeyGen</code> table</a>
-                    to match actual primary key values. You may want to do this after running any SQL script that inserts new rows
-                    into mapped tables. If you fail to synchronize the <code>KeyGen</code> table, Sooda will generate primary
-                    keys which are not unique and the <code>Commit()</code> operation on <a href="#soodatransaction">SoodaTransaction</a> 
-                    will fail.
+                    to match actual primary key values. Do this after running any SQL script that inserts new rows
+                    into mapped tables. If you fail to synchronize the <code>KeyGen</code> table, Sooda will generate non-unique primary
+                    keys which will cause primary key constraints to be violated.
+                </p>
+                <p>
+                    For example, assume that the <code>KeyGen</code> table contains a record where key_name="Foo" and key_value="100".
+                    You now run an SQL script that inserts new records into <code>Foo</code> table:
+                </p>
+                <code lang="SQL">
+                    insert into Foo(id,...) values (101,...);
+                    insert into Foo(id,...) values (102,...);
+                    insert into Foo(id,...) values (103,...);
+                    insert into Foo(id,...) values (104,...);
+                    ...
+                    insert into Foo(id,...) values (999,...);
+                </code>
+                <p>
+                    After you do this, you need to update the appropriate KeyGen record to have key_value = 1000, because this is the next
+                    value that should be generated for the primary key. If you fail to do so, newly created objects will get IDs of 100, 101, 102
+                    which are invalid.
                 </p>
                 <p>
                     SoodaFixKeygen is a command-line utility that reads a <a href="#schema">mapping schema</a> file and generates an SQL
@@ -5907,8 +5924,8 @@ union
 select 'Bike',coalesce(max(id),0) + 1 from Vehicle
                 </code>
                 <p>
-                    In order to properly update the KeyGen table, you should run the generated SQL code using any 
-                    SQL Query Analyzer or any other client utility. Note that the SQL generated is specific to MS-SQL, 
+                    In order to properly update the KeyGen table, you should run the generated SQL code using 
+                    SQL Query Analyzer or any other SQL client utility. Note that the SQL generated is specific to SQL Server, 
                     other databases may require some post-processing.
                 </p>
             </body>
@@ -5916,22 +5933,468 @@ select 'Bike',coalesce(max(id),0) + 1 from Vehicle
         <section id="soodaschematool">
             <title>SoodaSchemaTool</title>
             <body>
+                <p>
+                    SoodaSchemaTool utility can be used to perform various tasks related to <a href="#schema">mapping schema files</a>.
+                </p>
+                <ul>
+                    <li>Generate SQL DDL statements from the mapping schema</li>
+                </ul>
+                <p>
+                    Command-line Usage:
+                </p>
+                <code lang="C#">
+                    SoodaSchemaTool command [command_options]
+                </code>
+                <p>
+                    <code>command</code> is the action that should be performed, <code>command_options</code> are command-specific
+                    options. The following commands are supported:
+                </p>
+                <ul>
+                    <li><code>help</code> - displays an overview of available commands</li>
+                    <li><code>genddl</code> - generates DDL (to create tables, public keys, foreign keys) from the mapping schema</li>
+                    <li><code>genschema</code> - reverse-engineer database to create the approximate mapping schema</li>
+                    <li><code>updateschema</code> - reverse-engineer database and update the mapping schema with changes made to the tables</li>
+                </ul>
+                <p>
+                    The following sections describe command line options and usage information for all supported commands:
+                </p>
             </body>
+            <section id="soodaschematoolhelp">
+                <title>help</title>
+                <body>
+                    <p>
+                        Usage:
+                    </p>
+                    <code lang="C#">
+                        SoodaSchemaTool help [commandName]
+                    </code>
+                    <p>
+                        Displays a list of available commands. When <code>commandName</code> is provided, 
+                        a description of the command and a list of available options are displayed.
+                    </p>
+                </body>
+            </section>
+            <section id="soodaschematoolgenddl">
+                <title>genddl</title>
+                <body>
+                    <p>
+                        Usage:
+                    </p>
+                    <code lang="C#">
+                        SoodaSchemaTool genddl SoodaSchema.xml &gt; output.sql
+                    </code>
+                    <p>
+                        Generates DDL commands to create tables, public keys, foreign keys based on the mapping schema 
+                        and writes them to the standard output. The SQL uses T-SQL (Microsoft SQL-Server specific) syntax.
+                        You should use shell redirection mechanism to output the SQL to a file.
+                    </p>
+                </body>
+            </section>
+            <section id="soodaschematoolgenschema">
+                <title>genschema</title>
+                <body>
+                    <p>
+                        Usage:
+                    </p>
+                    <code lang="C#">
+                        SoodaSchemaTool genschema -databaseType DBTYPE -connectionString CS -outputFile OF
+                    </code>
+                    <p>
+                        Connects to the specified database and generates an approximate mapping schema file. The following parameters are accepted.
+                    </p>
+                    <ul>
+                        <li><code>-databaseType DBTYPE</code>  - specifies database type. Currently only <code>mssql</code> is supported which 
+                            is also the default value, so you can omit this parameter when connecting to MS SQL Server</li>
+                        <li><code>-connectionString CS</code> - specifies connection string. The connection string is database-dependent. 
+                            For Microsoft SQL, the connection string used for the local database named MyDatabase is:
+                            <code lang="C#">
+                                Integrated Security=true;Initial Catalog=MyDatabase;Server=.
+                            </code>
+                        </li>
+                        <li><code>-outputFile OF</code> - name of the output <a href="#schema">mapping schema file</a>.</li>
+                    </ul>
+                    <p>
+                        Schema generation follows the following rules to convert between the database structure and the schema file:
+                    </p>
+                    <ul>
+                        <li>Each database table is converted to a single <x><class /></x> based on a single <x><table /></x></li>
+                        <li>Tables with no primary keys are converted with warnings. You should manually
+                            add the <code>primaryKey="true"</code> declarations to appropriate fields.</li>
+                        <li>Referenced tables are detected automatically based on foreign key constraints. 
+                            Matching <x><collectionManyToMany /></x> entries are generated accordingly.</li>
+                        <li>Tables which have exactly two columns that are foreign keys are converted to a <x><relation /></x> 
+                            and two <x><collectionManyToMany /></x></li>
+                        <li>Inheritance is not supported.</li>
+                        <li>Named constants cannot be generated automatically.</li>
+                    </ul>
+                </body>
+            </section>
+            <section id="soodaschematoolupdateschema">
+                <title>updateschema</title>
+                <body>
+                    <p>
+                        Usage:
+                    </p>
+                    <code lang="C#">
+                        SoodaSchemaTool updateschema -databaseType DBTYPE -connectionString CS 
+                                                     -schemaFile IF [-outputSchemaFile OF]
+                                                     [-updateTypes] [-updateSizes] [-updateNullable] 
+                                                     [-updatePrimaryKeys] [-tableName T]
+                    </code>
+                    <p>
+                        Connects to the specified database and updates the mapping schema file. The following parameters are accepted.
+                    </p>
+                    <ul>
+                        <li><code>-databaseType DBTYPE</code>  - specifies database type. Currently only <code>mssql</code> is supported which 
+                            is also the default value, so you can omit this parameter when connecting to MS SQL Server</li>
+                        <li><code>-connectionString CS</code> - specifies connection string. The connection string is database-dependent. 
+                            For Microsoft SQL, the connection string used for the local database named MyDatabase is:
+                            <code lang="C#">
+                                Integrated Security=true;Initial Catalog=MyDatabase;Server=.
+                            </code>
+                        </li>
+                        <li><code>-schemaFile IF</code> - name of the <a href="#schema">mapping schema file</a> to read.</li>
+                        <li><code>-outputSchemaFile OF</code> - name of the output file to write. If not provided, the schema file is
+                            updated in place.</li>
+                        <li><code>-updateTypes</code> - update <code>type</code> attribute of each <x><field /></x> based on 
+                            the actual database field types.</li>
+                        <li><code>-updateSizes</code> - update <code>size</code> attribute of each <x><field /></x> based on 
+                            the actual database field sizes.</li>
+                        <li><code>-updateNullable</code> - update <code>nullable</code> attribute of each <x><field /></x> based on 
+                            the actual database field nullability.</li>
+                        <li><code>-updatePrimaryKeys</code> - update <code>primaryKey</code> attribute of each <x><field /></x> based on 
+                            the actual primary key constraints.</li>
+                        <li><code>-tableName T</code> - limit updates to the table <code>T</code>. If you omit this parameter
+                            all <x><table /></x> elements will be updated</li>
+
+                    </ul>
+                </body>
+            </section>
         </section>
+        <!--
         <section id="soodaaddin">
             <title>SoodaAddin</title>
             <body>
             </body>
         </section>
+        -->
     </section>
     <section id="configuration">
         <title>Configuration</title>
         <body>
+            <p>
+                Sooda needs to have runtime access to datasource-specific settings such as database 
+                connection string, SQL dialect and connection options.
+                By default this runtime configuration is handled by the .NET configuration mechanism and the parameters
+                are stored in application configuration files in the <x><appSettings /></x> section as described <sectionlink id="configurationappconfig" />.
+            </p>
+            <p>
+                If you have many programs that share runtime configuration, Sooda can be configured from a
+                shared XML configuration file. This feature is described <sectionlink id="configurationxml" />.
+                If you have developed your own configuration mechanism, you can write a specialized Sooda 
+                configuration provider for it as described <sectionlink id="configurationcustom" />.
+            </p>
         </body>
+        <section id="configurationappconfig">
+            <title>App.config - style configuration</title>
+            <body>
+                <p>
+                    By default Sooda configuration parameters are stored in standard .NET configuration files named
+                    <code>ApplicationName.exe.config</code> or <code>Web.config</code> in a section named <x><appSettings /></x>. 
+                    More information about .NET Configuration files is available in <a href="http://msdn.microsoft.com/library/en-us/cpgenref/html/gngrfconfiguration.asp">MSDN Library</a>.
+                </p>
+                <p>
+                    Each data source configuration entry has a form:
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                    <add name="dataSourceName.parameterName" value="parameterValue" />
+                    ]]>
+                </code>
+                <p>
+                    <code>dataSourceName</code> is the name of the datasource (usually "<code>default</code>") and <code>parameterName</code> 
+                    is the name of the setting for that datasource. The value of the setting is stored in <code>parameterName</code>.
+                    Possible setting names are described <sectionlink id="configuringdatasources" />.
+                </p>
+                <p>
+                    Some global options can also be set this way. Global options use the "sooda" prefix instead of their data source name.
+                </p>
+                <p>
+                    The following configuration file defines two settings for the "default" data source: <code>connectionString</code> and <code>sqlDialect</code>.
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                    <configuration>
+                        <appSettings>
+                            <add key="default.connectionString" value="Integrated Security=true;Server=.;Database=MyDatabase" />
+                            <add key="default.sqlDialect" value="mssql" />
+                        </appSettings>
+                    </configuration>
+                    ]]>
+                </code>
+            </body>
+        </section>
+        <section id="configurationxml">
+            <title>Shared XML configuration</title>
+            <body>
+                <p>
+                    There are situations where mutliple applications need to share the same set of configuration parameters.
+                    Instead of keeping multiple copies of Sooda-specific configuration, you can store the settings in
+                    a single XML file which is read by the applications.
+                </p>
+                <p>
+                    The format of the file is very simple. Each parameter is enclosed in an XML element and nesting is used to
+                    group parameters for a single datasource. The root element of the configuration file is not important,
+                    which means you can embed the Sooda-specific XML elements in any XML file as long as you can
+                    add your own elements.
+                </p>
+                <p>
+                    The following example demonstrates XML configuration file equivalent to the App.config 
+                    shown above.
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                    <configuration>
+                        <default>
+                            <connectionString>Integrated Security=true;Server=.;Database=MyDatabase</connectionString>
+                            <sqlDialect>mssql</sqlDialect>
+                        </default>
+                    </configuration>
+                    ]]>
+                </code>
+                <p>
+                    XML config files also support per-host overrides. Assuming the configuration file is 
+                    read from <code>sooda.config.xml</code>, Sooda looks for <code>sooda.config.HOSTNAME.xml</code> 
+                    where <code>HOSTNAME</code> is the name of the machine the application is running on. If the 
+                    host-specific configuration file is found, Sooda reads it as well and any settings specified in this
+                    file take precedence over the common configuration.
+                </p>
+                <p>
+                    Sooda looks for an XML configuration file in the application base directory. If the file is not found
+                    the parent directory is scanned, then its grandparent and so on until the file is found or until
+                    ten levels of directory hierarchy have been scanned or the root directory has been reached. 
+                    Assuming that your application is stored in <code>c:\myprojects\mysystem1\app1\bin\Debug\app.exe</code>
+                    and the name of the configuration file is: <code>sooda.config.xml</code>, 
+                    and Sooda will look for it in the following locations:
+                </p>
+                <ol>
+                    <li>c:\myprojects\mysystem1\app1\bin\Debug\sooda.config.xml</li>
+                    <li>c:\myprojects\mysystem1\app1\bin\sooda.config.xml</li>
+                    <li>c:\myprojects\mysystem1\app1\sooda.config.xml</li>
+                    <li>c:\myprojects\mysystem1\sooda.config.xml</li>
+                    <li>c:\myprojects\sooda.config.xml</li>
+                    <li>c:\sooda.config.xml</li>
+                </ol>
+                <p>
+                    As you can see, this is convenient because you can keep the settings for all applications making up
+                    entire system in a single file (<code>c:\myprojects\mysystem1\sooda.config.xml</code>) and
+                    all applications will be able to read it.
+                </p>
+                <p>
+                    To use XML configuration files, add this line of code to the <code>AssemblyInfo.cs</code>
+                    file of your <a href="http://msdn2.microsoft.com/en-us/library/system.reflection.assembly.getentryassembly.aspx">entry assembly</a>.
+                </p>
+                <code lang="C#">
+                    using Sooda;
+
+                    [assembly: SoodaConfig(XmlConfigFileName="sooda.config.xml")]
+                </code>
+                <p>
+                    Alternatively you can add these two entries in the application configuration file:
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                    <configuration>
+                        <appSettings>
+                            <add key="sooda.config" value="xmlconfig" />
+                            <add key="sooda.xmlconfigfile" value="sooda.config.xml" />
+                        </appSettings>
+                    </configuration>
+                    ]]>
+                </code>
+                <p>
+                    By default the HOSTNAME part of the file name is the name of the machine as returned by <code>Environment.MachineName</code>, but you can add the <code>sooda.hostname</code> 
+                    application configuration setting to override it:
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                    <configuration>
+                        <appSettings>
+                            <add key="sooda.hostname" value="ALTERNATIVEHOSTNAME" />
+                        </appSettings>
+                    </configuration>
+                    ]]>
+                </code>
+            </body>
+        </section>
+        <section id="configurationcustom">
+            <title>Custom configuration</title>
+            <body>
+                <p>
+                    If you have developed your own configuration mechanism, you can get Sooda to use it by creating a class
+                    that implements the <code>Sooda.Config.ISoodaConfigProvider</code> interface and telling Sooda to use it.
+                    The interface has only one method: <code>string GetString(string)</code> which must read a configuration
+                    setting with the specified name. The setting name is of the form <code>dataSourceName.parameterName</code>.
+                </p>
+                <p>
+                    To register your configuration provider in a declarative manner, you can either use an assembly-level attribute 
+                    or an application configuration file entry. Assuming you have created a class <code>MyProvider</code> 
+                    that implements <code>ISoodaConfigProvider</code>
+                    interface, just add the following code to your <code>AssemblyInfo.cs</code>:
+                </p>
+                <code lang="C#">
+                    using Sooda;
+
+                    [assembly: SoodaConfig(ProviderType=typeof(MyNamespace.MyProvider))]
+                </code>
+                <p>
+                    If you prefer to use the application configuration file, add the <code>sooda.config</code> entry containing
+                    the fully qualified name of the type (including assembly name, version and public key token).
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                    <configuration>
+                        <appSettings>
+                            <add key="sooda.config" value="MyNamespace.MyProvider, MyAssembly, Version=..., PublicKeyToken=..." />
+                        </appSettings>
+                    </configuration>
+                    ]]>
+                </code>
+                <p>
+                    To register the config provider programmatically, just call <code>SoodaConfig.SetConfigProvider()</code> 
+                    in your <code>Main()</code> method:
+                </p>
+                <code lang="C#">
+                    using Sooda;
+                    using Sooda.Config;
+
+                    class Program
+                    {
+                        public static void Main(string[] args)
+                        {
+                            // create the config provider object
+                            ISoodaConfigProvider provider = new MyNamespace.MyProvider();
+
+                            // make it active
+                            SoodaConfig.SetConfigProvider(provider);
+                        }
+                    }
+                </code>
+            </body>
+        </section>
     </section>
     <section id="logging">
         <title>Logging</title>
         <body>
+            <p>
+                Logging in Sooda can be used to trace Sooda components such as transaction management, caching, 
+                data sources and SOQL to SQL conversion. Having a trace file in place can be useful for 
+                post-execution analysis of your program and to understand the inner workings of Sooda.
+            </p>
+            <p>
+                The following logging mechanisms are supported:
+            </p>
+            <ul>
+                <li><code>console</code> - write all log messages to the console</li>
+                <li><code>null</code> - no log messages are written</li>
+                <li><code>nlog</code> - use <a href="http://www.nlog-project.org/">NLog</a> to manage logs</li>
+                <li><code>log4net</code> - use <a href="http://logging.apache.org/log4net">log4net</a> to manage logs</li>
+            </ul>
+            <p>
+                To configure logging, add the <code>sooda.logging</code> entry to the appropriate configuration file, an application configuration file:
+            </p>
+            <code lang="XML">
+                <![CDATA[
+                <configuration>
+                    <appSettings>
+                        <add key="sooda.logging" value="console" />
+                    </appSettings>
+                </configuration>
+                ]]>
+            </code>
+            <p>
+                or a shared XML configuration file:
+            </p>
+            <code lang="XML">
+                <![CDATA[
+                <configuration>
+                    <sooda>
+                        <logging>console</logging>
+                    </sooda>
+                </configuration>
+                ]]>
+            </code>
+            <p>
+                To enable logging in code, you need to set the static <code>LoggingImplementation</code> property
+                of the <code>Sooda.Logging.LogManager</code> class to an instance of appropriate logging implementation class.
+            </p>
+            <ul>
+                <li><code>ConsoleLoggingImplementation</code> - for console logging</li>
+                <li><code>NullLoggingImplementation</code> - for no logging</li>
+                <li><code>NLogLoggingImplementation</code> - for logging with NLog</li>
+                <li><code>Log4NetLoggingImplementation</code> - for logging with log4net</li>
+            </ul>
+            <code lang="C#">
+                using Sooda.Logging;
+
+                class Program
+                {
+                    static void Main(string[] args)
+                    {
+                        // turn on console logging
+                        LogManager.LoggingImplementation = new ConsoleLoggingImplementation();
+                    }
+                }
+            </code>
+            <p>
+                When using NLog or Log4Net you need to provide additional configuration files. Refer to 
+                the documentation of the product in question for more information.
+            </p>
+            <p>
+                To write your own logging provider, you need to create a class that implements the 
+                <code>Sooda.Logging.ILoggingImplementation</code>  interface defined by Sooda and 
+                put the fully qualified name of the class in <code>sooda.logging</code> configuration setting:
+            </p>
+            <code lang="XML">
+                <![CDATA[
+                <configuration>
+                    <appSettings>
+                        <add key="sooda.logging" value="MyNamespace.MyLoggingProvider, MyAssembly, Version=..., PublicKeyToken=..." />
+                    </appSettings>
+                </configuration>
+                ]]>
+            </code>
+            <p>
+                Each logging message in Sooda is associated with a source that identifies the component that emitted the log.
+                When using NLog or log4net, you can use the source to filter log messages. When console logging is used, there is no
+                way to specify which messages are emitted so it is recommended to use one of the mentioned log routing packages
+                or disable logging entirely, because emitting large amounts of tracing information can severely slow down the application.
+            </p>
+            <p>
+                The following sources are defined:
+            </p>
+            <ul>
+                <li><code>Sooda.Cache</code> - Level-2 caching related messages</li>
+                <li><code>Sooda.Config</code> - configuration-related messages</li>
+                <li><code>Sooda.FactoryCache</code> - factory cache messages</li>
+                <li><code>Sooda.ListSnapshot</code> - GetList()-related messages</li>
+                <li><code>Sooda.ManyToManyCollection</code> - many-to-many collections support</li>
+                <li><code>Sooda.OneToManyCollection</code> - one-to-many collections support</li>
+                <li><code>Sooda.Object</code> - per-object diagnostics messages (lazy loading, caching)</li>
+                <li><code>Sooda.Transaction</code> - transaction management</li>
+                <li><code>Sooda.SqlDataSource</code> - messages specific to SQL data source</li>
+                <li><code>Sooda.SQL</code> - SQL queries sent down to the RDBMS</li>
+            </ul>
+            <p>
+                Most logging messages are emitted with the lowest severity available (<code>Trace</code> for NLog, 
+                <code>Debug</code> for log4net), but Sooda also uses the <code>Error</code> and <code>Warning</code>
+                severities as necessary.
+            </p>
+            <p>
+                Typically you should keep detailed logging disabled, with the possible exception of tracing SQL queries
+                emitted through <code>Sooda.SQL</code> and increase log level to diagnose and fix bugs in your code 
+                or Sooda code. Error and warning messages should never be filtered out.
+            </p>
         </body>
     </section>
 </content>
