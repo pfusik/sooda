@@ -51,6 +51,7 @@ namespace SoodaAddIn
         private System.Windows.Forms.CheckBox checkBox4;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button buttonGenerateDefaultSchema;
+        private System.Windows.Forms.TabPage tabPage1;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -156,11 +157,13 @@ namespace SoodaAddIn
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
             this.checkBox4 = new System.Windows.Forms.CheckBox();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tabControl1.SuspendLayout();
             this.tabPageDatabase.SuspendLayout();
             this.tabPageCodeGen.SuspendLayout();
             this.tabPageAdvanced.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             this.SuspendLayout();
             // 
             // comboBoxDatabaseType
@@ -320,6 +323,7 @@ namespace SoodaAddIn
             this.tabControl1.Controls.Add(this.tabPageDatabase);
             this.tabControl1.Controls.Add(this.tabPageCodeGen);
             this.tabControl1.Controls.Add(this.tabPageAdvanced);
+            this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Location = new System.Drawing.Point(8, 88);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -341,7 +345,7 @@ namespace SoodaAddIn
             this.tabPageDatabase.Name = "tabPageDatabase";
             this.tabPageDatabase.Size = new System.Drawing.Size(616, 342);
             this.tabPageDatabase.TabIndex = 0;
-            this.tabPageDatabase.Text = "s";
+            this.tabPageDatabase.Text = "Database";
             // 
             // buttonGenerateDefaultSchema
             // 
@@ -471,6 +475,14 @@ namespace SoodaAddIn
             this.checkBox4.TabIndex = 9;
             this.checkBox4.Text = "Disable batch updates";
             // 
+            // tabPage1
+            // 
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Size = new System.Drawing.Size(616, 342);
+            this.tabPage1.TabIndex = 3;
+            this.tabPage1.Text = "tabPage1";
+            // 
             // pictureBox1
             // 
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
@@ -500,6 +512,7 @@ namespace SoodaAddIn
             this.tabPageDatabase.ResumeLayout(false);
             this.tabPageCodeGen.ResumeLayout(false);
             this.tabPageAdvanced.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -561,14 +574,6 @@ namespace SoodaAddIn
         {
             LoadConfiguration();
 
-            foreach (string s in Assembly.GetExecutingAssembly().GetManifestResourceNames())
-            {
-                if (s.EndsWith("sooda.jpg"))
-                {
-                    pictureBox1.Image = Image.FromStream(
-                        Assembly.GetExecutingAssembly().GetManifestResourceStream(s));
-                }
-            }
             comboBoxDatabaseType.Items.Add("System.Data.SqlClient.SqlConnection, System.Data, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
             //comboBoxDatabaseType.Items.Add("System.Data.Odbc.OdbcConnection, System.Data, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
             comboBoxDatabaseType.Items.Add("System.Data.OleDb.OdbcConnection, System.Data, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");

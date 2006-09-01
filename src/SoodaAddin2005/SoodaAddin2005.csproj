@@ -52,6 +52,12 @@
     <Compile Include="Connect.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="NewSoodaProjectWizard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NewSoodaProjectWizard.Designer.cs">
+      <DependentUpon>NewSoodaProjectWizard.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\SoodaAddin\AddSoodaSupportForm.resx">
@@ -98,6 +104,10 @@
     <Content Include="C:\Documents and Settings\Jarek\My Documents\Visual Studio 2005\Addins\SoodaAddin2005 - For Testing.AddIn">
       <Link>SoodaAddin2005 - For Testing.AddIn</Link>
     </Content>
+    <EmbeddedResource Include="NewSoodaProjectWizard.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>NewSoodaProjectWizard.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="sooda.jpg" />
     <Content Include="SoodaAddin2005.AddIn" />
   </ItemGroup>

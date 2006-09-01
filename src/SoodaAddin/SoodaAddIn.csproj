@@ -131,6 +131,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ConfigureConnections.cs"
+                    SubType = "UserControl"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ConfigureConnections.resx"
+                    DependentUpon = "ConfigureConnections.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Connect.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

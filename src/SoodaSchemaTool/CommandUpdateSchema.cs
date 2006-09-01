@@ -46,7 +46,6 @@ namespace SoodaSchemaTool
         private bool _updateSizes = false;
         private bool _updateNullable = false;
         private bool _updatePrimaryKeys = false;
-        private bool _addTables = false;
         private string _tableName = null;
         private string _outputSchemaFile = null;
 

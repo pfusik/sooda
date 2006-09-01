@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaAddin2005", "SoodaAddin2005.csproj", "{16792C4B-7CBE-4CE8-BBE6-B369FB3D7C47}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigureSooda", "..\ConfigureSooda\ConfigureSooda.csproj", "{729952B2-CB81-4777-BABC-3A80BA98EE00}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{16792C4B-7CBE-4CE8-BBE6-B369FB3D7C47}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16792C4B-7CBE-4CE8-BBE6-B369FB3D7C47}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16792C4B-7CBE-4CE8-BBE6-B369FB3D7C47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{729952B2-CB81-4777-BABC-3A80BA98EE00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{729952B2-CB81-4777-BABC-3A80BA98EE00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{729952B2-CB81-4777-BABC-3A80BA98EE00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{729952B2-CB81-4777-BABC-3A80BA98EE00}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

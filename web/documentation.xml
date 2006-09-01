@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-08-30 13:32:10 +0200 (Wed, 30 Aug 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 366 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-09-01 12:25:46 +0200 (Fri, 01 Sep 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 367 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright &#169; 2003-2006 by Jaros³aw Kowalski</div>
         <div class="pagebreak" />
     </div>
@@ -4459,6 +4459,82 @@ foreach (WorkItem wi in WorkItem.GetList(true))
         <section id="precommit">
             <title>Precommitting objects in transactions</title>
             <body>
+                <p>
+                    Sooda supports the <code>GetList()</code> to get the list of objects matching the specified criteria. It is not possible
+                    to calculate the list in memory because it would be very inefficient, therefore the criteria written in SOQL 
+                    (textual or typed) is converted to SQL and executed by the database engine. 
+                    Objects in transaction can be modified, created and deleted and RDBMS needs to be notified of all
+                    such modifications or it will return an incorrect list of matching objects.
+                </p>
+                <p>
+                    Consider this example:
+                </p>
+                <code lang="C#">
+                    using (SoodaTransaction t = new SoodaTransaction())
+                    {
+                        // create new person object but don't commit it
+
+                        Person p = new Person();
+                        p.Name = "Nancy Newcomer";
+
+                        // now get a list of all persons
+
+                        PersonList pl = Person.GetList(true);
+                    }
+                </code>
+                <p>
+                    The criteria passed to the <code>GetList()</code> method is always met, so expect it return all
+                    objects of class <code>Person</code> including the newly created 'Nancy Newcomer' object. 
+                    <code>GetList()</code> ultimately results in an SQL query, the result of the query must
+                    return the mentioned object. To do this, Sooda needs to issue a <code>INSERT INTO Person</code> statement
+                    before executing the <code>SELECT</code> statement on the database.
+                </p>
+                <p>
+                    In general, Sooda ensures that any modifications made in transaction, which can affect the query results,
+                    must be saved to the database before the query is executed. Objects that need to be precommitted are:
+                </p>
+                <ul>
+                    <li>all objects of the queried class (<code>Person</code> in the above example) and its subclasses</li>
+                    <li>all objects of classes mentioned in the <code>WHERE</code> clause and their subclasses</li>
+                    <li>all uncommitted, new dependent objects of the above</li>
+                </ul>
+                <p>
+                    For example, the following code causes all objects of <code>Person</code>, 
+                    <code>Group</code> and <code>OrganizationUnit</code> classes to be precommitted, because they are mentioned
+                    in the <code>WHERE</code> clause
+                </p>
+                <code lang="C#">
+                    <![CDATA[
+                    using (SoodaTransaction t = new SoodaTransaction())
+                    {
+                        Person p;
+
+                        Person.GetList(PersonField.Name == "Mary Manager" 
+                                    && PersonField.Group.Name == "Managers" 
+                                    && PersonField.OrgUnit.Name == "Sales Department");
+                    }
+                    ]]>
+                </code>
+                <p>
+                    To disable precommit, you need to pass <code>SoodaSnapshotOptions.NoWriteObjects</code> option 
+                    to the <code>GetList()</code> method. To manually cause a precommit at any time, you can 
+                    invoke the <code>SoodaTransaction.SaveObjectChanges()</code> method.
+                </p>
+                <p>
+                    Note that if your query contains a <code>RAWQUERY()</code> clause, determining the list of
+                    objects to be precommitted may not be possible, so all objects are precommitted to ensure consistent 
+                    results.
+                </p>
+                <p>
+                    Precommitting objects can become difficult if we have non-nullable fields in the database and
+                    data for these fields has not been provided yet (this is only possible when the object is in insert mode). 
+                    When inserting such objects, Sooda needs to provide SOME value for the column, otherwise the insert will fail.
+                    You can specify what values should be written to the database for each column type, referenced table or you can
+                    set them on a per-field basis as described <a href="#schemaprecommitvalues" />.
+                    It is important to specify correct precommit values for all referenced tables if you 
+                    use foreign key constraints in the database. If you do not specify the precommit values, Sooda will insert 
+                    the default value of zero into foreign key columns which may violate the constraints.
+                </p>
             </body>
         </section>
         <section id="schemaapi">
@@ -5197,7 +5273,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                             <tr>
                                 <td>rawquery (s)</td>
                                 <td>Soql.RawQuery(s)</td>
-                                <td>Pass <code>s</code> unmodified in a SQL query sent to the RDBMS.
+                                <td>Pass <code>s</code> unmodified in an SQL query sent to the RDBMS.
                                     <p>
                                         The following example shows a typed query which uses MSSQL-specific 
                                         full-text search function <code>CONTAINS()</code>.
@@ -5307,7 +5383,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     The result of the conversion is dependent on the <a href="#schema">mapping schema</a>, because SOQL to SQL converter 
                     must translate classes to database table names and named constants to literals. As database engines implement
                     slightly different SQL dialects, you must also pass
-                    an instance of a SQL builder class that implements <code>ISqlBuilder</code> interface and abstracts the SQL dialect
+                    an instance of an SQL builder class that implements <code>ISqlBuilder</code> interface and abstracts the SQL dialect
                     detail. Sooda comes with the following SQL builders for the most popular databases:
                 </p>
                 <ul>
