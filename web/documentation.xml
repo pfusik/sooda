@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-09-01 12:25:46 +0200 (Fri, 01 Sep 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 367 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-09-04 12:08:17 +0200 (Mon, 04 Sep 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 368 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright &#169; 2003-2006 by Jaros³aw Kowalski</div>
         <div class="pagebreak" />
     </div>
@@ -3222,7 +3222,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     </code>
                     <p>
                         <code>SoodaTransaction.ActiveTransaction</code> reference is usually stored in thread local storage, 
-                        but other storage strategies are possible, as described <sectionlink id="activetransactionstrategy" />.
+                        but other storage strategies are possible, as described <sectionlink id="activetransactionmanagement" />.
                     </p>
                     <p>
                         All examples in this document use implicit transactions.
@@ -4537,10 +4537,109 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 </p>
             </body>
         </section>
+        <section id="activetransactionmanagement">
+            <title>ActiveTransaction management</title>
+            <body>
+                <p>
+                    Implicit transaction (stored in <code>SoodaTransaction.ActiveTransaction</code>) is kept in 
+                    thread's local storage (TLS). It means, that as long as you access the objects from the thread
+                    that created the transaction, you do not need to pass the transcation reference explicitly.
+                    There are situations, where storing the transaction on per-thread basis is not enough. For example
+                    events in the ASP.NET environment are not guaranteed to be thread-bound, so you cannot store
+                    implicit <code>SoodaTransaction</code> in TLS.
+                </p>
+                <p>
+                    Fortunately, Sooda supports multiple strategies for managing the implicit transaction reference.
+                    There are two predefined strategies:
+                </p>
+                <ul>
+                    <li><code>SoodaThreadBoundTransactionStrategy</code> - default thread-bound implementation</li>
+                    <li><code>SoodaHttpContextBoundTransactionStrategy</code> - ASP.NET HttpContext-bound implementation</li>
+                </ul>
+                <p>
+                    To change the active strategy, create an instance of the appropriate strategy class and assign 
+                    it to the <code>SoodaTransaction.DefaultTransactionStrategy</code> static property:
+                </p>
+                <code lang="C#">
+                    SoodaTransaction.DefaultTransactionStrategy = new SoodaHttpContextBoundTransactionStrategy();
+                </code>
+                <p>
+                    To implement your own strategy, create a class that implements the 
+                    <code>IDefaultSoodaTransactionStrategy</code> interface. Two methods need to be implemented: one that
+                    gets current transaction and the other that sets it and returns a previous value.
+                </p>
+            </body>
+        </section>
         <section id="schemaapi">
             <title>Schema API</title>
             <body>
+                <p>
+                    Sooda provides runtime access to the <a href="#schema">mapping schema</a> through a set of metadata classes.
+                    Each class represents a single mapping element. The following classes are available:
+                </p>
+                <ul>
+                    <li><a href="#schemaapischemainfo"><code>SchemaInfo</code></a> - represents the <x><schema /></x> root element and provides access to classes, 
+                        relations, data sources, precommit values and included files</li>
+                    <li><a href="#schemaapiclassinfo"><code>ClassInfo</code></a> - represents the <x><class /></x> schema element</li>
+                    <li><a href="#schemaapirelationinfo"><code>RelationInfo</code></a> - represents the <x><relation /></x> schema element</li>
+                    <li><a href="#schemaapitableinfo"><code>TableInfo</code></a> - represents the <x><table /></x> schema element</li>
+                    <li><a href="#schemaapifieldinfo"><code>FieldInfo</code></a> - represents the <x><field /></x> schema element</li>
+                    <li><a href="#schemaapiincludeinfo"><code>IncludeInfo</code></a> - represents the <x><include /></x> schema element</li>
+                    <li><a href="#schemaapiconstantinfo"><code>ConstantInfo</code></a> - represents the <x><const /></x> schema element</li>
+                    <li><a href="#schemaapidatasourceinfo"><code>DataSourceInfo</code></a> - represents the <x><datasource /></x> schema element</li>
+                    <li><a href="#schemaapiprecommitvalueinfo"><code>PrecommitValueInfo</code></a> - represents the <x><precommitValue /></x> schema element</li>
+                </ul>
             </body>
+            <section id="schemaapischemainfo">
+                <title>SchemaInfo class</title>
+                <body>
+                    <p>
+                        Sooda.Schema.SchemaInfo class represents the <x><schema /></x> XML element. <a href="#soodastubgen">SoodaStubGen utility</a> 
+                        generates the <a href="#generatedschema">_DatabaseSchema class</a> that provides a method that returns a <code>SchemaInfo</code> object.
+                        <todo />
+                    </p>
+                </body>
+            </section>
+            <section id="schemaapiclassinfo">
+                <title>ClassInfo class</title>
+                <body>
+                </body>
+            </section>
+            <section id="schemaapirelationinfo">
+                <title>RelationInfo class</title>
+                <body>
+                </body>
+            </section>
+            <section id="schemaapitableinfo">
+                <title>TableInfo class</title>
+                <body>
+                </body>
+            </section>
+            <section id="schemaapifieldinfo">
+                <title>FieldInfo class</title>
+                <body>
+                </body>
+            </section>
+            <section id="schemaapiincludeinfo">
+                <title>IncludeInfo class</title>
+                <body>
+                </body>
+            </section>
+            <section id="schemaapiconstantinfo">
+                <title>ConstantInfo class</title>
+                <body>
+                </body>
+            </section>
+            <section id="schemaapidatasourceinfo">
+                <title>DataSourceInfo class</title>
+                <body>
+                </body>
+            </section>
+            <section id="schemaapiprecommitvalueinfo">
+                <title>PrecommitValueInfo class</title>
+                <body>
+                </body>
+            </section>
         </section>
         <section id="ql">
             <title>Query API</title>
@@ -4589,11 +4688,6 @@ foreach (WorkItem wi in WorkItem.GetList(true))
         </section>
         <section id="cachingapi">
             <title>Caching</title>
-            <body>
-            </body>
-        </section>
-        <section id="activetransactionstrategy">
-            <title>ActiveTransaction strategies</title>
             <body>
             </body>
         </section>

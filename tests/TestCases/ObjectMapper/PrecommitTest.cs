@@ -139,5 +139,36 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
                 }
             }
         }
+
+        [Test]
+        public void EventsTest()
+        {
+            using (TestSqlDataSource ds = new TestSqlDataSource("default"))
+            {
+                ds.Open();
+                int roleID;
+
+                using (SoodaTransaction t = new SoodaTransaction())
+                {
+                    t.RegisterDataSource(ds);
+                    Role r = new Role();
+                    r.Name = "aaa";
+                    Console.WriteLine("Precommitting...");
+                    t.SaveObjectChanges();
+                    Console.WriteLine("Comitting.");
+                    t.Commit();
+                    roleID = r.Id;
+                    Assert.AreEqual(0, r.BeforeObjectInsertEventCounter);
+                    Assert.AreEqual(2, r.AfterObjectInsertEventCounter);
+                    Assert.AreEqual(-1, r.BeforeObjectUpdateEventCounter);
+                    Assert.AreEqual(-1, r.AfterObjectUpdateEventCounter);
+
+                    Assert.AreEqual(1, r.Second.BeforeObjectInsertEventCounter);
+                    Assert.AreEqual(3, r.Second.AfterObjectInsertEventCounter);
+                    Assert.AreEqual(-1, r.Second.BeforeObjectUpdateEventCounter);
+                    Assert.AreEqual(-1, r.Second.AfterObjectUpdateEventCounter);
+                }
+            }
+        }
     }
 }

@@ -105,6 +105,14 @@
       <Project>{A1D122ED-CF84-4EF0-A138-72922DD50409}</Project>
       <Name>Sooda.UnitTests.BaseObjects-net-2.0</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TestCases\Sooda.UnitTests.TestCases-net-2.0.csproj">
+      <Project>{2DB9451B-8E35-45C3-94E6-32026E9DE8D1}</Project>
+      <Name>Sooda.UnitTests.TestCases-net-2.0</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UnitTestObjects\Sooda.UnitTests.Objects-net-2.0.csproj">
+      <Project>{3574E1EF-2272-4474-85D9-0718B3D452E3}</Project>
+      <Name>Sooda.UnitTests.Objects-net-2.0</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

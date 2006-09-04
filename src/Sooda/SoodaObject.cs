@@ -952,7 +952,7 @@ namespace Sooda
                 throw new SoodaDatabaseException("Cannot save object to the database " + e.Message, e);
             }
 
-            GetTransaction().AddToPostCommitQueue(this);
+            //GetTransaction().AddToPostCommitQueue(this);
         }
 
         internal void InvalidateCacheAfterCommit()
@@ -987,7 +987,7 @@ namespace Sooda
             }
         }
 
-        internal void PreCommit()
+        internal void CallBeforeCommitEvent()
         {
             if (IsInsertMode())
             {
@@ -997,6 +997,7 @@ namespace Sooda
             {
                 BeforeObjectUpdate();
             }
+            GetTransaction().AddToPostCommitQueue(this);
         }
 
         private void SerializePrimaryKey(XmlWriter xw)

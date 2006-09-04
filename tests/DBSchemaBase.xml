@@ -4,7 +4,7 @@
     <datasource name="default" type="Sooda.Sql.SqlDataSource" />
     <datasource name="xmldata1" type="Sooda.Xml.XmlDataSource" />
 
-    <class name="Role" cached="false" readOnly="true" precacheAll="false" triggers="false">
+    <class name="Role" cached="false" precacheAll="false" triggers="false">
         <table name="_Role">
             <field name="Id" dbcolumn="id" type="Integer" primaryKey="true" />
             <field name="Name" dbcolumn="name" type="String" size="64" nullable="true" />

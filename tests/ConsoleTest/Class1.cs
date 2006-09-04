@@ -48,29 +48,42 @@ using System.Security.Principal;
 using System.Security.Permissions;
 
 using Sooda.UnitTests.BaseObjects;
+using Sooda.UnitTests.Objects;
 using Sooda.UnitTests.BaseObjects.TypedQueries;
+using Sooda.UnitTests.TestCases;
 
-[assembly: SoodaStubAssembly(typeof(Sooda.UnitTests.BaseObjects._DatabaseSchema))]
-[assembly: SoodaConfig(XmlConfigFileName = "sooda.config.xml")]
+[assembly: SoodaStubAssembly(typeof(Sooda.UnitTests.Objects._DatabaseSchema))]
+[assembly: SoodaConfig(XmlConfigFileName = "Sooda.config.xml")]
 
 namespace ConsoleTest
 {
     class Class1
     {
-        static void Removed(object sender, LruCacheEventArgs args)
-        {
-            //Console.WriteLine("removed: {0}", args.Key);
-        }
-
         static void Main(string[] args)
         {
-            using (SoodaTransaction t = new SoodaTransaction())
+            using (TestSqlDataSource ds = new TestSqlDataSource("default"))
             {
-                foreach (Vehicle v in Vehicle.GetList(Veh))
-                {
-                    Console.WriteLine(v.GetType().Name);
-                }
+                ds.Open();
+                int roleID;
 
+                using (SoodaTransaction t = new SoodaTransaction())
+                {
+                    t.RegisterDataSource(ds); 
+                    Role r = new Role();
+                    r.Name = "aaa";
+                    Console.WriteLine("Precommitting...");
+                    t.SaveObjectChanges();
+                    Console.WriteLine("Comitting.");
+                    t.Commit();
+                    roleID = r.Id;
+                    Console.WriteLine("BI:{0} AI:{1} BU:{2} AU:{3}",
+                        r.BeforeObjectInsertEventCounter, r.AfterObjectInsertEventCounter,
+                        r.BeforeObjectUpdateEventCounter, r.AfterObjectUpdateEventCounter);
+
+                    Console.WriteLine("BI:{0} AI:{1} BU:{2} AU:{3}",
+                        r.Second.BeforeObjectInsertEventCounter, r.Second.AfterObjectInsertEventCounter,
+                        r.Second.BeforeObjectUpdateEventCounter, r.Second.AfterObjectUpdateEventCounter);
+                }
             }
         }
     }

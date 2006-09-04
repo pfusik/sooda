@@ -70,7 +70,7 @@ namespace Sooda
         private Queue _precommitQueue = null;
         private SoodaObjectCollection _deletedObjects = new SoodaObjectCollection();
         private Hashtable _precommittedClassOrRelation = new Hashtable();
-        private SoodaObjectCollection _postCommitQueue = null;
+        private SoodaObjectCollection _postCommitQueue = new SoodaObjectCollection();
         private SoodaObjectCollection _dirtyObjects = new SoodaObjectCollection();
         private SoodaObjectCollection _strongReferences = new SoodaObjectCollection();
         private StringToWeakSoodaObjectCollectionAssociation _objectsByClass = new StringToWeakSoodaObjectCollectionAssociation();
@@ -419,7 +419,7 @@ namespace Sooda
             }
         }
 
-        void CallPrecommits()
+        void CallBeforeCommitEvents()
         {
             foreach (SoodaObject o in _dirtyObjects)
             {
@@ -433,7 +433,7 @@ namespace Sooda
                 {
                     if (o.IsObjectDirty())
                     {
-                        o.PreCommit();
+                        o.CallBeforeCommitEvent();
                     }
                 }
             }
@@ -555,10 +555,8 @@ namespace Sooda
         public void Commit()
         {
             _precommitQueue = new Queue(_dirtyObjects.Count);
-            CallPrecommits();
+            CallBeforeCommitEvents();
             CheckCommitConditions();
-
-            _postCommitQueue = new SoodaObjectCollection();
 
             SaveObjectChanges(false, _dirtyObjects);
 
@@ -742,8 +740,9 @@ namespace Sooda
 
         internal void AddToPostCommitQueue(SoodaObject o)
         {
-            if (_postCommitQueue != null)
-                _postCommitQueue.Add(o);
+            if (transactionLogger.IsTraceEnabled)
+                transactionLogger.Trace("Adding {0} to post-commit queue", o.GetObjectKeyString());
+            _postCommitQueue.Add(o);
         }
 
         public string Serialize()
