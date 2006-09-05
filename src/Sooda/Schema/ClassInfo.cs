@@ -208,7 +208,7 @@ namespace Sooda.Schema
 
         [NonSerialized]
         [XmlIgnore]
-        public TableInfoCollection MergedTables;
+        public TableInfoCollection DatabaseTables;
 
         [NonSerialized]
         [XmlIgnore]
@@ -419,7 +419,7 @@ namespace Sooda.Schema
 
         internal void MergeTables()
         {
-            MergedTables = new TableInfoCollection();
+            DatabaseTables = new TableInfoCollection();
             Hashtable mergedTables = new Hashtable();
 
             foreach (TableInfo table in UnifiedTables)
@@ -432,7 +432,7 @@ namespace Sooda.Schema
                     mt.OrdinalInClass = -1;
                     mt.Rehash();
                     mergedTables[table.DBTableName] = mt;
-                    MergedTables.Add(mt);
+                    DatabaseTables.Add(mt);
                 }
 
                 foreach (FieldInfo fi in table.Fields)

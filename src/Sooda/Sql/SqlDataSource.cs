@@ -58,45 +58,22 @@ namespace Sooda.Sql
         private double queryTimeTraceWarn = 10.0;
         private double queryTimeTraceInfo = 2.0;
         public int CommandTimeout = 30;
+        public Type ConnectionType;
+        public string ConnectionString;
 
         public SqlDataSource(string name) : base(name)
         {
             string s = GetParameter("queryTimeTraceInfo", false);
-            if (s != null && s.Length > 0) queryTimeTraceInfo = Convert.ToDouble(s);
+            if (s != null && s.Length > 0)
+                queryTimeTraceInfo = Convert.ToDouble(s);
+
             s = GetParameter("queryTimeTraceWarn", false);
-            if (s != null && s.Length > 0) queryTimeTraceWarn = Convert.ToDouble(s);
-        }
+            if (s != null && s.Length > 0) 
+                queryTimeTraceWarn = Convert.ToDouble(s);
 
-        public SqlDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo) : this(dataSourceInfo.Name)
-        {
-        }
-
-        public override IsolationLevel IsolationLevel
-        {
-            get { return _isolationLevel; }
-            set { _isolationLevel = value; }
-        }
-
-        public override void Open()
-        {
-            string connectionTypeName = GetParameter("connectionType", false);
-            if (connectionTypeName == null)
-                connectionTypeName = "sqlclient";
-
-            Type connectionType = null;
-            switch (connectionTypeName)
-            {
-                case "sqlclient":
-                    connectionType = typeof(System.Data.SqlClient.SqlConnection);
-                    break;
-
-                default:
-                    connectionType = Type.GetType(connectionTypeName);
-                    break;
-            }
-            
-            string connectionString = GetParameter("connectionString", true);
-            Connection = (IDbConnection)Activator.CreateInstance(connectionType, new object[] { connectionString });
+            s = GetParameter("commandTimeout", false);
+            if (s != null && s.Length > 0)
+                CommandTimeout = Convert.ToInt32(s);
 
             if (GetParameter("disableTransactions", false) == "true")
                 this.DisableTransactions = true;
@@ -106,10 +83,6 @@ namespace Sooda.Sql
 
             if (GetParameter("indentQueries", false) == "true")
                 this.IndentQueries = true;
-
-            string s = GetParameter("commandTimeout", false);
-            if (s != null)
-                CommandTimeout = Convert.ToInt32(s);
 
             string dialect = GetParameter("sqlDialect", false);
             if (dialect == null)
@@ -149,6 +122,37 @@ namespace Sooda.Sql
             if (GetParameter("disableUpdateBatch", false) == "true")
                 this.SupportsUpdateBatch = false;
 
+            string connectionTypeName = GetParameter("connectionType", false);
+            if (connectionTypeName == null)
+                connectionTypeName = "sqlclient";
+
+            switch (connectionTypeName)
+            {
+                case "sqlclient":
+                    ConnectionType = typeof(System.Data.SqlClient.SqlConnection);
+                    break;
+
+                default:
+                    ConnectionType = Type.GetType(connectionTypeName);
+                    break;
+            }
+
+            ConnectionString = GetParameter("connectionString", true);
+        }
+
+        public SqlDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo) : this(dataSourceInfo.Name)
+        {
+        }
+
+        public override IsolationLevel IsolationLevel
+        {
+            get { return _isolationLevel; }
+            set { _isolationLevel = value; }
+        }
+
+        public override void Open()
+        {
+            Connection = (IDbConnection)Activator.CreateInstance(ConnectionType, new object[] { ConnectionString });
             Connection.Open();
             if (!DisableTransactions)
             {
@@ -571,7 +575,7 @@ namespace Sooda.Sql
 
         void DoInserts(SoodaObject obj, bool isPrecommit)
         {
-            foreach (TableInfo table in obj.GetClassInfo().MergedTables)
+            foreach (TableInfo table in obj.GetClassInfo().DatabaseTables)
             {
                 DoInsertsForTable(obj, table, isPrecommit);
             }
@@ -635,7 +639,7 @@ namespace Sooda.Sql
 
         void DoUpdates(SoodaObject obj)
         {
-            foreach (TableInfo table in obj.GetClassInfo().MergedTables)
+            foreach (TableInfo table in obj.GetClassInfo().DatabaseTables)
             {
                 DoUpdatesForTable(obj, table);
             }
