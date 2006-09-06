@@ -35,6 +35,7 @@ using System.Runtime.Remoting;
 using System.Threading;
 
 using Sooda;
+using Sooda.Sql;
 using Sooda.Schema;
 using Sooda.QL;
 using Sooda.ObjectMapper;
@@ -61,28 +62,43 @@ namespace ConsoleTest
     {
         static void Main(string[] args)
         {
-            using (TestSqlDataSource ds = new TestSqlDataSource("default"))
+            // connect to the data source 'default' defined 
+            // in the configuration file
+
+            using (SqlDataSource sds = new SqlDataSource("default"))
             {
-                ds.Open();
-                int roleID;
+                sds.Open();
 
-                using (SoodaTransaction t = new SoodaTransaction())
+                // SOQL textual query
+                string soqlQuery = @"
+                    SELECT Name, PrimaryGroup.Name, PrimaryGroup.Members.Count
+                    FROM Contact 
+                    WHERE PrimaryGroup.Manager.Name = {0} OR Name = {1}";
+
+                // parse the query to a SoqlQueryExpression object
+                SoqlQueryExpression queryExpression = SoqlParser.ParseQuery(soqlQuery);
+
+                // get the schema reference
+                SchemaInfo schema = Sooda.UnitTests.BaseObjects._DatabaseSchema.GetSchema();
+
+                // prepare parameters
+                object[] parameters = new object[] 
                 {
-                    t.RegisterDataSource(ds); 
-                    Role r = new Role();
-                    r.Name = "aaa";
-                    Console.WriteLine("Precommitting...");
-                    t.SaveObjectChanges();
-                    Console.WriteLine("Comitting.");
-                    t.Commit();
-                    roleID = r.Id;
-                    Console.WriteLine("BI:{0} AI:{1} BU:{2} AU:{3}",
-                        r.BeforeObjectInsertEventCounter, r.AfterObjectInsertEventCounter,
-                        r.BeforeObjectUpdateEventCounter, r.AfterObjectUpdateEventCounter);
+                    "Mary Manager", // positional parameter {0}
+                    "Eva Employee" // positional parameter {1}
+                };
 
-                    Console.WriteLine("BI:{0} AI:{1} BU:{2} AU:{3}",
-                        r.Second.BeforeObjectInsertEventCounter, r.Second.AfterObjectInsertEventCounter,
-                        r.Second.BeforeObjectUpdateEventCounter, r.Second.AfterObjectUpdateEventCounter);
+                // execute query
+                using (IDataReader reader = sds.ExecuteQuery(queryExpression, schema, parameters))
+                {
+                    // iterate the result set
+                    while (reader.Read())
+                    {
+                        Console.WriteLine("name: {0} group: {1} members: {2}", 
+                            reader.GetString(0), 
+                            reader.GetString(1), 
+                            reader.GetInt32(2));
+                    }
                 }
             }
         }

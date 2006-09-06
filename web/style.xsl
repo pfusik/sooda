@@ -183,7 +183,7 @@
                 <xsl:with-param name="maxLevel">
                     <xsl:choose>
                         <xsl:when test="@maxLevel"><xsl:value-of select="@maxLevel" /></xsl:when>
-                        <xsl:otherwise>2</xsl:otherwise>
+                        <xsl:otherwise>3</xsl:otherwise>
                     </xsl:choose>
                 </xsl:with-param>
             </xsl:apply-templates>

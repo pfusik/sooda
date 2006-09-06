@@ -46,17 +46,18 @@ namespace Sooda.Sql
         static Logger logger = LogManager.GetLogger("Sooda.SqlDataSource");
         static Logger sqllogger = LogManager.GetLogger("Sooda.SQL");
 
+        private IDbCommand _updateCommand = null;
+        private IsolationLevel _isolationLevel = IsolationLevel.ReadCommitted;
+
         public IDbConnection Connection;
         public IDbTransaction Transaction;
         public ISqlBuilder SqlBuilder = null;
         public bool DisableTransactions = false;
-        private IDbCommand _updateCommand = null;
-        public bool SupportsUpdateBatch = false;
+        public bool DisableUpdateBatch = false;
         public bool StripWhitespaceInLogs = false;
         public bool IndentQueries = false;
-        private IsolationLevel _isolationLevel = IsolationLevel.ReadCommitted;
-        private double queryTimeTraceWarn = 10.0;
-        private double queryTimeTraceInfo = 2.0;
+        public double QueryTimeTraceWarn = 10.0;
+        public double QueryTimeTraceInfo = 2.0;
         public int CommandTimeout = 30;
         public Type ConnectionType;
         public string ConnectionString;
@@ -65,11 +66,11 @@ namespace Sooda.Sql
         {
             string s = GetParameter("queryTimeTraceInfo", false);
             if (s != null && s.Length > 0)
-                queryTimeTraceInfo = Convert.ToDouble(s);
+                QueryTimeTraceInfo = Convert.ToDouble(s);
 
             s = GetParameter("queryTimeTraceWarn", false);
             if (s != null && s.Length > 0) 
-                queryTimeTraceWarn = Convert.ToDouble(s);
+                QueryTimeTraceWarn = Convert.ToDouble(s);
 
             s = GetParameter("commandTimeout", false);
             if (s != null && s.Length > 0)
@@ -88,6 +89,8 @@ namespace Sooda.Sql
             if (dialect == null)
                 dialect = "microsoft";
 
+            this.DisableUpdateBatch = true;
+
             switch (dialect)
             {
                 default:
@@ -95,7 +98,7 @@ namespace Sooda.Sql
                 case "mssql":
                 case "microsoft":
                     this.SqlBuilder = new SqlServerBuilder();
-                    this.SupportsUpdateBatch = true;
+                    this.DisableUpdateBatch = false;
                     break;
 
                 case "postgres":
@@ -120,7 +123,7 @@ namespace Sooda.Sql
                 this.IndentQueries = true;
 
             if (GetParameter("disableUpdateBatch", false) == "true")
-                this.SupportsUpdateBatch = false;
+                this.DisableUpdateBatch = true;
 
             string connectionTypeName = GetParameter("connectionType", false);
             if (connectionTypeName == null)
@@ -191,10 +194,12 @@ namespace Sooda.Sql
             {
                 Transaction.Rollback();
                 Transaction.Dispose();
+                Transaction = null;
             };
             if (Connection != null)
             {
                 Connection.Dispose();
+                Connection = null;
             }
         }
 
@@ -217,7 +222,7 @@ namespace Sooda.Sql
         {
             bool doExecute = true;
 
-            if (SupportsUpdateBatch)
+            if (!DisableUpdateBatch)
             {
                 if (_updateCommand.Parameters.Count < 100)
                     doExecute = false;
@@ -939,11 +944,11 @@ namespace Sooda.Sql
                     Statistics.RegisterQueryTime(timeInSeconds);
 
                 SoodaStatistics.Global.RegisterQueryTime(timeInSeconds);
-                if (timeInSeconds > queryTimeTraceWarn && sqllogger.IsWarnEnabled)
+                if (timeInSeconds > QueryTimeTraceWarn && sqllogger.IsWarnEnabled)
                 {
                     sqllogger.Warn("Query time: {0} ms. {1}", Math.Round(timeInSeconds * 1000.0, 3), LogCommand(cmd));
                 }
-                else if (timeInSeconds > queryTimeTraceInfo && sqllogger.IsInfoEnabled)
+                else if (timeInSeconds > QueryTimeTraceInfo && sqllogger.IsInfoEnabled)
                 {
                     sqllogger.Info("Query time: {0} ms: {1}", Math.Round(timeInSeconds * 1000.0, 3), LogCommand(cmd));
                 }
@@ -982,11 +987,11 @@ namespace Sooda.Sql
                     Statistics.RegisterQueryTime(timeInSeconds);
 
                 SoodaStatistics.Global.RegisterQueryTime(timeInSeconds);
-                if (timeInSeconds > queryTimeTraceWarn && sqllogger.IsWarnEnabled)
+                if (timeInSeconds > QueryTimeTraceWarn && sqllogger.IsWarnEnabled)
                 {
                     sqllogger.Warn("Non-query time: {0} ms. {1}", Math.Round(timeInSeconds * 1000.0, 3), LogCommand(cmd));
                 }
-                else if (timeInSeconds > queryTimeTraceInfo && sqllogger.IsInfoEnabled)
+                else if (timeInSeconds > QueryTimeTraceInfo && sqllogger.IsInfoEnabled)
                 {
                     sqllogger.Info("Non-query time: {0} ms. {1}", Math.Round(timeInSeconds * 1000.0, 3), LogCommand(cmd));
                 }
