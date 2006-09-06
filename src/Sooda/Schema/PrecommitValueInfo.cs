@@ -28,6 +28,7 @@
 // 
 
 using System;
+using Sooda.ObjectMapper.FieldHandlers;
 
 namespace Sooda.Schema
 {
@@ -58,7 +59,7 @@ namespace Sooda.Schema
 
         private object CalculateValue()
         {
-            return null;
+            return FieldHandlerFactory.GetFieldHandler(DataType).RawDeserialize(ValueText);
         }
     }
 }

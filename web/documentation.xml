@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-09-06 12:03:22 +0200 (Wed, 06 Sep 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 370 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-09-06 13:35:27 +0200 (Wed, 06 Sep 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 371 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright &#169; 2003-2006 by Jaros³aw Kowalski</div>
         <div class="pagebreak" />
     </div>
@@ -41,7 +41,7 @@
                         <li><a href="#inheritance">inheritance</a> (two models: table-per-hierarchy (TPH) and table-per-subclass (TPS))</li>
                         <li>strongly-typed, database-based <a href="#schemaconst">enumerations</a></li>
                         <li><a href="#lazyloading">lazy loading</a></li>
-                        <li><a href="#transactions">differential serialization and deserialization</a> of uncommitted changes (enables long-running transactions)</li>
+                        <li><a href="#serialization">differential serialization and deserialization</a> of uncommitted changes (enables long-running transactions)</li>
                         <li>strongly-typed <a href="#querylanguage">query language</a> (based on C# operator overloading)</li>
                         <li>text-based <a href="#querylanguage">query language</a> - SOQL</li>
                         <li><a href="#mappingmultipletablestoclasses">vertical partitioning</a> of data (load-on-demand for large columns)</li>
@@ -561,43 +561,6 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     </p>
                 </body>
             </section>
-            <section id="transactions">
-                <title>Transactions</title>
-                <body>
-                    <p>
-                        Each database-backed object in Sooda is associated with a transaction represented by 
-                        an instance of SoodaTransaction class. Transactions provide database connection management,
-                        identity management (ensuring reference-level object identity as mentioned <sectionlink id="primarykeys" />).
-                    </p>
-                    <p>
-                        In order to support identity management, transactions implement an L1 cache of all alive objects. SoodaTransaction
-                        is able to return a cached object given the <code>(className,primaryKeyValue)</code> pair.
-                    </p>
-                    <p>
-                        No object can live outside the transaction and object state is not defined after the transaction
-                        has been closed. Keeping a transaction open for a longer period of time is not recommended because it consumes
-                        unmanaged resources, such as a database connections.
-                    </p>
-                    <p>
-                        Transactions need to be closed when they are no longer needed and if you fail ensure that, otherwise
-                        you may get all sorts of unmanaged resource leaks. Typical usage pattern for a Sooda transaction 
-                        that ensures the transaction is properly closed is presented below. It makes use of the
-                        IDisposable pattern and the C# using() statement:
-                    </p>
-                    <code lang="C#">
-                        using (SoodaTransaction t = new SoodaTransaction())
-                        {
-                            // perform operations on Sooda objects here
-                            t.Commit();
-                        }
-                    </code>
-                    <p>
-                        In order to support long-running transactions, Sooda supports a differential
-                        serialization mechanism, which lets you persist uncommitted changes made within transaction to an XML document, 
-                        and deserialize them later, perhaps in a different process or a different machine.
-                    </p>
-                </body>
-            </section>
             <section id="querylanguage">
                 <title>Query Language</title>
                 <body>
@@ -633,7 +596,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         retrieved from the SQL database (both single rows and collections) so that the speed of processing is improved.
                     </p>
                     <p>
-                        The <a href="#cachingapi">Caching API section</a> explains things in detail.
+                        The <a href="#cachingapi">Caching section</a> explains things in detail.
                     </p>
                 </body>
             </section>
@@ -3626,7 +3589,38 @@ foreach (WorkItem wi in WorkItem.GetList(true))
         <section id="soodatransaction">
             <title>SoodaTransaction</title>
             <body>
-                <todo />
+                <p>
+                    Each database-backed object in Sooda is associated with a transaction represented by 
+                    an instance of SoodaTransaction class. Transactions provide database connection management,
+                    identity management (ensuring reference-level object identity as mentioned <sectionlink id="primarykeys" />).
+                </p>
+                <p>
+                    In order to support identity management, transactions implement an L1 cache of all alive objects. SoodaTransaction
+                    is able to return a cached object given the <code>(className,primaryKeyValue)</code> pair.
+                </p>
+                <p>
+                    No object can live outside the transaction and object state is not defined after the transaction
+                    has been closed. Keeping a transaction open for a longer period of time is not recommended because it consumes
+                    unmanaged resources, such as a database connections.
+                </p>
+                <p>
+                    Transactions need to be closed when they are no longer needed and if you fail ensure that, otherwise
+                    you may get all sorts of unmanaged resource leaks. Typical usage pattern for a Sooda transaction 
+                    that ensures the transaction is properly closed is presented below. It makes use of the
+                    IDisposable pattern and the C# using() statement:
+                </p>
+                <code lang="C#">
+                    using (SoodaTransaction t = new SoodaTransaction())
+                    {
+                        // perform operations on Sooda objects here
+                        t.Commit();
+                    }
+                </code>
+                <p>
+                    In order to support long-running transactions, Sooda supports a <a href="#serialization">differential
+                        serialization mechanism</a>, which lets you persist uncommitted changes made within transaction to an XML document, 
+                    and deserialize them later, perhaps in a different process or a different machine.
+                </p>
             </body>
             <section id="soodatransactioncreating">
                 <title>Creating and managing transactions</title>
@@ -4580,7 +4574,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 <p>
                     Sooda guarantees reference identity for objects retrieved from a database. It means
                     that if we make 2 or more queries which retrieve a particular row from the 
-                    database in the same <a href="#transactions">transaction</a>
+                    database in the same <a href="#soodatransaction">transaction</a>
                     they are guaranteed to be be mapped to the same object (not just two objects that are equal).
                     It means that you can modify the object through either any of the references and 
                     you will be modifying the same object, so the state is going to be consistent.
@@ -5141,39 +5135,6 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 </p>
             </body>
         </section>
-        <section id="activetransactionmanagement">
-            <title>ActiveTransaction management</title>
-            <body>
-                <p>
-                    Implicit transaction (stored in <code>SoodaTransaction.ActiveTransaction</code>) is kept in 
-                    thread's local storage (TLS). It means that as long as you access the objects from the thread
-                    that created the transaction, you do not need to pass the transaction reference explicitly.
-                    There are situations where storing the transaction on per-thread basis is not feasible. For example
-                    events in the ASP.NET environment are not guaranteed to be thread-bound so you cannot store
-                    implicit <code>SoodaTransaction</code> in TLS.
-                </p>
-                <p>
-                    Fortunately, Sooda supports multiple strategies for managing the implicit transaction reference.
-                    There are two predefined strategies:
-                </p>
-                <ul>
-                    <li><code>SoodaThreadBoundTransactionStrategy</code> - default thread-bound implementation</li>
-                    <li><code>SoodaHttpContextBoundTransactionStrategy</code> - ASP.NET HttpContext-bound implementation</li>
-                </ul>
-                <p>
-                    To change the active strategy, create an instance of the appropriate strategy class and assign 
-                    it to the <code>SoodaTransaction.DefaultTransactionStrategy</code> static property:
-                </p>
-                <code lang="C#">
-                    SoodaTransaction.DefaultTransactionStrategy = new SoodaHttpContextBoundTransactionStrategy();
-                </code>
-                <p>
-                    To implement your own strategy, create a class that implements the 
-                    <code>IDefaultSoodaTransactionStrategy</code> interface. Two methods need to be implemented: one that
-                    gets current transaction and the other that sets it and returns a previous value.
-                </p>
-            </body>
-        </section>
         <section id="ql">
             <title>Query API</title>
             <body>
@@ -5193,235 +5154,6 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 <body>
                 </body>
             </section>
-        </section>
-        <section id="prefetch">
-            <title>Prefetching</title>
-            <body>
-                <p>
-                    Prefetching is a technique that allows object references to be pre-loaded from the database 
-                    at the same time the object is loaded. This is possible thanks to the SQL <code>OUTER JOIN</code>
-                    operators. Normally Sooda issues a simple SQL statement to load an object from the database::
-                </p>
-                <code lang="C#">
-                    select column1, column2, ..., columnN
-                    from   table1
-                    where  id=123
-                </code>
-                <p>
-                    Assuming that <code>columnR</code> is a foreign key reference to <code>table2</code>, we can load two
-                    objects in a single query by using an outer join:
-                </p>
-                <code lang="C#">
-                    select t1.column1, t1.column2, ..., t1.columnN
-                           t2.column1, t2.column2, ..., t2.columnM
-                    from   table1 t1
-                           left outer join table2 t2 on (t1.columnR = t2.id)
-                    where  t1.id=123
-                </code>
-                <p>
-                    Note that columns 1..N belong to objects stored in "<code>table1</code>" and 
-                    columns N+1..N+M are from "<code>table2</code>".
-                </p>
-                <p>
-                    Sooda extends this concept with the possibility to include arbitrary number of objects being prefetched
-                    on each load. This can be controlled by the <code>prefetch</code> attribute of the <x><field /></x> element in the
-                    <a href="#schema">mapping schema</a>. By default it is zero, meaning that no prefetch should be performed,
-                    but you can set it to a higher value to indicate level of objects that should be prefetched.
-                </p>
-                <p>
-                    Consider this example of a simple movie management system:
-                </p>
-                <code lang="XML">
-                    <![CDATA[
-                    <schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
-                        <class name="Movie">
-                            <table name="Movie">
-                                <field name="ID" type="Integer" primaryKey="true" />
-                                <field name="Title" type="String" size="40" />
-                                <field name="Genre" type="Integer" references="MovieGenre" prefetch="1" />
-                                <field name="Subgenre" type="Integer" references="MovieGenre" prefetch="2" />
-                                <field name="AudioLanguage" type="Integer" references="AudioLanguage" />
-                                <field name="VideoFormat" type="Integer" references="VideoFormat" prefetch="1" />
-                                <field name="ParentalGuidance" type="Integer" references="ParentalRating" />
-                            </table>
-                        </class>
-                        <class name="MovieGenre">
-                            <table name="MovieGenre">
-                                <field name="ID" type="Integer" primaryKey="true" />
-                                <field name="Name" type="String" size="40" />
-                                <field name="ParentGenre" type="Integer" references="MovieGenre" prefetch="1" />
-                            </table>
-                        </class>
-                        <class name="VideoFormat">
-                            <table name="VideoFormat">
-                                <field name="ID" type="Integer" primaryKey="true" />
-                                <field name="FrameWidth" type="Integer" />
-                                <field name="FrameHeight" type="Integer" />
-                                <field name="ColorDepth" type="Integer" />
-                                <field name="Compression" type="Integer" />
-                            </table>
-                        </class>
-                        <class name="ParentalRating">
-                            <table name="ParentalRating">
-                                <field name="ID" type="Integer" primaryKey="true" />
-                                <field name="Name" type="String" size="40" />
-                                <field name="MinimumAge" type="Integer" />
-                            </table>
-                        </class>
-                        <class name="AudioLanguage">
-                            <table name="AudioLanguage">
-                                <field name="ID" type="Integer" primaryKey="true" />
-                                <field name="Name" type="String" size="40" />
-                                <field name="ISOTwoLetterName" type="String" size="40" />
-                                <field name="ISOThreeLetterName" type="String" size="40" />
-                            </table>
-                        </class>
-                    </schema>
-                    ]]>
-                </code>
-                <p>
-                    When you load a movie object <code>m</code> Sooda automatically prefetches related objects, so that 
-                    the following properties can be accessed with no additional SQL queries:
-                </p>
-                <code lang="C#">
-                    <![CDATA[
-                    m.ID
-                    m.Title
-                    m.Genre
-                    m.Subgenre
-                    m.AudioLanguage
-                    m.VideoFormat
-                    m.ParentalGuidance
-
-                    // these fields are prefetched because field Genre has prefetch="1"
-                    m.Genre.Name
-
-                    // these fields are prefetched because field Subgenre has prefetch="2"
-                    m.Subgenre.Name
-                    m.Subgenre.ParentGenre.ID
-                    m.Subgenre.ParentGenre.Name
-
-                    // these fields are prefetched because field VideoFormat has prefetch="1"
-                    m.VideoFormat.FrameWidth
-                    m.VideoFormat.FrameHeight
-                    m.VideoFormat.ColorDepth
-                    m.VideoFormat.Compression
-                    ]]>
-                </code>
-                <p>
-                    Note that the following fields are NOT prefetched automatically and will involve 
-                    a database access when first accessed:
-                </p>
-                <code lang="C#">
-                    <![CDATA[
-                    m.AudioLanguage.Name
-                    m.AudioLanguage.ISOTwoLetterName
-                    m.AudioLanguage.ISOThreeLetterName
-                    m.ParentalGuidance.Name
-                    m.ParentalGuidance.MinimumAge
-                    ]]>
-                </code>
-                <p>
-                    Because primary keys are always present in memory, accessing following fields will never
-                    cause a database roundtrip, even if the <code>prefetch</code> properties were not set:
-                </p>
-                <code lang="C#">
-                    <![CDATA[
-                    m.Genre.ID
-                    m.Subgenre.ID
-                    m.VideoFormat.ID
-                    m.AudioLanguage.ID
-                    m.ParentalGuidance.ID
-                    ]]>
-                </code>
-                <p>
-                    Prefetch can be used to optimize preloading of hierarchies, such as Employee-Manager relationship which is effectively
-                    a tree. Let's assume you have a class named <code>Employee</code> which includes a reference to its manager:
-                </p>
-                <code lang="XML">
-                    <![CDATA[
-                    <class name="Employee">
-                        <table name="Employee">
-                            <field name="ID" type="Integer" primaryKey="true" />
-                            <field name="Name" type="String" size="40" />
-                            <field name="Salary" type="Decimal" />
-                            <field name="HireDate" type="DateTime" />
-                            <field name="Manager" type="Integer" reference="Employee" />
-                            <field name="Active" type="BooleanAsInteger" />
-                        </table>
-                    </class>
-                    ]]>
-                </code>
-                <p>
-                    We can print all the managers of some particular employee with a simple <code>for()</code> loop:
-                </p>
-                <code lang="C#">
-                    <![CDATA[
-                    for (Employee e = this.Manager; e != null; e = e.Manager)
-                    {
-                        Console.WriteLine("manager: {0}", e.Name);
-                    }
-                    ]]>
-                </code>
-                <p>
-                    Without the prefetch, Sooda would have to issue the SQL query to retrieve each Employee object separately.
-                    Assuming you have 10 levels of management in your company, that would be 10 SQL queries. To minimize the number of queries, you can add prefetch="3"
-                    to the "<code>Manager</code>" field declaration:
-                </p>
-                <code lang="XML">
-                    <![CDATA[
-                        <field name="Manager" type="Integer" reference="Employee" prefetch="3" />
-                    ]]>
-                </code>
-                <p>
-                    When you load an <code>Employee</code> object <code>e</code>, Sooda preloads the following referenced objects, so you can access 
-                    their properties without an SQL query:
-                </p>
-                <code lang="C#">
-                    e.Manager
-                    e.Manager.Manager
-                    e.Manager.Manager.Manager
-                </code>
-                <p>
-                    Once you access <code>e.Manager.Manager.Manager.Manager</code>, Sooda will preload:
-                </p>
-                <code lang="C#">
-                    e.Manager.Manager.Manager.Manager.Manager
-                    e.Manager.Manager.Manager.Manager.Manager.Manager
-                    e.Manager.Manager.Manager.Manager.Manager.Manager.Manager
-                </code>
-                <p>
-                    If there are at most three managers in the hierarchy, setting the <code>prefetch</code> to <code>3</code> ensures that
-                    the entire structure will be fetched in a single SQL query. 
-                    The cost of prefetch is usually very small, but the number of columns returned in a query grows as you 
-                    prefetch, so you should limit the depth of the prefetch operation. Prefetch value of one is usually sufficient.
-                </p>
-            </body>
-        </section>
-        <section id="factorycache">
-            <title>Factory Cache</title>
-            <body>
-                <p>
-                    Factory cache is a mechanism that is meant to optimize the <code>GetRef()</code> operation for classes
-                    that are part of inheritance relationships. For all other cases <code>GetRef()</code> can be very cheap, 
-                    constant-time operation, but if a class has subclasses, Sooda needs to issue a database query to
-                    determine the concrete class that should be instantiated. Once the query has been executed and the concrete
-                    class is know, we can cache it so that further <code>GetRef()s</code> can be done without any database queries.
-                </p>
-                <p>
-                    By default Sooda comes with eternal factory cache that stores the primary key to concrete class association in 
-                    a hashtable that is never emptied. This is sufficient for most databases with less than a few million records. For
-                    larger databases you should implement your own factory cache by creating a class that implements the <code>ISoodaObjectFactoryCache</code>
-                    interface.
-                </p>
-                <p>
-                    Once you have defined your own factory cache, you should assign it to the static 
-                    property <code>SoodaObjectFactoryCache</code> of the <code>SoodaTransaction</code> class:
-                </p>
-                <code lang="C#">
-                    SoodaTransaction.SoodaObjectFactoryCache = new MyFactoryCache();
-                </code>
-            </body>
         </section>
         <section id="cachingapi">
             <title>Caching</title>
@@ -6438,8 +6170,21 @@ foreach (WorkItem wi in WorkItem.GetList(true))
     </section>
     <section id="advancedtopics">
         <title>Advanced Topics</title>
+        <body>
+            <p>
+                Information provided in the following sections can be useful if you want to understand the inner workings of Sooda or to perform advanced
+                tasks using the command line tools that come with Sooda.
+            </p>
+        </body>
         <section id="tools">
             <title>Tools</title>
+            <body>
+                <p>
+                    Sooda provides command-line tools that are used during the <a href="#compilationprocess">build process</a> to create
+                    a Data Access Layer library and some additional tools that can help you manage <a href="#schema">mapping schema files</a>. 
+                    The following sections explain each tool and provide guidelines for their use.
+                </p>
+            </body>
             <section id="soodastubgen">
                 <title>SoodaStubGen</title>
                 <body>
@@ -6460,7 +6205,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     <title>Install Location</title>
                     <body>
                         <p>
-                            By default SoodaStubGen is installed in two directories, one for each supported version of .NET Framework Version:
+                            By default SoodaStubGen is installed in two directories, one for each supported version of .NET Framework:
                         </p>
                         <code lang="C#">
                             %SOODA_DIR%\bin\net-1.1\SoodaStubGen.exe
@@ -7338,89 +7083,89 @@ where    (t2.name = 'Mary Manager')
         <section id="generatedcode">
             <title>Generated Code</title>
             <body>
-                <section id="generatedclasses">
-                    <title>Classes</title>
+            </body>
+            <section id="generatedclasses">
+                <title>Classes</title>
+                <body>
+                </body>
+                <section id="generatedproperties">
+                    <title>Properties</title>
                     <body>
                     </body>
-                    <section id="generatedproperties">
-                        <title>Properties</title>
-                        <body>
-                        </body>
-                        <section id="generatedpropertiesboxed">
-                            <title>Boxed</title>
-                            <body>
-                            </body>
-                        </section>
-                        <section id="generatedpropertiessqltypes">
-                            <title>SqlTypes</title>
-                            <body>
-                            </body>
-                        </section>
-                        <section id="generatedpropertiesraw">
-                            <title>Raw</title>
-                            <body>
-                            </body>
-                        </section>
-                        <section id="generatedpropertiesrawwithisnull">
-                            <title>RawWithIsNull</title>
-                            <body>
-                            </body>
-                        </section>
-                        <section id="generatedpropertiesnullable">
-                            <title>Nullable</title>
-                            <body>
-                            </body>
-                        </section>
-                    </section>
-                    <section id="generatedcollections">
-                        <title>Collections</title>
+                    <section id="generatedpropertiesboxed">
+                        <title>Boxed</title>
                         <body>
                         </body>
                     </section>
-                    <section id="generatedtriggers">
-                        <title>Triggers</title>
+                    <section id="generatedpropertiessqltypes">
+                        <title>SqlTypes</title>
+                        <body>
+                        </body>
+                    </section>
+                    <section id="generatedpropertiesraw">
+                        <title>Raw</title>
+                        <body>
+                        </body>
+                    </section>
+                    <section id="generatedpropertiesrawwithisnull">
+                        <title>RawWithIsNull</title>
+                        <body>
+                        </body>
+                    </section>
+                    <section id="generatedpropertiesnullable">
+                        <title>Nullable</title>
                         <body>
                         </body>
                     </section>
                 </section>
-                <section id="generatedclasshierarchy">
-                    <title>Class hierarchy</title>
-                    <body>
-                        <todo />
-                        <img src="doc15.png" alt="Demonstration of base-class-name effect" />
-                    </body>
-                </section>
-                <section id="generatedenums">
-                    <title>Constants/Enumerations</title>
-                    <body>
-                    </body>
-                </section>
-                <section id="generatedlistwrappers">
+                <section id="generatedcollections">
                     <title>Collections</title>
                     <body>
                     </body>
                 </section>
-                <section id="generatedfindmethods">
-                    <title>Find Methods</title>
+                <section id="generatedtriggers">
+                    <title>Triggers</title>
                     <body>
                     </body>
                 </section>
-                <section id="generatedfactories">
-                    <title>Factories</title>
-                    <body>
-                    </body>
-                </section>
-                <section id="generatedtypedqueries">
-                    <title>Typed Queries</title>
-                    <body>
-                    </body>
-                </section>
-                <section id="generatedschema">
-                    <title>Schema</title>
-                    <body>
-                    </body>
-                </section>
-            </body>
+            </section>
+            <section id="generatedclasshierarchy">
+                <title>Class hierarchy</title>
+                <body>
+                    <todo />
+                    <img src="doc15.png" alt="Demonstration of base-class-name effect" />
+                </body>
+            </section>
+            <section id="generatedenums">
+                <title>Constants/Enumerations</title>
+                <body>
+                </body>
+            </section>
+            <section id="generatedlistwrappers">
+                <title>Collections</title>
+                <body>
+                </body>
+            </section>
+            <section id="generatedfindmethods">
+                <title>Find Methods</title>
+                <body>
+                </body>
+            </section>
+            <section id="generatedfactories">
+                <title>Factories</title>
+                <body>
+                </body>
+            </section>
+            <section id="generatedtypedqueries">
+                <title>Typed Queries</title>
+                <body>
+                </body>
+            </section>
+            <section id="generatedschema">
+                <title>Schema</title>
+                <body>
+                </body>
+            </section>
         </section>
         <section id="schemaapi">
             <title>Schema API</title>
@@ -7702,28 +7447,354 @@ where    (t2.name = 'Mary Manager')
             <section id="schemaapiconstantinfo">
                 <title>ConstantInfo class</title>
                 <body>
+                    <p>
+                        <code>Sooda.Schema.ConstantInfo</code> class represents the <x><const /></x> element of 
+                        the <a href="#schema">mapping schema</a>. It can be used to retrieve information about defined named constants.
+                    </p>
+                    <p>
+                        <code>ConstantInfo</code> class has the following public properties:
+                    </p>
+                    <ul>
+                        <li><code>Name</code> - name of the constant</li>
+                        <li><code>Key</code> - key value of the object that should be associated with 
+                            the constant. Compount primary keys are not supported.</li>
+                    </ul>
                 </body>
             </section>
             <section id="schemaapidatasourceinfo">
                 <title>DataSourceInfo class</title>
                 <body>
+                    <p>
+                        <code>Sooda.Schema.DataSourceInfo</code> class represents the <x><datasource /></x> element of 
+                        the <a href="#schema">mapping schema</a>. It can be used to retrieve information about defined data sources.
+                    </p>
+                    <p>
+                        <code>DataSourceInfo</code> class has the following public properties:
+                    </p>
+                    <ul>
+                        <li><code>Name</code> - name of the data source</li>
+                        <li><code>Type</code> - type of the data source - name of the class that inherits from <code>SoodaDataSource</code></li>
+                    </ul>
                 </body>
             </section>
             <section id="schemaapiprecommitvalueinfo">
                 <title>PrecommitValueInfo class</title>
                 <body>
+                    <p>
+                        <code>Sooda.Schema.PrecommitValueInfo</code> class represents the <x><precommitValue /></x> element of 
+                        the <a href="#schema">mapping schema</a>. It can be used to retrieve information about 
+                        defined precommit values for each data type.
+                    </p>
+                    <p>
+                        <code>PrecommitValueInfo</code> class has the following public properties:
+                    </p>
+                    <ul>
+                        <li><code>DataName</code> - data type (Integer, String, DateTime and so on)</li>
+                        <li><code>ValueText</code> - textual precommit value</li>
+                        <li><code>Value</code> - typed precommit value</li>
+                    </ul>
                 </body>
             </section>
             <section id="schemaapicollectiononetomanyinfo">
                 <title>CollectionOneToManyInfo class</title>
                 <body>
+                    <p>
+                        <code>Sooda.Schema.CollectionOneToManyInfo</code> class represents the <x><collectionOneToMany /></x> element of 
+                        the <a href="#schema">mapping schema</a>. It can be used to retrieve information about 
+                        defined one-to-many collections of a class:
+                    </p>
+                    <p>
+                        <code>CollectionOneToManyInfo</code> class has the following public properties:
+                    </p>
+                    <ul>
+                        <li><code>Name</code> - collection name</li>
+                        <li><code>ClassName</code> - collection element type name</li>
+                        <li><code>Class</code> - collection element <a href="#schemaapiclassinfo"><code>ClassInfo</code></a>.</li>
+                        <li><code>ForeignFieldName</code> - name of the field in <code>Class</code> that references at the object that defines the collection</li>
+                        <li><code>Cache</code> - caching hint</li>
+                    </ul>
                 </body>
             </section>
             <section id="schemaapicollectionmanytomanyinfo">
                 <title>CollectionManyToManyInfo class</title>
                 <body>
+                    <p>
+                        <code>Sooda.Schema.CollectionManyToManyInfo</code> class represents the <x><collectionManyToMany /></x> element of 
+                        the <a href="#schema">mapping schema</a>. It can be used to retrieve information about 
+                        defined many-to-many collections of a class:
+                    </p>
+                    <p>
+                        <code>CollectionManyToManyInfo</code> class has the following public properties:
+                    </p>
+                    <ul>
+                        <li><code>Name</code> - collection name</li>
+                        <li><code>Relation</code> - name of the relation that resolves many-to-many relationship</li>
+                        <li><code>ForeignField</code> - name of the field in <code>Relation</code> that references at the object that defines the collection</li>
+                    </ul>
                 </body>
             </section>
+        </section>
+        <section id="factorycache">
+            <title>Factory Cache</title>
+            <body>
+                <p>
+                    Factory cache is a mechanism that is meant to optimize the <code>GetRef()</code> operation for classes
+                    that are part of inheritance relationships. For all other cases <code>GetRef()</code> can be very cheap, 
+                    constant-time operation, but if a class has subclasses, Sooda needs to issue a database query to
+                    determine the concrete class that should be instantiated. Once the query has been executed and the concrete
+                    class is know, we can cache it so that further <code>GetRef()s</code> can be done without any database queries.
+                </p>
+                <p>
+                    By default Sooda comes with eternal factory cache that stores the primary key to concrete class association in 
+                    a hashtable that is never emptied. This is sufficient for most databases with less than a few million records. For
+                    larger databases you should implement your own factory cache by creating a class that implements the <code>ISoodaObjectFactoryCache</code>
+                    interface.
+                </p>
+                <p>
+                    Once you have defined your own factory cache, you should assign it to the static 
+                    property <code>SoodaObjectFactoryCache</code> of the <code>SoodaTransaction</code> class:
+                </p>
+                <code lang="C#">
+                    SoodaTransaction.SoodaObjectFactoryCache = new MyFactoryCache();
+                </code>
+            </body>
+        </section>
+        <section id="activetransactionmanagement">
+            <title>ActiveTransaction management</title>
+            <body>
+                <p>
+                    Implicit transaction (stored in <code>SoodaTransaction.ActiveTransaction</code>) is kept in 
+                    thread's local storage (TLS). It means that as long as you access the objects from the thread
+                    that created the transaction, you do not need to pass the transaction reference explicitly.
+                    There are situations where storing the transaction on per-thread basis is not feasible. For example
+                    events in the ASP.NET environment are not guaranteed to be thread-bound so you cannot store
+                    implicit <code>SoodaTransaction</code> in TLS.
+                </p>
+                <p>
+                    Fortunately, Sooda supports multiple strategies for managing the implicit transaction reference.
+                    There are two predefined strategies:
+                </p>
+                <ul>
+                    <li><code>SoodaThreadBoundTransactionStrategy</code> - default thread-bound implementation</li>
+                    <li><code>SoodaHttpContextBoundTransactionStrategy</code> - ASP.NET HttpContext-bound implementation</li>
+                </ul>
+                <p>
+                    To change the active strategy, create an instance of the appropriate strategy class and assign 
+                    it to the <code>SoodaTransaction.DefaultTransactionStrategy</code> static property:
+                </p>
+                <code lang="C#">
+                    SoodaTransaction.DefaultTransactionStrategy = new SoodaHttpContextBoundTransactionStrategy();
+                </code>
+                <p>
+                    To implement your own strategy, create a class that implements the 
+                    <code>IDefaultSoodaTransactionStrategy</code> interface. Two methods need to be implemented: one that
+                    gets current transaction and the other that sets it and returns a previous value.
+                </p>
+            </body>
+        </section>
+        <section id="prefetch">
+            <title>Prefetching</title>
+            <body>
+                <p>
+                    Prefetching is a technique that allows object references to be pre-loaded from the database 
+                    at the same time the object is loaded. This is possible thanks to the SQL <code>OUTER JOIN</code>
+                    operators. Normally Sooda issues a simple SQL statement to load an object from the database::
+                </p>
+                <code lang="C#">
+                    select column1, column2, ..., columnN
+                    from   table1
+                    where  id=123
+                </code>
+                <p>
+                    Assuming that <code>columnR</code> is a foreign key reference to <code>table2</code>, we can load two
+                    objects in a single query by using an outer join:
+                </p>
+                <code lang="C#">
+                    select t1.column1, t1.column2, ..., t1.columnN
+                           t2.column1, t2.column2, ..., t2.columnM
+                    from   table1 t1
+                           left outer join table2 t2 on (t1.columnR = t2.id)
+                    where  t1.id=123
+                </code>
+                <p>
+                    Note that columns 1..N belong to objects stored in "<code>table1</code>" and 
+                    columns N+1..N+M are from "<code>table2</code>".
+                </p>
+                <p>
+                    Sooda extends this concept with the possibility to include arbitrary number of objects being prefetched
+                    on each load. This can be controlled by the <code>prefetch</code> attribute of the <x><field /></x> element in the
+                    <a href="#schema">mapping schema</a>. By default it is zero, meaning that no prefetch should be performed,
+                    but you can set it to a higher value to indicate level of objects that should be prefetched.
+                </p>
+                <p>
+                    Consider this example of a simple movie management system:
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                    <schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
+                        <class name="Movie">
+                            <table name="Movie">
+                                <field name="ID" type="Integer" primaryKey="true" />
+                                <field name="Title" type="String" size="40" />
+                                <field name="Genre" type="Integer" references="MovieGenre" prefetch="1" />
+                                <field name="Subgenre" type="Integer" references="MovieGenre" prefetch="2" />
+                                <field name="AudioLanguage" type="Integer" references="AudioLanguage" />
+                                <field name="VideoFormat" type="Integer" references="VideoFormat" prefetch="1" />
+                                <field name="ParentalGuidance" type="Integer" references="ParentalRating" />
+                            </table>
+                        </class>
+                        <class name="MovieGenre">
+                            <table name="MovieGenre">
+                                <field name="ID" type="Integer" primaryKey="true" />
+                                <field name="Name" type="String" size="40" />
+                                <field name="ParentGenre" type="Integer" references="MovieGenre" prefetch="1" />
+                            </table>
+                        </class>
+                        <class name="VideoFormat">
+                            <table name="VideoFormat">
+                                <field name="ID" type="Integer" primaryKey="true" />
+                                <field name="FrameWidth" type="Integer" />
+                                <field name="FrameHeight" type="Integer" />
+                                <field name="ColorDepth" type="Integer" />
+                                <field name="Compression" type="Integer" />
+                            </table>
+                        </class>
+                        <class name="ParentalRating">
+                            <table name="ParentalRating">
+                                <field name="ID" type="Integer" primaryKey="true" />
+                                <field name="Name" type="String" size="40" />
+                                <field name="MinimumAge" type="Integer" />
+                            </table>
+                        </class>
+                        <class name="AudioLanguage">
+                            <table name="AudioLanguage">
+                                <field name="ID" type="Integer" primaryKey="true" />
+                                <field name="Name" type="String" size="40" />
+                                <field name="ISOTwoLetterName" type="String" size="40" />
+                                <field name="ISOThreeLetterName" type="String" size="40" />
+                            </table>
+                        </class>
+                    </schema>
+                    ]]>
+                </code>
+                <p>
+                    When you load a movie object <code>m</code> Sooda automatically prefetches related objects, so that 
+                    the following properties can be accessed with no additional SQL queries:
+                </p>
+                <code lang="C#">
+                    <![CDATA[
+                    m.ID
+                    m.Title
+                    m.Genre
+                    m.Subgenre
+                    m.AudioLanguage
+                    m.VideoFormat
+                    m.ParentalGuidance
+
+                    // these fields are prefetched because field Genre has prefetch="1"
+                    m.Genre.Name
+
+                    // these fields are prefetched because field Subgenre has prefetch="2"
+                    m.Subgenre.Name
+                    m.Subgenre.ParentGenre.ID
+                    m.Subgenre.ParentGenre.Name
+
+                    // these fields are prefetched because field VideoFormat has prefetch="1"
+                    m.VideoFormat.FrameWidth
+                    m.VideoFormat.FrameHeight
+                    m.VideoFormat.ColorDepth
+                    m.VideoFormat.Compression
+                    ]]>
+                </code>
+                <p>
+                    Note that the following fields are NOT prefetched automatically and will involve 
+                    a database access when first accessed:
+                </p>
+                <code lang="C#">
+                    <![CDATA[
+                    m.AudioLanguage.Name
+                    m.AudioLanguage.ISOTwoLetterName
+                    m.AudioLanguage.ISOThreeLetterName
+                    m.ParentalGuidance.Name
+                    m.ParentalGuidance.MinimumAge
+                    ]]>
+                </code>
+                <p>
+                    Because primary keys are always present in memory, accessing following fields will never
+                    cause a database roundtrip, even if the <code>prefetch</code> properties were not set:
+                </p>
+                <code lang="C#">
+                    <![CDATA[
+                    m.Genre.ID
+                    m.Subgenre.ID
+                    m.VideoFormat.ID
+                    m.AudioLanguage.ID
+                    m.ParentalGuidance.ID
+                    ]]>
+                </code>
+                <p>
+                    Prefetch can be used to optimize preloading of hierarchies, such as Employee-Manager relationship which is effectively
+                    a tree. Let's assume you have a class named <code>Employee</code> which includes a reference to its manager:
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                    <class name="Employee">
+                        <table name="Employee">
+                            <field name="ID" type="Integer" primaryKey="true" />
+                            <field name="Name" type="String" size="40" />
+                            <field name="Salary" type="Decimal" />
+                            <field name="HireDate" type="DateTime" />
+                            <field name="Manager" type="Integer" reference="Employee" />
+                            <field name="Active" type="BooleanAsInteger" />
+                        </table>
+                    </class>
+                    ]]>
+                </code>
+                <p>
+                    We can print all the managers of some particular employee with a simple <code>for()</code> loop:
+                </p>
+                <code lang="C#">
+                    <![CDATA[
+                    for (Employee e = this.Manager; e != null; e = e.Manager)
+                    {
+                        Console.WriteLine("manager: {0}", e.Name);
+                    }
+                    ]]>
+                </code>
+                <p>
+                    Without the prefetch, Sooda would have to issue the SQL query to retrieve each Employee object separately.
+                    Assuming you have 10 levels of management in your company, that would be 10 SQL queries. To minimize the number of queries, you can add prefetch="3"
+                    to the "<code>Manager</code>" field declaration:
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                        <field name="Manager" type="Integer" reference="Employee" prefetch="3" />
+                    ]]>
+                </code>
+                <p>
+                    When you load an <code>Employee</code> object <code>e</code>, Sooda preloads the following referenced objects, so you can access 
+                    their properties without an SQL query:
+                </p>
+                <code lang="C#">
+                    e.Manager
+                    e.Manager.Manager
+                    e.Manager.Manager.Manager
+                </code>
+                <p>
+                    Once you access <code>e.Manager.Manager.Manager.Manager</code>, Sooda will preload:
+                </p>
+                <code lang="C#">
+                    e.Manager.Manager.Manager.Manager.Manager
+                    e.Manager.Manager.Manager.Manager.Manager.Manager
+                    e.Manager.Manager.Manager.Manager.Manager.Manager.Manager
+                </code>
+                <p>
+                    If there are at most three managers in the hierarchy, setting the <code>prefetch</code> to <code>3</code> ensures that
+                    the entire structure will be fetched in a single SQL query. 
+                    The cost of prefetch is usually very small, but the number of columns returned in a query grows as you 
+                    prefetch, so you should limit the depth of the prefetch operation. Prefetch value of one is usually sufficient.
+                </p>
+            </body>
         </section>
     </section>
 </content>

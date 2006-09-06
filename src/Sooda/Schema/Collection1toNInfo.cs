@@ -67,25 +67,6 @@ namespace Sooda.Schema
         [DefaultValue(false)]
         public bool Cache = false;
 
-        private DeleteAction deleteAction = DeleteAction.Nothing;
-
-        [System.Xml.Serialization.XmlAttributeAttribute("onDelete")]
-        [System.ComponentModel.DefaultValue(DeleteAction.Nothing)]
-        public DeleteAction OnDelete
-        {
-            get
-            {
-                return deleteAction;
-            }
-            set
-            {
-                deleteAction = value;
-            }
-        }
-        [XmlAttribute("prefetch")]
-        [DefaultValue(0)]
-        public int PrefetchLevel = 0;
-
         public override ClassInfo GetItemClass()
         {
             return Class;
