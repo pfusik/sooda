@@ -131,8 +131,8 @@ namespace Sooda.Schema
                 Includes = new IncludeInfoCollection();
 
 #if DOTNET2
-            classNameHash = new Hashtable(StringComparer.Ordinal);
-            relationNameHash = new Hashtable(StringComparer.Ordinal);
+            classNameHash = new Hashtable(StringComparer.OrdinalIgnoreCase);
+            relationNameHash = new Hashtable(StringComparer.OrdinalIgnoreCase);
 #else
             classNameHash = new Hashtable(new CaseInsensitiveHashCodeProvider(), new CaseInsensitiveComparer());
             relationNameHash = new Hashtable(new CaseInsensitiveHashCodeProvider(), new CaseInsensitiveComparer());

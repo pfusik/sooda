@@ -139,6 +139,7 @@ namespace SoodaSchemaTool
 
         private void AutoDetectCollections(SchemaInfo si)
         {
+            int counter = 0;
             foreach (ClassInfo ci in si.Classes)
             {
                 foreach (FieldInfo fi in ci.LocalTables[0].Fields)
@@ -151,7 +152,7 @@ namespace SoodaSchemaTool
                             al.AddRange(fi.ReferencedClass.Collections1toN);
                         }
                         CollectionOnetoManyInfo coll = new CollectionOnetoManyInfo();
-                        coll.Name = "CollectionOf" + ci.Name + "" + al.Count;
+                        coll.Name = "CollectionOf" + ci.Name + "" + counter++;
                         coll.ClassName = ci.Name;
                         coll.ForeignFieldName = fi.Name;
                         al.Add(coll);
@@ -171,7 +172,7 @@ namespace SoodaSchemaTool
                     al.AddRange(ri.Table.Fields[0].ReferencedClass.CollectionsNtoN);
 
                 mm = new CollectionManyToManyInfo();
-                mm.Name = "CollectionOf" + ri.Table.Fields[1].ReferencedClass.Name + "" + al.Count;
+                mm.Name = "CollectionOf" + ri.Table.Fields[1].ReferencedClass.Name + "" + counter++;
                 mm.Relation = ri.Name;
                 mm.ForeignField = ri.Table.Fields[0].Name;
                 al.Add(mm);

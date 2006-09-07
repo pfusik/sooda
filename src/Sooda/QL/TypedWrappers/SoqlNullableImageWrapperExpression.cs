@@ -38,10 +38,10 @@ using System.Drawing;
 
 namespace Sooda.QL.TypedWrappers
 {
-    public class SoqlNullableDoubleWrapperExpression : SoqlDoubleWrapperExpression
+    public class SoqlNullableImageWrapperExpression : SoqlImageWrapperExpression
     {
-        public SoqlNullableDoubleWrapperExpression() { }
-        public SoqlNullableDoubleWrapperExpression(SoqlExpression innerExpression) : base(innerExpression) { }
+        public SoqlNullableImageWrapperExpression() { }
+        public SoqlNullableImageWrapperExpression(SoqlExpression innerExpression) : base(innerExpression) { }
 
         public SoqlBooleanExpression IsNull() { return new SoqlBooleanIsNullExpression(this, false); }
         public SoqlBooleanExpression IsNotNull() { return new SoqlBooleanIsNullExpression(this, true); }

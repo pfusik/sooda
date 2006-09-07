@@ -38,41 +38,41 @@ using System.Drawing;
 
 namespace Sooda.QL.TypedWrappers
 {
-    public class SoqlTimeSpanWrapperExpression : SoqlTypedWrapperExpression 
+    public class SoqlImageWrapperExpression : SoqlTypedWrapperExpression 
     {
-        public SoqlTimeSpanWrapperExpression()
+        public SoqlImageWrapperExpression()
         {
         }
 
-        public SoqlTimeSpanWrapperExpression(SoqlExpression innerExpression) : base(innerExpression) { }
+        public SoqlImageWrapperExpression(SoqlExpression innerExpression) : base(innerExpression) { }
 
-        public static implicit operator SoqlTimeSpanWrapperExpression(TimeSpan v)
+        public static implicit operator SoqlImageWrapperExpression(Image v)
         {
-            return new SoqlTimeSpanWrapperExpression(new SoqlLiteralExpression(v));
+            return new SoqlImageWrapperExpression(new SoqlLiteralExpression(v));
         }
 
-        public static implicit operator SoqlTimeSpanWrapperExpression(SoqlParameterLiteralExpression v)
+        public static implicit operator SoqlImageWrapperExpression(SoqlParameterLiteralExpression v)
         {
-            return new SoqlTimeSpanWrapperExpression(v);
+            return new SoqlImageWrapperExpression(v);
         }
 
-        public static SoqlBooleanExpression operator ==(SoqlTimeSpanWrapperExpression left, SoqlTimeSpanWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.Equal); }
-        public static SoqlBooleanExpression operator !=(SoqlTimeSpanWrapperExpression left, SoqlTimeSpanWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.NotEqual); }
+        public static SoqlBooleanExpression operator ==(SoqlImageWrapperExpression left, SoqlImageWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.Equal); }
+        public static SoqlBooleanExpression operator !=(SoqlImageWrapperExpression left, SoqlImageWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.NotEqual); }
         
-        public SoqlBooleanExpression In(params SoqlTimeSpanWrapperExpression[] inExpressions)
+        public SoqlBooleanExpression In(params SoqlImageWrapperExpression[] inExpressions)
         {
             SoqlExpressionCollection rhs = new SoqlExpressionCollection();
-            foreach (SoqlTimeSpanWrapperExpression e in inExpressions)
+            foreach (SoqlImageWrapperExpression e in inExpressions)
             {
                 rhs.Add(e);
             }
             return new SoqlBooleanInExpression(this, rhs);
         }
 
-        public SoqlBooleanExpression In(params TimeSpan[] inExpressions)
+        public SoqlBooleanExpression In(params Image[] inExpressions)
         {
             SoqlExpressionCollection rhs = new SoqlExpressionCollection();
-            foreach (TimeSpan e in inExpressions)
+            foreach (Image e in inExpressions)
             {
                 rhs.Add(new SoqlLiteralExpression(e));
             }
@@ -81,10 +81,10 @@ namespace Sooda.QL.TypedWrappers
 
         public override bool Equals(object o) { return Object.ReferenceEquals(this, o); }
         public override int GetHashCode() { return base.GetHashCode(); }
-        public static SoqlBooleanExpression operator <=(SoqlTimeSpanWrapperExpression left, SoqlTimeSpanWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.LessOrEqual); }
-        public static SoqlBooleanExpression operator >=(SoqlTimeSpanWrapperExpression left, SoqlTimeSpanWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.GreaterOrEqual); }
-        public static SoqlBooleanExpression operator <(SoqlTimeSpanWrapperExpression left, SoqlTimeSpanWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.Less); }
-        public static SoqlBooleanExpression operator >(SoqlTimeSpanWrapperExpression left, SoqlTimeSpanWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.Greater); }
+        public static SoqlBooleanExpression operator <=(SoqlImageWrapperExpression left, SoqlImageWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.LessOrEqual); }
+        public static SoqlBooleanExpression operator >=(SoqlImageWrapperExpression left, SoqlImageWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.GreaterOrEqual); }
+        public static SoqlBooleanExpression operator <(SoqlImageWrapperExpression left, SoqlImageWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.Less); }
+        public static SoqlBooleanExpression operator >(SoqlImageWrapperExpression left, SoqlImageWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.Greater); }
     }
 
 }

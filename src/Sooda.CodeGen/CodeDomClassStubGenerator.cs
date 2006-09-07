@@ -511,7 +511,7 @@ namespace Sooda.CodeGen
                 if (fi.References != null)
                 {
                     // reference field getter
-
+                    //
                     prop.GetStatements.Add(
                             new CodeConditionStatement(
                                 new CodeBinaryOperatorExpression(

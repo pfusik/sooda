@@ -3,22 +3,22 @@
         ProjectType = "Local"
         ProductVersion = "7.10.3077"
         SchemaVersion = "2.0"
-        ProjectGuid = "{CD8A7A16-EC7F-4450-B91E-57EB19F27B19}"
+        ProjectGuid = "{43FDE59A-8710-4E7B-859B-021BBB6DEEEB}"
     >
         <Build>
             <Settings
-                ApplicationIcon = ""
+                ApplicationIcon = "App.ico"
                 AssemblyKeyContainerName = ""
-                AssemblyName = "SoodaAddIn"
+                AssemblyName = "ConfigureSoodaProject"
                 AssemblyOriginatorKeyFile = ""
                 DefaultClientScript = "JScript"
                 DefaultHTMLPageLayout = "Grid"
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
-                OutputType = "Library"
+                OutputType = "WinExe"
                 PreBuildEvent = ""
                 PostBuildEvent = ""
-                RootNamespace = "SoodaAddIn"
+                RootNamespace = "ConfigureSoodaProject"
                 RunPostBuildEvent = "OnBuildSuccess"
                 StartupObject = ""
             >
@@ -32,12 +32,12 @@
                     DocumentationFile = ""
                     DebugSymbols = "true"
                     FileAlignment = "4096"
-                    IncrementalBuild = "true"
+                    IncrementalBuild = "false"
                     NoStdLib = "false"
                     NoWarn = ""
                     Optimize = "false"
                     OutputPath = "bin\Debug\"
-                    RegisterForComInterop = "true"
+                    RegisterForComInterop = "false"
                     RemoveIntegerChecks = "false"
                     TreatWarningsAsErrors = "false"
                     WarningLevel = "4"
@@ -52,12 +52,12 @@
                     DocumentationFile = ""
                     DebugSymbols = "false"
                     FileAlignment = "4096"
-                    IncrementalBuild = "true"
+                    IncrementalBuild = "false"
                     NoStdLib = "false"
                     NoWarn = ""
                     Optimize = "true"
                     OutputPath = "bin\Release\"
-                    RegisterForComInterop = "true"
+                    RegisterForComInterop = "false"
                     RemoveIntegerChecks = "false"
                     TreatWarningsAsErrors = "false"
                     WarningLevel = "4"
@@ -67,38 +67,12 @@
                 <Reference
                     Name = "System"
                     AssemblyName = "System"
+                    HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.dll"
                 />
                 <Reference
                     Name = "System.Data"
                     AssemblyName = "System.Data"
-                />
-                <Reference
-                    Name = "System.XML"
-                    AssemblyName = "System.Xml"
-                />
-                <Reference
-                    Name = "Office"
-                    AssemblyName = "Office"
-                />
-                <Reference
-                    Name = "Extensibility"
-                    AssemblyName = "Extensibility"
-                />
-                <Reference
-                    Name = "EnvDTE"
-                    AssemblyName = "EnvDTE"
-                    HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\EnvDTE.dll"
-                />
-                <Reference
-                    Name = "System.Windows.Forms"
-                    AssemblyName = "System.Windows.Forms"
-                    HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Windows.Forms.dll"
-                />
-                <Reference
-                    Name = "NLog"
-                    AssemblyName = "NLog"
-                    HintPath = "C:\Program Files\NLog\bin\net-1.1\NLog.dll"
-                    AssemblyFolderKey = "hklm\nlog"
+                    HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Data.dll"
                 />
                 <Reference
                     Name = "System.Drawing"
@@ -106,48 +80,36 @@
                     HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Drawing.dll"
                 />
                 <Reference
-                    Name = "Sooda.CodeGen"
-                    AssemblyName = "Sooda.CodeGen"
-                    HintPath = "C:\Program Files\Sooda 0.8\bin\net-1.1\Sooda.CodeGen.dll"
-                    AssemblyFolderKey = "hklm\sooda"
+                    Name = "System.Windows.Forms"
+                    AssemblyName = "System.Windows.Forms"
+                    HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Windows.Forms.dll"
+                />
+                <Reference
+                    Name = "System.XML"
+                    AssemblyName = "System.Xml"
+                    HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
+                />
+                <Reference
+                    Name = "SoodaAddin.UI"
+                    Project = "{C5CD6D63-6EE3-4FD9-9E4C-CBA49C0EF739}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
             </References>
         </Build>
         <Files>
             <Include>
                 <File
-                    RelPath = "AddSoodaSupportForm.cs"
-                    SubType = "Form"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "AddSoodaSupportForm.resx"
-                    DependentUpon = "AddSoodaSupportForm.cs"
-                    BuildAction = "EmbeddedResource"
+                    RelPath = "App.ico"
+                    BuildAction = "Content"
                 />
                 <File
                     RelPath = "AssemblyInfo.cs"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Program.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ConfigureConnections.cs"
-                    SubType = "UserControl"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ConfigureConnections.resx"
-                    DependentUpon = "ConfigureConnections.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "Connect.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "sooda.jpg"
-                    BuildAction = "EmbeddedResource"
                 />
             </Include>
         </Files>

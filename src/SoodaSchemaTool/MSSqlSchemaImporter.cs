@@ -144,7 +144,7 @@ namespace SoodaSchemaTool
                         {
                             if (fi.DBColumnName == curSrcColumnName)
                             {
-                                fi.References = curDstTableName;
+                                fi.References = MakePascalCase(curDstTableName);
                                 break;
                             }
                         }
@@ -274,6 +274,9 @@ namespace SoodaSchemaTool
                     Console.WriteLine("WARNING: {0}", ex.Message);
                 }
             }
+
+            bool hasPrimaryKey = false;
+
             foreach (DataRow r in dataSet.Tables["PrimaryKeys"].Select("TABLE_NAME='" + table + "' and TABLE_OWNER='" + owner + "'"))
             {
                 string column = Convert.ToString(r["COLUMN_NAME"]);
@@ -282,8 +285,14 @@ namespace SoodaSchemaTool
                     if (0 == String.Compare(fi.DBColumnName, column, true))
                     {
                         fi.IsPrimaryKey = true;
+                        hasPrimaryKey = true;
                     }
                 }
+            }
+            if (!hasPrimaryKey)
+            {
+                Console.WriteLine("WARNING: Created artificial primary key from the first column of the " + ti.DBTableName + " table. This may be incorrect.");
+                ti.Fields[0].IsPrimaryKey = true;
             }
             schemaInfo.Classes.Add(ci);
         }

@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-09-06 13:35:27 +0200 (Wed, 06 Sep 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 371 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-09-07 17:02:28 +0200 (Thu, 07 Sep 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 372 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright &#169; 2003-2006 by Jaros³aw Kowalski</div>
         <div class="pagebreak" />
     </div>
@@ -352,7 +352,7 @@ class Permission
                     </p>
                     <ul>
                         <li>add a Permission to a collection of permissions held by Employee</li>
-                        <li>add an Employee to a collection of employeees which hold the permission</li>
+                        <li>add an Employee to a collection of employees which hold the permission</li>
                     </ul>
                     <code lang="C#">
 using (SoodaTransaction t = new SoodaTransaction())
@@ -606,10 +606,37 @@ foreach (WorkItem wi in WorkItem.GetList(true))
         <title>Getting Started</title>
         <body>
             <p>
-                In order to use Sooda in your project you need to have a working database. We will be using Microsoft
-                SQL Server and the Northwind database.
-            </p> 
-            <todo />
+                Sooda comes with a graphical wizard that can be used to automatically add Sooda support to your Visual Studio project.
+                In this tutorial we will use it to create a simple C# application that exercises various features of Sooda. We will be
+                using the <code>Northwind</code> database that comes with MSSQL Server but any database should be ok.
+            </p>
+            <p>
+                Let's start by creating an empty C# Console application project in Visual Studio. After the project has been created
+                run the wizard. You can invoke it by clicking on the <code>Configure Sooda...</code> option located in the <code>Tools</code> menu 
+                of Visual Studio or by running a stand-alone application <code>ConfigureSoodaProject.exe</code> by clicking its shortcut
+                on the Start menu.
+            </p>
+            <p>
+                The first step of the wizard is a greeting message that reminds the user to prepare a database.
+                We already have one, so we can proceed to the next step by clicking the <code>Next</code> button.
+            </p>
+            <img src="docwizard1.gif" />
+            <p>
+                In the second step of the wizard you need to specify database server and credentials used to connect to the database.
+                Make sure the account used to connect has the right to create additional tables in the database or you will not be able
+                to complete the wizard (using a local administrator account and Windows Authentication should be sufficient in most cases).
+                Click <code>Next</code> to proceed to the database selection:
+            </p>
+            <img src="docwizard2.gif" />
+            <p>
+                The third step of the wizard prompts you to choose one of the databases that are running on the server. Choose <code>Northwind</code> and click <code>Next</code>.
+            </p>
+            <img src="docwizard3.gif" />
+            <p>
+                The last page of the wizard presents a list of actions the wizard can perform for you. The default set of options should
+                be just fine, and clicking <code>Finish</code> will add Sooda support to your project as requested.
+            </p>
+            <img src="docwizard4.gif" />
         </body>
     </section>
     <section id="schema">
@@ -2155,7 +2182,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 </ul>
 
                 <p>
-                    The following picture describes the problem. Note how Book_Stub class must be able to return references
+                    The following figure describes the problem. Note how Book_Stub class must be able to return references
                     to Person class and Person_Stub must be able to return Book objects. At the same time Book inherits
                     from Book_Stub and Person inherits from Person_Stub:
                 </p>
@@ -2179,7 +2206,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         <li>C#/VB Compiler which compiles stub and application code together</li>
                     </ol>
                     <p>
-                        The following picture provides an overview of the standard stub compilation process:
+                        The following figure provides an overview of the standard stub compilation process:
                     </p>
                     <img src="doc12.png" alt="Standard stub compilation" />
                     <p>
@@ -2231,7 +2258,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         <li>C#/VB Compiler which compiles application code referencing the precompiled stub DLL</li>
                     </ol>
                     <p>
-                        The following picture provides an overview of the separate stub compilation process:
+                        The following figure provides an overview of the separate stub compilation process:
                     </p>
                     <img src="doc13.png" alt="Separate stub compilation" />
                     <p>
@@ -4997,7 +5024,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
             <body>
                 <p>
                     Key generation is a process of generating unique identifiers to be used for primary keys of newly created objects.
-                    Because primary keys must be known before objects can be committed, you cannot use SQL Server identity columns for key
+                    Because primary keys must be known before objects can be committed, <b>you cannot use SQL Server identity columns</b> for key
                     generation. By default Sooda uses a table-based key generator that manages primary keys by storing their values in
                     a special database table, but you can write your own generator by creating a class that implements 
                     the <code>IPrimaryKeyGenerator</code> interface.
@@ -7083,87 +7110,765 @@ where    (t2.name = 'Mary Manager')
         <section id="generatedcode">
             <title>Generated Code</title>
             <body>
+                <a href="#soodastubgen">SoodaStubGen utility</a> generates a number of classes, such as stub classes, factory classes, list wrappers, and more.
+                This section describes each piece of generated code in detail.
             </body>
             <section id="generatedclasses">
                 <title>Classes</title>
                 <body>
+                    <p>
+                        Each <x><class /></x> declaration in the <a href="#schema">mapping schema</a> translates into at least five classes:
+                    </p>
+                    <ul>
+                        <li><b>stub class</b> - contains properties generated based on <x><field /></x> elements in the schema and utility methods</li>
+                        <li><b>skeleton class</b> - generated only once, inherits from a stub class</li>
+                        <li><b>factory class</b> - contains methods to create single instances and lists of objects of particular class in a polymorphic manner - following the Abstract Factory design pattern</li>
+                        <li><b>value class</b> - contains field values - used for lazy loading</li>
+                        <li><b>list wrapper class</b> - type-safe wrapper around <code>ISoodaObjectList</code></li>
+                    </ul>
                 </body>
-                <section id="generatedproperties">
-                    <title>Properties</title>
+                <section id="generatedstubclasses">
+                    <title>Stub Classes</title>
                     <body>
-                    </body>
-                    <section id="generatedpropertiesboxed">
-                        <title>Boxed</title>
-                        <body>
-                        </body>
-                    </section>
-                    <section id="generatedpropertiessqltypes">
-                        <title>SqlTypes</title>
-                        <body>
-                        </body>
-                    </section>
-                    <section id="generatedpropertiesraw">
-                        <title>Raw</title>
-                        <body>
-                        </body>
-                    </section>
-                    <section id="generatedpropertiesrawwithisnull">
-                        <title>RawWithIsNull</title>
-                        <body>
-                        </body>
-                    </section>
-                    <section id="generatedpropertiesnullable">
-                        <title>Nullable</title>
-                        <body>
-                        </body>
-                    </section>
-                </section>
-                <section id="generatedcollections">
-                    <title>Collections</title>
-                    <body>
-                    </body>
-                </section>
-                <section id="generatedtriggers">
-                    <title>Triggers</title>
-                    <body>
+                        <p>
+                            Each stub class <code>NNN_Stub</code> generated by SoodaStubGen corresponds to a <x><class name="NNN" /></x> declaration in the <a href="#schema">mapping schema</a>.
+                            The stub class is enclosed in the output namespace defined in the <a href="#soodaproject">Sooda Project File</a> followed by <code>.Stubs</code>. It ultimately
+                            derives from the <code>SoodaObject</code> class as described <sectionlink id="generatedclasshierarchy" />:
+                        </p>
+                        <code lang="C#">
+                            namespace OutputNamespace.Stubs
+                            {
+                                public class NNN_Stub : SoodaObject
+                                {
+                                }
+                            }
+                        </code>
+                        <p>
+                            Each stub class has:
+                        </p>
+                        <ul>
+                            <li>constructors</li>
+                            <li>one public instance property for each <x><field /></x> declared locally in the <a href="#schema">schema file</a>. The name of the property matches the name defined in the schema and exact type
+                                depends on chosen <a href="#soodaprojectprimitiverep">primitive representation</a> and field nullability ad described <sectionlink id="generatedproperties" />.</li>
+                            <li>one public static property for each <x><const /></x> declared locally in the schema as described <sectionlink id="generatedenums" />.</li>
+                            <li><code>GetClassInfo()</code> method that returns the <a href="#schemaapiclassinfo">ClassInfo</a> object
+                                describing mapping metadata</li>
+                            <li><code>GetFieldHandler(int ordinal)</code> method that returns a field handler given for a field ordinal</li>
+                            <li>static <code>GetKeyGenerator()</code> method that returns the key generator for the class</li>
+                            <li><code>InitNewObject()</code> method that initializes the primary key of the newly created objects from the key generator</li>
+                            <li>
+                                <p>
+                                    Loader methods:
+                                </p>
+                                <ul>
+                                    <li><code>LoadSingleObject()</code> overloaded method</li>
+                                    <li><code>GetAllObjects()</code> method overloads</li>
+                                    <li><code>GetList()</code> method overloads</li>
+                                    <li><code>Load()</code> method overloads</li>
+                                    <li><code>GetRef()</code> method overloads</li>
+                                    <li><code>TryGet()</code> method overloads</li>
+                                </ul>
+                                <p>
+                                    Note that these methods are located in a separate class named <code>NNNLoader</code>
+                                    when the <x><loader-class /></x> option is set to <code>true</code> in the <a href="#soodaproject">Sooda Project File</a>.
+                                </p>
+                            </li>
+                        </ul>
                     </body>
                 </section>
             </section>
             <section id="generatedclasshierarchy">
                 <title>Class hierarchy</title>
                 <body>
-                    <todo />
+                    <p>
+                        Each <x><class /></x> defined in the <a href="#schema">mapping schema</a> is represented 
+                        by two classes: skeleton and stub. Stub classes typically inherit from the <code>SoodaObject</code>
+                        class, but when Sooda class inheritance is used, the stub classes may inherit from parent skeleton classes.
+                    </p>
+                    <p>
+                        In addition to this, you may "inject" your own class into the inheritance hierarchy at two levels:
+                    </p>
+                    <ul>
+                        <li>by specifying the <x><base-class-name /></x> in the <a href="#soodaproject">Sooda Project File</a></li>
+                        <li>by overriding the base class name in the schema with the <code>extBaseClassName</code> attribute.</li>
+                    </ul>
+                    <p>
+                        The class you inject must provide 2 constructors required by Sooda and must ultimately derive from <code>SoodaObject</code>.
+                        Typical declaration of the injectable class looks like this:
+                    </p>
+                    <code lang="C#">
+                        <![CDATA[
+                            public class SoodaObjectExtensions: SoodaObject
+                            {
+                                public SoodaObjectExtensions(SoodaTransaction t): base(t){}
+                                protected SoodaObjectExtensions(SoodaConstructor c): base(c){}
+                            }
+                        ]]>
+                    </code>
+                    <p>
+                        Consider a simple schema with five classes (fields and tables omitted for brevity):
+                    </p>
+                    <code lang="XML">
+                        <![CDATA[
+                        <schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
+                            <class name="Vehicle" subclassSelectorField="Type" subclassSelectorValue="0">
+                            </class>
+
+                            <class name="Bicycle" inheritFrom="Vehicle" subclassSelectorValue="1">
+                            </class>
+                                
+                            <class name="Car" inheritFrom="Vehicle" subclassSelectorValue="2">
+                            </class>
+                                
+                            <class name="Boat" inheritFrom="Vehicle" subclassSelectorValue="3">
+                            </class>
+
+                            <class name="Person">
+                            </class>
+                        </schema>
+                        ]]>
+                    </code>
+                    <p>
+                        Assuming the Sooda Project File sets the <x><base-class-name /></x> option:
+                    </p>
+                    <code lang="XML">
+                        <![CDATA[
+                        <sooda-project xmlns="http://www.sooda.org/schemas/SoodaProject.xsd">
+                            <base-class-name>AdditionalBaseClass</base-class-name>
+                        </sooda-project>                
+                        ]]>
+                    </code>
+                    <p>
+                        The generated class hierarchy is presented on the following figure. 
+                        Note how all classes ultimately derive from the <code>SoodaObject</code> class
+                        and how <code>Bicycle_Stub</code>, <code>Car_Stub</code> and <code>Boat_Stub</code>
+                        classes inherit from <code>Vehicle</code> skeleton class.
+                    </p>
                     <img src="doc15.png" alt="Demonstration of base-class-name effect" />
+                </body>
+            </section>
+            <section id="generatedproperties">
+                <title>Properties</title>
+                <body>
+                    <p>
+                        SoodaStubGen generates a property for each <x><field /></x> declared in the mapping schema. The
+                        name of the property is taken from the <code>name</code> attribute and the property type 
+                        is dependent on two factors:
+                    </p>
+                    <ul>
+                        <li>the nullability of the field</li>
+                        <li>the primitive representation as defined in the Sooda Project File</li>
+                    </ul>
+                    <p>
+                        If the field is nullable, SoodaStubGen uses the representation passed in <x><nullable-representation /></x> parameter.
+                        If the field is not null, the representation passed in <x><not-null-representation /></x> is used. 
+                        Individual representations are presented in the following sections.
+                    </p>
+                </body>
+                <section id="generatedpropertiesboxed">
+                    <title>Boxed</title>
+                    <body>
+                        <p>
+                            <code>Boxed</code> representation causes the property to have <code>System.Object</code> return type
+                            which maps to <code>object</code> keyword in C#, so the property declaration looks like this:
+                        </p>
+                        <code lang="C#">
+                            <![CDATA[
+
+                            class NNN_Stub
+                            {
+                                // Boxed object representation, note that there is
+                                // no static type checking
+                                public object Field1
+                                {
+                                    get { ... } 
+                                    set { ... }
+                                }
+                            }
+
+                            ]]>
+                        </code>
+                    </body>
+                </section>
+                <section id="generatedpropertiessqltypes">
+                    <title>SqlTypes</title>
+                    <body>
+                        <p>
+                            <code>SqlTypes</code> representation causes the property to have the type that is a structure from the
+                            <code>System.Data.SqlTypes</code> namespace:
+                        </p>
+                        <ul>
+                            <li><code>System.Data.SqlTypes.SqlInt32</code> - for the <code>Integer</code> data type</li>
+                            <li><code>System.Data.SqlTypes.SqlInt64</code> - for the <code>Long</code> data type</li>
+                            <li><code>System.Data.SqlTypes.SqlString</code> - for the <code>String</code> and <code>AnsiString</code> data types</li>
+                            <li><code>System.Data.SqlTypes.SqlBoolean</code> - for <code>Boolean</code> and <code>BooleanAsInteger</code> data types</li>
+                            <li><code>System.Data.SqlTypes.SqlDateTime</code> - for the <code>DateTime</code> data type</li>
+                            <li><code>System.Data.SqlTypes.SqlDecimal</code> - for the <code>Decimal</code> data type</li>
+                            <li><code>System.Data.SqlTypes.SqlSingle</code> - for the <code>Float</code> data type</li>
+                            <li><code>System.Data.SqlTypes.SqlDouble</code> - for the <code>Double</code> data type</li>
+                            <li><code>System.Data.SqlTypes.SqlBinary</code> - for the <code>Blob</code> data type</li>
+                            <li><code>System.Data.SqlTypes.SqlGuid</code> - for the <code>Guid</code> data type</li>
+                        </ul>
+                        <p>
+                            Example:
+                        </p>
+                        <code lang="C#">
+                            <![CDATA[
+
+                            class NNN_Stub
+                            {
+                                // SqlTypes object representation
+                                public System.Data.SqlTypes.SqlInt32 Field1
+                                {
+                                    get { ... } 
+                                    set { ... }
+                                }
+                            }
+
+                            ]]>
+                        </code>
+                    </body>
+                </section>
+                <section id="generatedpropertiesraw">
+                    <title>Raw</title>
+                    <body>
+                        <p>
+                            <code>Raw</code> property representation does not care about null values at all. The property type is simply
+                            the raw type of the field:
+                        </p>
+                        <ul>
+                            <li><code>System.Int32</code> - for the <code>Integer</code> data type</li>
+                            <li><code>System.Int64</code> - for the <code>Long</code> data type</li>
+                            <li><code>System.String</code> - for the <code>String</code> and <code>AnsiString</code> data types</li>
+                            <li><code>System.Boolean</code> - for <code>Boolean</code> and <code>BooleanAsInteger</code> data types</li>
+                            <li><code>System.DateTime</code> - for the <code>DateTime</code> data type</li>
+                            <li><code>System.Decimal</code> - for the <code>Decimal</code> data type</li>
+                            <li><code>System.Single</code> - for the <code>Float</code> data type</li>
+                            <li><code>System.Double</code> - for the <code>Double</code> data type</li>
+                            <li><code>byte[]</code> - for the <code>Blob</code> data type</li>
+                            <li><code>System.Drawing.Image</code> - for the <code>Image</code> data type</li>
+                            <li><code>System.Guid</code> - for the <code>Guid</code> data type</li>
+                        </ul>
+                        <p>
+                            Example:
+                        </p>
+                        <code lang="C#">
+                            <![CDATA[
+
+                            class NNN_Stub
+                            {
+                                // Raw object representation
+                                public System.Int32 Field1
+                                {
+                                    get { ... } 
+                                    set { ... }
+                                }
+                            }
+
+                            ]]>
+                        </code>
+                    </body>
+                </section>
+                <section id="generatedpropertiesrawwithisnull">
+                    <title>RawWithIsNull</title>
+                    <body>
+                        <p>
+                            <code>RawWithIsNull</code> generates a pair of properties: <code>P</code> and <code>P_IsNull</code>,
+                            the latter returning <code>true</code> when the field value is <code>null</code>. In additon to this
+                            the <code>P_SetNull()</code> method is generated that can be used to set the field value to null.
+                        </p>
+                        <ul>
+                            <li><code>System.Int32</code> - for the <code>Integer</code> data type</li>
+                            <li><code>System.Int64</code> - for the <code>Long</code> data type</li>
+                            <li><code>System.String</code> - for the <code>String</code> and <code>AnsiString</code> data types</li>
+                            <li><code>System.Boolean</code> - for <code>Boolean</code> and <code>BooleanAsInteger</code> data types</li>
+                            <li><code>System.DateTime</code> - for the <code>DateTime</code> data type</li>
+                            <li><code>System.Decimal</code> - for the <code>Decimal</code> data type</li>
+                            <li><code>System.Single</code> - for the <code>Float</code> data type</li>
+                            <li><code>System.Double</code> - for the <code>Double</code> data type</li>
+                            <li><code>byte[]</code> - for the <code>Blob</code> data type</li>
+                            <li><code>System.Drawing.Image</code> - for the <code>Image</code> data type</li>
+                            <li><code>System.Guid</code> - for the <code>Guid</code> data type</li>
+                        </ul>
+                        <p>
+                            Example:
+                        </p>
+                        <code lang="C#">
+                            <![CDATA[
+
+                            class NNN_Stub
+                            {
+                                // RawWithIsNull object representation
+                                public System.Int32 Field1
+                                {
+                                    get { ... } 
+                                    set { ... }
+                                }
+
+                                public bool Field1_IsNull
+                                {
+                                    get { ... }
+                                }
+
+                                public void Field1_SetNull()
+                                {
+                                    ...
+                                }
+                            }
+
+                            ]]>
+                        </code>
+                    </body>
+                </section>
+                <section id="generatedpropertiesnullable">
+                    <title>Nullable</title>
+                    <body>
+                        <p>
+                            <code>Nullable</code> property uses <code>System.Nullable&lt;T&gt;</code> generic type available in .NET 2.0.
+                            The actual type of the property depends on the field data type:
+                        </p>
+                        <ul>
+                            <li><code>Nullable&lt;Int32&gt;</code> - for the <code>Integer</code> data type</li>
+                            <li><code>Nullable&lt;Int64&gt;</code> - for the <code>Long</code> data type</li>
+                            <li><code>Nullable&lt;Boolean&gt;</code> - for <code>Boolean</code> and <code>BooleanAsInteger</code> data types</li>
+                            <li><code>Nullable&lt;DateTime&gt;</code> - for the <code>DateTime</code> data type</li>
+                            <li><code>Nullable&lt;Decimal&gt;</code> - for the <code>Decimal</code> data type</li>
+                            <li><code>Nullable&lt;Single&gt;</code> - for the <code>Float</code> data type</li>
+                            <li><code>Nullable&lt;Double&gt;</code> - for the <code>Double</code> data type</li>
+                            <li><code>Nullable&lt;Guid&gt;</code> - for the <code>Guid</code> data type</li>
+                        </ul>
+                        <p>
+                            Note that <code>String</code>, <code>AnsiString</code>, <code>Blob</code> and <code>Image</code> types are handled in a special way, because nullable
+                            types cannot be used to "wrap" reference types):
+                        </p>
+                        <ul>
+                            <li><code>string</code> - for the <code>String</code> and <code>AnsiString</code> data types</li>
+                            <li><code>byte[]</code> - for the <code>Blob</code> data type</li>
+                            <li><code>System.Drawing.Image</code> - for the <code>Image</code> data type</li>
+                        </ul>
+                        <p>
+                            Example:
+                        </p>
+                        <code lang="C#">
+                            <![CDATA[
+
+                            class NNN_Stub
+                            {
+                                // Nullable object representation
+                                public Nullable<System.Int32> Field1
+                                {
+                                    get { ... } 
+                                    set { ... }
+                                }
+                            }
+
+                            ]]>
+                        </code>
+                    </body>
+                </section>
+                <section id="generatedpropertiesreference">
+                    <title>Reference fields</title>
+                    <body>
+                        <p>
+                            For reference fields, the property return type is the class that is referred. Null reference is
+                            passed as <code>null</code>.
+                        </p>
+                        <code lang="C#">
+                            <![CDATA[
+
+                            class NNN_Stub
+                            {
+                                public ReferencedClass RefField1
+                                {
+                                    get { ... } 
+                                    set { ... }
+                                }
+                            }
+
+                            ]]>
+                        </code>
+                    </body>
+                </section>
+            </section>
+            <section id="generatedcollections">
+                <title>Collections</title>
+                <body>
+                    <p>
+                        Each collection (both one-to-many and many-to-many) is represented as a read-only property whose type is
+                        <code>MMMList</code> where <code>MMM</code> is the type of the collection element. The <code>MMMList</code> is a
+                        list wrapper described <sectionlink id="generatedlistwrappers" />.
+                    </p>
+                    <code lang="XML">
+                        <![CDATA[
+                        <schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
+                            <class name="NNN">
+                                <collectionOneToMany name="Members" class="MMM" foreignField="..." />
+                            </class>
+                        </schema>
+                        ]]>
+                    </code>
+                    <p>
+                        The following code is generated from the above declaration:
+                    </p>
+                    <code lang="C#">
+                        <![CDATA[
+
+                        class NNN_Stub
+                        {
+                            public MMMList Members
+                            {
+                                get { ... } 
+                            }
+                        }
+
+                        ]]>
+                    </code>
+                </body>
+            </section>
+            <section id="generatedtriggers">
+                <title>Triggers</title>
+                <body>
+                    <p>
+                        Sooda generates 2 methods for each <x><field /></x>, which are called before and after the field
+                        is modified. Assuming the following schema:
+                    </p>
+                    <code lang="XML">
+                        <![CDATA[
+                        <schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
+                            <class name="NNN">
+                                <table name="Table1">
+                                    <field name="Field1" type="Integer" />
+                                </table>
+                            </class>
+                        </schema>
+                        ]]>
+                    </code>
+                    <p>
+                        The trigger method signatures are:
+                    </p>
+                    <code lang="C#">
+                        <![CDATA[
+                        class NNN_Stub
+                        {
+                            protected virtual void BeforeFieldUpdate_Field1(object oldValue, object newValue)
+                            {
+                            }
+
+                            protected virtual void AfterFieldUpdate_Field1(object oldValue, object newValue)
+                            {
+                            }
+                        }    
+                        ]]>
+                    </code>
+                    <p>
+                        <code>oldValue</code> and <code>newValue</code> passed to these methods are old and new values of the field
+                        being set, respectively. The values are boxed to represent the <code>null</code>. For reference fields, the type
+                        of <code>objValue</code> and <code>newValue</code> arguments is the referenced class itself.
+                    </p>
+                    <code lang="XML">
+                        <![CDATA[
+                        <schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
+                            <class name="NNN">
+                                <table name="Table1">
+                                    <field name="RefField1" type="Integer" references="ReferencedClass" />
+                                </table>
+                            </class>
+                        </schema>
+                        ]]>
+                    </code>
+                    <p>
+                        This schema causes the following pair of trigger methods to be generated:
+                    </p>
+                    <code lang="C#">
+                        <![CDATA[
+                        class NNN_Stub
+                        {
+                            protected virtual void BeforeFieldUpdate_RefField1(ReferencedClass oldValue, ReferencedClass newValue)
+                            {
+                            }
+
+                            protected virtual void AfterFieldUpdate_RefField1(ReferencedClass oldValue, ReferencedClass newValue)
+                            {
+                            }
+                        }    
+                        ]]>
+                    </code>
+                    <p>
+                        The methods are declared <code>protected virtual</code> so that you can override them in your skeleton classes
+                        but you cannot call them from outside the object.
+                    </p>
                 </body>
             </section>
             <section id="generatedenums">
                 <title>Constants/Enumerations</title>
                 <body>
+                    <p>
+                        Constants declared with <x><const /></x> are generated as public static properties of the stub class:
+                    </p>
+                    <code lang="XML">
+                        <![CDATA[
+                        <schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
+                            <class name="NNN">
+                                <const name="MyConstant1" key="1" />
+                            </class>
+                        </schema>
+                        ]]>
+                    </code>
+                    <p>
+                        The above declaration translates to:
+                    </p>
+                    <code lang="C#">
+                        <![CDATA[
+                        class NNN_Stub
+                        {
+                            public static NNN MyConstant1
+                            {
+                                get { ... }
+                            }
+                        }    
+                        ]]>
+                    </code>
                 </body>
             </section>
             <section id="generatedlistwrappers">
-                <title>Collections</title>
+                <title>List wrappers</title>
                 <body>
+                    <p>
+                        List wrappers are type-safe wrappers around <code>ISoodaObjectList</code> that can be used in all places
+                        where the interface is expected. They provide typed <code>Add()</code>, <code>Remove()</code> and <code>Contains()</code>
+                        methods and a number of convenience methods. The following wrapper is generated for each class NNN:
+                    </p>
+                    <code lang="C#">
+                        <![CDATA[
+                          public class NNNList : Sooda.ObjectMapper.SoodaObjectCollectionWrapperGeneric<NNN> {
+                            public NNNList() {
+                            }
+                            public NNNList(ISoodaObjectList list) : 
+                                base(list) {
+                            }
+                            public new NNN this[int pos] {
+                              get {
+                                return ((NNN)(base.GetItem(pos)));
+                              }
+                            }
+                            public int Add(NNN obj) {
+                              return base.Add2(obj);
+                            }
+                            public void Remove(NNN obj) {
+                              base.Remove2(obj);
+                            }
+                            public bool Contains(NNN obj) {
+                              return base.Contains2(obj);
+                            }
+                            public NNNList Sort(IComparer comparer) {
+                              return new NNNList(base.Sort2(comparer));
+                            }
+                            public NNNList Sort(string sortOrder) {
+                              return new NNNList(base.Sort2(sortOrder));
+                            }
+                            public NNNList Sort(Sooda.QL.SoqlExpression sortExpression) {
+                              return new NNNList(base.Sort2(sortExpression));
+                            }
+                            public NNNList Sort(Sooda.QL.SoqlExpression sortExpression, Sooda.SortOrder sortOrder) {
+                              return new NNNList(base.Sort2(sortExpression, sortOrder));
+                            }
+                            public NNNList SelectFirst(int count) {
+                              return new NNNList(base.SelectFirst2(count));
+                            }
+                            public NNNList SelectLast(int count) {
+                              return new NNNList(base.SelectLast2(count));
+                            }
+                            public NNNList SelectRange(int _from, int _to) {
+                              return new NNNList(base.SelectRange2(_from, _to));
+                            }
+                            public NNNList Filter(SoodaObjectFilter f) {
+                              return new NNNList(base.Filter2(f));
+                            }
+                            public NNNList Filter(Sooda.QL.SoqlBooleanExpression sortExpression) {
+                              return new NNNList(base.Filter2(sortExpression));
+                            }
+                            public NNNList Filter(SoodaWhereClause whereClause) {
+                              return new NNNList(base.Filter2(whereClause));
+                            }
+                            public NNNList GetSnapshot() {
+                              return new NNNList(base.GetSnapshot2());
+                            }
+                        }
+                        ]]>
+                    </code>
+                    <p>
+                        The class that <code>NNNList</code> inherits from 
+                        is <code>Sooda.ObjectMapper.SoodaObjectCollectionWrapperGeneric&lt;NNN&gt;</code> for .NET 2.0 and above
+                        and <code>Sooda.ObjectMapper.SoodaObjectCollectionWrapper</code> for .NET 1.x.
+                    </p>
                 </body>
             </section>
             <section id="generatedfindmethods">
                 <title>Find Methods</title>
                 <body>
+                    <p>
+                        The <code>FindByNNN</code> and <code>FindListByNNN</code> methods are used to quickly locate one or all objects such that
+                        their <code>NNN</code> is equal to the provided value. The finders are generated as public static methods of 
+                        stub classes:
+                    </p>
+                    <code lang="XML">
+                        <![CDATA[
+                        <schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
+                            <class name="NNN">
+                                <table name="Table1">
+                                    <field name="Field1" type="Integer" find="true" />
+                                    <field name="Field2" type="Integer" findList="true" />
+                                </table>
+                            </class>
+                        </schema>
+                        ]]>
+                    </code>
+                    <code lang="C#">
+                        class NNN_Stub
+                        {
+                            public static void NNN FindByField1(Int32 field1)
+                            {
+                            }
+
+                            public static void NNNList FindByField2(Int32 field2)
+                            {
+                            }
+                        }
+                    </code>
                 </body>
             </section>
             <section id="generatedfactories">
-                <title>Factories</title>
+                <title>Abstract Factories</title>
                 <body>
-                </body>
-            </section>
-            <section id="generatedtypedqueries">
-                <title>Typed Queries</title>
-                <body>
+                    <p>
+                        Each Sooda class has an associated abstract factory that can create instances of the class and 
+                        return mapping metadata. The abstract factory is a class that 
+                        implements <code>ISoodaObjectFactory</code>. The following factory code is generated for 
+                        each class <code>NNN</code>:
+                    </p>
+                    <code lang="C#">
+                        <![CDATA[
+                        namespace OutputNamespace.Stubs
+                        {
+                          [SoodaObjectFactoryAttribute("NNN", typeof(NNN))]
+                          public class NNN_Factory : ISoodaObjectFactory
+                          {
+                            public NNN_Factory()
+                            {
+                            }
+                            public static NNN_Factory TheFactory
+                            {
+                                get { ... }
+                            }
+                            public virtual Type TheType
+                            {
+                                get { ... }
+                            }
+                            public static ClassInfo TheClassInfo
+                            {
+                                get { ... }
+                            }
+                            public virtual SoodaObject GetRef(SoodaTransaction tran, object keyValue)
+                            {
+                            }
+                            public virtual SoodaObject TryGet(SoodaTransaction tran, object keyValue)
+                            {
+                            }
+                            public virtual IList GetList(SoodaTransaction tran, 
+                                    SoodaWhereClause whereClause, 
+                                    SoodaOrderBy orderBy, 
+                                    SoodaSnapshotOptions options)
+                            {
+                            }
+                            public virtual ClassInfo GetClassInfo()
+                            {
+                            }
+                            public virtual SoodaFieldHandler GetPrimaryKeyFieldHandler()
+                            {
+                            }
+                            public virtual SoodaFieldHandler GetFieldHandler(int ordinal)
+                            {
+                            }
+                            internal static SoodaFieldHandler InternalGetFieldHandler(int ordinal)
+                            {
+                            }
+                            public virtual SoodaObject CreateNew(SoodaTransaction tran)
+                            {
+                            }
+                            public virtual SoodaObject GetRawObject(SoodaTransaction tran)
+                            {
+                            }
+                          }
+                        }
+                      ]]>
+                  </code>
+                  <p>
+                      Thanks to factory classes, Sooda can create instances of materialized objects without using reflection, which helps
+                      speed things up.
+                  </p>
                 </body>
             </section>
             <section id="generatedschema">
                 <title>Schema</title>
                 <body>
+                    <p>
+                        SoodaStubGen generates the <code>_DatabaseSchema</code> schema that provides access to runtime
+                        mapping metadata and instances of all class factories for the schema. The declaration of the class is:
+                    </p>
+                    <code lang="C#">
+                        <![CDATA[
+                        public class _DatabaseSchema : ISoodaSchema
+                        {
+                            public _DatabaseSchema()
+                            {
+                            }
+                            public virtual Sooda.Schema.SchemaInfo Schema
+                            {
+                                get { ... }
+                            }
+                            public static Sooda.Schema.SchemaInfo GetSchema()
+                            {
+                            }
+                            public virtual Sooda.ISoodaObjectFactory[] GetFactories() {
+                            }
+                        }
+                        ]]>
+                    </code>
+                </body>
+            </section>
+            <section id="generatedtypedqueries">
+                <title>Typed Queries</title>
+                <body>
+                    <p>
+                        There are two sets of classes that support typed queries: public classes and supporting classes. Public 
+                        classes are named <code>OutputNamespace.TypedQueries.NNNField</code> where <code>NNN</code> is the name 
+                        of the appropriate class. Supporting classes are located in the <code>OutputNamespace.Stubs</code> namespace
+                        and are named: <code>NNNWrapperExpression</code> and <code>NNNNullableWrapperExpression</code>:
+                    </p>
+                    <code lang="C#">
+                        <![CDATA[
+                        namespace OutputNamespace.TypedQueries
+                        {
+                            public class NNNField
+                            {
+                            }
+                        }
+
+                        namespace OutputNamespace.Stubs
+                        {
+                            public class NNNWrapperExpression : Sooda.QL.SoqlPathExpression
+                            {
+                            }
+
+                            public class NNNNullableWrapperExpression : NNNWrapperExpression
+                            {
+                            }
+                        }
+                        ]]>
+                    </code>
+                    <p>
+                        Each <code>NNNField</code>
+                    </p>
                 </body>
             </section>
         </section>

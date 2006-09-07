@@ -489,6 +489,8 @@ namespace Sooda.Schema
                 if (fi.References != null)
                 {
                     ClassInfo ci = schema.FindClassByName(fi.References);
+                    if (ci == null)
+                        throw new SoodaSchemaException("Class " + fi.References + " not found.");
                     fi.ReferencedClass = ci;
                 }
             }
