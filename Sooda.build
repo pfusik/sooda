@@ -19,7 +19,6 @@
     <property name="sooda.external" value="${nant.project.basedir}/external" unless="${property::exists('sooda.external')}" />
     <property name="sooda.nlog.dir" value="${sooda.external}" unless="${property::exists('sooda.nlog.dir')}" />
     <property name="sooda.log4net.dir" value="${sooda.external}" unless="${property::exists('sooda.log4net.dir')}" />
-    <property name="sooda.icsharpcode.texteditor.dir" value="${sooda.external}" unless="${property::exists('sooda.icsharpcode.texteditor.dir')}" />
 
     <property name="clover.enabled" value="false" />
     <property name="clover.home" value="C:\Program Files\Cenqua\Clover.NET" />
@@ -38,10 +37,27 @@
     <target name="build-mono-2.0" depends="build-common, minitools" />
 
     <target name="build-common" depends="configure, libraries" />
-    <target name="tools" depends="SoodaStubGen, SoodaQuery, SoodaSchemaTool, SoodaFixKeygen, SoodaCompileStubs" />
+    <target name="tools" depends="SoodaStubGen, SoodaSchemaTool, SoodaFixKeygen, SoodaCompileStubs" />
     <target name="minitools" depends="SoodaStubGen, SoodaCompileStubs" />
 
     <target name="libraries" depends="Sooda, Sooda.Logging.NLog, Sooda.Logging.log4net" />
+
+    <target name="update-build-number">
+        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/Sooda/AssemblyBuildInfo.cs build/Sooda.buildversion" useruntimeengine="true" />
+        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/Sooda.CodeGen/AssemblyBuildInfo.cs build/Sooda.buildversion" useruntimeengine="true" />
+        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaStubGen/AssemblyBuildInfo.cs build/Sooda.buildversion" useruntimeengine="true" />
+        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaCompileStubs/AssemblyBuildInfo.cs build/Sooda.buildversion" useruntimeengine="true" />
+        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaFixKeygen/AssemblyBuildInfo.cs build/Sooda.buildversion" useruntimeengine="true" />
+        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaSchemaTool/AssemblyBuildInfo.cs build/Sooda.buildversion" useruntimeengine="true" />
+        <foreach item="Line" in="build/Sooda.buildversion" delim="." property="tmp1,tmp2,tmp3,tmp4">
+            <property name="sooda.version.major" value="${tmp1}" />
+            <property name="sooda.version.minor" value="${tmp2}" />
+            <property name="sooda.version.revision" value="${tmp3}" />
+            <property name="sooda.version.build" value="${tmp4}" />
+        </foreach>
+
+        <property name="sooda.version" value="${sooda.version.major}.${sooda.version.minor}.${sooda.version.revision}.${sooda.version.build}" />
+    </target>
 
     <target name="configure">
         <property name="sooda.define" value="NANT" />
@@ -91,7 +107,7 @@
         <property name="sooda.optimize" value="false" />
     </target>
 
-    <target name="Sooda" depends="configure" description="Sooda">
+    <target name="Sooda" depends="configure, update-build-number" description="Sooda">
         <csc target="library" output="${sooda.dir}/Sooda.dll" doc="${sooda.dir}/Sooda.xml" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
             <references>                                  
                 <include name="mscorlib.dll" />
@@ -112,7 +128,7 @@
         </csc>
     </target>
 
-    <target name="Sooda.Logging.NLog" depends="configure, Sooda, NLog" description="Sooda">
+    <target name="Sooda.Logging.NLog" depends="configure, update-build-number, Sooda, NLog" description="Sooda">
         <csc target="library" output="${sooda.dir}/Sooda.Logging.NLog.dll" doc="${sooda.dir}/Sooda.Logging.NLog.xml" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
             <references>                                  
                 <include name="mscorlib.dll" />
@@ -130,7 +146,7 @@
         </csc>
     </target>
 
-    <target name="Sooda.Web" depends="configure, Sooda">
+    <target name="Sooda.Web" depends="configure, update-build-number, Sooda">
         <csc target="library" output="${sooda.dir}/Sooda.Web.dll" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
             <references>                                  
                 <include name="mscorlib.dll" />
@@ -146,7 +162,7 @@
         </csc>
     </target>
 
-    <target name="Sooda.Logging.log4net" depends="configure, log4net" description="Sooda">
+    <target name="Sooda.Logging.log4net" depends="configure, update-build-number, log4net" description="Sooda">
         <csc target="library" output="${sooda.dir}/Sooda.Logging.log4net.dll" doc="${sooda.dir}/Sooda.Logging.log4net.xml" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
             <references>                                  
                 <include name="mscorlib.dll" />
@@ -164,7 +180,7 @@
         </csc>
     </target>
 
-    <target name="Sooda.CodeGen" depends="configure, Sooda">
+    <target name="Sooda.CodeGen" depends="configure, update-build-number, Sooda">
         <csc target="library" output="${sooda.dir}/Sooda.CodeGen.dll" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
             <references>                                  
                 <include name="${sooda.dir}/Sooda.dll" />
@@ -181,7 +197,7 @@
         </csc>
     </target>
 
-    <target name="SoodaStubGen" depends="configure, Sooda, Sooda.CodeGen">
+    <target name="SoodaStubGen" depends="configure, update-build-number, Sooda, Sooda.CodeGen">
         <csc target="exe" output="${sooda.dir}/SoodaStubGen.exe" debug="${sooda.debug}" define="${sooda.define},NO_VB,NO_JSCRIPT">
             <references>                                  
                 <include name="${sooda.dir}/Sooda.dll" />
@@ -195,7 +211,7 @@
         <copy file="src/SoodaStubGen/App.config" tofile="${sooda.dir}/SoodaStubGen.exe.config" />
     </target>
 
-    <target name="SoodaCompileStubs" depends="configure, Sooda">
+    <target name="SoodaCompileStubs" depends="configure, update-build-number, Sooda">
         <csc target="exe" output="${sooda.dir}/SoodaCompileStubs.exe" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
             <references>                                  
                 <include name="${sooda.dir}/Sooda.dll" />
@@ -207,7 +223,7 @@
         </csc>
     </target>
 
-    <target name="SoodaSchemaTool" depends="configure, Sooda">
+    <target name="SoodaSchemaTool" depends="configure, update-build-number, Sooda">
         <csc target="exe" output="${sooda.dir}/SoodaSchemaTool.exe" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
             <references>                                  
                 <include name="System.Data.dll" asis="true" />
@@ -220,7 +236,7 @@
         </csc>
     </target>
 
-    <target name="SoodaFixKeygen" depends="configure, Sooda">
+    <target name="SoodaFixKeygen" depends="configure, update-build-number, Sooda">
         <csc target="exe" output="${sooda.dir}/SoodaFixKeygen.exe" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
             <references>                                  
                 <include name="System.Data.dll" asis="true" />
@@ -231,27 +247,6 @@
             </sources>
             <arg value="${sooda.csc.args}"/>
         </csc>
-    </target>
-
-    <target name="SoodaQuery" depends="configure, Sooda, ICSharpCode.TextEditor">
-        <csc target="winexe" output="${sooda.dir}/SoodaQuery.exe" debug="${sooda.debug}" define="${sooda.define}" win32icon="src/SoodaQuery/app.ico">
-            <references>                                  
-                <include name="${sooda.dir}/Sooda.dll" />
-                <include name="${sooda.dir}/ICSharpCode.TextEditor.dll" />
-            </references>
-            <sources basedir="src/SoodaQuery">
-                <include name="*.cs" />
-            </sources>
-            <resources basedir="src/SoodaQuery" prefix="SoodaQuery" dynamicprefix="true">
-                <include name="MainForm.resx" />
-                <include name="*.xshd" />
-                <include name="SyntaxModes.xml" />
-            </resources>
-            <arg value="${sooda.csc.args}"/>
-        </csc>
-        <copy file="src/SoodaQuery/App.config" tofile="${sooda.dir}/SoodaQuery.exe.config" />
-        <copy file="src/SoodaQuery/SoodaQuery.exe.manifest" tofile="${sooda.dir}/SoodaQuery.exe.manifest" />
-        <copy file="${sooda.external}/ICSharpCode.TextEditor.dll" tofile="${sooda.dir}/ICSharpCode.TextEditor.dll" />
     </target>
 
     <target name="clean" depends="configure" description="Delete *.exe,*.dll,*.pdb and *.exe files from output directory">
@@ -593,9 +588,7 @@
         <readregistry property="nsis.dir" key="SOFTWARE\NSIS\" />
         <property name="makensis.exe" value="${nsis.dir}/makensis.exe" />
 
-        <foreach item="Line" in="sooda.version" delim="." property="sooda.major,sooda.minor,sooda.revision,sooda.build">
-            <exec program="${makensis.exe}" commandline="/DSOODA_VERSION=${sooda.major}.${sooda.minor} /DRELEASE_VERSION=${release.version} tools\SetupSooda.nsi" />
-        </foreach>
+        <exec program="${makensis.exe}" commandline="/DSOODA_VERSION=${sooda.version.major}.${sooda.version.minor} /DRELEASE_VERSION=${release.version} tools\SetupSooda.nsi" />
     </target>
 
     <target name="NLog">
@@ -612,14 +605,6 @@
         <copy todir="${sooda.dir}">
             <fileset basedir="${sooda.log4net.dir}">
                 <include name="log4net.dll" />
-            </fileset>
-        </copy>
-    </target>
-
-    <target name="ICSharpCode.TextEditor">
-        <copy todir="${sooda.dir}">
-            <fileset basedir="${sooda.icsharpcode.texteditor.dir}">
-                <include name="ICSharpCode.TextEditor.*" />
             </fileset>
         </copy>
     </target>
