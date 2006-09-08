@@ -80,7 +80,7 @@
                     HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
                 />
                 <Reference
-                    Name = "Sooda"
+                    Name = "Sooda.vs2003"
                     Project = "{FCC9B644-9093-41F6-8F0D-F98F22474CB5}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
@@ -162,6 +162,10 @@
                     RelPath = "SoodaProject.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SoodaProject.xsd"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "VS2005csprojProjectFile.cs"

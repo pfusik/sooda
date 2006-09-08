@@ -285,7 +285,6 @@
                 <delete dir="${dirname}" />
             </do>
         </foreach>    
-        <nant buildfile="examples/Soodawind/Soodawind.build" target="clean" />
     </target>
 
     <target name="tarbz2" description="Creates a .tar.bz2 snapshot of sources" depends="configure, clean">
@@ -577,8 +576,6 @@
         <exec program="nant" commandline="-t:net-2.0 clean" />
 
         <call target="clean_wizards" />
-        <nant buildfile="examples/Soodawind/Soodawind.build" target="clean" />
-        
         <call target="installer" />
     </target>
     <target name="installer" depends="vs2005_wizards">
@@ -692,7 +689,6 @@
             <fileset basedir="${web.dir}">
                 <include name="**/*" />
                 <exclude name="index.html" />
-                <exclude name="examples/Soodawind/**" />
                 <exclude name="**/.svn" />
                 <exclude name="**/.svn/**" />
                 <exclude name="**/_svn" />

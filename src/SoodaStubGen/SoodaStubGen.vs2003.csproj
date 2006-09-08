@@ -80,8 +80,13 @@
                     HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
                 />
                 <Reference
-                    Name = "Sooda.CodeGen"
+                    Name = "Sooda.CodeGen.vs2003"
                     Project = "{0D67237B-4FBA-4BD9-95C3-24B5F427D014}"
+                    Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+                />
+                <Reference
+                    Name = "Sooda.vs2003"
+                    Project = "{FCC9B644-9093-41F6-8F0D-F98F22474CB5}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
             </References>
