@@ -1,0 +1,18 @@
+[OPTIONS]
+Compatibility=1.1 or later
+Compiled file=build\Sooda.chm
+Default Window=DEFAULT
+Default topic=build\doc\documentation.html
+Display compile progress=Yes
+Language=0x409 English (United States)
+Title=Sooda
+
+[WINDOWS]
+DEFAULT="Sooda Documentation",,,"build\doc\documentation.html","build\doc\documentation.html","build\doc\documentation.html",,,,0x42000,,0x387e,[17,6,851,472],0x30000,,,,,,0
+
+
+[FILES]
+build\doc\documentation.html
+
+[INFOTYPES]
+

@@ -228,6 +228,10 @@ namespace SoodaAddin.UI
                     sw.WriteLine("  <with-indexers>true</with-indexers>");
                     sw.WriteLine("  <with-typed-queries>true</with-typed-queries>");
                     sw.WriteLine("  <embedded-schema-type>Binary</embedded-schema-type>");
+                    if (WizardOptions.SeparateStubs)
+                    {
+                        sw.WriteLine("  <stubs-compiled-separately>true</stubs-compiled-separately>");
+                    }
                     sw.WriteLine("  <external-projects>");
                     sw.WriteLine("    <project type=\"{0}\" file=\"{1}\"/>", Strategy.ProjectType, Path.GetFileName(Strategy.ProjectFile));
                     sw.WriteLine("  </external-projects>");
@@ -312,7 +316,10 @@ namespace SoodaAddin.UI
                         }
                     }
 
-                    newLines.Add("\"%SOODA_DIR%\\bin\\net-" + dotnetVersion + "\\SoodaCompileStubs.exe\" \"" + Strategy.AssemblyName + "\" \"$(ProjectDir)Stubs\"");
+                    if (WizardOptions.SeparateStubs)
+                    {
+                        newLines.Add("\"%SOODA_DIR%\\bin\\net-" + dotnetVersion + "\\SoodaCompileStubs.exe\" \"" + Strategy.AssemblyName + "\" \"$(ProjectDir)Stubs\"");
+                    }
 
                     string newPreBuildEvent = String.Join("\r\n", (string[])newLines.ToArray(typeof(string)));
                     WriteToLog("Setting Pre-Build Event to: " + newPreBuildEvent);

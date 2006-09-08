@@ -98,6 +98,7 @@ Section "Visual Studio 2003 Support"
   File src\Sooda\Schema\SoodaSchema.xsd
   File src\Sooda.CodeGen\SoodaProject.xsd
 novsnet:
+  CreateShortCut "$SMPROGRAMS\Sooda ${SOODA_VERSION}\Add Sooda Support to Visual Studio 2003 Project.lnk" "$INSTDIR\bin\net-1.1\ConfigureSoodaProject.exe" ""
 SectionEnd
 
 SectionGroupEnd
@@ -131,11 +132,9 @@ Section "Visual Studio 2005 Support"
   SetOutPath "$0\xml\schemas"
   File src\Sooda\Schema\SoodaSchema.xsd
   File src\Sooda.CodeGen\SoodaProject.xsd
-  Return
 
 novsnet:
-  MessageBox MB_OK "Visual Studio .NET 2005 was not found. Support not installed."
-
+  CreateShortCut "$SMPROGRAMS\Sooda ${SOODA_VERSION}\Add Sooda Support to Visual Studio 2005 Project.lnk" "$INSTDIR\bin\net-2.0\ConfigureSoodaProject.exe" ""
 SectionEnd
 
 SectionGroupEnd
@@ -144,7 +143,7 @@ Section "Documentation"
   SectionIn 1 2 3
   SetOutPath $INSTDIR\docs
   File build\Sooda.chm
-  CreateShortCut  "$SMPROGRAMS\Sooda\Sooda Documentation.lnk" "$INSTDIR\Doc\Sooda.chm" ""
+  CreateShortCut "$SMPROGRAMS\Sooda ${SOODA_VERSION}\Sooda Documentation.lnk" "$INSTDIR\Doc\Sooda.chm" ""
 SectionEnd
 
 Section "Uninstall"
