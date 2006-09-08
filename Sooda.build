@@ -149,7 +149,7 @@
     </target>
 
     <target name="ConfigureSoodaProject" depends="configure, update-build-number, SoodaAddin.UI">
-        <csc target="winexe" output="${sooda.dir}/ConfigureSoodaProject.exe" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
+        <csc target="winexe" output="${sooda.dir}/ConfigureSoodaProject.exe" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true" win32icon="src/ConfigureSoodaProject/App.ico">
             <references>                                  
                 <include name="mscorlib.dll" />
                 <include name="System.dll" />
