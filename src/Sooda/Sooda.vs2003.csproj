@@ -1,1247 +1,251 @@
 <VisualStudioProject>
-    <CSHARP
-        ProjectType = "Local"
-        ProductVersion = "7.10.3077"
-        SchemaVersion = "2.0"
-        ProjectGuid = "{FCC9B644-9093-41F6-8F0D-F98F22474CB5}"
-    >
-        <Build>
-            <Settings
-                ApplicationIcon = ""
-                AssemblyKeyContainerName = ""
-                AssemblyName = "Sooda"
-                AssemblyOriginatorKeyFile = ""
-                DefaultClientScript = "JScript"
-                DefaultHTMLPageLayout = "Grid"
-                DefaultTargetSchema = "IE50"
-                DelaySign = "false"
-                OutputType = "Library"
-                PreBuildEvent = '"$(ProjectDir)..\..\tools\UpdateBuildNumber.exe" "$(ProjectDir)..\..\Sooda.version" "$(ProjectDir)AssemblyBuildInfo.cs" "$(ProjectDir)..\..\build\Sooda.buildversion"'
-                PostBuildEvent = ""
-                RootNamespace = "Sooda"
-                RunPostBuildEvent = "OnBuildSuccess"
-                StartupObject = ""
-            >
-                <Config
-                    Name = "Debug"
-                    AllowUnsafeBlocks = "false"
-                    BaseAddress = "285212672"
-                    CheckForOverflowUnderflow = "false"
-                    ConfigurationOverrideFile = ""
-                    DefineConstants = "VSNET"
-                    DocumentationFile = ""
-                    DebugSymbols = "true"
-                    FileAlignment = "4096"
-                    IncrementalBuild = "false"
-                    NoStdLib = "false"
-                    NoWarn = ""
-                    Optimize = "false"
-                    OutputPath = "bin\Debug\"
-                    RegisterForComInterop = "false"
-                    RemoveIntegerChecks = "false"
-                    TreatWarningsAsErrors = "true"
-                    WarningLevel = "4"
-                />
-                <Config
-                    Name = "Release"
-                    AllowUnsafeBlocks = "false"
-                    BaseAddress = "285212672"
-                    CheckForOverflowUnderflow = "false"
-                    ConfigurationOverrideFile = ""
-                    DefineConstants = ""
-                    DocumentationFile = ""
-                    DebugSymbols = "false"
-                    FileAlignment = "4096"
-                    IncrementalBuild = "false"
-                    NoStdLib = "false"
-                    NoWarn = ""
-                    Optimize = "false"
-                    OutputPath = "bin\Release\"
-                    RegisterForComInterop = "false"
-                    RemoveIntegerChecks = "false"
-                    TreatWarningsAsErrors = "true"
-                    WarningLevel = "4"
-                />
-            </Settings>
-            <References>
-                <Reference
-                    Name = "System"
-                    AssemblyName = "System"
-                    HintPath = "F:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.dll"
-                />
-                <Reference
-                    Name = "System.XML"
-                    AssemblyName = "System.Xml"
-                    HintPath = "F:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
-                />
-                <Reference
-                    Name = "System.Data"
-                    AssemblyName = "System.Data"
-                    HintPath = "F:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Data.dll"
-                />
-                <Reference
-                    Name = "System.Drawing"
-                    AssemblyName = "System.Drawing"
-                    HintPath = "C:\WINNT\Microsoft.NET\Framework\v1.1.4322\System.Drawing.dll"
-                />
-                <Reference
-                    Name = "System.Web"
-                    AssemblyName = "System.Web"
-                    HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Web.dll"
-                />
-            </References>
-        </Build>
-        <Files>
-            <Include>
-                <File
-                    RelPath = "AssemblyBuildInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "AssemblyInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "AssemblySign.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "IDefaultSoodaTransactionStrategy.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ISoodaObjectFactory.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ISoodaObjectList.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaConfig.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaConfigAttribute.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaConfigException.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaConstructor.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaDatabaseException.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaDataSource.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaException.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaFieldSizeAttribute.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaFieldUpdateDelegate.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaHttpContextBoundTransactionStrategy.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaNullable.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaObject.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaObjectArrayFieldValues.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaObjectExpressionComparer.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaObjectFieldComparer.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaObjectFieldValues.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaObjectFilterDelegate.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaObjectMultiFieldComparer.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaObjectNotFoundException.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaObjectReflectionBasedFieldValues.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaObjectsAssemblyAttribute.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaOrderBy.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaSerializeOptions.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaSnapshotOptions.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaStatistics.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaStubAssemblyAttribute.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaThreadBoundTransactionStrategy.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaTransaction.cs"
-                    SubType = "Component"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaTuple.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SoodaWhereClause.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Caching\CacheUtils.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Caching\ISoodaCache.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Caching\ISoodaCacheLock.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Caching\ISoodaCacheView.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Caching\ISoodaCachingPolicy.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Caching\ISoodaCachingPolicyFixedTimeout.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Caching\LruCache.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Caching\SimpleCachingPolicy.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Caching\SoodaCache.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Caching\SoodaCacheAllPolicy.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Caching\SoodaCachedCollection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Caching\SoodaCacheEntry.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Caching\SoodaCacheInvalidateReason.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Caching\SoodaCacheKey.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Caching\SoodaCacheSmallAndMediumPolicy.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Caching\SoodaCacheSmallPolicy.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Caching\SoodaInProcessCache.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Caching\SoodaNoCache.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Caching\SoodaNoCachingPolicy.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collections\ObjectToSoodaObjectAssociation.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collections\ObjectToSoodaObjectFactoryAssociation.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collections\ObjectToWeakSoodaObjectAssociation.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collections\SoodaDataSourceCollection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collections\SoodaObjectCollection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collections\SoodaObjectToInt32Association.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collections\SoodaObjectToNameValueCollectionAssociation.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collections\SoodaObjectToObjectAssociation.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collections\StringToISoodaObjectFactoryAssociation.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collections\StringToObjectToSoodaObjectAssociation.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collections\StringToObjectToWeakSoodaObjectAssociation.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collections\StringToSoodaObjectCollectionAssociation.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collections\StringToStringToISoodaObjectFactoryAssociation.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collections\StringToWeakSoodaObjectCollectionAssociation.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collections\TypeToISoodaObjectFactoryAssociation.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collections\TypeToSoodaRelationTableAssociation.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Collections\WeakSoodaObjectCollection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Config\AppSettingsConfigProvider.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Config\ISoodaConfigProvider.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Config\XmlConfigProvider.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Logging\BasicLogger.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Logging\ConsoleLogger.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Logging\ConsoleLoggingImplementation.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Logging\ILoggingImplementation.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Logging\Logger.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Logging\LogManager.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Logging\NullLogger.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Logging\NullLoggingImplementation.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\IPrimaryKeyGenerator.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\ISoodaObjectFactoryCache.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\ISoodaObjectListInternal.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\ISoodaSchema.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\SchemaLoader.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\SoodaFieldHandler.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\SoodaNullObjectFactoryCache.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\SoodaObjectCollectionWrapper.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\SoodaObjectFactoryAttribute.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\SoodaObjectFactoryCache.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\SoodaObjectFlags.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\SoodaObjectImpl.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\SoodaObjectListSnapshot.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\SoodaObjectManyToManyCollection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\SoodaObjectOneToManyCollection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\SoodaRelationTable.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\WeakSoodaObject.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\FieldHandlers\AnsiStringFieldHandler.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\FieldHandlers\BlobFieldHandler.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\FieldHandlers\BooleanAsIntegerFieldHandler.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\FieldHandlers\BooleanFieldHandler.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\FieldHandlers\DateTimeFieldHandler.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\FieldHandlers\DecimalFieldHandler.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\FieldHandlers\DoubleFieldHandler.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\FieldHandlers\FieldHandlerFactory.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\FieldHandlers\FloatFieldHandler.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\FieldHandlers\GuidFieldHandler.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\FieldHandlers\ImageFieldHandler.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\FieldHandlers\Int32FieldHandler.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\FieldHandlers\Int64FieldHandler.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\FieldHandlers\StringFieldHandler.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\FieldHandlers\TimeSpanFieldHandler.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\KeyGenerators\GuidGenerator.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\KeyGenerators\TableBasedGenerator.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\KeyGenerators\TableBasedGeneratorBigint.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\GetInvolvedClassesVisitor.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\ILiteralModifers.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\ISoqlConstantExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\ISoqlEvaluateContext.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\ISoqlSelectAliasProvider.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\ISoqlVisitor.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\Soql.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlAsteriskExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlBinaryExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlBinaryOperator.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlBooleanAndExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlBooleanExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlBooleanInExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlBooleanIsNullExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlBooleanLiteralExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlBooleanNegationExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlBooleanOrExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlBooleanRelationalExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlContainsExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlCountPathExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlException.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlExistsExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlExpressionCollection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlExpressionType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlFunctionCallExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlLiteralExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlLiteralValueModifiers.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlNullLiteral.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlParameterLiteralExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlParser.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlPathExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlPrettyPrinter.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlQueryExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlRawExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlRelationalOperator.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlSoodaClassExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlTokenizer.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlTypedWrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlUnaryNegationExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\SoqlUtils.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\makewrappers.pl"
-                    BuildAction = "None"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlBooleanWrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlCollectionWrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlDateTimeWrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlDecimalWrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlDoubleWrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlGuidWrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlImageWrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlInt16WrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlInt32WrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlInt64WrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlNullableBooleanWrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlNullableDateTimeWrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlNullableDecimalWrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlNullableDoubleWrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlNullableGuidWrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlNullableImageWrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlNullableInt16WrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlNullableInt32WrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlNullableInt64WrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlNullableSingleWrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlNullableStringWrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlNullableTimeSpanWrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlSingleWrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlStringWrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "QL\TypedWrappers\SoqlTimeSpanWrapperExpression.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\CachingMode.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\ClassCardinality.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\ClassInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\ClassInfoCollection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\Collection1toNInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\CollectionBaseInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\CollectionBaseInfoCollection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\CollectionNtoNInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\ConstantInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\DataSourceInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\DataSourceInfoCollection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\DeleteAction.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\FieldDataType.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\FieldInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\FieldInfoCollection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\IFieldContainer.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\IncludeInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\IncludeInfoCollection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\PrecommitValueInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\PrecommitValueInfoCollection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\RelationInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\RelationInfoCollection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\SchemaInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\SchemaManager.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\SoodaSchema.xsd"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "Schema\SoodaSchema.xsx"
-                    BuildAction = "None"
-                />
-                <File
-                    RelPath = "Schema\SoodaSchemaException.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\TableInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\TableInfoCollection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Sql\DbParameterConverter.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Sql\ISqlBuilder.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Sql\MySqlBuilder.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Sql\OracleBuilder.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Sql\PostgreSqlBuilder.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Sql\SoqlToSqlConverter.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Sql\SqlBuilderBase.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Sql\SqlBuilderNamedArg.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Sql\SqlBuilderPositionalArg.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Sql\SqlDataSource.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Sql\SqlOuterJoinSyntax.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Sql\SqlServerBuilder.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Sql\SqlTopSupportMode.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Utils\QPCStopWatch.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Utils\StopWatch.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Xml\XmlDataSource.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-            </Include>
-        </Files>
-    </CSHARP>
+  <CSHARP ProjectType="Local" ProductVersion="7.10.3077" SchemaVersion="2.0" ProjectGuid="{FCC9B644-9093-41F6-8F0D-F98F22474CB5}">
+    <Build>
+      <Settings ApplicationIcon="" AssemblyKeyContainerName="" AssemblyName="Sooda" AssemblyOriginatorKeyFile="" DefaultClientScript="JScript" DefaultHTMLPageLayout="Grid" DefaultTargetSchema="IE50" DelaySign="false" OutputType="Library" PreBuildEvent="&quot;$(ProjectDir)..\..\tools\UpdateBuildNumber.exe&quot; &quot;$(ProjectDir)..\..\Sooda.version&quot; &quot;$(ProjectDir)AssemblyBuildInfo.cs&quot; &quot;$(ProjectDir)..\..\build\Sooda.buildversion&quot;" PostBuildEvent="" RootNamespace="Sooda" RunPostBuildEvent="OnBuildSuccess" StartupObject="">
+        <Config Name="Debug" AllowUnsafeBlocks="false" BaseAddress="285212672" CheckForOverflowUnderflow="false" ConfigurationOverrideFile="" DefineConstants="VSNET" DocumentationFile="" DebugSymbols="true" FileAlignment="4096" IncrementalBuild="false" NoStdLib="false" NoWarn="" Optimize="false" OutputPath="bin\Debug\" RegisterForComInterop="false" RemoveIntegerChecks="false" TreatWarningsAsErrors="true" WarningLevel="4" />
+        <Config Name="Release" AllowUnsafeBlocks="false" BaseAddress="285212672" CheckForOverflowUnderflow="false" ConfigurationOverrideFile="" DefineConstants="" DocumentationFile="" DebugSymbols="false" FileAlignment="4096" IncrementalBuild="false" NoStdLib="false" NoWarn="" Optimize="false" OutputPath="bin\Release\" RegisterForComInterop="false" RemoveIntegerChecks="false" TreatWarningsAsErrors="true" WarningLevel="4" />
+      </Settings>
+      <References>
+        <Reference Name="System" AssemblyName="System" HintPath="F:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.dll" />
+        <Reference Name="System.XML" AssemblyName="System.Xml" HintPath="F:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll" />
+        <Reference Name="System.Data" AssemblyName="System.Data" HintPath="F:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Data.dll" />
+        <Reference Name="System.Drawing" AssemblyName="System.Drawing" HintPath="C:\WINNT\Microsoft.NET\Framework\v1.1.4322\System.Drawing.dll" />
+        <Reference Name="System.Web" AssemblyName="System.Web" HintPath="C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Web.dll" />
+      </References>
+    </Build>
+    <Files>
+      <Include>
+        <File RelPath="AssemblyBuildInfo.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="AssemblyInfo.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="AssemblySign.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="IDefaultSoodaTransactionStrategy.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ISoodaObjectFactory.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ISoodaObjectList.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaConfig.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaConfigAttribute.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaConfigException.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaConstructor.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaDatabaseException.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaDataSource.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaException.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaFieldSizeAttribute.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaFieldUpdateDelegate.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaHttpContextBoundTransactionStrategy.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaNullable.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaObject.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaObjectArrayFieldValues.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaObjectExpressionComparer.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaObjectFieldComparer.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaObjectFieldValues.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaObjectFilterDelegate.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaObjectMultiFieldComparer.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaObjectNotFoundException.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaObjectReflectionBasedFieldValues.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaObjectsAssemblyAttribute.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaOrderBy.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaSerializeOptions.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaSnapshotOptions.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaStatistics.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaStubAssemblyAttribute.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaThreadBoundTransactionStrategy.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaTransaction.cs" SubType="Component" BuildAction="Compile" />
+        <File RelPath="SoodaTuple.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="SoodaWhereClause.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Caching\CacheUtils.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Caching\ISoodaCache.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Caching\ISoodaCacheLock.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Caching\ISoodaCacheView.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Caching\ISoodaCachingPolicy.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Caching\ISoodaCachingPolicyFixedTimeout.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Caching\LruCache.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Caching\SimpleCachingPolicy.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Caching\SoodaCache.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Caching\SoodaCacheAllPolicy.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Caching\SoodaCachedCollection.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Caching\SoodaCacheEntry.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Caching\SoodaCacheInvalidateReason.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Caching\SoodaCacheKey.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Caching\SoodaCacheSmallAndMediumPolicy.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Caching\SoodaCacheSmallPolicy.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Caching\SoodaInProcessCache.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Caching\SoodaNoCache.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Caching\SoodaNoCachingPolicy.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Collections\ObjectToSoodaObjectAssociation.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Collections\ObjectToSoodaObjectFactoryAssociation.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Collections\ObjectToWeakSoodaObjectAssociation.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Collections\SoodaDataSourceCollection.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Collections\SoodaObjectCollection.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Collections\SoodaObjectToInt32Association.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Collections\SoodaObjectToNameValueCollectionAssociation.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Collections\SoodaObjectToObjectAssociation.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Collections\StringToISoodaObjectFactoryAssociation.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Collections\StringToObjectToSoodaObjectAssociation.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Collections\StringToObjectToWeakSoodaObjectAssociation.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Collections\StringToSoodaObjectCollectionAssociation.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Collections\StringToStringToISoodaObjectFactoryAssociation.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Collections\StringToWeakSoodaObjectCollectionAssociation.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Collections\TypeToISoodaObjectFactoryAssociation.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Collections\TypeToSoodaRelationTableAssociation.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Collections\WeakSoodaObjectCollection.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Config\AppSettingsConfigProvider.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Config\ISoodaConfigProvider.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Config\XmlConfigProvider.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Logging\BasicLogger.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Logging\ConsoleLogger.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Logging\ConsoleLoggingImplementation.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Logging\ILoggingImplementation.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Logging\Logger.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Logging\LogManager.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Logging\NullLogger.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Logging\NullLoggingImplementation.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\IPrimaryKeyGenerator.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\ISoodaObjectFactoryCache.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\ISoodaObjectListInternal.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\ISoodaSchema.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\SchemaLoader.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\SoodaFieldHandler.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\SoodaNullObjectFactoryCache.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\SoodaObjectCollectionWrapper.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\SoodaObjectFactoryAttribute.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\SoodaObjectFactoryCache.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\SoodaObjectFlags.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\SoodaObjectImpl.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\SoodaObjectListSnapshot.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\SoodaObjectManyToManyCollection.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\SoodaObjectOneToManyCollection.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\SoodaRelationTable.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\WeakSoodaObject.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\FieldHandlers\AnsiStringFieldHandler.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\FieldHandlers\BlobFieldHandler.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\FieldHandlers\BooleanAsIntegerFieldHandler.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\FieldHandlers\BooleanFieldHandler.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\FieldHandlers\DateTimeFieldHandler.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\FieldHandlers\DecimalFieldHandler.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\FieldHandlers\DoubleFieldHandler.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\FieldHandlers\FieldHandlerFactory.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\FieldHandlers\FloatFieldHandler.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\FieldHandlers\GuidFieldHandler.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\FieldHandlers\ImageFieldHandler.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\FieldHandlers\Int32FieldHandler.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\FieldHandlers\Int64FieldHandler.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\FieldHandlers\StringFieldHandler.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\FieldHandlers\TimeSpanFieldHandler.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\KeyGenerators\GuidGenerator.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\KeyGenerators\TableBasedGenerator.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="ObjectMapper\KeyGenerators\TableBasedGeneratorBigint.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\GetInvolvedClassesVisitor.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\ILiteralModifers.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\ISoqlConstantExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\ISoqlEvaluateContext.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\ISoqlSelectAliasProvider.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\ISoqlVisitor.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\Soql.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlAsteriskExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlBinaryExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlBinaryOperator.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlBooleanAndExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlBooleanExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlBooleanInExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlBooleanIsNullExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlBooleanLiteralExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlBooleanNegationExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlBooleanOrExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlBooleanRelationalExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlContainsExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlCountPathExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlException.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlExistsExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlExpressionCollection.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlExpressionType.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlFunctionCallExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlLiteralExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlLiteralValueModifiers.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlNullLiteral.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlParameterLiteralExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlParser.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlPathExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlPrettyPrinter.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlQueryExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlRawExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlRelationalOperator.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlSoodaClassExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlTokenizer.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlTypedWrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlUnaryNegationExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\SoqlUtils.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\makewrappers.pl" BuildAction="None" />
+        <File RelPath="QL\TypedWrappers\SoqlBooleanWrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\SoqlCollectionWrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\SoqlDateTimeWrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\SoqlDecimalWrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\SoqlDoubleWrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\SoqlGuidWrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\SoqlImageWrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\SoqlInt16WrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\SoqlInt32WrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\SoqlInt64WrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\SoqlNullableBooleanWrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\SoqlNullableDateTimeWrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\SoqlNullableDecimalWrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\SoqlNullableDoubleWrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\SoqlNullableGuidWrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\SoqlNullableImageWrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\SoqlNullableInt16WrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\SoqlNullableInt32WrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\SoqlNullableInt64WrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\SoqlNullableSingleWrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\SoqlNullableStringWrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\SoqlNullableTimeSpanWrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\SoqlSingleWrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\SoqlStringWrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="QL\TypedWrappers\SoqlTimeSpanWrapperExpression.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\CachingMode.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\ClassCardinality.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\ClassInfo.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\ClassInfoCollection.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\Collection1toNInfo.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\CollectionBaseInfo.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\CollectionBaseInfoCollection.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\CollectionNtoNInfo.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\ConstantInfo.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\DataSourceInfo.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\DataSourceInfoCollection.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\DeleteAction.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\FieldDataType.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\FieldInfo.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\FieldInfoCollection.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\IFieldContainer.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\IncludeInfo.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\IncludeInfoCollection.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\PrecommitValueInfo.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\PrecommitValueInfoCollection.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\RelationInfo.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\RelationInfoCollection.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\SchemaInfo.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\SchemaManager.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\SoodaSchema.xsx" BuildAction="None" />
+        <File RelPath="Schema\SoodaSchemaException.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\TableInfo.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\TableInfoCollection.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Sql\DbParameterConverter.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Sql\ISqlBuilder.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Sql\MySqlBuilder.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Sql\OracleBuilder.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Sql\PostgreSqlBuilder.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Sql\SoqlToSqlConverter.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Sql\SqlBuilderBase.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Sql\SqlBuilderNamedArg.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Sql\SqlBuilderPositionalArg.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Sql\SqlDataSource.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Sql\SqlOuterJoinSyntax.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Sql\SqlServerBuilder.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Sql\SqlTopSupportMode.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Utils\QPCStopWatch.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Utils\StopWatch.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Xml\XmlDataSource.cs" SubType="Code" BuildAction="Compile" />
+        <File RelPath="Schema\SoodaSchema.xsd" BuildAction="EmbeddedResource" />
+      </Include>
+    </Files>
+  </CSHARP>
 </VisualStudioProject>
-

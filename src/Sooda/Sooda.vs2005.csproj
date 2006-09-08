@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <ProductVersion>8.0.50727</ProductVersion>
@@ -712,9 +712,6 @@
     <Compile Include="Xml\XmlDataSource.cs">
       <SubType>Code</SubType>
     </Compile>
-    <EmbeddedResource Include="Schema\SoodaSchema.xsd">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <None Include="SoqlClasses.cd" />
     <None Include="QL\TypedWrappers\makewrappers.pl" />
     <None Include="Schema\SoodaSchema.xsx">

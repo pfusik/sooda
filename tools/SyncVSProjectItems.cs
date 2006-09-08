@@ -93,9 +93,20 @@ namespace Tools
             if (!baseDir.EndsWith("\\"))
                 baseDir = baseDir + "\\";
 
-            foreach (string s in SourceFiles.FileNames)
+            if (SourceFiles != null)
             {
-                _relativeSourceFiles[RelativePath(baseDir, s)] = s;
+                foreach (string s in SourceFiles.FileNames)
+                {
+                    _relativeSourceFiles[RelativePath(baseDir, s)] = s;
+                }
+            }
+
+            if (ResourceFiles != null)
+            {
+                foreach (string s in ResourceFiles.FileNames)
+                {
+                    _relativeResourceFiles[RelativePath(baseDir, s)] = s;
+                }
             }
 
             foreach (string projectFile in ProjectFiles.FileNames)

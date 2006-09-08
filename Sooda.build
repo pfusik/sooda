@@ -963,6 +963,9 @@
             <source-files basedir="src/Sooda">
                 <include name="**/*.cs" />
             </source-files>
+            <resource-files basedir="src/Sooda">
+                <include name="Schema/SoodaSchema.xsd" />
+            </resource-files>
         </sync-vs-project-items>
         <sync-vs-project-items>
             <project-files basedir="src/Sooda.CodeGen">
@@ -972,6 +975,11 @@
             <source-files basedir="src/Sooda.CodeGen">
                 <include name="**/*.cs" />
             </source-files>
+            <resource-files basedir="src/Sooda.CodeGen">
+                <include name="Templates/**/*" />
+                <include name="CDIL/Templates/**/*.cdil" />
+                <include name="SoodaProject.xsd" />
+            </resource-files>
         </sync-vs-project-items>
         <sync-vs-project-items>
             <project-files basedir="src/SoodaStubGen">
