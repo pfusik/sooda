@@ -141,7 +141,7 @@ SectionGroupEnd
 
 Section "Documentation"
   SectionIn 1 2 3
-  SetOutPath $INSTDIR\docs
+  SetOutPath $INSTDIR\doc
   File build\Sooda.chm
   CreateShortCut "$SMPROGRAMS\Sooda ${SOODA_VERSION}\Sooda Documentation.lnk" "$INSTDIR\Doc\Sooda.chm" ""
 SectionEnd
