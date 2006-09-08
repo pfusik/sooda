@@ -712,6 +712,9 @@
     <Compile Include="Xml\XmlDataSource.cs">
       <SubType>Code</SubType>
     </Compile>
+    <EmbeddedResource Include="Schema\SoodaSchema.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <None Include="SoqlClasses.cd" />
     <None Include="QL\TypedWrappers\makewrappers.pl" />
     <None Include="Schema\SoodaSchema.xsx">
