@@ -16,7 +16,7 @@
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
                 OutputType = "Library"
-                PreBuildEvent = ""
+                PreBuildEvent = '"$(ProjectDir)..\..\tools\UpdateBuildNumber.exe" "$(ProjectDir)..\..\Sooda.version" "$(ProjectDir)AssemblyBuildInfo.cs" "$(ProjectDir)..\..\build\Sooda.buildversion"'
                 PostBuildEvent = ""
                 RootNamespace = "Sooda.NAnt.Tasks"
                 RunPostBuildEvent = "OnBuildSuccess"
@@ -93,6 +93,10 @@
         </Build>
         <Files>
             <Include>
+                <File
+                    RelPath = "AssemblyBuildInfo.cs"
+                    BuildAction = "Compile"
+                />
                 <File
                     RelPath = "AssemblyInfo.cs"
                     SubType = "Code"

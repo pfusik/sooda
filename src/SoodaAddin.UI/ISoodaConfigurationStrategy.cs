@@ -5,6 +5,7 @@ namespace SoodaAddin.UI
 	public interface ISoodaConfigurationStrategy
 	{
         string ProjectFile { get; }
+        string AssemblyName { get; }
         void AddCompileUnit(string file);
         void AddContent(string file);
         void AddEmbeddedResource(string file);

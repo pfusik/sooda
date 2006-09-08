@@ -964,6 +964,74 @@
         </zip>
     </target>
 
+    <target name="sync-vs-projects">
+        <csc target="library" output="build/SyncVSProjectItems.dll">
+            <sources basedir="tools">
+                <include name="SyncVSProjectItems.cs" />
+            </sources>
+            <references>
+                <include name="${nant::get-base-directory()}/NAnt.Core.dll" />
+            </references>
+        </csc>
+        <loadtasks assembly="build/SyncVSProjectItems.dll" />
+        <sync-vs-project-items>
+            <project-files basedir="src/Sooda">
+                <include name="*.csproj" />
+                <include name="*.csdproj" />
+            </project-files>
+            <source-files basedir="src/Sooda">
+                <include name="**/*.cs" />
+            </source-files>
+        </sync-vs-project-items>
+        <sync-vs-project-items>
+            <project-files basedir="src/Sooda.CodeGen">
+                <include name="*.csproj" />
+                <include name="*.csdproj" />
+            </project-files>
+            <source-files basedir="src/Sooda.CodeGen">
+                <include name="**/*.cs" />
+            </source-files>
+        </sync-vs-project-items>
+        <sync-vs-project-items>
+            <project-files basedir="src/SoodaStubGen">
+                <include name="*.csproj" />
+                <include name="*.csdproj" />
+            </project-files>
+            <source-files basedir="src/SoodaStubGen">
+                <include name="**/*.cs" />
+            </source-files>
+        </sync-vs-project-items>
+        <sync-vs-project-items>
+            <project-files basedir="src/SoodaCompileStubs">
+                <include name="*.csproj" />
+                <include name="*.csdproj" />
+            </project-files>
+            <source-files basedir="src/SoodaCompileStubs">
+                <include name="**/*.cs" />
+            </source-files>
+        </sync-vs-project-items>
+        <sync-vs-project-items>
+            <project-files basedir="src/SoodaSchemaTool">
+                <include name="*.csproj" />
+                <include name="*.csdproj" />
+            </project-files>
+            <source-files basedir="src/SoodaSchemaTool">
+                <include name="**/*.cs" />
+            </source-files>
+        </sync-vs-project-items>
+        <sync-vs-project-items>
+            <project-files basedir="src/SoodaFixKeygen">
+                <include name="*.csproj" />
+                <include name="*.csdproj" />
+            </project-files>
+            <source-files basedir="src/SoodaFixKeygen">
+                <include name="**/*.cs" />
+            </source-files>
+        </sync-vs-project-items>
+    </target>
+
+
+
     <target name="sourceforge-release">
         <nant buildfile="${nant.project.buildfile}" target="debug clean build installer source_snapshot binary_snapshot" />
     </target>

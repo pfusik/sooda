@@ -35,7 +35,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Sooda Community - www.sooda.org")]
 [assembly: AssemblyProduct("Sooda - Simple Object Oriented Database Access")]
-[assembly: AssemblyCopyright("Copyright (c) 2002-2005 by Jaroslaw Kowalski")]
+[assembly: AssemblyCopyright("Copyright (c) 2002-2006 by Jaroslaw Kowalski")]
+
 [assembly: AssemblyCulture("")]
 
-[assembly: AssemblyVersion("0.8.0.0")]

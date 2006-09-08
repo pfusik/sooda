@@ -3,22 +3,22 @@
         ProjectType = "Local"
         ProductVersion = "7.10.3077"
         SchemaVersion = "2.0"
-        ProjectGuid = "{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}"
+        ProjectGuid = "{74410A3C-F7F5-47FE-8F72-1856753BDD26}"
     >
         <Build>
             <Settings
                 ApplicationIcon = "App.ico"
                 AssemblyKeyContainerName = ""
-                AssemblyName = "SoodaQuery"
+                AssemblyName = "SoodaFixKeygen"
                 AssemblyOriginatorKeyFile = ""
                 DefaultClientScript = "JScript"
                 DefaultHTMLPageLayout = "Grid"
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
-                OutputType = "WinExe"
-                PreBuildEvent = ""
+                OutputType = "Exe"
+                PreBuildEvent = '"$(ProjectDir)..\..\tools\UpdateBuildNumber.exe" "$(ProjectDir)..\..\Sooda.version" "$(ProjectDir)AssemblyBuildInfo.cs" "$(ProjectDir)..\..\build\Sooda.buildversion"'
                 PostBuildEvent = ""
-                RootNamespace = "SoodaQuery"
+                RootNamespace = "SoodaFixKeygen"
                 RunPostBuildEvent = "OnBuildSuccess"
                 StartupObject = ""
             >
@@ -32,11 +32,11 @@
                     DocumentationFile = ""
                     DebugSymbols = "true"
                     FileAlignment = "4096"
-                    IncrementalBuild = "true"
+                    IncrementalBuild = "false"
                     NoStdLib = "false"
                     NoWarn = ""
                     Optimize = "false"
-                    OutputPath = "..\..\..\bin\"
+                    OutputPath = "bin\Debug\"
                     RegisterForComInterop = "false"
                     RemoveIntegerChecks = "false"
                     TreatWarningsAsErrors = "true"
@@ -56,7 +56,7 @@
                     NoStdLib = "false"
                     NoWarn = ""
                     Optimize = "true"
-                    OutputPath = "..\..\..\bin\"
+                    OutputPath = "bin\Release\"
                     RegisterForComInterop = "false"
                     RemoveIntegerChecks = "false"
                     TreatWarningsAsErrors = "true"
@@ -67,54 +67,35 @@
                 <Reference
                     Name = "System"
                     AssemblyName = "System"
-                    HintPath = "F:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.dll"
+                    HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.dll"
                 />
                 <Reference
                     Name = "System.Data"
                     AssemblyName = "System.Data"
-                    HintPath = "F:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Data.dll"
-                />
-                <Reference
-                    Name = "System.Drawing"
-                    AssemblyName = "System.Drawing"
-                    HintPath = "F:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Drawing.dll"
-                />
-                <Reference
-                    Name = "System.Windows.Forms"
-                    AssemblyName = "System.Windows.Forms"
-                    HintPath = "F:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Windows.Forms.dll"
+                    HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Data.dll"
                 />
                 <Reference
                     Name = "System.XML"
                     AssemblyName = "System.Xml"
-                    HintPath = "F:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.XML.dll"
-                />
-                <Reference
-                    Name = "System.Web.Services"
-                    AssemblyName = "System.Web.Services"
-                    HintPath = "F:\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.Web.Services.dll"
+                    HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
                 />
                 <Reference
                     Name = "Sooda"
                     Project = "{FCC9B644-9093-41F6-8F0D-F98F22474CB5}"
                     Package = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
                 />
-                <Reference
-                    Name = "ICSharpCode.TextEditor"
-                    AssemblyName = "ICSharpCode.TextEditor"
-                    HintPath = "..\..\external\ICSharpCode.TextEditor.dll"
-                />
             </References>
         </Build>
         <Files>
             <Include>
                 <File
-                    RelPath = "App.config"
-                    BuildAction = "None"
-                />
-                <File
                     RelPath = "App.ico"
                     BuildAction = "Content"
+                />
+                <File
+                    RelPath = "AssemblyBuildInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "AssemblyInfo.cs"
@@ -122,45 +103,9 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "CSV-Mode.xshd"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "MainForm.cs"
-                    SubType = "Form"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "MainForm.resx"
-                    DependentUpon = "MainForm.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "ProjectDialog.cs"
-                    SubType = "Form"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ProjectDialog.resx"
-                    DependentUpon = "ProjectDialog.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "ProjectInfo.cs"
+                    RelPath = "Class1.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "SQL-Mode.xshd"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "SyntaxModes.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "XML-Mode.xshd"
-                    BuildAction = "EmbeddedResource"
                 />
             </Include>
         </Files>

@@ -16,7 +16,7 @@
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
                 OutputType = "Library"
-                PreBuildEvent = ""
+                PreBuildEvent = '"$(ProjectDir)..\..\tools\UpdateBuildNumber.exe" "$(ProjectDir)..\..\Sooda.version" "$(ProjectDir)AssemblyBuildInfo.cs" "$(ProjectDir)..\..\build\Sooda.buildversion"'
                 PostBuildEvent = ""
                 RootNamespace = "Sooda"
                 RunPostBuildEvent = "OnBuildSuccess"
@@ -84,10 +84,19 @@
                     AssemblyName = "System.Drawing"
                     HintPath = "C:\WINNT\Microsoft.NET\Framework\v1.1.4322\System.Drawing.dll"
                 />
+                <Reference
+                    Name = "System.Web"
+                    AssemblyName = "System.Web"
+                    HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Web.dll"
+                />
             </References>
         </Build>
         <Files>
             <Include>
+                <File
+                    RelPath = "AssemblyBuildInfo.cs"
+                    BuildAction = "Compile"
+                />
                 <File
                     RelPath = "AssemblyInfo.cs"
                     SubType = "Code"
@@ -95,6 +104,11 @@
                 />
                 <File
                     RelPath = "AssemblySign.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "IDefaultSoodaTransactionStrategy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -144,7 +158,17 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SoodaFieldSizeAttribute.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SoodaFieldUpdateDelegate.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SoodaHttpContextBoundTransactionStrategy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -160,6 +184,11 @@
                 />
                 <File
                     RelPath = "SoodaObjectArrayFieldValues.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SoodaObjectExpressionComparer.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -224,8 +253,13 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "SoodaTransaction.cs"
+                    RelPath = "SoodaThreadBoundTransactionStrategy.cs"
                     SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SoodaTransaction.cs"
+                    SubType = "Component"
                     BuildAction = "Compile"
                 />
                 <File
@@ -244,7 +278,47 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Caching\ISoodaCache.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Caching\ISoodaCacheLock.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Caching\ISoodaCacheView.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Caching\ISoodaCachingPolicy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Caching\ISoodaCachingPolicyFixedTimeout.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Caching\LruCache.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Caching\SimpleCachingPolicy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Caching\SoodaCache.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Caching\SoodaCacheAllPolicy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -254,17 +328,42 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Caching\SoodaCachedCollectionHash.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Caching\SoodaCachedCollectionKey.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Caching\SoodaCacheEntry.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Caching\SoodaCacheInvalidateReason.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Caching\SoodaCacheKey.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Caching\SoodaCacheSmallAndMediumPolicy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Caching\SoodaCacheSmallPolicy.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Caching\SoodaInProcessCache.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Caching\SoodaNoCache.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Caching\SoodaNoCachingPolicy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -425,11 +524,6 @@
                 />
                 <File
                     RelPath = "ObjectMapper\ISoodaSchema.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "ObjectMapper\RefCache.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -828,6 +922,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "QL\TypedWrappers\SoqlImageWrapperExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "QL\TypedWrappers\SoqlInt16WrapperExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -864,6 +963,11 @@
                 />
                 <File
                     RelPath = "QL\TypedWrappers\SoqlNullableGuidWrapperExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "QL\TypedWrappers\SoqlNullableImageWrapperExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1003,26 +1107,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Schema\IndexFieldInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\IndexFieldInfoCollection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\IndexInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Schema\IndexInfoCollection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Schema\PrecommitValueInfo.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1053,12 +1137,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Schema\SoodaSchema.xsd"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "Schema\SoodaSchema.xsx"
-                    DependentUpon = "SoodaSchema.xsd"
                     BuildAction = "None"
                 />
                 <File

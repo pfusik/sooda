@@ -79,14 +79,14 @@ namespace SoodaAddin.UI
                 | System.Windows.Forms.AnchorStyles.Right)));
             this.contentPanel.Location = new System.Drawing.Point(8, 88);
             this.contentPanel.Name = "contentPanel";
-            this.contentPanel.Size = new System.Drawing.Size(568, 272);
+            this.contentPanel.Size = new System.Drawing.Size(568, 336);
             this.contentPanel.TabIndex = 1;
             // 
             // buttonNext
             // 
             this.buttonNext.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonNext.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonNext.Location = new System.Drawing.Point(424, 378);
+            this.buttonNext.Location = new System.Drawing.Point(424, 434);
             this.buttonNext.Name = "buttonNext";
             this.buttonNext.TabIndex = 2;
             this.buttonNext.Text = "&Next >";
@@ -96,7 +96,7 @@ namespace SoodaAddin.UI
             // 
             this.buttonFinish.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonFinish.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonFinish.Location = new System.Drawing.Point(504, 378);
+            this.buttonFinish.Location = new System.Drawing.Point(504, 434);
             this.buttonFinish.Name = "buttonFinish";
             this.buttonFinish.TabIndex = 2;
             this.buttonFinish.Text = "&Finish";
@@ -106,7 +106,7 @@ namespace SoodaAddin.UI
             // 
             this.buttonBack.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonBack.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonBack.Location = new System.Drawing.Point(344, 378);
+            this.buttonBack.Location = new System.Drawing.Point(344, 434);
             this.buttonBack.Name = "buttonBack";
             this.buttonBack.TabIndex = 2;
             this.buttonBack.Text = "< &Back";
@@ -116,7 +116,7 @@ namespace SoodaAddin.UI
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.buttonCancel.Location = new System.Drawing.Point(264, 378);
+            this.buttonCancel.Location = new System.Drawing.Point(264, 434);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.TabIndex = 2;
             this.buttonCancel.Text = "Cancel";
@@ -125,7 +125,7 @@ namespace SoodaAddin.UI
             // SoodaConfigurationWizard
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-            this.ClientSize = new System.Drawing.Size(584, 408);
+            this.ClientSize = new System.Drawing.Size(584, 464);
             this.Controls.Add(this.buttonNext);
             this.Controls.Add(this.contentPanel);
             this.Controls.Add(this.pictureBox1);

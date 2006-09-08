@@ -28,11 +28,13 @@
 // 
 
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
-[assembly: AssemblyTitle("Sooda")]
+[assembly: AssemblyTitle("Sooda Schema Tool")]
 [assembly: AssemblyDescription("Sooda")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Sooda Community - www.sooda.org")]
+[assembly: AssemblyCompany("Sooda")]
 [assembly: AssemblyProduct("Sooda - Simple Object Oriented Database Access")]
 [assembly: AssemblyCopyright("Copyright (c) 2002-2006 by Jaroslaw Kowalski")]
 [assembly: AssemblyCulture("")]
+

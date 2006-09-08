@@ -312,6 +312,8 @@ namespace SoodaAddin.UI
                         }
                     }
 
+                    newLines.Add("\"%SOODA_DIR%\\bin\\net-" + dotnetVersion + "\\SoodaCompileStubs.exe\" \"" + Strategy.AssemblyName + "\" \"$(ProjectDir)Stubs\"");
+
                     string newPreBuildEvent = String.Join("\r\n", (string[])newLines.ToArray(typeof(string)));
                     WriteToLog("Setting Pre-Build Event to: " + newPreBuildEvent);
                     Strategy.PreBuildEvent = newPreBuildEvent;

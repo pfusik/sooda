@@ -31,6 +31,20 @@ namespace ConfigureSoodaProject
             get { return _projectFile; }
         }
 
+        public string AssemblyName
+        {
+            get { 
+                if (_isVS2003)
+                {
+                    return null;
+                }
+                else
+                {
+                    return _projectXml.SelectSingleNode("//msbuild:AssemblyName", _namespaceManager).InnerText;
+                }
+            }
+        }
+
         private XmlElement GetItemGroup(string whichHas)
         {
             XmlElement itemGroup = (XmlElement)_projectXml.SelectSingleNode("msbuild:Project/msbuild:ItemGroup[msbuild:" + whichHas + "]", _namespaceManager);
@@ -160,7 +174,25 @@ namespace ConfigureSoodaProject
 	{
         public static void Main(string[] args)
         {
-            ProjectFileConfigurationStrategy strategy = new ProjectFileConfigurationStrategy(args[0]);
+            string projectFile;
+
+            if (args.Length == 0)
+            {
+                using (OpenFileDialog ofd = new OpenFileDialog())
+                {
+                    ofd.Title = "Open Visual Studio Project File";
+                    ofd.Filter = "Project Files (*.csproj;*.vbproj)|*.csproj;*.vbproj|All Files (*.*)|*.*";
+                    if (ofd.ShowDialog() != DialogResult.OK)
+                        return;
+                    projectFile = ofd.FileName;
+                }
+            }
+            else
+            {
+                projectFile = args[0];
+            }
+
+            ProjectFileConfigurationStrategy strategy = new ProjectFileConfigurationStrategy(projectFile);
 
             Application.EnableVisualStyles();
             Application.Run(new SoodaConfigurationWizard(strategy));
