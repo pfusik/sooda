@@ -1,16 +1,15 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{C5E51DAD-B844-4B20-8A84-2D098E75ABAF}</ProjectGuid>
+    <ProjectGuid>{5F89F8D0-39BC-49F8-92E3-3A7F5F3FF55F}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ApplicationIcon>
-    </ApplicationIcon>
+    <ApplicationIcon>App.ico</ApplicationIcon>
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
-    <AssemblyName>SoodaSchemaTool</AssemblyName>
+    <AssemblyName>SoodaStubGen</AssemblyName>
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
     <DefaultClientScript>JScript</DefaultClientScript>
@@ -18,7 +17,7 @@
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
     <DelaySign>false</DelaySign>
     <OutputType>Exe</OutputType>
-    <RootNamespace>SoodaSchemaTool</RootNamespace>
+    <RootNamespace>SoodaStubGen</RootNamespace>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <StartupObject>
     </StartupObject>
@@ -34,20 +33,18 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants>TRACE;DEBUG;VSNET,DOTNET2</DefineConstants>
     <DocumentationFile>
     </DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
-    <NoWarn>
-    </NoWarn>
+    <NoWarn>1699</NoWarn>
     <Optimize>false</Optimize>
     <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <WarningLevel>1</WarningLevel>
+    <WarningLevel>4</WarningLevel>
     <DebugType>full</DebugType>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
@@ -58,29 +55,22 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants>TRACE;VSNET,DOTNET2</DefineConstants>
     <DocumentationFile>
     </DocumentationFile>
     <DebugSymbols>false</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
-    <NoWarn>
-    </NoWarn>
-    <Optimize>false</Optimize>
+    <NoWarn>1699</NoWarn>
+    <Optimize>true</Optimize>
     <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <WarningLevel>1</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
     <DebugType>none</DebugType>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Sooda\Sooda-net-2.0.csproj">
-      <Name>Sooda-net-2.0</Name>
-      <Project>{FCC9B644-9093-41F6-8F0D-F98F22474CB5}</Project>
-      <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
-    </ProjectReference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -90,32 +80,25 @@
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
+    <ProjectReference Include="..\Sooda.CodeGen\Sooda.CodeGen.vs2005.csproj">
+      <Name>Sooda.CodeGen.vs2005</Name>
+      <Project>{0D67237B-4FBA-4BD9-95C3-24B5F427D014}</Project>
+      <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Command.cs">
+    <None Include="App.config" />
+    <Content Include="App.ico" />
+    <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CommandAttribute.cs">
+    <Compile Include="AssemblySign.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CommandGenDDL.cs">
+    <Compile Include="ConsoleCodeGeneratorOutput.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CommandHelp.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ConsoleRunner.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="CommandFactory.cs" />
-    <Compile Include="CommandGenSchema.cs" />
-    <Compile Include="CommandUpdateSchema.cs" />
-    <Compile Include="ISchemaImporterOptions.cs" />
-    <Compile Include="MSSqlSchemaImporter.cs" />
-    <Compile Include="SchemaExporter.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="SchemaImporter.cs">
+    <Compile Include="EntryPoint.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="AssemblyBuildInfo.cs" />
@@ -123,8 +106,7 @@
   <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PreBuildEvent>"$(ProjectDir)..\..\tools\UpdateBuildNumber.exe" "$(ProjectDir)..\..\Sooda.version" "$(ProjectDir)AssemblyBuildInfo.cs" "$(ProjectDir)..\..\build\Sooda.buildversion"</PreBuildEvent>
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
