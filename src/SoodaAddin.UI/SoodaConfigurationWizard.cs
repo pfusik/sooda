@@ -153,6 +153,7 @@ namespace SoodaAddin.UI
         {
             Text += " - " + Path.GetFileName(_strategy.ProjectFile);
             _welcomePage = new WizardPageWelcome();
+            _welcomePage.textBoxProjectPath.Text = _strategy.ProjectFile;
             _connectToDatabasePage = new WizardPageConnectToDatabase();
             _chooseDatabasePage = new WizardPageChooseDatabase();
             _optionsPage = new WizardPageOptions();

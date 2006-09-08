@@ -117,6 +117,11 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "Do_Not_Modify_In_Visual_Studio_2005.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ISoodaConfigurationStrategy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

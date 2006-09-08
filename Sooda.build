@@ -16,7 +16,7 @@
     <property name="webserver.deploy.dir" value="web/www.sooda.org/html/test" />
 
     <property name="sooda.csc.args" value="/nowarn:1591" />
-    <property name="sooda.external" value="${nant.project.basedir}/external" unless="${property::exists('sooda.external')}" />
+    <property name="sooda.external" value="${project::get-base-directory()}/external" unless="${property::exists('sooda.external')}" />
     <property name="sooda.nlog.dir" value="${sooda.external}" unless="${property::exists('sooda.nlog.dir')}" />
     <property name="sooda.log4net.dir" value="${sooda.external}" unless="${property::exists('sooda.log4net.dir')}" />
 
@@ -28,9 +28,9 @@
     <property name="sources" value="src" />
     
     <target name="build" depends="build-${nant.settings.currentframework}" />
-    <target name="build-net-1.0" depends="build-common, tools" />
-    <target name="build-net-1.1" depends="build-common, tools" />
-    <target name="build-net-2.0" depends="build-common, tools, Sooda.Web" />
+    <target name="build-net-1.0" depends="build-common, tools, guitools" />
+    <target name="build-net-1.1" depends="build-common, tools, guitools" />
+    <target name="build-net-2.0" depends="build-common, tools, Sooda.Web, guitools" />
     <target name="build-netcf-1.0" depends="build-common" />
     <target name="build-netcf-2.0" depends="build-common" />
     <target name="build-mono-1.0" depends="build-common, minitools" />
@@ -38,6 +38,7 @@
 
     <target name="build-common" depends="configure, libraries" />
     <target name="tools" depends="SoodaStubGen, SoodaSchemaTool, SoodaFixKeygen, SoodaCompileStubs" />
+    <target name="guitools" depends="ConfigureSoodaProject" />
     <target name="minitools" depends="SoodaStubGen, SoodaCompileStubs" />
 
     <target name="libraries" depends="Sooda, Sooda.Logging.NLog, Sooda.Logging.log4net" />
@@ -67,7 +68,7 @@
 
         <property name="buildsubdir" value="${framework::get-target-framework()}${if(clover.enabled,'-clover','')}${if(sooda.debug,'-debug','')}" />
         
-        <property name="sooda.dir" value="${nant.project.basedir}/build/${buildsubdir}/bin" unless="${property::exists('sooda.dir')}" />
+        <property name="sooda.dir" value="${project::get-base-directory()}/build/${buildsubdir}/bin" unless="${property::exists('sooda.dir')}" />
         <property name="web.dir" value="build/${buildsubdir}/web" unless="${property::exists('web.dir')}" />
         <property name="help.dir" value="build/${buildsubdir}/help" unless="${property::exists('help.dir')}" />
         <property name="helpweb.dir" value="build/${buildsubdir}/helpweb" unless="${property::exists('helpweb.dir')}" />
@@ -77,12 +78,12 @@
         <call target="configure-${nant.settings.currentframework}" 
             if="${target::exists('configure-' + nant.settings.currentframework)}" />
 
-        <echo message="basedir:   ${nant.project.basedir}" />
+        <echo message="basedir:   ${project::get-base-directory()}" />
         <echo message="external:  ${sooda.external}" />
         <echo message="defines:   ${sooda.define}" />
         <echo message="optimize:  ${sooda.optimize}" />
         <echo message="output:    ${sooda.dir}" />
-        <echo message="framework: ${nant.settings.currentframework.description}" />
+        <echo message="framework: ${framework::get-description(framework::get-target-framework())}" />
     </target>
 
     <target name="configure-net-1.0">
@@ -147,8 +148,27 @@
         </csc>
     </target>
 
+    <target name="ConfigureSoodaProject" depends="configure, update-build-number, SoodaAddin.UI">
+        <csc target="winexe" output="${sooda.dir}/ConfigureSoodaProject.exe" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
+            <references>                                  
+                <include name="mscorlib.dll" />
+                <include name="System.dll" />
+                <include name="System.XML.dll" />
+                <include name="System.Data.dll" />
+                <include name="System.Drawing.dll" />
+                <include name="${sooda.dir}/SoodaAddin.UI.dll" />
+            </references>
+            <sources basedir="src/ConfigureSoodaProject">
+                <include name="**/*.cs" />
+            </sources>
+            <resources basedir="src/ConfigureSoodaProject" prefix="SoodaAddin.UI" dynamicprefix="true">
+                <include name="**/*.resx" />
+            </resources>
+        </csc>
+    </target>
+
     <target name="SoodaAddin.UI" depends="configure, update-build-number">
-        <tlbimp output="${sooda.dir}/Interop.SQLDMO.dll" typelib="" />
+        <copy file="external/Interop.SQLDMO.dll" tofile="${sooda.dir}/Interop.SQLDMO.dll" />
         <csc target="library" output="${sooda.dir}/SoodaAddin.UI.dll" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
             <references>                                  
                 <include name="mscorlib.dll" />
@@ -161,6 +181,9 @@
             <sources basedir="src/SoodaAddin.UI">
                 <include name="**/*.cs" />
             </sources>
+            <resources basedir="src/SoodaAddin.UI" prefix="SoodaAddin.UI" dynamicprefix="true">
+                <include name="**/*.resx" />
+            </resources>
         </csc>
     </target>
 
@@ -632,29 +655,29 @@
 
     <target name="updateversion">
         <foreach item="Line" in="sooda.version" delim=";" property="sooda.version">
-            <exec workingdir="${nant.project.basedir}" program="tools/ReplaceVersion.exe" commandline="src ${sooda.version}" />
+            <exec workingdir="${project::get-base-directory()}" program="tools/ReplaceVersion.exe" commandline="src ${sooda.version}" />
         </foreach>
     </target>
 
     <target name="newbuild">
-        <exec workingdir="${nant.project.basedir}" 
+        <exec workingdir="${project::get-base-directory()}" 
             program="tools/NewBuild.exe" 
-            commandline="${nant.project.basedir}/sooda.version build" />
+            commandline="${project::get-base-directory()}/sooda.version build" />
         <call target="updateversion" />
     </target>
 
     <target name="newrevision">
-        <exec workingdir="${nant.project.basedir}" program="tools/NewBuild.exe" commandline="${nant.project.basedir}/sooda.version revision" />
+        <exec workingdir="${project::get-base-directory()}" program="tools/NewBuild.exe" commandline="${project::get-base-directory()}/sooda.version revision" />
         <call target="updateversion" />
     </target>
 
     <target name="newminor">
-        <exec workingdir="${nant.project.basedir}" program="tools/NewBuild.exe" commandline="${nant.project.basedir}/sooda.version minor" />
+        <exec workingdir="${project::get-base-directory()}" program="tools/NewBuild.exe" commandline="${project::get-base-directory()}/sooda.version minor" />
         <call target="updateversion" />
     </target>
 
     <target name="newmajor">
-        <exec workingdir="${nant.project.basedir}" program="tools/NewBuild.exe" commandline="${nant.project.basedir}/sooda.version major" />
+        <exec workingdir="${project::get-base-directory()}" program="tools/NewBuild.exe" commandline="${project::get-base-directory()}/sooda.version major" />
         <call target="updateversion" />
     </target>
 
@@ -677,12 +700,12 @@
     </target>
 
     <target name="keyfile">
-        <exec program="${nant.settings.currentframework.sdkdirectory}/sn.exe" workingdir="${nant.project.basedir}" commandline="-q -k Sooda.snk"/>
+        <exec program="${nant.settings.currentframework.sdkdirectory}/sn.exe" workingdir="${project::get-base-directory()}" commandline="-q -k Sooda.snk"/>
     </target>
 
     <target name="keyfile-mono">
-        <exec useruntimeengine="true" program="${nant.settings.currentframework.sdkdirectory}/sn.exe" workingdir="${nant.project.basedir}" commandline="-q -k Sooda.snk"/>
-        <exec useruntimeengine="true" program="${nant.settings.currentframework.sdkdirectory}/sn.exe" workingdir="${nant.project.basedir}" commandline="-q -i Sooda.snk SoodaPublisherKey"/>
+        <exec useruntimeengine="true" program="${nant.settings.currentframework.sdkdirectory}/sn.exe" workingdir="${project::get-base-directory()}" commandline="-q -k Sooda.snk"/>
+        <exec useruntimeengine="true" program="${nant.settings.currentframework.sdkdirectory}/sn.exe" workingdir="${project::get-base-directory()}" commandline="-q -i Sooda.snk SoodaPublisherKey"/>
     </target>
 
     <target name="putty">
@@ -742,13 +765,13 @@
     </target>
 
     <target name="doc" depends="configure, build, website, helpwebsite">
-        <copy file="${nant.project.basedir}/web/syntax.xsl" tofile="build/${buildsubdir}/syntax.xsl" overwrite="true" />
+        <copy file="${project::get-base-directory()}/web/syntax.xsl" tofile="build/${buildsubdir}/syntax.xsl" overwrite="true" />
         <xmlpoke file="build/${buildsubdir}/syntax.xsl" xpath="//xsl:param[@name='external-base']" value="file://${webbuild.dir}">
             <namespaces>
                 <namespace prefix="xsl" uri="http://www.w3.org/1999/XSL/Transform" />
             </namespaces>
         </xmlpoke>
-        <copy file="${nant.project.basedir}/Sooda-${framework::get-target-framework()}.ndoc" tofile="build/${buildsubdir}/Sooda.ndoc" />
+        <copy file="${project::get-base-directory()}/Sooda-${framework::get-target-framework()}.ndoc" tofile="build/${buildsubdir}/Sooda.ndoc" />
         <copy todir="build/${buildsubdir}/help/examples">
             <fileset basedir="build/${buildsubdir}/helpweb/examples">
                 <include name="**/*" />
@@ -820,7 +843,7 @@
                 <exclude name="helpmenu.xml" />
             </infiles>
             <parameters>
-                <parameter name="external-base" value="${path::combine(nant.project.basedir,webbuild.dir)}" />
+                <parameter name="external-base" value="${path::combine(project::get-base-directory(),webbuild.dir)}" />
                 <parameter name="file_extension" value="html" />
                 <parameter name="sourceforge" value="${web.sourceforge}" />
                 <parameter name="mode" value="${web.buildmode}" />
@@ -831,7 +854,7 @@
 
         <style in="build/webtmp/documentation.xml" out="build/doc/documentation.html" style="web/style.xsl">
             <parameters>
-                <parameter name="external-base" value="${path::combine(nant.project.basedir,webbuild.dir)}" />
+                <parameter name="external-base" value="${path::combine(project::get-base-directory(),webbuild.dir)}" />
                 <parameter name="file_extension" value="html" />
                 <parameter name="mode" value="plain" />
             </parameters>
