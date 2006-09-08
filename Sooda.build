@@ -249,7 +249,6 @@
             </sources>
             <arg value="${sooda.csc.args}"/>
         </csc>
-        <copy file="src/SoodaStubGen/App.config" tofile="${sooda.dir}/SoodaStubGen.exe.config" />
     </target>
 
     <target name="SoodaCompileStubs" depends="configure, update-build-number, Sooda">
@@ -616,17 +615,16 @@
         <exec program="nant" commandline="-t:net-1.1 clean" />
         <exec program="nant" commandline="-t:net-2.0 clean" />
 
-        <call target="clean_wizards" />
         <call target="installer" />
     </target>
-    <target name="installer" depends="vs2005_wizards">
-        <exec program="nant" commandline="-t:net-1.1 build doc" />
-        <exec program="nant" commandline="-t:net-2.0 build" />
+    <target name="installer" depends="update-build-number">
+        <exec program="nant" commandline="-t:net-1.1 -D:sooda.debug=${sooda.debug} -D:sooda.optimize=${sooda.optimize} build" />
+        <exec program="nant" commandline="-t:net-2.0 -D:sooda.debug=${sooda.debug} -D:sooda.optimize=${sooda.optimize} build" />
 
         <readregistry property="nsis.dir" key="SOFTWARE\NSIS\" />
         <property name="makensis.exe" value="${nsis.dir}/makensis.exe" />
 
-        <exec program="${makensis.exe}" commandline="/DSOODA_VERSION=${sooda.version.major}.${sooda.version.minor} /DRELEASE_VERSION=${release.version} tools\SetupSooda.nsi" />
+        <exec program="${makensis.exe}" commandline="/DSOODA_VERSION=${sooda.version.major}.${sooda.version.minor} /DSOODA_DEBUG=${if(sooda.debug,'-debug','')} /DRELEASE_VERSION=${sooda.version} tools\SetupSooda.nsi" />
     </target>
 
     <target name="NLog">
@@ -744,51 +742,17 @@
         <!-- <delete file="web.zip" /> -->
     </target>
 
-    <target name="install-wizard-vs2003">
-        <readregistry property="vcsharp.dir" key="Software\Microsoft\VisualStudio\7.1\Setup\VC#\ProductDir" />
-        <echo message="Installing C# wizards to ${vcsharp.dir}" />
-        <copy todir="${vcsharp.dir}\CSharpProjectItems">
-            <fileset basedir="wizard/vs2003/CSharpProjectItems">
-                <include name="**/*" />
-            </fileset>
-        </copy>
-        <copy todir="${vcsharp.dir}\VC#Wizards">
-            <fileset basedir="wizard/vs2003/VC#Wizards">
-                <include name="**/*" />
-            </fileset>
-        </copy>
-        <copy todir="${vcsharp.dir}\CSharpProjects">
-            <fileset basedir="wizard/vs2003/CSharpProjects">
-                <include name="**/*" />
-            </fileset>
-        </copy>
-    </target>
-
     <target name="doc" depends="configure, build, website, helpwebsite">
-        <copy file="${project::get-base-directory()}/web/syntax.xsl" tofile="build/${buildsubdir}/syntax.xsl" overwrite="true" />
-        <xmlpoke file="build/${buildsubdir}/syntax.xsl" xpath="//xsl:param[@name='external-base']" value="file://${webbuild.dir}">
-            <namespaces>
-                <namespace prefix="xsl" uri="http://www.w3.org/1999/XSL/Transform" />
-            </namespaces>
-        </xmlpoke>
-        <copy file="${project::get-base-directory()}/Sooda-${framework::get-target-framework()}.ndoc" tofile="build/${buildsubdir}/Sooda.ndoc" />
-        <copy todir="build/${buildsubdir}/help/examples">
-            <fileset basedir="build/${buildsubdir}/helpweb/examples">
-                <include name="**/*" />
-            </fileset>
-        </copy>
-        <uptodate property="help.uptodate">
-            <targetfiles>
-                <include name="${help.dir}/Sooda.chm" />
+        <uptodate property="doc.uptodate">
+            <targetfiles basedir="build">
+                <include name="Sooda.chm" />
             </targetfiles>
-            <sourcefiles basedir="build/${buildsubdir}">
-                <include name="**/*.dll" />
-                <include name="web/**/*" />
-                <include name="Sooda.ndoc" />
+            <sourcefiles basedir="build/doc">
+                <include name="*.*" />
             </sourcefiles>
         </uptodate>
-        <if test="${not help.uptodate}">
-            <exec program="${ndoc.console.exe}" workingdir="build/${buildsubdir}" commandline="-documenter=MSDN -project=.\Sooda.ndoc" />
+        <if test="${not doc.uptodate}">
+            <exec program="C:\Program Files\HTML Help Workshop\hhc.exe" commandline="Sooda.hhp" workingdir="." />
         </if>
     </target>
 
@@ -914,54 +878,6 @@
                 <format type="html" />
             </current>
         </clover-report>
-    </target>
-
-    <target name="clean_wizards">
-        <delete>
-            <fileset basedir="wizard">
-                <include name="**/bin/**" />
-                <include name="**/obj/**" />
-                <include name="**/Stubs/**" />
-                <include name="**/_Stubs.*" />
-                <include name="**/_DBSchema.bin" />
-                <include name="**/*.suo" />
-                <include name="**/*.*proj.user" />
-            </fileset>
-        </delete>
-    </target>
-
-    <target name="vs2005_wizards" depends="clean_wizards">
-        <delete dir="tmp_dir" failonerror="false" />
-        <copy todir="tmp_dir">
-            <fileset basedir="wizard/vs2005/work/cs-console/Soodawind">
-                <include name="**/*" />
-                <exclude name="**/bin/**" />
-                <exclude name="**/obj/**" />
-                <exclude name="**/Stubs/**" />
-                <exclude name="**/*.suo" />
-                <exclude name="**/*.sln" />
-                <exclude name="**/*.*proj.user" />
-                <exclude name="**/*.vstemplate" />
-            </fileset>
-            <filterchain>
-                <replacestring from="Soodawind" to="$safeprojectname$" />
-            </filterchain>
-        </copy>
-        <echo message="This is just a placeholder. Rebuild your project to generate stubs." file="tmp_dir/_DBSchema.bin" />
-        <echo message="This is just a placeholder. Rebuild your project to generate stubs." file="tmp_dir/_Stubs.cs" />
-        <copy todir="tmp_dir">
-            <fileset basedir="wizard/vs2005/work/cs-console/Soodawind">
-                <include name="**/*.vstemplate" />
-            </fileset>
-            <filterchain>                                             
-                <replacestring from="&quot;Soodawind.soodaproject&quot;" to="&quot;$safeprojectname$.soodaproject&quot;" />
-            </filterchain>
-        </copy>
-        <zip zipfile="CSSoodaConsoleProject.zip">
-            <fileset basedir="tmp_dir">
-                <include name="**/*" />
-            </fileset>
-        </zip>
     </target>
 
     <target name="source_snapshot">

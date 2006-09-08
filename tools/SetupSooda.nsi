@@ -27,7 +27,7 @@ Name "Sooda"
 SetCompress force
 
 ; The file to write
-OutFile "SoodaInstaller-${RELEASE_VERSION}.exe"
+OutFile "SoodaInstaller-${RELEASE_VERSION}${SOODA_DEBUG}.exe"
 
 ; The default installation directory
 InstallDir "$PROGRAMFILES\Sooda ${SOODA_VERSION}"
@@ -46,14 +46,12 @@ Section "Core Files"
 
   SetOutPath $INSTDIR
   File License.txt
-  File SoodaQuery_License.txt
   File src\Sooda\Schema\SoodaSchema.xsd
   File src\Sooda.CodeGen\SoodaProject.xsd
 
   # create shortcuts
 
   CreateDirectory "$SMPROGRAMS\Sooda ${SOODA_VERSION}"
-  CreateShortCut  "$SMPROGRAMS\Sooda ${SOODA_VERSION}\View Sooda Query Analyzer License.lnk" "$INSTDIR\SoodaQuery_License.txt" ""
   CreateShortCut  "$SMPROGRAMS\Sooda ${SOODA_VERSION}\Uninstall.lnk" "$INSTDIR\Uninstall.exe" ""
   CreateShortCut  "$SMPROGRAMS\Sooda ${SOODA_VERSION}\View Sooda License.lnk" "$INSTDIR\License.txt" ""
 
@@ -76,19 +74,16 @@ Section ".NET 1.1 Libraries and Tools"
   SectionIn 1 2 4
 
   SetOutPath $INSTDIR\bin\net-1.1
-  File /r build\net-1.1-debug\bin\Sooda*.dll
-  File /r build\net-1.1-debug\bin\Sooda*.exe
-  File /r build\net-1.1-debug\bin\Sooda*.xml
-  File /r build\net-1.1-debug\bin\ICSharpCode*.dll
-  File /r build\net-1.1-debug\bin\Sooda*.exe.config
-  File /r build\net-1.1-debug\bin\Sooda*.exe.manifest
+  File /r build\net-1.1${SOODA_DEBUG}\bin\*.dll
+  File /r build\net-1.1${SOODA_DEBUG}\bin\*.exe
+  File /r build\net-1.1${SOODA_DEBUG}\bin\*.xml
 SectionEnd
 
 Section "Debug Symbols"
   SectionIn 1 2
 
   SetOutPath $INSTDIR\bin\net-1.1
-  File /r build\net-1.1-debug\bin\Sooda*.pdb
+  File /nonfatal /r build\net-1.1${SOODA_DEBUG}\bin\Sooda*.pdb
 SectionEnd
 
 Section "Visual Studio 2003 Support"
@@ -102,19 +97,7 @@ Section "Visual Studio 2003 Support"
   SetOutPath "$0\Packages\schemas\xml"
   File src\Sooda\Schema\SoodaSchema.xsd
   File src\Sooda.CodeGen\SoodaProject.xsd
-
-  ClearErrors
-  ReadRegStr $0 HKLM Software\Microsoft\VisualStudio\7.1\Setup\VC# "ProductDir"
-  IfErrors novsnet
-  DetailPrint "Visual C# .NET 2003 installed in $0"
-  SetOutPath $0
-  File /r /x _svn wizard\vs2003\CSharpProjects
-  File /r /x _svn "wizard\vs2003\VC#Wizards"
-  Return
-
 novsnet:
-  MessageBox MB_OK "Visual Studio .NET 2003 was not found. Support not installed."
-
 SectionEnd
 
 SectionGroupEnd
@@ -125,19 +108,16 @@ Section ".NET 2.0 Libraries and Tools"
   SectionIn 1 3 4
 
   SetOutPath $INSTDIR\bin\net-2.0
-  File /r build\net-2.0-debug\bin\Sooda*.dll
-  File /r build\net-2.0-debug\bin\Sooda*.exe
-  File /r build\net-2.0-debug\bin\Sooda*.xml
-  File /r build\net-2.0-debug\bin\ICSharpCode*.dll
-  File /r build\net-2.0-debug\bin\Sooda*.exe.config
-  File /r build\net-2.0-debug\bin\Sooda*.exe.manifest
+  File /r build\net-2.0${SOODA_DEBUG}\bin\*.dll
+  File /r build\net-2.0${SOODA_DEBUG}\bin\*.exe
+  File /r build\net-2.0${SOODA_DEBUG}\bin\*.xml
 SectionEnd
 
 Section "Debug Symbols"
   SectionIn 1 3
 
   SetOutPath $INSTDIR\bin\net-2.0
-  File /r build\net-2.0-debug\bin\Sooda*.pdb
+  File /nonfatal /r build\net-2.0${SOODA_DEBUG}\bin\Sooda*.pdb
 SectionEnd
 
 Section "Visual Studio 2005 Support"
@@ -151,10 +131,6 @@ Section "Visual Studio 2005 Support"
   SetOutPath "$0\xml\schemas"
   File src\Sooda\Schema\SoodaSchema.xsd
   File src\Sooda.CodeGen\SoodaProject.xsd
-
-  SetOutPath "$DOCUMENTS\Visual Studio 2005\Templates\ProjectTemplates\Visual C#"
-  File CSSoodaConsoleProject.zip
-
   Return
 
 novsnet:
@@ -164,34 +140,16 @@ SectionEnd
 
 SectionGroupEnd
 
-Section "Example Projects"
-  SectionIn 1 2 3
-  SetOutPath $INSTDIR\examples
-  File /r /x _svn examples\*.*
-  CreateShortCut  "$SMPROGRAMS\Sooda ${SOODA_VERSION}\Examples.lnk" "$INSTDIR\examples" ""
-SectionEnd
-
 Section "Documentation"
   SectionIn 1 2 3
   SetOutPath $INSTDIR\docs
-  File build\net-1.1-debug\help\Sooda.chm
-  CreateShortCut  "$SMPROGRAMS\Sooda\Sooda Class Library Reference.lnk" "$INSTDIR\Doc\Sooda.chm" ""
+  File build\Sooda.chm
+  CreateShortCut  "$SMPROGRAMS\Sooda\Sooda Documentation.lnk" "$INSTDIR\Doc\Sooda.chm" ""
 SectionEnd
 
 Section "Uninstall"
   Push "$INSTDIR\bin"
   call un.RemoveFromPath
-
-  ClearErrors
-  ReadRegStr $0 HKLM Software\Microsoft\VisualStudio\7.1\Setup\VC# "ProductDir"
-  IfErrors novsnet
-  Delete "$0CSharpProjects\CSharpSooda*"
-  RMDir /r "$0VC#Wizards\CSharpSoodaConsoleWiz"
-  RMDir /r "$0VC#Wizards\CSharpSoodaDLLWiz"
-  RMDir /r "$0VC#Wizards\CSharpSoodaEXEWiz"
-  RMDir /r "$0VC#Wizards\CSharpAddSoodaSchemaWiz"
-
-novsnet:
 
   ClearErrors
   ReadRegStr $0 HKLM Software\Microsoft\VisualStudio\7.1\Setup\VS "VS7CommonDir"

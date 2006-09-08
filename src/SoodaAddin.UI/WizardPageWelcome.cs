@@ -107,6 +107,7 @@ namespace SoodaAddin.UI
                 | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxProjectPath.Location = new System.Drawing.Point(8, 88);
             this.textBoxProjectPath.Name = "textBoxProjectPath";
+            this.textBoxProjectPath.ReadOnly = true;
             this.textBoxProjectPath.Size = new System.Drawing.Size(568, 22);
             this.textBoxProjectPath.TabIndex = 0;
             this.textBoxProjectPath.Text = "";

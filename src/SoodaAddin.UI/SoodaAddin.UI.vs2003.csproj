@@ -90,12 +90,9 @@
                     HintPath = "C:\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Windows.Forms.dll"
                 />
                 <Reference
-                    Name = "SQLDMO"
-                    Guid = "{10010001-E260-11CF-AE68-00AA004A34D5}"
-                    VersionMajor = "8"
-                    VersionMinor = "5"
-                    Lcid = "0"
-                    WrapperTool = "tlbimp"
+                    Name = "Interop.SQLDMO"
+                    AssemblyName = "Interop.SQLDMO"
+                    HintPath = "..\..\external\Interop.SQLDMO.dll"
                 />
             </References>
         </Build>
