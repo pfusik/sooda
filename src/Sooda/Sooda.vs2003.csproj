@@ -1138,6 +1138,10 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Schema\SoodaSchema.xsd"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "Schema\SoodaSchema.xsx"
                     BuildAction = "None"
                 />

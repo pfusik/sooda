@@ -227,6 +227,47 @@
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
+                <File
+                    RelPath = "CDIL\Templates\ClassField.cdil"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "CDIL\Templates\DatabaseSchema.cdil"
+                    SubType = "Code"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "CDIL\Templates\Factory.cdil"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "CDIL\Templates\ListWrapper.cdil"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "CDIL\Templates\Loader.cdil"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "CDIL\Templates\NullableTypedWrapper.cdil"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "CDIL\Templates\Skeleton.cdil"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "CDIL\Templates\Stub.cdil"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "CDIL\Templates\TypedCollectionWrapper.cdil"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "CDIL\Templates\TypedWrapper.cdil"
+                    BuildAction = "EmbeddedResource"
+                />
             </Include>
         </Files>
     </CSHARP>

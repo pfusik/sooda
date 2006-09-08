@@ -10,7 +10,7 @@
   <with-typed-queries>true</with-typed-queries>
   <embedded-schema-type>Binary</embedded-schema-type>
   <external-projects>
-    <project type="vs2003" file="Sooda.UnitTests.Objects.csproj"/>
-    <project type="vs2005" file="Sooda.UnitTests.Objects-net-2.0.csproj"/>
+    <project type="vs2003" file="Sooda.UnitTests.Objects.vs2003.csproj"/>
+    <project type="vs2005" file="Sooda.UnitTests.Objects.vs2005.csproj"/>
   </external-projects>
 </sooda-project>
