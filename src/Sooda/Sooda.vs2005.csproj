@@ -1,11 +1,12 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version='1.0' encoding='utf-8'?>
+<Project DefaultTargets='Build' xmlns='http://schemas.microsoft.com/developer/msbuild/2003'>
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{FCC9B644-9093-41F6-8F0D-F98F22474CB5}</ProjectGuid>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Configuration Condition=' &apos;$(Configuration)&apos; == &apos;&apos; '>Debug</Configuration>
+    <Platform Condition=' &apos;$(Platform)&apos; == &apos;&apos; '>AnyCPU</Platform>
     <ApplicationIcon>
     </ApplicationIcon>
     <AssemblyKeyContainerName>
@@ -27,7 +28,7 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Debug|AnyCPU&apos; '>
     <OutputPath>bin\Debug\</OutputPath>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
@@ -49,7 +50,7 @@
     <DebugType>full</DebugType>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Release|AnyCPU&apos; '>
     <OutputPath>bin\Release\</OutputPath>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
@@ -72,657 +73,657 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System">
+    <Reference Include='System'>
       <Name>System</Name>
     </Reference>
-    <Reference Include="System.configuration" />
-    <Reference Include="System.Data">
+    <Reference Include='System.configuration' />
+    <Reference Include='System.Data'>
       <Name>System.Data</Name>
     </Reference>
-    <Reference Include="System.Drawing">
+    <Reference Include='System.Drawing'>
       <Name>System.Drawing</Name>
     </Reference>
-    <Reference Include="System.Web" />
-    <Reference Include="System.Xml">
+    <Reference Include='System.Web' />
+    <Reference Include='System.Xml'>
       <Name>System.XML</Name>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.cs">
+    <Compile Include='AssemblyInfo.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AssemblySign.cs">
+    <Compile Include='AssemblySign.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Caching\CacheUtils.cs">
+    <Compile Include='Caching\CacheUtils.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Caching\ISoodaCachingPolicyFixedTimeout.cs" />
-    <Compile Include="Caching\SimpleCachingPolicy.cs" />
-    <Compile Include="Caching\ISoodaCacheView.cs" />
-    <Compile Include="Caching\SoodaCacheKey.cs" />
-    <Compile Include="Caching\LruCache.cs" />
-    <Compile Include="Caching\ISoodaCacheLock.cs" />
-    <Compile Include="Caching\SoodaCacheInvalidateReason.cs" />
-    <Compile Include="Caching\SoodaInProcessCache.cs" />
-    <Compile Include="Caching\ISoodaCache.cs" />
-    <Compile Include="Caching\SoodaCacheSmallAndMediumPolicy.cs" />
-    <Compile Include="Caching\SoodaCacheSmallPolicy.cs" />
-    <Compile Include="Caching\SoodaCacheAllPolicy.cs" />
-    <Compile Include="Caching\SoodaNoCache.cs" />
-    <Compile Include="Caching\SoodaNoCachingPolicy.cs" />
-    <Compile Include="Caching\ISoodaCachingPolicy.cs" />
-    <Compile Include="Caching\SoodaCache.cs">
+    <Compile Include='Caching\ISoodaCachingPolicyFixedTimeout.cs' />
+    <Compile Include='Caching\SimpleCachingPolicy.cs' />
+    <Compile Include='Caching\ISoodaCacheView.cs' />
+    <Compile Include='Caching\SoodaCacheKey.cs' />
+    <Compile Include='Caching\LruCache.cs' />
+    <Compile Include='Caching\ISoodaCacheLock.cs' />
+    <Compile Include='Caching\SoodaCacheInvalidateReason.cs' />
+    <Compile Include='Caching\SoodaInProcessCache.cs' />
+    <Compile Include='Caching\ISoodaCache.cs' />
+    <Compile Include='Caching\SoodaCacheSmallAndMediumPolicy.cs' />
+    <Compile Include='Caching\SoodaCacheSmallPolicy.cs' />
+    <Compile Include='Caching\SoodaCacheAllPolicy.cs' />
+    <Compile Include='Caching\SoodaNoCache.cs' />
+    <Compile Include='Caching\SoodaNoCachingPolicy.cs' />
+    <Compile Include='Caching\ISoodaCachingPolicy.cs' />
+    <Compile Include='Caching\SoodaCache.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Caching\SoodaCachedCollection.cs">
+    <Compile Include='Caching\SoodaCachedCollection.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Caching\SoodaCacheEntry.cs">
+    <Compile Include='Caching\SoodaCacheEntry.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\ObjectToSoodaObjectAssociation.cs">
+    <Compile Include='Collections\ObjectToSoodaObjectAssociation.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\ObjectToSoodaObjectFactoryAssociation.cs">
+    <Compile Include='Collections\ObjectToSoodaObjectFactoryAssociation.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\ObjectToWeakSoodaObjectAssociation.cs">
+    <Compile Include='Collections\ObjectToWeakSoodaObjectAssociation.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\SoodaDataSourceCollection.cs">
+    <Compile Include='Collections\SoodaDataSourceCollection.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\SoodaObjectCollection.cs">
+    <Compile Include='Collections\SoodaObjectCollection.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\SoodaObjectToInt32Association.cs">
+    <Compile Include='Collections\SoodaObjectToInt32Association.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\SoodaObjectToNameValueCollectionAssociation.cs">
+    <Compile Include='Collections\SoodaObjectToNameValueCollectionAssociation.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\SoodaObjectToObjectAssociation.cs">
+    <Compile Include='Collections\SoodaObjectToObjectAssociation.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\StringToISoodaObjectFactoryAssociation.cs">
+    <Compile Include='Collections\StringToISoodaObjectFactoryAssociation.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\StringToObjectToSoodaObjectAssociation.cs">
+    <Compile Include='Collections\StringToObjectToSoodaObjectAssociation.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\StringToObjectToWeakSoodaObjectAssociation.cs">
+    <Compile Include='Collections\StringToObjectToWeakSoodaObjectAssociation.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\StringToSoodaObjectCollectionAssociation.cs">
+    <Compile Include='Collections\StringToSoodaObjectCollectionAssociation.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\StringToStringToISoodaObjectFactoryAssociation.cs">
+    <Compile Include='Collections\StringToStringToISoodaObjectFactoryAssociation.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\StringToWeakSoodaObjectCollectionAssociation.cs">
+    <Compile Include='Collections\StringToWeakSoodaObjectCollectionAssociation.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\TypeToISoodaObjectFactoryAssociation.cs">
+    <Compile Include='Collections\TypeToISoodaObjectFactoryAssociation.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\TypeToSoodaRelationTableAssociation.cs">
+    <Compile Include='Collections\TypeToSoodaRelationTableAssociation.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\WeakSoodaObjectCollection.cs">
+    <Compile Include='Collections\WeakSoodaObjectCollection.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Config\AppSettingsConfigProvider.cs">
+    <Compile Include='Config\AppSettingsConfigProvider.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Config\ISoodaConfigProvider.cs">
+    <Compile Include='Config\ISoodaConfigProvider.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Config\XmlConfigProvider.cs">
+    <Compile Include='Config\XmlConfigProvider.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SoodaFieldSizeAttribute.cs" />
-    <Compile Include="SoodaHttpContextBoundTransactionStrategy.cs" />
-    <Compile Include="SoodaThreadBoundTransactionStrategy.cs" />
-    <Compile Include="IDefaultSoodaTransactionStrategy.cs" />
-    <Compile Include="ISoodaObjectFactory.cs">
+    <Compile Include='SoodaFieldSizeAttribute.cs' />
+    <Compile Include='SoodaHttpContextBoundTransactionStrategy.cs' />
+    <Compile Include='SoodaThreadBoundTransactionStrategy.cs' />
+    <Compile Include='IDefaultSoodaTransactionStrategy.cs' />
+    <Compile Include='ISoodaObjectFactory.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ISoodaObjectList.cs">
+    <Compile Include='ISoodaObjectList.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Logging\BasicLogger.cs">
+    <Compile Include='Logging\BasicLogger.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Logging\ConsoleLogger.cs">
+    <Compile Include='Logging\ConsoleLogger.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Logging\ConsoleLoggingImplementation.cs">
+    <Compile Include='Logging\ConsoleLoggingImplementation.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Logging\ILoggingImplementation.cs">
+    <Compile Include='Logging\ILoggingImplementation.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Logging\Logger.cs">
+    <Compile Include='Logging\Logger.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Logging\LogManager.cs">
+    <Compile Include='Logging\LogManager.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Logging\NullLogger.cs">
+    <Compile Include='Logging\NullLogger.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Logging\NullLoggingImplementation.cs">
+    <Compile Include='Logging\NullLoggingImplementation.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\FieldHandlers\AnsiStringFieldHandler.cs">
+    <Compile Include='ObjectMapper\FieldHandlers\AnsiStringFieldHandler.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\FieldHandlers\BlobFieldHandler.cs">
+    <Compile Include='ObjectMapper\FieldHandlers\BlobFieldHandler.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\FieldHandlers\BooleanAsIntegerFieldHandler.cs">
+    <Compile Include='ObjectMapper\FieldHandlers\BooleanAsIntegerFieldHandler.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\FieldHandlers\BooleanFieldHandler.cs">
+    <Compile Include='ObjectMapper\FieldHandlers\BooleanFieldHandler.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\FieldHandlers\DateTimeFieldHandler.cs">
+    <Compile Include='ObjectMapper\FieldHandlers\DateTimeFieldHandler.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\FieldHandlers\DecimalFieldHandler.cs">
+    <Compile Include='ObjectMapper\FieldHandlers\DecimalFieldHandler.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\FieldHandlers\DoubleFieldHandler.cs">
+    <Compile Include='ObjectMapper\FieldHandlers\DoubleFieldHandler.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\FieldHandlers\FieldHandlerFactory.cs">
+    <Compile Include='ObjectMapper\FieldHandlers\FieldHandlerFactory.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\FieldHandlers\FloatFieldHandler.cs">
+    <Compile Include='ObjectMapper\FieldHandlers\FloatFieldHandler.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\FieldHandlers\GuidFieldHandler.cs">
+    <Compile Include='ObjectMapper\FieldHandlers\GuidFieldHandler.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\FieldHandlers\ImageFieldHandler.cs">
+    <Compile Include='ObjectMapper\FieldHandlers\ImageFieldHandler.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\FieldHandlers\Int32FieldHandler.cs">
+    <Compile Include='ObjectMapper\FieldHandlers\Int32FieldHandler.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\FieldHandlers\Int64FieldHandler.cs">
+    <Compile Include='ObjectMapper\FieldHandlers\Int64FieldHandler.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\FieldHandlers\StringFieldHandler.cs">
+    <Compile Include='ObjectMapper\FieldHandlers\StringFieldHandler.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\FieldHandlers\TimeSpanFieldHandler.cs">
+    <Compile Include='ObjectMapper\FieldHandlers\TimeSpanFieldHandler.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\IPrimaryKeyGenerator.cs">
+    <Compile Include='ObjectMapper\IPrimaryKeyGenerator.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\ISoodaObjectFactoryCache.cs">
+    <Compile Include='ObjectMapper\ISoodaObjectFactoryCache.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\ISoodaObjectListInternal.cs">
+    <Compile Include='ObjectMapper\ISoodaObjectListInternal.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\ISoodaSchema.cs">
+    <Compile Include='ObjectMapper\ISoodaSchema.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\KeyGenerators\GuidGenerator.cs">
+    <Compile Include='ObjectMapper\KeyGenerators\GuidGenerator.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\KeyGenerators\TableBasedGenerator.cs">
+    <Compile Include='ObjectMapper\KeyGenerators\TableBasedGenerator.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\KeyGenerators\TableBasedGeneratorBigint.cs">
+    <Compile Include='ObjectMapper\KeyGenerators\TableBasedGeneratorBigint.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\SchemaLoader.cs">
+    <Compile Include='ObjectMapper\SchemaLoader.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\SoodaFieldHandler.cs">
+    <Compile Include='ObjectMapper\SoodaFieldHandler.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\SoodaNullObjectFactoryCache.cs">
+    <Compile Include='ObjectMapper\SoodaNullObjectFactoryCache.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\SoodaObjectCollectionWrapper.cs">
+    <Compile Include='ObjectMapper\SoodaObjectCollectionWrapper.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\SoodaObjectFactoryAttribute.cs">
+    <Compile Include='ObjectMapper\SoodaObjectFactoryAttribute.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\SoodaObjectFactoryCache.cs">
+    <Compile Include='ObjectMapper\SoodaObjectFactoryCache.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\SoodaObjectFlags.cs">
+    <Compile Include='ObjectMapper\SoodaObjectFlags.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\SoodaObjectImpl.cs">
+    <Compile Include='ObjectMapper\SoodaObjectImpl.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\SoodaObjectListSnapshot.cs">
+    <Compile Include='ObjectMapper\SoodaObjectListSnapshot.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\SoodaObjectManyToManyCollection.cs">
+    <Compile Include='ObjectMapper\SoodaObjectManyToManyCollection.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\SoodaObjectOneToManyCollection.cs">
+    <Compile Include='ObjectMapper\SoodaObjectOneToManyCollection.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\SoodaRelationTable.cs">
+    <Compile Include='ObjectMapper\SoodaRelationTable.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ObjectMapper\WeakSoodaObject.cs">
+    <Compile Include='ObjectMapper\WeakSoodaObject.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlExpressionCollection.cs" />
-    <Compile Include="QL\GetInvolvedClassesVisitor.cs">
+    <Compile Include='QL\SoqlExpressionCollection.cs' />
+    <Compile Include='QL\GetInvolvedClassesVisitor.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\ILiteralModifers.cs">
+    <Compile Include='QL\ILiteralModifers.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\ISoqlConstantExpression.cs">
+    <Compile Include='QL\ISoqlConstantExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\ISoqlEvaluateContext.cs">
+    <Compile Include='QL\ISoqlEvaluateContext.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\ISoqlSelectAliasProvider.cs">
+    <Compile Include='QL\ISoqlSelectAliasProvider.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\ISoqlVisitor.cs">
+    <Compile Include='QL\ISoqlVisitor.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\Soql.cs">
+    <Compile Include='QL\Soql.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlAsteriskExpression.cs">
+    <Compile Include='QL\SoqlAsteriskExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlBinaryExpression.cs">
+    <Compile Include='QL\SoqlBinaryExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlBinaryOperator.cs">
+    <Compile Include='QL\SoqlBinaryOperator.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlBooleanAndExpression.cs">
+    <Compile Include='QL\SoqlBooleanAndExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlBooleanExpression.cs">
+    <Compile Include='QL\SoqlBooleanExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlBooleanInExpression.cs">
+    <Compile Include='QL\SoqlBooleanInExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlBooleanIsNullExpression.cs">
+    <Compile Include='QL\SoqlBooleanIsNullExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlBooleanLiteralExpression.cs">
+    <Compile Include='QL\SoqlBooleanLiteralExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlBooleanNegationExpression.cs">
+    <Compile Include='QL\SoqlBooleanNegationExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlBooleanOrExpression.cs">
+    <Compile Include='QL\SoqlBooleanOrExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlBooleanRelationalExpression.cs">
+    <Compile Include='QL\SoqlBooleanRelationalExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlContainsExpression.cs">
+    <Compile Include='QL\SoqlContainsExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlCountPathExpression.cs">
+    <Compile Include='QL\SoqlCountPathExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlException.cs">
+    <Compile Include='QL\SoqlException.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlExistsExpression.cs">
+    <Compile Include='QL\SoqlExistsExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlExpression.cs">
+    <Compile Include='QL\SoqlExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlExpressionType.cs">
+    <Compile Include='QL\SoqlExpressionType.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlFunctionCallExpression.cs">
+    <Compile Include='QL\SoqlFunctionCallExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlLiteralExpression.cs">
+    <Compile Include='QL\SoqlLiteralExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlLiteralValueModifiers.cs">
+    <Compile Include='QL\SoqlLiteralValueModifiers.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlNullLiteral.cs">
+    <Compile Include='QL\SoqlNullLiteral.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlParameterLiteralExpression.cs">
+    <Compile Include='QL\SoqlParameterLiteralExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlParser.cs">
+    <Compile Include='QL\SoqlParser.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlPathExpression.cs">
+    <Compile Include='QL\SoqlPathExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlPrettyPrinter.cs">
+    <Compile Include='QL\SoqlPrettyPrinter.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlQueryExpression.cs">
+    <Compile Include='QL\SoqlQueryExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlRawExpression.cs">
+    <Compile Include='QL\SoqlRawExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlRelationalOperator.cs">
+    <Compile Include='QL\SoqlRelationalOperator.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlSoodaClassExpression.cs">
+    <Compile Include='QL\SoqlSoodaClassExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlTokenizer.cs">
+    <Compile Include='QL\SoqlTokenizer.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlTypedWrapperExpression.cs">
+    <Compile Include='QL\SoqlTypedWrapperExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlUnaryNegationExpression.cs">
+    <Compile Include='QL\SoqlUnaryNegationExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlUtils.cs">
+    <Compile Include='QL\SoqlUtils.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\TypedWrappers\SoqlBooleanWrapperExpression.cs">
+    <Compile Include='QL\TypedWrappers\SoqlBooleanWrapperExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\TypedWrappers\SoqlCollectionWrapperExpression.cs">
+    <Compile Include='QL\TypedWrappers\SoqlCollectionWrapperExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\TypedWrappers\SoqlDateTimeWrapperExpression.cs">
+    <Compile Include='QL\TypedWrappers\SoqlDateTimeWrapperExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\TypedWrappers\SoqlDecimalWrapperExpression.cs">
+    <Compile Include='QL\TypedWrappers\SoqlDecimalWrapperExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\TypedWrappers\SoqlDoubleWrapperExpression.cs">
+    <Compile Include='QL\TypedWrappers\SoqlDoubleWrapperExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\TypedWrappers\SoqlGuidWrapperExpression.cs">
+    <Compile Include='QL\TypedWrappers\SoqlGuidWrapperExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\TypedWrappers\SoqlInt16WrapperExpression.cs">
+    <Compile Include='QL\TypedWrappers\SoqlInt16WrapperExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\TypedWrappers\SoqlInt32WrapperExpression.cs">
+    <Compile Include='QL\TypedWrappers\SoqlInt32WrapperExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\TypedWrappers\SoqlInt64WrapperExpression.cs">
+    <Compile Include='QL\TypedWrappers\SoqlInt64WrapperExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\TypedWrappers\SoqlNullableBooleanWrapperExpression.cs">
+    <Compile Include='QL\TypedWrappers\SoqlNullableBooleanWrapperExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\TypedWrappers\SoqlNullableDateTimeWrapperExpression.cs">
+    <Compile Include='QL\TypedWrappers\SoqlNullableDateTimeWrapperExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\TypedWrappers\SoqlNullableDecimalWrapperExpression.cs">
+    <Compile Include='QL\TypedWrappers\SoqlNullableDecimalWrapperExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\TypedWrappers\SoqlNullableDoubleWrapperExpression.cs">
+    <Compile Include='QL\TypedWrappers\SoqlNullableDoubleWrapperExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\TypedWrappers\SoqlNullableGuidWrapperExpression.cs">
+    <Compile Include='QL\TypedWrappers\SoqlNullableGuidWrapperExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\TypedWrappers\SoqlNullableInt16WrapperExpression.cs">
+    <Compile Include='QL\TypedWrappers\SoqlNullableInt16WrapperExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\TypedWrappers\SoqlNullableInt32WrapperExpression.cs">
+    <Compile Include='QL\TypedWrappers\SoqlNullableInt32WrapperExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\TypedWrappers\SoqlNullableInt64WrapperExpression.cs">
+    <Compile Include='QL\TypedWrappers\SoqlNullableInt64WrapperExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\TypedWrappers\SoqlNullableSingleWrapperExpression.cs">
+    <Compile Include='QL\TypedWrappers\SoqlNullableSingleWrapperExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\TypedWrappers\SoqlNullableStringWrapperExpression.cs">
+    <Compile Include='QL\TypedWrappers\SoqlNullableStringWrapperExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\TypedWrappers\SoqlNullableTimeSpanWrapperExpression.cs">
+    <Compile Include='QL\TypedWrappers\SoqlNullableTimeSpanWrapperExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\TypedWrappers\SoqlSingleWrapperExpression.cs">
+    <Compile Include='QL\TypedWrappers\SoqlSingleWrapperExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\TypedWrappers\SoqlStringWrapperExpression.cs">
+    <Compile Include='QL\TypedWrappers\SoqlStringWrapperExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\TypedWrappers\SoqlTimeSpanWrapperExpression.cs">
+    <Compile Include='QL\TypedWrappers\SoqlTimeSpanWrapperExpression.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\CachingMode.cs">
+    <Compile Include='Schema\CachingMode.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\ClassCardinality.cs">
+    <Compile Include='Schema\ClassCardinality.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\ClassInfo.cs">
+    <Compile Include='Schema\ClassInfo.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\ClassInfoCollection.cs">
+    <Compile Include='Schema\ClassInfoCollection.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\Collection1toNInfo.cs">
+    <Compile Include='Schema\Collection1toNInfo.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\CollectionBaseInfo.cs">
+    <Compile Include='Schema\CollectionBaseInfo.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\CollectionBaseInfoCollection.cs">
+    <Compile Include='Schema\CollectionBaseInfoCollection.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\CollectionNtoNInfo.cs">
+    <Compile Include='Schema\CollectionNtoNInfo.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\ConstantInfo.cs">
+    <Compile Include='Schema\ConstantInfo.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\DataSourceInfo.cs">
+    <Compile Include='Schema\DataSourceInfo.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\DataSourceInfoCollection.cs">
+    <Compile Include='Schema\DataSourceInfoCollection.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\DeleteAction.cs">
+    <Compile Include='Schema\DeleteAction.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\FieldDataType.cs">
+    <Compile Include='Schema\FieldDataType.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\FieldInfo.cs">
+    <Compile Include='Schema\FieldInfo.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\FieldInfoCollection.cs">
+    <Compile Include='Schema\FieldInfoCollection.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\IFieldContainer.cs">
+    <Compile Include='Schema\IFieldContainer.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\IncludeInfo.cs">
+    <Compile Include='Schema\IncludeInfo.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\IncludeInfoCollection.cs">
+    <Compile Include='Schema\IncludeInfoCollection.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\PrecommitValueInfo.cs">
+    <Compile Include='Schema\PrecommitValueInfo.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\PrecommitValueInfoCollection.cs">
+    <Compile Include='Schema\PrecommitValueInfoCollection.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\RelationInfo.cs">
+    <Compile Include='Schema\RelationInfo.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\RelationInfoCollection.cs">
+    <Compile Include='Schema\RelationInfoCollection.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\SchemaInfo.cs">
+    <Compile Include='Schema\SchemaInfo.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\SchemaManager.cs">
+    <Compile Include='Schema\SchemaManager.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\SoodaSchemaException.cs">
+    <Compile Include='Schema\SoodaSchemaException.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\TableInfo.cs">
+    <Compile Include='Schema\TableInfo.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\TableInfoCollection.cs">
+    <Compile Include='Schema\TableInfoCollection.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SoodaConfig.cs">
+    <Compile Include='SoodaConfig.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SoodaConfigAttribute.cs">
+    <Compile Include='SoodaConfigAttribute.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SoodaConfigException.cs">
+    <Compile Include='SoodaConfigException.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SoodaConstructor.cs">
+    <Compile Include='SoodaConstructor.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SoodaDatabaseException.cs">
+    <Compile Include='SoodaDatabaseException.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SoodaDataSource.cs">
+    <Compile Include='SoodaDataSource.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SoodaException.cs">
+    <Compile Include='SoodaException.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SoodaFieldUpdateDelegate.cs" />
-    <Compile Include="SoodaNullable.cs" />
-    <Compile Include="SoodaObject.cs">
+    <Compile Include='SoodaFieldUpdateDelegate.cs' />
+    <Compile Include='SoodaNullable.cs' />
+    <Compile Include='SoodaObject.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SoodaObjectArrayFieldValues.cs">
+    <Compile Include='SoodaObjectArrayFieldValues.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SoodaObjectExpressionComparer.cs" />
-    <Compile Include="SoodaObjectFieldComparer.cs">
+    <Compile Include='SoodaObjectExpressionComparer.cs' />
+    <Compile Include='SoodaObjectFieldComparer.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SoodaObjectFieldValues.cs">
+    <Compile Include='SoodaObjectFieldValues.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SoodaObjectFilterDelegate.cs">
+    <Compile Include='SoodaObjectFilterDelegate.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SoodaObjectMultiFieldComparer.cs">
+    <Compile Include='SoodaObjectMultiFieldComparer.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SoodaObjectNotFoundException.cs">
+    <Compile Include='SoodaObjectNotFoundException.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SoodaObjectReflectionBasedFieldValues.cs" />
-    <Compile Include="SoodaObjectsAssemblyAttribute.cs">
+    <Compile Include='SoodaObjectReflectionBasedFieldValues.cs' />
+    <Compile Include='SoodaObjectsAssemblyAttribute.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SoodaOrderBy.cs">
+    <Compile Include='SoodaOrderBy.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SoodaSerializeOptions.cs">
+    <Compile Include='SoodaSerializeOptions.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SoodaSnapshotOptions.cs">
+    <Compile Include='SoodaSnapshotOptions.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SoodaStatistics.cs">
+    <Compile Include='SoodaStatistics.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SoodaStubAssemblyAttribute.cs">
+    <Compile Include='SoodaStubAssemblyAttribute.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SoodaTransaction.cs">
+    <Compile Include='SoodaTransaction.cs'>
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="SoodaTuple.cs">
+    <Compile Include='SoodaTuple.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SoodaWhereClause.cs">
+    <Compile Include='SoodaWhereClause.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Sql\DbParameterConverter.cs">
+    <Compile Include='Sql\DbParameterConverter.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Sql\ISqlBuilder.cs">
+    <Compile Include='Sql\ISqlBuilder.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Sql\MySqlBuilder.cs">
+    <Compile Include='Sql\MySqlBuilder.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Sql\OracleBuilder.cs">
+    <Compile Include='Sql\OracleBuilder.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Sql\PostgreSqlBuilder.cs">
+    <Compile Include='Sql\PostgreSqlBuilder.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Sql\SoqlToSqlConverter.cs">
+    <Compile Include='Sql\SoqlToSqlConverter.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Sql\SqlBuilderBase.cs">
+    <Compile Include='Sql\SqlBuilderBase.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Sql\SqlBuilderNamedArg.cs">
+    <Compile Include='Sql\SqlBuilderNamedArg.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Sql\SqlBuilderPositionalArg.cs">
+    <Compile Include='Sql\SqlBuilderPositionalArg.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Sql\SqlDataSource.cs">
+    <Compile Include='Sql\SqlDataSource.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Sql\SqlOuterJoinSyntax.cs">
+    <Compile Include='Sql\SqlOuterJoinSyntax.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Sql\SqlServerBuilder.cs">
+    <Compile Include='Sql\SqlServerBuilder.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Sql\SqlTopSupportMode.cs">
+    <Compile Include='Sql\SqlTopSupportMode.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Utils\QPCStopWatch.cs">
+    <Compile Include='Utils\QPCStopWatch.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Utils\StopWatch.cs">
+    <Compile Include='Utils\StopWatch.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Xml\XmlDataSource.cs">
+    <Compile Include='Xml\XmlDataSource.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <None Include="SoqlClasses.cd" />
-    <None Include="QL\TypedWrappers\makewrappers.pl" />
-    <None Include="Schema\SoodaSchema.xsx">
+    <None Include='SoqlClasses.cd' />
+    <None Include='QL\TypedWrappers\makewrappers.pl' />
+    <None Include='Schema\SoodaSchema.xsx'>
       <DependentUpon>SoodaSchema.xsd</DependentUpon>
     </None>
-    <Compile Include="QL\TypedWrappers\SoqlImageWrapperExpression.cs" />
-    <Compile Include="QL\TypedWrappers\SoqlNullableImageWrapperExpression.cs" />
-    <Compile Include="AssemblyBuildInfo.cs" />
+    <Compile Include='QL\TypedWrappers\SoqlImageWrapperExpression.cs' />
+    <Compile Include='QL\TypedWrappers\SoqlNullableImageWrapperExpression.cs' />
+    <Compile Include='AssemblyBuildInfo.cs' />
   </ItemGroup>
   <ItemGroup />
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project='$(MSBuildBinPath)\Microsoft.CSharp.targets' />
   <PropertyGroup>
     <PreBuildEvent>"$(ProjectDir)..\..\tools\UpdateBuildNumber.exe" "$(ProjectDir)..\..\Sooda.version" "$(ProjectDir)AssemblyBuildInfo.cs" "$(ProjectDir)..\..\build\Sooda.buildversion"</PreBuildEvent>
     <PostBuildEvent>

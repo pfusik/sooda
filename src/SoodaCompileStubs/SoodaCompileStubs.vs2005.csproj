@@ -1,11 +1,12 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version='1.0' encoding='utf-8'?>
+<Project DefaultTargets='Build' xmlns='http://schemas.microsoft.com/developer/msbuild/2003'>
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{7DACB842-1C46-4145-B02D-91E7C3CD4276}</ProjectGuid>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Configuration Condition=' &apos;$(Configuration)&apos; == &apos;&apos; '>Debug</Configuration>
+    <Platform Condition=' &apos;$(Platform)&apos; == &apos;&apos; '>AnyCPU</Platform>
     <ApplicationIcon>App.ico</ApplicationIcon>
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
@@ -26,7 +27,7 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Debug|AnyCPU&apos; '>
     <OutputPath>bin\Debug\</OutputPath>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
@@ -48,7 +49,7 @@
     <DebugType>full</DebugType>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=' &apos;$(Configuration)|$(Platform)&apos; == &apos;Release|AnyCPU&apos; '>
     <OutputPath>bin\Release\</OutputPath>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
@@ -71,33 +72,36 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System">
+    <Reference Include='System'>
       <Name>System</Name>
     </Reference>
-    <Reference Include="System.Data">
+    <Reference Include='System.Data'>
       <Name>System.Data</Name>
     </Reference>
-    <Reference Include="System.XML">
+    <Reference Include='System.XML'>
       <Name>System.XML</Name>
     </Reference>
-    <ProjectReference Include="..\Sooda\Sooda.vs2005.csproj">
+    <ProjectReference Include='..\Sooda\Sooda.vs2005.csproj'>
       <Name>Sooda.vs2005</Name>
       <Project>{FCC9B644-9093-41F6-8F0D-F98F22474CB5}</Project>
       <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App.ico" />
-    <Compile Include="AssemblyInfo.cs">
+    <Content Include='App.ico' />
+    <Compile Include='AssemblyInfo.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="EntryPoint.cs">
+    <Compile Include='EntryPoint.cs'>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AssemblyBuildInfo.cs" />
+    <Compile Include='AssemblyBuildInfo.cs' />
   </ItemGroup>
   <ItemGroup />
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup />
+  <ItemGroup />
+  <ItemGroup />
+  <Import Project='$(MSBuildBinPath)\Microsoft.CSharp.targets' />
   <PropertyGroup>
     <PreBuildEvent>"$(ProjectDir)..\..\tools\UpdateBuildNumber.exe" "$(ProjectDir)..\..\Sooda.version" "$(ProjectDir)AssemblyBuildInfo.cs" "$(ProjectDir)..\..\build\Sooda.buildversion"</PreBuildEvent>
     <PostBuildEvent>

@@ -116,10 +116,13 @@ namespace Tools
                 _added = 0;
                 _removed = 0;
 
+                bool isOld = true;
+
                 if (doc.SelectSingleNode("//Files/Include") != null)
                 {
                     Log(Level.Verbose, "Visual Studio 2002/2003-style project.");
                     ProcessOldProject(doc);
+                    isOld = true;
                 }
                 else
                 {
@@ -129,7 +132,14 @@ namespace Tools
                 if (_added + _removed > 0)
                 {
                     Log(Level.Info, "Project: {0} Added: {1} Removed: {2}", projectFile, _added, _removed);
-                    doc.Save(projectFile);
+
+                    using (FileStream fs = File.Create(projectFile))
+                    {
+                        XmlTextWriter xtw = new XmlTextWriter(fs, Encoding.UTF8);
+                        xtw.QuoteChar = '\'';
+                        xtw.Formatting = Formatting.Indented;
+                        doc.Save(xtw);
+                    }
                 }
             }
         }

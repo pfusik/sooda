@@ -49,6 +49,7 @@
         <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaCompileStubs/AssemblyBuildInfo.cs build/Sooda.buildversion" useruntimeengine="true" />
         <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaFixKeygen/AssemblyBuildInfo.cs build/Sooda.buildversion" useruntimeengine="true" />
         <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaSchemaTool/AssemblyBuildInfo.cs build/Sooda.buildversion" useruntimeengine="true" />
+        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaAddin.UI/AssemblyBuildInfo.cs build/Sooda.buildversion" useruntimeengine="true" />
         <foreach item="Line" in="build/Sooda.buildversion" delim="." property="tmp1,tmp2,tmp3,tmp4">
             <property name="sooda.version.major" value="${tmp1}" />
             <property name="sooda.version.minor" value="${tmp2}" />
@@ -143,6 +144,23 @@
                 <include name="**/*.cs" />
             </sources>
             <arg value="${sooda.csc.args}"/>
+        </csc>
+    </target>
+
+    <target name="SoodaAddin.UI" depends="configure, update-build-number">
+        <tlbimp output="${sooda.dir}/Interop.SQLDMO.dll" typelib="" />
+        <csc target="library" output="${sooda.dir}/SoodaAddin.UI.dll" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
+            <references>                                  
+                <include name="mscorlib.dll" />
+                <include name="System.dll" />
+                <include name="System.XML.dll" />
+                <include name="System.Data.dll" />
+                <include name="System.Drawing.dll" />
+                <include name="${sooda.dir}/Interop.SQLDMO.dll" />
+            </references>
+            <sources basedir="src/SoodaAddin.UI">
+                <include name="**/*.cs" />
+            </sources>
         </csc>
     </target>
 
