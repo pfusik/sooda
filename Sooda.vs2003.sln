@@ -1,45 +1,45 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda", "src\Sooda\Sooda.csproj", "{FCC9B644-9093-41F6-8F0D-F98F22474CB5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.vs2003", "src\Sooda\Sooda.vs2003.csproj", "{FCC9B644-9093-41F6-8F0D-F98F22474CB5}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaQuery", "src\SoodaQuery\SoodaQuery.csproj", "{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaFixKeygen.vs2003", "src\SoodaFixKeygen\SoodaFixKeygen.vs2003.csproj", "{74410A3C-F7F5-47FE-8F72-1856753BDD26}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaFixKeygen", "src\SoodaFixKeygen\SoodaFixKeygen.csproj", "{74410A3C-F7F5-47FE-8F72-1856753BDD26}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaCompileStubs.vs2003", "src\SoodaCompileStubs\SoodaCompileStubs.vs2003.csproj", "{7DACB842-1C46-4145-B02D-91E7C3CD4276}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaCompileStubs", "src\SoodaCompileStubs\SoodaCompileStubs.csproj", "{7DACB842-1C46-4145-B02D-91E7C3CD4276}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaSchemaTool.vs2003", "src\SoodaSchemaTool\SoodaSchemaTool.vs2003.csproj", "{C5E51DAD-B844-4B20-8A84-2D098E75ABAF}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaSchemaTool", "src\SoodaSchemaTool\SoodaSchemaTool.csproj", "{C5E51DAD-B844-4B20-8A84-2D098E75ABAF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.Logging.NLog.vs2003", "src\Sooda.Logging.NLog\Sooda.Logging.NLog.vs2003.csproj", "{A6A3FE85-9F3D-4A3D-B8E6-B24771CB3F62}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.Logging.NLog", "src\Sooda.Logging.NLog\Sooda.Logging.NLog.csproj", "{A6A3FE85-9F3D-4A3D-B8E6-B24771CB3F62}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.Logging.log4net.vs2003", "src\Sooda.Logging.log4net\Sooda.Logging.log4net.vs2003.csproj", "{F7C88A34-ECCE-4658-9E5C-0289CD10241D}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.Logging.log4net", "src\Sooda.Logging.log4net\Sooda.Logging.log4net.csproj", "{F7C88A34-ECCE-4658-9E5C-0289CD10241D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.CodeGen.vs2003", "src\Sooda.CodeGen\Sooda.CodeGen.vs2003.csproj", "{0D67237B-4FBA-4BD9-95C3-24B5F427D014}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.CodeGen", "src\Sooda.CodeGen\Sooda.CodeGen.csproj", "{0D67237B-4FBA-4BD9-95C3-24B5F427D014}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.NAnt.Tasks.vs2003", "src\Sooda.NAnt.Tasks\Sooda.NAnt.Tasks.vs2003.csproj", "{6CEC3AFB-2F26-4128-81CE-D93373874AF8}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.NAnt.Tasks", "src\Sooda.NAnt.Tasks\Sooda.NAnt.Tasks.csproj", "{6CEC3AFB-2F26-4128-81CE-D93373874AF8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaStubGen.vs2003", "src\SoodaStubGen\SoodaStubGen.vs2003.csproj", "{5F89F8D0-39BC-49F8-92E3-3A7F5F3FF55F}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaStubGen", "src\SoodaStubGen\SoodaStubGen.csproj", "{5F89F8D0-39BC-49F8-92E3-3A7F5F3FF55F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaAddin.UI.vs2003", "src\SoodaAddin.UI\SoodaAddin.UI.vs2003.csproj", "{C5CD6D63-6EE3-4FD9-9E4C-CBA49C0EF739}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "web\Web.csproj", "{2D11C6FF-FF8C-4517-8546-C81C621CFF7C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigureSoodaProject.vs2003", "src\ConfigureSoodaProject\ConfigureSoodaProject.vs2003.csproj", "{43FDE59A-8710-4E7B-859B-021BBB6DEEEB}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
@@ -53,10 +53,6 @@ Global
 		{FCC9B644-9093-41F6-8F0D-F98F22474CB5}.Debug.Build.0 = Debug|.NET
 		{FCC9B644-9093-41F6-8F0D-F98F22474CB5}.Release.ActiveCfg = Release|.NET
 		{FCC9B644-9093-41F6-8F0D-F98F22474CB5}.Release.Build.0 = Release|.NET
-		{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}.Debug.ActiveCfg = Debug|.NET
-		{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}.Debug.Build.0 = Debug|.NET
-		{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}.Release.ActiveCfg = Release|.NET
-		{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}.Release.Build.0 = Release|.NET
 		{74410A3C-F7F5-47FE-8F72-1856753BDD26}.Debug.ActiveCfg = Debug|.NET
 		{74410A3C-F7F5-47FE-8F72-1856753BDD26}.Debug.Build.0 = Debug|.NET
 		{74410A3C-F7F5-47FE-8F72-1856753BDD26}.Release.ActiveCfg = Release|.NET
@@ -89,8 +85,14 @@ Global
 		{5F89F8D0-39BC-49F8-92E3-3A7F5F3FF55F}.Debug.Build.0 = Debug|.NET
 		{5F89F8D0-39BC-49F8-92E3-3A7F5F3FF55F}.Release.ActiveCfg = Release|.NET
 		{5F89F8D0-39BC-49F8-92E3-3A7F5F3FF55F}.Release.Build.0 = Release|.NET
-		{2D11C6FF-FF8C-4517-8546-C81C621CFF7C}.Debug.ActiveCfg = Debug|.NET
-		{2D11C6FF-FF8C-4517-8546-C81C621CFF7C}.Release.ActiveCfg = Release|.NET
+		{C5CD6D63-6EE3-4FD9-9E4C-CBA49C0EF739}.Debug.ActiveCfg = Debug|.NET
+		{C5CD6D63-6EE3-4FD9-9E4C-CBA49C0EF739}.Debug.Build.0 = Debug|.NET
+		{C5CD6D63-6EE3-4FD9-9E4C-CBA49C0EF739}.Release.ActiveCfg = Release|.NET
+		{C5CD6D63-6EE3-4FD9-9E4C-CBA49C0EF739}.Release.Build.0 = Release|.NET
+		{43FDE59A-8710-4E7B-859B-021BBB6DEEEB}.Debug.ActiveCfg = Debug|.NET
+		{43FDE59A-8710-4E7B-859B-021BBB6DEEEB}.Debug.Build.0 = Debug|.NET
+		{43FDE59A-8710-4E7B-859B-021BBB6DEEEB}.Release.ActiveCfg = Release|.NET
+		{43FDE59A-8710-4E7B-859B-021BBB6DEEEB}.Release.Build.0 = Release|.NET
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
