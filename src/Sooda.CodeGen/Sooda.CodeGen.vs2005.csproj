@@ -170,11 +170,17 @@
     <Compile Include='AssemblyBuildInfo.cs' />
   </ItemGroup>
   <ItemGroup>
-  </ItemGroup>
-  <ItemGroup />
-  <ItemGroup>
-  </ItemGroup>
-  <ItemGroup>
+    <EmbeddedResource Include='CDIL\Templates\TypedWrapper.cdil' />
+    <EmbeddedResource Include='CDIL\Templates\Loader.cdil' />
+    <EmbeddedResource Include='CDIL\Templates\Skeleton.cdil' />
+    <EmbeddedResource Include='CDIL\Templates\TypedCollectionWrapper.cdil' />
+    <EmbeddedResource Include='CDIL\Templates\DatabaseSchema.cdil' />
+    <EmbeddedResource Include='CDIL\Templates\ClassField.cdil' />
+    <EmbeddedResource Include='SoodaProject.xsd' />
+    <EmbeddedResource Include='CDIL\Templates\Factory.cdil' />
+    <EmbeddedResource Include='CDIL\Templates\NullableTypedWrapper.cdil' />
+    <EmbeddedResource Include='CDIL\Templates\ListWrapper.cdil' />
+    <EmbeddedResource Include='CDIL\Templates\Stub.cdil' />
   </ItemGroup>
   <Import Project='$(MSBuildBinPath)\Microsoft.CSharp.targets' />
   <PropertyGroup>

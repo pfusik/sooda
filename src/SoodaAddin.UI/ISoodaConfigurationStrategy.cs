@@ -10,6 +10,7 @@ namespace SoodaAddin.UI
         void AddContent(string file);
         void AddEmbeddedResource(string file);
         void AddReference(string reference);
+        void AddReferenceWithHintPath(string reference, string hintPath);
         void SaveProject();
         string PreBuildEvent { get; set; }
         string ProjectType { get; }

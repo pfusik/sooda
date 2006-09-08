@@ -84,6 +84,27 @@ namespace ConfigureSoodaProject
             }
         }
 
+        public void AddReferenceWithHintPath(string reference, string hintPath)
+        {
+            XmlElement compileItemGroup = GetItemGroup("Reference");
+
+            XmlElement file = (XmlElement)compileItemGroup.SelectSingleNode("msbuild:Reference[@Include='" + reference + "']", _namespaceManager);
+            if (file == null)
+            {
+                XmlElement el = _projectXml.CreateElement("", "Reference", "http://schemas.microsoft.com/developer/msbuild/2003");
+                el.SetAttribute("Include", reference);
+                compileItemGroup.AppendChild(el);
+                XmlElement specificVersion = _projectXml.CreateElement("", "SpecificVersion", "http://schemas.microsoft.com/developer/msbuild/2003");
+                specificVersion.InnerText = "false";
+
+                XmlElement hintPathElement = _projectXml.CreateElement("", "HintPath", "http://schemas.microsoft.com/developer/msbuild/2003");
+                hintPathElement.InnerText = hintPath;
+                el.AppendChild(specificVersion);
+                el.AppendChild(hintPathElement);
+                _modified = true;
+            }
+        }
+
         public void AddEmbeddedResource(string relativeFileName)
         {
             XmlElement compileItemGroup = GetItemGroup("Compile");

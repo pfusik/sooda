@@ -215,8 +215,6 @@ namespace Tools
 
             if (itemGroup == null)
             {
-                if (directoryFiles.Count > 0)
-                    return;
                 XmlNode importNode = doc.SelectSingleNode("//msb:Import", mgr);
                 if (importNode == null)
                     throw new Exception("No <Import> node in project.");

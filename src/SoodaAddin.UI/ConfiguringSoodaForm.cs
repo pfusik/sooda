@@ -183,6 +183,11 @@ namespace SoodaAddin.UI
                 configOptions["default.indentQueries"] = "true";
                 configOptions["default.useSafeLiterals"] = "true";
                 configOptions["default.disableUpdateBatch"] = "false";
+                configOptions["sooda.defaultObjectsAssembly"] = Strategy.AssemblyName + (WizardOptions.SeparateStubs ? ".Stubs" : "");
+                configOptions["sooda.cachingPolicy"] = "none";
+                configOptions["sooda.cachingPolicy.expirationTimeout"] = "120";
+                configOptions["sooda.cachingPolicy.slidingExpiration"] = "false";
+                configOptions["sooda.cache.type"] = "inprocess";
 
                 WriteToLog("Configuring project: " + Strategy.ProjectFile);
                 WriteToLog("Adding reference to 'Sooda'");
@@ -318,7 +323,18 @@ namespace SoodaAddin.UI
 
                     if (WizardOptions.SeparateStubs)
                     {
-                        newLines.Add("\"%SOODA_DIR%\\bin\\net-" + dotnetVersion + "\\SoodaCompileStubs.exe\" \"" + Strategy.AssemblyName + "\" \"$(ProjectDir)Stubs\"");
+                        string extraFiles = "";
+
+                        if (File.Exists(Path.Combine(baseDir, "Properties\\AssemblyInfo.cs")))
+                        {
+                            extraFiles += " \"$(ProjectDir)Properties\\AssemblyInfo.cs\"";
+                        }
+                        if (File.Exists(Path.Combine(baseDir, "AssemblyInfo.cs")))
+                        {
+                            extraFiles += " \"$(ProjectDir)AssemblyInfo.cs\"";
+                        }
+
+                        newLines.Add("\"%SOODA_DIR%\\bin\\net-" + dotnetVersion + "\\SoodaCompileStubs.exe\" \"" + Strategy.AssemblyName + "\" \"$(ProjectDir)Stubs\"" + extraFiles);
                     }
 
                     string newPreBuildEvent = String.Join("\r\n", (string[])newLines.ToArray(typeof(string)));
@@ -326,6 +342,10 @@ namespace SoodaAddin.UI
                     Strategy.PreBuildEvent = newPreBuildEvent;
                 }
 
+                if (WizardOptions.SeparateStubs)
+                {
+                    Strategy.AddReferenceWithHintPath(Strategy.AssemblyName + ".Stubs", "Stubs\\" + Strategy.AssemblyName + ".Stubs.dll");
+                }
                 WriteToLog("Saving project...");
                 Strategy.SaveProject();
                 WriteToLog("Building Sooda Project for the first time...");

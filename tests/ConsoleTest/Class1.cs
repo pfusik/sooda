@@ -53,7 +53,7 @@ using Sooda.UnitTests.Objects;
 using Sooda.UnitTests.BaseObjects.TypedQueries;
 using Sooda.UnitTests.TestCases;
 
-[assembly: SoodaStubAssembly(typeof(Sooda.UnitTests.Objects._DatabaseSchema))]
+//[assembly: SoodaStubAssembly(typeof(Sooda.UnitTests.Objects._DatabaseSchema))]
 [assembly: SoodaConfig(XmlConfigFileName = "Sooda.config.xml")]
 
 namespace ConsoleTest
@@ -62,43 +62,11 @@ namespace ConsoleTest
     {
         static void Main(string[] args)
         {
-            // connect to the data source 'default' defined 
-            // in the configuration file
-
-            using (SqlDataSource sds = new SqlDataSource("default"))
+            using (SoodaTransaction t = new SoodaTransaction())
             {
-                sds.Open();
-
-                // SOQL textual query
-                string soqlQuery = @"
-                    SELECT Name, PrimaryGroup.Name, PrimaryGroup.Members.Count
-                    FROM Contact 
-                    WHERE PrimaryGroup.Manager.Name = {0} OR Name = {1}";
-
-                // parse the query to a SoqlQueryExpression object
-                SoqlQueryExpression queryExpression = SoqlParser.ParseQuery(soqlQuery);
-
-                // get the schema reference
-                SchemaInfo schema = Sooda.UnitTests.BaseObjects._DatabaseSchema.GetSchema();
-
-                // prepare parameters
-                object[] parameters = new object[] 
+                foreach (Contact c in Contact.GetList(true))
                 {
-                    "Mary Manager", // positional parameter {0}
-                    "Eva Employee" // positional parameter {1}
-                };
-
-                // execute query
-                using (IDataReader reader = sds.ExecuteQuery(queryExpression, schema, parameters))
-                {
-                    // iterate the result set
-                    while (reader.Read())
-                    {
-                        Console.WriteLine("name: {0} group: {1} members: {2}", 
-                            reader.GetString(0), 
-                            reader.GetString(1), 
-                            reader.GetInt32(2));
-                    }
+                    Console.WriteLine(c);
                 }
             }
         }
