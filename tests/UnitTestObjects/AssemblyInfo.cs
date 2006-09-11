@@ -28,7 +28,6 @@
 // 
 
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 [assembly: AssemblyTitle("Sooda.Utils")]
 [assembly: AssemblyDescription("Application framework for Sooda")]
