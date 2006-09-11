@@ -69,7 +69,18 @@ namespace Sooda.Sql
                     else
                         return "decimal(" + fi.Size + "," + fi.Precision + ")";
 
+                case FieldDataType.Guid:
+                    return "uniqueidentifier";
+
                 case FieldDataType.Double:
+                    if (fi.Size < 0)
+                        return "float";
+                    else if (fi.Precision < 0)
+                        return "float(" + fi.Size + ")";
+                    else
+                        return "float(" + fi.Size + "," + fi.Precision + ")";
+
+                case FieldDataType.Float:
                     if (fi.Size < 0)
                         return "float";
                     else if (fi.Precision < 0)
@@ -91,6 +102,9 @@ namespace Sooda.Sql
 
                 case FieldDataType.TimeSpan:
                     return "int";
+
+                case FieldDataType.Boolean:
+                    return "bit";
 
                 default:
                     throw new NotImplementedException(String.Format("Datatype {0} not supported for this database", fi.DataType.ToString()));

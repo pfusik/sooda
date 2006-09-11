@@ -140,7 +140,7 @@ namespace Sooda.Sql
                     break;
             }
 
-            ConnectionString = GetParameter("connectionString", true);
+            ConnectionString = GetParameter("connectionString", false);
         }
 
         public SqlDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo) : this(dataSourceInfo.Name)
@@ -155,6 +155,10 @@ namespace Sooda.Sql
 
         public override void Open()
         {
+            if (ConnectionString == null)
+                throw new SoodaDatabaseException("connectionString parameter not defined for datasource: " + Name);
+            if (ConnectionType == null)
+                throw new SoodaDatabaseException("connectionType parameter not defined for datasource: " + Name);
             Connection = (IDbConnection)Activator.CreateInstance(ConnectionType, new object[] { ConnectionString });
             Connection.Open();
             if (!DisableTransactions)
