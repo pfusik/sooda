@@ -18,28 +18,13 @@ After you create this table and grant the database user the correct permissions,
         </faq>
         <faq id="objectsassembly" title="I'm getting 'ObjectsAssembly has not been set for this SoodaTransaction.' exception. What should I do?">
             You're getting this exception because you've not told Sooda where to look for the assembly that contains
-            objects factories. There are 3 ways to fix it:
-
-            <ol>
-                <li>Specify the assembly on per-call basis by passing it as the argument to SoodaTransaction constructor. Simply do:</li>
-                <pre>SoodaTransaction t =
-        new SoodaTransaction(typeof(Name.Space._DatabaseSchema).Assembly))</pre>
-                <li>Specify the assembly once, at the beginning of your program by setting the SoodaTransaction.DefaultObjectsAssembly property:</li>
-                <pre>static void Main()
-{
-    SoodaTransaction.DefaultObjectsAssembly =
-        typeof(Name.Space._DatabaseSchema).Assembly);
-}</pre>
-                <li>Use assembly-level attributes to configure ObjectsAssembly. Simply add this line somewhere in
-                    your code outside any class declarations:</li>
-                <pre>[assembly: SoodaStubAssembly(typeof(Name.Space._DatabaseSchema))]</pre>
-            </ol>
+            objects factories. See <a href="documentation.html#soodatransactioncreating">here</a> for an explanation.
         </faq>
         <faq id="configuration" title="I've developed my own configuration mechanism. Can I get Sooda to use it?">
-            Yes you can. See <link href="technical-config">here</link> for the full answer.
+            See <a href="documentation.html#config">here</a> for more information.
         </faq>
         <faq id="logging" title="How do I enable logging from Sooda?">
-            See <link href="technical-logging">here</link> for more information.
+            See <a href="documentation.html#logging">here</a> for more information.
         </faq>
     </faq-answers>
 </content>

@@ -139,6 +139,7 @@ namespace SoodaCompileStubs
                 options.ReferencedAssemblies.Add(soodaDll);
                 options.ReferencedAssemblies.Add("System.dll");
                 options.ReferencedAssemblies.Add("System.Data.dll");
+                options.ReferencedAssemblies.Add("System.Drawing.dll");
                 for (int i = 2; i < args.Length; ++i)
                 {
                     if (args[i].EndsWith(".dll"))
@@ -166,6 +167,7 @@ namespace SoodaCompileStubs
                 options.ReferencedAssemblies.Add(soodaDll);
                 options.ReferencedAssemblies.Add("System.dll");
                 options.ReferencedAssemblies.Add("System.Data.dll");
+                options.ReferencedAssemblies.Add("System.Drawing.dll");
                 options.ReferencedAssemblies.Add(stubsDll);
                 for (int i = 2; i < args.Length; ++i)
                 {
@@ -205,6 +207,7 @@ namespace SoodaCompileStubs
                 options.ReferencedAssemblies.Add("System.dll");
                 options.ReferencedAssemblies.Add("System.Data.dll");
                 options.ReferencedAssemblies.Add("System.Xml.dll");
+                options.ReferencedAssemblies.Add("System.Drawing.dll");
                 options.ReferencedAssemblies.Add(objectsAssemblyDll);
                 for (int i = 2; i < args.Length; ++i)
                 {

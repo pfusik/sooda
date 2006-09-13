@@ -53,7 +53,7 @@ namespace Sooda.ObjectMapper.FieldHandlers
 
         public static Double GetFromReader(IDataRecord record, int pos)
         {
-            return record.GetDouble(pos);
+            return Convert.ToDouble(record.GetValue(pos));
         }
 
         public override string RawSerialize(object val)

@@ -3,117 +3,25 @@
 <content lang="en" id="status">
     <h1>Current Status</h1>
     <p>
-        While Sooda is quite a new technology, it's already been given some serious testing.
-        It is currently used as a Data Access Layer technology for Atmo - 
-        a workflow-building technology created by the <a href="http://www.atm.com.pl/">company I work for</a> and
-        has been deployed in a number of projects.
+        Sooda has been successfully used in production systems since 2003 and the core of the system is very stable.
+        The command line tools that accompany it are mostly mature, but some utilities (such as Sooda Configuration Wizard) 
+        may still need testing before they can be declared production quality code.
     </p>
     <p>
-        The following tables summarize the current status of Sooda. Some areas obviously need more
-        serious testing before they can be called production-ready. I don't have time or equipment to do all the 
-        testing myself, so If you'd like to help us improve Sooda
-        by providing testing and support for one of the following areas, join the <link href="development">development</link> team.
+        Microsoft SQL Server 2000 and 2005 are the most tested RDBMs. Other databases (MySQL, PostgreSQL, Oracle) are known to
+        work with Sooda, but since they are not primary development environments, you may run into some bugs. Contributors 
+        that would like to maintain support for these databases are welcome to <link href="mailinglist">join the project</link>.
     </p>
     <p>
-        Platform support:
+        Sooda has been originally written by Jaroslaw Kowalski. As of October 2006 he is not part of the project any more.
+        Support for Sooda is available through the <link href="mailinglist">mailing list</link>.
     </p>
     <p>
-        <div class="table">
-            <table>
-                <col width="30%" />
-                <col width="10%" />
-                <col width="20%" />
-                <col width="40%" />
-            <tr>
-                <th>CLI</th>
-                <th>Supported</th>
-                <th>Tested</th>
-                <th>Comments</th>
-            </tr>
-            <tr>
-                <td>.NET 1.0</td>
-                <td>no</td>
-                <td></td>
-                <td>It's not recommended to use Sooda with .NET 1.0. It may not even compile on this platform. Use .NET 1.1 instead</td>
-            </tr>
-            <tr>
-                <td>.NET 1.1</td>
-                <td>yes</td>
-                <td>well tested</td>
-                <td>this is the primary development environment of Sooda</td>
-            </tr>
-            <tr>
-                <td>.NET 2.0</td>
-                <td>partially</td>
-                <td>untested</td>
-                <td>.NET 2.0-specific features like partial classes and nullable types aren't supported yet. Otherwise
-                    everything should work unmodified on .NET 2.0 (modulo some warnings during the compilation)</td>
-            </tr>
-            <tr>
-                <td>Mono 1.x</td>
-                <td>partially</td>
-                <td>partially tested</td>
-                <td>unit tests mostly pass, due to some limitations of the platform some features (in particular separate stub compilation)
-                    aren't supported and <a href="http://bugzilla.ximian.com/show_bug.cgi?id=52813">will probably never be</a>.</td>
-            </tr>
-        </table>
-    </div>
+        As of October 2006, the following persons are responsible for the development and support of Sooda:
     </p>
-    <p>
-        Database support:
-    </p>
-    <p>
-        <div class="table">
-        <table>
-                <col width="30%" />
-                <col width="10%" />
-                <col width="20%" />
-                <col width="40%" />
-            <tr>
-                <th>RDBMS</th>
-                <th>Supported</th>
-                <th>Tested</th>
-                <th>Comments</th>
-            </tr>
-            <tr>
-                <td>MS SQL Server 2000</td>
-                <td>yes</td>
-                <td>well tested</td>
-                <td>this is the main RDBMS we use while developing Sooda</td>
-            </tr>
-            <tr>
-                <td>PostgreSQL 7.1.x</td>
-                <td>yes</td>
-                <td>untested</td>
-                <td>some basic features tested on Linux/Mono with Npgsql driver</td>
-            </tr>
-            <tr>
-                <td>PostgreSQL 8.x</td>
-                <td>yes</td>
-                <td>untested</td>
-                <td>basic features tested on Windows with Npgsql driver</td>
-            </tr>
-            <tr>
-                <td>Oracle</td>
-                <td>perhaps</td>
-                <td>untested</td>
-                <td>there's support for Oracle join syntax, completely untested</td>
-            </tr>
-            <tr>
-                <td>MySQL 3.xx</td>
-                <td>partially</td>
-                <td>untested</td>
-                <td>trivial things (insert, update, delete) should work, in complex SOQL queries Sooda relies 
-                    on subqueries and they aren't supported in MySQL3</td>
-            </tr>
-            <tr>
-                <td>MySQL 4.xx</td>
-                <td>yes</td>
-                <td>untested</td>
-                <td>basic features tested on Linux/Mono with ByteFX driver</td>
-            </tr>
-        </table>
-    </div>
-    </p>
+    <ul>
+        <li><a href="mailto:rafal.gwizdala@atm.com.pl">Rafal Gwizdala</a></li>
+        <li><a href="mailto:marcin.krupinski@atm.com.pl">Marcin Krupinski</a></li>
+    </ul>
 </content>
 

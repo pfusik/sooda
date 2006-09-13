@@ -17,18 +17,24 @@ namespace ConfigureSoodaProject
 
         public ProjectFileConfigurationStrategy(string projectFile)
         {
-            _projectFile = projectFile;
-            _projectXml = new XmlDocument();
-            _projectXml.Load(projectFile);
-            _namespaceManager = new XmlNamespaceManager(_projectXml.NameTable);
-            _namespaceManager.AddNamespace("msbuild", "http://schemas.microsoft.com/developer/msbuild/2003");
-
-            _isVS2003 = _projectXml.DocumentElement.LocalName != "Project";
+            if (projectFile != null)
+                ProjectFile = projectFile;
         }
 
         public string ProjectFile
         {
             get { return _projectFile; }
+            set 
+            {
+                _modified = false;
+                _projectFile = value; 
+                _projectXml = new XmlDocument();
+                _projectXml.Load(_projectFile);
+                _namespaceManager = new XmlNamespaceManager(_projectXml.NameTable);
+                _namespaceManager.AddNamespace("msbuild", "http://schemas.microsoft.com/developer/msbuild/2003");
+
+                _isVS2003 = _projectXml.DocumentElement.LocalName != "Project";
+            }
         }
 
         public string AssemblyName
@@ -199,14 +205,7 @@ namespace ConfigureSoodaProject
 
             if (args.Length == 0)
             {
-                using (OpenFileDialog ofd = new OpenFileDialog())
-                {
-                    ofd.Title = "Open Visual Studio Project File";
-                    ofd.Filter = "Project Files (*.csproj;*.vbproj)|*.csproj;*.vbproj|All Files (*.*)|*.*";
-                    if (ofd.ShowDialog() != DialogResult.OK)
-                        return;
-                    projectFile = ofd.FileName;
-                }
+                projectFile = null;
             }
             else
             {

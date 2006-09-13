@@ -13,6 +13,8 @@ namespace SoodaAddin.UI
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         public System.Windows.Forms.TextBox textBoxProjectPath;
+        public System.Windows.Forms.Button buttonBrowse;
+        private System.Windows.Forms.Label label5;
 		private System.ComponentModel.IContainer components = null;
 
 		public WizardPageWelcome()
@@ -50,6 +52,8 @@ namespace SoodaAddin.UI
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.textBoxProjectPath = new System.Windows.Forms.TextBox();
+            this.buttonBrowse = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -68,7 +72,7 @@ namespace SoodaAddin.UI
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
                 | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(238)));
-            this.label2.Location = new System.Drawing.Point(8, 128);
+            this.label2.Location = new System.Drawing.Point(8, 80);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(568, 48);
             this.label2.TabIndex = 1;
@@ -105,20 +109,42 @@ namespace SoodaAddin.UI
             // 
             this.textBoxProjectPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
                 | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxProjectPath.Location = new System.Drawing.Point(8, 88);
+            this.textBoxProjectPath.Location = new System.Drawing.Point(8, 152);
             this.textBoxProjectPath.Name = "textBoxProjectPath";
             this.textBoxProjectPath.ReadOnly = true;
-            this.textBoxProjectPath.Size = new System.Drawing.Size(568, 22);
+            this.textBoxProjectPath.Size = new System.Drawing.Size(488, 22);
             this.textBoxProjectPath.TabIndex = 0;
             this.textBoxProjectPath.Text = "";
             // 
+            // buttonBrowse
+            // 
+            this.buttonBrowse.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonBrowse.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.buttonBrowse.Location = new System.Drawing.Point(504, 152);
+            this.buttonBrowse.Name = "buttonBrowse";
+            this.buttonBrowse.TabIndex = 3;
+            this.buttonBrowse.Text = "Browse...";
+            // 
+            // label5
+            // 
+            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+                | System.Windows.Forms.AnchorStyles.Right)));
+            this.label5.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(238)));
+            this.label5.Location = new System.Drawing.Point(8, 128);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(568, 24);
+            this.label5.TabIndex = 1;
+            this.label5.Text = "Choose a Visual Studio Project file:";
+            // 
             // WizardPageWelcome
             // 
+            this.Controls.Add(this.buttonBrowse);
             this.Controls.Add(this.textBoxProjectPath);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label4);
+            this.Controls.Add(this.label5);
             this.EnableBack = false;
             this.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
             this.Name = "WizardPageWelcome";

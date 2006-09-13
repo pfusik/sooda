@@ -3,26 +3,12 @@
 <content lang="en" id="download">
     <h1>Downloading Sooda</h1>
     <p>
-        Sooda is an open source software, so the source code is available to public and everyone 
-        can join the project to improve it. Source and binary packages are available.
-    </p>
-    <h3>Binary packages</h3>
-    <h5>Released Packages</h5>
-    <p>
-        Sooda source and binary packages can be downloaded from the <a href="http://sourceforge.net/project/showfiles.php?group_id=71422">sourceforge file release system</a>.
-    </p>
-    <h5>Snapshots</h5>
-    <p>
-        For your convenience the source and binary snapshots (including the windows installer)
-        are available <a href="http://www.sooda.org/snapshots/">here</a>. They are occasionally generated between
-        releases and primarily meant for testing.</p>
-    <h3>Building Sooda from source</h3>
-    <p>
-        Sooda can be built with either Visual Studio.NET 2003 or <a href="http://nant.sourceforge.net/">NAnt</a>. If you
-        decide to use NAnt - make sure to use one of the latest nightly builds 
-        available <a href="http://nant.sourceforge.net/nightly/latest/">here</a> or NAnt 0.85 version when it becomes available.
+        Sooda is an open source software, so the source code is available to public.
+        You can download the sources, binaries and Win32 installer of Sooda from <a href="http://www.sooda.org/releases/">here</a>.
     </p>
     <p>
-        To build Sooda using NAnt, just type <code>nant</code> at the command prompt. To rebuild Sooda using VS.NET, open the solution file (<code>Sooda.sln</code>) and run <code>Build|Rebuild Solution</code>.
+        You can also get the latest sources from the Subversion repository which 
+        is located <a href="http://svn.sooda.org/repos/sooda">here</a>. Subversion read-only access is
+        available to anyone. To get write access, send request to the <link href="mailinglist">mailing list</link>.
     </p>
 </content>

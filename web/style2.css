@@ -648,6 +648,10 @@ ul.noindent
     body { left: 0pt; }
     #controls { display: none; }
     #googlesearch { display: none; }
+    .dontprintthis
+    { 
+        display: none; 
+    }
     #printthis
     { 
         display: none; 
@@ -676,7 +680,7 @@ ul.noindent
 
     .toctitle
     {
-        margin-top: 5cm;
+        margin-top: 2cm;
         text-align: center;
     }
 
@@ -713,6 +717,11 @@ ul.noindent
     .pagebreak
     {
         page-break-after: always;
+    }
+
+    .screenshot66
+    {
+        width: 66%;
     }
 }
 

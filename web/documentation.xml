@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="windows-1250" ?>
 <?xml-stylesheet type="text/xsl" href="style.xsl" ?>
-<content lang="en" id="documentation">
+<content lang="en" id="docs">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-09-07 17:02:28 +0200 (Thu, 07 Sep 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 372 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-09-13 16:34:13 +0200 (Wed, 13 Sep 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 397 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright &#169; 2003-2006 by Jarosław Kowalski</div>
         <div class="pagebreak" />
     </div>
-    <p class="toctitle">Table of Contents</p>
+    <p class="dontprintthis">
+        <h1>Sooda Documentation</h1>
+    </p>
+    <p class="toctitle" />
 
     <table-of-contents />
 
@@ -610,34 +613,294 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 In this tutorial we will use it to create a simple C# application that exercises various features of Sooda. We will be
                 using the <code>Northwind</code> database that comes with MSSQL Server but any database should be ok.
             </p>
-            <p>
-                Let's start by creating an empty C# Console application project in Visual Studio. After the project has been created
-                run the wizard. You can invoke it by clicking on the <code>Configure Sooda...</code> option located in the <code>Tools</code> menu 
-                of Visual Studio or by running a stand-alone application <code>ConfigureSoodaProject.exe</code> by clicking its shortcut
-                on the Start menu.
-            </p>
-            <p>
-                The first step of the wizard is a greeting message that reminds the user to prepare a database.
-                We already have one, so we can proceed to the next step by clicking the <code>Next</code> button.
-            </p>
-            <img src="docwizard1.gif" />
-            <p>
-                In the second step of the wizard you need to specify database server and credentials used to connect to the database.
-                Make sure the account used to connect has the right to create additional tables in the database or you will not be able
-                to complete the wizard (using a local administrator account and Windows Authentication should be sufficient in most cases).
-                Click <code>Next</code> to proceed to the database selection:
-            </p>
-            <img src="docwizard2.gif" />
-            <p>
-                The third step of the wizard prompts you to choose one of the databases that are running on the server. Choose <code>Northwind</code> and click <code>Next</code>.
-            </p>
-            <img src="docwizard3.gif" />
-            <p>
-                The last page of the wizard presents a list of actions the wizard can perform for you. The default set of options should
-                be just fine, and clicking <code>Finish</code> will add Sooda support to your project as requested.
-            </p>
-            <img src="docwizard4.gif" />
         </body>
+        <section id="gettingstartedwizard">
+            <title>Configuring Sooda project</title>
+            <body>
+                <p>
+                    Let's start by creating an empty C# Console application project in Visual Studio. After the project has been created
+                    and saved to disk (you need to save your projects explicitly when using Visual Studio Express Editions), run the wizard
+                    by clicking on the "Add Sooda Support to Visual Studio Project" shortcut on the Start menu:
+                </p>
+                <img src="docwizardlaunch.gif" class="screenshot66" />
+                <p>
+                    The first step of the wizard is a greeting message that reminds the user to prepare a database 
+                    and choose a Visual Studio project file to configure. Choose the project by clicking <code>Browse</code>.
+                    We can proceed to the next step by clicking the <code>Next</code> button.
+                </p>
+                <img src="docwizard1.gif" class="screenshot66" />
+                <p>
+                    In the second step of the wizard you need to specify database server and credentials used to connect to the database.
+                    Make sure the account used to connect has the right to create additional tables in the database or you will not be able
+                    to complete the wizard (using a local administrator account and Windows Authentication should be sufficient in most cases).
+                    Click <code>Next</code> to proceed to the database selection:
+                </p>
+                <img src="docwizard2.gif" class="screenshot66" />
+                <p>
+                    The third step of the wizard prompts you to choose one of the databases that are running on the server. Choose <code>Northwind</code> and click <code>Next</code>.
+                </p>
+                <img src="docwizard3.gif" class="screenshot66" />
+                <p>
+                    The last page of the wizard presents a list of actions the wizard can perform for you. The default set of options should
+                    be just fine, and clicking <code>Finish</code> will add Sooda support to your project as requested.
+                </p>
+                <img src="docwizard4.gif" class="screenshot66" />
+                <p>If you choose to set advanced options by clicking the <code>Advanced Options</code> button, the wizard will present
+                    you with a list of more settings each followed by the <code>Explain</code> link that will direct you to the appropriate
+                    section of the documentation.
+                </p>
+                <img src="docwizard4a.gif" class="screenshot66" />
+                <p>
+                    Once you have set up your project it is time to compile it. Switch to Visual Studio and click "Build" (note that you will
+                    get warnings about project file modifications - choose to Reload your project when prompted).
+                </p>
+                <p>
+                    It is possible that you get the following error when building your project.
+                </p>
+                <code lang="C#">
+                    error CS0234: The type or namespace name 'Drawing' does not exist in the namespace 'System' (are you missing an assembly reference?)
+                </code>
+                <p>
+                    If you do, add 'System.Drawing.dll' reference to your project and recompile. This error may occur if you
+                    use have any pictures stored in the database (which is the case with <code>Northwind</code> database).
+                </p>
+                <p>
+                    Note how the Wizard generated the following files for your project:
+                </p>
+                <ul>
+                    <li><code>projectname.soodaproject</code> - that stores <a href="#soodaproject">code generation settings</a></li>
+                    <li><code>SoodaSchema.xml</code> - that contains the <a href="#schema">object-to-relational mapping schema</a></li>
+                    <li><code>App.config</code> - that contains runtime configuration settings</li>
+                </ul>
+                <p>
+                    In addition to these your project has been modified to automatically launch the <a href="#soodastubgen">SoodaStubGen utility</a>
+                    on each build and optionally to launch <a href="#soodacompilestubs">SoodaCompileStubs</a> to precompile stubs to a DLL.
+                </p>
+            </body>
+        </section>
+        <section id="gettingstartedrenamingclasses">
+            <title>Renaming classes</title>
+            <body>
+                <p>
+                    Class names detected by the wizard are plural nouns, because this is how tables are named in the <code>Northwind</code>
+                    database. For example we have <code>Territories</code> instead of <code>Territory</code>.
+                    Using plurals in class names is not a good idea so we should fix it by renaming the classes.
+                </p> 
+                <p>
+                    To save time, you can download the corrected schema for the Northwind database 
+                    from the <a href="http://www.sooda.org/northwind/SoodaSchema.xml">Sooda website</a>. The schema includes
+                    all changes described below.
+                </p>
+                <p>
+                    To do this, open <code>SoodaSchema.xml</code> and replace all plural class names with the appropriate singular forms.
+                    Make sure to replace only class names not table names, so it is best to use the following renaming strategy:
+                </p>
+                <ol>
+                    <li>replace <code>"Territories"</code> with <code>"Territory"</code> (quotes should be included in the 
+                        Search For and Replace With strings)</li>
+                    <li>replace <code>&lt;table name="Territory" /&gt;</code> with <code>&lt;table name="Territories" />&gt;</code></li>
+                </ol>
+                <p>
+                    Repeat the above steps to rename:
+                </p>
+                <ul>
+                    <li><code>Categories</code> with <code>Category</code></li>
+                    <li><code>Customers</code> with <code>Customer</code></li>
+                    <li><code>Employees</code> with <code>Employee</code></li>
+                    <li><code>Orders</code> with <code>Order</code></li>
+                    <li><code>Products</code> with <code>Product</code></li>
+                    <li><code>Region</code> with <code>Region</code></li>
+                    <li><code>Shippers</code> with <code>Shipper</code></li>
+                    <li><code>Suppliers</code> with <code>Supplier</code></li>
+                    <li><code>Territories</code> with <code>Territory</code></li>
+                </ul>
+                <p>
+                    In addition, you should give meaningful names to all collections declared with
+                    <x><collectionOneToMany /></x> and <x><collectionManyToMany /></x>. You should
+                    remove <code>CollectionOf</code> and trailing digits from the names.
+                </p>
+                <p>
+                    Remove the following files for classes that are no longer present 
+                    or you will get errors about some non-existent stub classes.
+                </p>
+                <ul>
+                    <li>Categories.cs</li>
+                    <li>Customers.cs</li>
+                    <li>Employees.cs</li>
+                    <li>Orders.cs</li>
+                    <li>Products.cs</li>
+                    <li>Regions.cs</li>
+                    <li>Shippers.cs</li>
+                    <li>Suppliers.cs</li>
+                    <li>Territories.cs</li>
+                </ul>
+                <p>
+                    When you are done, rebuild your project.
+                </p>
+            </body>
+        </section>
+        <section id="gettingstartedcode">
+            <title>Adding example code to your project</title>
+            <body>
+                <p>
+                    It is now time to add some code to the project that will demonstrate the use of DAL classes generated by Sooda.
+                    By default Sooda generates one class for each table found in the database and the name of the class corresponds to
+                    the name of the table as described <sectionlink id="soodaschematoolgenschema" />.
+                </p>
+                <p>
+                    Before you can use Sooda objects, you need to create an instance of <a href="#soodatransaction">SoodaTransaction</a> 
+                    class. You can only access your objects within the transaction and after the transaction is closed, object references
+                    are not valid. Typically you create a <code>SoodaTransaction</code> object in a <code>using()</code> clause.
+                </p>
+                <p>
+                    To begin, add the following <code>using</code> clauses to the top of your <code>Program.cs</code> source file 
+                    replacing <code>YOURNAMESPACE</code> with the namespace of the project:
+                </p>
+                <code lang="C#">
+                    using Sooda;
+                    using YOURNAMESPACE.TypedQueries;
+                </code>
+                <p>
+                    Copy the following piece of code and paste it to replace the generated <code>Main()</code> method:
+                </p>
+                <code lang="C#">
+                    public static void Main()
+                    {
+                        // you cannot access Sooda objects here
+
+                        using (SoodaTransaction tran = new SoodaTransaction())
+                        {
+                            // access your objects here
+
+                            // commit all changes made within transaction
+                            tran.Commit();
+                        }
+
+                        // you cannot access Sooda objects here
+                    }
+                </code>
+                <p>
+                    We are now ready to test various Sooda features. Let's start with simple object loading. To load an object given its
+                    primary key, you can use the generated <code>Load()</code> static method. The following code loads a row from the 
+                    <code>Territories</code> table and displays its <code>TerritoryDescription</code>. Note that you use the 
+                    (renamed) class names instead of the table names in your code.
+                </p>
+                <code lang="C#">
+                    Territory t = Territory.Load("98104");
+                    Console.WriteLine("Territory is: {0}", t.TerritoryDescription);
+                </code>
+                <p>
+                    When you run this program, it should display:
+                </p>
+                <pre class="csharp">Territory is: Seattle</pre>
+                <p>
+                    To see what region Seattle belongs to, we can use the <a href="#pathexpressions">path expression</a> <code>t.Region.RegionDescription</code>:
+                </p>
+                <code lang="C#">
+                    Territory t = Territory.Load("98104");
+                    Console.WriteLine("Territory is: {0}", t.TerritoryDescription);
+                    Console.WriteLine("Region is: {0}", t.Region.RegionDescription);
+                </code>
+                <p>
+                    We can use <code>foreach()</code> to enumerate all employees from Seattle:
+                </p>
+                <code lang="C#">
+                    Territory t = Territory.Load("98104");
+
+                    foreach (Employee e in t.Employees)
+                    {
+                        Console.WriteLine("name: {0} {1} id: {2}", e.LastName, e.FirstName, e);
+                    }
+                </code>
+                <p>
+                    There is one: <code>Michael Suyama</code> and his Employee ID is <code>6</code>. 
+                    Let's see a list of his all superiors:
+                </p>
+                <code lang="C#">
+                    Employee michaelSuyama = Employee.Load(6);
+
+                    for (Employee e = michaelSuyama; e != null; e = e.ReportsTo)
+                    {
+                        Console.WriteLine("id={0} name={1} {2} reports to={3}", e.EmployeeID, e.LastName, e.FirstName, e.ReportsTo);
+                    }
+                </code>
+                <p>
+                    Running this code presents us with a list of 3 people and their IDs:
+                </p>
+                <code lang="C#">
+                    id=6 name=Suyama Michael reports to=5
+                    id=5 name=Buchanan Steven reports to=2
+                    id=2 name=Fuller Andrew reports to=
+                </code>
+                <p>
+                    What if we wanted to find people by their names? 
+                    Sooda supports a query language called <a href="#soql">SOQL</a> that lets you formulate object-oriented queries to find
+                    objects that meet some specified criteria. Two variants of SOQL are supported: <a href="#soqltypedqueries">typed queries</a>
+                    (presented below - only supported in C#) or <a href="#soqltext">textual queries</a> available in all languages.
+                </p>
+                <code lang="C#">
+                foreach (Employee emp in Employee.GetList(EmployeeField.LastName == "Suyama"))
+                {
+                    Console.WriteLine("{0}", emp.FirstName);
+                }
+                </code>
+                <p>
+                    The following code uses a textual query to get the same result:
+                </p>
+                <code lang="C#">
+                    foreach (Employee emp in Employee.GetList(new SoodaWhereClause("LastName == {0}", "Suyama")))
+                    {
+                        Console.WriteLine("{0}", emp.FirstName);
+                    }
+                </code>
+                <p>
+                    The former method uses C# operator overloading and has the advantage of using C# compiler to validate all queries.
+                    That means you cannot write invalid queries because they will fail to compile. This is great when developing large
+                    ever-changing projects, as you can immediately know the impact of removing a field or changing its data type.
+                </p>
+                <p>
+                    SOQL lets you write powerful query expressions without the use of SQL <code>JOIN</code> operators
+                    thanks to the support for <a href="#soqlpathexpressions">path expressions</a>. The following 
+                    example displays the details of all shipments made via "Speedy Express" carrier that have more than 3 items:
+                </p>
+                <code lang="C#">
+                    <![CDATA[
+                    foreach (Order o in Order.GetList(
+                        OrderField.ShipVia.CompanyName == "Speedy Express" &&
+                        OrderField.Items.Count > 3))
+                    {
+                        Console.WriteLine("Order #{0} Date: {1}", o.OrderID, o.OrderDate);
+                        Console.WriteLine("Ship to: {0} {1} {2} {3} {4}", 
+                                o.ShipName, o.ShipAddress, 
+                                o.ShipCity, o.ShipPostalCode, 
+                                o.ShipCountry);
+
+
+                        for (int i = 0; i < o.Items.Count; ++i)
+                        {
+                            Product p = Product.Load(o.Items[i].Product);
+
+                            Console.WriteLine("  {0}. {1} {2} x {3}", i, 
+                                p.ProductName, p.UnitPrice, o.Items[i].Quantity);
+                        }
+                        //Console.WriteLine("o: {0}", o.Items.Count);
+                    }
+                    ]]>
+                </code>
+                <p>
+                    Creating and modifying objects is easy. To create objects you simply use the familiar <code>new</code> 
+                    construct. To create new order you would write:
+                </p>
+                <code lang="C#">
+                    Order o = new Order();
+                </code>
+                <p>
+                    To modify objects, just set their appropriate properties:
+                </p>
+                <code lang="C#">
+                </code>
+            </body>
+        </section>
     </section>
     <section id="schema">
         <title>O/R Mapping Schema</title>
@@ -3071,8 +3334,8 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 <li>Logging - described <sectionlink id="logging" />.</li>
             </ul>
             <p>
-                Configuration parameters are typically stored in <a href="#configuration">configuration files</a>, but there are other options
-                as explained later in this section.
+                Configuration parameters are typically stored in <a href="#configuration">configuration files</a>, 
+                but there are other possibilities as explained later in this section.
             </p>
         </body>
         <section id="configuration">
@@ -3279,7 +3542,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
             <title>Data Source Configuration</title>
             <body>
                 <p>
-                    You can configure your data source either declaratively (using the <a href="#configuration">configuration file</a>)
+                    You can configure your data source either declaratively using the <a href="#configuration">configuration file</a>
                     or in code by properties of the <code>SqlDataSource</code> objects.
                 </p>
                 <div class="table">
@@ -3628,10 +3891,10 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 <p>
                     No object can live outside the transaction and object state is not defined after the transaction
                     has been closed. Keeping a transaction open for a longer period of time is not recommended because it consumes
-                    unmanaged resources, such as a database connections.
+                    unmanaged resources, such as database connections.
                 </p>
                 <p>
-                    Transactions need to be closed when they are no longer needed and if you fail ensure that, otherwise
+                    Transactions need to be closed when they are no longer needed and if you fail to ensure that, otherwise
                     you may get all sorts of unmanaged resource leaks. Typical usage pattern for a Sooda transaction 
                     that ensures the transaction is properly closed is presented below. It makes use of the
                     IDisposable pattern and the C# using() statement:
@@ -4054,8 +4317,8 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     </p>
                     <ul>
                         <li><code>transaction</code> - (optional) transaction reference, in case it is omitted <code>SoodaTransaction.ActiveTransaction</code> is used</li>
-                        <li><code>whereClause</code> - filter clause, either <a href="#soodawhereclause">SoodaWhereClause</a> for textual queries or
-                            <a href="#soqlbooleanexpression">SoqlBooleanExpression</a> for typed queries.</li>
+                        <li><code>whereClause</code> - filter clause, either <code>SoodaWhereClause</code> for textual queries or
+                            <code>SoqlBooleanExpression</code> for typed queries.</li>
                         <li><code>topCount</code> - (optional) maximum number of objects to retrieve - this is equivalent to <code>SELECT TOP n</code> SQL query</li>
                         <li><code>orderBy</code> - (optional) specifies ordering of result objects</li>
                         <li><code>options</code> - (optional) various flags</li>
@@ -4447,8 +4710,8 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <td>Creates a new collection containing objects that match the specified filter <code>f</code> which can be:
                                     <ul>
                                         <li>an instance of the <b>SoodaObjectFilter</b> delegate</li>
-                                        <li>an instance of <b><a href="#soodawhereclause">SoodaWhereClause</a></b> for <a href="#soqltext">textual queries</a></li>
-                                        <li>an instance of <b><a href="#soqlbooleanexpression">SoqlBooleanExpression</a></b> for <a href="#soqltypedqueries">typed queries</a></li>
+                                        <li>an instance of <b><code>SoodaWhereClause</code></b> for <a href="#soqltext">textual queries</a></li>
+                                        <li>an instance of <b><code>SoqlBooleanExpression</code></b> for <a href="#soqltypedqueries">typed queries</a></li>
                                     </ul>
 
                                     <p>Examples (all filter out the person named "Mary Manager"):</p>
@@ -4502,7 +4765,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                         collection2 = collection.Sort("Group.Manager.Name asc");
                                     </code>
                                     <ul>
-                                        <li><a href="#soqlexpression">SOQL expression</a> (typically created with <a href="#soqltypedqueries">typed queries</a> syntax)</li>
+                                        <li>SOQL expression (typically created with <a href="#soqltypedqueries">typed queries</a> syntax)</li>
                                         <li>SOQL expression and ascending/descending specification</li>
                                     </ul>
 
@@ -5108,10 +5371,10 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     }
                 </code>
                 <p>
-                    The criteria passed to the <code>GetList()</code> method is always met, so you expect it to return all
-                    objects of class <code>Person</code> including the newly created 'Nancy Newcomer' object. 
+                    The condition <code>true</code> passed to the <code>GetList()</code> method is always met, so you expect 
+                    it to return all objects of class <code>Person</code> including the newly created 'Nancy Newcomer' object. 
                     <code>GetList()</code> ultimately results in an SQL query, whose result should
-                    include the mentioned object. For this reason, Sooda needs to issue a <code>INSERT INTO Person</code> statement
+                    include the mentioned object. For this reason, Sooda needs to issue an <code>INSERT INTO Person</code> statement
                     before executing the <code>SELECT</code> statement on the database.
                 </p>
                 <p>
@@ -5162,26 +5425,6 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 </p>
             </body>
         </section>
-        <section id="ql">
-            <title>Query API</title>
-            <body>
-            </body>
-            <section id="soqlexpression">
-                <title>SoqlExpression</title>
-                <body>
-                </body>
-            </section>
-            <section id="soodawhereclause">
-                <title>SoodaWhereClause</title>
-                <body>
-                </body>
-            </section>
-            <section id="soqlbooleanexpression">
-                <title>SoqlBooleanExpression</title>
-                <body>
-                </body>
-            </section>
-        </section>
         <section id="cachingapi">
             <title>Caching</title>
             <body>
@@ -5201,14 +5444,14 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     <li>cache storage</li>
                 </ul>
                 <p>
-                    Caching policy determines what objects should be stored in cache and how long they be kept there. 
+                    Caching policy determines what objects should be stored in cache and how long they are kept there. 
                     There are many possible approaches here:
                 </p>
                 <ul>
                     <li><b>none</b> - do not use Level 2 cache</li>
                     <li><b>all</b> - all objects are subject to be cached - useful for small databases (up to 1 GB)</li>
-                    <li><b>small</b> - cache small objects, large and medium objects are always reloaded from the database</li>
-                    <li><b>smallmedium</b> - cache small and medium objects, large objects are always reloaded from the database</li>
+                    <li><b>small</b> - cache small cardinality objects, large and medium cardinality objects are always reloaded from the database</li>
+                    <li><b>smallmedium</b> - cache small and medium cardinality objects, large cardinality objects are always reloaded from the database</li>
                 </ul>
                 <p>
                     Objects are considered <code>Small</code>, <code>Medium</code> or <code>Large</code> depending on the
@@ -5217,7 +5460,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 <p>
                     In addition to this, you can also create your own caching policy by creating a class that implements 
                     the <code>ISoodaCachingPolicy</code> interface. Your caching policy can use caching hints (<code>cached</code>, 
-                    <code>cacheCollections</code>, <code>cardinality</code> as defined in the schema or your algorithm to decide
+                    <code>cacheCollections</code>, <code>cardinality</code> as defined in the schema) or your algorithm to decide
                     which objects or collections should be put into cache.
                 </p>
                 <p>
@@ -5369,7 +5612,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 <p>
                     There are two ways to acquire a <code>SqlDataSource</code> object, depending on whether you
                     have an open transaction. If you do, getting the SQL data source is a matter of calling <code>OpenDataSource()</code>
-                    method on a <code>SoodaTransaction</code> instance passing it the name of the data source to open.
+                    method on a <code>SoodaTransaction</code> instance, passing the name of the data source to open.
                     SoodaTransaction manages a list of open data sources and will return the same data source object when <code>OpenDataSource()</code> 
                     is called with the same data source name twice.
                 </p>
@@ -5407,7 +5650,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 <ul>
                     <li><code>Open()</code> method.
                         <blockquote>
-                            Opens the data source which connects to the database and opens a new transaction (unless <code>DisableTransactions</code> has been set).
+                            Opens the data source which connects to the database and opens a new transaction (unless <code>DisableTransactions</code> has been set to <code>true</code>).
                         </blockquote>
                     </li>
                     <li><code>IsOpen</code> property.
@@ -5417,7 +5660,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     </li>
                     <li><code>Rollback()</code> method.
                         <blockquote>
-                            Performs rollback of the open transaction and starts a new one. This method does nothing if <code>DisableTransactions</code> is set.
+                            Performs rollback of the open transaction and starts a new one. This method does nothing if <code>DisableTransactions</code> is set to <code>true</code>.
                         </blockquote>
                     </li>
                     <li><code>Commit()</code> method.
@@ -5437,7 +5680,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                             The <code>schema</code> parameter is an instance of the <a href="#schemaapischemainfo">SchemaInfo</a> class
                             and <code>parameters</code> is an array of values to be used for 
                             <code>{0}</code>, <code>{1}</code>, <code>{2}</code> ... parameter placeholders. See below for an example
-                            of this method being used.
+                            use of this method.
                         </blockquote>
                     </li>
                     <li><code>IDataReader ExecuteRawQuery(string queryText, object[] parameters)</code> method
@@ -5449,7 +5692,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     </li>
                     <li><code>int ExecuteNonQuery(string queryText, object[] parameters);</code> method
                         <blockquote>
-                            Executes raw SQL command that does not return eny records (such as SQL <code>INSERT</code> or <code>UPDATE</code>)
+                            Executes raw SQL command that does not return any records (such as SQL <code>INSERT</code> or <code>UPDATE</code>)
                             on an open data source. <code>parameters</code> is an array of values to be used for 
                             <code>{0}</code>, <code>{1}</code>, <code>{2}</code> ... parameter placeholders.
                             Other than that, this method is equivalent to <code>IDbCommand.ExecuteNonQuery()</code>.
@@ -7149,7 +7392,7 @@ where    (t2.name = 'Mary Manager')
                         <ul>
                             <li>constructors</li>
                             <li>one public instance property for each <x><field /></x> declared locally in the <a href="#schema">schema file</a>. The name of the property matches the name defined in the schema and exact type
-                                depends on chosen <a href="#soodaprojectprimitiverep">primitive representation</a> and field nullability ad described <sectionlink id="generatedproperties" />.</li>
+                                depends on chosen <a href="#soodaprojectprimitiverep">primitive representation</a> and field nullability as described <sectionlink id="generatedproperties" />.</li>
                             <li>one public static property for each <x><const /></x> declared locally in the schema as described <sectionlink id="generatedenums" />.</li>
                             <li><code>GetClassInfo()</code> method that returns the <a href="#schemaapiclassinfo">ClassInfo</a> object
                                 describing mapping metadata</li>
@@ -7161,7 +7404,7 @@ where    (t2.name = 'Mary Manager')
                                     Loader methods:
                                 </p>
                                 <ul>
-                                    <li><code>LoadSingleObject()</code> overloaded method</li>
+                                    <li><code>LoadSingleObject()</code> method overloads</li>
                                     <li><code>GetAllObjects()</code> method overloads</li>
                                     <li><code>GetList()</code> method overloads</li>
                                     <li><code>Load()</code> method overloads</li>
@@ -7181,8 +7424,8 @@ where    (t2.name = 'Mary Manager')
                 <title>Class hierarchy</title>
                 <body>
                     <p>
-                        Each <x><class /></x> defined in the <a href="#schema">mapping schema</a> is represented 
-                        by two classes: skeleton and stub. Stub classes typically inherit from the <code>SoodaObject</code>
+                        Each <x><class /></x> element defined in the <a href="#schema">mapping schema</a> is represented 
+                        in generated code by two classes: skeleton and stub. Stub classes typically inherit from the <code>SoodaObject</code>
                         class, but when Sooda class inheritance is used, the stub classes may inherit from parent skeleton classes.
                     </p>
                     <p>
@@ -7239,7 +7482,7 @@ where    (t2.name = 'Mary Manager')
                         ]]>
                     </code>
                     <p>
-                        The generated class hierarchy is presented on the following figure. 
+                        The generated class hierarchy is presented in the following figure. 
                         Note how all classes ultimately derive from the <code>SoodaObject</code> class
                         and how <code>Bicycle_Stub</code>, <code>Car_Stub</code> and <code>Boat_Stub</code>
                         classes inherit from <code>Vehicle</code> skeleton class.
@@ -7251,9 +7494,9 @@ where    (t2.name = 'Mary Manager')
                 <title>Properties</title>
                 <body>
                     <p>
-                        SoodaStubGen generates a property for each <x><field /></x> declared in the mapping schema. The
+                        SoodaStubGen generates one property for each <x><field /></x> declared in the mapping schema. The
                         name of the property is taken from the <code>name</code> attribute and the property type 
-                        is dependent on two factors:
+                        depends on two factors:
                     </p>
                     <ul>
                         <li>the nullability of the field</li>
@@ -7261,8 +7504,8 @@ where    (t2.name = 'Mary Manager')
                     </ul>
                     <p>
                         If the field is nullable, SoodaStubGen uses the representation passed in <x><nullable-representation /></x> parameter.
-                        If the field is not null, the representation passed in <x><not-null-representation /></x> is used. 
-                        Individual representations are presented in the following sections.
+                        If the field is not nullable, the representation passed in <x><not-null-representation /></x> is used. 
+                        Particular representations are presented in the following sections.
                     </p>
                 </body>
                 <section id="generatedpropertiesboxed">
@@ -7374,7 +7617,7 @@ where    (t2.name = 'Mary Manager')
                     <body>
                         <p>
                             <code>RawWithIsNull</code> generates a pair of properties: <code>P</code> and <code>P_IsNull</code>,
-                            the latter returning <code>true</code> when the field value is <code>null</code>. In additon to this
+                            the latter being read-only returning <code>true</code> when the field value is <code>null</code>. In additon to this
                             the <code>P_SetNull()</code> method is generated that can be used to set the field value to null.
                         </p>
                         <ul>
@@ -7529,7 +7772,7 @@ where    (t2.name = 'Mary Manager')
                 <title>Triggers</title>
                 <body>
                     <p>
-                        Sooda generates 2 methods for each <x><field /></x>, which are called before and after the field
+                        Sooda generates two methods for each <x><field /></x>, one called before and the other called after the field is modified
                         is modified. Assuming the following schema:
                     </p>
                     <code lang="XML">
@@ -7595,7 +7838,7 @@ where    (t2.name = 'Mary Manager')
                     </code>
                     <p>
                         The methods are declared <code>protected virtual</code> so that you can override them in your skeleton classes
-                        but you cannot call them from outside the object.
+                        but you cannot call them from outside of the class.
                     </p>
                 </body>
             </section>
@@ -7717,7 +7960,7 @@ where    (t2.name = 'Mary Manager')
                             <class name="NNN">
                                 <table name="Table1">
                                     <field name="Field1" type="Integer" find="true" />
-                                    <field name="Field2" type="Integer" findList="true" />
+                                    <field name="Field2" type="String" findList="true" />
                                 </table>
                             </class>
                         </schema>
@@ -7730,7 +7973,7 @@ where    (t2.name = 'Mary Manager')
                             {
                             }
 
-                            public static void NNNList FindByField2(Int32 field2)
+                            public static void NNNList FindByField2(String field2)
                             {
                             }
                         }
@@ -8247,7 +8490,7 @@ where    (t2.name = 'Mary Manager')
                     that are part of inheritance relationships. For all other cases <code>GetRef()</code> can be very cheap, 
                     constant-time operation, but if a class has subclasses, Sooda needs to issue a database query to
                     determine the concrete class that should be instantiated. Once the query has been executed and the concrete
-                    class is know, we can cache it so that further <code>GetRef()s</code> can be done without any database queries.
+                    class is known, we can cache it so that further <code>GetRef()s</code> can be done without any database queries.
                 </p>
                 <p>
                     By default Sooda comes with eternal factory cache that stores the primary key to concrete class association in 

@@ -152,8 +152,9 @@ namespace SoodaAddin.UI
 
         private void SoodaConfigurationWizard_Load(object sender, System.EventArgs e)
         {
-            Text += " - " + Path.GetFileName(_strategy.ProjectFile);
+            UpdateTitle();
             _welcomePage = new WizardPageWelcome();
+            _welcomePage.buttonBrowse.Click += new EventHandler(buttonBrowse_Click);
             _welcomePage.textBoxProjectPath.Text = _strategy.ProjectFile;
             _connectToDatabasePage = new WizardPageConnectToDatabase();
             _chooseDatabasePage = new WizardPageChooseDatabase();
@@ -197,13 +198,23 @@ namespace SoodaAddin.UI
             }
 
             //DialogResult = DialogResult.OK;
-            //Close();
+            Close();
         }
 
         private void buttonNext_Click(object sender, System.EventArgs e)
         {
             if (_currentWizardPage is WizardPageWelcome)
             {
+                if (_welcomePage.textBoxProjectPath.Text.Trim().Length == 0)
+                {
+                    MessageBox.Show(this, "You must specify a project file to configure.");
+                    return;
+                }
+                if (!File.Exists(_welcomePage.textBoxProjectPath.Text))
+                {
+                    MessageBox.Show(this, "Project file not found.");
+                    return;
+                }
                 ShowWizardPage(_connectToDatabasePage);
                 return;
             }
@@ -265,5 +276,33 @@ namespace SoodaAddin.UI
             DialogResult = DialogResult.Cancel;
             Close();
         }
-	}
+
+        private void buttonBrowse_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog ofd = new OpenFileDialog())
+            {
+                ofd.FileName = _strategy.ProjectFile;
+                ofd.Title = "Open Visual Studio Project File";
+                ofd.Filter = "Project Files (*.csproj;*.vbproj)|*.csproj;*.vbproj|All Files (*.*)|*.*";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    _strategy.ProjectFile = ofd.FileName;
+                    _welcomePage.textBoxProjectPath.Text = ofd.FileName;
+                    Text = "Sooda Configuration Wizard - " + Path.GetFileName(_strategy.ProjectFile);
+                }
+            }
+        }
+
+        private void UpdateTitle()
+        {
+            if (_strategy.ProjectFile != null)
+            {
+                Text = "Sooda Configuration Wizard - " + Path.GetFileName(_strategy.ProjectFile);
+            }
+            else
+            {
+                Text = "Sooda Configuration Wizard - No Project Selected";
+            }
+        }
+    }
 }

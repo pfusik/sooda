@@ -13,7 +13,7 @@
     <property name="ssh.server" value="jaak@sav.net" />
     <property name="scp.args" value="-q -batch" />
     <property name="ssh.args" value="-batch" />
-    <property name="webserver.deploy.dir" value="web/www.sooda.org/html/test" />
+    <property name="webserver.deploy.dir" value="web/www.sooda.org/html/test2" />
 
     <property name="sooda.csc.args" value="/nowarn:1591" />
     <property name="sooda.external" value="${project::get-base-directory()}/external" unless="${property::exists('sooda.external')}" />

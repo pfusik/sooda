@@ -1,35 +1,23 @@
 <?xml version="1.0" encoding="windows-1250" ?>
 <?xml-stylesheet type="text/xsl" href="style.xsl" ?>
 <content lang="en" id="introduction">
-    <h1>Introduction</h1>
     <p>
-        <b>Sooda</b> (Simple Object-Oriented Data Access) is an Object-To-Relational Mapping software for the <a href="http://msdn.microsoft.com/net">.NET</a> environment.
+        <b>Sooda</b> is an object-to-relational mapping (O/R Mapping) software for the <a href="http://msdn.microsoft.com/net">.NET</a> environment.
         It lets you automatically generate an object-oriented data access layer (DAL) for your application.
         Instead of writing SQL code, you can now focus on writing business rules in object-oriented .NET languages.
     </p>
     <p>
-
-        <p>
-            Sooda is an open source software distributed under the terms of the <a href="../LICENSE.txt">BSD license</a>.
-            <b>SoodaQuery</b> tool is distributed under the terms of <a href="../SoodaQuery_LICENSE.txt">GPL v2</a>, 
-            because it makes use of the <a href="http://www.icsharpcode.net/OpenSource/SD/Default.aspx">ICSharpCode.TextEditor.dll</a> component which is GPL.
-        </p>
+        Sooda is an open source software distributed under the terms of the <a href="../LICENSE.txt">BSD license</a>.
     </p>
     <h2>News</h2>
     <p>
-        <b>2006-03-23</b> Sooda has been presented at <a href="http://wawadotnet.aspweb.cz">Warsaw .NET Group</a>'s first meeting.<br/>
-        The slides (in Polish) can be downloaded <a href="presentations/WarsawDotNet_PL.ppt">here</a>. 
-        The source code and sample database is <a href="presentations/WarsawDotNet-Sample.zip">here</a>. They also include
-        a version of Sooda that was presented. English translation of the slides is available <a href="presentations/WarsawDotNet_EN.ppt">here</a>. 
-        You should also expect a new stable Sooda release soon (big changes are coming as described
-        on the meeting).
-    </p> 
-    <p>
-        <b>2005-05-21</b> Sooda 0.7 has been released. This is the first public release after 2 years of development. Download the source or binary <link href="download">here</link>.
+        <b style="color: red">2006-09-18</b> Sooda 1.0 has been released. 
+        You can get the source code and binary packages from the <link href="download">download section</link>. Documentation is available <link href="docs">here</link>. Support for this release is available through the <link href="mailinglist">mailing lists</link>.
     </p>
     <h2>Features</h2>
     <p>
-        Sooda supports the following O/R features:</p>
+        Sooda runs on the .NET Framework versions 1.1 and 2.0 and supports the following O/R features:
+    </p>
     <ul>
         <li>transparent object materialization</li>
         <li>clean and natural syntax - the amount of boilerplate code is reduced to the absolute minimum, the code is readable and maintainable</li>
@@ -40,9 +28,14 @@
         <li>differential XML serialization and deserialization for moving data across layers</li>
         <li>support for long running transactions</li>
         <li>data caching with copy-on-write support</li>
-        <li>heterogenous data access (including RDBMS, in the future XML files, Web services, LDAP &amp; AD directories)</li>
     </ul>
-    <p>Sooda supports <a href="http://msdn.microsoft.com/net">Microsoft .NET Framework</a> version 1.1 or later and
-        <a href="http://www.go-mono.com">Mono</a>. Visual Studio .NET 2003 and <a href="http://nant.sourceforge.net/">NAnt 0.85</a> are both supported for compilation.
+    <p>
+        The following database engines are supported.
     </p>
+    <ul>
+        <li>Microsoft SQL Server - primary development platform, most thoroughly tested, production quality support</li>
+        <li>MySQL 4.x and higher - experimental support</li>
+        <li>PostgreSQL 8.x - experimental support</li>
+        <li>Oracle 8i - experimental support</li>
+    </ul>
 </content>

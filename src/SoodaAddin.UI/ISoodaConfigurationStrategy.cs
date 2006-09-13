@@ -4,7 +4,7 @@ namespace SoodaAddin.UI
 {
 	public interface ISoodaConfigurationStrategy
 	{
-        string ProjectFile { get; }
+        string ProjectFile { get; set; }
         string AssemblyName { get; }
         void AddCompileUnit(string file);
         void AddContent(string file);

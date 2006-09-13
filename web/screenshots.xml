@@ -2,11 +2,14 @@
 <?xml-stylesheet type="text/xsl" href="style.xsl" ?>
 <content lang="en" id="screenshots">
     <h1>Screenshots</h1>
-    <p>Click to enlarge.</p>
-    <a href="screenshots/SoodaQuery-0.1.gif"><img src="screenshots/SoodaQuery-0.1-thumb.gif" /></a>
-    <p><b>SoodaQuery v0.1</b> - Sooda Query Language testing tool. Used for testing Soql do SQL conversion algorithm.</p>
-    
-    <a href="screenshots/tutorial_wizard.gif"><img src="screenshots/tutorial_wizard.gif" /></a>
-    <p><b>Sooda Visual Studio.NET 2003 Wizard</b> - creates a VS.NET C# project that uses Sooda</p>
+    <p>
+        The following figures show the <code>Sooda Configuration Wizard</code> that can be used to <a href="documentation.html#gettingstarted">add Sooda support to Visual Studio Project</a>.
+    </p>
+    <img src="docwizard2.gif" />
+    <p/>
+    <img src="docwizard3.gif" />
+    <p/>
+    <img src="docwizard4a.gif" />
+    <p/>
 </content>
 

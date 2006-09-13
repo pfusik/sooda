@@ -40,40 +40,6 @@
                 <div id="{$mode}content">
                     <xsl:apply-templates select="content" />
                 </div>
-                <xsl:if test="$mode = 'web'">
-                    <div id="googlesearch">
-                        <!-- SiteSearch Google -->
-                        <form method="get" action="http://www.google.com/custom" target="_top">
-                            <table border="0">
-                                <tr><td nowrap="nowrap" valign="top" align="left" height="32">
-                                        <input type="hidden" name="domains" value="www.sooda.org"></input>
-                                        <input type="text" name="q" size="20" maxlength="255" value=""></input>
-                                        <input type="submit" name="sa" value="Google Search"></input>
-                                </td></tr>
-                                <tr>
-                                    <td nowrap="nowrap">
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <input type="radio" name="sitesearch" value=""></input>
-                                                    <font size="-1" color="#000000">Web</font>
-                                                </td>
-                                                <td>
-                                                    <input type="radio" name="sitesearch" value="www.sooda.org" checked="checked"></input>
-                                                    <font size="-1" color="#000000">www.sooda.org</font>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                        <input type="hidden" name="forid" value="1"></input>
-                                        <input type="hidden" name="ie" value="UTF-8"></input>
-                                        <input type="hidden" name="oe" value="UTF-8"></input>
-                                        <input type="hidden" name="cof" value="GALT:#0066CC;GL:1;DIV:#999999;VLC:336633;AH:center;BGC:FFFFFF;LBGC:FF9900;ALC:0066CC;LC:0066CC;T:000000;GFNT:666666;GIMP:666666;FORID:1;"></input>
-                                        <input type="hidden" name="hl" value="en"></input>
-                            </td></tr></table>
-                        </form>
-                        <!-- SiteSearch Google -->
-                    </div>
-                </xsl:if>
             </body>
         </html>
     </xsl:template>
@@ -237,11 +203,6 @@
                         <xsl:if test="$mode = 'web'">
                             <tr>
                                 <td align="right">
-                                    <a href="http://www.cenqua.com/clover.net"><img src="http://www.cenqua.com/images/cloverednet1.gif" width="89" height="33" border="0" alt="Code Coverage by Clover.NET"/></a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td align="right">
                                     <script type="text/javascript" language="javascript">
                                         var sc_project=575055; 
                                         var sc_partition=4; 
@@ -257,14 +218,6 @@
                                         urchinTracker();
                                     </script>
 
-                                </td>
-                            </tr>
-                            <tr>
-                                <td align="right">
-                                    <a href="http://validator.w3.org/check?uri=referer"><img
-                                            src="http://www.w3.org/Icons/valid-xhtml10"
-                                            border="0" 
-                                            alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a>
                                 </td>
                             </tr>
                         </xsl:if>
