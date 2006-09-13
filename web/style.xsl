@@ -391,8 +391,9 @@
     <xsl:template match="faq" mode="faq-body">
         <hr />
         <h5>
-            <a><xsl:value-of select="position()" />. 
+            <a>
                 <xsl:attribute name="name"><xsl:value-of select="@id" /></xsl:attribute>
+                <xsl:value-of select="position()" />. 
                 <xsl:value-of select="@title" />
             </a>
         </h5>

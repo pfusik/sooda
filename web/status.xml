@@ -4,8 +4,8 @@
     <h1>Current Status</h1>
     <p>
         Sooda has been successfully used in production systems since 2003 and the core of the system is very stable.
-        The command line tools that accompany it are mostly mature, but some utilities (such as Sooda Configuration Wizard) 
-        may still need testing before they can be declared production quality code.
+        The command line tools that accompany it are mostly mature, but some newer utilities (such as Sooda Configuration Wizard) 
+        may still need work before they can be declared production quality code.
     </p>
     <p>
         Microsoft SQL Server 2000 and 2005 are the most tested RDBMs. Other databases (MySQL, PostgreSQL, Oracle) are known to
@@ -17,7 +17,7 @@
         Support for Sooda is available through the <link href="mailinglist">mailing list</link>.
     </p>
     <p>
-        As of October 2006, the following persons are responsible for the development and support of Sooda:
+        The following persons are responsible for the development and support of Sooda:
     </p>
     <ul>
         <li><a href="mailto:rafal.gwizdala@atm.com.pl">Rafal Gwizdala</a></li>
