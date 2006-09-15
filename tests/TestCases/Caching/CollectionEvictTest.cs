@@ -55,6 +55,9 @@ namespace Sooda.UnitTests.TestCases.Caching
         {
             ISoodaCache c = new SoodaInProcessCache();
             string ck = "Contact where 1=2";
+            c.Add("Contact", 1, DummyEntry(1), TimeSpan.FromHours(1), false);
+            c.Add("Contact", 2, DummyEntry(2), TimeSpan.FromHours(1), false);
+            c.Add("Contact", 3, DummyEntry(3), TimeSpan.FromHours(1), false);
             c.StoreCollection(ck, "Contact", new int[] { 1, 2, 3 }, new string[0], true, TimeSpan.FromHours(1), false);
             Assert.IsNotNull(c.LoadCollection(ck));
             Assert.AreEqual(3, c.LoadCollection(ck).Count);

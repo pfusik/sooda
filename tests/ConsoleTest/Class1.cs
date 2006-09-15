@@ -62,13 +62,8 @@ namespace ConsoleTest
     {
         static void Main(string[] args)
         {
-            using (SoodaTransaction t = new SoodaTransaction())
-            {
-                foreach (Contact c in Contact.GetList(true))
-                {
-                    Console.WriteLine(c);
-                }
-            }
+            Sooda.UnitTests.TestCases.Caching.CollectionEvictTest ct = new Sooda.UnitTests.TestCases.Caching.CollectionEvictTest();
+            ct.Test5();
         }
     }
 }

@@ -220,6 +220,14 @@ namespace Sooda.ObjectMapper
                 {
                     cacheKey = relationInfo.Name + " where " + relationInfo.Table.Fields[1 - masterColumn].Name + " = " + masterValue;
                 }
+                else
+                {
+                    string tmpCacheKey = relationInfo.Name + " where " + relationInfo.Table.Fields[1 - masterColumn].Name + " = " + masterValue;
+
+                    logger.Debug("Cache miss. Cannot use cache for {0} because objects have been precommitted.", cacheKey);
+                    SoodaStatistics.Global.RegisterCollectionCacheMiss();
+                    transaction.Statistics.RegisterCollectionCacheMiss();
+                }
             }
 
             IEnumerable keysCollection = transaction.Cache.LoadCollection(cacheKey);
