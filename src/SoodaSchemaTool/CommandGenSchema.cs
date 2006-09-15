@@ -81,8 +81,8 @@ namespace SoodaSchemaTool
             SchemaInfo schemaInfo = importer.GetSchemaFromDatabase(this);
             AutoDetectRelations(schemaInfo);
             schemaInfo.Resolve();
-            AutoDetectCollections(schemaInfo);
             RemoveReferencePrimaryKeys(schemaInfo);
+            AutoDetectCollections(schemaInfo);
 
             DataSourceInfo dsi = new DataSourceInfo();
             dsi.Name = "default";

@@ -74,6 +74,7 @@ Section ".NET 1.1 Libraries and Tools"
   SectionIn 1 2 4
 
   SetOutPath $INSTDIR\bin\net-1.1
+  File /r build\net-1.1${SOODA_DEBUG}\bin\*Interop*.dll
   File /r build\net-1.1${SOODA_DEBUG}\bin\*Sooda*.dll
   File /r build\net-1.1${SOODA_DEBUG}\bin\*Sooda*.exe
   File /r build\net-1.1${SOODA_DEBUG}\bin\*Sooda*.xml
@@ -98,7 +99,6 @@ Section "Visual Studio 2003 Support"
   File src\Sooda\Schema\SoodaSchema.xsd
   File src\Sooda.CodeGen\SoodaProject.xsd
 novsnet:
-  CreateShortCut "$SMPROGRAMS\Sooda ${SOODA_VERSION}\Add Sooda Support to Visual Studio Project.lnk" "$INSTDIR\bin\net-1.1\ConfigureSoodaProject.exe" ""
 SectionEnd
 
 SectionGroupEnd
@@ -109,6 +109,7 @@ Section ".NET 2.0 Libraries and Tools"
   SectionIn 1 3 4
 
   SetOutPath $INSTDIR\bin\net-2.0
+  File /r build\net-2.0${SOODA_DEBUG}\bin\*Interop*.dll
   File /r build\net-2.0${SOODA_DEBUG}\bin\*Sooda*.dll
   File /r build\net-2.0${SOODA_DEBUG}\bin\*Sooda*.exe
   File /r build\net-2.0${SOODA_DEBUG}\bin\*Sooda*.xml
@@ -134,7 +135,7 @@ Section "Visual Studio 2005 Support"
   File src\Sooda.CodeGen\SoodaProject.xsd
 
 novsnet:
-#  CreateShortCut "$SMPROGRAMS\Sooda ${SOODA_VERSION}\Add Sooda Support to Visual Studio 2005 Project.lnk" "$INSTDIR\bin\net-2.0\ConfigureSoodaProject.exe" ""
+  CreateShortCut "$SMPROGRAMS\Sooda ${SOODA_VERSION}\Add Sooda Support to Visual Studio Project.lnk" "$INSTDIR\bin\net-2.0\ConfigureSoodaProject.exe" ""
 SectionEnd
 
 SectionGroupEnd

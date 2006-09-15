@@ -192,6 +192,7 @@ namespace SoodaAddin.UI
                 WriteToLog("Configuring project: " + Strategy.ProjectFile);
                 WriteToLog("Adding reference to 'Sooda'");
                 Strategy.AddReference("Sooda");
+                Strategy.AddReference("System.Drawing");
                 if (WizardOptions.CreateAppConfigFile)
                 {
                     string appConfig = Path.Combine(baseDir, "App.config");
