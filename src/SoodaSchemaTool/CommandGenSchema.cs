@@ -82,6 +82,7 @@ namespace SoodaSchemaTool
             AutoDetectRelations(schemaInfo);
             schemaInfo.Resolve();
             AutoDetectCollections(schemaInfo);
+            RemoveReferencePrimaryKeys(schemaInfo);
 
             DataSourceInfo dsi = new DataSourceInfo();
             dsi.Name = "default";
@@ -134,6 +135,19 @@ namespace SoodaSchemaTool
 
                 Console.WriteLine("Converting {0} to a relation", ci.Name);
                 si.Classes.Remove(ci);
+            }
+        }
+
+        private void RemoveReferencePrimaryKeys(SchemaInfo si)
+        {
+            // for classes, primary keys which are references are not supported
+            foreach (ClassInfo ci in si.Classes)
+            {
+                foreach (FieldInfo fi in ci.UnifiedFields)
+                {
+                    if (fi.IsPrimaryKey)
+                        fi.References = null;
+                }
             }
         }
 

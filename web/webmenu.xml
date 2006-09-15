@@ -6,7 +6,7 @@
         <nav href="screenshots" label="Screenshots" />
         <nav href="download" label="Download" />
         <nav href="docs" label="Documentation" />
-        <nav href="mailinglist" label="Mailing Lists" />
+        <nav href="support" label="Support" />
         <nav href="faq" label="FAQ" />
     </navigation>
 </common>

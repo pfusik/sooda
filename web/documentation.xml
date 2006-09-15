@@ -3,7 +3,7 @@
 <content lang="en" id="docs">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-09-13 16:34:13 +0200 (Wed, 13 Sep 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 397 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-09-15 13:24:42 +0200 (Fri, 15 Sep 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 399 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright &#169; 2003-2006 by Jaros³aw Kowalski</div>
         <div class="pagebreak" />
     </div>
@@ -821,7 +821,8 @@ foreach (WorkItem wi in WorkItem.GetList(true))
 
                     for (Employee e = michaelSuyama; e != null; e = e.ReportsTo)
                     {
-                        Console.WriteLine("id={0} name={1} {2} reports to={3}", e.EmployeeID, e.LastName, e.FirstName, e.ReportsTo);
+                        Console.WriteLine("id={0} name={1} {2} reports to={3}", 
+                             e.EmployeeID, e.LastName, e.FirstName, e.ReportsTo);
                     }
                 </code>
                 <p>
@@ -898,7 +899,15 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     To modify objects, just set their appropriate properties:
                 </p>
                 <code lang="C#">
+                    o.ShipCity = "Redmond";
+                    o.ShipCountry = "US";
+                    o.ShipPostalCode = "98052";
+                    o.ShipAddress = "One Microsoft Way";
                 </code>
+                <p>
+                    When you are done with object modifications, you can call the <code>Commit()</code> method on the transaction
+                    object to save your changes to the database.
+                </p>
             </body>
         </section>
     </section>
