@@ -624,7 +624,7 @@
         <readregistry property="nsis.dir" key="SOFTWARE\NSIS\" />
         <property name="makensis.exe" value="${nsis.dir}/makensis.exe" />
 
-        <exec program="${makensis.exe}" commandline="/DSOODA_VERSION=${sooda.version.major}.${sooda.version.minor} /DSOODA_DEBUG=${if(sooda.debug,'-debug','')} /DRELEASE_VERSION=${sooda.version} tools\SetupSooda.nsi" />
+        <exec program="${makensis.exe}" commandline="/DSOODA_VERSION=${sooda.version.major}.${sooda.version.minor} /DSOODA_DEBUG=${if(sooda.debug,'-debug','')} /DRELEASE_VERSION=${release.version} tools\SetupSooda.nsi" />
     </target>
 
     <target name="NLog">
