@@ -3,7 +3,7 @@
     <navigation>
         <nav href="introduction" label="Introduction" />
         <nav href="status" label="Status" />
-        <nav href="screenshots" label="Screenshots" />
+        <nav href="examples" label="Examples" />
         <nav href="download" label="Download" />
         <nav href="docs" label="Documentation" />
         <nav href="support" label="Support" />

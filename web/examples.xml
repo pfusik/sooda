@@ -1,49 +1,109 @@
 <?xml version="1.0" encoding="windows-1250" ?>
 <?xml-stylesheet type="text/xsl" href="style.xsl" ?>
 <content lang="en" id="examples">
-<h1>Examples</h1>
-        Sooda provides an easy-to-use and convenient way to manipulate objects and relations stored in relational databases.
-        It's best to demonstrate this with some examples:
-        <h3>Accessing object attributes</h3>
-        All database entities are mapped to .NET objects, where table columns are mapped to object properties.
-        With this approach, object access becomes very easy, as shown in the following example:
+    <h1>Examples</h1>
+    Sooda provides an easy-to-use and convenient way to manipulate objects and their relationships stored in relational databases.
+    It's best to demonstrate this with some examples:
+    <h3>Accessing object attributes</h3>
+    All database entities are mapped to .NET objects, where table columns are mapped to object properties.
+    With this approach, object access becomes very easy, as shown in the following example:
 
-        <cs src="examples/web/sample1.cs" />
+    <code lang="C#" src="examples/web/sample1.cs" />
 
-        <h3>Easy-to-use relations</h3>
-        Database relations (both "<i>one to many</i>" and "<i>many to many</i>") 
+    <h3>Easy-to-use relationships</h3>
+    <p>
+        Database relationships (both <a href="documentation.html#mappingonetomany">one-to-many</a> and <a href="documentation.html#mappingmanytomany">many-to-many</a>) 
         are mapped as collections implementing <span class="type">ICollection</span> interface 
         and providing type-safe wrappers.
+    </p>
 
-        This makes performing all basic operations simple and intuitive. All standard collection methods
-        are available, namely <span class="keyword">Add</span>, <span class="keyword">Remove</span>, 
-        <span class="keyword">Contains</span>, iterating with <span class="keyword">foreach()</span> and indexers.
+    Basic operations on collections are simple and intuitive. All standard collection methods
+    are available, namely <span class="keyword">Add</span>, <span class="keyword">Remove</span>, 
+    <span class="keyword">Contains</span>, iterating with <span class="keyword">foreach()</span> and indexers, plus
+    some <a href="documentation.html#collectionapi">convenience methods</a>:
 
-        <cs src="examples/web/sample2.cs" />
+    <code lang="C#" src="examples/web/sample2.cs" />
 
-        <h3>Inheritance and polymorphism</h3>
+    <h3>Inheritance and polymorphism</h3>
 
-        It's possible to store map a complex C#/VB.NET class hierarchy with inheritance and access objects
-        in a polymorphic manner.
+    <p>
+        Inheritance ("is-a" relationship) is an object-oriented programming concept which is not present in
+        relational databases. One of the most important features of inheritance is polymorphism (ability to
+        act on objects through their base classes or interfaces without knowing their exact type).
+        Sooda supports two methods of <a href="documentation.html#inheritance">representing inheritance</a> in 
+        the database: table-per-type (TPT) and table-per-hierarchy (TPH).
+    </p>
 
-        <cs src="examples/web/sample3.cs" />
-        <h3>Query language</h3>
+    <code lang="C#" src="examples/web/sample3.cs" />
+    <h3>Query language</h3>
+    <p>
+        Sooda supports a query language named SOQL which is similar to SQL (Structured Query Language)
+        enhanced with path expressions, collections, named constants and inheritance support. Only SELECT operation is 
+        supported which means no INSERT/UPDATE/DELETE support exists in SOQL.
+    </p>
+    <p>
+        SOQL supports the following language constructs known from SQL:
+    </p>
+    <ul>
+        <li>relational operators (<code>=</code>, <code>!=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;=</code>, <code>&gt;</code>, <code>LIKE</code>)</li>
+        <li>boolean operators (<code>AND</code>, <code>OR</code>)</li>
+        <li><code>EXISTS()</code>, <code>IN()</code>, <code>IS NULL</code> and <code>IS NOT NULL</code> predicates</li>
+        <li>arithmetic operators (<code>+</code>,<code>-</code>,<code>*</code>,<code>/</code> and <code>%</code>) with natural precedence and associativity</li>
+        <li>arithmetic (<code>-</code>) and boolean (<code>NOT</code>) negation</li>
+    </ul>
+    <p>
+        In addition the following new constructs are supported:
+    </p>
+    <ul>
+        <li><a href="documentation.html#soqlpathexpressions">path expressions</a> for specifying join-less criteria (<code>t.PrimaryGroup.Manager.Name</code>)</li>
+        <li><a href="documentation.html#soqlcollections">one-to-many and many-to-many collections</a> supporting <code>Count</code> and <code>Contains</code> operations</li>
+        <li>named constants (as defined in the <a href="documentation.html#schema">mapping schema</a>)</li>
+        <li><code>TRUE</code> and <code>FALSE</code> literals</li>
+        <li>simplified subqueries</li>
+        <li>functions</li>
+        <li>raw SQL queries</li>
+        <li><code>SoodaClass</code> operator</li>
+    </ul>
 
-        Sooda provides an advanced query language called Soql (Sooda Object Query Language).
-        You can use Soql to specify conditions to be used for object matching. This is similar to the
-        <span class="keyword">where</span> clause in SQL. Soql fully supports all Sooda features, like 
-        inheritance one-to-many and many-to-many relations, as well as path expressions of arbitrary length.
+    <code lang="C#" src="examples/web/sample11.cs" />
+    <h3>Typed Query language</h3>
+    <p>
+        Textual queries passed to <code>SoodaWhereClause</code> have one deficiency: property/field names
+        that you use are not validated at compilation time. It is possible to write code that contains
+        references to non-existing fields. The compilation will succeed, but you will get runtime
+        errors.
+    </p>
+    <p>
+        When developing large systems that change often (such as workflow applications with
+        ever-changing customer requirements) it may be beneficial to statically validate all queries used in 
+        the application to make sure that you only reference correct fields. This way, when you remove a field
+        from the schema or change its type, the application will simply not compile and the compiler will show
+        you statements that need to be corrected because of the original change.
+    </p>
+    <p>
+        Sooda implements typed SOQL queries, which let you write SOQL-like expressions in pure C# using a technique
+        called operator overloading. Sooda comes with a large set of classes that represent nodes in query expression
+        trees (such as relational operators, path expressions, <code>Count</code>, <code>Contains</code>, boolean <code>and</code>, 
+        <code>or</code>, <code>not</code> and so on).
+        These classes overload standard C# operators such as <code>+</code>,<code>-</code>,<code>&amp;&amp;</code>,
+        <code>||</code> so that they return elements of the syntax tree instead of performing actual computations.
+    </p>
 
-        <cs src="examples/web/sample4.cs" />
-        
-        <h3>Schema definition</h3>
+    <code lang="C#" src="examples/web/sample12.cs" />
 
+    <h3>Schema definition</h3>
+
+    <p>
         Sooda uses an XML-based schema definition. You provide an XML document that describes
-		the mapping between the database (tables, columns, relations) and CLI world (classes, 
-		properties, collections). By writing an appropriate schema you can use features like 
-		column-renaming, lazy-loading, split-classes, inheritance, collections, enumerations 
+        the mapping between the database (tables, columns, relationships) and CLI world (classes, 
+        properties, collections). By writing an appropriate schema you can use features like 
+        column-renaming, lazy-loading, split-classes, inheritance, collections, enumerations 
         and so on.
+    </p>
+    <p>
+        The following example demonstrates a mapping schema for the <code>Northwind</code> database.
+    </p>
 
-        <xml src="examples/web/sample5.xml" />
+    <code lang="XML" src="examples/web/sample5.xml" />
 </content>
 

@@ -1,57 +1,157 @@
-<schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd" xml:space="preserve">
-    <!--
-    We'll be connecting to the SQL data source.
-    -->
-    <datasource name="default" type="Sooda.Sql.SqlDataSource" />
-
-    <class name="Category">
-        <table name="Categories">
-            <field name="ID" dbcolumn="CategoryID" type="Integer" primaryKey="true" nullable="false" />
-            <field name="Name" dbcolumn="CategoryName" type="String" size="15" nullable="false" />
-            <field name="Description" dbcolumn="Description" type="String" size="1" nullable="true" />
-            <field name="Picture" dbcolumn="Picture" type="Blob" nullable="true" />
-        </table>
-        <collectionOneToMany name="ProductsInThisCategory" class="Product" foreignField="Category" />
-        <!-- an example constant -->
-        <const name="Beverages" key="1" />
-        <const name="Seafood" key="8" />
-    </class>
-    
-    <class name="Product">
-        <table name="Products">
-            <field name="ID" dbcolumn="ProductID" type="Integer" primaryKey="true" nullable="false" />
-            <field name="Name" dbcolumn="ProductName" type="String" size="40" nullable="false" />
-            <field name="Supplier" dbcolumn="SupplierID" type="Integer" nullable="true" references="Supplier" />
-            <field name="Category" dbcolumn="CategoryID" type="Integer" nullable="true" references="Category" />
-            <field name="QuantityPerUnit" dbcolumn="QuantityPerUnit" type="String" size="20" nullable="true" />
-            <field name="UnitPrice" dbcolumn="UnitPrice" type="Decimal" nullable="true" />
-        </table>
-    </class>
-    
-    <class name="Supplier">
-        <table name="Suppliers">
-            <field name="ID" dbcolumn="SupplierID" type="Integer" primaryKey="true" nullable="false" />
-            <field name="Company" dbcolumn="CompanyName" type="String" size="40" nullable="false" />
-            <field name="ContactName" dbcolumn="ContactName" type="String" size="30" nullable="true" />
-            <field name="ContactTitle" dbcolumn="ContactTitle" type="String" size="30" nullable="true" />
-            <field name="Address" dbcolumn="Address" type="String" size="60" nullable="true" />
-            <field name="City" dbcolumn="City" type="String" size="15" nullable="true" />
-            <field name="Region" dbcolumn="Region" type="String" size="15" nullable="true" />
-            <field name="PostalCode" dbcolumn="PostalCode" type="String" size="10" nullable="true" />
-            <field name="Country" dbcolumn="Country" type="String" size="15" nullable="true" />
-            <field name="Phone" dbcolumn="Phone" type="String" size="24" nullable="true" />
-            <field name="Fax" dbcolumn="Fax" type="String" size="24" nullable="true" />
-            <field name="HomePage" dbcolumn="HomePage" type="String" size="1" nullable="true" />
-        </table>
-        <collectionOneToMany name="Products" class="Product" foreignField="Supplier" />
-    </class>
-    
-    <class name="Shipper">
-        <table name="Shippers">
-            <field name="ID" dbcolumn="ShipperID" type="Integer" primaryKey="true" nullable="false" />
-            <field name="Company" dbcolumn="CompanyName" type="String" size="40" nullable="false" />
-            <field name="Phone" dbcolumn="Phone" type="String" size="24" nullable="true" />
-        </table>
-    </class>
+<?xml version="1.0"?>
+<schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
+  <datasource name="default" type="Sooda.Sql.SqlDataSource" />
+  <class name="Category">
+    <table name="Categories">
+      <field name="CategoryID" type="Integer" primaryKey="true" dbcolumn="CategoryID" />
+      <field name="CategoryName" type="String" size="15" dbcolumn="CategoryName" />
+      <field name="Description" type="String" size="2147483647" nullable="true" dbcolumn="Description" />
+      <field name="Picture" type="Image" nullable="true" dbcolumn="Picture" />
+    </table>
+    <collectionOneToMany name="Products" class="Product" foreignField="CategoryID" />
+  </class>
+  <class name="CustomerDemographics">
+    <table name="CustomerDemographics">
+      <field name="CustomerTypeID" type="String" size="10" primaryKey="true" dbcolumn="CustomerTypeID" />
+      <field name="CustomerDesc" type="String" size="2147483647" nullable="true" dbcolumn="CustomerDesc" />
+    </table>
+    <collectionManyToMany name="Customers" relation="CustomerCustomerDemo" foreignField="CustomerTypeID" />
+  </class>
+  <class name="Customer">
+    <table name="Customers">
+      <field name="CustomerID" type="String" size="5" primaryKey="true" dbcolumn="CustomerID" />
+      <field name="CompanyName" type="String" size="40" dbcolumn="CompanyName" />
+      <field name="ContactName" type="String" size="30" nullable="true" dbcolumn="ContactName" />
+      <field name="ContactTitle" type="String" size="30" nullable="true" dbcolumn="ContactTitle" />
+      <field name="Address" type="String" size="60" nullable="true" dbcolumn="Address" />
+      <field name="City" type="String" size="15" nullable="true" dbcolumn="City" />
+      <field name="Region" type="String" size="15" nullable="true" dbcolumn="Region" />
+      <field name="PostalCode" type="String" size="10" nullable="true" dbcolumn="PostalCode" />
+      <field name="Country" type="String" size="15" nullable="true" dbcolumn="Country" />
+      <field name="Phone" type="String" size="24" nullable="true" dbcolumn="Phone" />
+      <field name="Fax" type="String" size="24" nullable="true" dbcolumn="Fax" />
+    </table>
+    <collectionOneToMany name="Orders" class="Order" foreignField="CustomerID" />
+    <collectionManyToMany name="Demographics" relation="CustomerCustomerDemo" foreignField="CustomerID" />
+  </class>
+  <class name="Employee">
+    <table name="Employees">
+      <field name="EmployeeID" type="Integer" primaryKey="true" dbcolumn="EmployeeID" />
+      <field name="LastName" type="String" size="20" dbcolumn="LastName" />
+      <field name="FirstName" type="String" size="10" dbcolumn="FirstName" />
+      <field name="Title" type="String" size="30" nullable="true" dbcolumn="Title" />
+      <field name="TitleOfCourtesy" type="String" size="25" nullable="true" dbcolumn="TitleOfCourtesy" />
+      <field name="BirthDate" type="DateTime" nullable="true" dbcolumn="BirthDate" />
+      <field name="HireDate" type="DateTime" nullable="true" dbcolumn="HireDate" />
+      <field name="Address" type="String" size="60" nullable="true" dbcolumn="Address" />
+      <field name="City" type="String" size="15" nullable="true" dbcolumn="City" />
+      <field name="Region" type="String" size="15" nullable="true" dbcolumn="Region" />
+      <field name="PostalCode" type="String" size="10" nullable="true" dbcolumn="PostalCode" />
+      <field name="Country" type="String" size="15" nullable="true" dbcolumn="Country" />
+      <field name="HomePhone" type="String" size="24" nullable="true" dbcolumn="HomePhone" />
+      <field name="Extension" type="String" size="4" nullable="true" dbcolumn="Extension" />
+      <field name="Photo" type="Image" nullable="true" dbcolumn="Photo" />
+      <field name="Notes" type="String" size="2147483647" nullable="true" dbcolumn="Notes" />
+      <field name="ReportsTo" type="Integer" references="Employee" nullable="true" dbcolumn="ReportsTo" />
+      <field name="PhotoPath" type="String" size="255" nullable="true" dbcolumn="PhotoPath" />
+    </table>
+    <collectionOneToMany name="Employees" class="Employee" foreignField="ReportsTo" />
+    <collectionOneToMany name="Orders" class="Order" foreignField="EmployeeID" />
+    <collectionManyToMany name="Territories" relation="EmployeeTerritories" foreignField="EmployeeID" />
+  </class>
+  <class name="OrderDetails">
+    <table name="[Order Details]">
+      <field name="OrderID" type="Integer" references="Order" primaryKey="true" dbcolumn="OrderID" />
+      <field name="Product" type="Integer" primaryKey="true" dbcolumn="ProductID" />
+      <field name="UnitPrice" type="Decimal" dbcolumn="UnitPrice" />
+      <field name="Quantity" type="Integer" dbcolumn="Quantity" />
+      <field name="Discount" type="Double" dbcolumn="Discount" />
+    </table>
+  </class>
+  <class name="Order">
+    <table name="Orders">
+      <field name="OrderID" type="Integer" primaryKey="true" dbcolumn="OrderID" />
+      <field name="CustomerID" type="String" size="5" references="Customer" nullable="true" dbcolumn="CustomerID" />
+      <field name="EmployeeID" type="Integer" references="Employee" nullable="true" dbcolumn="EmployeeID" />
+      <field name="OrderDate" type="DateTime" nullable="true" dbcolumn="OrderDate" />
+      <field name="RequiredDate" type="DateTime" nullable="true" dbcolumn="RequiredDate" />
+      <field name="ShippedDate" type="DateTime" nullable="true" dbcolumn="ShippedDate" />
+      <field name="ShipVia" type="Integer" references="Shipper" nullable="true" dbcolumn="ShipVia" />
+      <field name="Freight" type="Decimal" nullable="true" dbcolumn="Freight" />
+      <field name="ShipName" type="String" size="40" nullable="true" dbcolumn="ShipName" />
+      <field name="ShipAddress" type="String" size="60" nullable="true" dbcolumn="ShipAddress" />
+      <field name="ShipCity" type="String" size="15" nullable="true" dbcolumn="ShipCity" />
+      <field name="ShipRegion" type="String" size="15" nullable="true" dbcolumn="ShipRegion" />
+      <field name="ShipPostalCode" type="String" size="10" nullable="true" dbcolumn="ShipPostalCode" />
+      <field name="ShipCountry" type="String" size="15" nullable="true" dbcolumn="ShipCountry" />
+    </table>
+    <collectionOneToMany name="Items" class="OrderDetails" foreignField="OrderID" />
+  </class>
+  <class name="Product">
+    <table name="Products">
+      <field name="ProductID" type="Integer" primaryKey="true" dbcolumn="ProductID" />
+      <field name="ProductName" type="String" size="40" dbcolumn="ProductName" find="true" />
+      <field name="SupplierID" type="Integer" references="Supplier" nullable="true" dbcolumn="SupplierID" />
+      <field name="CategoryID" type="Integer" references="Category" nullable="true" dbcolumn="CategoryID" />
+      <field name="QuantityPerUnit" type="String" size="20" nullable="true" dbcolumn="QuantityPerUnit" />
+      <field name="UnitPrice" type="Decimal" nullable="true" dbcolumn="UnitPrice" />
+      <field name="UnitsInStock" type="Integer" nullable="true" dbcolumn="UnitsInStock" />
+      <field name="UnitsOnOrder" type="Integer" nullable="true" dbcolumn="UnitsOnOrder" />
+      <field name="ReorderLevel" type="Integer" nullable="true" dbcolumn="ReorderLevel" />
+      <field name="Discontinued" type="Boolean" dbcolumn="Discontinued" />
+    </table>
+    <collectionOneToMany name="OrderDetails" class="OrderDetails" foreignField="Product" />
+  </class>
+  <class name="Region">
+    <table name="Region">
+      <field name="RegionID" type="Integer" primaryKey="true" dbcolumn="RegionID" />
+      <field name="RegionDescription" type="String" size="50" dbcolumn="RegionDescription" />
+    </table>
+    <collectionOneToMany name="Territories" class="Territory" foreignField="Region" />
+  </class>
+  <class name="Shipper">
+    <table name="Shippers">
+      <field name="ShipperID" type="Integer" primaryKey="true" dbcolumn="ShipperID" />
+      <field name="CompanyName" type="String" size="40" dbcolumn="CompanyName" />
+      <field name="Phone" type="String" size="24" nullable="true" dbcolumn="Phone" />
+    </table>
+    <collectionOneToMany name="Orders" class="Order" foreignField="ShipVia" />
+  </class>
+  <class name="Supplier">
+    <table name="Suppliers">
+      <field name="SupplierID" type="Integer" primaryKey="true" dbcolumn="SupplierID" />
+      <field name="CompanyName" type="String" size="40" dbcolumn="CompanyName" />
+      <field name="ContactName" type="String" size="30" nullable="true" dbcolumn="ContactName" />
+      <field name="ContactTitle" type="String" size="30" nullable="true" dbcolumn="ContactTitle" />
+      <field name="Address" type="String" size="60" nullable="true" dbcolumn="Address" />
+      <field name="City" type="String" size="15" nullable="true" dbcolumn="City" />
+      <field name="Region" type="String" size="15" nullable="true" dbcolumn="Region" />
+      <field name="PostalCode" type="String" size="10" nullable="true" dbcolumn="PostalCode" />
+      <field name="Country" type="String" size="15" nullable="true" dbcolumn="Country" />
+      <field name="Phone" type="String" size="24" nullable="true" dbcolumn="Phone" />
+      <field name="Fax" type="String" size="24" nullable="true" dbcolumn="Fax" />
+      <field name="HomePage" type="String" size="2147483647" nullable="true" dbcolumn="HomePage" />
+    </table>
+    <collectionOneToMany name="Products" class="Product" foreignField="SupplierID" />
+  </class>
+  <class name="Territory">
+    <table name="Territories">
+      <field name="TerritoryID" type="String" size="20" primaryKey="true" dbcolumn="TerritoryID" />
+      <field name="TerritoryDescription" type="String" size="50" dbcolumn="TerritoryDescription" />
+      <field name="Region" type="Integer" references="Region" dbcolumn="RegionID" />
+    </table>
+    <collectionManyToMany name="Employees" relation="EmployeeTerritories" foreignField="TerritoryID" />
+  </class>
+  <relation name="CustomerCustomerDemo">
+    <table name="CustomerCustomerDemo">
+      <field name="CustomerID" type="String" size="5" references="Customer" primaryKey="true" dbcolumn="CustomerID" />
+      <field name="CustomerTypeID" type="String" size="10" references="CustomerDemographics" primaryKey="true" dbcolumn="CustomerTypeID" />
+    </table>
+  </relation>
+  <relation name="EmployeeTerritories">
+    <table name="EmployeeTerritories">
+      <field name="EmployeeID" type="Integer" references="Employee" primaryKey="true" dbcolumn="EmployeeID" />
+      <field name="TerritoryID" type="String" size="20" references="Territory" primaryKey="true" dbcolumn="TerritoryID" />
+    </table>
+  </relation>
 </schema>

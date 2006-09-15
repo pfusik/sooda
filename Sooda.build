@@ -3,7 +3,6 @@
     <tstamp />
     <property name="sooda.debug" value="true" unless="${property::exists('sooda.debug')}" />
     <property name="sooda.optimize" value="false" unless="${property::exists('sooda.optimize')}" />
-    <property name="release.version" value="${tstamp.date}" unless="${property::exists('release.version')}" />
 
     <property name="ndoc.console.exe" value="D:\Apps\NDoc\1.1\ndocconsole.exe" />
     <property name="prettyprinter.exe" value="tools/PrettyPrinter.exe" />
@@ -59,6 +58,7 @@
         </foreach>
 
         <property name="sooda.version" value="${sooda.version.major}.${sooda.version.minor}.${sooda.version.revision}.${sooda.version.build}" />
+        <property name="release.version" value="${tstamp.date}.${sooda.version.build}" unless="${property::exists('release.version')}" />
     </target>
 
     <target name="configure">
@@ -881,12 +881,13 @@
         </clover-report>
     </target>
 
-    <target name="source_snapshot">
+    <target name="source_snapshot" depends="update-build-number">
         <delete dir="temp/source_snapshot" if="${directory::exists('temp/source_snapshot')}" />
         <property name="temp.dir" value="temp/source_snapshot/Sooda-${release.version}" />
         <mkdir dir="temp/source_snapshot" if="${not directory::exists('temp/source_snapshot')}" />
+        <copy file="build/Sooda.buildversion" tofile="temp/source_snapshot/Sooda.version" />
         <exec program="svn" commandline="export . ${temp.dir}" />
-        <zip zipfile="Sooda-source-${release.version}.zip">
+        <zip zipfile="Sooda-${release.version}-src.zip">
             <fileset basedir="temp/source_snapshot">
                 <include name="**/*" />
                 <exclude name="_svn" />
@@ -894,10 +895,14 @@
         </zip>
     </target>
 
-    <target name="binary_snapshot">
-        <zip zipfile="Sooda-binary-${release.version}.zip">
+    <target name="binary_snapshot" depends="build">
+        <zip zipfile="Sooda-${release.version}-${framework::get-target-framework()}${if(sooda.debug,'-debug','')}.zip">
             <fileset basedir="${sooda.dir}">
-                <include name="**/*" />
+                <include name="*Sooda*.dll" />
+                <include name="*Sooda*.exe" />
+                <include name="*Sooda*.pdb" />
+                <include name="*Sooda*.xml" />
+                <include name="*Interop*" />
                 <exclude name="_svn" />
             </fileset>
         </zip>
@@ -976,8 +981,6 @@
             </source-files>
         </sync-vs-project-items>
     </target>
-
-
 
     <target name="sourceforge-release">
         <nant buildfile="${nant.project.buildfile}" target="debug clean build installer source_snapshot binary_snapshot" />

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="windows-1250" ?>
 <?xml-stylesheet type="text/xsl" href="style.xsl" ?>
 <content lang="en" id="introduction">
+    <h2>Introduction to Sooda</h2>
     <p>
         <b>Sooda</b> is an object-to-relational mapping (O/R Mapping) software for the <a href="http://msdn.microsoft.com/net">.NET</a> environment.
         It lets you automatically generate an object-oriented data access layer (DAL) for your application.

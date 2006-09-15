@@ -1,9 +1,12 @@
 using System;
 using Sooda;
 
-class Sample1 {
-    static void Main() {
-        using (SoodaTransaction transaction = new SoodaTransaction()) {
+class Sample1 
+{
+    static void Main()
+    {
+        using (SoodaTransaction transaction = new SoodaTransaction())
+        {
             // load group with primary key 10
             Group g = Group.Load(10);
 

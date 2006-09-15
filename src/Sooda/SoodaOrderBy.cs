@@ -98,6 +98,16 @@ namespace Sooda
             return new SoodaOrderBy(columnName, SortOrder.Descending);
         }
 
+        public static SoodaOrderBy Ascending(SoqlExpression expression)
+        {
+            return new SoodaOrderBy(expression, SortOrder.Ascending);
+        }
+
+        public static SoodaOrderBy Descending(SoqlExpression expression)
+        {
+            return new SoodaOrderBy(expression, SortOrder.Descending);
+        }
+
         public static SoodaOrderBy Parse(string sortString)
         {
             string[] components = sortString.Trim().Split(',');

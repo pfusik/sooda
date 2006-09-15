@@ -27,7 +27,7 @@ Name "Sooda"
 SetCompress force
 
 ; The file to write
-OutFile "SoodaInstaller-${RELEASE_VERSION}${SOODA_DEBUG}.exe"
+OutFile "Sooda-${RELEASE_VERSION}${SOODA_DEBUG}.exe"
 
 ; The default installation directory
 InstallDir "$PROGRAMFILES\Sooda ${SOODA_VERSION}"
