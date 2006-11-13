@@ -33,5 +33,7 @@ namespace Sooda.QL.TypedWrappers
     {
         public SoqlNullableBooleanWrapperExpression() { }
         public SoqlNullableBooleanWrapperExpression(SoqlExpression innerExpression) : base(innerExpression) { }
+        public SoqlBooleanExpression IsNull() { return new SoqlBooleanIsNullExpression(this, false); }
+        public SoqlBooleanExpression IsNotNull() { return new SoqlBooleanIsNullExpression(this, true); }
     }
 }
