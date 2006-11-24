@@ -889,7 +889,7 @@ namespace Sooda.Sql
             return (string)cacheLoadRefObjectSelectStatement[masterColumn][relationInfo];
         }
 
-        private void UnifyTable(Hashtable tables, TableInfo ti)
+        private void UnifyTable(Hashtable tables, TableInfo ti, bool isInherited)
         {
             TableInfo baseTable;
 
@@ -900,6 +900,7 @@ namespace Sooda.Sql
                 baseTable.DBTableName = ti.DBTableName;
 
                 tables[ti.DBTableName] = baseTable;
+                isInherited = false;
             }
 
             foreach (FieldInfo fi in ti.Fields)
@@ -918,6 +919,8 @@ namespace Sooda.Sql
                 if (!found)
                 {
                     baseTable.Fields.Add(fi);
+                    if (isInherited)
+                        fi.IsNullable = true;
                 }
             }
         }
@@ -1009,18 +1012,28 @@ namespace Sooda.Sql
         public virtual void GenerateDdlForSchema(SchemaInfo schema, TextWriter tw)
         {
             Hashtable tables = new Hashtable();
+            Hashtable processed = new Hashtable();
 
-            foreach (ClassInfo ci in schema.Classes)
+            while (processed.Count < schema.Classes.Count)
             {
-                foreach (TableInfo ti in ci.UnifiedTables)
+                foreach (ClassInfo ci in schema.Classes)
                 {
-                    UnifyTable(tables, ti);
+                    bool isInherited = ci.InheritsFromClass != null;
+                    bool canProcess = isInherited ? processed.ContainsKey(ci.InheritsFromClass.Name) : true;
+                    if (canProcess)
+                    {
+                        foreach (TableInfo ti in ci.UnifiedTables)
+                        {
+                            UnifyTable(tables, ti, isInherited);
+                        }
+                        processed.Add(ci.Name, ci.Name);
+                    }
                 }
             }
 
             foreach (RelationInfo ri in schema.Relations)
             {
-                UnifyTable(tables, ri.Table);
+                UnifyTable(tables, ri.Table, false);
             }
 
             ArrayList names = new ArrayList();
