@@ -354,7 +354,15 @@ namespace Sooda.Sql
                 if (!currentClass.IsAbstractClass())
                 {
                     Output.Write(" when ");
-                    Output.Write(currentClass.SubclassSelectorValue);
+                    if (currentClass.SubclassSelectorField.DataType == FieldDataType.String 
+                        || currentClass.SubclassSelectorField.DataType == FieldDataType.AnsiString)
+                    {
+                        Output.Write("'");
+                        Output.Write(currentClass.SubclassSelectorValue);
+                        Output.Write("'");
+                    }
+                    else
+                        Output.Write(currentClass.SubclassSelectorValue);
                     Output.Write(" then ");
                     Output.Write("'");
                     Output.Write(currentClass.Name);
@@ -367,7 +375,16 @@ namespace Sooda.Sql
                     {
 
                         Output.Write(" when ");
-                        Output.Write(subci.SubclassSelectorValue);
+                        if (subci.SubclassSelectorField.DataType == FieldDataType.String
+                            || subci.SubclassSelectorField.DataType == FieldDataType.AnsiString)
+                        {
+                            Output.Write("'");
+                            Output.Write(subci.SubclassSelectorValue);
+                            Output.Write("'");
+                        }
+                        else
+                            Output.Write(subci.SubclassSelectorValue);
+                        
                         Output.Write(" then ");
                         Output.Write("'");
                         Output.Write(subci.Name);
