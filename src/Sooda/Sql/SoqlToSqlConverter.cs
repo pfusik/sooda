@@ -673,7 +673,11 @@ namespace Sooda.Sql
                                     Output.Write(",");
                                 }
                             }
+                            if (v.SelectExpressions[i] is SoqlQueryExpression)
+                                Output.Write("(");
                             v.SelectExpressions[i].Accept(this);
+                            if (v.SelectExpressions[i] is SoqlQueryExpression)
+                                Output.Write(")");
                             if (v.SelectAliases[i].Length > 0)
                             {
                                 Output.Write(" as ");
