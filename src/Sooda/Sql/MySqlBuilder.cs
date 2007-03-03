@@ -55,7 +55,7 @@ namespace Sooda.Sql
 
         protected override string GetNameForParameter(int pos)
         {
-            return "@p" + pos.ToString();
+            return "?p" + pos.ToString();
         }
 
         public override SqlTopSupportMode TopSupport
