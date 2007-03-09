@@ -38,8 +38,8 @@ using Microsoft.CSharp;
 
 namespace SoodaCompileStubs
 {
-	class EntryPoint
-	{
+    class EntryPoint
+    {
         [STAThread]
         static int Main(string[] args)
         {
@@ -59,6 +59,7 @@ namespace SoodaCompileStubs
 
             string objectsAssemblyDll = Path.Combine(basePath, assemblyBaseName + ".dll");
             string stubsDll = Path.Combine(basePath, assemblyBaseName + ".Stubs.dll");
+            string stubsDoc = Path.Combine(basePath, assemblyBaseName + ".Stubs.xml");
 
             bool rebuildStubs = false;
 
@@ -215,7 +216,7 @@ namespace SoodaCompileStubs
                         options.ReferencedAssemblies.Add(Path.GetFullPath(args[i]));
                 }
                 
-                options.CompilerOptions = "/res:" + Path.Combine(basePath, "_DBSchema.bin");
+                options.CompilerOptions = "/doc:" + stubsDoc + " /res:" + Path.Combine(basePath, "_DBSchema.bin");
                 options.OutputAssembly = stubsDll;
                 options.GenerateInMemory = false;
 
@@ -252,5 +253,5 @@ namespace SoodaCompileStubs
                 }
             }
         }
-	}
+    }
 }

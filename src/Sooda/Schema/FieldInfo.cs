@@ -50,6 +50,9 @@ namespace Sooda.Schema
         [XmlAttribute("type")]
         public FieldDataType DataType;
 
+        [XmlElement("description")]
+        public string Description;
+
         [XmlAttribute("size")]
         [System.ComponentModel.DefaultValueAttribute(-1)]
         public int Size = -1;

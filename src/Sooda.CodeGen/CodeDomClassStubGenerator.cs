@@ -432,6 +432,12 @@ namespace Sooda.CodeGen
                 prop.Attributes = MemberAttributes.Final | MemberAttributes.Public;
                 prop.Type = returnType;
                 //prop.GetStatements.Add(new CodeMethodReturnStatement(new CodeFieldReferenceExpression(null, "_FieldNames")));
+                if (fi.Description != null)
+                {
+                    prop.Comments.Add(new CodeCommentStatement("<summary>", true));
+                    prop.Comments.Add(new CodeCommentStatement(fi.Description, true));
+                    prop.Comments.Add(new CodeCommentStatement("</summary>", true));
+                }
                 ctd.Members.Add(prop);
 
                 if (fi.Size != -1)

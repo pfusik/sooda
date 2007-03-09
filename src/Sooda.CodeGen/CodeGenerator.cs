@@ -240,6 +240,12 @@ namespace Sooda.CodeGen
             }
 
             CodeTypeDeclaration ctd = CDILParser.ParseClass(CDILTemplate.Get("Stub.cdil"), context);
+            if (ci.Description != null)
+            {
+                ctd.Comments.Add(new CodeCommentStatement("<summary>", true));
+                ctd.Comments.Add(new CodeCommentStatement(ci.Description, true));
+                ctd.Comments.Add(new CodeCommentStatement("</summary>", true));
+            }
             nspace.Types.Add(ctd);
 
             if (miniStub)
@@ -359,6 +365,12 @@ namespace Sooda.CodeGen
         public void GenerateClassSkeleton(CodeNamespace nspace, ClassInfo ci, bool useChainedConstructorCall, bool fakeSkeleton)
         {
             CodeTypeDeclaration ctd = new CodeTypeDeclaration(ci.Name);
+            if (ci.Description != null)
+            {
+                ctd.Comments.Add(new CodeCommentStatement("<summary>", true));
+                ctd.Comments.Add(new CodeCommentStatement(ci.Description, true));
+                ctd.Comments.Add(new CodeCommentStatement("</summary>", true));
+            }
             ctd.BaseTypes.Add(Project.OutputNamespace + ".Stubs." + ci.Name + "_Stub");
             if (ci.IsAbstractClass())
                 ctd.TypeAttributes |= System.Reflection.TypeAttributes.Abstract;

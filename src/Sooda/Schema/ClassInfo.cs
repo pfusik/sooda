@@ -45,6 +45,9 @@ namespace Sooda.Schema
         [XmlAttribute("datasource")]
         public string DataSourceName;
 
+        [XmlElement("description")]
+        public string Description;
+
         [System.Xml.Serialization.XmlElementAttribute("table")]
         public TableInfoCollection LocalTables;
 
