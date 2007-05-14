@@ -84,6 +84,12 @@ namespace Sooda.Schema
 
         internal void Resolve(SchemaInfo schemaInfo)
         {
+            if (parentSchema != null)
+            {
+                // already resolved, probably as part of included schema Resolve() process
+                return;
+            }
+
             parentSchema = schemaInfo;
 
             Table.Resolve(this.Name, true);

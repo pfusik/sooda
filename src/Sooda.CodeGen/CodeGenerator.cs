@@ -806,12 +806,17 @@ namespace Sooda.CodeGen
                 return Path.Combine(Project.OutputPath, "_Stubs." + _fileExtensionWithoutPeriod);
         }
 
-        private void GetInputAndOutputFiles(StringCollection inputFiles, StringCollection rewrittenOutputFiles, StringCollection shouldBePresentOutputFiles)
+        private void GetInputAndOutputFiles(StringCollection inputFiles, StringCollection rewrittenOutputFiles, StringCollection shouldBePresentOutputFiles, StringCollection includedFiles)
         {
             // input 
             inputFiles.Add(Path.GetFullPath(this.GetType().Assembly.Location)); // Sooda.CodeGen.dll
             inputFiles.Add(Path.GetFullPath(Project.SchemaFile));
-            // TODO - includes
+
+            // includes
+            foreach (IncludeInfo ii in _schema.Includes)
+            {
+                includedFiles.Add(Path.GetFullPath(ii.SchemaFile));
+            }
 
             // output
             rewrittenOutputFiles.Add(Path.GetFullPath(GetEmbeddedSchemaFileName()));
@@ -1086,8 +1091,9 @@ namespace Sooda.CodeGen
                 StringCollection inputFiles = new StringCollection();
                 StringCollection rewrittenOutputFiles = new StringCollection();
                 StringCollection shouldBePresentOutputFiles = new StringCollection();
+                StringCollection includedFiles = new StringCollection();
 
-                GetInputAndOutputFiles(inputFiles, rewrittenOutputFiles, shouldBePresentOutputFiles);
+                GetInputAndOutputFiles(inputFiles, rewrittenOutputFiles, shouldBePresentOutputFiles, includedFiles);
 
                 bool doRebuild = false;
 
@@ -1096,6 +1102,11 @@ namespace Sooda.CodeGen
 
                 if (MaxDate(inputFiles) > MinDate(rewrittenOutputFiles))
                     doRebuild = true;
+
+                if (MaxDate(includedFiles) > MaxDate(inputFiles))
+                {
+                    doRebuild = true;
+                }
 
                 if (!RebuildIfChanged)
                     doRebuild = true;
