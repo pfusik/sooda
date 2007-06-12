@@ -210,7 +210,14 @@ namespace Sooda.Sql
         public override void BeginSaveChanges()
         {
             _updateCommand = Connection.CreateCommand();
-            _updateCommand.CommandTimeout = CommandTimeout;
+            try
+            {
+                _updateCommand.CommandTimeout = CommandTimeout;
+            }
+            catch (NotSupportedException e)
+            {
+                logger.Debug("CommandTimeout not supported. {0}", e.Message);
+            }
             if (!DisableTransactions)
                 _updateCommand.Transaction = this.Transaction;
             _updateCommand.CommandText = "";
@@ -300,7 +307,14 @@ namespace Sooda.Sql
         {
             ClassInfo classInfo = obj.GetClassInfo();
             IDbCommand cmd = Connection.CreateCommand();
-            cmd.CommandTimeout = CommandTimeout;
+            try
+            {
+                cmd.CommandTimeout = CommandTimeout;
+            }
+            catch(NotSupportedException e)
+            {
+                logger.Debug("CommandTimeout not supported. {0}", e.Message);
+            }
 
             if (!DisableTransactions)
                 cmd.Transaction = this.Transaction;
@@ -378,7 +392,14 @@ namespace Sooda.Sql
                 //logger.Trace("Converted as {0}", query);
 
                 IDbCommand cmd = Connection.CreateCommand();
-                cmd.CommandTimeout = CommandTimeout;
+                try
+                {
+                    cmd.CommandTimeout = CommandTimeout;
+                }
+                catch (NotSupportedException e)
+                {
+                    logger.Debug("CommandTimeout not supported. {0}", e.Message);
+                }
 
                 if (!DisableTransactions)
                     cmd.Transaction = this.Transaction;
@@ -477,7 +498,15 @@ namespace Sooda.Sql
                 //logger.Trace("Converted as {0}", query);
 
                 IDbCommand cmd = Connection.CreateCommand();
-                cmd.CommandTimeout = CommandTimeout;
+
+                try
+                {
+                    cmd.CommandTimeout = CommandTimeout;
+                }
+                catch (NotSupportedException e)
+                {
+                    logger.Debug("CommandTimeout not supported. {0}", e.Message);
+                }
 
                 if (!DisableTransactions)
                     cmd.Transaction = this.Transaction;
@@ -519,7 +548,14 @@ namespace Sooda.Sql
             try
             {
                 IDbCommand cmd = Connection.CreateCommand();
-                cmd.CommandTimeout = CommandTimeout;
+                try
+                {
+                    cmd.CommandTimeout = CommandTimeout;
+                }
+                catch (NotSupportedException e)
+                {
+                    logger.Debug("CommandTimeout not supported. {0}", e.Message);
+                }
 
                 if (!DisableTransactions)
                     cmd.Transaction = this.Transaction;
@@ -540,7 +576,14 @@ namespace Sooda.Sql
             {
                 using (IDbCommand cmd = Connection.CreateCommand())
                 {
-                    cmd.CommandTimeout = CommandTimeout;
+                    try
+                    {
+                        cmd.CommandTimeout = CommandTimeout;
+                    }
+                    catch (NotSupportedException e)
+                    {
+                        logger.Debug("CommandTimeout not supported. {0}", e.Message);
+                    }
                     if (!DisableTransactions)
                         cmd.Transaction = this.Transaction;
 
@@ -567,7 +610,14 @@ namespace Sooda.Sql
                 string query = GetLoadRefObjectSelectStatement(relationInfo, masterColumn);
 
                 IDbCommand cmd = Connection.CreateCommand();
-                cmd.CommandTimeout = CommandTimeout;
+                try
+                {
+                    cmd.CommandTimeout = CommandTimeout;
+                }
+                catch (NotSupportedException e)
+                {
+                    logger.Debug("CommandTimeout not supported. {0}", e.Message);
+                }
 
                 if (!DisableTransactions)
                     cmd.Transaction = this.Transaction;
@@ -743,7 +793,14 @@ namespace Sooda.Sql
         {
             using (IDbCommand cmd = Connection.CreateCommand())
             {
-                cmd.CommandTimeout = CommandTimeout;
+                try
+                {
+                    cmd.CommandTimeout = CommandTimeout;
+                }
+                catch (NotSupportedException e)
+                {
+                    logger.Debug("CommandTimeout not supported. {0}", e.Message);
+                }
                 if (!DisableTransactions)
                     cmd.Transaction = this.Transaction;
 

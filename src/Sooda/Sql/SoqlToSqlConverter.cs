@@ -416,6 +416,7 @@ namespace Sooda.Sql
             {
                 Output.Write("(select count(*) from ");
                 Output.Write(col1n.Class.LocalTables[0].DBTableName);
+                this.SetTableUsageHint(Output, col1n.Class.LocalTables[0]);
                 Output.Write(" where ");
                 Output.Write(col1n.ForeignColumn);
                 Output.Write("=");
@@ -434,6 +435,7 @@ namespace Sooda.Sql
 
                 Output.Write("(select count(*) from ");
                 Output.Write(ri.Table.DBTableName);
+                this.SetTableUsageHint(Output, ri.Table);
                 Output.Write(" where ");
                 Output.Write(ri.Table.Fields[1 - colnn.MasterField].DBColumnName);
                 Output.Write("=");
@@ -446,6 +448,23 @@ namespace Sooda.Sql
             }
 
             throw new Exception("Unknown collection " + v.CollectionName + " in " + currentClass.Name);
+        }
+
+        private void SetTableUsageHint(TextWriter Output, TableInfo tableInfo)
+        {
+            if (_builder.OuterJoinSyntax != SqlOuterJoinSyntax.Oracle && tableInfo.TableUsageType == TableUsageType.Dictionary)
+            {
+                Output.Write(" WITH (NOLOCK) ");
+            }
+        }
+
+        private string GetTableUsageHint(TableInfo tableInfo)
+        {
+            if (_builder.OuterJoinSyntax != SqlOuterJoinSyntax.Oracle && tableInfo.TableUsageType == TableUsageType.Dictionary)
+            {
+                return " WITH (NOLOCK) ";
+            }
+            return "";
         }
 
         public override void Visit(SoqlContainsExpression v)
@@ -469,6 +488,7 @@ namespace Sooda.Sql
             {
                 Output.Write("exists (select * from ");
                 Output.Write(col1n.Class.LocalTables[0].DBTableName);
+                this.SetTableUsageHint(Output, col1n.Class.LocalTables[0]);
                 Output.Write(" where ");
                 Output.Write(col1n.ForeignColumn);
                 Output.Write("=");
@@ -495,6 +515,7 @@ namespace Sooda.Sql
 
                 Output.Write("exists (select * from ");
                 Output.Write(ri.Table.DBTableName);
+                this.SetTableUsageHint(Output, ri.Table);
                 Output.Write(" where ");
                 Output.Write(ri.Table.Fields[1 - colnn.MasterField].DBColumnName);
                 Output.Write("=");
@@ -840,12 +861,14 @@ namespace Sooda.Sql
                             }
                         }
 
-                        Output.Write(FindContainerByName(v.From[i]).GetAllFields()[0].Table.DBTableName);
+                        TableInfo tbl = FindContainerByName(v.From[i]).GetAllFields()[0].Table;
+                        Output.Write(tbl.DBTableName);
                         if (ActualFromAliases[i].Length > 0)
                         {
                             Output.Write(" ");
                             Output.Write(ActualFromAliases[i]);
                         }
+                        this.SetTableUsageHint(Output, tbl);
                         foreach (string s in (StringCollection)FromJoins[i])
                         {
                             if (IndentOutput)
@@ -1030,15 +1053,29 @@ namespace Sooda.Sql
             TableAliases[newPrefix] = "EXT";
 
             string s;
-
+            FieldInfo fi = classInfo.UnifiedTables[0].Fields[0];
             if (_builder.OuterJoinSyntax != SqlOuterJoinSyntax.Oracle)
             {
-                s = String.Format("left outer join {0} {2} on ({1}.{3} = {2}.{4})",
-                    fieldToReach.Table.DBTableName,
-                    rootPrefix,
-                    newPrefix,
-                    classInfo.UnifiedTables[0].Fields[0].DBColumnName,
-                    classInfo.UnifiedTables[fieldToReach.Table.OrdinalInClass].Fields[0].DBColumnName);
+                if (fi.IsNullable)
+                {
+                    s = String.Format("left outer join {0} {2} {5} on ({1}.{3} = {2}.{4})",
+                        fieldToReach.Table.DBTableName,
+                        rootPrefix,
+                        newPrefix,
+                        classInfo.UnifiedTables[0].Fields[0].DBColumnName,
+                        classInfo.UnifiedTables[fieldToReach.Table.OrdinalInClass].Fields[0].DBColumnName,
+                        this.GetTableUsageHint(fieldToReach.Table));
+                }
+                else
+                {
+                    s = String.Format("inner join {0} {2} {5} on ({1}.{3} = {2}.{4})",
+                        fieldToReach.Table.DBTableName,
+                        rootPrefix,
+                        newPrefix,
+                        classInfo.UnifiedTables[0].Fields[0].DBColumnName,
+                        classInfo.UnifiedTables[fieldToReach.Table.OrdinalInClass].Fields[0].DBColumnName,
+                        this.GetTableUsageHint(fieldToReach.Table));
+                }
             }
             else
             {
@@ -1046,13 +1083,26 @@ namespace Sooda.Sql
                     fieldToReach.Table.DBTableName,
                     newPrefix);
 
-                WhereJoins.Add(
-                    String.Format("({1}.{3} = {2}.{4} (+))",
-                    fieldToReach.Table.DBTableName,
-                    rootPrefix,
-                    newPrefix,
-                    classInfo.UnifiedTables[0].Fields[0].DBColumnName,
-                    classInfo.UnifiedTables[fieldToReach.Table.OrdinalInClass].Fields[0].DBColumnName));
+                if (fi.IsNullable)
+                {
+                    WhereJoins.Add(
+                        String.Format("({1}.{3} = {2}.{4} (+))",
+                        fieldToReach.Table.DBTableName,
+                        rootPrefix,
+                        newPrefix,
+                        classInfo.UnifiedTables[0].Fields[0].DBColumnName,
+                        classInfo.UnifiedTables[fieldToReach.Table.OrdinalInClass].Fields[0].DBColumnName));
+                }
+                else
+                {
+                    WhereJoins.Add(
+                        String.Format("({1}.{3} = {2}.{4})",
+                        fieldToReach.Table.DBTableName,
+                        rootPrefix,
+                        newPrefix,
+                        classInfo.UnifiedTables[0].Fields[0].DBColumnName,
+                        classInfo.UnifiedTables[fieldToReach.Table.OrdinalInClass].Fields[0].DBColumnName));
+                }
             }
 
             int foundPos = ActualFromAliases.IndexOf(fromTableAlias);
@@ -1081,28 +1131,52 @@ namespace Sooda.Sql
                 throw new NotSupportedException();
 
             string s;
-
             if (_builder.OuterJoinSyntax != SqlOuterJoinSyntax.Oracle)
             {
-                s = String.Format("left outer join {0} {1} on ({2}.{3} = {1}.{4})",
-                    field.ReferencedClass.UnifiedTables[0].DBTableName,
-                    tbl,
-                    lastTableAlias,
-                    field.DBColumnName,
-                    field.ReferencedClass.GetFirstPrimaryKeyField().DBColumnName);
+                if (field.IsNullable)
+                {
+                    s = String.Format("left outer join {0} {1} {5} on ({2}.{3} = {1}.{4})",
+                        field.ReferencedClass.UnifiedTables[0].DBTableName,
+                        tbl,
+                        lastTableAlias,
+                        field.DBColumnName,
+                        field.ReferencedClass.GetFirstPrimaryKeyField().DBColumnName,
+                        this.GetTableUsageHint(field.ReferencedClass.UnifiedTables[0]));
+                }
+                else
+                {
+                    s = String.Format("inner join {0} {1} {5} on ({2}.{3} = {1}.{4})",
+                        field.ReferencedClass.UnifiedTables[0].DBTableName,
+                        tbl,
+                        lastTableAlias,
+                        field.DBColumnName,
+                        field.ReferencedClass.GetFirstPrimaryKeyField().DBColumnName,
+                        this.GetTableUsageHint(field.ReferencedClass.UnifiedTables[0]));
+                }
             }
             else
             {
                 s = String.Format(", {0} {1}",
                     field.ReferencedClass.UnifiedTables[0].DBTableName,
                     tbl);
-
-                WhereJoins.Add(String.Format("({2}.{3} = {1}.{4} (+))",
-                    field.ReferencedClass.UnifiedTables[0].DBTableName,
-                    tbl,
-                    lastTableAlias,
-                    field.DBColumnName,
-                    field.ReferencedClass.GetFirstPrimaryKeyField().DBColumnName));
+                if (field.IsNullable)
+                {
+                    WhereJoins.Add(String.Format("({2}.{3} = {1}.{4} (+))",
+                        field.ReferencedClass.UnifiedTables[0].DBTableName,
+                        tbl,
+                        lastTableAlias,
+                        field.DBColumnName,
+                        field.ReferencedClass.GetFirstPrimaryKeyField().DBColumnName));
+                }
+                else
+                {
+                    WhereJoins.Add(String.Format("({2}.{3} = {1}.{4})",
+                        field.ReferencedClass.UnifiedTables[0].DBTableName,
+                        tbl,
+                        lastTableAlias,
+                        field.DBColumnName,
+                        field.ReferencedClass.GetFirstPrimaryKeyField().DBColumnName));
+                }
             }
 
             StringCollection coll = (StringCollection)FromJoins[foundPos];

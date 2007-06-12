@@ -35,6 +35,14 @@ namespace Sooda.Schema
     using System.Collections;
 
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
+    public enum TableUsageType
+    {
+        Normal,
+        Dictionary,
+        OccasionallyModificated
+    }
+
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [Serializable]
     public class TableInfo
     {
@@ -42,6 +50,7 @@ namespace Sooda.Schema
         public FieldInfoCollection Fields = new FieldInfoCollection();
 
         private string _dbTableName = null;
+        private TableUsageType _usageType = TableUsageType.Normal;
 
         [NonSerialized]
         [XmlIgnore]
@@ -69,6 +78,19 @@ namespace Sooda.Schema
             set
             {
                 _dbTableName = value;
+            }
+        }
+
+        [System.Xml.Serialization.XmlAttributeAttribute("usage")]
+        public TableUsageType TableUsageType
+        {
+            get
+            {
+                return _usageType;
+            }
+            set
+            {
+                _usageType = value;
             }
         }
 
