@@ -1056,9 +1056,9 @@ namespace Sooda.Sql
             FieldInfo fi = classInfo.UnifiedTables[0].Fields[0];
             if (_builder.OuterJoinSyntax != SqlOuterJoinSyntax.Oracle)
             {
-                if (fi.IsNullable)
+                if (!fi.IsNullable && SoodaConfig.GetString("sooda.innerjoins", "false") == "true")
                 {
-                    s = String.Format("left outer join {0} {2} {5} on ({1}.{3} = {2}.{4})",
+                    s = String.Format("inner join {0} {2} {5} on ({1}.{3} = {2}.{4})",
                         fieldToReach.Table.DBTableName,
                         rootPrefix,
                         newPrefix,
@@ -1068,7 +1068,7 @@ namespace Sooda.Sql
                 }
                 else
                 {
-                    s = String.Format("inner join {0} {2} {5} on ({1}.{3} = {2}.{4})",
+                    s = String.Format("left outer join {0} {2} {5} on ({1}.{3} = {2}.{4})",
                         fieldToReach.Table.DBTableName,
                         rootPrefix,
                         newPrefix,
@@ -1083,10 +1083,10 @@ namespace Sooda.Sql
                     fieldToReach.Table.DBTableName,
                     newPrefix);
 
-                if (fi.IsNullable)
+                if (!fi.IsNullable && SoodaConfig.GetString("sooda.innerjoins", "false") == "true")
                 {
                     WhereJoins.Add(
-                        String.Format("({1}.{3} = {2}.{4} (+))",
+                        String.Format("({1}.{3} = {2}.{4})",
                         fieldToReach.Table.DBTableName,
                         rootPrefix,
                         newPrefix,
@@ -1096,7 +1096,7 @@ namespace Sooda.Sql
                 else
                 {
                     WhereJoins.Add(
-                        String.Format("({1}.{3} = {2}.{4})",
+                        String.Format("({1}.{3} = {2}.{4} (+))",
                         fieldToReach.Table.DBTableName,
                         rootPrefix,
                         newPrefix,
@@ -1133,9 +1133,9 @@ namespace Sooda.Sql
             string s;
             if (_builder.OuterJoinSyntax != SqlOuterJoinSyntax.Oracle)
             {
-                if (field.IsNullable)
+                if (!field.IsNullable && SoodaConfig.GetString("sooda.innerjoins", "false") == "true")
                 {
-                    s = String.Format("left outer join {0} {1} {5} on ({2}.{3} = {1}.{4})",
+                    s = String.Format("inner join {0} {1} {5} on ({2}.{3} = {1}.{4})",
                         field.ReferencedClass.UnifiedTables[0].DBTableName,
                         tbl,
                         lastTableAlias,
@@ -1145,7 +1145,7 @@ namespace Sooda.Sql
                 }
                 else
                 {
-                    s = String.Format("inner join {0} {1} {5} on ({2}.{3} = {1}.{4})",
+                    s = String.Format("left outer join {0} {1} {5} on ({2}.{3} = {1}.{4})",
                         field.ReferencedClass.UnifiedTables[0].DBTableName,
                         tbl,
                         lastTableAlias,
@@ -1159,9 +1159,9 @@ namespace Sooda.Sql
                 s = String.Format(", {0} {1}",
                     field.ReferencedClass.UnifiedTables[0].DBTableName,
                     tbl);
-                if (field.IsNullable)
+                if (!field.IsNullable && SoodaConfig.GetString("sooda.innerjoins", "false") == "true")
                 {
-                    WhereJoins.Add(String.Format("({2}.{3} = {1}.{4} (+))",
+                    WhereJoins.Add(String.Format("({2}.{3} = {1}.{4})",
                         field.ReferencedClass.UnifiedTables[0].DBTableName,
                         tbl,
                         lastTableAlias,
@@ -1170,7 +1170,7 @@ namespace Sooda.Sql
                 }
                 else
                 {
-                    WhereJoins.Add(String.Format("({2}.{3} = {1}.{4})",
+                    WhereJoins.Add(String.Format("({2}.{3} = {1}.{4} (+))",
                         field.ReferencedClass.UnifiedTables[0].DBTableName,
                         tbl,
                         lastTableAlias,
