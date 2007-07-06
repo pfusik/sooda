@@ -1159,7 +1159,7 @@ namespace Sooda
         {
             EnsureFieldsInited();
 
-            if (AreFieldUpdateTriggersEnabled())
+            if (true)
             {
                 EnsureDataLoaded(tableNumber);
                 try
@@ -1168,14 +1168,14 @@ namespace Sooda
                     if (Object.Equals(oldValue, newValue))
                         return;
 
-                    if (before != null)
+                    if (AreFieldUpdateTriggersEnabled() && before != null)
                         before(oldValue, newValue);
 
                     CopyOnWrite();
                     _fieldValues.SetFieldValue(fieldOrdinal, newValue);
                     SetFieldDirty(fieldOrdinal, true);
 
-                    if (after != null)
+                    if (AreFieldUpdateTriggersEnabled() && after != null)
                         after(oldValue, newValue);
 
                     SetObjectDirty();
