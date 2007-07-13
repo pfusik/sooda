@@ -1075,15 +1075,18 @@ namespace Sooda.Sql
             {
                 foreach (ClassInfo ci in schema.Classes)
                 {
-                    bool isInherited = ci.InheritsFromClass != null;
-                    bool canProcess = isInherited ? processed.ContainsKey(ci.InheritsFromClass.Name) : true;
-                    if (canProcess)
+                    if (!processed.ContainsKey(ci.Name))
                     {
-                        foreach (TableInfo ti in ci.UnifiedTables)
+                        bool isInherited = ci.InheritsFromClass != null;
+                        bool canProcess = isInherited ? processed.ContainsKey(ci.InheritsFromClass.Name) : true;
+                        if (canProcess)
                         {
-                            UnifyTable(tables, ti, isInherited);
+                            foreach (TableInfo ti in ci.UnifiedTables)
+                            {
+                                UnifyTable(tables, ti, isInherited);
+                            }
+                            processed.Add(ci.Name, ci.Name);
                         }
-                        processed.Add(ci.Name, ci.Name);
                     }
                 }
             }
