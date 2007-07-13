@@ -67,13 +67,18 @@ namespace Sooda.Sql
         public void GenerateCreateTable(TextWriter xtw, Sooda.Schema.TableInfo tableInfo)
         {
             xtw.WriteLine("create table {0} (", tableInfo.DBTableName);
+            Hashtable processedFields = new Hashtable();
             for (int i = 0; i < tableInfo.Fields.Count; ++i)
             {
-                GenerateCreateTableField(xtw, tableInfo.Fields[i]);
-                if (i == tableInfo.Fields.Count - 1)
-                    Console.WriteLine();
-                else
-                    Console.WriteLine(",");
+                if (!processedFields.ContainsKey(tableInfo.Fields[i].DBColumnName))
+                {
+                    GenerateCreateTableField(xtw, tableInfo.Fields[i]);
+                    if (i == tableInfo.Fields.Count - 1)
+                        Console.WriteLine();
+                    else
+                        Console.WriteLine(",");
+                    processedFields.Add(tableInfo.Fields[i].DBColumnName, 0);
+                }
             }
             xtw.Write(")");
             xtw.Write(GetDDLCommandTerminator());
