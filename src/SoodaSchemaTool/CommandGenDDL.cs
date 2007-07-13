@@ -36,11 +36,11 @@ using System.IO;
 namespace SoodaSchemaTool
 {
     [Command("genddl","generate DDL from schema")]
-	public class CommandGenDdl : Command
-	{
-		public CommandGenDdl()
-		{
-		}
+    public class CommandGenDdl : Command
+    {
+        public CommandGenDdl()
+        {
+        }
 
         public override int Run(string[] args)
         {
@@ -50,9 +50,9 @@ namespace SoodaSchemaTool
             SchemaInfo schemaInfo = SchemaManager.ReadAndValidateSchema(xr, Path.GetDirectoryName(schemaFileName));
 
             SqlDataSource sds = new SqlDataSource(schemaInfo.GetDataSourceInfo("default"));
-            sds.SqlBuilder = new SqlServerBuilder();
+            //sds.SqlBuilder = new SqlServerBuilder();
             sds.GenerateDdlForSchema(schemaInfo, Console.Out);
             return 0;
         }
-	}
+    }
 }

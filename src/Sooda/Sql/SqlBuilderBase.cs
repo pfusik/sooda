@@ -117,13 +117,18 @@ namespace Sooda.Sql
             {
                 if (fi.References != null)
                 {
-                    xtw.Write("alter table {0} add constraint FK_{0}_{1} foreign key ({2}) references {3}({4})",
-                            tableInfo.DBTableName, fi.DBColumnName, fi.DBColumnName,
+                    xtw.Write("alter table {0} add constraint {1} foreign key ({2}) references {3}({4})",
+                            tableInfo.DBTableName, GetConstraintName(tableInfo.DBTableName, fi.DBColumnName), fi.DBColumnName,
                             fi.ReferencedClass.UnifiedTables[0].DBTableName, fi.ReferencedClass.GetFirstPrimaryKeyField().DBColumnName
                             );
                     xtw.Write(GetDDLCommandTerminator());
                 }
             }
+        }
+
+        public virtual string GetConstraintName(string tableName, string foreignKey)
+        {
+            return String.Format("FK_{0}_{1}", tableName, foreignKey);
         }
 
         public abstract string GetSQLDataType(Sooda.Schema.FieldInfo fi);
