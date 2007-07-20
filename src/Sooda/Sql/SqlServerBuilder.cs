@@ -124,6 +124,14 @@ namespace Sooda.Sql
             }
         }
 
+        public override int MaxIdentifierLength
+        {
+            get
+            {
+                return 128;
+            }
+        }
+
         public override string EndInsert(string tableName)
         {
             return "set identity_insert " + tableName + " off ";

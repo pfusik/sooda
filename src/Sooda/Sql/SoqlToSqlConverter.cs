@@ -1047,6 +1047,7 @@ namespace Sooda.Sql
                 return rootPrefix;
 
             string newPrefix = rootPrefix + "_pkjoin_" + fieldToReach.Table.DBTableName;
+            newPrefix = _builder.GetTruncatedIdentifier(newPrefix);
             if (TableAliases.ContainsKey(newPrefix))
                 return newPrefix;
 

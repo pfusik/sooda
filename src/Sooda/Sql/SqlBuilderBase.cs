@@ -40,6 +40,25 @@ namespace Sooda.Sql
     {
         private bool _useSafeLiterals = true;
 
+        private string HashString(string input)
+        {
+            int tmp = 0;
+            for (int i = 0; i < input.Length; i++)
+            {
+                tmp += i*input[i];
+                tmp = tmp % 65536;
+            }
+            return tmp.ToString("x4");
+        }
+
+        public string GetTruncatedIdentifier(string identifier)
+        {
+            if (identifier.Length < MaxIdentifierLength)
+                return identifier;
+            string hash = HashString(identifier);
+            return identifier.Substring(0, MaxIdentifierLength - 5) + "_" + hash;
+        }
+
         public bool UseSafeLiterals
         {
             get { return _useSafeLiterals; }
@@ -56,6 +75,14 @@ namespace Sooda.Sql
             get
             {
                 return SqlOuterJoinSyntax.Ansi;
+            }
+        }
+
+        public virtual int MaxIdentifierLength
+        {
+            get
+            {
+                return 30;
             }
         }
 
@@ -128,7 +155,7 @@ namespace Sooda.Sql
 
         public virtual string GetConstraintName(string tableName, string foreignKey)
         {
-            return String.Format("FK_{0}_{1}", tableName, foreignKey);
+            return GetTruncatedIdentifier(String.Format("FK_{0}_{1}", tableName, foreignKey));
         }
 
         public abstract string GetSQLDataType(Sooda.Schema.FieldInfo fi);

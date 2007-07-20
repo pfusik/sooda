@@ -35,7 +35,7 @@ namespace Sooda.Sql
 {
     public class OracleBuilder : SqlBuilderNamedArg
     {
-        private int _internalCounter = 0;
+        //private int _internalCounter = 0;
 
         public override string GetDDLCommandTerminator()
         {
@@ -108,23 +108,23 @@ namespace Sooda.Sql
             }
         }
 
-		// truncate identifier and add a generated number to have unique identifiers
-        private string TruncateIdentifier(string identifier, int length)
-        {
-            if (identifier.Length < length)
-                return identifier;
-            string num = "_" + _internalCounter.ToString();
-            _internalCounter ++;
-            return identifier.Substring(0, length - num.Length) + num;
-            
-        }
+		//// truncate identifier and add a generated number to have unique identifiers
+        //private string TruncateIdentifier(string identifier, int length)
+        //{
+        //    if (identifier.Length < length)
+        //        return identifier;
+        //    string num = "_" + _internalCounter.ToString();
+        //    _internalCounter ++;
+        //    return identifier.Substring(0, length - num.Length) + num;
+        //    
+        //}
 
-        public override string GetConstraintName(string tableName, string foreignKey)
-        {
-        	// we have to truncate FK name - length of object name must be < 30
-            string res = base.GetConstraintName(tableName, foreignKey);
-            return TruncateIdentifier(res, 30);
-        }
+        //public override string GetConstraintName(string tableName, string foreignKey)
+        //{
+        //	// we have to truncate FK name - length of object name must be < 30
+        //    string res = base.GetConstraintName(tableName, foreignKey);
+        //    return TruncateIdentifier(res, 30);
+        //}
 
         protected override string GetNameForParameter(int pos)
         {

@@ -41,6 +41,7 @@ namespace Sooda.Sql
         string GetDDLCommandTerminator();
         SqlOuterJoinSyntax OuterJoinSyntax { get; }
         SqlTopSupportMode TopSupport { get; }
+        int MaxIdentifierLength { get; }
         bool UseSafeLiterals { get; set; }
 
         void BuildCommandWithParameters(IDbCommand command, bool append, string query, object[] par, bool isRaw);
@@ -49,5 +50,6 @@ namespace Sooda.Sql
         void GeneratePrimaryKey(TextWriter tw, TableInfo tableInfo);
         void GenerateForeignKeys(TextWriter tw, TableInfo tableInfo);
         string QuoteFieldName(string name);
+        string GetTruncatedIdentifier(string identifier);
     }
 }
