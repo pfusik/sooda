@@ -3,7 +3,7 @@
 <content lang="en" id="docs">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2006-09-15 13:24:42 +0200 (Fri, 15 Sep 2006) $</last-modified-date> (revision <subversion-revision>$Revision: 399 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2007-07-24 10:13:15 +0200 (Tue, 24 Jul 2007) $</last-modified-date> (revision <subversion-revision>$Revision: 426 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright &#169; 2003-2006 by Jaros³aw Kowalski</div>
         <div class="pagebreak" />
     </div>
@@ -202,7 +202,7 @@
             <section id="mappingonetomany">
                 <title>One-To-Many Relationships</title>
                 <body>
-                    One-to-many relationalships are typically represented as collections of objects related
+                    One-to-many relationships are typically represented as collections of objects related
                     to some particular object (only one). Typical examples are:
                     <ul>
                         <li>customer has a collection of orders (each order has exactly one customer)</li>
@@ -210,7 +210,7 @@
                         <li>mother has children (each child has exactly one mother)</li>
                     </ul>
                     In databases we usually represent relationships as foreign key columns stored in the
-                    "child" objects, so to represent the customer-to-orders relatioship we have a foreign
+                    "child" objects, so to represent the customer-to-orders relationship we have a foreign
                     key column (perhaps named "customer") stored in the "Order" table. The value stored
                     in this column must match the primary key value of the Customer. 
                     
@@ -517,7 +517,7 @@ using (SoodaTransaction t = new SoodaTransaction())
                         Supporting polymorphism in O/R mapping requires the engine to be able to create instances
                         of the proper subclass on load. This is required because when you load an object from 
                         the database you may get an instance of a subclass.
-                        Object refererences (stored as foreign keys) are also polymorphic (you only store the key value, not the 
+                        Object references (stored as foreign keys) are also polymorphic (you only store the key value, not the 
                         concrete type). We need a way to be able to quickly determine the concrete class that will
                         represent the object from the database.
                     </p>
@@ -1212,7 +1212,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 <p>
                     It is possible to have two <x><table /></x> elements that are bound to the same physical database table. You only need to repeat
                     the primary key field in each <x><table /></x> element. This allows for column-based lazy loading without the need to create
-                    additional database tables. For example, the followin Employee class uses mentioned partitioning feature
+                    additional database tables. For example, the following Employee class uses mentioned partitioning feature
                     to avoid loading Picture and VoiceSample with other columns.
                 </p>
                 <code lang="XML">
@@ -1264,7 +1264,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     // 3. access the picture of Adam - we need to access a database
                     Console.WriteLine(adam.Picture); 
 
-                    // 4. we load PictureBlob for Eva (note that neiter Name nor Location is loaded yet)
+                    // 4. we load PictureBlob for Eva (note that neither Name nor Location is loaded yet)
                     Console.WriteLine(eva.Picture); 
 
                     // 5. access the Name of Eva - we load it along with her Location
@@ -3402,7 +3402,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 <title>Shared XML configuration</title>
                 <body>
                     <p>
-                        There are situations where mutliple applications need to share the same set of configuration parameters.
+                        There are situations where multiple applications need to share the same set of configuration parameters.
                         Instead of keeping multiple copies of Sooda-specific configuration, you can store the settings in
                         a single XML file which is read by the applications.
                     </p>
@@ -3619,7 +3619,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <td align="center" valign="top">CommandTimeout</td>
                                 <td>
                                     <p>
-                                        Specifies the maximum amout of time (in seconds) that SQL queries are allowed to execute
+                                        Specifies the maximum amount of time (in seconds) that SQL queries are allowed to execute
                                         before they are terminated.
                                     </p>
                                     <p>
@@ -3801,7 +3801,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                     </code>
                                     <p>
                                         When query batching is not enabled, five round trips to the server are required which may
-                                        degrade performace:
+                                        degrade performance:
                                     </p>
                                     <code lang="SQL">
                                         INSERT INTO T1(id,name) values(100,'aaa');
@@ -4813,7 +4813,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     <li><code>ICollection&lt;T&gt;</code> - .NET 2.0 and above</li>
                 </ul>
                 <p>The following example shows the typical usage of collections. 
-                    As you can see the amout of boilerplate code is reduced to minimum:</p>
+                    As you can see the amount of boilerplate code is reduced to minimum:</p>
                 <code lang="C#">
                     using (SoodaTransaction t = new SoodaTransaction())
                     {
@@ -4967,7 +4967,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 </p>
                 <p>
                     The API for serialization and deserialization is very simple. It consists of methods named <code>Serialize()</code> and 
-                    <code>Deserialize()</code> respectively. The serializaton code is presented below:
+                    <code>Deserialize()</code> respectively. The serialization code is presented below:
                 </p>
                 <code lang="C#">
                     <![CDATA[
@@ -5232,7 +5232,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
             <p>
                 Object-level triggers are always available and cannot be disabled. You can disable field-level triggers 
                 (BeforeFieldUpdate_xxx and AfterFieldUpdate_xxx) either at stub generation stage or at runtime.
-                The former option is useful to reduce the amout of generated code, because stub classes can get pretty large 
+                The former option is useful to reduce the amount of generated code, because stub classes can get pretty large 
                 when you declare many fields in a class.
             </p>
             <p>
@@ -5793,7 +5793,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
             <title>SOQL Queries</title>
             <body>
                 <p>
-                    SOQL queries have syntax smilar to SQL SELECT statements. Each query has the following form:
+                    SOQL queries have syntax similar to SQL SELECT statements. Each query has the following form:
                 </p>
                 <code lang="SQL">
                     SELECT     [TOP number] [DISTINCT] select_expressions
@@ -5870,7 +5870,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 <p>
                     SOQL is case-insensitive on keywords, class names and property names. 
                     For readability, it is recommended to use the original casing when 
-                    refering to fields and classes. Case sensitivity of string comparisons and SOQL <code>LIKE</code> operator are  database-dependent.
+                    referring to fields and classes. Case sensitivity of string comparisons and SOQL <code>LIKE</code> operator are  database-dependent.
                 </p>
             </body>
             <section id="soqlpathexpressions">
@@ -5992,7 +5992,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     <p>
                         <code>SoodaClass</code> is a virtual property that is present in all Sooda classes. It returns name
                         of the class as defined in the <a href="#schema">mapping schema</a>. 
-                        It can be used to distinguish between subclasses in polymorhpic queries.
+                        It can be used to distinguish between subclasses in polymorphic queries.
                     </p>
                     <code lang="SQL">
                         -- select vehicles which are bikes or super bikes
@@ -7626,7 +7626,7 @@ where    (t2.name = 'Mary Manager')
                     <body>
                         <p>
                             <code>RawWithIsNull</code> generates a pair of properties: <code>P</code> and <code>P_IsNull</code>,
-                            the latter being read-only returning <code>true</code> when the field value is <code>null</code>. In additon to this
+                            the latter being read-only returning <code>true</code> when the field value is <code>null</code>. In addition to this
                             the <code>P_SetNull()</code> method is generated that can be used to set the field value to null.
                         </p>
                         <ul>
