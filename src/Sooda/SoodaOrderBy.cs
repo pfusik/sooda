@@ -62,7 +62,7 @@ namespace Sooda
             SoodaObjectExpressionComparer ec = new SoodaObjectExpressionComparer();
             ec.AddExpression(SoqlParser.ParseExpression(columnName1), sortOrder1);
             ec.AddExpression(SoqlParser.ParseExpression(columnName2), sortOrder2);
-            ec.AddExpression(SoqlParser.ParseExpression(columnName3), sortOrder2);
+            ec.AddExpression(SoqlParser.ParseExpression(columnName3), sortOrder3);
             _comparer = ec;
         }
 
