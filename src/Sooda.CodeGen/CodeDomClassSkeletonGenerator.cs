@@ -61,7 +61,6 @@ namespace Sooda.CodeGen
         public CodeConstructor Constructor_Inserting(bool useChainedCall)
         {
             CodeConstructor ctor = new CodeConstructor();
-            ctor = new CodeConstructor();
             ctor.Attributes = MemberAttributes.Public;
             ctor.Parameters.Add(new CodeParameterDeclarationExpression("SoodaTransaction", "transaction"));
             ctor.BaseConstructorArgs.Add(Arg("transaction"));
