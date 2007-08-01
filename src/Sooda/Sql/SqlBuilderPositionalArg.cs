@@ -28,15 +28,19 @@
 // 
 
 using System;
+using System.Collections;
+using System.Collections.Specialized;
 using System.Data;
+
+using Sooda.QL;
 
 namespace Sooda.Sql
 {
     public abstract class SqlBuilderPositionalArg : SqlBuilderBase
     {
-        public override void BuildCommandWithParameters(IDbCommand command, bool append, string query, object[] par, bool isRaw)
+        protected override string AddNumberedParameter(IDbCommand command, object v, SoqlLiteralValueModifiers modifiers, StringCollection paramNames, int paramNumber)
         {
-            throw new NotImplementedException();
+            return AddParameterFromValue(command, v, modifiers);
         }
     }
 }

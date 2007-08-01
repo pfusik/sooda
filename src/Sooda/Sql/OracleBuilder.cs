@@ -33,7 +33,7 @@ using Sooda.Schema;
 
 namespace Sooda.Sql
 {
-    public class OracleBuilder : SqlBuilderNamedArg
+    public class OracleBuilder : SqlBuilderPositionalArg
     {
         //private int _internalCounter = 0;
 

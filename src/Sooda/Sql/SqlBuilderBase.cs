@@ -28,11 +28,16 @@
 // 
 
 using System;
-using System.Data;
-using System.IO;
 using System.Collections;
+using System.Collections.Specialized;
+using System.Data;
+using System.Globalization;
+using System.IO;
 
 using Sooda.QL;
+using Sooda.ObjectMapper;
+using Sooda.ObjectMapper.FieldHandlers;
+using Sooda.Schema;
 
 namespace Sooda.Sql
 {
@@ -160,8 +165,6 @@ namespace Sooda.Sql
 
         public abstract string GetSQLDataType(Sooda.Schema.FieldInfo fi);
 
-        public abstract void BuildCommandWithParameters(IDbCommand command, bool append, string query, object[] par, bool isRaw);
-
         protected virtual bool SetDbTypeFromValue(IDbDataParameter parameter, object value, SoqlLiteralValueModifiers modifiers)
         {
             object o = paramTypes[value.GetType()];
@@ -243,5 +246,258 @@ namespace Sooda.Sql
         {
             return "";
         }
+
+        protected string AddParameterFromValue(IDbCommand command, object v, SoqlLiteralValueModifiers modifiers)
+        {
+            IDbDataParameter p = command.CreateParameter();
+            p.Direction = ParameterDirection.Input;
+
+            p.ParameterName = GetNameForParameter(command.Parameters.Count);
+            if (modifiers != null)
+                FieldHandlerFactory.GetFieldHandler(modifiers.DataTypeOverride).SetupDBParameter(p, v);
+            else
+            {
+                SetDbTypeFromValue(p, v, modifiers);
+                p.Value = v;
+            }
+            command.Parameters.Add(p);
+            return p.ParameterName;
+        }
+
+        public void BuildCommandWithParameters(System.Data.IDbCommand command, bool append, string query, object[] par, bool isRaw)
+        {
+            if (append)
+            {
+                if (command.CommandText == null)
+                    command.CommandText = "";
+                if (command.CommandText != "")
+                    command.CommandText += ";\n";
+            }
+            else
+            {
+                command.CommandText = "";
+                command.Parameters.Clear();
+            }
+
+            System.Text.StringBuilder sb = new System.Text.StringBuilder(query.Length * 2);
+            StringCollection paramNames = new StringCollection();
+
+            for (int i = 0; i < query.Length; ++i)
+            {
+                char c = query[i];
+
+                if (c == '\'')  // locate the string
+                {
+                    int stringStartPos = i;
+                    int stringEndPos = -1;
+
+                    for (int j = i + 1; j < query.Length; ++j)
+                    {
+                        if (query[j] == '\'')
+                        {
+                            // possible end of string, need to check for double apostrophes,
+                            // which don't mean EOS
+
+                            if (j + 1 < query.Length && query[j + 1] == '\'')
+                            {
+                                j++;
+                                continue;
+                            }
+
+                            stringEndPos = j;
+                            break;
+                        }
+                    }
+
+                    if (stringEndPos == -1)
+                    {
+                        throw new ArgumentException("Query has unbalanced quotes");
+                    }
+
+                    string stringValue = query.Substring(stringStartPos + 1, stringEndPos - stringStartPos - 1);
+                    bool requireParameter = false;
+
+                    // dates and ansi-string definitely require parameters
+                    if (stringEndPos + 1 < query.Length && (query[stringEndPos + 1] == 'D' || query[stringEndPos + 1] == 'A'))
+                    {
+                        requireParameter = true;
+                    }
+
+                    if (!requireParameter)
+                    {
+                        if (!IsStringSafeForLiteral(stringValue) && !isRaw)
+                            requireParameter = true;
+                    }
+
+                    if (!UseSafeLiterals && !isRaw)
+                        requireParameter = true;
+
+                    if (requireParameter)
+                    {
+                        // replace double quotes with single quotes
+                        stringValue = stringValue.Replace("''", "'");
+                        string paramName;
+
+                        if (stringEndPos + 1 < query.Length && query[stringEndPos + 1] == 'D')
+                        {
+                            // datetime literal
+                            paramName = AddParameterFromValue(command, DateTime.ParseExact(stringValue, "yyyyMMddHH:mm:ss", CultureInfo.InvariantCulture), null);
+                            stringEndPos++;
+                        }
+                        else if (stringEndPos + 1 < query.Length && query[stringEndPos + 1] == 'A')
+                        {
+                            paramName = AddParameterFromValue(command, stringValue, SoqlLiteralValueModifiers.AnsiString);
+                            stringEndPos++;
+                        }
+                        else
+                        {
+                            paramName = AddParameterFromValue(command, stringValue, null);
+                        }
+                        sb.Append(paramName);
+
+                        i = stringEndPos;
+                    }
+                    else
+                    {
+                        sb.Append("'");
+                        sb.Append(stringValue);
+                        sb.Append("'");
+                        i = stringEndPos;
+                    }
+                }
+                else if (c == '{')
+                {
+                    char c1 = query[i + 1];
+                    object v;
+
+                    if (c1 == 'L')
+                    {
+                        // {L:fieldDataTypeName:value
+
+                        int startPos = i + 3;
+                        int endPos = query.IndexOf(':', startPos);
+                        if (endPos < 0)
+                            throw new ArgumentException("Missing ':' in literal specification");
+
+                        SoqlLiteralValueModifiers modifier = SoqlParser.ParseLiteralValueModifiers(query.Substring(startPos, endPos - startPos));
+                        FieldDataType fdt = modifier.DataTypeOverride;
+
+                        int valueStartPos = endPos + 1;
+                        bool anyEscape = false;
+
+                        for (i = valueStartPos; i < query.Length; ++i)
+                        {
+                            if (query[i] == '\\')
+                            {
+                                i++;
+                                anyEscape = true;
+                                continue;
+                            }
+                            if (query[i] == '}')
+                            {
+                                break;
+                            }
+                        }
+
+                        string literalValue = query.Substring(valueStartPos, i - valueStartPos);
+                        if (anyEscape)
+                        {
+                            literalValue = literalValue.Replace("\\}", "}");
+                            literalValue = literalValue.Replace("\\\\", "\\");
+                        }
+
+                        SoodaFieldHandler fieldHandler = FieldHandlerFactory.GetFieldHandler(fdt);
+                        v = fieldHandler.RawDeserialize(literalValue);
+
+                        if (v == null)
+                        {
+                            sb.Append("null");
+                        }
+                        else if (UseSafeLiterals && v is int)
+                        {
+                            sb.Append((int)v);
+                        }
+                        else if (UseSafeLiterals && v is string && IsStringSafeForLiteral((string)v))
+                        {
+                            sb.Append("'");
+                            sb.Append((string)v);
+                            sb.Append("'");
+                        }
+                        else
+                        {
+                            IDbDataParameter p = command.CreateParameter();
+                            p.Direction = ParameterDirection.Input;
+                            p.ParameterName = GetNameForParameter(command.Parameters.Count);
+                            fieldHandler.SetupDBParameter(p, v);
+                            command.Parameters.Add(p);
+                            sb.Append(p.ParameterName);
+                        }
+                    }
+                    else
+                    {
+                        char c2 = query[i + 2];
+                        int paramNumber;
+                        SoqlLiteralValueModifiers modifiers = null;
+
+                        if (c2 == '}' || c2 == ':')
+                        {
+                            paramNumber = c1 - '0';
+                            i += 2;
+                        }
+                        else
+                        {
+                            paramNumber = (c1 - '0') * 10 + (c2 - '0');
+                            if (query[i + 3] != '}' && query[i + 3] != ':')
+                                throw new NotSupportedException("Max 99 positional parameters are supported");
+                            i += 3;
+                        }
+                        if (query[i] == ':')
+                        {
+                            int startPos = i + 1;
+                            int endPos = query.IndexOf('}', startPos);
+                            if (endPos < 0)
+                                throw new ArgumentException("Missing '}' in parameter specification");
+
+                            modifiers = SoqlParser.ParseLiteralValueModifiers(query.Substring(startPos, endPos - startPos));
+                            i = endPos;
+                        }
+                        v = par[paramNumber];
+
+                        if (v is SoodaObject)
+                        {
+                            v = ((SoodaObject)v).GetPrimaryKeyValue();
+                        }
+
+                        if (v == null)
+                        {
+                            sb.Append("null");
+                        }
+                        else if (UseSafeLiterals && v is int)
+                        {
+                            sb.Append((int)v);
+                        }
+                        else if (UseSafeLiterals && v is string && IsStringSafeForLiteral((string)v))
+                        {
+                            sb.Append("'");
+                            sb.Append((string)v);
+                            sb.Append("'");
+                        }
+                        else
+                        {
+                            sb.Append(AddNumberedParameter(command, v, modifiers, paramNames, paramNumber));
+                        }
+                    }
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+            command.CommandText += sb.ToString();
+        }
+
+        protected abstract string AddNumberedParameter(IDbCommand command, object v, SoqlLiteralValueModifiers modifiers, StringCollection paramNames, int paramNumber);
+
+        protected abstract string GetNameForParameter(int pos);
     }
 }
