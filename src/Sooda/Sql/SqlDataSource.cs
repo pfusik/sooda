@@ -56,6 +56,7 @@ namespace Sooda.Sql
         public bool DisableUpdateBatch = false;
         public bool StripWhitespaceInLogs = false;
         public bool IndentQueries = false;
+        public bool UpperLike = false;
         public double QueryTimeTraceWarn = 10.0;
         public double QueryTimeTraceInfo = 2.0;
         public int CommandTimeout = 30;
@@ -84,6 +85,9 @@ namespace Sooda.Sql
 
             if (GetParameter("indentQueries", false) == "true")
                 this.IndentQueries = true;
+
+            if (GetParameter("upperLike", false) == "true")
+                this.UpperLike = true;
 
             string dialect = GetParameter("sqlDialect", false);
             if (dialect == null)
@@ -352,6 +356,20 @@ namespace Sooda.Sql
             }
         }
 
+        private string SoqlToSql(SoqlQueryExpression queryExpression, SchemaInfo schemaInfo, bool generateColumnAliases)
+        {
+            StringWriter sw = new StringWriter();
+            SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, schemaInfo, SqlBuilder);
+            converter.IndentOutput = this.IndentQueries;
+            converter.GenerateColumnAliases = generateColumnAliases;
+            converter.UpperLike = this.UpperLike;
+            //logger.Trace("Converting {0}", queryExpression);
+            converter.ConvertQuery(queryExpression);
+            string query = sw.ToString();
+            //logger.Trace("Converted as {0}", query);
+            return query;
+        }
+
         public override IDataReader LoadMatchingPrimaryKeys(SchemaInfo schemaInfo, ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount)
         {
             try
@@ -381,15 +399,7 @@ namespace Sooda.Sql
                     queryExpression.SetOrderBy(orderBy);
                 }
 
-                StringWriter sw = new StringWriter();
-                SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, schemaInfo, SqlBuilder);
-                converter.IndentOutput = this.IndentQueries;
-                converter.GenerateColumnAliases = false;
-                //logger.Trace("Converting {0}", queryExpression);
-                converter.ConvertQuery(queryExpression);
-                string query = sw.ToString();
-
-                //logger.Trace("Converted as {0}", query);
+                string query = SoqlToSql(queryExpression, schemaInfo, false);
 
                 IDbCommand cmd = Connection.CreateCommand();
                 try
@@ -487,15 +497,7 @@ namespace Sooda.Sql
                     queryExpression.SetOrderBy(orderBy);
                 }
 
-                StringWriter sw = new StringWriter();
-                SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, schemaInfo, SqlBuilder);
-                converter.IndentOutput = this.IndentQueries;
-                converter.GenerateColumnAliases = false;
-                //logger.Trace("Converting {0}", queryExpression);
-                converter.ConvertQuery(queryExpression);
-                string query = sw.ToString();
-
-                //logger.Trace("Converted as {0}", query);
+                string query = SoqlToSql(queryExpression, schemaInfo, false);
 
                 IDbCommand cmd = Connection.CreateCommand();
 
@@ -527,13 +529,7 @@ namespace Sooda.Sql
         {
             try
             {
-                StringWriter sw = new StringWriter();
-                SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, schema, SqlBuilder);
-                converter.IndentOutput = this.IndentQueries;
-                converter.ConvertQuery(query);
-
-                string queryText = sw.ToString();
-
+                string queryText = SoqlToSql(query, schema, false);
                 return ExecuteRawQuery(queryText, parameters);
             }
             catch (Exception ex)
@@ -906,13 +902,7 @@ namespace Sooda.Sql
                     }
                 }
 
-                StringWriter sw = new StringWriter();
-                SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, tableInfo.OwnerClass.Schema, SqlBuilder);
-                converter.IndentOutput = this.IndentQueries;
-                converter.GenerateColumnAliases = false;
-                converter.ConvertQuery(queryExpression);
-
-                string query = sw.ToString();
+                string query = SoqlToSql(queryExpression, tableInfo.OwnerClass.Schema, false);
 
                 // logger.Debug("Loading statement for table {0}: {1}", tableInfo.NameToken, query);
 
@@ -927,22 +917,16 @@ namespace Sooda.Sql
         {
             if (!cacheLoadRefObjectSelectStatement[masterColumn].Contains(relationInfo))
             {
-                string soqlQuery = "";
+                string soqlQuery;
 
                 soqlQuery = String.Format("select mt.{0}.* from {2} mt where mt.{1} = {{0}}",
                         relationInfo.Table.Fields[masterColumn].Name,
                         relationInfo.Table.Fields[1 - masterColumn].Name,
                         relationInfo.Name);
 
-                StringWriter sw = new StringWriter();
-                SoqlToSqlConverter converter = new SoqlToSqlConverter(sw, relationInfo.Schema, SqlBuilder);
-                converter.IndentOutput = this.IndentQueries;
-                converter.GenerateColumnAliases = false;
-                converter.ConvertQuery(SoqlParser.ParseQuery(soqlQuery));
-                string sqlQuery = sw.ToString();
-
-                cacheLoadRefObjectSelectStatement[masterColumn][relationInfo] = sqlQuery;
-            };
+                string query = SoqlToSql(SoqlParser.ParseQuery(soqlQuery), relationInfo.Schema, false);
+                cacheLoadRefObjectSelectStatement[masterColumn][relationInfo] = query;
+            }
             return (string)cacheLoadRefObjectSelectStatement[masterColumn][relationInfo];
         }
 

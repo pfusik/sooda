@@ -49,6 +49,7 @@ namespace Sooda.Sql
 
         public bool DisableBooleanExpansion = false;
         public bool GenerateColumnAliases = true;
+        public bool UpperLike = false;
         public StringCollection ActualFromAliases = new StringCollection();
         public ArrayList FromJoins = new ArrayList();
         public StringCollection WhereJoins = new StringCollection();
@@ -1285,6 +1286,8 @@ namespace Sooda.Sql
 
         public override void Visit(SoqlBooleanRelationalExpression v)
         {
+            bool upper = UpperLike && v.op == SoqlRelationalOperator.Like;
+
             //
             // this is to support type coercions. Whenever we have
             //
@@ -1326,6 +1329,8 @@ namespace Sooda.Sql
                         oldBooleanExpansion = DisableBooleanExpansion;
                         DisableBooleanExpansion = true;
                         Output.Write("(");
+                        if (upper)
+                            Output.Write("upper(");
                         if (unwrappedPar1 is ILiteralModifiers)
                         {
                             OutputModifiedLiteral(unwrappedPar1, pathFieldInfo);
@@ -1334,7 +1339,11 @@ namespace Sooda.Sql
                         {
                             v.par1.Accept(this);
                         }
+                        if (upper)
+                            Output.Write(")");
                         OutputRelationalOperator(v.op);
+                        if (upper)
+                            Output.Write("upper(");
                         if (unwrappedPar2 is ILiteralModifiers)
                         {
                             OutputModifiedLiteral(unwrappedPar2, pathFieldInfo);
@@ -1343,6 +1352,8 @@ namespace Sooda.Sql
                         {
                             v.par2.Accept(this);
                         }
+                        if (upper)
+                            Output.Write(")");
                         Output.Write(")");
                         DisableBooleanExpansion = oldBooleanExpansion;
                         return;
@@ -1357,7 +1368,18 @@ namespace Sooda.Sql
 
             oldBooleanExpansion = DisableBooleanExpansion;
             DisableBooleanExpansion = true;
-            base.Visit(v);
+            if (upper)
+            {
+                Output.Write("(upper(");
+                v.par1.Accept(this);
+                Output.Write(")");
+                OutputRelationalOperator(v.op);
+                Output.Write("upper(");
+                v.par2.Accept(this);
+                Output.Write("))");
+            }
+            else
+                base.Visit(v);
             DisableBooleanExpansion = oldBooleanExpansion;
         }
     }
