@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="windows-1250" ?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-    version="1.0">
-    <xsl:param name="page_id_override"></xsl:param>
-    <xsl:param name="subpage_id_override"></xsl:param>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
     <xsl:param name="file_extension">xml</xsl:param>
     <xsl:param name="mode">plain</xsl:param>
 
-    <xsl:variable name="page_id" select="concat(/*[position()=1]/@id,$page_id_override)" />
-    <xsl:variable name="subpage_id" select="concat(/*[position()=1]/@subid,$subpage_id_override)" />
-    <xsl:variable name="common" select="document(concat($mode,'menu.xml'))" />
+    <xsl:variable name="page_id" select="/*[position()=1]/@id" />
 
     <xsl:output method="xml" 
         indent="no" 
@@ -22,8 +17,7 @@
                 <link rel="stylesheet" href="style2.css" type="text/css" />
                 <link rel="stylesheet" href="syntax.css" type="text/css" />
                 <link rel="stylesheet" href="custom.css" type="text/css" />
-                <title>Sooda - <xsl:value-of select="$common/common/navigation/nav[@href=$page_id]/@label" />
-                    <xsl:if test="$subpage_id"> - <xsl:value-of select="$common/common/navigation//subnav[@href=$subpage_id]/@label" /></xsl:if></title>
+                <title>Sooda<xsl:if test="$mode = 'web'"> - <xsl:value-of select="document('webmenu.xml')/common/navigation/nav[@href=$page_id]/@label" /></xsl:if></title>
                 <meta name="keywords" content="Sooda, O/R mapping, .NET, C#, object relational mapper, persistence, open source, simple object oriented data access, database, sql, soql" />
                 <meta name="author" content="Jaroslaw Kowalski" />
                 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -31,10 +25,9 @@
             </head>
             <body>
                 <div id="header"><img src="sooda.jpg" alt="Sooda - Simple Object-Oriented Data Access" /></div>
-                <xsl:if test="$mode != 'plain'">
+                <xsl:if test="$mode = 'web'">
                     <div id="controls">
-                        <img src="sooda_nav.jpg" style="display: none" alt="sooda_nav" /> <!-- need this for CHM -->
-                        <xsl:call-template name="controls" />
+                        <xsl:apply-templates select="document('webmenu.xml')/common/navigation" />
                     </div>
                 </xsl:if>
                 <div id="{$mode}content">
@@ -190,66 +183,15 @@
         <xsl:apply-templates />
     </xsl:template>
 
-    <xsl:template name="controls">
-        <xsl:apply-templates select="$common/common/navigation" />
-    </xsl:template>
-
     <xsl:template match="navigation">
         <table border="0" cellpadding="0" cellspacing="0" class="navtable">
             <xsl:apply-templates select="nav" />
-            <tr>
-                <td class="logobutton">
-                    <table style="table-layout: fixed; width: 160px">
-                        <xsl:if test="$mode = 'web'">
-                            <tr>
-                                <td align="right">
-                                    <script type="text/javascript" language="javascript">
-                                        var sc_project=575055; 
-                                        var sc_partition=4; 
-                                        var sc_security="e249d6a5"; 
-                                    </script>
-
-                                    <script type="text/javascript" language="javascript" src="http://www.statcounter.com/counter/counter.js"></script><noscript><a href="http://www.statcounter.com/" target="_blank"><img  src="http://c5.statcounter.com/counter.php?sc_project=575055&amp;amp;java=0&amp;amp;security=e249d6a5" alt="free web stats" border="0" /></a> </noscript>
-
-                                    <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
-                                    </script>
-                                    <script type="text/javascript">
-                                        _uacct = "UA-256960-1";
-                                        urchinTracker();
-                                    </script>
-
-                                </td>
-                            </tr>
-                        </xsl:if>
-                        <tr>
-                            <td align="right" style="font-family: Tahoma; color: white; font-size: 10px">Copyright (c) 2003-2006<br/><a style="color: white" href="mailto:jaak@jkowalski.net">Jaroslaw Kowalski</a></td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-            <tr class="navtablespacer"><td></td></tr>
+            <tr class="navtablespacer"><td><a class="nav" href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=71422&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a></td></tr>
         </table>
     </xsl:template>
 
     <xsl:template match="nav">
         <xsl:choose>
-            <xsl:when test="$page_id = @href and subnav">
-                <tr>
-                    <td class="nav_selected">
-                        <table class="submenu" cellpadding="0" cellspacing="0">
-                            <tr><td>
-                                    <a class="nav_selected">
-                                        <xsl:attribute name="href"><xsl:value-of select="@href" />.<xsl:value-of select="$file_extension" /></xsl:attribute>
-                                        <xsl:value-of select="@label" />
-                                    </a>
-                            </td></tr>
-                            <xsl:if test="subnav">
-                                <xsl:apply-templates select="subnav" />
-                            </xsl:if>
-                        </table>
-                    </td>
-                </tr>
-            </xsl:when>
             <xsl:when test="$page_id = @href">
                 <tr>
                     <td class="nav_selected">
@@ -261,16 +203,7 @@
                 </tr>
             </xsl:when>
             <xsl:otherwise>
-                <tr><td class="nav"><a class="nav"><xsl:attribute name="href"><xsl:value-of select="@href" /><xsl:if test="not(@noext)">.<xsl:value-of select="$file_extension" /></xsl:if></xsl:attribute><xsl:value-of select="@label" /></a></td></tr>
-            </xsl:otherwise>
-        </xsl:choose>
-    </xsl:template>
-
-    <xsl:template match="subnav">
-        <xsl:choose>
-            <xsl:when test="$subpage_id = @href"><tr class="subnav"><td><a class="subnav_selected" href="{@href}.{$file_extension}"><xsl:value-of select="@label" /></a></td></tr></xsl:when>
-            <xsl:otherwise>
-                <tr class="subnav"><td><a class="subnav"><xsl:attribute name="href"><xsl:value-of select="@href" /><xsl:if test="not(@noext)">.<xsl:value-of select="$file_extension" /></xsl:if></xsl:attribute><xsl:value-of select="@label" /></a></td></tr>
+                <tr><td class="nav"><a class="nav"><xsl:attribute name="href"><xsl:value-of select="@href" /><xsl:if test="not(contains(@href, '/'))">.<xsl:value-of select="$file_extension" /></xsl:if></xsl:attribute><xsl:value-of select="@label" /></a></td></tr>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>

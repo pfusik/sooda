@@ -1,19 +1,13 @@
 <?xml version="1.0" encoding="windows-1250" ?>
 <?xml-stylesheet type="text/xsl" href="style.xsl" ?>
-<content lang="en" id="introduction">
-    <h2>Introduction to Sooda</h2>
+<content lang="en" id="index">
     <p>
         <b>Sooda</b> is an object-to-relational mapping (O/R Mapping) software for the <a href="http://msdn.microsoft.com/net">.NET</a> environment.
         It lets you automatically generate an object-oriented data access layer (DAL) for your application.
         Instead of writing SQL code, you can now focus on writing business rules in object-oriented .NET languages.
     </p>
     <p>
-        Sooda is an open source software distributed under the terms of the <a href="../LICENSE.txt">BSD license</a>.
-    </p>
-    <h2>News</h2>
-    <p>
-        <b style="color: red">2006-09-18</b> Sooda 1.0 has been released. 
-        You can get the source code and binary packages from the <link href="download">download section</link>. Documentation is available <link href="docs">here</link>. Support for this release is available through the <link href="support">mailing lists</link>.
+        Sooda is an open source software distributed under the terms of the BSD license.
     </p>
     <h2>Features</h2>
     <p>
@@ -37,6 +31,6 @@
         <li>Microsoft SQL Server - primary development platform, most thoroughly tested, production quality support</li>
         <li>MySQL 4.x and higher - experimental support</li>
         <li>PostgreSQL 8.x - experimental support</li>
-        <li>Oracle 8i - experimental support</li>
+        <li>Oracle 8i and higher - experimental support</li>
     </ul>
 </content>

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="windows-1250" ?>
 <common>
     <navigation>
-        <nav href="introduction" label="Introduction" />
+        <nav href="index" label="Introduction" />
         <nav href="status" label="Status" />
+        <nav href="http://sourceforge.net/project/showfiles.php?group_id=71422" label="Download" />
         <nav href="examples" label="Examples" />
-        <nav href="download" label="Download" />
-        <nav href="docs" label="Documentation" />
-        <nav href="support" label="Support" />
+        <nav href="documentation" label="Documentation" />
         <nav href="faq" label="FAQ" />
+        <nav href="http://sourceforge.net/projects/sooda/" label="Project pages" />
     </navigation>
 </common>

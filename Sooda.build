@@ -9,10 +9,10 @@
 
     <property name="scp.program" value="pscp" />
     <property name="ssh.program" value="plink" />
-    <property name="ssh.server" value="jaak@sav.net" />
+    <property name="ssh.server" value="pfusik@shell.sourceforge.net" />
     <property name="scp.args" value="-q -batch" />
     <property name="ssh.args" value="-batch" />
-    <property name="webserver.deploy.dir" value="web/www.sooda.org/html" />
+    <property name="webserver.deploy.dir" value="/home/groups/s/so/sooda/htdocs" />
 
     <property name="sooda.csc.args" value="/nowarn:1591" />
     <property name="sooda.external" value="${project::get-base-directory()}/external" unless="${property::exists('sooda.external')}" />
@@ -70,8 +70,6 @@
         
         <property name="sooda.dir" value="${project::get-base-directory()}/build/${buildsubdir}/bin" unless="${property::exists('sooda.dir')}" />
         <property name="web.dir" value="build/${buildsubdir}/web" unless="${property::exists('web.dir')}" />
-        <property name="help.dir" value="build/${buildsubdir}/help" unless="${property::exists('help.dir')}" />
-        <property name="helpweb.dir" value="build/${buildsubdir}/helpweb" unless="${property::exists('helpweb.dir')}" />
 
         <mkdir dir="${sooda.dir}" />
 
@@ -371,7 +369,7 @@
             <references>                                  
                 <include name="${sooda.dir}/Sooda.dll" />
                 <include name="${sooda.dir}/Sooda.CodeGen.dll" />
-                <include name="${nant.location}/NAnt.Core.dll" />
+                <include name="${nant::get-base-directory()}/NAnt.Core.dll" />
             </references>
             <sources basedir="src/Sooda.NAnt.Tasks">
                 <include name="*.cs" />
@@ -567,7 +565,7 @@
     </target>
 
     <target name="Sooda.UnitTests.TestCases" depends="libraries, Sooda.UnitTests.Objects, Sooda.UnitTests.BaseObjects">
-        <copy file="${nant.location}/lib/${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}/nunit.framework.dll" tofile="${sooda.dir}/nunit.framework.dll" />
+        <copy file="${nant::get-base-directory()}/lib/${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}/nunit.framework.dll" tofile="${sooda.dir}/nunit.framework.dll" />
         <csc target="library" output="${sooda.dir}/Sooda.UnitTests.TestCases.dll" debug="true">
             <references>                                  
                 <include name="${sooda.dir}/Sooda.dll" />
@@ -727,7 +725,6 @@
         <zip zipfile="web.zip" stampdatetime="${datetime::now()}" includeemptydirs="true">
             <fileset basedir="${web.dir}">
                 <include name="**/*" />
-                <exclude name="index.html" />
                 <exclude name="**/.svn" />
                 <exclude name="**/.svn/**" />
                 <exclude name="**/_svn" />
@@ -742,7 +739,7 @@
         <!-- <delete file="web.zip" /> -->
     </target>
 
-    <target name="doc" depends="configure, build, website, helpwebsite">
+    <target name="doc" depends="configure, build, website">
         <uptodate property="doc.uptodate">
             <targetfiles basedir="build">
                 <include name="Sooda.chm" />
@@ -760,20 +757,8 @@
     <target name="website" depends="configure">
         <property name="webbuild.dir" value="${web.dir}" />
         <property name="web.buildmode" value="web" />
-        <property name="web.sourceforge" value="0" />
         <call target="buildwebsite" />
-        <copy file="${webbuild.dir}/introduction.html" tofile="${webbuild.dir}/index.html" />
         <copy file="src/Sooda/Schema/SoodaSchema.xsd" tofile="${webbuild.dir}/schemas/SoodaSchema.xsd" />
-        <copy file="web/redirector.html" tofile="${web.dir}/redirector.html" />
-        <copy file="web/redirector.php" tofile="${web.dir}/redirector.php" />
-    </target>
-
-    <target name="helpwebsite" depends="configure">
-        <property name="webbuild.dir" value="${helpweb.dir}" />
-        <property name="web.buildmode" value="help" />
-        <property name="web.sourceforge" value="0" />
-        <call target="buildwebsite" />
-        <copy file="${webbuild.dir}/introduction.html" tofile="${webbuild.dir}/index.html" />
     </target>
 
     <target name="buildwebsite" depends="configure">
@@ -787,7 +772,6 @@
                 <include name="*.png" />
                 <include name="*.jpg" />
                 <include name="*.gif" />
-                <include name="screenshots/**" />
             </fileset>
         </copy>
 
@@ -805,12 +789,9 @@
             <infiles basedir="build\webtmp">
                 <include name="*.xml" />
                 <exclude name="webmenu.xml" />
-                <exclude name="helpmenu.xml" />
             </infiles>
             <parameters>
-                <parameter name="external-base" value="${path::combine(project::get-base-directory(),webbuild.dir)}" />
                 <parameter name="file_extension" value="html" />
-                <parameter name="sourceforge" value="${web.sourceforge}" />
                 <parameter name="mode" value="${web.buildmode}" />
             </parameters>
         </style>
@@ -819,17 +800,14 @@
 
         <style in="build/webtmp/documentation.xml" out="build/doc/documentation.html" style="web/style.xsl">
             <parameters>
-                <parameter name="external-base" value="${path::combine(project::get-base-directory(),webbuild.dir)}" />
                 <parameter name="file_extension" value="html" />
                 <parameter name="mode" value="plain" />
             </parameters>
         </style>
 
-        <!-- <style in="build/doc/documentation.html" out="build/doc/documentation.tex" style="tools/xhtml2latex.xslt" /> -->
-
         <copy todir="build/doc">
             <fileset basedir="web">
-                <include name="rightarrow*.gif" />
+                <include name="rightarrow.gif" />
                 <include name="doc*.gif" />
                 <include name="doc*.png" />
                 <include name="*.css" />
