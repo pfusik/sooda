@@ -390,7 +390,7 @@ namespace SoodaAddin.UI
         {
             ProcessStartInfo psi = new ProcessStartInfo();
             psi.FileName = "iexplore.exe";
-            psi.Arguments = "http://www.sooda.org/test/documentation.html?from=wizard#" + url;
+            psi.Arguments = "http://sooda.sourceforge.net/documentation.html?from=wizard#" + url;
             psi.UseShellExecute = true;
             System.Diagnostics.Process.Start(psi);
         }
