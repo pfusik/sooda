@@ -17,7 +17,7 @@
         <li>transparent object materialization</li>
         <li>clean and natural syntax - the amount of boilerplate code is reduced to the absolute minimum, the code is readable and maintainable</li>
         <li>support for most data types supported by the .NET Framework</li>
-        <li>natural mapping of one-to-many relations as referenced objects and collections.</li>
+        <li>natural mapping of one-to-many relations as referenced objects and collections</li>
         <li>natural mapping of many-to-many relations as collections</li>
         <li>various models of object inheritance</li>
         <li>differential XML serialization and deserialization for moving data across layers</li>
@@ -25,7 +25,7 @@
         <li>data caching with copy-on-write support</li>
     </ul>
     <p>
-        The following database engines are supported.
+        The following database engines are supported:
     </p>
     <ul>
         <li>Microsoft SQL Server - primary development platform, most thoroughly tested, production quality support</li>
