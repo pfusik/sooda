@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2007-08-03 13:59:48 +0200 (Fri, 03 Aug 2007) $</last-modified-date> (revision <subversion-revision>$Revision: 429 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2007-08-08 16:38:18 +0200 (Wed, 08 Aug 2007) $</last-modified-date> (revision <subversion-revision>$Revision: 433 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright &#169; 2003-2006 by Jaros³aw Kowalski</div>
         <div class="pagebreak" />
     </div>
@@ -698,7 +698,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 <ol>
                     <li>replace <code>"Territories"</code> with <code>"Territory"</code> (quotes should be included in the 
                         Search For and Replace With strings)</li>
-                    <li>replace <code>&lt;table name="Territory" /&gt;</code> with <code>&lt;table name="Territories" />&gt;</code></li>
+                    <li>replace <code>&lt;table name="Territory" /&gt;</code> with <code>&lt;table name="Territories" /&gt;</code></li>
                 </ol>
                 <p>
                     Repeat the above steps to rename:
@@ -1879,7 +1879,6 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     <table>
                         <col style="font-family: Consolas, Courier New" />
                         <col style="font-family: Consolas, Courier New" />
-                        <col style="font-family: Consolas, Courier New" />
                         <thead>
                             <tr>
                                 <th>Name</th>
@@ -1970,7 +1969,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     which are subject to separate compilation and code generation.
                 </p>
                 <p>
-                    You need to use the <x><include /></x> to include another schema. The following attributes are supported.
+                    You need to use the <x><include /></x> to include another schema. The following attributes are supported
                     (attributes marked with bold are required).
                 </p>
                 <div class="table">
@@ -3875,6 +3874,17 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                         </configuration>
                                         ]]>
                                     </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" valign="top">upperLike</td>
+                                <td align="center" valign="top">UpperLike</td>
+                                <td>
+                                    <p>
+                                        When this parameter is <code>true</code>, both sides of the SQL operator <code>LIKE</code>
+                                        are wrapped in <code>UPPER</code> functions. This can be used to search case-insensitively
+                                        when the <code>LIKE</code> operator matches case-sensitively.
+                                    </p>
                                 </td>
                             </tr>
                         </tbody>
