@@ -46,6 +46,7 @@ namespace Sooda.Sql
     public class SoqlToSqlConverter : SoqlPrettyPrinter
     {
         private ISqlBuilder _builder;
+        private bool _generatingOrderBy = false;
 
         public bool DisableBooleanExpansion = false;
         public bool GenerateColumnAliases = true;
@@ -599,6 +600,8 @@ namespace Sooda.Sql
 
             if (doOutput)
             {
+                if (_generatingOrderBy)
+                    Output.Write(_builder.GetSQLOrderBy(fi, true));
                 if (fi.Table.OrdinalInClass > 0)
                 {
                     string extPrefix = AddPrimaryKeyJoin(firstTableAlias, (ClassInfo)currentContainer, GetTableAliasForExpressionPrefix(p), fi);
@@ -610,6 +613,8 @@ namespace Sooda.Sql
                 }
                 Output.Write(".");
                 Output.Write(fi.DBColumnName);
+                if (_generatingOrderBy)
+                   Output.Write( _builder.GetSQLOrderBy(fi, false));
             }
             return fi;
         }
@@ -813,6 +818,7 @@ namespace Sooda.Sql
                             Output.Write(" ");
                         }
                         Output.Write("order by ");
+                        _generatingOrderBy = true;
                         for (int i = 0; i < v.OrderByExpressions.Count; ++i)
                         {
                             if (i > 0)
@@ -821,6 +827,7 @@ namespace Sooda.Sql
                             Output.Write(" ");
                             Output.Write(v.OrderByOrder[i]);
                         }
+                        _generatingOrderBy = false;
                     }
 
                     if (v.TopCount != -1)

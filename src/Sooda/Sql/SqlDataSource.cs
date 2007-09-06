@@ -62,6 +62,8 @@ namespace Sooda.Sql
         public int CommandTimeout = 30;
         public Type ConnectionType;
         public string ConnectionString;
+        public string CreateTable = "";
+        public string CreateIndex = "";
 
         public SqlDataSource(string name) : base(name)
         {
@@ -88,6 +90,14 @@ namespace Sooda.Sql
 
             if (GetParameter("upperLike", false) == "true")
                 this.UpperLike = true;
+
+            string at = GetParameter("createTable", false);
+            if (at != null)
+                this.CreateTable = at;
+
+            at = GetParameter("createIndex", false);
+            if (at != null)
+                this.CreateIndex = at;
 
             string dialect = GetParameter("sqlDialect", false);
             if (dialect == null)
@@ -1092,12 +1102,12 @@ namespace Sooda.Sql
             foreach (string s in names)
             {
                 tw.WriteLine("--- table {0}", s);
-                SqlBuilder.GenerateCreateTable(tw, (TableInfo)tables[s]);
+                SqlBuilder.GenerateCreateTable(tw, (TableInfo)tables[s], this.CreateTable);
             }
 
             foreach (string s in names)
             {
-                SqlBuilder.GeneratePrimaryKey(tw, (TableInfo)tables[s]);
+                SqlBuilder.GeneratePrimaryKey(tw, (TableInfo)tables[s], this.CreateIndex);
             }
 
             foreach (string s in names)

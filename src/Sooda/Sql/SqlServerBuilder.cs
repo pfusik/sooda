@@ -141,5 +141,27 @@ namespace Sooda.Sql
         {
             return "set identity_insert " + tableName + " on ";
         }
+
+        public override string GetSQLOrderBy(Sooda.Schema.FieldInfo fi, bool start)
+        {
+            switch (fi.DataType)
+            {
+                case FieldDataType.AnsiString:
+                    if (fi.Size > 4000)
+                        return start ? "convert(varchar(3999), " : ")";
+                    else
+                        return "";
+
+                case FieldDataType.String:
+                    if (fi.Size > 4000)
+                        return start ? "convert(nvarchar(3999), " : ")";
+                    else
+                        return "";
+
+                default:
+                    return "";
+            }
+        }
+
     }
 }

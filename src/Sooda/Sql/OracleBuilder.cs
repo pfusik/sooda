@@ -108,7 +108,7 @@ namespace Sooda.Sql
             }
         }
 
-		//// truncate identifier and add a generated number to have unique identifiers
+                //// truncate identifier and add a generated number to have unique identifiers
         //private string TruncateIdentifier(string identifier, int length)
         //{
         //    if (identifier.Length < length)
@@ -121,7 +121,7 @@ namespace Sooda.Sql
 
         //public override string GetConstraintName(string tableName, string foreignKey)
         //{
-        //	// we have to truncate FK name - length of object name must be < 30
+        //      // we have to truncate FK name - length of object name must be < 30
         //    string res = base.GetConstraintName(tableName, foreignKey);
         //    return TruncateIdentifier(res, 30);
         //}
@@ -151,6 +151,28 @@ namespace Sooda.Sql
             {
                 return SqlOuterJoinSyntax.Oracle;
             }
+        }
+
+        public override string GetSQLOrderBy(Sooda.Schema.FieldInfo fi, bool start)
+        {
+            switch (fi.DataType)
+            {
+                case FieldDataType.AnsiString:
+                    if (fi.Size > 2000)
+                        return start ? "cast(" : " as varchar2(2000))";
+                    else
+                        return "";
+
+                case FieldDataType.String:
+                    if (fi.Size > 2000)
+                        return start ? "cast(" : " as nvarchar2(2000))";
+                    else
+                        return "";
+
+                default:
+                    return "";
+            }
+
         }
 
     }

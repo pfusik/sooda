@@ -96,7 +96,7 @@ namespace Sooda.Sql
             Console.Write("\t{0} {1} {2}", fieldInfo.DBColumnName, GetSQLDataType(fieldInfo), fieldInfo.IsNullable ? "null" : "not null");
         }
 
-        public void GenerateCreateTable(TextWriter xtw, Sooda.Schema.TableInfo tableInfo)
+        public void GenerateCreateTable(TextWriter xtw, Sooda.Schema.TableInfo tableInfo, string additionalSettings)
         {
             xtw.WriteLine("create table {0} (", tableInfo.DBTableName);
             Hashtable processedFields = new Hashtable();
@@ -113,10 +113,12 @@ namespace Sooda.Sql
                 }
             }
             xtw.Write(")");
+            if (additionalSettings != "")
+                xtw.Write(" " + additionalSettings);
             xtw.Write(GetDDLCommandTerminator());
         }
 
-        public void GeneratePrimaryKey(TextWriter xtw, Sooda.Schema.TableInfo tableInfo)
+        public void GeneratePrimaryKey(TextWriter xtw, Sooda.Schema.TableInfo tableInfo, string additionalSettings)
         {
             bool first = true;
 
@@ -139,6 +141,8 @@ namespace Sooda.Sql
             if (!first)
             {
                 xtw.Write(")");
+                if (additionalSettings != "")
+                    xtw.Write(" " + additionalSettings);
                 xtw.Write(GetDDLCommandTerminator());
             }
         }
@@ -164,6 +168,7 @@ namespace Sooda.Sql
         }
 
         public abstract string GetSQLDataType(Sooda.Schema.FieldInfo fi);
+        public abstract string GetSQLOrderBy(Sooda.Schema.FieldInfo fi, bool start);
 
         protected virtual bool SetDbTypeFromValue(IDbDataParameter parameter, object value, SoqlLiteralValueModifiers modifiers)
         {

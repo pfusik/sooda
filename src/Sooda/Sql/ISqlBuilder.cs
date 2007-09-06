@@ -38,6 +38,7 @@ namespace Sooda.Sql
     public interface ISqlBuilder
     {
         string GetSQLDataType(Sooda.Schema.FieldInfo fi);
+        string GetSQLOrderBy(Sooda.Schema.FieldInfo fi, bool start);
         string GetDDLCommandTerminator();
         SqlOuterJoinSyntax OuterJoinSyntax { get; }
         SqlTopSupportMode TopSupport { get; }
@@ -46,8 +47,8 @@ namespace Sooda.Sql
 
         void BuildCommandWithParameters(IDbCommand command, bool append, string query, object[] par, bool isRaw);
 
-        void GenerateCreateTable(TextWriter tw, TableInfo tableInfo);
-        void GeneratePrimaryKey(TextWriter tw, TableInfo tableInfo);
+        void GenerateCreateTable(TextWriter tw, TableInfo tableInfo, string additionalSettings);
+        void GeneratePrimaryKey(TextWriter tw, TableInfo tableInfo, string additionalSettings);
         void GenerateForeignKeys(TextWriter tw, TableInfo tableInfo);
         string QuoteFieldName(string name);
         string GetTruncatedIdentifier(string identifier);

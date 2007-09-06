@@ -66,5 +66,10 @@ namespace Sooda.Sql
             }
         }
 
+        public override string GetSQLOrderBy(Sooda.Schema.FieldInfo fi, bool start)
+        {
+            return "";
+        }
+
     }
 }
