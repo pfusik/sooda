@@ -35,8 +35,8 @@ using System.IO;
 
 namespace SoodaFixKeygen
 {
-	class Class1
-	{
+        class Class1
+        {
         static int Main(string[] args)
         {
             if (args.Length < 2)
@@ -53,6 +53,7 @@ namespace SoodaFixKeygen
             using (StreamWriter output = new StreamWriter(args[1], false, System.Text.Encoding.Default))
             {
                 output.WriteLine("delete from KeyGen;");
+                output.WriteLine("GO");
                 bool first = true;
                 output.WriteLine("insert into KeyGen");
                 foreach (ClassInfo classInfo in schemaInfo.Classes)
@@ -74,5 +75,5 @@ namespace SoodaFixKeygen
             }
             return 0;
         }
-	}
+        }
 }
