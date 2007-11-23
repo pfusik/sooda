@@ -329,9 +329,9 @@ namespace Sooda.CodeGen
             context["PrimaryKeyHandlerType"] = pkFieldHandlerTypeName;
             context["IsAbstract"] = ci.IsAbstractClass();
             if (Project.LoaderClass)
-                context["LoaderClass"] = Project.OutputNamespace + "." + ci.Name + "Loader";
+                context["LoaderClass"] = /*Project.OutputNamespace.Replace(".", "") + "." + */ci.Name + "Loader";
             else
-                context["LoaderClass"] = Project.OutputNamespace + ".Stubs." + ci.Name + "_Stub";
+                context["LoaderClass"] = /*Project.OutputNamespace.Replace(".", "") + "Stubs." + */ci.Name + "_Stub";
 
             CodeTypeDeclaration factoryClass = CDILParser.ParseClass(CDILTemplate.Get("Factory.cdil"), context);
 
@@ -371,7 +371,7 @@ namespace Sooda.CodeGen
                 ctd.Comments.Add(new CodeCommentStatement(ci.Description, true));
                 ctd.Comments.Add(new CodeCommentStatement("</summary>", true));
             }
-            ctd.BaseTypes.Add(Project.OutputNamespace + ".Stubs." + ci.Name + "_Stub");
+            ctd.BaseTypes.Add(Project.OutputNamespace.Replace(".", "") + "Stubs." + ci.Name + "_Stub");
             if (ci.IsAbstractClass())
                 ctd.TypeAttributes |= System.Reflection.TypeAttributes.Abstract;
             nspace.Types.Add(ctd);
@@ -495,11 +495,11 @@ namespace Sooda.CodeGen
             }
             if (Project.LoaderClass)
             {
-                context["LoaderClass"] = Project.OutputNamespace + "." + ci.Name + "Loader";
+                context["LoaderClass"] = /*Project.OutputNamespace.Replace(".", "") + "." + */ci.Name + "Loader";
                 context["OptionalNewAttribute"] = "";
             }
             else
-                context["LoaderClass"] = Project.OutputNamespace + ".Stubs." + ci.Name + "_Stub";
+                context["LoaderClass"] = /*Project.OutputNamespace.Replace(".", "") + "Stubs." + */ci.Name + "_Stub";
             CodeTypeDeclaration ctd = CDILParser.ParseClass(CDILTemplate.Get("Loader.cdil"), context);
             foreach (FieldInfo fi in ci.LocalFields)
             {
@@ -521,7 +521,7 @@ namespace Sooda.CodeGen
                             CodeMemberMethod findMethod = new CodeMemberMethod();
                             findMethod.Name = "Find" + ((list == 1) ? "List" : "") + "By" + fi.Name;
                             findMethod.Attributes = MemberAttributes.Public | MemberAttributes.Static;
-                            findMethod.ReturnType = new CodeTypeReference(Project.OutputNamespace + "." + ci.Name + ((list == 1) ? "List" : ""));
+                            findMethod.ReturnType = new CodeTypeReference(Project.OutputNamespace.Replace(".", "") + "." + ci.Name + ((list == 1) ? "List" : ""));
 
                             if (withTransaction == 1)
                             {
@@ -604,7 +604,7 @@ namespace Sooda.CodeGen
             field.InitExpression =
                 new CodeMethodInvokeExpression(
                 new CodeMethodInvokeExpression(
-                new CodeTypeReferenceExpression(Project.OutputNamespace + "." + "_DatabaseSchema"), "GetSchema"), "FindRelationByName",
+                new CodeTypeReferenceExpression(Project.OutputNamespace.Replace(".", "") + "." + "_DatabaseSchema"), "GetSchema"), "FindRelationByName",
                 new CodePrimitiveExpression(ri.Name));
 
             ctd.Members.Add(field);
@@ -1442,6 +1442,7 @@ namespace Sooda.CodeGen
             nspace.Imports.Add(new CodeNamespaceImport("System.Data"));
             nspace.Imports.Add(new CodeNamespaceImport("Sooda"));
             nspace.Imports.Add(new CodeNamespaceImport(Project.OutputNamespace + ".Stubs"));
+            //nspace.Imports.Add(new CodeNamespaceImport(Project.OutputNamespace.Replace(".", "") + "Stubs = " + Project.OutputNamespace + ".Stubs"));
             AddImportsFromIncludedSchema(nspace, schema.Includes, false);
             AddImportsFromIncludedSchema(nspace, schema.Includes, true);
             AddTypedQueryImportsFromIncludedSchema(nspace, schema.Includes);
@@ -1456,7 +1457,7 @@ namespace Sooda.CodeGen
             nspace.Imports.Add(new CodeNamespaceImport("System.Diagnostics"));
             nspace.Imports.Add(new CodeNamespaceImport("System.Data"));
             nspace.Imports.Add(new CodeNamespaceImport("Sooda"));
-            nspace.Imports.Add(new CodeNamespaceImport(Project.OutputNamespace + ".Stubs"));
+            nspace.Imports.Add(new CodeNamespaceImport(Project.OutputNamespace.Replace(".", "") + "Stubs = " + Project.OutputNamespace + ".Stubs"));
             AddImportsFromIncludedSchema(nspace, schema.Includes, false);
             return nspace;
         }
@@ -1470,7 +1471,7 @@ namespace Sooda.CodeGen
             nspace.Imports.Add(new CodeNamespaceImport("System.Data"));
             nspace.Imports.Add(new CodeNamespaceImport("Sooda"));
             nspace.Imports.Add(new CodeNamespaceImport("Sooda.ObjectMapper"));
-            nspace.Imports.Add(new CodeNamespaceImport(Project.OutputNamespace));
+            nspace.Imports.Add(new CodeNamespaceImport(Project.OutputNamespace.Replace(".", "") + " = " + Project.OutputNamespace));
             AddImportsFromIncludedSchema(nspace, schema.Includes, false);
             AddImportsFromIncludedSchema(nspace, schema.Includes, true);
             return nspace;

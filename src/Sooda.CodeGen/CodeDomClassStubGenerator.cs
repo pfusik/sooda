@@ -100,7 +100,7 @@ namespace Sooda.CodeGen
                         new CodePrimitiveExpression(GetRootClass(classInfo).Name),
                         new CodeMethodInvokeExpression(
                         new CodeMethodInvokeExpression(
-                        new CodeTypeReferenceExpression(options.OutputNamespace + "." + "_DatabaseSchema"), "GetSchema"),
+                        new CodeTypeReferenceExpression(options.OutputNamespace.Replace(".", "") + "." + "_DatabaseSchema"), "GetSchema"),
                         "GetDataSourceInfo",
                         new CodePrimitiveExpression(classInfo.GetSafeDataSourceName())));
                     break;
@@ -109,7 +109,7 @@ namespace Sooda.CodeGen
                         new CodePrimitiveExpression(GetRootClass(classInfo).Name),
                         new CodeMethodInvokeExpression(
                         new CodeMethodInvokeExpression(
-                        new CodeTypeReferenceExpression(options.OutputNamespace + "." + "_DatabaseSchema"), "GetSchema"),
+                        new CodeTypeReferenceExpression(options.OutputNamespace.Replace(".", "") + "." + "_DatabaseSchema"), "GetSchema"),
                         "GetDataSourceInfo",
                         new CodePrimitiveExpression(classInfo.GetSafeDataSourceName())));
                     break;
