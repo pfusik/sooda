@@ -45,7 +45,7 @@ namespace SoodaCompileStubs
         {
             if (args.Length < 2)
             {
-                Console.WriteLine("Usage: SoodaCompileStubs assembly_base_name stubs_dir [skeleton_extra_files]");
+                Console.WriteLine("Usage: SoodaCompileStubs assembly_base_name stubs_dir [skeleton_extra_files] [options]");
                 return 1;
             }
             string assemblyBaseName = args[0];
@@ -70,7 +70,8 @@ namespace SoodaCompileStubs
             ArrayList sourceFiles = new ArrayList();
             for (int i = 2; i < args.Length; ++i)
             {
-                sourceFiles.Add(Path.GetFullPath(args[i]));
+                if (!args[i].StartsWith("/"))
+                    sourceFiles.Add(Path.GetFullPath(args[i]));
             }
 
             sourceFiles.Add(miniSkeletonCSX);
@@ -145,6 +146,9 @@ namespace SoodaCompileStubs
                 {
                     if (args[i].EndsWith(".dll"))
                         options.ReferencedAssemblies.Add(Path.GetFullPath(args[i]));
+                    else
+                        if (args[i].StartsWith("/"))
+                        options.CompilerOptions += " " + args[i];
                 }
                 options.OutputAssembly = stubsDll;
                 options.GenerateInMemory = false;
@@ -174,6 +178,9 @@ namespace SoodaCompileStubs
                 {
                     if (args[i].EndsWith(".dll"))
                         options.ReferencedAssemblies.Add(Path.GetFullPath(args[i]));
+                    else
+                        if (args[i].StartsWith("/"))
+                        options.CompilerOptions += " " + args[i];
                 }
                 options.OutputAssembly = objectsAssemblyDll;
                 options.GenerateInMemory = false;
@@ -183,6 +190,8 @@ namespace SoodaCompileStubs
                 for (int i = 2; i < args.Length; ++i)
                 {
                     if (args[i].EndsWith(".dll"))
+                        continue;
+                    if (args[i].StartsWith("/"))
                         continue;
 
                     skeletonSourceFiles.Add(Path.GetFullPath(args[i]));
@@ -210,13 +219,17 @@ namespace SoodaCompileStubs
                 options.ReferencedAssemblies.Add("System.Xml.dll");
                 options.ReferencedAssemblies.Add("System.Drawing.dll");
                 options.ReferencedAssemblies.Add(objectsAssemblyDll);
+                options.CompilerOptions = "/doc:" + stubsDoc + " /res:" + Path.Combine(basePath, "_DBSchema.bin");
+
                 for (int i = 2; i < args.Length; ++i)
                 {
                     if (args[i].EndsWith(".dll"))
                         options.ReferencedAssemblies.Add(Path.GetFullPath(args[i]));
+                    else
+                        if (args[i].StartsWith("/"))
+                        options.CompilerOptions += " " + args[i];
                 }
                 
-                options.CompilerOptions = "/doc:" + stubsDoc + " /res:" + Path.Combine(basePath, "_DBSchema.bin");
                 options.OutputAssembly = stubsDll;
                 options.GenerateInMemory = false;
 
