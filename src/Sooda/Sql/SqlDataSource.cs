@@ -43,8 +43,8 @@ namespace Sooda.Sql
 {
     public class SqlDataSource : Sooda.SoodaDataSource
     {
-        static Logger logger = LogManager.GetLogger("Sooda.SqlDataSource");
-        static Logger sqllogger = LogManager.GetLogger("Sooda.SQL");
+        protected static Logger logger = LogManager.GetLogger("Sooda.SqlDataSource");
+        protected static Logger sqllogger = LogManager.GetLogger("Sooda.SQL");
 
         private IDbCommand _updateCommand = null;
         private IsolationLevel _isolationLevel = IsolationLevel.ReadCommitted;
@@ -232,7 +232,7 @@ namespace Sooda.Sql
             {
                 logger.Debug("CommandTimeout not supported. {0}", e.Message);
             }
-            if (!DisableTransactions)
+            if (Transaction != null)
                 _updateCommand.Transaction = this.Transaction;
             _updateCommand.CommandText = "";
         }
@@ -330,7 +330,7 @@ namespace Sooda.Sql
                 logger.Debug("CommandTimeout not supported. {0}", e.Message);
             }
 
-            if (!DisableTransactions)
+            if (Transaction != null)
                 cmd.Transaction = this.Transaction;
 
             SqlBuilder.BuildCommandWithParameters(cmd, false, GetLoadingSelectStatement(classInfo, classInfo.UnifiedTables[tableNumber], out loadedTables), SoodaTuple.GetValuesArray(keyVal), false);
@@ -421,7 +421,7 @@ namespace Sooda.Sql
                     logger.Debug("CommandTimeout not supported. {0}", e.Message);
                 }
 
-                if (!DisableTransactions)
+                if (Transaction != null)
                     cmd.Transaction = this.Transaction;
 
                 SqlBuilder.BuildCommandWithParameters(cmd, false, query, whereClause.Parameters, false);
@@ -520,7 +520,7 @@ namespace Sooda.Sql
                     logger.Debug("CommandTimeout not supported. {0}", e.Message);
                 }
 
-                if (!DisableTransactions)
+                if (Transaction != null)
                     cmd.Transaction = this.Transaction;
 
                 SqlBuilder.BuildCommandWithParameters(cmd, false, query, whereClause.Parameters, false);
@@ -563,7 +563,7 @@ namespace Sooda.Sql
                     logger.Debug("CommandTimeout not supported. {0}", e.Message);
                 }
 
-                if (!DisableTransactions)
+                if (Transaction != null)
                     cmd.Transaction = this.Transaction;
 
                 SqlBuilder.BuildCommandWithParameters(cmd, false, queryText, parameters, true);
@@ -590,7 +590,7 @@ namespace Sooda.Sql
                     {
                         logger.Debug("CommandTimeout not supported. {0}", e.Message);
                     }
-                    if (!DisableTransactions)
+                    if (Transaction != null)
                         cmd.Transaction = this.Transaction;
 
                     SqlBuilder.BuildCommandWithParameters(cmd, false, queryText, parameters, true);
@@ -625,7 +625,7 @@ namespace Sooda.Sql
                     logger.Debug("CommandTimeout not supported. {0}", e.Message);
                 }
 
-                if (!DisableTransactions)
+                if (Transaction != null)
                     cmd.Transaction = this.Transaction;
 
                 SqlBuilder.BuildCommandWithParameters(cmd, false, query, new object[] { masterValue }, false);
@@ -807,7 +807,7 @@ namespace Sooda.Sql
                 {
                     logger.Debug("CommandTimeout not supported. {0}", e.Message);
                 }
-                if (!DisableTransactions)
+                if (Transaction != null)
                     cmd.Transaction = this.Transaction;
 
                 cmd.CommandText = sql;
