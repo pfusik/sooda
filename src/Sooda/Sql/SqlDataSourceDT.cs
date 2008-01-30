@@ -63,7 +63,9 @@ namespace Sooda.Sql
         {
             if (System.Transactions.Transaction.Current != null)
             {
-                return true;
+				//TransactionStatus ts = System.Transactions.Transaction.Current.TransactionInformation.Status;
+				//if (ts == System.Transactions.TransactionStatus.Active || ts == System.Transactions.TransactionStatus.InDoubt)
+				return true;
             }
             return false;
         }

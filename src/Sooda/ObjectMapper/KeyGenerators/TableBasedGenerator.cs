@@ -68,7 +68,21 @@ namespace Sooda.ObjectMapper.KeyGenerators
             }
         }
 
-        public void AcquireNextRange()
+#if DOTNET2
+		public void AcquireNextRange()
+		{
+			using (System.Transactions.TransactionScope ts = new System.Transactions.TransactionScope(System.Transactions.TransactionScopeOption.Suppress))
+			{
+				AcquireNextRangeInternal();
+			}
+		}
+#else
+		public void AcquireNextRange()
+		{
+			AcquireNextRangeInternal();
+		}
+#endif
+        private void AcquireNextRangeInternal()
         {
             // TODO - fix me, this is hack
 
