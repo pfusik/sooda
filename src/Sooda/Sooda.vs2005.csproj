@@ -185,6 +185,7 @@
     </Compile>
     <Compile Include="SoodaFieldSizeAttribute.cs" />
     <Compile Include="SoodaHttpContextBoundTransactionStrategy.cs" />
+    <Compile Include="SoodaProcessBoundTransactionStrategy.cs" />
     <Compile Include="SoodaThreadBoundTransactionStrategy.cs" />
     <Compile Include="IDefaultSoodaTransactionStrategy.cs" />
     <Compile Include="ISoodaObjectFactory.cs">

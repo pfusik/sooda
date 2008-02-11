@@ -44,6 +44,7 @@
         <File RelPath='SoodaObjectReflectionBasedFieldValues.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='SoodaObjectsAssemblyAttribute.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='SoodaOrderBy.cs' SubType='Code' BuildAction='Compile' />
+        <File RelPath='SoodaProcessBoundTransactionStrategy.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='SoodaSerializeOptions.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='SoodaSnapshotOptions.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='SoodaStatistics.cs' SubType='Code' BuildAction='Compile' />
