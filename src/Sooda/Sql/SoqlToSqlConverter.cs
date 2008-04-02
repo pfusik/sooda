@@ -109,6 +109,7 @@ namespace Sooda.Sql
             firstTableAlias = lastTableAlias;
 
             SoqlPathExpression currentToken;
+            bool nullable = false;
 
             for (currentToken = startingToken; currentToken != null; currentToken = currentToken.Next)
             {
@@ -132,14 +133,17 @@ namespace Sooda.Sql
                     continue;
                 };
 
+                if (fi.IsNullable)
+                    nullable = true;
+
                 if (fi.Table.OrdinalInClass > 0)
                 {
                     string extPrefix = AddPrimaryKeyJoin(firstTableAlias, (ClassInfo)currentContainer, lastTableAlias, fi);
-                    AddRefJoin(firstTableAlias, p, extPrefix, fi);
+                    AddRefJoin(firstTableAlias, p, extPrefix, fi, nullable);
                 }
                 else
                 {
-                    AddRefJoin(firstTableAlias, p, lastTableAlias, fi);
+                    AddRefJoin(firstTableAlias, p, lastTableAlias, fi, nullable);
                 }
                 currentContainer = fi.ReferencedClass;
             }
@@ -1095,7 +1099,7 @@ namespace Sooda.Sql
             return newPrefix;
         }
 
-        public void AddRefJoin(string fromTableAlias, string newPrefix, string lastTableAlias, FieldInfo field)
+        public void AddRefJoin(string fromTableAlias, string newPrefix, string lastTableAlias, FieldInfo field, bool nullable)
         {
             // logger.Debug("AddRefJoin({0},{1},{2},{3})", fromTableAlias, newPrefix, lastTableAlias, field);
             if (ExpressionPrefixToTableAlias.ContainsKey(newPrefix))
@@ -1110,7 +1114,7 @@ namespace Sooda.Sql
                 throw new NotSupportedException();
 
             string s = AddJoin(field.ReferencedClass.UnifiedTables[0], lastTableAlias, tbl,
-                field, field.ReferencedClass.GetFirstPrimaryKeyField(), !field.IsNullable);
+                field, field.ReferencedClass.GetFirstPrimaryKeyField(), !nullable);
 
             StringCollection coll = (StringCollection)FromJoins[foundPos];
             coll.Add(s);
