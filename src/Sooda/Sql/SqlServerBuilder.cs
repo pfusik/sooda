@@ -163,5 +163,11 @@ namespace Sooda.Sql
             }
         }
 
+        public override string GetAlterTableStatement(Sooda.Schema.TableInfo tableInfo)
+        {
+            string ident = GetTruncatedIdentifier(String.Format("PK_{0}", tableInfo.DBTableName));
+            return String.Format("alter table {0} add constraint {1} primary key", tableInfo.DBTableName, ident);
+        }
+
     }
 }

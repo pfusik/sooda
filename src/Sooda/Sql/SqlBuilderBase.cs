@@ -118,6 +118,11 @@ namespace Sooda.Sql
             xtw.Write(GetDDLCommandTerminator());
         }
 
+        public virtual string GetAlterTableStatement(Sooda.Schema.TableInfo tableInfo)
+        {
+            return String.Format("alter table {0} add primary key", tableInfo.DBTableName);
+        }
+
         public void GeneratePrimaryKey(TextWriter xtw, Sooda.Schema.TableInfo tableInfo, string additionalSettings)
         {
             bool first = true;
@@ -128,7 +133,8 @@ namespace Sooda.Sql
                 {
                     if (first)
                     {
-                        xtw.Write("alter table {0} add primary key (", tableInfo.DBTableName);
+                        xtw.Write(GetAlterTableStatement(tableInfo));
+                        xtw.Write(" (");
                     }
                     else
                     {
