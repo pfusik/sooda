@@ -52,7 +52,7 @@ namespace SoodaFixKeygen
 
             using (StreamWriter output = new StreamWriter(args[1], false, System.Text.Encoding.Default))
             {
-                output.WriteLine("delete from KeyGen;");
+                output.WriteLine("delete from KeyGen");
                 output.WriteLine("GO");
                 bool first = true;
                 output.WriteLine("insert into KeyGen");
