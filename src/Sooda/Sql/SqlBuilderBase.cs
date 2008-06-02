@@ -168,9 +168,29 @@ namespace Sooda.Sql
             }
         }
 
+        public void GenerateIndices(TextWriter xtw, Sooda.Schema.TableInfo tableInfo, string additionalSettings)
+        {
+            foreach (Sooda.Schema.FieldInfo fi in tableInfo.Fields)
+            {
+                if (fi.References != null)
+                {
+                    xtw.Write("create index {0} on {1} ({2})",
+                            GetIndexName(tableInfo.DBTableName, fi.DBColumnName), tableInfo.DBTableName, fi.DBColumnName);
+                    if (additionalSettings != "")
+                        xtw.Write(" " + additionalSettings);
+                    xtw.Write(GetDDLCommandTerminator());
+                }
+            }
+        }
+
         public virtual string GetConstraintName(string tableName, string foreignKey)
         {
             return GetTruncatedIdentifier(String.Format("FK_{0}_{1}", tableName, foreignKey));
+        }
+
+        public virtual string GetIndexName(string tableName, string column)
+        {
+            return GetTruncatedIdentifier(String.Format("IDX_{0}_{1}", tableName, column));
         }
 
         public abstract string GetSQLDataType(Sooda.Schema.FieldInfo fi);

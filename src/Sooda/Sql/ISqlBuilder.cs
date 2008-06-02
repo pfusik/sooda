@@ -50,6 +50,7 @@ namespace Sooda.Sql
         void GenerateCreateTable(TextWriter tw, TableInfo tableInfo, string additionalSettings);
         void GeneratePrimaryKey(TextWriter tw, TableInfo tableInfo, string additionalSettings);
         void GenerateForeignKeys(TextWriter tw, TableInfo tableInfo);
+        void GenerateIndices(TextWriter tw, TableInfo tableInfo, string additionalSettings);
         string QuoteFieldName(string name);
         string GetTruncatedIdentifier(string identifier);
     }

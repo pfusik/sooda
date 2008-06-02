@@ -1114,6 +1114,11 @@ namespace Sooda.Sql
             {
                 SqlBuilder.GenerateForeignKeys(tw, (TableInfo)tables[s]);
             }
+
+            foreach (string s in names)
+            {
+                SqlBuilder.GenerateIndices(tw, (TableInfo)tables[s], this.CreateIndex);
+            }
         }
     }
 }
