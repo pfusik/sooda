@@ -108,6 +108,28 @@ namespace Sooda.Sql
             }
         }
 
+        public override string GetSQLNullable(Sooda.Schema.FieldInfo fi)
+        {
+            switch (fi.DataType)
+            {
+                case FieldDataType.AnsiString:
+                    if (fi.Size < 4000)
+                        // dla clob IsNull dziala w oracle dobrze, a dla nvarchar2 isnull('') = true - niezgodne z ansi SQL-92
+                        return "null";
+                    break;
+
+                case FieldDataType.String:
+                    if (fi.Size < 4000)
+                        // dla clob IsNull dziala w oracle dobrze, a dla nvarchar2 isnull('') = true - niezgodne z ansi SQL-92
+                        return "null";
+                    break;
+            }
+
+            return fi.IsNullable ? "null" : "not null";
+        }
+
+
+
                 //// truncate identifier and add a generated number to have unique identifiers
         //private string TruncateIdentifier(string identifier, int length)
         //{

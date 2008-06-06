@@ -93,7 +93,7 @@ namespace Sooda.Sql
 
         public void GenerateCreateTableField(TextWriter xtw, Sooda.Schema.FieldInfo fieldInfo)
         {
-            Console.Write("\t{0} {1} {2}", fieldInfo.DBColumnName, GetSQLDataType(fieldInfo), fieldInfo.IsNullable ? "null" : "not null");
+            Console.Write("\t{0} {1} {2}", fieldInfo.DBColumnName, GetSQLDataType(fieldInfo), GetSQLNullable(fieldInfo));
         }
 
         public void GenerateCreateTable(TextWriter xtw, Sooda.Schema.TableInfo tableInfo, string additionalSettings)
@@ -195,6 +195,11 @@ namespace Sooda.Sql
 
         public abstract string GetSQLDataType(Sooda.Schema.FieldInfo fi);
         public abstract string GetSQLOrderBy(Sooda.Schema.FieldInfo fi, bool start);
+
+        public virtual string GetSQLNullable(Sooda.Schema.FieldInfo fi)
+        {
+            return fi.IsNullable ? "null" : "not null";
+        }
 
         protected virtual bool SetDbTypeFromValue(IDbDataParameter parameter, object value, SoqlLiteralValueModifiers modifiers)
         {
