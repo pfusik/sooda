@@ -795,8 +795,59 @@ namespace Sooda.Sql
                             Output.Write(v.TopCount);
                         }
                     }
-                    Output = oldOutput;
 
+                    StringWriter whereSW = new StringWriter();
+                    Output = whereSW;
+
+                    SoqlBooleanExpression limitedWhere = (SoqlBooleanExpression)v.WhereClause;
+                    for (int i = 0; i < v.From.Count; ++i)
+                    {
+                        Sooda.Schema.ClassInfo ci = Schema.FindClassByName(v.From[i]);
+
+                        if (ci == null)
+                            continue;
+
+                        SoqlBooleanExpression restriction = BuildClassRestriction(ActualFromAliases[i], ci);
+
+                        if (restriction != null)
+                        {
+                            if (limitedWhere == null)
+                            {
+                                limitedWhere = restriction;
+                            }
+                            else
+                            {
+                                limitedWhere = new SoqlBooleanAndExpression(limitedWhere, restriction);
+                            }
+                        }
+                    }
+                    
+                    if (limitedWhere != null || WhereJoins.Count > 0)
+                    {
+                        if (IndentOutput)
+                        {
+                            Output.WriteLine();
+                            WriteIndentString();
+                            Output.Write("where    ");
+                        }
+                        else
+                        {
+                            Output.Write(" where ");
+                        }
+                        limitedWhere.Accept(this);
+                        bool first = true;
+                        if (limitedWhere != null)
+                            first = false;
+
+                        foreach (string s in WhereJoins)
+                        {
+                            if (!first)
+                                Output.Write(" and ");
+                            Output.Write(s);
+                        }
+                    }
+
+                    Output = oldOutput;
 
                     if (IndentOutput)
                     {
@@ -850,53 +901,7 @@ namespace Sooda.Sql
                         }
                     }
 
-                    SoqlBooleanExpression limitedWhere = (SoqlBooleanExpression)v.WhereClause;
-                    for (int i = 0; i < v.From.Count; ++i)
-                    {
-                        Sooda.Schema.ClassInfo ci = Schema.FindClassByName(v.From[i]);
-
-                        if (ci == null)
-                            continue;
-
-                        SoqlBooleanExpression restriction = BuildClassRestriction(ActualFromAliases[i], ci);
-
-                        if (restriction != null)
-                        {
-                            if (limitedWhere == null)
-                            {
-                                limitedWhere = restriction;
-                            }
-                            else
-                            {
-                                limitedWhere = new SoqlBooleanAndExpression(limitedWhere, restriction);
-                            }
-                        }
-                    }
-                    if (limitedWhere != null || WhereJoins.Count > 0)
-                    {
-                        if (IndentOutput)
-                        {
-                            Output.WriteLine();
-                            WriteIndentString();
-                            Output.Write("where    ");
-                        }
-                        else
-                        {
-                            Output.Write(" where ");
-                        }
-                        limitedWhere.Accept(this);
-                        bool first = true;
-                        if (limitedWhere != null)
-                            first = false;
-
-                        foreach (string s in WhereJoins)
-                        {
-                            if (!first)
-                                Output.Write(" and ");
-                            Output.Write(s);
-                        }
-                    }
-
+                    Output.Write(whereSW.ToString());
                     Output.Write(sw.ToString());
                 }
                 finally
