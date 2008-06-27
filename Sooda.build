@@ -117,6 +117,7 @@
                 <include name="System.Drawing.dll" />
                 <include name="System.Web.dll" />
                 <include name="System.Configuration.dll" />
+                <include name="System.Data.OracleClient.dll" />
             </references>
             <sources basedir="src/Sooda">
                 <include name="**/*.cs" />

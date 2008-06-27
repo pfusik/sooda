@@ -283,7 +283,7 @@ namespace Sooda.Sql
             return "";
         }
 
-        protected string AddParameterFromValue(IDbCommand command, object v, SoqlLiteralValueModifiers modifiers)
+        protected virtual string AddParameterFromValue(IDbCommand command, object v, SoqlLiteralValueModifiers modifiers)
         {
             IDbDataParameter p = command.CreateParameter();
             p.Direction = ParameterDirection.Input;

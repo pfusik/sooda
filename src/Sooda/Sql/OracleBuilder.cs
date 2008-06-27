@@ -28,7 +28,10 @@
 // 
 
 using System;
+using System.Data;
+using System.Data.OracleClient;
 
+using Sooda.QL;
 using Sooda.Schema;
 
 namespace Sooda.Sql
@@ -203,5 +206,15 @@ namespace Sooda.Sql
             return String.Format("alter table {0} add constraint {1} primary key", tableInfo.DBTableName, ident);
         }
 
+        protected override string AddParameterFromValue(IDbCommand command, object v, SoqlLiteralValueModifiers modifiers)
+        {
+            string paramName = base.AddParameterFromValue(command, v, modifiers);
+            OracleParameter param = (OracleParameter)command.Parameters[paramName];
+            if ((param.DbType == DbType.String) && (v.ToString().Length > 2000))
+            {
+                param.OracleType = OracleType.NClob;
+            }
+            return paramName;
+        }
     }
 }
