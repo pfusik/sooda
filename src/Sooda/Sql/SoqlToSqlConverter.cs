@@ -636,6 +636,7 @@ namespace Sooda.Sql
                 subconverter.Parent = this;
                 subconverter.IndentLevel = this.IndentLevel;
                 subconverter.IndentStep = this.IndentStep;
+                subconverter.UpperLike = this.UpperLike;
                 subconverter.Visit(v);
             }
             else
