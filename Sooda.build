@@ -36,7 +36,7 @@
     <target name="build-mono-2.0" depends="build-common, minitools" />
 
     <target name="build-common" depends="configure, libraries" />
-    <target name="tools" depends="SoodaStubGen, SoodaSchemaTool, SoodaFixKeygen, SoodaCompileStubs" />
+    <target name="tools" depends="SoodaStubGen, SoodaSchemaTool, SoodaFixKeygen, SoodaCompileStubs, SoodaQuery" />
     <target name="guitools" depends="ConfigureSoodaProject" />
     <target name="minitools" depends="SoodaStubGen, SoodaCompileStubs" />
 
@@ -49,6 +49,7 @@
         <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaCompileStubs/AssemblyBuildInfo.cs build/Sooda.buildversion" useruntimeengine="true" />
         <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaFixKeygen/AssemblyBuildInfo.cs build/Sooda.buildversion" useruntimeengine="true" />
         <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaSchemaTool/AssemblyBuildInfo.cs build/Sooda.buildversion" useruntimeengine="true" />
+        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaQuery/AssemblyBuildInfo.cs build/Sooda.buildversion" useruntimeengine="true" />
         <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaAddin.UI/AssemblyBuildInfo.cs build/Sooda.buildversion" useruntimeengine="true" />
         <foreach item="Line" in="build/Sooda.buildversion" delim="." property="tmp1,tmp2,tmp3,tmp4">
             <property name="sooda.version.major" value="${tmp1}" />
@@ -271,6 +272,26 @@
             <sources basedir="src/SoodaSchemaTool">
                 <include name="*.cs" />
             </sources>
+            <arg value="${sooda.csc.args}"/>
+        </csc>
+    </target>
+
+    <target name="SoodaQuery" depends="configure, update-build-number, Sooda">
+        <copy file="external/ICSharpCode.TextEditor.dll" tofile="${sooda.dir}/ICSharpCode.TextEditor.dll" />
+        <csc target="exe" output="${sooda.dir}/SoodaQuery.exe" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
+            <references>                                  
+                <include name="System.Data.dll" asis="true" />
+                <include name="${sooda.dir}/Sooda.dll" />
+                <include name="${sooda.dir}/ICSharpCode.TextEditor.dll" />
+            </references>
+            <sources basedir="src/SoodaQuery">
+                <include name="*.cs" />
+            </sources>
+            <resources basedir="src/SoodaQuery" prefix="SoodaQuery" dynamicprefix="true">
+                <include name="SyntaxModes.xml" />
+                <include name="**/*.resx" />
+                <include name="**/*.xshd" />
+            </resources>
             <arg value="${sooda.csc.args}"/>
         </csc>
     </target>
@@ -947,6 +968,15 @@
                 <include name="*.csdproj" />
             </project-files>
             <source-files basedir="src/SoodaSchemaTool">
+                <include name="**/*.cs" />
+            </source-files>
+        </sync-vs-project-items>
+        <sync-vs-project-items>
+            <project-files basedir="src/SoodaQuery">
+                <include name="*.csproj" />
+                <include name="*.csdproj" />
+            </project-files>
+            <source-files basedir="src/SoodaQuery">
                 <include name="**/*.cs" />
             </source-files>
         </sync-vs-project-items>

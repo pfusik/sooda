@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<SyntaxDefinition name = "CSV" extensions = ".csv">
+	<Environment> 
+		<Default      color = "SystemColors.WindowText" bgcolor="SystemColors.Window"/>
+		<Selection    bgcolor = "#e0e0f0"/>
+		<VRuler       color = "Green"/>
+		<InvalidLines color = "Red"/>
+		<CaretMarker  color = "Yellow"/>
+
+		<LineNumbers  color = "#FF696969" bgcolor = "WhiteSmoke"/>
+		
+		<FoldLine     color = "#808080" bgcolor = "Black"/>
+		<FoldMarker   color = "#808080" bgcolor = "White"/>
+		
+		<EOLMarkers   color = "#E0E0E5"/>
+		<SpaceMarkers color = "#E0E0E5"/>
+		<TabMarkers   color = "#E0E0E5"/>
+	</Environment>
+
+	<Properties>
+		<Property name="LineComment" value="--"/>
+	</Properties>
+
+	<Digits name = "Digits" bold = "false" italic = "false" color = "#0000ff"/>
+
+	<RuleSets>
+		<RuleSet ignorecase="true">
+			<Delimiters>&amp;&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
+
+			<Span name = "STRING1" bold = "false" italic = "false" color = "#404080" stopateol = "false">
+				<Begin>&quot;</Begin>
+				<End>&quot;</End>
+			</Span>
+			<Span name = "STRING2" bold = "false" italic = "false" color = "#404080" stopateol = "false">
+				<Begin>&apos;</Begin>
+				<End>&apos;</End>
+			</Span>
+
+			<KeyWords name = "Punctuation" bold = "false" italic = "false" color = "#ff0000">
+				<Key word = ";" />
+			</KeyWords>
+		</RuleSet>
+	</RuleSets>
+</SyntaxDefinition>
+

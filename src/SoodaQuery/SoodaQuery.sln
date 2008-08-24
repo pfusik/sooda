@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaQuery", "SoodaQuery.csproj", "{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}.Debug.ActiveCfg = Debug|.NET
+		{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}.Debug.Build.0 = Debug|.NET
+		{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}.Release.ActiveCfg = Release|.NET
+		{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

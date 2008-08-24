@@ -1,0 +1,13 @@
+<SyntaxModes version="1.0">
+	<Mode file       = "SQL-Mode.xshd"
+	      name       = "SQL"
+		  extensions = ".sql"/>
+	
+	<Mode file       = "CSV-Mode.xshd"
+	      name       = "CSV"
+		  extensions = ".csv"/>
+	
+	<Mode file       = "XML-Mode.xshd"
+	      name       = "MyXML"
+		  extensions = ".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd"/>
+</SyntaxModes>

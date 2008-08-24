@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaStubGen.vs2005", "src\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sooda.UnitTests.BaseObjects.vs2005", "tests\BaseObjects\Sooda.UnitTests.BaseObjects.vs2005.csproj", "{A1D122ED-CF84-4EF0-A138-72922DD50409}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoodaQuery", "src\SoodaQuery\SoodaQuery.csproj", "{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,6 +68,10 @@ Global
 		{A1D122ED-CF84-4EF0-A138-72922DD50409}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1D122ED-CF84-4EF0-A138-72922DD50409}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1D122ED-CF84-4EF0-A138-72922DD50409}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
