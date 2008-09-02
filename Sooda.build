@@ -281,6 +281,7 @@
         <csc target="exe" output="${sooda.dir}/SoodaQuery.exe" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
             <references>                                  
                 <include name="System.Data.dll" asis="true" />
+                <include name="System.Data.OracleClient.dll" asis="true" />
                 <include name="${sooda.dir}/Sooda.dll" />
                 <include name="${sooda.dir}/ICSharpCode.TextEditor.dll" />
             </references>

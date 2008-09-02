@@ -184,13 +184,13 @@ namespace Sooda.Sql
             {
                 case FieldDataType.AnsiString:
                     if (fi.Size > 2000)
-                        return start ? "cast(" : " as varchar2(2000))";
+                        return start ? "cast(substr(" : ", 0, 2000) as varchar2(2000))";
                     else
                         return "";
 
                 case FieldDataType.String:
                     if (fi.Size > 2000)
-                        return start ? "cast(" : " as nvarchar2(2000))";
+                        return start ? "cast(substr(" : ", 0, 2000) as nvarchar2(2000))";
                     else
                         return "";
 

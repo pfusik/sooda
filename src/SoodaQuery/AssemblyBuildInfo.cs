@@ -1,4 +1,4 @@
 // do not modify this file. It will be automatically regenerated
 // based on the version number saved in 'Sooda.version'
 using System.Reflection;
-[assembly: AssemblyVersion("1.0.0.450")]
+[assembly: AssemblyVersion("1.0.0.452")]
