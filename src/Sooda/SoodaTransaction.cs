@@ -198,6 +198,18 @@ namespace Sooda
             }
         }
 
+        public static bool HasActiveTransaction
+        {
+            [DebuggerStepThrough]
+            get
+            {
+                if (_defaultTransactionStrategy.GetDefaultTransaction() == null)
+                    return false;
+
+                return true;
+            }
+        }
+
         internal WeakSoodaObjectCollection GetObjectsByClassName(string className)
         {
             return _objectsByClass[className];
