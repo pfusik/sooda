@@ -1227,7 +1227,7 @@ namespace Sooda.Sql
 
         public override void Visit(SoqlBooleanRelationalExpression v)
         {
-            bool upper = UpperLike && ((v.op == SoqlRelationalOperator.Like) || (v.op == SoqlRelationalOperator.Equal));
+            bool upper = UpperLike && v.op == SoqlRelationalOperator.Like;
 
             //
             // this is to support type coercions. Whenever we have
