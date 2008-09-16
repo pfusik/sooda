@@ -848,6 +848,21 @@ namespace Sooda.Sql
                         }
                     }
 
+                    if (v.TopCount != -1)
+                    {
+                        if (_builder.TopSupport == SqlTopSupportMode.Oracle)
+                        {
+                            if (limitedWhere != null || WhereJoins.Count > 0)
+                                Output.Write(" and ");
+                            else
+                                Output.Write(" where ");
+                            Output.Write(" rownum <= ");
+                            Output.Write(v.TopCount);
+                            Output.Write(" ");
+                        }
+                    }
+
+
                     Output = oldOutput;
 
                     if (IndentOutput)
