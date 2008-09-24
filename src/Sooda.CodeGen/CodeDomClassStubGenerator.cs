@@ -457,12 +457,28 @@ namespace Sooda.CodeGen
                             new CodeTypeReferenceExpression(typeof(SoodaTuple)), "GetValue", getPrimaryKeyValue, new CodePrimitiveExpression(primaryKeyComponentNumber));
                     }
 
-                    prop.GetStatements.Add(
-                        new CodeMethodReturnStatement(
-                        new CodeCastExpression(
-                        prop.Type,
-                        getPrimaryKeyValue
-                        )));
+                    if (fi.References != null)
+                    {
+                        prop.GetStatements.Add(
+                            new CodeMethodReturnStatement(
+                            new CodeMethodInvokeExpression(
+                                LoaderClass(fi.ReferencedClass),
+                                "GetRef",
+                                GetTransaction(),
+                                new CodeCastExpression(
+                                    GetReturnType(actualNotNullRepresentation, fi),
+                                    getPrimaryKeyValue
+                            ))));
+                    }
+                    else
+                    {
+                        prop.GetStatements.Add(
+                            new CodeMethodReturnStatement(
+                            new CodeCastExpression(
+                            prop.Type,
+                            getPrimaryKeyValue
+                            )));
+                    }
 
                     if (!classInfo.ReadOnly)
                     {
@@ -476,11 +492,14 @@ namespace Sooda.CodeGen
                         }
                         else
                         {
+                            CodeExpression plainValue = new CodePropertySetValueReferenceExpression();
+                            if (fi.References != null)
+                                plainValue = new CodeMethodInvokeExpression(plainValue, "GetPrimaryKeyValue");
                             prop.SetStatements.Add(
                                 new CodeExpressionStatement(
                                 new CodeMethodInvokeExpression(
                                 new CodeThisReferenceExpression(), "SetPrimaryKeySubValue",
-                                new CodePropertySetValueReferenceExpression(),
+                                plainValue,
                                 new CodePrimitiveExpression(primaryKeyComponentNumber),
                                 new CodePrimitiveExpression(classInfo.GetPrimaryKeyFields().Length))));
                         }
