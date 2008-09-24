@@ -51,6 +51,8 @@ namespace Sooda.Sql
         public bool DisableBooleanExpansion = false;
         public bool GenerateColumnAliases = true;
         public bool UpperLike = false;
+        public bool GenerateUniqueAliases = false;
+        public int UniqueColumnId = 0;
         public StringCollection ActualFromAliases = new StringCollection();
         public ArrayList FromJoins = new ArrayList();
         public StringCollection WhereJoins = new StringCollection();
@@ -658,6 +660,22 @@ namespace Sooda.Sql
 
                     if (v.TopCount != -1)
                     {
+                        if (_builder.TopSupport == SqlTopSupportMode.Oracle)
+                        {
+                            Output.Write(" * from (");
+                            IndentLevel++;
+                            WriteIndentString();
+                            if (IndentOutput)
+                            {
+                                Output.Write("select   ");
+                            }
+                            else
+                            {
+                                Output.Write("select ");
+                            }
+                            Output.Write(" ");
+                            GenerateUniqueAliases = true;
+                        }
                         if (_builder.TopSupport == SqlTopSupportMode.SelectTop)
                         {
                             Output.Write("top ");
@@ -680,7 +698,7 @@ namespace Sooda.Sql
                             Output.Write(ActualFromAliases[0]);
                             Output.Write(".");
                             Output.Write(pkfi.DBColumnName);
-                            if (GenerateColumnAliases)
+                            if (GenerateColumnAliases || GenerateUniqueAliases)
                             {
                                 Output.Write(" as ");
                                 Output.Write(_builder.QuoteFieldName(pkfi.Name));
@@ -715,13 +733,21 @@ namespace Sooda.Sql
                                 Output.Write(" as ");
                                 Output.Write(_builder.QuoteFieldName(v.SelectAliases[i]));
                             }
-                            else if (GenerateColumnAliases)
+                            else 
                             {
-                                if (v.SelectExpressions[i] is ISoqlSelectAliasProvider)
+                                if (GenerateColumnAliases)
                                 {
-                                    Output.Write(" as ");
+                                    if (v.SelectExpressions[i] is ISoqlSelectAliasProvider)
+                                    {
+                                        Output.Write(" as ");
 
-                                    ((ISoqlSelectAliasProvider)v.SelectExpressions[i]).WriteDefaultSelectAlias(Output);
+                                        ((ISoqlSelectAliasProvider)v.SelectExpressions[i]).WriteDefaultSelectAlias(Output);
+                                    }
+                                }
+                                else
+                                if (GenerateUniqueAliases)
+                                {
+                                        Output.Write(String.Format(" as col_{0}", UniqueColumnId++));
                                 }
                             }
                         }
@@ -848,21 +874,6 @@ namespace Sooda.Sql
                         }
                     }
 
-                    if (v.TopCount != -1)
-                    {
-                        if (_builder.TopSupport == SqlTopSupportMode.Oracle)
-                        {
-                            if (limitedWhere != null || WhereJoins.Count > 0)
-                                Output.Write(" and ");
-                            else
-                                Output.Write(" where ");
-                            Output.Write(" rownum <= ");
-                            Output.Write(v.TopCount);
-                            Output.Write(" ");
-                        }
-                    }
-
-
                     Output = oldOutput;
 
                     if (IndentOutput)
@@ -919,6 +930,22 @@ namespace Sooda.Sql
 
                     Output.Write(whereSW.ToString());
                     Output.Write(sw.ToString());
+                    if (v.TopCount != -1)
+                    {
+                        if (_builder.TopSupport == SqlTopSupportMode.Oracle)
+                        {
+                            if (IndentOutput)
+                            {
+                                Output.WriteLine();
+                                WriteIndentString();
+                            }
+                            Output.Write(") where rownum <= ");
+                            Output.Write(v.TopCount);
+                            IndentLevel--;
+                        }
+                    }
+
+
                 }
                 finally
                 {
