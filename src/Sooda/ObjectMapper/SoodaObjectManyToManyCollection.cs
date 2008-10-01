@@ -208,7 +208,7 @@ namespace Sooda.ObjectMapper
 
         protected void LoadData()
         {
-            bool useCache = transaction.CachingPolicy.ShouldCacheRelation(relationInfo, _classInfo);
+            bool useCache = false; //transaction.CachingPolicy.ShouldCacheRelation(relationInfo, _classInfo);
             string cacheKey = null;
 
             items = new SoodaObjectToInt32Association();
