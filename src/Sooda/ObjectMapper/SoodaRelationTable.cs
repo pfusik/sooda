@@ -224,8 +224,8 @@ namespace Sooda.ObjectMapper
             if (_dirty)
             {
                 cache.Invalidate(this.relationInfo.Name, "", SoodaCacheInvalidateReason.ManyToManyModified);
-                //cache
-                //cache
+                cache.Invalidate(this.relationInfo.GetRef1ClassInfo().Name, "", SoodaCacheInvalidateReason.ManyToManyModified);
+                cache.Invalidate(this.relationInfo.GetRef2ClassInfo().Name, "", SoodaCacheInvalidateReason.ManyToManyModified);
             }
             _dirty = false;
         }
