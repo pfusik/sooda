@@ -403,10 +403,9 @@ namespace Sooda.Sql
                 }
                 else if (c == '{')
                 {
-                    char c1 = query[i + 1];
-                    object v;
+                    c = query[i + 1];
 
-                    if (c1 == 'L')
+                    if (c == 'L')
                     {
                         // {L:fieldDataTypeName:value
 
@@ -443,7 +442,7 @@ namespace Sooda.Sql
                         }
 
                         SoodaFieldHandler fieldHandler = FieldHandlerFactory.GetFieldHandler(fdt);
-                        v = fieldHandler.RawDeserialize(literalValue);
+                        object v = fieldHandler.RawDeserialize(literalValue);
 
                         if (v == null)
                         {
@@ -469,35 +468,29 @@ namespace Sooda.Sql
                             sb.Append(p.ParameterName);
                         }
                     }
-                    else
+                    else if (c >= '0' && c <= '9')
                     {
-                        char c2 = query[i + 2];
-                        int paramNumber;
-                        SoqlLiteralValueModifiers modifiers = null;
+                        i++;
+                        int paramNumber = 0;
+                        do
+                        {
+                            paramNumber = paramNumber * 10 + c - '0';
+                            c = query[++i];
+                        } while (c >= '0' && c <= '9');
 
-                        if (c2 == '}' || c2 == ':')
-                        {
-                            paramNumber = c1 - '0';
-                            i += 2;
-                        }
-                        else
-                        {
-                            paramNumber = (c1 - '0') * 10 + (c2 - '0');
-                            if (query[i + 3] != '}' && query[i + 3] != ':')
-                                throw new NotSupportedException("Max 99 positional parameters are supported");
-                            i += 3;
-                        }
-                        if (query[i] == ':')
+                        SoqlLiteralValueModifiers modifiers = null;
+                        if (c == ':')
                         {
                             int startPos = i + 1;
-                            int endPos = query.IndexOf('}', startPos);
-                            if (endPos < 0)
+                            i = query.IndexOf('}', startPos);
+                            if (i < 0)
                                 throw new ArgumentException("Missing '}' in parameter specification");
-
-                            modifiers = SoqlParser.ParseLiteralValueModifiers(query.Substring(startPos, endPos - startPos));
-                            i = endPos;
+                            modifiers = SoqlParser.ParseLiteralValueModifiers(query.Substring(startPos, i - startPos));
                         }
-                        v = par[paramNumber];
+                        else if (c != '}')
+                            throw new ArgumentException("Missing '}' in parameter specification");
+
+                        object v = par[paramNumber];
 
                         if (v is SoodaObject)
                         {
@@ -522,6 +515,10 @@ namespace Sooda.Sql
                         {
                             sb.Append(AddNumberedParameter(command, v, modifiers, paramNames, paramNumber));
                         }
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Unexpected character in parameter specification");
                     }
                 }
                 else
