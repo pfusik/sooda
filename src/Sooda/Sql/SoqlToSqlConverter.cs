@@ -494,25 +494,42 @@ namespace Sooda.Sql
             CollectionOnetoManyInfo col1n = currentClass.FindCollectionOneToMany(v.CollectionName);
             if (col1n != null)
             {
-                Output.Write("exists (select * from ");
-                Output.Write(col1n.Class.LocalTables[0].DBTableName);
-                this.SetTableUsageHint(Output, col1n.Class.LocalTables[0]);
-                Output.Write(" where ");
-                Output.Write(col1n.ForeignColumn);
-                Output.Write("=");
+                if (col1n.Class.GetPrimaryKeyFields().Length >= 2 && v.Expr is SoqlQueryExpression)
+                {
+                    Output.Write("exists (");
+                    if (IndentOutput)
+                        Output.WriteLine();
+                    v.Expr.Accept(this);
+                    Output.Write(" and ");
+                    Output.Write(col1n.ForeignColumn);
+                    Output.Write("=");
+                    Output.Write(GetTableAliasForExpressionPrefix(p));
+                    Output.Write(".");
+                    Output.Write(currentClass.GetFirstPrimaryKeyField().DBColumnName);
+                    Output.Write(")");
+                }
+                else
+                {
+                    Output.Write("exists (select * from ");
+                    Output.Write(col1n.Class.LocalTables[0].DBTableName);
+                    this.SetTableUsageHint(Output, col1n.Class.LocalTables[0]);
+                    Output.Write(" where ");
+                    Output.Write(col1n.ForeignColumn);
+                    Output.Write("=");
 
-                Output.Write(GetTableAliasForExpressionPrefix(p));
-                Output.Write(".");
-                Output.Write(currentClass.GetFirstPrimaryKeyField().DBColumnName);
-                Output.Write(" and ");
-                Output.Write(col1n.Class.GetFirstPrimaryKeyField().DBColumnName);
-                Output.Write(" in (");
-                if (IndentOutput)
-                    Output.WriteLine();
+                    Output.Write(GetTableAliasForExpressionPrefix(p));
+                    Output.Write(".");
+                    Output.Write(currentClass.GetFirstPrimaryKeyField().DBColumnName);
+                    Output.Write(" and ");
+                    Output.Write(col1n.Class.GetFirstPrimaryKeyField().DBColumnName);
+                    Output.Write(" in (");
+                    if (IndentOutput)
+                        Output.WriteLine();
 
-                v.Expr.Accept(this);
+                    v.Expr.Accept(this);
 
-                Output.Write("))");
+                    Output.Write("))");
+                }
                 return;
             }
 
