@@ -826,7 +826,7 @@ namespace Sooda.Sql
                     StringWriter whereSW = new StringWriter();
                     Output = whereSW;
 
-                    SoqlBooleanExpression limitedWhere = (SoqlBooleanExpression)v.WhereClause;
+                    SoqlBooleanExpression limitedWhere = v.WhereClause;
                     for (int i = 0; i < v.From.Count; ++i)
                     {
                         Sooda.Schema.ClassInfo ci = Schema.FindClassByName(v.From[i]);
@@ -861,16 +861,19 @@ namespace Sooda.Sql
                         {
                             Output.Write(" where ");
                         }
-                        limitedWhere.Accept(this);
                         bool first = true;
                         if (limitedWhere != null)
+                        {
+                            limitedWhere.Accept(this);
                             first = false;
+                        }
 
                         foreach (string s in WhereJoins)
                         {
                             if (!first)
                                 Output.Write(" and ");
                             Output.Write(s);
+                            first = false;
                         }
                     }
 
