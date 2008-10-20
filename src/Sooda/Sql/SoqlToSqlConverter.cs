@@ -264,6 +264,16 @@ namespace Sooda.Sql
         }
 
 
+        void OutputColumn(string tableAlias, FieldInfo fi)
+        {
+            if (tableAlias.Length > 0)
+            {
+                Output.Write(tableAlias);
+                Output.Write(".");
+            }
+            Output.Write(fi.DBColumnName);
+        }
+
         public override void Visit(SoqlAsteriskExpression v)
         {
             string p;
@@ -304,17 +314,10 @@ namespace Sooda.Sql
                         Output.Write(",");
                     }
                 }
+                string extPrefix = GetTableAliasForExpressionPrefix(p);
                 if (fi.Table.OrdinalInClass > 0)
-                {
-                    string extPrefix = AddPrimaryKeyJoin(firstTableAlias, (ClassInfo)currentContainer, GetTableAliasForExpressionPrefix(p), fi);
-                    Output.Write(extPrefix);
-                }
-                else
-                {
-                    Output.Write(GetTableAliasForExpressionPrefix(p));
-                }
-                Output.Write(".");
-                Output.Write(fi.DBColumnName);
+                    extPrefix = AddPrimaryKeyJoin(firstTableAlias, (ClassInfo)currentContainer, extPrefix, fi);
+                OutputColumn(extPrefix, fi);
                 if (GenerateColumnAliases)
                 {
                     Output.Write(" as ");
@@ -403,6 +406,48 @@ namespace Sooda.Sql
             }
         }
 
+        SoqlToSqlConverter CreateSubconverter()
+        {
+            SoqlToSqlConverter subconverter = new SoqlToSqlConverter(Output, Schema, _builder);
+            subconverter.Parent = this;
+            subconverter.IndentLevel = this.IndentLevel;
+            subconverter.IndentStep = this.IndentStep;
+            subconverter.UpperLike = this.UpperLike;
+            return subconverter;
+        }
+
+        SoqlToSqlConverter CreateCollectionSubconverter(CollectionOnetoManyInfo col1n, SoqlQueryExpression query, out string tableAlias)
+        {
+            if (col1n.Where != null && col1n.Where.Length > 0)
+            {
+                if (query == null)
+                {
+                    query = new SoqlQueryExpression();
+                    query.From.Add(col1n.ClassName);
+                    query.FromAliases.Add("");
+                }
+                SoqlToSqlConverter subconverter = CreateSubconverter();
+                subconverter.Init(query);
+                tableAlias = subconverter.ActualFromAliases[0];
+                return subconverter;
+            }
+            tableAlias = "";
+            return null;
+        }
+
+        void OutputCollectionWhere(ClassInfo currentClass, string p, CollectionOnetoManyInfo col1n, string tableAlias, SoqlToSqlConverter subconverter)
+        {
+            OutputColumn(tableAlias, col1n.ForeignField2);
+            Output.Write("=");
+            OutputColumn(GetTableAliasForExpressionPrefix(p), currentClass.GetFirstPrimaryKeyField());
+            if (col1n.Where != null && col1n.Where.Length > 0)
+            {
+                Output.Write(" and ");
+                SoqlBooleanExpression expr = SoqlParser.ParseWhereClause(col1n.Where);
+                expr.Accept(subconverter);
+            }
+        }
+
         public override void Visit(SoqlCountExpression v)
         {
             ClassInfo currentClass;
@@ -422,16 +467,12 @@ namespace Sooda.Sql
             CollectionOnetoManyInfo col1n = currentClass.FindCollectionOneToMany(v.CollectionName);
             if (col1n != null)
             {
+                string tableAlias;
+                SoqlToSqlConverter subconverter = CreateCollectionSubconverter(col1n, null, out tableAlias);
                 Output.Write("(select count(*) from ");
-                Output.Write(col1n.Class.LocalTables[0].DBTableName);
-                this.SetTableUsageHint(Output, col1n.Class.LocalTables[0]);
+                OutputTableFrom(col1n.Class.LocalTables[0], tableAlias);
                 Output.Write(" where ");
-                Output.Write(col1n.ForeignColumn);
-                Output.Write("=");
-
-                Output.Write(GetTableAliasForExpressionPrefix(p));
-                Output.Write(".");
-                Output.Write(currentClass.GetFirstPrimaryKeyField().DBColumnName);
+                OutputCollectionWhere(currentClass, p, col1n, tableAlias, subconverter);
                 Output.Write(")");
                 return;
             }
@@ -442,15 +483,11 @@ namespace Sooda.Sql
                 RelationInfo ri = colnn.GetRelationInfo();
 
                 Output.Write("(select count(*) from ");
-                Output.Write(ri.Table.DBTableName);
-                this.SetTableUsageHint(Output, ri.Table);
+                OutputTableFrom(ri.Table, "");
                 Output.Write(" where ");
                 Output.Write(ri.Table.Fields[1 - colnn.MasterField].DBColumnName);
                 Output.Write("=");
-
-                Output.Write(GetTableAliasForExpressionPrefix(p));
-                Output.Write(".");
-                Output.Write(currentClass.GetFirstPrimaryKeyField().DBColumnName);
+                OutputColumn(GetTableAliasForExpressionPrefix(p), currentClass.GetFirstPrimaryKeyField());
                 Output.Write(")");
                 return;
             }
@@ -458,8 +495,14 @@ namespace Sooda.Sql
             throw new Exception("Unknown collection " + v.CollectionName + " in " + currentClass.Name);
         }
 
-        private void SetTableUsageHint(TextWriter Output, TableInfo tableInfo)
+        private void OutputTableFrom(TableInfo tableInfo, string tableAlias)
         {
+            Output.Write(tableInfo.DBTableName);
+            if (tableAlias.Length > 0)
+            {
+                Output.Write(" ");
+                Output.Write(tableAlias);
+            }
             if (_builder.OuterJoinSyntax != SqlOuterJoinSyntax.Oracle && tableInfo.TableUsageType == TableUsageType.Dictionary)
             {
                 Output.Write(" WITH (NOLOCK) ");
@@ -496,38 +539,36 @@ namespace Sooda.Sql
             {
                 if (col1n.Class.GetPrimaryKeyFields().Length >= 2 && v.Expr is SoqlQueryExpression)
                 {
+                    string tableAlias;
+                    SoqlToSqlConverter subconverter = CreateCollectionSubconverter(col1n, (SoqlQueryExpression) v.Expr, out tableAlias);
+                    if (subconverter == null)
+                    {
+                        subconverter = CreateSubconverter();
+                        subconverter.Init((SoqlQueryExpression) v.Expr);
+                        tableAlias = subconverter.ActualFromAliases[0];
+                    }
                     Output.Write("exists (");
                     if (IndentOutput)
                         Output.WriteLine();
-                    v.Expr.Accept(this);
+                    subconverter.DoVisit((SoqlQueryExpression) v.Expr);
                     Output.Write(" and ");
-                    Output.Write(col1n.ForeignColumn);
-                    Output.Write("=");
-                    Output.Write(GetTableAliasForExpressionPrefix(p));
-                    Output.Write(".");
-                    Output.Write(currentClass.GetFirstPrimaryKeyField().DBColumnName);
+                    OutputCollectionWhere(currentClass, p, col1n, tableAlias, subconverter);
                     Output.Write(")");
                 }
                 else
                 {
+                    string tableAlias;
+                    SoqlToSqlConverter subconverter = CreateCollectionSubconverter(col1n, null, out tableAlias);
                     Output.Write("exists (select * from ");
-                    Output.Write(col1n.Class.LocalTables[0].DBTableName);
-                    this.SetTableUsageHint(Output, col1n.Class.LocalTables[0]);
+                    OutputTableFrom(col1n.Class.LocalTables[0], tableAlias);
                     Output.Write(" where ");
-                    Output.Write(col1n.ForeignColumn);
-                    Output.Write("=");
-
-                    Output.Write(GetTableAliasForExpressionPrefix(p));
-                    Output.Write(".");
-                    Output.Write(currentClass.GetFirstPrimaryKeyField().DBColumnName);
+                    OutputCollectionWhere(currentClass, p, col1n, tableAlias, subconverter);
                     Output.Write(" and ");
-                    Output.Write(col1n.Class.GetFirstPrimaryKeyField().DBColumnName);
+                    OutputColumn(tableAlias, col1n.Class.GetFirstPrimaryKeyField());
                     Output.Write(" in (");
                     if (IndentOutput)
                         Output.WriteLine();
-
                     v.Expr.Accept(this);
-
                     Output.Write("))");
                 }
                 return;
@@ -539,15 +580,11 @@ namespace Sooda.Sql
                 RelationInfo ri = colnn.GetRelationInfo();
 
                 Output.Write("exists (select * from ");
-                Output.Write(ri.Table.DBTableName);
-                this.SetTableUsageHint(Output, ri.Table);
+                OutputTableFrom(ri.Table, "");
                 Output.Write(" where ");
                 Output.Write(ri.Table.Fields[1 - colnn.MasterField].DBColumnName);
                 Output.Write("=");
-
-                Output.Write(GetTableAliasForExpressionPrefix(p));
-                Output.Write(".");
-                Output.Write(currentClass.GetFirstPrimaryKeyField().DBColumnName);
+                OutputColumn(GetTableAliasForExpressionPrefix(p), currentClass.GetFirstPrimaryKeyField());
                 Output.Write(" and ");
                 Output.Write(ri.Table.Fields[colnn.MasterField].DBColumnName);
                 Output.Write(" in (");
@@ -625,17 +662,10 @@ namespace Sooda.Sql
             {
                 if (_generatingOrderBy)
                     Output.Write(_builder.GetSQLOrderBy(fi, true));
+                string extPrefix = GetTableAliasForExpressionPrefix(p);
                 if (fi.Table.OrdinalInClass > 0)
-                {
-                    string extPrefix = AddPrimaryKeyJoin(firstTableAlias, (ClassInfo)currentContainer, GetTableAliasForExpressionPrefix(p), fi);
-                    Output.Write(extPrefix);
-                }
-                else
-                {
-                    Output.Write(GetTableAliasForExpressionPrefix(p));
-                }
-                Output.Write(".");
-                Output.Write(fi.DBColumnName);
+                    extPrefix = AddPrimaryKeyJoin(firstTableAlias, (ClassInfo)currentContainer, extPrefix, fi);
+                OutputColumn(extPrefix, fi);
                 if (_generatingOrderBy)
                    Output.Write( _builder.GetSQLOrderBy(fi, false));
             }
@@ -647,268 +677,70 @@ namespace Sooda.Sql
             VisitAndGetFieldInfo(v, true);
         }
 
-        public override void Visit(SoqlQueryExpression v)
+        void DoVisit(SoqlQueryExpression v)
         {
-            if (this.Query != null)
+            IndentLevel++;
+            try
             {
-                SoqlToSqlConverter subconverter = new SoqlToSqlConverter(Output, Schema, _builder);
-                subconverter.Parent = this;
-                subconverter.IndentLevel = this.IndentLevel;
-                subconverter.IndentStep = this.IndentStep;
-                subconverter.UpperLike = this.UpperLike;
-                subconverter.Visit(v);
-            }
-            else
-            {
-                Init(v);
-
-                IndentLevel++;
-                try
+                WriteIndentString();
+                if (IndentOutput)
                 {
-                    WriteIndentString();
-                    if (IndentOutput)
+                    Output.Write("select   ");
+                }
+                else
+                {
+                    Output.Write("select ");
+                }
+
+                if (v.TopCount != -1)
+                {
+                    if (_builder.TopSupport == SqlTopSupportMode.Oracle)
                     {
-                        Output.Write("select   ");
-                    }
-                    else
-                    {
-                        Output.Write("select ");
-                    }
-
-                    if (v.TopCount != -1)
-                    {
-                        if (_builder.TopSupport == SqlTopSupportMode.Oracle)
-                        {
-                            Output.Write(" * from (");
-                            IndentLevel++;
-                            WriteIndentString();
-                            if (IndentOutput)
-                            {
-                                Output.Write("select   ");
-                            }
-                            else
-                            {
-                                Output.Write("select ");
-                            }
-                            Output.Write(" ");
-                            GenerateUniqueAliases = true;
-                        }
-                        if (_builder.TopSupport == SqlTopSupportMode.SelectTop)
-                        {
-                            Output.Write("top ");
-                            Output.Write(v.TopCount);
-                            Output.Write(" ");
-                        }
-                    }
-
-                    if (v.SelectExpressions.Count == 0)
-                    {
-                        // simplified query - emit the primary key here
-
-                        Sooda.Schema.ClassInfo ci = Schema.FindClassByName(v.From[0]);
-                        bool first = true;
-
-                        foreach (FieldInfo pkfi in ci.GetPrimaryKeyFields())
-                        {
-                            if (!first)
-                                Output.Write(", ");
-                            Output.Write(ActualFromAliases[0]);
-                            Output.Write(".");
-                            Output.Write(pkfi.DBColumnName);
-                            if (GenerateColumnAliases || GenerateUniqueAliases)
-                            {
-                                Output.Write(" as ");
-                                Output.Write(_builder.QuoteFieldName(pkfi.Name));
-                            }
-                            first = false;
-                        }
-                    }
-                    else
-                    {
-                        for (int i = 0; i < v.SelectExpressions.Count; ++i)
-                        {
-                            if (i > 0)
-                            {
-                                if (IndentOutput)
-                                {
-                                    Output.WriteLine(",");
-                                    WriteIndentString();
-                                    Output.Write("         ");
-                                }
-                                else
-                                {
-                                    Output.Write(",");
-                                }
-                            }
-                            if (v.SelectExpressions[i] is SoqlQueryExpression)
-                                Output.Write("(");
-                            v.SelectExpressions[i].Accept(this);
-                            if (v.SelectExpressions[i] is SoqlQueryExpression)
-                                Output.Write(")");
-                            if (v.SelectAliases[i].Length > 0)
-                            {
-                                Output.Write(" as ");
-                                Output.Write(_builder.QuoteFieldName(v.SelectAliases[i]));
-                            }
-                            else 
-                            {
-                                if (GenerateColumnAliases)
-                                {
-                                    if (v.SelectExpressions[i] is ISoqlSelectAliasProvider)
-                                    {
-                                        Output.Write(" as ");
-
-                                        ((ISoqlSelectAliasProvider)v.SelectExpressions[i]).WriteDefaultSelectAlias(Output);
-                                    }
-                                }
-                                else
-                                if (GenerateUniqueAliases)
-                                {
-                                        Output.Write(String.Format(" as col_{0}", UniqueColumnId++));
-                                }
-                            }
-                        }
-                    }
-
-                    StringWriter sw = new StringWriter();
-                    TextWriter oldOutput = Output;
-                    Output = sw;
-
-                    if (v.GroupByExpressions != null && v.GroupByExpressions.Count > 0)
-                    {
-                        if (IndentOutput)
-                        {
-                            Output.WriteLine();
-                            WriteIndentString();
-                        }
-                        else
-                        {
-                            Output.Write(" ");
-                        }
-                        Output.Write("group by ");
-                        for (int i = 0; i < v.GroupByExpressions.Count; ++i)
-                        {
-                            if (i > 0)
-                                Output.Write(", ");
-                            v.GroupByExpressions[i].Accept(this);
-                        }
-                    }
-                    if (v.Having != null)
-                    {
-                        if (IndentOutput)
-                        {
-                            Output.WriteLine();
-                            WriteIndentString();
-                        }
-                        else
-                        {
-                            Output.Write(" ");
-                        }
-                        Output.Write("having   ");
-                        v.Having.Accept(this);
-                    }
-                    if (v.OrderByExpressions != null && v.OrderByExpressions.Count > 0)
-                    {
-                        if (IndentOutput)
-                        {
-                            Output.WriteLine();
-                            WriteIndentString();
-                        }
-                        else
-                        {
-                            Output.Write(" ");
-                        }
-                        Output.Write("order by ");
-                        _generatingOrderBy = true;
-                        for (int i = 0; i < v.OrderByExpressions.Count; ++i)
-                        {
-                            if (i > 0)
-                                Output.Write(", ");
-                            v.OrderByExpressions[i].Accept(this);
-                            Output.Write(" ");
-                            Output.Write(v.OrderByOrder[i]);
-                        }
-                        _generatingOrderBy = false;
-                    }
-
-                    if (v.TopCount != -1)
-                    {
-                        if (_builder.TopSupport == SqlTopSupportMode.Limit)
-                        {
-                            Output.Write(" limit ");
-                            Output.Write(v.TopCount);
-                        }
-                    }
-
-                    StringWriter whereSW = new StringWriter();
-                    Output = whereSW;
-
-                    SoqlBooleanExpression limitedWhere = v.WhereClause;
-                    for (int i = 0; i < v.From.Count; ++i)
-                    {
-                        Sooda.Schema.ClassInfo ci = Schema.FindClassByName(v.From[i]);
-
-                        if (ci == null)
-                            continue;
-
-                        SoqlBooleanExpression restriction = BuildClassRestriction(ActualFromAliases[i], ci);
-
-                        if (restriction != null)
-                        {
-                            if (limitedWhere == null)
-                            {
-                                limitedWhere = restriction;
-                            }
-                            else
-                            {
-                                limitedWhere = new SoqlBooleanAndExpression(limitedWhere, restriction);
-                            }
-                        }
-                    }
-                    
-                    if (limitedWhere != null || WhereJoins.Count > 0)
-                    {
-                        if (IndentOutput)
-                        {
-                            Output.WriteLine();
-                            WriteIndentString();
-                            Output.Write("where    ");
-                        }
-                        else
-                        {
-                            Output.Write(" where ");
-                        }
-                        bool first = true;
-                        if (limitedWhere != null)
-                        {
-                            limitedWhere.Accept(this);
-                            first = false;
-                        }
-
-                        foreach (string s in WhereJoins)
-                        {
-                            if (!first)
-                                Output.Write(" and ");
-                            Output.Write(s);
-                            first = false;
-                        }
-                    }
-
-                    Output = oldOutput;
-
-                    if (IndentOutput)
-                    {
-                        // output FROM here
-
-                        Output.WriteLine();
+                        Output.Write(" * from (");
+                        IndentLevel++;
                         WriteIndentString();
-                        Output.Write("from     ");
+                        if (IndentOutput)
+                        {
+                            Output.Write("select   ");
+                        }
+                        else
+                        {
+                            Output.Write("select ");
+                        }
+                        Output.Write(" ");
+                        GenerateUniqueAliases = true;
                     }
-                    else
+                    if (_builder.TopSupport == SqlTopSupportMode.SelectTop)
                     {
-                        Output.Write(" from ");
+                        Output.Write("top ");
+                        Output.Write(v.TopCount);
+                        Output.Write(" ");
                     }
-                    for (int i = 0; i < v.From.Count; ++i)
+                }
+
+                if (v.SelectExpressions.Count == 0)
+                {
+                    // simplified query - emit the primary key here
+
+                    Sooda.Schema.ClassInfo ci = Schema.FindClassByName(v.From[0]);
+                    bool first = true;
+
+                    foreach (FieldInfo pkfi in ci.GetPrimaryKeyFields())
+                    {
+                        if (!first)
+                            Output.Write(", ");
+                        OutputColumn(ActualFromAliases[0], pkfi);
+                        if (GenerateColumnAliases || GenerateUniqueAliases)
+                        {
+                            Output.Write(" as ");
+                            Output.Write(_builder.QuoteFieldName(pkfi.Name));
+                        }
+                        first = false;
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < v.SelectExpressions.Count; ++i)
                     {
                         if (i > 0)
                         {
@@ -923,55 +755,240 @@ namespace Sooda.Sql
                                 Output.Write(",");
                             }
                         }
-
-                        TableInfo tbl = FindContainerByName(v.From[i]).GetAllFields()[0].Table;
-                        Output.Write(tbl.DBTableName);
-                        if (ActualFromAliases[i].Length > 0)
+                        if (v.SelectExpressions[i] is SoqlQueryExpression)
+                            Output.Write("(");
+                        v.SelectExpressions[i].Accept(this);
+                        if (v.SelectExpressions[i] is SoqlQueryExpression)
+                            Output.Write(")");
+                        if (v.SelectAliases[i].Length > 0)
                         {
-                            Output.Write(" ");
-                            Output.Write(ActualFromAliases[i]);
+                            Output.Write(" as ");
+                            Output.Write(_builder.QuoteFieldName(v.SelectAliases[i]));
                         }
-                        this.SetTableUsageHint(Output, tbl);
-                        foreach (string s in (StringCollection)FromJoins[i])
+                        else 
                         {
-                            if (IndentOutput)
+                            if (GenerateColumnAliases)
                             {
-                                Output.WriteLine();
-                                WriteIndentString();
-                                Output.Write("         ");
+                                if (v.SelectExpressions[i] is ISoqlSelectAliasProvider)
+                                {
+                                    Output.Write(" as ");
+
+                                    ((ISoqlSelectAliasProvider)v.SelectExpressions[i]).WriteDefaultSelectAlias(Output);
+                                }
                             }
                             else
+                            if (GenerateUniqueAliases)
                             {
-                                Output.Write(" ");
+                                    Output.Write(String.Format(" as col_{0}", UniqueColumnId++));
                             }
-                            Output.Write(s);
                         }
                     }
-
-                    Output.Write(whereSW.ToString());
-                    Output.Write(sw.ToString());
-                    if (v.TopCount != -1)
-                    {
-                        if (_builder.TopSupport == SqlTopSupportMode.Oracle)
-                        {
-                            if (IndentOutput)
-                            {
-                                Output.WriteLine();
-                                WriteIndentString();
-                            }
-                            Output.Write(") where rownum <= ");
-                            Output.Write(v.TopCount);
-                            IndentLevel--;
-                        }
-                    }
-
-
                 }
-                finally
+
+                StringWriter sw = new StringWriter();
+                TextWriter oldOutput = Output;
+                Output = sw;
+
+                if (v.GroupByExpressions != null && v.GroupByExpressions.Count > 0)
                 {
-                    IndentLevel--;
+                    if (IndentOutput)
+                    {
+                        Output.WriteLine();
+                        WriteIndentString();
+                    }
+                    else
+                    {
+                        Output.Write(" ");
+                    }
+                    Output.Write("group by ");
+                    for (int i = 0; i < v.GroupByExpressions.Count; ++i)
+                    {
+                        if (i > 0)
+                            Output.Write(", ");
+                        v.GroupByExpressions[i].Accept(this);
+                    }
                 }
+                if (v.Having != null)
+                {
+                    if (IndentOutput)
+                    {
+                        Output.WriteLine();
+                        WriteIndentString();
+                    }
+                    else
+                    {
+                        Output.Write(" ");
+                    }
+                    Output.Write("having   ");
+                    v.Having.Accept(this);
+                }
+                if (v.OrderByExpressions != null && v.OrderByExpressions.Count > 0)
+                {
+                    if (IndentOutput)
+                    {
+                        Output.WriteLine();
+                        WriteIndentString();
+                    }
+                    else
+                    {
+                        Output.Write(" ");
+                    }
+                    Output.Write("order by ");
+                    _generatingOrderBy = true;
+                    for (int i = 0; i < v.OrderByExpressions.Count; ++i)
+                    {
+                        if (i > 0)
+                            Output.Write(", ");
+                        v.OrderByExpressions[i].Accept(this);
+                        Output.Write(" ");
+                        Output.Write(v.OrderByOrder[i]);
+                    }
+                    _generatingOrderBy = false;
+                }
+
+                if (v.TopCount != -1)
+                {
+                    if (_builder.TopSupport == SqlTopSupportMode.Limit)
+                    {
+                        Output.Write(" limit ");
+                        Output.Write(v.TopCount);
+                    }
+                }
+
+                StringWriter whereSW = new StringWriter();
+                Output = whereSW;
+
+                SoqlBooleanExpression limitedWhere = v.WhereClause;
+                for (int i = 0; i < v.From.Count; ++i)
+                {
+                    Sooda.Schema.ClassInfo ci = Schema.FindClassByName(v.From[i]);
+
+                    if (ci == null)
+                        continue;
+
+                    SoqlBooleanExpression restriction = BuildClassRestriction(ActualFromAliases[i], ci);
+
+                    if (restriction != null)
+                    {
+                        if (limitedWhere == null)
+                        {
+                            limitedWhere = restriction;
+                        }
+                        else
+                        {
+                            limitedWhere = new SoqlBooleanAndExpression(limitedWhere, restriction);
+                        }
+                    }
+                }
+                
+                if (limitedWhere != null || WhereJoins.Count > 0)
+                {
+                    if (IndentOutput)
+                    {
+                        Output.WriteLine();
+                        WriteIndentString();
+                        Output.Write("where    ");
+                    }
+                    else
+                    {
+                        Output.Write(" where ");
+                    }
+                    bool first = true;
+                    if (limitedWhere != null)
+                    {
+                        limitedWhere.Accept(this);
+                        first = false;
+                    }
+
+                    foreach (string s in WhereJoins)
+                    {
+                        if (!first)
+                            Output.Write(" and ");
+                        Output.Write(s);
+                        first = false;
+                    }
+                }
+
+                Output = oldOutput;
+
+                if (IndentOutput)
+                {
+                    // output FROM here
+
+                    Output.WriteLine();
+                    WriteIndentString();
+                    Output.Write("from     ");
+                }
+                else
+                {
+                    Output.Write(" from ");
+                }
+                for (int i = 0; i < v.From.Count; ++i)
+                {
+                    if (i > 0)
+                    {
+                        if (IndentOutput)
+                        {
+                            Output.WriteLine(",");
+                            WriteIndentString();
+                            Output.Write("         ");
+                        }
+                        else
+                        {
+                            Output.Write(",");
+                        }
+                    }
+
+                    TableInfo tbl = FindContainerByName(v.From[i]).GetAllFields()[0].Table;
+                    OutputTableFrom(tbl, ActualFromAliases[i]);
+                    foreach (string s in (StringCollection)FromJoins[i])
+                    {
+                        if (IndentOutput)
+                        {
+                            Output.WriteLine();
+                            WriteIndentString();
+                            Output.Write("         ");
+                        }
+                        else
+                        {
+                            Output.Write(" ");
+                        }
+                        Output.Write(s);
+                    }
+                }
+
+                Output.Write(whereSW.ToString());
+                Output.Write(sw.ToString());
+                if (v.TopCount != -1)
+                {
+                    if (_builder.TopSupport == SqlTopSupportMode.Oracle)
+                    {
+                        if (IndentOutput)
+                        {
+                            Output.WriteLine();
+                            WriteIndentString();
+                        }
+                        Output.Write(") where rownum <= ");
+                        Output.Write(v.TopCount);
+                        IndentLevel--;
+                    }
+                }
+
+
             }
+            finally
+            {
+                IndentLevel--;
+            }
+        }
+
+        public override void Visit(SoqlQueryExpression v)
+        {
+            SoqlToSqlConverter conv = this;
+            if (this.Query != null)
+                conv = CreateSubconverter();
+            conv.Init(v);
+            conv.DoVisit(v);
         }
 
         public SoqlToSqlConverter Parent;
