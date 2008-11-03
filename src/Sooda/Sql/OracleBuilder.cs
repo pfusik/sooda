@@ -216,5 +216,16 @@ namespace Sooda.Sql
             }
             return paramName;
         }
+
+        // for Oracle empty string is also null string
+        public override bool IsNullValue(object val, Sooda.Schema.FieldInfo fi)
+        {
+            if (val == null)
+               return true;
+            if ((fi.DataType == FieldDataType.AnsiString) || (fi.DataType == FieldDataType.String))
+                return ((string)val) == "";
+            return false;
+        }
+
     }
 }

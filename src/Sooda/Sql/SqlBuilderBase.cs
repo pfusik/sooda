@@ -529,6 +529,11 @@ namespace Sooda.Sql
             command.CommandText += sb.ToString();
         }
 
+        public virtual bool IsNullValue(object val, Sooda.Schema.FieldInfo fi)
+        {
+            return val == null;
+        }
+
         protected abstract string AddNumberedParameter(IDbCommand command, object v, SoqlLiteralValueModifiers modifiers, StringCollection paramNames, int paramNumber);
 
         protected abstract string GetNameForParameter(int pos);

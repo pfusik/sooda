@@ -669,25 +669,28 @@ namespace Sooda.Sql
                     builder.Append(",");
 
                 object val = obj.GetFieldValue(table.Fields[i].ClassUnifiedOrdinal);
-                if (val == null && !table.Fields[i].IsNullable)
+                if (!table.Fields[i].IsNullable)
                 {
-                    if (isPrecommit)
+                    if (SqlBuilder.IsNullValue(val, table.Fields[i]))
                     {
-                        if (table.Fields[i].PrecommitTypedValue != null)
+                        if (isPrecommit)
                         {
-                            val = table.Fields[i].PrecommitTypedValue;
-                            if (logger.IsDebugEnabled)
+                            if (table.Fields[i].PrecommitTypedValue != null)
                             {
-                                logger.Debug("Using precommit value of {0} for {1}.{2}", val, table.NameToken, table.Fields[i].Name);
+                                val = table.Fields[i].PrecommitTypedValue;
+                                if (logger.IsDebugEnabled)
+                                {
+                                    logger.Debug("Using precommit value of {0} for {1}.{2}", val, table.NameToken, table.Fields[i].Name);
+                                }
+                            }
+                            else
+                            {
+                                throw new SoodaDatabaseException(obj.GetObjectKeyString() + "." + table.Fields[i].Name + " is null on precommit and no 'precommitValue' has been defined for it.");
                             }
                         }
                         else
-                        {
-                            throw new SoodaDatabaseException(obj.GetObjectKeyString() + "." + table.Fields[i].Name + " is null on precommit and no 'precommitValue' has been defined for it.");
-                        }
+                            throw new SoodaDatabaseException(obj.GetObjectKeyString() + "." + table.Fields[i].Name + " cannot be null on commit.");
                     }
-                    else
-                        throw new SoodaDatabaseException(obj.GetObjectKeyString() + "." + table.Fields[i].Name + " cannot be null on commit.");
                 }
 
                 builder.Append('{');

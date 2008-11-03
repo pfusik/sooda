@@ -26,7 +26,7 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
-
+using System;
 using System.IO;
 
 using System.Data;
@@ -53,5 +53,6 @@ namespace Sooda.Sql
         void GenerateIndices(TextWriter tw, TableInfo tableInfo, string additionalSettings);
         string QuoteFieldName(string name);
         string GetTruncatedIdentifier(string identifier);
+        bool IsNullValue(object val, Sooda.Schema.FieldInfo fi);
     }
 }
