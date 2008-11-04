@@ -53,6 +53,7 @@ namespace Sooda.Sql
         void GenerateIndices(TextWriter tw, TableInfo tableInfo, string additionalSettings);
         string QuoteFieldName(string name);
         string GetTruncatedIdentifier(string identifier);
+        bool IsFatalException(IDbConnection connection, Exception e);
         bool IsNullValue(object val, Sooda.Schema.FieldInfo fi);
     }
 }

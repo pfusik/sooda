@@ -173,12 +173,37 @@ namespace Sooda.Sql
                 throw new SoodaDatabaseException("connectionString parameter not defined for datasource: " + Name);
             if (ConnectionType == null)
                 throw new SoodaDatabaseException("connectionType parameter not defined for datasource: " + Name);
-            Connection = (IDbConnection)Activator.CreateInstance(ConnectionType, new object[] { ConnectionString });
-            Connection.Open();
-            if (!DisableTransactions)
+            string stries = SoodaConfig.GetString("sooda.connectionopenretries", "2");
+            int tries;
+            try
             {
-                Transaction = Connection.BeginTransaction(IsolationLevel);
-            };
+                tries = Convert.ToInt32(stries);
+            }
+            catch
+            {
+                tries = 2;
+            }
+            int maxtries = tries;
+            while(tries > 0)
+            {
+                try
+                {
+                    Connection = (IDbConnection)Activator.CreateInstance(ConnectionType, new object[] { ConnectionString });
+                    Connection.Open();
+                    if (!DisableTransactions)
+                    {
+                                Transaction = Connection.BeginTransaction(IsolationLevel);
+                    };
+                    tries = 0;
+                }
+                catch(Exception e)
+                {
+                    tries--;
+                    logger.Warn("Exception on Open#{0}: {1}", maxtries-tries, e);
+                    if ((tries == 0) || SqlBuilder.IsFatalException(Connection, e))
+                        throw e;
+                }
+            }
         }
 
         public override bool IsOpen

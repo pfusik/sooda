@@ -529,6 +529,11 @@ namespace Sooda.Sql
             command.CommandText += sb.ToString();
         }
 
+        public virtual bool IsFatalException(IDbConnection connection, Exception e)
+        {
+            return true;
+        }
+
         public virtual bool IsNullValue(object val, Sooda.Schema.FieldInfo fi)
         {
             return val == null;

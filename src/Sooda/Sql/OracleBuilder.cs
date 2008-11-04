@@ -217,6 +217,12 @@ namespace Sooda.Sql
             return paramName;
         }
 
+        public override bool IsFatalException(IDbConnection connection, Exception e)
+        {
+            OracleConnection.ClearAllPools();
+            return false;
+        }
+
         // for Oracle empty string is also null string
         public override bool IsNullValue(object val, Sooda.Schema.FieldInfo fi)
         {
