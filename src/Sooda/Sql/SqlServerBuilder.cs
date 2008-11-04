@@ -173,7 +173,9 @@ namespace Sooda.Sql
 
         public override bool IsFatalException(IDbConnection connection, Exception e)
         {
+#if DOTNET2
             SqlConnection.ClearAllPools();
+#endif
             return false;
         }
     }
