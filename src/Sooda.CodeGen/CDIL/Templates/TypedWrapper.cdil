@@ -43,6 +43,13 @@ begin
     return new Sooda.QL.SoqlBooleanInExpression(this, arg(items));
 end
 
+method In(IEnumerable items)
+    attributes Public
+    returns Sooda.QL.SoqlBooleanExpression
+begin
+    return new Sooda.QL.SoqlBooleanInExpression(this, arg(items));
+end
+
 #endif
 
 #if CSharp
