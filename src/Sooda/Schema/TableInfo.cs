@@ -99,6 +99,9 @@ namespace Sooda.Schema
             if (fieldName == null)
                 return null;
 
+            if (fieldsNameHash == null)
+                this.Rehash();
+
             return (FieldInfo)fieldsNameHash[fieldName];
         }
 
@@ -113,7 +116,7 @@ namespace Sooda.Schema
         public void AddField(FieldInfo fi)
         {
             if (ContainsField(fi.Name))
-                throw new SoodaSchemaException("Cannot add FieldInfo twice");
+                throw new SoodaSchemaException(String.Format("Duplicate field '{0}' found!", fi.Name));
 
             if (Fields == null)
                 Fields = new FieldInfoCollection();
@@ -183,6 +186,20 @@ namespace Sooda.Schema
 
             tableInfo.OwnerClass = newParent;
             return tableInfo;
+        }
+
+        internal void Merge(TableInfo merge)
+        {
+            //            Hashtable mergeNames = new Hashtable();
+            //            foreach (FieldInfo fi in this.Fields)
+            //                mergeNames.Add(fi.Name, fi);
+            //            foreach (FieldInfo mfi in merge.Fields)
+            //                if (!mergeNames.ContainsKey(mfi.Name))
+            //                    this.AddField(mfi);
+            //                else 
+            //                    throw new SoodaSchemaException(String.Format("Duplicate field '{0}' found!", fi.Name));
+            foreach (FieldInfo mfi in merge.Fields)
+                this.AddField(mfi);
         }
     }
 }

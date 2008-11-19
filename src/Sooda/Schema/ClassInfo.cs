@@ -286,14 +286,10 @@ namespace Sooda.Schema
 
         internal void Resolve(SchemaInfo schema)
         {
-            if (parentSchema != null)
-            {
-                // already resolved, probably as part of included schema Resolve() process
-                return;
-            }
+            if (parentSchema == null)
+                parentSchema = schema;
 
             OuterReferences = new FieldInfoCollection();
-            parentSchema = schema;
 
             // local fields - a sum of all tables local to the class
 
@@ -385,7 +381,7 @@ namespace Sooda.Schema
             }
             else if (InheritFrom != null)
             {
-                throw new SoodaSchemaException("Must use subclassSelectorFieldName when defining inherited class");
+                throw new SoodaSchemaException(String.Format("Must use subclassSelectorFieldName when defining inherited class '{0}'", this.Name));
             }
             if (SubclassSelectorStringValue != null)
             {
@@ -418,6 +414,90 @@ namespace Sooda.Schema
                 }
             }
             _primaryKeyFields = (FieldInfo[])pkFields.ToArray(typeof(FieldInfo));
+        }
+
+        internal Array MergeArray(Array oldArray, Array merge)
+        {
+            int oldSize = oldArray.Length;
+            int mergeSize = merge.Length;
+            int newSize = oldSize + mergeSize;
+            System.Type elementType = oldArray.GetType().GetElementType();
+            System.Array newArray = System.Array.CreateInstance(elementType, newSize);
+            int preserveLength = System.Math.Min(oldSize,newSize);
+            System.Array.Copy(oldArray, 0, newArray, 0, oldSize);
+            System.Array.Copy(merge, 0, newArray, oldSize, mergeSize);
+            return newArray;
+        }
+
+        internal void Merge(ClassInfo merge)
+        {
+            Hashtable mergeNames = new Hashtable();
+            foreach (TableInfo mti in this.LocalTables)
+                mergeNames.Add(mti.DBTableName, mti);
+            foreach (TableInfo ti in merge.LocalTables)
+            {
+                if (mergeNames.ContainsKey(ti.DBTableName))
+                    ((TableInfo)mergeNames[ti.DBTableName]).Merge(ti);
+                else
+                    LocalTables.Add(ti);
+            }
+            mergeNames.Clear();
+
+            if (this.Collections1toN != null)
+            {
+                foreach (CollectionOnetoManyInfo ci in Collections1toN)
+                    mergeNames.Add(ci.Name, ci);
+            }
+            if (this.Collections1toN == null)
+                this.Collections1toN = merge.Collections1toN;
+            else
+            {
+                if (merge.Collections1toN != null)
+                {
+                    foreach (CollectionOnetoManyInfo mci in merge.Collections1toN)
+                        if (mergeNames.ContainsKey(mci.Name))
+                            throw new SoodaSchemaException(String.Format("Duplicate collection 1:N '{0}' found!", mci.Name));
+                    this.Collections1toN = (CollectionOnetoManyInfo[])MergeArray(this.Collections1toN, merge.Collections1toN);
+                }
+            }
+            mergeNames.Clear();
+
+            if (this.CollectionsNtoN != null)
+            {
+                foreach (CollectionManyToManyInfo ci in CollectionsNtoN)
+                    mergeNames.Add(ci.Name, ci);
+            }
+            if (this.CollectionsNtoN == null)
+                this.CollectionsNtoN = merge.CollectionsNtoN;
+            else
+            {
+                if (merge.CollectionsNtoN != null)
+                {
+                    foreach (CollectionManyToManyInfo mci in merge.CollectionsNtoN)
+                        if (mergeNames.ContainsKey(mci.Name))
+                            throw new SoodaSchemaException(String.Format("Duplicate collection N:N '{0}' found!", mci.Name));
+                    this.CollectionsNtoN = (CollectionManyToManyInfo[])MergeArray(this.CollectionsNtoN, merge.CollectionsNtoN);
+                }
+            }
+            mergeNames.Clear();
+
+            if (this.Constants != null)
+            {
+                foreach (ConstantInfo ci in Constants)
+                    mergeNames.Add(ci.Name, ci);
+            }
+            if (this.Constants == null)
+                this.Constants = merge.Constants;
+            else
+            {
+                if (merge.Constants != null)
+                {
+                    foreach (ConstantInfo mci in merge.Constants)
+                        if (mergeNames.ContainsKey(mci.Name))
+                            throw new SoodaSchemaException(String.Format("Duplicate constant name '{0}' found!", mci.Name));
+                    this.Constants = (ConstantInfo[])MergeArray(this.Constants, merge.Constants);
+                }
+            }
         }
 
         internal void MergeTables()
@@ -539,6 +619,10 @@ namespace Sooda.Schema
             get
             {
                 return parentSchema;
+            }
+            set
+            {
+                parentSchema = value;
             }
         }
 

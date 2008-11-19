@@ -75,14 +75,20 @@ namespace Sooda.Schema
             foreach (IncludeInfo ii in includes)
             {
                 string includeFileName = Path.Combine(baseDirectoryForIncludes, ii.SchemaFile);
-                SchemaInfo includedSchema = ReadAndValidateSchema(new XmlTextReader(includeFileName), Path.GetDirectoryName(includeFileName));
-
+                SchemaInfo includedSchema = ReadAndValidateSchema(new XmlTextReader(includeFileName), Path.GetDirectoryName(includeFileName), ii);
                 resultSchema.MergeIncludedSchema(includedSchema);
+                includedSchema.AssemblyName = ii.AssemblyName;
+                includedSchema.Namespace = ii.Namespace;
                 ii.Schema = includedSchema;
             }
         }
 
         public static SchemaInfo ReadAndValidateSchema(XmlReader reader, string baseDirectoryForIncludes)
+        {
+            return ReadAndValidateSchema(reader, baseDirectoryForIncludes, null);
+        }
+
+        public static SchemaInfo ReadAndValidateSchema(XmlReader reader, string baseDirectoryForIncludes, IncludeInfo include)
         {
 #if SOODA_NO_VALIDATING_READER
             XmlSerializer ser = new XmlSerializer(typeof(Sooda.Schema.SchemaInfo));
@@ -109,7 +115,14 @@ namespace Sooda.Schema
                 ProcessIncludes(schemaInfo, schemaInfo.Includes, baseDirectoryForIncludes);
             }
 
-            schemaInfo.Resolve();
+            if (include == null)
+                schemaInfo.Resolve();
+            else
+            {
+                if ((include.AssemblyName != null) && (include.AssemblyName != ""))
+                    foreach (ClassInfo ci in schemaInfo.Classes)
+                        ci.Schema = schemaInfo;
+            }
             return schemaInfo;
         }
     }

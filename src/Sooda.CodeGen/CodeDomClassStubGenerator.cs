@@ -409,7 +409,7 @@ namespace Sooda.CodeGen
 
                 CodeTypeReference returnType;
 
-                //if (fi.Name == classInfo.PrimaryKeyFieldName)
+                //if (fi.Name == ci.PrimaryKeyFieldName)
                 //{
                 //  returnType = GetReturnType(PrimitiveRepresentation.Raw, fi.DataType);
                 //}
