@@ -79,6 +79,10 @@ namespace Sooda.Schema
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool IsNullable = false;
 
+        [XmlAttribute("readOnly")]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool ReadOnly = false;
+
         [XmlAttribute("forceTrigger")]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool ForceTrigger = false;
@@ -175,6 +179,7 @@ namespace Sooda.Schema
             fi.DataType = this.DataType;
             fi.Size = this.Size;
             fi.ForceTrigger = this.ForceTrigger;
+            fi.ReadOnly = this.ReadOnly;
 
             return fi;
         }

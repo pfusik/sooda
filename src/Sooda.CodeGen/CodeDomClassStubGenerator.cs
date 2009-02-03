@@ -480,7 +480,7 @@ namespace Sooda.CodeGen
                             )));
                     }
 
-                    if (!classInfo.ReadOnly)
+                    if (!classInfo.ReadOnly && !fi.ReadOnly)
                     {
                         if (classInfo.GetPrimaryKeyFields().Length == 1)
                         {
@@ -570,7 +570,7 @@ namespace Sooda.CodeGen
                                     RefCacheExpression(ci, fi))));
 
                     // reference field setter
-                    if (!classInfo.ReadOnly)
+                    if (!classInfo.ReadOnly && !fi.ReadOnly)
                     {
                         prop.SetStatements.Add(
                                 new CodeExpressionStatement(
@@ -595,7 +595,7 @@ namespace Sooda.CodeGen
                     // plain field getter
 
                     prop.GetStatements.Add(new CodeMethodReturnStatement(GetFieldValueForRead(fi)));
-                    if (!classInfo.ReadOnly)
+                    if (!classInfo.ReadOnly && !fi.ReadOnly)
                     {
                         CodeExpression beforeDelegate = new CodePrimitiveExpression(null);
                         CodeExpression afterDelegate = new CodePrimitiveExpression(null);

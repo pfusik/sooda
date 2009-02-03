@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2007-08-08 16:38:18 +0200 (Wed, 08 Aug 2007) $</last-modified-date> (revision <subversion-revision>$Revision: 433 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2009-02-03 10:52:08 +0100 (Tue, 03 Feb 2009) $</last-modified-date> (revision <subversion-revision>$Revision: 477 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright &#169; 2003-2006 by Jaros³aw Kowalski</div>
         <div class="pagebreak" />
     </div>
@@ -75,7 +75,7 @@
                         The following RDBMSes are supported:
                     </p>
                     <ul>
-                        <li>Microsoft SQL Server 2000, 2005 (including MSDE and SQL Server Express Edition)</li>
+                        <li>Microsoft SQL Server 2000, 2005, 2008 (including MSDE and SQL Server Express Edition)</li>
                         <li>MySQL v4.x</li>
                         <li>PostgreSQL v8.x</li>
                         <li>Oracle 8i, 9i, 10g</li>
@@ -1395,6 +1395,11 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <td>nullable</td>
                                 <td>boolean</td>
                                 <td>Allow this field to hold the null value. Exact <a href="#generatedproperties">representation of the null value</a> depends on options passed to <a href="#soodastubgen">SoodaStubGen</a>.</td>
+                            </tr>
+                            <tr>
+                                <td>readOnly</td>
+                                <td>boolean</td>
+                                <td>This field cannot be modified (no property setter is generated).</td>
                             </tr>
                             <tr>
                                 <td>forceTrigger</td>
@@ -8379,6 +8384,7 @@ where    (t2.name = 'Mary Manager')
                         <li><code>PrimaryKey</code> - <code>true</code> if the field is (part of) the primary key</li>
                         <li><code>PrecommitTypedValue</code> - typed precommit value (integer, string, datetime)</li>
                         <li><code>Nullable</code> - <code>true</code> if the field is nullable</li>
+                        <li><code>ReadOnly</code> - <code>true</code> if the field is read-only</li>
                         <li><code>ForceTrigger</code> - <code>true</code> if the triggers for this field have been generated, regardless of
                             a value of the <code>ClassInfo.Triggers</code> for the parent <x><class /></x>.</li>
                         <li><code>DeleteAction</code> - specifies the action that should be taken when referenced object is deleted. Equivalent of the <code>onDelete</code> attribute.</li>

@@ -686,18 +686,26 @@ namespace Sooda.Sql
 
             ArrayList par = new ArrayList();
 
+            bool comma = false;
             for (int i = 0; i < table.Fields.Count; ++i)
             {
-                if (i != 0)
+                if (table.Fields[i].ReadOnly)
+                    continue;
+                if (comma)
                     builder.Append(",");
+                comma = true;
                 builder.Append(table.Fields[i].DBColumnName);
             };
 
             builder.Append(") values (");
+            comma = false;
             for (int i = 0; i < table.Fields.Count; ++i)
             {
-                if (i > 0)
+                if (table.Fields[i].ReadOnly)
+                    continue;
+                if (comma)
                     builder.Append(",");
+                comma = true;
 
                 object val = obj.GetFieldValue(table.Fields[i].ClassUnifiedOrdinal);
                 if (!table.Fields[i].IsNullable)
