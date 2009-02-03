@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2009-02-03 10:52:08 +0100 (Tue, 03 Feb 2009) $</last-modified-date> (revision <subversion-revision>$Revision: 477 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2009-02-03 12:38:41 +0100 (Tue, 03 Feb 2009) $</last-modified-date> (revision <subversion-revision>$Revision: 478 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright &#169; 2003-2006 by Jaros³aw Kowalski</div>
         <div class="pagebreak" />
     </div>
@@ -21,7 +21,7 @@
             <body>
                 <p>
                     <b>Sooda</b> (Simple Object-Oriented Data Access) is an Object-To-Relational Mapping 
-                    software for the <a href="http://msdn.microsoft.com/net">.NET</a> environment.
+                    software for the <a href="http://www.microsoft.com/NET/">.NET</a> environment.
                     O/R Mapping Software enables you to express your business rules without using SQL at all.
                 </p>
                 <p>
@@ -96,12 +96,12 @@
                         The following languages have been tested:
                     </p>
                     <ul>
-                        <li><a href="http://msdn.microsoft.com/csharp/">C#</a> - fully supported, code compiles cleanly, supports <a href="#soqltypedqueries">Typed Queries</a>.</li>
+                        <li><a href="http://msdn.microsoft.com/vcsharp/">C#</a> - fully supported, code compiles cleanly, supports <a href="#soqltypedqueries">Typed Queries</a>.</li>
                         <li><a href="http://msdn.microsoft.com/vbasic/">VB.NET</a> - fully supported, some warnings may be raised during compilation of the generated code, but they can be ignored.</li>
                         <li><a href="http://boo.codehaus.org/">Boo</a> - works - EXPERIMENTAL</li>
                         <li><a href="http://msdn.microsoft.com/vjsharp/">VJ#</a> - works - EXPERIMENTAL</li>
-                        <li><a href="http://www.nemerle.org/">Nemerle</a> - not supported - fails compilation</li>
-                        <li><a href="http://msdn.microsoft.com/jscript/">JScript.NET</a> - not supported - compilation fails with internal error</li>
+                        <li><a href="http://www.nemerle.org/">Nemerle</a> - not supported - compilation fails</li>
+                        <li><a href="http://msdn.microsoft.com/en-us/library/3bf5fs13.aspx">JScript.NET</a> - not supported - compilation fails with internal error</li>
                         <li><a href="http://www.codeplex.com/Wiki/View.aspx?ProjectName=IronPython">IronPython</a> - code generation works, needs further investigation</li>
                     </ul>
                 </body>
@@ -3369,7 +3369,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     <p>
                         By default Sooda configuration parameters are stored in standard .NET configuration files named
                         <code>ApplicationName.exe.config</code> or <code>Web.config</code> in a section named <x><appSettings /></x>. 
-                        More information about .NET Configuration files is available in <a href="http://msdn.microsoft.com/library/en-us/cpgenref/html/gngrfconfiguration.asp">MSDN Library</a>.
+                        More information about .NET Configuration files is available in <a href="http://msdn.microsoft.com/en-us/library/1fk1t1t0.aspx">MSDN Library</a>.
                     </p>
                     <p>
                         Each data source configuration entry has a form:
@@ -6125,7 +6125,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 </code>
                 <p>
                     Manually concatenating string literals can be dangerous and lead 
-                    to <a href="http://en.wikipedia.org/wiki/XSS">cross-site scripting vulnerabilities</a> in web applications.
+                    to <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">cross-site scripting vulnerabilities</a> in web applications.
                     Fortunately Sooda lets you separate string literals from the rest of the query code.
                     You can use the <code>{0}, {1}, {2}</code> notation similar to <code>Console.WriteLine()</code>.
                     Note that you do not need to quote the strings yourself nor surround <code>{0}</code> with apostrophes. In fact
