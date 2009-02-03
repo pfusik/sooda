@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2009-02-03 13:18:24 +0100 (Tue, 03 Feb 2009) $</last-modified-date> (revision <subversion-revision>$Revision: 479 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2009-02-03 13:58:47 +0100 (Tue, 03 Feb 2009) $</last-modified-date> (revision <subversion-revision>$Revision: 480 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright &#169; 2003-2006 by Jaros³aw Kowalski</div>
         <div class="pagebreak" />
     </div>
@@ -8622,11 +8622,12 @@ where    (t2.name = 'Mary Manager')
                 </p>
                 <p>
                     Fortunately, Sooda supports multiple strategies for managing the implicit transaction reference.
-                    There are two predefined strategies:
+                    There are three predefined strategies:
                 </p>
                 <ul>
                     <li><code>SoodaThreadBoundTransactionStrategy</code> - default thread-bound implementation</li>
                     <li><code>SoodaHttpContextBoundTransactionStrategy</code> - ASP.NET HttpContext-bound implementation</li>
+                    <li><code>SoodaProcessBoundTransactionStrategy</code> - process-bound implementation</li>
                 </ul>
                 <p>
                     To change the active strategy, create an instance of the appropriate strategy class and assign 
