@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2009-02-03 12:38:41 +0100 (Tue, 03 Feb 2009) $</last-modified-date> (revision <subversion-revision>$Revision: 478 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2009-02-03 13:18:24 +0100 (Tue, 03 Feb 2009) $</last-modified-date> (revision <subversion-revision>$Revision: 479 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright &#169; 2003-2006 by Jaros³aw Kowalski</div>
         <div class="pagebreak" />
     </div>
@@ -3385,7 +3385,8 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         Possible setting names are described <sectionlink id="configuringdatasources" />.
                     </p>
                     <p>
-                        Some global options can also be set this way. Global options use the "sooda" prefix instead of their data source name.
+                        Some global options can also be set this way. Global options use the "<code>sooda</code>" prefix instead of a data source name.
+                        They are described <sectionlink id="configurationglobal" />.
                     </p>
                     <p>
                         The following configuration file defines two settings for the "default" data source: <code>connectionString</code> and <code>sqlDialect</code>.
@@ -3889,6 +3890,82 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                         When this parameter is <code>true</code>, both sides of the SQL operator <code>LIKE</code>
                                         are wrapped in <code>UPPER</code> functions. This can be used to search case-insensitively
                                         when the <code>LIKE</code> operator matches case-sensitively.
+                                    </p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </body>
+        </section>
+        <section id="configurationglobal">
+            <title>Global Configuration</title>
+            <body>
+                <p>
+                    Sooda has some options which are not data source specific. These options have the name prefix <code>sooda</code>.
+                </p>
+                <div class="table">
+                    <table style="table-layout: fixed">
+                        <col style="font-size: 90%; width: 70mm; text-align: center" />
+                        <thead>
+                            <tr>
+                                <th>Configuration setting</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td align="center" valign="top">sooda.connectionopenretries</td>
+                                <td>
+                                    <p>
+                                        Specifies number of tries of opening a database connection.
+                                    </p>
+                                    <p>
+                                        If the data provider's <code>Connection.Open()</code> method throws an exception,
+                                        it is executed again until it succeeds or the number of calls exceeds <code>sooda.connectionopenretries</code>.
+                                        The default value is 2.
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" valign="top">sooda.hostname</td>
+                                <td>
+                                    <p>
+                                        Overrides the HOSTNAME part of the configuration file, which is normally the machine name
+                                        as returned by <code>Environment.MachineName</code>.
+                                    </p>
+                                    <p>
+                                        Example:
+                                    </p>
+                                    <code lang="XML">
+                                        <![CDATA[
+                                        <configuration>
+                                            <appSettings>
+                                                <add key="sooda.hostname" value="ALTERNATIVEHOSTNAME" />
+                                            </appSettings>
+                                        </configuration>
+                                        ]]>
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" valign="top">sooda.innerjoins</td>
+                                <td>
+                                    <p>
+                                        Enables use of <code>INNER JOIN</code> in SQL queries,
+                                        which can be more effective than <code>OUTER JOIN</code>.
+                                        Defaults to <code>false</code>
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" valign="top">sooda.oracleClientAutoCommitBugWorkaround</td>
+                                <td>
+                                    <p>
+                                        Enables a workaround for a bug in Microsoft's OracleClient in .NET 3.5 SP1.
+                                        The bug causes transactions to be autocommitted in certain conditions.
+                                        The bug and the workaround are described
+                                        <a href="http://social.msdn.microsoft.com/forums/en-US/adodotnetdataproviders/thread/d4834ce2-482f-40ec-ad90-c3f9c9c4d4b1/">here</a>.
                                     </p>
                                 </td>
                             </tr>
