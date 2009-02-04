@@ -137,7 +137,6 @@ namespace Sooda.Schema
             classNameHash = new Hashtable(new CaseInsensitiveHashCodeProvider(), new CaseInsensitiveComparer());
             relationNameHash = new Hashtable(new CaseInsensitiveHashCodeProvider(), new CaseInsensitiveComparer());
 #endif
-
             Rehash();
 
             _backRefCollections = new Hashtable();
@@ -274,19 +273,27 @@ namespace Sooda.Schema
 
             if (includedSchema.Classes != null)
             {
+                Hashtable classNames = new Hashtable();
+                foreach (ClassInfo nci in includedSchema.Classes)
+                    classNames.Add(nci.Name, nci);
+
                 ClassInfoCollection newClasses = new ClassInfoCollection();
-
-                foreach (ClassInfo ci in includedSchema.Classes)
-                {
-                    newClasses.Add(ci);
-                }
-
                 if (this.Classes != null)
                 {
                     foreach (ClassInfo ci in this.Classes)
                     {
                         newClasses.Add(ci);
+                        if (classNames.ContainsKey(ci.Name))
+                        {
+                            ci.Merge((ClassInfo)classNames[ci.Name]);
+                            classNames.Remove(ci.Name);
+                        }
                     }
+                }
+
+                foreach (ClassInfo ci in classNames.Values)
+                {
+                    newClasses.Add(ci);
                 }
 
                 this.Classes = newClasses;

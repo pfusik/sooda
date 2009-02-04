@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2007-08-08 16:38:18 +0200 (Wed, 08 Aug 2007) $</last-modified-date> (revision <subversion-revision>$Revision: 433 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2009-02-04 09:29:30 +0100 (Wed, 04 Feb 2009) $</last-modified-date> (revision <subversion-revision>$Revision: 481 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright &#169; 2003-2006 by Jaros³aw Kowalski</div>
         <div class="pagebreak" />
     </div>
@@ -21,7 +21,7 @@
             <body>
                 <p>
                     <b>Sooda</b> (Simple Object-Oriented Data Access) is an Object-To-Relational Mapping 
-                    software for the <a href="http://msdn.microsoft.com/net">.NET</a> environment.
+                    software for the <a href="http://www.microsoft.com/NET/">.NET</a> environment.
                     O/R Mapping Software enables you to express your business rules without using SQL at all.
                 </p>
                 <p>
@@ -75,7 +75,7 @@
                         The following RDBMSes are supported:
                     </p>
                     <ul>
-                        <li>Microsoft SQL Server 2000, 2005 (including MSDE and SQL Server Express Edition)</li>
+                        <li>Microsoft SQL Server 2000, 2005, 2008 (including MSDE and SQL Server Express Edition)</li>
                         <li>MySQL v4.x</li>
                         <li>PostgreSQL v8.x</li>
                         <li>Oracle 8i, 9i, 10g</li>
@@ -96,12 +96,12 @@
                         The following languages have been tested:
                     </p>
                     <ul>
-                        <li><a href="http://msdn.microsoft.com/csharp/">C#</a> - fully supported, code compiles cleanly, supports <a href="#soqltypedqueries">Typed Queries</a>.</li>
+                        <li><a href="http://msdn.microsoft.com/vcsharp/">C#</a> - fully supported, code compiles cleanly, supports <a href="#soqltypedqueries">Typed Queries</a>.</li>
                         <li><a href="http://msdn.microsoft.com/vbasic/">VB.NET</a> - fully supported, some warnings may be raised during compilation of the generated code, but they can be ignored.</li>
                         <li><a href="http://boo.codehaus.org/">Boo</a> - works - EXPERIMENTAL</li>
                         <li><a href="http://msdn.microsoft.com/vjsharp/">VJ#</a> - works - EXPERIMENTAL</li>
-                        <li><a href="http://www.nemerle.org/">Nemerle</a> - not supported - fails compilation</li>
-                        <li><a href="http://msdn.microsoft.com/jscript/">JScript.NET</a> - not supported - compilation fails with internal error</li>
+                        <li><a href="http://www.nemerle.org/">Nemerle</a> - not supported - compilation fails</li>
+                        <li><a href="http://msdn.microsoft.com/en-us/library/3bf5fs13.aspx">JScript.NET</a> - not supported - compilation fails with internal error</li>
                         <li><a href="http://www.codeplex.com/Wiki/View.aspx?ProjectName=IronPython">IronPython</a> - code generation works, needs further investigation</li>
                     </ul>
                 </body>
@@ -1395,6 +1395,11 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <td>nullable</td>
                                 <td>boolean</td>
                                 <td>Allow this field to hold the null value. Exact <a href="#generatedproperties">representation of the null value</a> depends on options passed to <a href="#soodastubgen">SoodaStubGen</a>.</td>
+                            </tr>
+                            <tr>
+                                <td>readOnly</td>
+                                <td>boolean</td>
+                                <td>This field cannot be modified (no property setter is generated).</td>
                             </tr>
                             <tr>
                                 <td>forceTrigger</td>
@@ -3364,7 +3369,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     <p>
                         By default Sooda configuration parameters are stored in standard .NET configuration files named
                         <code>ApplicationName.exe.config</code> or <code>Web.config</code> in a section named <x><appSettings /></x>. 
-                        More information about .NET Configuration files is available in <a href="http://msdn.microsoft.com/library/en-us/cpgenref/html/gngrfconfiguration.asp">MSDN Library</a>.
+                        More information about .NET Configuration files is available in <a href="http://msdn.microsoft.com/en-us/library/1fk1t1t0.aspx">MSDN Library</a>.
                     </p>
                     <p>
                         Each data source configuration entry has a form:
@@ -3380,7 +3385,8 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         Possible setting names are described <sectionlink id="configuringdatasources" />.
                     </p>
                     <p>
-                        Some global options can also be set this way. Global options use the "sooda" prefix instead of their data source name.
+                        Some global options can also be set this way. Global options use the "<code>sooda</code>" prefix instead of a data source name.
+                        They are described <sectionlink id="configurationglobal" />.
                     </p>
                     <p>
                         The following configuration file defines two settings for the "default" data source: <code>connectionString</code> and <code>sqlDialect</code>.
@@ -3884,6 +3890,82 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                         When this parameter is <code>true</code>, both sides of the SQL operator <code>LIKE</code>
                                         are wrapped in <code>UPPER</code> functions. This can be used to search case-insensitively
                                         when the <code>LIKE</code> operator matches case-sensitively.
+                                    </p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </body>
+        </section>
+        <section id="configurationglobal">
+            <title>Global Configuration</title>
+            <body>
+                <p>
+                    Sooda has some options which are not data source specific. These options have the name prefix <code>sooda</code>.
+                </p>
+                <div class="table">
+                    <table style="table-layout: fixed">
+                        <col style="font-size: 90%; width: 70mm; text-align: center" />
+                        <thead>
+                            <tr>
+                                <th>Configuration setting</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td align="center" valign="top">sooda.connectionopenretries</td>
+                                <td>
+                                    <p>
+                                        Specifies number of tries of opening a database connection.
+                                    </p>
+                                    <p>
+                                        If the data provider's <code>Connection.Open()</code> method throws an exception,
+                                        it is executed again until it succeeds or the number of calls exceeds <code>sooda.connectionopenretries</code>.
+                                        The default value is 2.
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" valign="top">sooda.hostname</td>
+                                <td>
+                                    <p>
+                                        Overrides the HOSTNAME part of the configuration file, which is normally the machine name
+                                        as returned by <code>Environment.MachineName</code>.
+                                    </p>
+                                    <p>
+                                        Example:
+                                    </p>
+                                    <code lang="XML">
+                                        <![CDATA[
+                                        <configuration>
+                                            <appSettings>
+                                                <add key="sooda.hostname" value="ALTERNATIVEHOSTNAME" />
+                                            </appSettings>
+                                        </configuration>
+                                        ]]>
+                                    </code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" valign="top">sooda.innerjoins</td>
+                                <td>
+                                    <p>
+                                        Enables use of <code>INNER JOIN</code> in SQL queries,
+                                        which can be more effective than <code>OUTER JOIN</code>.
+                                        Defaults to <code>false</code>
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center" valign="top">sooda.oracleClientAutoCommitBugWorkaround</td>
+                                <td>
+                                    <p>
+                                        Enables a workaround for a bug in Microsoft's OracleClient in .NET 3.5 SP1.
+                                        The bug causes transactions to be autocommitted in certain conditions.
+                                        The bug and the workaround are described
+                                        <a href="http://social.msdn.microsoft.com/forums/en-US/adodotnetdataproviders/thread/d4834ce2-482f-40ec-ad90-c3f9c9c4d4b1/">here</a>.
                                     </p>
                                 </td>
                             </tr>
@@ -6120,7 +6202,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 </code>
                 <p>
                     Manually concatenating string literals can be dangerous and lead 
-                    to <a href="http://en.wikipedia.org/wiki/XSS">cross-site scripting vulnerabilities</a> in web applications.
+                    to <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">cross-site scripting vulnerabilities</a> in web applications.
                     Fortunately Sooda lets you separate string literals from the rest of the query code.
                     You can use the <code>{0}, {1}, {2}</code> notation similar to <code>Console.WriteLine()</code>.
                     Note that you do not need to quote the strings yourself nor surround <code>{0}</code> with apostrophes. In fact
@@ -8379,6 +8461,7 @@ where    (t2.name = 'Mary Manager')
                         <li><code>PrimaryKey</code> - <code>true</code> if the field is (part of) the primary key</li>
                         <li><code>PrecommitTypedValue</code> - typed precommit value (integer, string, datetime)</li>
                         <li><code>Nullable</code> - <code>true</code> if the field is nullable</li>
+                        <li><code>ReadOnly</code> - <code>true</code> if the field is read-only</li>
                         <li><code>ForceTrigger</code> - <code>true</code> if the triggers for this field have been generated, regardless of
                             a value of the <code>ClassInfo.Triggers</code> for the parent <x><class /></x>.</li>
                         <li><code>DeleteAction</code> - specifies the action that should be taken when referenced object is deleted. Equivalent of the <code>onDelete</code> attribute.</li>
@@ -8539,11 +8622,12 @@ where    (t2.name = 'Mary Manager')
                 </p>
                 <p>
                     Fortunately, Sooda supports multiple strategies for managing the implicit transaction reference.
-                    There are two predefined strategies:
+                    There are three predefined strategies:
                 </p>
                 <ul>
                     <li><code>SoodaThreadBoundTransactionStrategy</code> - default thread-bound implementation</li>
                     <li><code>SoodaHttpContextBoundTransactionStrategy</code> - ASP.NET HttpContext-bound implementation</li>
+                    <li><code>SoodaProcessBoundTransactionStrategy</code> - process-bound implementation</li>
                 </ul>
                 <p>
                     To change the active strategy, create an instance of the appropriate strategy class and assign 

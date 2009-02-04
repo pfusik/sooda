@@ -102,6 +102,8 @@ namespace Sooda.CodeGen
 
         private void GenerateConditionalSets(CodeStatementCollection stats, int min, int max, ClassInfo ci)
         {
+            if ((ci.Schema.AssemblyName != null) && (ci.Schema.AssemblyName != ""))
+                return;
             if (min >= max)
             {
                 stats.Add(new CodeCommentStatement("ordinal: " + min));
@@ -124,6 +126,8 @@ namespace Sooda.CodeGen
 
         public void GenerateClassValues(CodeNamespace nspace, ClassInfo ci, bool miniStub)
         {
+            if ((ci.Schema.AssemblyName != null) && (ci.Schema.AssemblyName != ""))
+                return;
             CodeDomClassStubGenerator gen = new CodeDomClassStubGenerator(ci, Project);
 
             CodeTypeDeclaration ctd = new CodeTypeDeclaration(ci.Name + "_Values");
@@ -213,6 +217,8 @@ namespace Sooda.CodeGen
 
         public void GenerateClassStub(CodeNamespace nspace, ClassInfo ci, bool miniStub)
         {
+            if ((ci.Schema.AssemblyName != null) && (ci.Schema.AssemblyName != ""))
+                return;
             if (!miniStub)
                 GenerateClassValues(nspace, ci, miniStub);
 
@@ -309,6 +315,8 @@ namespace Sooda.CodeGen
 
         public void GenerateClassFactory(CodeNamespace nspace, ClassInfo ci)
         {
+            if ((ci.Schema.AssemblyName != null) && (ci.Schema.AssemblyName != ""))
+                return;
             FieldInfo fi = ci.GetFirstPrimaryKeyField();
             string pkClrTypeName = fi.GetFieldHandler().GetFieldType().FullName;
             string pkFieldHandlerTypeName = fi.GetFieldHandler().GetType().FullName;
@@ -364,6 +372,8 @@ namespace Sooda.CodeGen
 
         public void GenerateClassSkeleton(CodeNamespace nspace, ClassInfo ci, bool useChainedConstructorCall, bool fakeSkeleton)
         {
+            if ((ci.Schema.AssemblyName != null) && (ci.Schema.AssemblyName != ""))
+                return;
             CodeTypeDeclaration ctd = new CodeTypeDeclaration(ci.Name);
             if (ci.Description != null)
             {
@@ -390,14 +400,16 @@ namespace Sooda.CodeGen
 
         private void OutputFactories(CodeArrayCreateExpression cace, string ns, SchemaInfo schema)
         {
-            foreach (IncludeInfo ii in schema.Includes)
-            {
-                OutputFactories(cace, ii.Namespace, ii.Schema);
-            }
+            //foreach (IncludeInfo ii in schema.Includes)
+            //{
+            //    if ((ii.Schema != null) && (ii.AssemblyName != null) && (ii.AssemblyName != ""))
+            //        OutputFactories(cace, ii.Namespace, ii.Schema);
+            //}
 
-            foreach (ClassInfo ci in schema.LocalClasses)
+            foreach (ClassInfo ci in schema.Classes)
             {
-                cace.Initializers.Add(new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(ns + ".Stubs." + ci.Name + "_Factory"), "TheFactory"));
+                string nameSpace = ((ci.Schema.Namespace != null) && (ci.Schema.Namespace != "")) ? ci.Schema.Namespace : ns;
+                cace.Initializers.Add(new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(nameSpace + ".Stubs." + ci.Name + "_Factory"), "TheFactory"));
             }
         }
 
@@ -432,6 +444,9 @@ namespace Sooda.CodeGen
 
         public void GenerateListWrapper(CodeNamespace nspace, ClassInfo ci)
         {
+            if ((ci.Schema.AssemblyName != null) && (ci.Schema.AssemblyName != ""))
+                return;
+            //Output.Verbose("      * list wrapper {0}.{1}.{2}", ci.Schema.AssemblyName, ci.Schema.Namespace, ci.Name);
             CDILContext context = new CDILContext();
             context["ClassName"] = ci.Name;
             context["OptionalNewAttribute"] = (_codeProvider is Microsoft.VisualBasic.VBCodeProvider) ? "" : ",New";
@@ -579,6 +594,8 @@ namespace Sooda.CodeGen
 
         private void GenerateLoaderClass(CodeNamespace nspace, ClassInfo ci)
         {
+            if ((ci.Schema.AssemblyName != null) && (ci.Schema.AssemblyName != ""))
+                return;
             CodeTypeDeclaration ctd = GetLoaderClass(ci);
             nspace.Types.Add(ctd);
         }
@@ -658,15 +675,17 @@ namespace Sooda.CodeGen
             }
         }
 
-        private void GenerateTypedPublicQueryWrappers(CodeNamespace ns, ClassInfo classInfo)
+        private void GenerateTypedPublicQueryWrappers(CodeNamespace ns, ClassInfo ci)
         {
+            if ((ci.Schema.AssemblyName != null) && (ci.Schema.AssemblyName != ""))
+                return;
             CDILContext context = new CDILContext();
-            context["ClassName"] = classInfo.Name;
+            context["ClassName"] = ci.Name;
 
             CodeTypeDeclaration ctd = CDILParser.ParseClass(CDILTemplate.Get("ClassField.cdil"), context);
             ns.Types.Add(ctd);
 
-            foreach (CollectionBaseInfo coll in classInfo.UnifiedCollections)
+            foreach (CollectionBaseInfo coll in ci.UnifiedCollections)
             {
                 CodeMemberProperty prop = new CodeMemberProperty();
 
@@ -681,7 +700,7 @@ namespace Sooda.CodeGen
                 ctd.Members.Add(prop);
             }
 
-            foreach (FieldInfo fi in classInfo.UnifiedFields)
+            foreach (FieldInfo fi in ci.UnifiedFields)
             {
                 CodeMemberProperty prop = new CodeMemberProperty();
 
@@ -715,26 +734,28 @@ namespace Sooda.CodeGen
             }
         }
 
-        private void GenerateTypedInternalQueryWrappers(CodeNamespace ns, ClassInfo classInfo)
+        private void GenerateTypedInternalQueryWrappers(CodeNamespace ns, ClassInfo ci)
         {
+            if ((ci.Schema.AssemblyName != null) && (ci.Schema.AssemblyName != ""))
+                return;
             CDILContext context = new CDILContext();
-            context["ClassName"] = classInfo.Name;
-            context["PrimaryKeyType"] = classInfo.GetFirstPrimaryKeyField().GetFieldHandler().GetFieldType().FullName;
+            context["ClassName"] = ci.Name;
+            context["PrimaryKeyType"] = ci.GetFirstPrimaryKeyField().GetFieldHandler().GetFieldType().FullName;
             context["CSharp"] = _codeProvider is Microsoft.CSharp.CSharpCodeProvider;
 
             CodeTypeDeclaration ctd = CDILParser.ParseClass(CDILTemplate.Get("TypedCollectionWrapper.cdil"), context);
             ns.Types.Add(ctd);
 
             context = new CDILContext();
-            context["ClassName"] = classInfo.Name;
-            context["PrimaryKeyType"] = classInfo.GetFirstPrimaryKeyField().GetFieldHandler().GetFieldType().FullName;
+            context["ClassName"] = ci.Name;
+            context["PrimaryKeyType"] = ci.GetFirstPrimaryKeyField().GetFieldHandler().GetFieldType().FullName;
             context["CSharp"] = _codeProvider is Microsoft.CSharp.CSharpCodeProvider;
             context["ParameterAttributes"] = _codeGenerator.Supports(GeneratorSupport.ParameterAttributes);
 
             ctd = CDILParser.ParseClass(CDILTemplate.Get("TypedWrapper.cdil"), context);
             ns.Types.Add(ctd);
 
-            foreach (CollectionBaseInfo coll in classInfo.UnifiedCollections)
+            foreach (CollectionBaseInfo coll in ci.UnifiedCollections)
             {
                 CodeMemberProperty prop = new CodeMemberProperty();
 
@@ -749,7 +770,7 @@ namespace Sooda.CodeGen
                 ctd.Members.Add(prop);
             }
 
-            foreach (FieldInfo fi in classInfo.UnifiedFields)
+            foreach (FieldInfo fi in ci.UnifiedFields)
             {
                 CodeMemberProperty prop = new CodeMemberProperty();
 
@@ -1416,7 +1437,8 @@ namespace Sooda.CodeGen
 
             foreach (IncludeInfo ii in includes)
             {
-                nspace.Imports.Add(new CodeNamespaceImport(ii.Namespace + (stubsSubnamespace ? ".Stubs" : "")));
+                if ((ii.Namespace != "") && (ii.Namespace != null))
+                    nspace.Imports.Add(new CodeNamespaceImport(ii.Namespace + (stubsSubnamespace ? ".Stubs" : "")));
                 AddImportsFromIncludedSchema(nspace, ii.Schema.Includes, stubsSubnamespace);
             }
         }
@@ -1428,7 +1450,8 @@ namespace Sooda.CodeGen
 
             foreach (IncludeInfo ii in includes)
             {
-                nspace.Imports.Add(new CodeNamespaceImport(ii.Namespace + ".TypedQueries"));
+                if ((ii.Namespace != "") && (ii.Namespace != null))
+                    nspace.Imports.Add(new CodeNamespaceImport(ii.Namespace + ".TypedQueries"));
                 AddTypedQueryImportsFromIncludedSchema(nspace, ii.Schema.Includes);
             }
         }
