@@ -32,6 +32,7 @@ using System.CodeDom;
 using System.IO;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Reflection;
 
 namespace Sooda.CodeGen.CDIL
 {
@@ -393,6 +394,19 @@ namespace Sooda.CodeGen.CDIL
             return new CodeTypeReference(name);
         }
 
+        public TypeAttributes ParseTypeAttributes()
+        {
+            TypeAttributes retval = (TypeAttributes) 0;
+            for (;;)
+            {
+                string keyword = EatKeyword();
+                retval |= (TypeAttributes) Enum.Parse(typeof(TypeAttributes), keyword, true);
+                if (TokenType != CDILToken.Comma)
+                    return retval;
+                GetNextToken();
+            }
+        }
+
         public MemberAttributes ParseMemberAttributes()
         {
             MemberAttributes retval = (MemberAttributes)0;
@@ -687,6 +701,11 @@ namespace Sooda.CodeGen.CDIL
             ExpectKeyword("class");
             CodeTypeReference className = ParseType();
             CodeTypeDeclaration ctd = new CodeTypeDeclaration(className.BaseType);
+            if (IsKeyword("attributes"))
+            {
+                GetNextToken();
+                ctd.TypeAttributes = ParseTypeAttributes();
+            }
             if (IsKeyword("extends"))
             {
                 GetNextToken();

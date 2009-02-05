@@ -1,4 +1,5 @@
 class ${ClassName}_Stub
+    attributes Public,Abstract
     extends ${BaseClassName}
 
 constructor(SoodaTransaction tran)
