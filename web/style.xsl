@@ -186,7 +186,7 @@
     <xsl:template match="navigation">
         <table border="0" cellpadding="0" cellspacing="0" class="navtable">
             <xsl:apply-templates select="nav" />
-            <tr class="navtablespacer"><td><a class="nav" href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=71422&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a></td></tr>
+            <tr class="navtablespacer"><td><a class="nav" href="http://sourceforge.net/projects/sooda"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=71422&amp;type=4" width="125" height="37" border="0" alt="Get Sooda - Simple Object Oriented Data Access at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a></td></tr>
         </table>
     </xsl:template>
 
