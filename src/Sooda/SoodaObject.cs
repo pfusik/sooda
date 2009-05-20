@@ -701,15 +701,16 @@ namespace Sooda
                     {
                         try
                         {
-                            SoodaFieldHandler handler = GetFieldHandler(field.ClassUnifiedOrdinal);
                             int ordinal = field.ClassUnifiedOrdinal;
-
                             if (!IsFieldDirty(ordinal))
                             {
                                 if (reader.IsDBNull(recordPos))
                                     _fieldValues.SetFieldValue(ordinal, null);
                                 else
+                                {
+                                    SoodaFieldHandler handler = GetFieldHandler(ordinal);
                                     _fieldValues.SetFieldValue(ordinal, handler.RawRead(reader, recordPos));
+                                }
                             }
                         }
                         catch (Exception ex)
