@@ -1169,14 +1169,16 @@ namespace Sooda.CodeGen
                 }
                 Output.Verbose("Output Path:       {0}", Project.OutputPath);
                 Output.Verbose("Namespace:         {0}", Project.OutputNamespace);
-                _codeGeneratorOptions = new CodeGeneratorOptions();
-                _codeGeneratorOptions.IndentString = "  ";
-                _codeGeneratorOptions.ElseOnClosing = false;
 
                 // write skeleton files
-
+                _codeGeneratorOptions = new CodeGeneratorOptions();
+                _codeGeneratorOptions.BracingStyle = "C";
+                _codeGeneratorOptions.IndentString = "    ";
                 WriteSkeletonClasses();
+
+                // write stubs
                 _codeGeneratorOptions.BracingStyle = "Block";
+                _codeGeneratorOptions.IndentString = "  ";
                 _codeGeneratorOptions.BlankLinesBetweenMembers = false;
 
                 if (Project.SeparateStubs)
