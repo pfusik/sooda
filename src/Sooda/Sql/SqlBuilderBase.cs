@@ -353,20 +353,28 @@ namespace Sooda.Sql
                     string stringValue = query.Substring(stringStartPos + 1, stringEndPos - stringStartPos - 1);
                     bool requireParameter = false;
 
-                    // dates and ansi-string definitely require parameters
-                    if (stringEndPos + 1 < query.Length && (query[stringEndPos + 1] == 'D' || query[stringEndPos + 1] == 'A'))
+                    if (stringEndPos + 1 < query.Length && query[stringEndPos + 1] == 'V')
                     {
-                        requireParameter = true;
+                        // requireParameter = false;
+                        stringEndPos++;
                     }
-
-                    if (!requireParameter)
+                    else
                     {
-                        if (!IsStringSafeForLiteral(stringValue) && !isRaw)
+                        // dates and ansi-string definitely require parameters
+                        if (stringEndPos + 1 < query.Length && (query[stringEndPos + 1] == 'D' || query[stringEndPos + 1] == 'A'))
+                        {
+                            requireParameter = true;
+                        }
+
+                        if (!requireParameter)
+                        {
+                            if (!IsStringSafeForLiteral(stringValue) && !isRaw)
+                                requireParameter = true;
+                        }
+
+                        if (!UseSafeLiterals && !isRaw)
                             requireParameter = true;
                     }
-
-                    if (!UseSafeLiterals && !isRaw)
-                        requireParameter = true;
 
                     if (requireParameter)
                     {
