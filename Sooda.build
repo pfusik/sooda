@@ -44,14 +44,14 @@
     <target name="libraries" depends="Sooda, Sooda.Logging.NLog, Sooda.Logging.log4net" />
 
     <target name="update-build-number">
-        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/Sooda/AssemblyBuildInfo.cs build/Sooda.buildversion" useruntimeengine="true" />
-        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/Sooda.CodeGen/AssemblyBuildInfo.cs build/Sooda.buildversion" useruntimeengine="true" />
-        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaStubGen/AssemblyBuildInfo.cs build/Sooda.buildversion" useruntimeengine="true" />
-        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaCompileStubs/AssemblyBuildInfo.cs build/Sooda.buildversion" useruntimeengine="true" />
-        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaFixKeygen/AssemblyBuildInfo.cs build/Sooda.buildversion" useruntimeengine="true" />
-        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaSchemaTool/AssemblyBuildInfo.cs build/Sooda.buildversion" useruntimeengine="true" />
-        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaQuery/AssemblyBuildInfo.cs build/Sooda.buildversion" useruntimeengine="true" />
-        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaAddin.UI/AssemblyBuildInfo.cs build/Sooda.buildversion" useruntimeengine="true" />
+        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/Sooda/AssemblyBuildInfo.cs build/Sooda.buildversion" />
+        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/Sooda.CodeGen/AssemblyBuildInfo.cs build/Sooda.buildversion" />
+        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaStubGen/AssemblyBuildInfo.cs build/Sooda.buildversion" />
+        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaCompileStubs/AssemblyBuildInfo.cs build/Sooda.buildversion" />
+        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaFixKeygen/AssemblyBuildInfo.cs build/Sooda.buildversion" />
+        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaSchemaTool/AssemblyBuildInfo.cs build/Sooda.buildversion" />
+        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaQuery/AssemblyBuildInfo.cs build/Sooda.buildversion" />
+        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaAddin.UI/AssemblyBuildInfo.cs build/Sooda.buildversion" />
         <foreach item="Line" in="build/Sooda.buildversion" delim="." property="tmp1,tmp2,tmp3,tmp4">
             <property name="sooda.version.major" value="${tmp1}" />
             <property name="sooda.version.minor" value="${tmp2}" />
@@ -729,8 +729,8 @@
     </target>
 
     <target name="keyfile-mono">
-        <exec useruntimeengine="true" program="${nant.settings.currentframework.sdkdirectory}/sn.exe" workingdir="${project::get-base-directory()}" commandline="-q -k Sooda.snk"/>
-        <exec useruntimeengine="true" program="${nant.settings.currentframework.sdkdirectory}/sn.exe" workingdir="${project::get-base-directory()}" commandline="-q -i Sooda.snk SoodaPublisherKey"/>
+        <exec program="${nant.settings.currentframework.sdkdirectory}/sn.exe" workingdir="${project::get-base-directory()}" commandline="-q -k Sooda.snk"/>
+        <exec program="${nant.settings.currentframework.sdkdirectory}/sn.exe" workingdir="${project::get-base-directory()}" commandline="-q -i Sooda.snk SoodaPublisherKey"/>
     </target>
 
     <target name="putty">
@@ -806,7 +806,7 @@
 
         <exec program="external/NDocSyntax.exe" 
               commandline="-outDir build\webtmp web/*.xml" 
-              workingdir="." useruntimeengine="true" />
+              workingdir="." />
 
         <copy todir="${webbuild.dir}/examples">
             <fileset basedir="examples">
