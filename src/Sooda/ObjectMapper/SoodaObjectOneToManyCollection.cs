@@ -54,8 +54,8 @@ namespace Sooda.ObjectMapper
         private SoodaWhereClause additionalWhereClause;
         private bool cached;
 
-        private static object markerAdded = new Object();
-        private static object markerRemoved = new Object();
+        private static readonly object markerAdded = new Object();
+        private static readonly object markerRemoved = new Object();
 
         public SoodaObjectOneToManyCollection(SoodaTransaction tran, Type childType, SoodaObject parentObject, string childRefField, Sooda.Schema.ClassInfo classInfo, SoodaWhereClause additionalWhereClause, bool cached)
         {
@@ -125,6 +125,9 @@ namespace Sooda.ObjectMapper
 
         public void InternalAdd(SoodaObject c)
         {
+            if (!childType.IsInstanceOfType(c))
+                return;
+
             if (items == null)
             {
                 if (tempItems == null)
@@ -142,6 +145,9 @@ namespace Sooda.ObjectMapper
 
         public void InternalRemove(SoodaObject c)
         {
+            if (!childType.IsInstanceOfType(c))
+                return;
+
             if (items == null)
             {
                 if (tempItems == null)
