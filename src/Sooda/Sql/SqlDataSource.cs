@@ -429,7 +429,7 @@ namespace Sooda.Sql
                 }
                 queryExpression.TopCount = topCount;
                 queryExpression.From.Add(classInfo.Name);
-                queryExpression.FromAliases.Add("obj");
+                queryExpression.FromAliases.Add("");
                 if (whereClause != null && whereClause.WhereExpression != null)
                 {
                     queryExpression.WhereClause = whereClause.WhereExpression;
@@ -476,13 +476,13 @@ namespace Sooda.Sql
                 SoqlQueryExpression queryExpression = new SoqlQueryExpression();
                 queryExpression.TopCount = topCount;
                 queryExpression.From.Add(classInfo.Name);
-                queryExpression.FromAliases.Add("obj");
+                queryExpression.FromAliases.Add("");
                 foreach (TableInfo ti in classInfo.UnifiedTables)
                 {
                     tablesArrayList.Add(ti);
                     foreach (FieldInfo fi in ti.Fields)
                     {
-                        SoqlPathExpression pathExpr = new SoqlPathExpression("obj", fi.Name);
+                        SoqlPathExpression pathExpr = new SoqlPathExpression(fi.Name);
                         queryExpression.SelectExpressions.Add(pathExpr);
                         queryExpression.SelectAliases.Add("");
 
@@ -878,11 +878,11 @@ namespace Sooda.Sql
 
                 SoqlQueryExpression queryExpression = new SoqlQueryExpression();
                 queryExpression.From.Add(classInfo.Name);
-                queryExpression.FromAliases.Add("obj");
+                queryExpression.FromAliases.Add("");
 
                 foreach (FieldInfo fi in tableInfo.Fields)
                 {
-                    SoqlPathExpression pathExpr = new SoqlPathExpression("obj", fi.Name);
+                    SoqlPathExpression pathExpr = new SoqlPathExpression(fi.Name);
                     queryExpression.SelectExpressions.Add(pathExpr);
                     queryExpression.SelectAliases.Add("");
 
@@ -938,7 +938,7 @@ namespace Sooda.Sql
                     {
                         SoqlBooleanRelationalExpression expr =
                             new SoqlBooleanRelationalExpression(
-                                    new SoqlPathExpression("obj", fi.Name),
+                                    new SoqlPathExpression(fi.Name),
                                     new SoqlParameterLiteralExpression(parameterPos),
                                     SoqlRelationalOperator.Equal);
 
