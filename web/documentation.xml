@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2009-02-04 09:29:30 +0100 (Wed, 04 Feb 2009) $</last-modified-date> (revision <subversion-revision>$Revision: 481 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2009-09-21 10:56:47 +0200 (Mon, 21 Sep 2009) $</last-modified-date> (revision <subversion-revision>$Revision: 498 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright &#169; 2003-2006 by Jaros³aw Kowalski</div>
         <div class="pagebreak" />
     </div>
@@ -291,7 +291,7 @@ c.Orders.OrderBy(sortExpression);
                 <title>Many-To-Many Relationships</title>
                 <body>
                     <p>
-                        Many-to-many relationalships are used in many situations, such as these:
+                        Many-to-many relationships are used in many situations, such as these:
                     </p>
                     <ul>
                         <li>person-to-permission (each person has many permissions, each permission is held by many persons)</li>
@@ -474,7 +474,7 @@ using (SoodaTransaction t = new SoodaTransaction())
                     <img src="doc6.gif" alt="Grouping large columns for lazy loading"/>
                     <p>
                         Sooda makes it possible to create a class based on up to 32 physical or logical tables. The only thing they
-                        need to have in common is their primary key. This feaure is used in inheritance, which is described <sectionlink id="inheritance" />.
+                        need to have in common is their primary key. This feature is used in inheritance, which is described <sectionlink id="inheritance" />.
                     </p>
                 </body>
             </section>
@@ -686,11 +686,6 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     database. For example we have <code>Territories</code> instead of <code>Territory</code>.
                     Using plurals in class names is not a good idea so we should fix it by renaming the classes.
                 </p> 
-                <p>
-                    To save time, you can download the corrected schema for the Northwind database 
-                    from the <a href="http://www.sooda.org/northwind/SoodaSchema.xml">Sooda website</a>. The schema includes
-                    all changes described below.
-                </p>
                 <p>
                     To do this, open <code>SoodaSchema.xml</code> and replace all plural class names with the appropriate singular forms.
                     Make sure to replace only class names not table names, so it is best to use the following renaming strategy:
@@ -1097,7 +1092,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                 <td>cacheCollections</td>
                                 <td>bool</td>
                                 <td>
-                                    Collection caching hint. The actual interpretation depends on the <a href="caching">caching policy</a> that is in effect.
+                                    Collection caching hint. The actual interpretation depends on the <a href="#caching">caching policy</a> that is in effect.
                                 </td>
                             </tr>
                             <tr>
@@ -1180,7 +1175,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 <p>
                     Objects may need to be <a href="#mappingmultipletablestoclasses">stored in multiple tables</a> for efficiency reasons. 
                     In the following example we have two tables - one has employee ID, Name, Salary, HireDate and Active flag, 
-                    the other stors his/her Picture (potentially very large piece of binary data that encodes the person's photo). 
+                    the other stores his/her Picture (potentially very large piece of binary data that encodes the person's photo). 
                     By storing the picture in a separate table we can avoid reading from it until the data is actually needed.
                 </p>
                 <img src="doc5.gif" alt="Large columns moved to a separate table" />
@@ -4329,7 +4324,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     </ul>
                     <p>
                         Lazy loading is a way to get a reference to the object without actually loading data from the
-                        database. Propery values will be loaded on first read access. Getting object reference is very fast
+                        database. Property values will be loaded on first read access. Getting object reference is very fast
                         and should be used when we do not need actual object data, just its reference, as 
                         described <sectionlink id="lazyloading" />.
                     </p>
@@ -4406,7 +4401,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     </p>
                     <p>
                         <code>GetList()</code> method is overloaded to support various usage scenarios.
-                        The most complex variant of the method takes five parameters, but <a href="soodastubgen">SoodaStubGen</a>
+                        The most complex variant of the method takes five parameters, but <a href="#soodastubgen">SoodaStubGen</a>
                         also generates simplified variants of the GetList() method which only accept 1,2,3 or 4 parameters. There are
                         32 overloads generated for each class.
                     </p>
@@ -4966,7 +4961,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     Sooda guarantees reference identity for objects retrieved from a database. It means
                     that if we make 2 or more queries which retrieve a particular row from the 
                     database in the same <a href="#soodatransaction">transaction</a>
-                    they are guaranteed to be be mapped to the same object (not just two objects that are equal).
+                    they are guaranteed to be mapped to the same object (not just two objects that are equal).
                     It means that you can modify the object through either any of the references and 
                     you will be modifying the same object, so the state is going to be consistent.
                     Mechanism that ensures object identity is called Level 1 (transaction-level) caching.
@@ -6246,7 +6241,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     To properly support path expressions, some schema-specific code needs to be generated as well 
                     which <a href="#soodastubgen">SoodaStubGen utility</a> takes care of. It generates a set of 
                     classes that let you build typed path expressions and typed collection expression builders. They both
-                    let you express almost all all SOQL features. In some rare cases (such as SQL functions or subqueries)
+                    let you express almost all SOQL features. In some rare cases (such as SQL functions or subqueries)
                     you can resort to text-based SOQL and even combine the two approaches in a single query.
                 </p>
                 <p>
