@@ -1676,7 +1676,7 @@ namespace Sooda
             return GetTransaction().GetPersistentValue(this, name);
         }
 
-        public string GetLabel(bool throwOnError)
+        public virtual string GetLabel(bool throwOnError)
         {
             string labelField = GetClassInfo().GetLabel();
             if (labelField == null)
