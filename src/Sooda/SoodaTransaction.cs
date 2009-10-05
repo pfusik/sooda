@@ -76,6 +76,7 @@ namespace Sooda
         private StringToWeakSoodaObjectCollectionAssociation _objectsByClass = new StringToWeakSoodaObjectCollectionAssociation();
         private StringToWeakSoodaObjectCollectionAssociation _dirtyObjectsByClass = new StringToWeakSoodaObjectCollectionAssociation();
         private StringToObjectToWeakSoodaObjectAssociation _objectDictByClass = new StringToObjectToWeakSoodaObjectAssociation();
+        private StringCollection _disabledKeyGenerators = new StringCollection();
 
         internal SoodaDataSourceCollection _dataSources = new SoodaDataSourceCollection();
         private StringToISoodaObjectFactoryAssociation factoryForClassName = new StringToISoodaObjectFactoryAssociation();
@@ -1131,6 +1132,42 @@ namespace Sooda
         {
             get { return _cache; }
             set { _cache = value; }
+        }
+
+        public bool IsKeyGeneratorDisabled(string className)
+        {
+            return _disabledKeyGenerators.Contains(className);
+        }
+
+        private class RevertDisableKeyGenerators : IDisposable
+        {
+            private SoodaTransaction _trans;
+            private StringCollection _classNames;
+
+            internal RevertDisableKeyGenerators(SoodaTransaction trans, StringCollection classNames)
+            {
+                _trans = trans;
+                _classNames = classNames;
+            }
+
+            public void Dispose()
+            {
+                foreach (string className in _classNames)
+                    _trans._disabledKeyGenerators.Remove(className);
+            }
+        }
+
+        public IDisposable DisableKeyGenerators(params string[] classNames)
+        {
+            StringCollection disabled = new StringCollection();
+            foreach (string className in classNames)
+            {
+                if (_disabledKeyGenerators.Contains(className))
+                    continue;
+                _disabledKeyGenerators.Add(className);
+                disabled.Add(className);
+            }
+            return new RevertDisableKeyGenerators(this, disabled);
         }
     }
 }

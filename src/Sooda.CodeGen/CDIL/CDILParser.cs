@@ -768,18 +768,6 @@ namespace Sooda.CodeGen.CDIL
 
                 GetNextToken();
                 retVal = new CodeMethodReturnStatement();
-                if (!IsKeyword("nothing"))
-                    retVal.Expression = ParseExpression();
-                else
-                    GetNextToken();
-                return retVal;
-            }
-            if (IsKeyword("return"))
-            {
-                CodeMethodReturnStatement retVal;
-
-                GetNextToken();
-                retVal = new CodeMethodReturnStatement();
                 if (TokenType != CDILToken.Semicolon && TokenType != CDILToken.EOF)
                     retVal.Expression = ParseExpression();
                 return retVal;

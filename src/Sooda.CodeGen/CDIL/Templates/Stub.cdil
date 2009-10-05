@@ -66,6 +66,10 @@ end
 method InitNewObject()
     attributes Assembly,Family,Override
 begin
+    if defaultscope.GetTransaction().IsKeyGeneratorDisabled('${ClassName}')
+    then
+        return;
+    endif;
     call this.SetPrimaryKeyValue(defaultscope.GetKeyGenerator().GetNextKeyValue())
 end
 
