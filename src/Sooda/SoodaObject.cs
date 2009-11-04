@@ -1176,11 +1176,11 @@ namespace Sooda
                     CopyOnWrite();
                     _fieldValues.SetFieldValue(fieldOrdinal, newValue);
                     SetFieldDirty(fieldOrdinal, true);
+                    SetObjectDirty();
 
                     if (after != null)
                         after(oldValue, newValue);
 
-                    SetObjectDirty();
                 }
                 catch (Exception e)
                 {
