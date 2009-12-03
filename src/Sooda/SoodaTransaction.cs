@@ -240,21 +240,25 @@ namespace Sooda
         private void AddObjectWithKey(string className, object keyValue, SoodaObject obj)
         {
             // Console.WriteLine("AddObjectWithKey('{0}',{1})", className, keyValue);
+            if (keyValue == null) keyValue = "";
             GetObjectDictionaryForClass(className)[keyValue] = new WeakSoodaObject(obj);
         }
 
         private void UnregisterObjectWithKey(string className, object keyValue)
         {
+            if (keyValue == null) keyValue = "";
             GetObjectDictionaryForClass(className).Remove(keyValue);
         }
 
         internal bool ExistsObjectWithKey(string className, object keyValue)
         {
+            if (keyValue == null) keyValue = "";
             return FindObjectWithKey(className, keyValue) != null;
         }
 
         private SoodaObject FindObjectWithKey(string className, object keyValue)
         {
+            if (keyValue == null) keyValue = "";
             WeakSoodaObject wo = GetObjectDictionaryForClass(className)[keyValue];
             if (wo == null)
                 return null;
@@ -356,6 +360,7 @@ namespace Sooda
 
         public object FindObjectWithKey(string className, object keyValue, Type expectedType)
         {
+            if (keyValue == null) keyValue = "";
             object o = FindObjectWithKey(className, keyValue);
             if (o == null)
                 return null;
@@ -619,6 +624,7 @@ namespace Sooda
         private SoodaObject GetObject(ISoodaObjectFactory factory, string keyString)
         {
             object keyValue = factory.GetPrimaryKeyFieldHandler().RawDeserialize(keyString);
+            if (keyValue == null) keyValue = "";
             return factory.GetRef(this, keyValue);
         }
 
@@ -635,6 +641,7 @@ namespace Sooda
         private SoodaObject LoadObject(ISoodaObjectFactory factory, string keyString)
         {
             object keyValue = factory.GetPrimaryKeyFieldHandler().RawDeserialize(keyString);
+            if (keyValue == null) keyValue = "";
             SoodaObject obj = factory.GetRef(this, keyValue);
             obj.LoadAllData();
             return obj;

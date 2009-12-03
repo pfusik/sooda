@@ -75,4 +75,14 @@ end
 
 #endif
 
+#ifnot HasKeyGen
+
+method InitNewObject()
+    attributes Assembly,Family,Override
+begin
+    call this.RegisterObjectInTransaction()
+end
+
+#endif
+
 #endif  // MiniStub

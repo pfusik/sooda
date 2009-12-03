@@ -622,6 +622,8 @@ namespace Sooda
                 if (_fieldValues != null)
                     PropagatePrimaryKeyToFields();
                 RegisterObjectInTransaction();
+                if (InsertMode == false)
+                    SetObjectDirty();
             }
             else if (IsRegisteredInTransaction())
             {
