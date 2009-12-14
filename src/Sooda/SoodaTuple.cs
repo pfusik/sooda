@@ -135,14 +135,14 @@ namespace Sooda
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("[");
+            sb.Append('[');
             for (int i = 0; i < _items.Length; ++i)
             {
                 if (i > 0)
-                    sb.Append(",");
+                    sb.Append(',');
                 sb.Append(_items[i].ToString());
             }
-            sb.Append("]");
+            sb.Append(']');
             return sb.ToString();
         }
     }

@@ -67,43 +67,43 @@ namespace Sooda.QL
 
         public virtual void Visit(SoqlBinaryExpression v)
         {
-            Output.Write("(");
+            Output.Write('(');
             v.par1.Accept(this);
-            Output.Write(" ");
+            Output.Write(' ');
             switch (v.op)
             {
                 case SoqlBinaryOperator.Add:
-                    Output.Write("+");
+                    Output.Write('+');
                     break;
 
                 case SoqlBinaryOperator.Sub:
-                    Output.Write("-");
+                    Output.Write('-');
                     break;
 
                 case SoqlBinaryOperator.Div:
-                    Output.Write("/");
+                    Output.Write('/');
                     break;
 
                 case SoqlBinaryOperator.Mul:
-                    Output.Write("*");
+                    Output.Write('*');
                     break;
 
                 case SoqlBinaryOperator.Mod:
-                    Output.Write("%");
+                    Output.Write('%');
                     break;
             }
-            Output.Write(" ");
+            Output.Write(' ');
             v.par2.Accept(this);
-            Output.Write(")");
+            Output.Write(')');
         }
 
         public virtual void Visit(SoqlBooleanAndExpression v)
         {
-            Output.Write("(");
+            Output.Write('(');
             v.Left.Accept(this);
             Output.Write(" and ");
             v.Right.Accept(this);
-            Output.Write(")");
+            Output.Write(')');
         }
 
         public virtual void Visit(SoqlBooleanInExpression v)
@@ -115,11 +115,11 @@ namespace Sooda.QL
             for (int i = 0; i < v.Right.Count; ++i)
             {
                 if (!first)
-                    Output.Write(",");
+                    Output.Write(',');
                 first = false;
                 ((SoqlExpression)v.Right[i]).Accept(this);
             }
-            Output.Write(")");
+            Output.Write(')');
         }
 
         public virtual void Visit(SoqlBooleanIsNullExpression v)
@@ -152,24 +152,24 @@ namespace Sooda.QL
 
         public virtual void Visit(SoqlBooleanOrExpression v)
         {
-            Output.Write("(");
+            Output.Write('(');
             v.par1.Accept(this);
             Output.Write(" OR ");
             v.par2.Accept(this);
-            Output.Write(")");
+            Output.Write(')');
         }
 
         protected void OutputRelationalOperator(SoqlRelationalOperator op)
         {
-            Output.Write(" ");
+            Output.Write(' ');
             switch (op)
             {
                 case SoqlRelationalOperator.Greater:
-                    Output.Write(">");
+                    Output.Write('>');
                     break;
 
                 case SoqlRelationalOperator.Less:
-                    Output.Write("<");
+                    Output.Write('<');
                     break;
 
                 case SoqlRelationalOperator.LessOrEqual:
@@ -181,7 +181,7 @@ namespace Sooda.QL
                     break;
 
                 case SoqlRelationalOperator.Equal:
-                    Output.Write("=");
+                    Output.Write('=');
                     break;
 
                 case SoqlRelationalOperator.NotEqual:
@@ -195,16 +195,16 @@ namespace Sooda.QL
                 default:
                     throw new NotImplementedException(op.ToString());
             }
-            Output.Write(" ");
+            Output.Write(' ');
         }
 
         public virtual void Visit(SoqlBooleanRelationalExpression v)
         {
-            Output.Write("(");
+            Output.Write('(');
             v.par1.Accept(this);
             OutputRelationalOperator(v.op);
             v.par2.Accept(this);
-            Output.Write(")");
+            Output.Write(')');
         }
 
         public virtual void Visit(SoqlExistsExpression v)
@@ -219,17 +219,17 @@ namespace Sooda.QL
             {
                 Output.WriteLine();
             }
-            Output.Write(")");
+            Output.Write(')');
         }
 
         public virtual void Visit(SoqlFunctionCallExpression v)
         {
             Output.Write(v.FunctionName);
-            Output.Write("(");
+            Output.Write('(');
             if (v.Parameters.Count == 1 && v.Parameters[0] is SoqlAsteriskExpression)
             {
                 // special case for count(*) - temporary hack
-                Output.Write("*");
+                Output.Write('*');
             }
             else
             {
@@ -240,22 +240,22 @@ namespace Sooda.QL
                     v.Parameters[i].Accept(this);
                 }
             }
-            Output.Write(")");
+            Output.Write(')');
         }
 
         public virtual void Visit(SoqlLiteralExpression v)
         {
             if (v.LiteralValue is String)
             {
-                Output.Write("'");
+                Output.Write('\'');
                 Output.Write(((string)v.LiteralValue).Replace("'", "''"));
-                Output.Write("'");
+                Output.Write('\'');
             }
             else if (v.LiteralValue is DateTime)
             {
-                Output.Write("'");
+                Output.Write('\'');
                 Output.Write(((DateTime)v.LiteralValue).ToString("yyyyMMdd HH:mm:ss"));
-                Output.Write("'");
+                Output.Write('\'');
             }
             else
             {
@@ -275,15 +275,15 @@ namespace Sooda.QL
                 object parameterValue = ParameterValues[v.ParameterPosition];
                 if (parameterValue is String)
                 {
-                    Output.Write("'");
+                    Output.Write('\'');
                     Output.Write(((string)parameterValue).Replace("'", "''"));
-                    Output.Write("'");
+                    Output.Write('\'');
                 }
                 else if (parameterValue is DateTime)
                 {
-                    Output.Write("'");
+                    Output.Write('\'');
                     Output.Write(((DateTime)parameterValue).ToString("yyyyMMdd HH:mm:ss"));
-                    Output.Write("'");
+                    Output.Write('\'');
                 }
                 else
                 {
@@ -292,14 +292,14 @@ namespace Sooda.QL
             }
             else
             {
-                Output.Write("{");
+                Output.Write('{');
                 Output.Write(v.ParameterPosition);
                 if (v.Modifiers != null)
                 {
-                    Output.Write(":");
+                    Output.Write(':');
                     Output.Write(v.Modifiers.ToString());
                 }
-                Output.Write("}");
+                Output.Write('}');
             }
         }
 
@@ -308,7 +308,7 @@ namespace Sooda.QL
             if (v.Left != null)
             {
                 v.Left.Accept(this);
-                Output.Write(".");
+                Output.Write('.');
             }
 
             Output.Write(v.PropertyName);
@@ -319,10 +319,10 @@ namespace Sooda.QL
             if (v.Left != null)
             {
                 v.Left.Accept(this);
-                Output.Write(".");
+                Output.Write('.');
             }
 
-            Output.Write("*");
+            Output.Write('*');
         }
 
         public virtual void Visit(SoqlCountExpression v)
@@ -330,12 +330,11 @@ namespace Sooda.QL
             if (v.Path != null)
             {
                 v.Path.Accept(this);
-                Output.Write(".");
+                Output.Write('.');
             }
 
             Output.Write(v.CollectionName);
-            Output.Write(".");
-            Output.Write("Count");
+            Output.Write(".Count");
         }
 
         public virtual void Visit(SoqlSoodaClassExpression v)
@@ -343,7 +342,7 @@ namespace Sooda.QL
             if (v.Path != null)
             {
                 v.Path.Accept(this);
-                Output.Write(".");
+                Output.Write('.');
             }
 
             Output.Write("SoodaClass");
@@ -354,18 +353,18 @@ namespace Sooda.QL
             if (v.Path != null)
             {
                 v.Path.Accept(this);
-                Output.Write(".");
+                Output.Write('.');
             }
 
             Output.Write(v.CollectionName);
-            Output.Write(".");
+            Output.Write('.');
             Output.Write("Contains(");
             if (v.Expr is SoqlQueryExpression && IndentOutput)
                 Output.WriteLine();
             v.Expr.Accept(this);
             if (v.Expr is SoqlQueryExpression && IndentOutput)
                 Output.WriteLine();
-            Output.Write(")");
+            Output.Write(')');
         }
 
         public virtual void Visit(SoqlQueryExpression v)
@@ -383,20 +382,20 @@ namespace Sooda.QL
                         {
                             if (IndentOutput)
                             {
-                                Output.WriteLine(",");
+                                Output.WriteLine(',');
                                 WriteIndentString();
                                 Output.Write("         ");
                             }
                             else
                             {
-                                Output.Write(",");
+                                Output.Write(',');
                             }
                         }
                         if (v.SelectExpressions[i] is SoqlQueryExpression)
-                            Output.Write("(");
+                            Output.Write('(');
                         v.SelectExpressions[i].Accept(this);
                         if (v.SelectExpressions[i] is SoqlQueryExpression)
-                            Output.Write(")");
+                            Output.Write(')');
                         if (v.SelectAliases[i].Length > 0)
                         {
                             Output.Write(" as ");
@@ -424,13 +423,13 @@ namespace Sooda.QL
                     {
                         if (IndentOutput)
                         {
-                            Output.WriteLine(",");
+                            Output.WriteLine(',');
                             WriteIndentString();
                             Output.Write("         ");
                         }
                         else
                         {
-                            Output.Write(",");
+                            Output.Write(',');
                         }
                     }
 
@@ -465,7 +464,7 @@ namespace Sooda.QL
                     }
                     else
                     {
-                        Output.Write(" ");
+                        Output.Write(' ');
                     }
                     Output.Write("group by ");
                     for (int i = 0; i < v.GroupByExpressions.Count; ++i)
@@ -484,7 +483,7 @@ namespace Sooda.QL
                     }
                     else
                     {
-                        Output.Write(" ");
+                        Output.Write(' ');
                     }
                     Output.Write("having   ");
                     v.Having.Accept(this);
@@ -498,7 +497,7 @@ namespace Sooda.QL
                     }
                     else
                     {
-                        Output.Write(" ");
+                        Output.Write(' ');
                     }
                     Output.Write("order by ");
                     for (int i = 0; i < v.OrderByExpressions.Count; ++i)
@@ -506,7 +505,7 @@ namespace Sooda.QL
                         if (i > 0)
                             Output.Write(", ");
                         v.OrderByExpressions[i].Accept(this);
-                        Output.Write(" ");
+                        Output.Write(' ');
                         Output.Write(v.OrderByOrder[i]);
                     }
                 }
@@ -519,7 +518,9 @@ namespace Sooda.QL
 
         public virtual void Visit(SoqlRawExpression v)
         {
-            Output.Write("RAWQUERY(" + v.Text + ")");
+            Output.Write("RAWQUERY(");
+            Output.Write(v.Text);
+            Output.Write(')');
         }
 
         public TextWriter Output;

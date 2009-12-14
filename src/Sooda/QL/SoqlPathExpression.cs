@@ -90,7 +90,7 @@ namespace Sooda.QL
             if (Left != null)
             {
                 Left.WriteDefaultSelectAlias(output);
-                output.Write("_");
+                output.Write('_');
             }
             output.Write(PropertyName);
         }

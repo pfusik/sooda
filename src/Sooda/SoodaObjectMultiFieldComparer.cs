@@ -55,12 +55,12 @@ namespace Sooda
             foreach (FieldCompareInfo fci in fields)
             {
                 if (!first)
-                    sb.Append(",");
+                    sb.Append(',');
                 sb.Append(String.Join(".", fci.propertyChain));
-                sb.Append(" ");
+                sb.Append(' ');
                 sb.Append(fci.sortOrder);
             }
-            sb.Append("]");
+            sb.Append(']');
             return sb.ToString();
         }
 

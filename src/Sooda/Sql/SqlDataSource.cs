@@ -315,14 +315,13 @@ namespace Sooda.Sql
                 {
                     if (pos > 0)
                         query.Append(" and ");
-                    query.Append("(");
+                    query.Append('(');
                     query.Append(fi.DBColumnName);
                     query.Append(" = {");
                     query.Append(pos++);
                     query.Append(':');
                     query.Append(fi.DataType);
-                    query.Append("}");
-                    query.Append(")");
+                    query.Append("})");
                 }
 
                 SqlBuilder.BuildCommandWithParameters(_updateCommand, true, query.ToString(), queryParams, true);
@@ -682,7 +681,7 @@ namespace Sooda.Sql
             StringBuilder builder = new StringBuilder(500);
             builder.Append("insert into ");
             builder.Append(table.DBTableName);
-            builder.Append("(");
+            builder.Append('(');
 
             ArrayList par = new ArrayList();
 
@@ -692,7 +691,7 @@ namespace Sooda.Sql
                 if (table.Fields[i].ReadOnly)
                     continue;
                 if (comma)
-                    builder.Append(",");
+                    builder.Append(',');
                 comma = true;
                 builder.Append(table.Fields[i].DBColumnName);
             };
@@ -704,7 +703,7 @@ namespace Sooda.Sql
                 if (table.Fields[i].ReadOnly)
                     continue;
                 if (comma)
-                    builder.Append(",");
+                    builder.Append(',');
                 comma = true;
 
                 object val = obj.GetFieldValue(table.Fields[i].ClassUnifiedOrdinal);
@@ -739,7 +738,7 @@ namespace Sooda.Sql
                 builder.Append(table.Fields[i].DataType);
                 builder.Append('}');
             };
-            builder.Append(")");
+            builder.Append(')');
             SqlBuilder.BuildCommandWithParameters(_updateCommand, true, builder.ToString(), par.ToArray(), false);
             FlushUpdateCommand(false);
         }
@@ -778,7 +777,7 @@ namespace Sooda.Sql
                     builder.Append(fieldnum);
                     builder.Append(':');
                     builder.Append(table.Fields[i].DataType);
-                    builder.Append("}");
+                    builder.Append('}');
                     anyChange = true;
                 };
             };
@@ -792,14 +791,13 @@ namespace Sooda.Sql
                     {
                         builder.Append(" and ");
                     }
-                    builder.Append("(");
+                    builder.Append('(');
                     builder.Append(fi.DBColumnName);
                     builder.Append("={");
                     builder.Append(par.Add(SoodaTuple.GetValue(obj.GetPrimaryKeyValue(), pkordinal)));
                     builder.Append(':');
                     builder.Append(fi.DataType);
-                    builder.Append('}');
-                    builder.Append(")");
+                    builder.Append("})");
                     pkordinal++;
                 }
             }

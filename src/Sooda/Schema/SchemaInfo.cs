@@ -260,7 +260,7 @@ namespace Sooda.Schema
             foreach (DataSourceInfo dsi in DataSources)
             {
                 if (sb.Length > 0)
-                    sb.Append(",");
+                    sb.Append(',');
                 sb.Append(dsi.Name + ": " + dsi.DataSourceType);
             }
 

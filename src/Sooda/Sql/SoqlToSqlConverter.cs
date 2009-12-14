@@ -125,7 +125,7 @@ namespace Sooda.Sql
                 }
 
                 if (p.Length > 0)
-                    p += ".";
+                    p += '.';
 
                 p += currentToken.PropertyName;
 
@@ -189,20 +189,20 @@ namespace Sooda.Sql
         {
             if (literalValue is String)
             {
-                Output.Write("'");
+                Output.Write('\'');
                 Output.Write(((string)literalValue).Replace("'", "''"));
-                Output.Write("'");
+                Output.Write('\'');
                 if (modifier != null)
                 {
                     if (modifier.DataTypeOverride == FieldDataType.AnsiString)
                     {
-                        Output.Write("A");
+                        Output.Write('A');
                     }
                 }
             }
             else if (literalValue is DateTime)
             {
-                Output.Write("'");
+                Output.Write('\'');
                 Output.Write(((DateTime)literalValue).ToString("yyyyMMddHH:mm:ss"));
                 Output.Write("'D");
             }
@@ -223,11 +223,11 @@ namespace Sooda.Sql
             {
                 if (v.Value)
                 {
-                    Output.Write("1");
+                    Output.Write('1');
                 }
                 else
                 {
-                    Output.Write("0");
+                    Output.Write('0');
                 }
             }
             else
@@ -257,7 +257,7 @@ namespace Sooda.Sql
             }
             else
             {
-                Output.Write("(");
+                Output.Write('(');
                 base.Visit(v);
                 Output.Write(" <> 0)");
             }
@@ -269,7 +269,7 @@ namespace Sooda.Sql
             if (tableAlias.Length > 0)
             {
                 Output.Write(tableAlias);
-                Output.Write(".");
+                Output.Write('.');
             }
             Output.Write(fi.DBColumnName);
         }
@@ -282,7 +282,7 @@ namespace Sooda.Sql
 
             if (Parent != null && v.Left == null)
             {
-                Output.Write("*");
+                Output.Write('*');
                 return;
             }
 
@@ -305,13 +305,13 @@ namespace Sooda.Sql
                 {
                     if (IndentOutput)
                     {
-                        Output.WriteLine(",");
+                        Output.WriteLine(',');
                         WriteIndentString();
                         Output.Write("         ");
                     }
                     else
                     {
-                        Output.Write(",");
+                        Output.Write(',');
                     }
                 }
                 string extPrefix = GetTableAliasForExpressionPrefix(p);
@@ -352,15 +352,15 @@ namespace Sooda.Sql
             }
             if (currentClass.GetSubclassesForSchema(Schema).Count == 0)
             {
-                Output.Write("'");
+                Output.Write('\'');
                 Output.Write(currentClass.Name);
-                Output.Write("'");
+                Output.Write('\'');
             }
             else
             {
                 Output.Write("(case ");
                 Output.Write(p);
-                Output.Write(".");
+                Output.Write('.');
                 Output.Write(currentClass.SubclassSelectorField.DBColumnName);
                 if (!currentClass.IsAbstractClass())
                 {
@@ -368,16 +368,16 @@ namespace Sooda.Sql
                     if (currentClass.SubclassSelectorField.DataType == FieldDataType.String 
                         || currentClass.SubclassSelectorField.DataType == FieldDataType.AnsiString)
                     {
-                        Output.Write("'");
+                        Output.Write('\'');
                         Output.Write(currentClass.SubclassSelectorValue);
-                        Output.Write("'");
+                        Output.Write('\'');
                     }
                     else
                         Output.Write(currentClass.SubclassSelectorValue);
                     Output.Write(" then ");
-                    Output.Write("'");
+                    Output.Write('\'');
                     Output.Write(currentClass.Name);
-                    Output.Write("'");
+                    Output.Write('\'');
                 }
 
                 foreach (ClassInfo subci in currentClass.GetSubclassesForSchema(Schema))
@@ -389,17 +389,17 @@ namespace Sooda.Sql
                         if (subci.SubclassSelectorField.DataType == FieldDataType.String
                             || subci.SubclassSelectorField.DataType == FieldDataType.AnsiString)
                         {
-                            Output.Write("'");
+                            Output.Write('\'');
                             Output.Write(subci.SubclassSelectorValue);
-                            Output.Write("'");
+                            Output.Write('\'');
                         }
                         else
                             Output.Write(subci.SubclassSelectorValue);
                         
                         Output.Write(" then ");
-                        Output.Write("'");
+                        Output.Write('\'');
                         Output.Write(subci.Name);
-                        Output.Write("'");
+                        Output.Write('\'');
                     }
                 }
                 Output.Write(" else null end)");
@@ -438,7 +438,7 @@ namespace Sooda.Sql
         void OutputCollectionWhere(ClassInfo currentClass, string p, CollectionOnetoManyInfo col1n, string tableAlias, SoqlToSqlConverter subconverter)
         {
             OutputColumn(tableAlias, col1n.ForeignField2);
-            Output.Write("=");
+            Output.Write('=');
             OutputColumn(GetTableAliasForExpressionPrefix(p), currentClass.GetFirstPrimaryKeyField());
             if (col1n.Where != null && col1n.Where.Length > 0)
             {
@@ -473,7 +473,7 @@ namespace Sooda.Sql
                 OutputTableFrom(col1n.Class.LocalTables[0], tableAlias);
                 Output.Write(" where ");
                 OutputCollectionWhere(currentClass, p, col1n, tableAlias, subconverter);
-                Output.Write(")");
+                Output.Write(')');
                 return;
             }
 
@@ -486,9 +486,9 @@ namespace Sooda.Sql
                 OutputTableFrom(ri.Table, "");
                 Output.Write(" where ");
                 Output.Write(ri.Table.Fields[1 - colnn.MasterField].DBColumnName);
-                Output.Write("=");
+                Output.Write('=');
                 OutputColumn(GetTableAliasForExpressionPrefix(p), currentClass.GetFirstPrimaryKeyField());
-                Output.Write(")");
+                Output.Write(')');
                 return;
             }
 
@@ -500,7 +500,7 @@ namespace Sooda.Sql
             Output.Write(tableInfo.DBTableName);
             if (tableAlias.Length > 0)
             {
-                Output.Write(" ");
+                Output.Write(' ');
                 Output.Write(tableAlias);
             }
             if (_builder.OuterJoinSyntax != SqlOuterJoinSyntax.Oracle && tableInfo.TableUsageType == TableUsageType.Dictionary)
@@ -553,7 +553,7 @@ namespace Sooda.Sql
                     subconverter.DoVisit((SoqlQueryExpression) v.Expr);
                     Output.Write(" and ");
                     OutputCollectionWhere(currentClass, p, col1n, tableAlias, subconverter);
-                    Output.Write(")");
+                    Output.Write(')');
                 }
                 else
                 {
@@ -582,7 +582,7 @@ namespace Sooda.Sql
                 OutputTableFrom(ri.Table, "");
                 Output.Write(" where ");
                 Output.Write(ri.Table.Fields[1 - colnn.MasterField].DBColumnName);
-                Output.Write("=");
+                Output.Write('=');
                 OutputColumn(GetTableAliasForExpressionPrefix(p), currentClass.GetFirstPrimaryKeyField());
                 Output.Write(" and ");
                 Output.Write(ri.Table.Fields[colnn.MasterField].DBColumnName);
@@ -706,14 +706,14 @@ namespace Sooda.Sql
                         {
                             Output.Write("select ");
                         }
-                        Output.Write(" ");
+                        Output.Write(' ');
                         GenerateUniqueAliases = true;
                     }
                     if (_builder.TopSupport == SqlTopSupportMode.SelectTop)
                     {
                         Output.Write("top ");
                         Output.Write(v.TopCount);
-                        Output.Write(" ");
+                        Output.Write(' ');
                     }
                 }
 
@@ -745,20 +745,20 @@ namespace Sooda.Sql
                         {
                             if (IndentOutput)
                             {
-                                Output.WriteLine(",");
+                                Output.WriteLine(',');
                                 WriteIndentString();
                                 Output.Write("         ");
                             }
                             else
                             {
-                                Output.Write(",");
+                                Output.Write(',');
                             }
                         }
                         if (v.SelectExpressions[i] is SoqlQueryExpression)
-                            Output.Write("(");
+                            Output.Write('(');
                         v.SelectExpressions[i].Accept(this);
                         if (v.SelectExpressions[i] is SoqlQueryExpression)
-                            Output.Write(")");
+                            Output.Write(')');
                         if (v.SelectAliases[i].Length > 0)
                         {
                             Output.Write(" as ");
@@ -797,7 +797,7 @@ namespace Sooda.Sql
                     }
                     else
                     {
-                        Output.Write(" ");
+                        Output.Write(' ');
                     }
                     Output.Write("group by ");
                     for (int i = 0; i < v.GroupByExpressions.Count; ++i)
@@ -816,7 +816,7 @@ namespace Sooda.Sql
                     }
                     else
                     {
-                        Output.Write(" ");
+                        Output.Write(' ');
                     }
                     Output.Write("having   ");
                     v.Having.Accept(this);
@@ -830,7 +830,7 @@ namespace Sooda.Sql
                     }
                     else
                     {
-                        Output.Write(" ");
+                        Output.Write(' ');
                     }
                     Output.Write("order by ");
                     _generatingOrderBy = true;
@@ -839,7 +839,7 @@ namespace Sooda.Sql
                         if (i > 0)
                             Output.Write(", ");
                         v.OrderByExpressions[i].Accept(this);
-                        Output.Write(" ");
+                        Output.Write(' ');
                         Output.Write(v.OrderByOrder[i]);
                     }
                     _generatingOrderBy = false;
@@ -928,13 +928,13 @@ namespace Sooda.Sql
                     {
                         if (IndentOutput)
                         {
-                            Output.WriteLine(",");
+                            Output.WriteLine(',');
                             WriteIndentString();
                             Output.Write("         ");
                         }
                         else
                         {
-                            Output.Write(",");
+                            Output.Write(',');
                         }
                     }
 
@@ -950,7 +950,7 @@ namespace Sooda.Sql
                         }
                         else
                         {
-                            Output.Write(" ");
+                            Output.Write(' ');
                         }
                         Output.Write(s);
                     }
@@ -1267,22 +1267,22 @@ namespace Sooda.Sql
 
                 Output.Write("{L:");
                 Output.Write(fieldInfo.DataType.ToString());
-                Output.Write(":");
+                Output.Write(':');
 
                 string serializedValue = fieldInfo.GetFieldHandler().RawSerialize(e.LiteralValue).Replace("\\", "\\\\").Replace("}", "\\}");
 
                 Output.Write(serializedValue);
-                Output.Write("}");
+                Output.Write('}');
             }
             else if (expr is SoqlParameterLiteralExpression)
             {
                 SoqlParameterLiteralExpression e = (SoqlParameterLiteralExpression)expr;
 
-                Output.Write("{");
+                Output.Write('{');
                 Output.Write(e.ParameterPosition);
-                Output.Write(":");
+                Output.Write(':');
                 Output.Write(fieldInfo.DataType.ToString());
-                Output.Write("}");
+                Output.Write('}');
             }
             else if (expr is SoqlBooleanLiteralExpression)
             {
@@ -1290,12 +1290,12 @@ namespace Sooda.Sql
 
                 Output.Write("{L:");
                 Output.Write(fieldInfo.DataType.ToString());
-                Output.Write(":");
+                Output.Write(':');
 
                 string serializedValue = fieldInfo.GetFieldHandler().RawSerialize(e.Value).Replace("\\", "\\\\").Replace("}", "\\}");
 
                 Output.Write(serializedValue);
-                Output.Write("}");
+                Output.Write('}');
             }
             else
             {
@@ -1347,7 +1347,7 @@ namespace Sooda.Sql
                     {
                         oldBooleanExpansion = DisableBooleanExpansion;
                         DisableBooleanExpansion = true;
-                        Output.Write("(");
+                        Output.Write('(');
                         if (upper)
                             Output.Write("upper(");
                         if (unwrappedPar1 is ILiteralModifiers)
@@ -1359,7 +1359,7 @@ namespace Sooda.Sql
                             v.par1.Accept(this);
                         }
                         if (upper)
-                            Output.Write(")");
+                            Output.Write(')');
                         OutputRelationalOperator(v.op);
                         if (upper)
                             Output.Write("upper(");
@@ -1372,8 +1372,8 @@ namespace Sooda.Sql
                             v.par2.Accept(this);
                         }
                         if (upper)
-                            Output.Write(")");
-                        Output.Write(")");
+                            Output.Write(')');
+                        Output.Write(')');
                         DisableBooleanExpansion = oldBooleanExpansion;
                         return;
                     }
@@ -1391,7 +1391,7 @@ namespace Sooda.Sql
             {
                 Output.Write("(upper(");
                 v.par1.Accept(this);
-                Output.Write(")");
+                Output.Write(')');
                 OutputRelationalOperator(v.op);
                 Output.Write("upper(");
                 v.par2.Accept(this);

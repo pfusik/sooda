@@ -62,9 +62,9 @@ namespace Sooda
             StringBuilder sb = new StringBuilder();
             sb.Append("singlefieldcomparer[");
             sb.Append(String.Join(".", _propertyChain));
-            sb.Append(" ");
+            sb.Append(' ');
             sb.Append(_sortOrder);
-            sb.Append("]");
+            sb.Append(']');
             return sb.ToString();
         }
 

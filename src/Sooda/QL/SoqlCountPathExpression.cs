@@ -57,7 +57,7 @@ namespace Sooda.QL
             if (this.Path != null)
             {
                 this.Path.WriteDefaultSelectAlias(output);
-                output.Write("_");
+                output.Write('_');
             }
             output.Write(CollectionName);
             output.Write("_Count");

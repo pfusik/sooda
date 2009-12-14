@@ -112,7 +112,7 @@ namespace Sooda.Sql
                     processedFields.Add(tableInfo.Fields[i].DBColumnName, 0);
                 }
             }
-            xtw.Write(")");
+            xtw.Write(')');
             if (additionalSettings != "")
                 xtw.Write(" " + additionalSettings);
             xtw.Write(GetDDLCommandTerminator());
@@ -146,7 +146,7 @@ namespace Sooda.Sql
             }
             if (!first)
             {
-                xtw.Write(")");
+                xtw.Write(')');
                 if (additionalSettings != "")
                     xtw.Write(" " + additionalSettings);
                 xtw.Write(GetDDLCommandTerminator());
@@ -306,7 +306,7 @@ namespace Sooda.Sql
             {
                 if (command.CommandText == null)
                     command.CommandText = "";
-                if (command.CommandText != "")
+                else if (command.CommandText.Length > 0)
                     command.CommandText += ";\n";
             }
             else
@@ -403,9 +403,9 @@ namespace Sooda.Sql
                     }
                     else
                     {
-                        sb.Append("'");
+                        sb.Append('\'');
                         sb.Append(stringValue);
-                        sb.Append("'");
+                        sb.Append('\'');
                         i = stringEndPos;
                     }
                 }
@@ -462,9 +462,9 @@ namespace Sooda.Sql
                         }
                         else if (UseSafeLiterals && v is string && IsStringSafeForLiteral((string)v))
                         {
-                            sb.Append("'");
+                            sb.Append('\'');
                             sb.Append((string)v);
-                            sb.Append("'");
+                            sb.Append('\'');
                         }
                         else
                         {
@@ -515,9 +515,9 @@ namespace Sooda.Sql
                         }
                         else if (UseSafeLiterals && v is string && IsStringSafeForLiteral((string)v))
                         {
-                            sb.Append("'");
+                            sb.Append('\'');
                             sb.Append((string)v);
-                            sb.Append("'");
+                            sb.Append('\'');
                         }
                         else
                         {

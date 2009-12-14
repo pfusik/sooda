@@ -50,77 +50,77 @@ namespace Sooda.CodeGen.CDIL
             if ((attr & MemberAttributes.Abstract) == MemberAttributes.Abstract)
             {
                 if (!first)
-                    output.Write(",");
+                    output.Write(',');
                 first = false;
                 output.Write("Abstract");
             }
             if ((attr & MemberAttributes.Assembly) == MemberAttributes.Assembly)
             {
                 if (!first)
-                    output.Write(",");
+                    output.Write(',');
                 first = false;
                 output.Write("Assembly");
             }
             if ((attr & MemberAttributes.Const) == MemberAttributes.Const)
             {
                 if (!first)
-                    output.Write(",");
+                    output.Write(',');
                 first = false;
                 output.Write("Const");
             }
             if ((attr & MemberAttributes.Public) == MemberAttributes.Public)
             {
                 if (!first)
-                    output.Write(",");
+                    output.Write(',');
                 first = false;
                 output.Write("Public");
             }
             if ((attr & MemberAttributes.Static) == MemberAttributes.Static)
             {
                 if (!first)
-                    output.Write(",");
+                    output.Write(',');
                 first = false;
                 output.Write("Static");
             }
             if ((attr & MemberAttributes.Private) == MemberAttributes.Private)
             {
                 if (!first)
-                    output.Write(",");
+                    output.Write(',');
                 first = false;
                 output.Write("Private");
             }
             if ((attr & MemberAttributes.Family) == MemberAttributes.Family)
             {
                 if (!first)
-                    output.Write(",");
+                    output.Write(',');
                 first = false;
                 output.Write("Family");
             }
             if ((attr & MemberAttributes.Override) == MemberAttributes.Override)
             {
                 if (!first)
-                    output.Write(",");
+                    output.Write(',');
                 first = false;
                 output.Write("Override");
             }
             if ((attr & MemberAttributes.Overloaded) == MemberAttributes.Overloaded)
             {
                 if (!first)
-                    output.Write(",");
+                    output.Write(',');
                 first = false;
                 output.Write("Overloaded");
             }
             if ((attr & MemberAttributes.New) == MemberAttributes.New)
             {
                 if (!first)
-                    output.Write(",");
+                    output.Write(',');
                 first = false;
                 output.Write("New");
             }
             if ((attr & MemberAttributes.Final) == MemberAttributes.Final)
             {
                 if (!first)
-                    output.Write(",");
+                    output.Write(',');
                 first = false;
                 output.Write("Final");
             }
@@ -128,14 +128,14 @@ namespace Sooda.CodeGen.CDIL
             if ((attr & MemberAttributes.FamilyOrAssembly) == MemberAttributes.FamilyOrAssembly)
             {
                 if (!first)
-                    output.Write(",");
+                    output.Write(',');
                 first = false;
                 output.Write("FamilyOrAssembly");
             }
             if ((attr & MemberAttributes.FamilyAndAssembly) == MemberAttributes.FamilyAndAssembly)
             {
                 if (!first)
-                    output.Write(",");
+                    output.Write(',');
                 first = false;
                 output.Write("FamilyAndAssembly");
             }
@@ -148,7 +148,7 @@ namespace Sooda.CodeGen.CDIL
             {
                 output.Write("arrayof(");
                 output.Write(ctr.BaseType);
-                output.Write(")");
+                output.Write(')');
             }
             else
             {
@@ -165,16 +165,16 @@ namespace Sooda.CodeGen.CDIL
                     output.Write("defaultscope");
                 else
                     PrintExpression(output, cmi.Method.TargetObject);
-                output.Write(".");
+                output.Write('.');
                 output.Write(cmi.Method.MethodName);
-                output.Write("(");
+                output.Write('(');
                 for (int i = 0; i < cmi.Parameters.Count; ++i)
                 {
                     if (i > 0)
                         output.Write(", ");
                     PrintExpression(output, cmi.Parameters[i]);
                 }
-                output.Write(")");
+                output.Write(')');
                 return;
             }
 
@@ -183,15 +183,15 @@ namespace Sooda.CodeGen.CDIL
                 CodeDelegateInvokeExpression die = (CodeDelegateInvokeExpression)expression;
                 output.Write("delegatecall(");
                 PrintExpression(output, die.TargetObject);
-                output.Write(")");
-                output.Write("(");
+                output.Write(')');
+                output.Write('(');
                 for (int i = 0; i < die.Parameters.Count; ++i)
                 {
                     if (i > 0)
                         output.Write(", ");
                     PrintExpression(output, die.Parameters[i]);
                 }
-                output.Write(")");
+                output.Write(')');
                 return;
             }
 
@@ -202,7 +202,7 @@ namespace Sooda.CodeGen.CDIL
                     output.Write("defaultscope");
                 else
                     PrintExpression(output, cpre.TargetObject);
-                output.Write(".");
+                output.Write('.');
                 output.Write(cpre.PropertyName);
                 return;
             }
@@ -214,9 +214,9 @@ namespace Sooda.CodeGen.CDIL
                     output.Write("defaultscope");
                 else
                     PrintExpression(output, cpre.TargetObject);
-                output.Write(".");
+                output.Write('.');
                 output.Write(cpre.FieldName);
-                output.Write("$");
+                output.Write('$');
                 return;
             }
 
@@ -265,7 +265,7 @@ namespace Sooda.CodeGen.CDIL
                 output.Write("typeref(");
                 CodeTypeReferenceExpression ctr = (CodeTypeReferenceExpression)expression;
                 PrintTypeReference(output, ctr.Type);
-                output.Write(")");
+                output.Write(')');
                 return;
             }
             if (expression is CodeCastExpression)
@@ -276,7 +276,7 @@ namespace Sooda.CodeGen.CDIL
                 PrintTypeReference(output, cce.TargetType);
                 output.Write(", ");
                 PrintExpression(output, cce.Expression);
-                output.Write(")");
+                output.Write(')');
                 return;
             }
 
@@ -285,7 +285,7 @@ namespace Sooda.CodeGen.CDIL
                 CodeTypeOfExpression ctoe = (CodeTypeOfExpression)expression;
                 output.Write("typeof(");
                 PrintTypeReference(output, ctoe.Type);
-                output.Write(")");
+                output.Write(')');
                 return;
             }
 
@@ -294,7 +294,7 @@ namespace Sooda.CodeGen.CDIL
                 CodeObjectCreateExpression coce = (CodeObjectCreateExpression)expression;
                 output.Write("new ");
                 PrintTypeReference(output, coce.CreateType);
-                output.Write("(");
+                output.Write('(');
                 for (int i = 0; i < coce.Parameters.Count; ++i)
                 {
                     if (i > 0)
@@ -303,7 +303,7 @@ namespace Sooda.CodeGen.CDIL
 
                 }
 
-                output.Write(")");
+                output.Write(')');
                 return;
             }
 
@@ -317,7 +317,7 @@ namespace Sooda.CodeGen.CDIL
                     output.Write(", ");
                     PrintExpression(output, caie.Indices[i]);
                 }
-                output.Write(")");
+                output.Write(')');
                 return;
             }
 
@@ -326,9 +326,9 @@ namespace Sooda.CodeGen.CDIL
                 CodeArrayCreateExpression cace = (CodeArrayCreateExpression)expression;
                 output.Write("newarray(");
                 PrintTypeReference(output, cace.CreateType);
-                output.Write(",");
+                output.Write(',');
                 PrintExpression(output, cace.SizeExpression);
-                output.Write(")");
+                output.Write(')');
                 return;
             }
 
@@ -357,11 +357,11 @@ namespace Sooda.CodeGen.CDIL
                         output.Write("UNKNOWN CBOE: {0}", cboe.Operator);
                         break;
                 }
-                output.Write("(");
+                output.Write('(');
                 PrintExpression(output, cboe.Left);
                 output.Write(", ");
                 PrintExpression(output, cboe.Right);
-                output.Write(")");
+                output.Write(')');
                 return;
             }
 
@@ -382,13 +382,13 @@ namespace Sooda.CodeGen.CDIL
                     case FieldDirection.Out:
                         output.Write("out(");
                         PrintExpression(output, ((CodeDirectionExpression)expression).Expression);
-                        output.Write(")");
+                        output.Write(')');
                         break;
 
                     case FieldDirection.Ref:
                         output.Write("ref(");
                         PrintExpression(output, ((CodeDirectionExpression)expression).Expression);
-                        output.Write(")");
+                        output.Write(')');
                         break;
                 }
                 return;
@@ -408,7 +408,7 @@ namespace Sooda.CodeGen.CDIL
                 output.Write("        ");
                 PrintStatement(output, ccs.TrueStatements[i]);
                 if (i + 1 < ccs.TrueStatements.Count)
-                    output.WriteLine(";");
+                    output.WriteLine(';');
                 else
                     output.WriteLine();
             }
@@ -420,7 +420,7 @@ namespace Sooda.CodeGen.CDIL
                     output.Write("        ");
                     PrintStatement(output, ccs.FalseStatements[i]);
                     if (i + 1 < ccs.FalseStatements.Count)
-                        output.WriteLine(";");
+                        output.WriteLine(';');
                     else
                         output.WriteLine();
                 }
@@ -537,7 +537,7 @@ namespace Sooda.CodeGen.CDIL
                 PrintTypeReference(output, method.Parameters[i].Type);
                 output.Write(" {0}", method.Parameters[i].Name);
             }
-            output.WriteLine(")");
+            output.WriteLine(')');
             output.Write("    attributes ");
             PrintMemberAttributes(output, method.Attributes);
             output.WriteLine();
@@ -572,7 +572,7 @@ namespace Sooda.CodeGen.CDIL
                 output.Write("    ");
                 PrintStatement(output, method.Statements[i]);
                 if (i + 1 < method.Statements.Count)
-                    output.WriteLine(";");
+                    output.WriteLine(';');
                 else
                     output.WriteLine();
             }
@@ -594,7 +594,7 @@ namespace Sooda.CodeGen.CDIL
                 output.Write("    ");
                 PrintStatement(output, typeConstructor.Statements[i]);
                 if (i + 1 < typeConstructor.Statements.Count)
-                    output.WriteLine(";");
+                    output.WriteLine(';');
                 else
                     output.WriteLine();
             }
@@ -605,7 +605,7 @@ namespace Sooda.CodeGen.CDIL
         {
             output.Write("field ");
             PrintTypeReference(output, field.Type);
-            output.Write(" ");
+            output.Write(' ');
             output.WriteLine(field.Name);
             output.Write("    attributes ");
             PrintMemberAttributes(output, field.Attributes);
@@ -636,7 +636,7 @@ namespace Sooda.CodeGen.CDIL
                     output.Write("    ");
                     PrintStatement(output, property.GetStatements[i]);
                     if (i + 1 < property.GetStatements.Count)
-                        output.WriteLine(";");
+                        output.WriteLine(';');
                     else
                         output.WriteLine();
                 }
@@ -649,7 +649,7 @@ namespace Sooda.CodeGen.CDIL
                     output.Write("    ");
                     PrintStatement(output, property.SetStatements[i]);
                     if (i + 1 < property.SetStatements.Count)
-                        output.WriteLine(";");
+                        output.WriteLine(';');
                     else
                         output.WriteLine();
                 }
@@ -667,7 +667,7 @@ namespace Sooda.CodeGen.CDIL
                 PrintTypeReference(output, constructor.Parameters[i].Type);
                 output.Write(" {0}", constructor.Parameters[i].Name);
             }
-            output.WriteLine(")");
+            output.WriteLine(')');
             output.Write("    attributes ");
             PrintMemberAttributes(output, constructor.Attributes);
             output.WriteLine();
@@ -684,7 +684,7 @@ namespace Sooda.CodeGen.CDIL
                 output.Write("    ");
                 PrintStatement(output, constructor.Statements[i]);
                 if (i + 1 < constructor.Statements.Count)
-                    output.WriteLine(";");
+                    output.WriteLine(';');
                 else
                     output.WriteLine();
             }

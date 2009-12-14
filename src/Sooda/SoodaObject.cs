@@ -1593,7 +1593,7 @@ namespace Sooda
                     {
                         if (i > 0)
                             query.Append(" and ");
-                        query.Append("(");
+                        query.Append('(');
                         query.Append(pkFields[i].Name);
                         query.Append("={");
                         query.Append(i);
