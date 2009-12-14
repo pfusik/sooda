@@ -59,6 +59,7 @@ namespace Sooda
                 sb.Append(String.Join(".", fci.propertyChain));
                 sb.Append(' ');
                 sb.Append(fci.sortOrder);
+                first = false;
             }
             sb.Append(']');
             return sb.ToString();
