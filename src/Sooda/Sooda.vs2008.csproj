@@ -156,13 +156,13 @@
     <Compile Include="Collections\StringToObjectToSoodaObjectAssociation.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Collections\StringToObjectToSoodaObjectFactoryAssociation.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Collections\StringToObjectToWeakSoodaObjectAssociation.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Collections\StringToSoodaObjectCollectionAssociation.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Collections\StringToStringToISoodaObjectFactoryAssociation.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Collections\StringToWeakSoodaObjectCollectionAssociation.cs">

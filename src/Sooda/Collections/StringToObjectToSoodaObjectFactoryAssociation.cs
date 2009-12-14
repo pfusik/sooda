@@ -32,12 +32,12 @@ namespace Sooda.Collections
     /// <summary>
     /// A dictionary with keys of type string and values of type ObjectToSoodaObjectFactoryAssociation
     /// </summary>
-    public class StringToStringToISoodaObjectFactoryAssociation : System.Collections.DictionaryBase
+    public class StringToObjectToSoodaObjectFactoryAssociation : System.Collections.DictionaryBase
     {
         /// <summary>
-        /// Initializes a new empty instance of the StringToStringToISoodaObjectFactoryAssociation class
+        /// Initializes a new empty instance of the StringToObjectToSoodaObjectFactoryAssociation class
         /// </summary>
-        public StringToStringToISoodaObjectFactoryAssociation()
+        public StringToObjectToSoodaObjectFactoryAssociation()
         {
             // empty
         }
@@ -61,7 +61,7 @@ namespace Sooda.Collections
         }
 
         /// <summary>
-        /// Adds an element with the specified key and value to this StringToStringToISoodaObjectFactoryAssociation.
+        /// Adds an element with the specified key and value to this StringToObjectToSoodaObjectFactoryAssociation.
         /// </summary>
         /// <param name="key">
         /// The string key of the element to add.
@@ -75,13 +75,13 @@ namespace Sooda.Collections
         }
 
         /// <summary>
-        /// Determines whether this StringToStringToISoodaObjectFactoryAssociation contains a specific key.
+        /// Determines whether this StringToObjectToSoodaObjectFactoryAssociation contains a specific key.
         /// </summary>
         /// <param name="key">
-        /// The string key to locate in this StringToStringToISoodaObjectFactoryAssociation.
+        /// The string key to locate in this StringToObjectToSoodaObjectFactoryAssociation.
         /// </param>
         /// <returns>
-        /// true if this StringToStringToISoodaObjectFactoryAssociation contains an element with the specified key;
+        /// true if this StringToObjectToSoodaObjectFactoryAssociation contains an element with the specified key;
         /// otherwise, false.
         /// </returns>
         public virtual bool Contains(string key)
@@ -90,13 +90,13 @@ namespace Sooda.Collections
         }
 
         /// <summary>
-        /// Determines whether this StringToStringToISoodaObjectFactoryAssociation contains a specific key.
+        /// Determines whether this StringToObjectToSoodaObjectFactoryAssociation contains a specific key.
         /// </summary>
         /// <param name="key">
-        /// The string key to locate in this StringToStringToISoodaObjectFactoryAssociation.
+        /// The string key to locate in this StringToObjectToSoodaObjectFactoryAssociation.
         /// </param>
         /// <returns>
-        /// true if this StringToStringToISoodaObjectFactoryAssociation contains an element with the specified key;
+        /// true if this StringToObjectToSoodaObjectFactoryAssociation contains an element with the specified key;
         /// otherwise, false.
         /// </returns>
         public virtual bool ContainsKey(string key)
@@ -105,13 +105,13 @@ namespace Sooda.Collections
         }
 
         /// <summary>
-        /// Determines whether this StringToStringToISoodaObjectFactoryAssociation contains a specific value.
+        /// Determines whether this StringToObjectToSoodaObjectFactoryAssociation contains a specific value.
         /// </summary>
         /// <param name="value">
-        /// The ObjectToSoodaObjectFactoryAssociation value to locate in this StringToStringToISoodaObjectFactoryAssociation.
+        /// The ObjectToSoodaObjectFactoryAssociation value to locate in this StringToObjectToSoodaObjectFactoryAssociation.
         /// </param>
         /// <returns>
-        /// true if this StringToStringToISoodaObjectFactoryAssociation contains an element with the specified value;
+        /// true if this StringToObjectToSoodaObjectFactoryAssociation contains an element with the specified value;
         /// otherwise, false.
         /// </returns>
         public virtual bool ContainsValue(ObjectToSoodaObjectFactoryAssociation value)
@@ -125,7 +125,7 @@ namespace Sooda.Collections
         }
 
         /// <summary>
-        /// Removes the element with the specified key from this StringToStringToISoodaObjectFactoryAssociation.
+        /// Removes the element with the specified key from this StringToObjectToSoodaObjectFactoryAssociation.
         /// </summary>
         /// <param name="key">
         /// The string key of the element to remove.
@@ -136,7 +136,7 @@ namespace Sooda.Collections
         }
 
         /// <summary>
-        /// Gets a collection containing the keys in this StringToStringToISoodaObjectFactoryAssociation.
+        /// Gets a collection containing the keys in this StringToObjectToSoodaObjectFactoryAssociation.
         /// </summary>
         public virtual System.Collections.ICollection Keys
         {
@@ -147,7 +147,7 @@ namespace Sooda.Collections
         }
 
         /// <summary>
-        /// Gets a collection containing the values in this StringToStringToISoodaObjectFactoryAssociation.
+        /// Gets a collection containing the values in this StringToObjectToSoodaObjectFactoryAssociation.
         /// </summary>
         public virtual System.Collections.ICollection Values
         {

@@ -82,9 +82,9 @@
         <File RelPath='Collections\SoodaObjectToObjectAssociation.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Collections\StringToISoodaObjectFactoryAssociation.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Collections\StringToObjectToSoodaObjectAssociation.cs' SubType='Code' BuildAction='Compile' />
+        <File RelPath='Collections\StringToObjectToSoodaObjectFactoryAssociation.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Collections\StringToObjectToWeakSoodaObjectAssociation.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Collections\StringToSoodaObjectCollectionAssociation.cs' SubType='Code' BuildAction='Compile' />
-        <File RelPath='Collections\StringToStringToISoodaObjectFactoryAssociation.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Collections\StringToWeakSoodaObjectCollectionAssociation.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Collections\TypeToISoodaObjectFactoryAssociation.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Collections\TypeToSoodaRelationTableAssociation.cs' SubType='Code' BuildAction='Compile' />
