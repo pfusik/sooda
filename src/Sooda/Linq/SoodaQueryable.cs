@@ -103,11 +103,6 @@ namespace Sooda.Linq
             return new SoodaQueryable<TElement>(expr);
         }
 
-        static object GetConstant(Expression expr)
-        {
-            return ((ConstantExpression) expr).Value;
-        }
-
         static SoodaQueryableContext<T> GetQueryableContext(MethodCallExpression mc)
         {
             if (mc.Arguments.Count == 2)
@@ -244,6 +239,12 @@ namespace Sooda.Linq
                 return TranslateRelational((BinaryExpression) expr, SoqlRelationalOperator.Greater);
             case ExpressionType.GreaterThanOrEqual:
                 return TranslateRelational((BinaryExpression) expr, SoqlRelationalOperator.GreaterOrEqual);
+            case ExpressionType.MemberAccess:
+                SoqlExpression ql = TranslateMember((MemberExpression) expr);
+                SoqlBooleanExpression qlBool = ql as SoqlBooleanExpression;
+                if (qlBool != null)
+                    return qlBool;
+                return new SoqlBooleanRelationalExpression(ql, SoqlBooleanLiteralExpression.True, SoqlRelationalOperator.Equal);
             default:
                 throw new NotSupportedException(expr.NodeType.ToString());
             }
