@@ -753,9 +753,7 @@ namespace Sooda
 
         public ISoodaObjectFactory GetFactory(ClassInfo classInfo, bool throwOnError)
         {
-            if (throwOnError && !factoryForClassName.Contains(classInfo.Name))
-                throw new SoodaException("Class " + classInfo.Name + " not registered for Sooda");
-            return factoryForClassName[classInfo.Name];
+            return GetFactory(classInfo.Name, throwOnError);
         }
 
         internal void AddToPostCommitQueue(SoodaObject o)
