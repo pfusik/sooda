@@ -31,14 +31,12 @@ using System;
 using System.Reflection;
 
 using Sooda.Config;
-using Sooda.Logging;
 
 namespace Sooda
 {
     public sealed class SoodaConfig
     {
         private static ISoodaConfigProvider configProvider = null;
-        private static Logger logger = LogManager.GetLogger("Sooda.Config");
 
         static SoodaConfig()
         {
@@ -101,7 +99,6 @@ namespace Sooda
         {
             if (provider == null)
                 throw new ArgumentException("provider");
-            logger.Debug("Setting config provider to " + provider.GetType().FullName);
             configProvider = provider;
         }
 
