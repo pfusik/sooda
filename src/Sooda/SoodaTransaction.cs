@@ -472,11 +472,16 @@ namespace Sooda
             SaveObjectChanges(true, null);
         }
 
+        internal void MarkPrecommitted(SoodaObject o)
+        {
+            _precommittedClassOrRelation[o.GetClassInfo().GetRootClass().Name] = true;
+        }
+
         internal void PrecommitObject(SoodaObject o)
         {
             if (!o.VisitedOnCommit && !o.IsMarkedForDelete())
             {
-                _precommittedClassOrRelation[o.GetClassInfo().GetRootClass().Name] = true;
+                MarkPrecommitted(o);
                 o.SaveObjectChanges();
             }
         }
@@ -510,7 +515,7 @@ namespace Sooda
                 {
                     if (!o.VisitedOnCommit && !o.IsMarkedForDelete())
                     {
-                        _precommittedClassOrRelation[o.GetClassInfo().GetRootClass().Name] = true;
+                        MarkPrecommitted(o);
                         o.SaveObjectChanges();
                     }
                 }

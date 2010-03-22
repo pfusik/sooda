@@ -391,8 +391,10 @@ namespace Sooda
                     for (int i = oldDeletePosition; i < newDeletePosition; ++i)
                     {
                         // logger.Debug("Actually deleting {0}", GetTransaction().DeletedObjects[i].GetObjectKeyString());
-                        deleted[i].CommitObjectChanges();
-                        deleted[i].SetObjectDirty();
+                        SoodaObject o = deleted[i];
+                        o.CommitObjectChanges();
+                        o.SetObjectDirty();
+                        GetTransaction().MarkPrecommitted(o);
                     }
                     foreach (SoodaDataSource source in GetTransaction()._dataSources)
                     {
