@@ -54,6 +54,7 @@ namespace Sooda
 
         internal byte[] _fieldIsDirty;
         internal SoodaObjectFieldValues _fieldValues;
+        internal Hashtable _fieldForDelayedUpdate;
         private int _dataLoadedMask;
         private SoodaTransaction _transaction;
         private SoodaObjectFlags _flags;
@@ -881,6 +882,50 @@ namespace Sooda
             return GetTransaction().IsRegistered(this);
         }
 
+        internal void DelayedUpdate()
+        {
+            if (_fieldForDelayedUpdate != null)
+            {
+                if (_fieldForDelayedUpdate.Count > 0)
+                {
+                    for (int i = GetClassInfo().UnifiedFields.Count; i >= 0; i--)
+                        SetFieldDirty(i, false);
+                    this.InsertMode = false;
+                    foreach (object obj in _fieldForDelayedUpdate.Keys)
+                    {
+                        _fieldValues.SetFieldValue((int)obj, _fieldForDelayedUpdate[obj]);
+                        SetFieldDirty((int)obj, true);
+                    }
+                    CommitObjectChanges();
+                    _fieldForDelayedUpdate.Clear();
+                }
+                _fieldForDelayedUpdate = null;
+            }
+        }
+
+        internal void CallDelayedUpdates()
+        {
+            // iterate outer references
+
+            foreach (Sooda.Schema.FieldInfo fi in GetClassInfo().UnifiedFields)
+            {
+                if (fi.ReferencedClass == null)
+                    continue;
+
+                object v = _fieldValues.GetBoxedFieldValue(fi.ClassUnifiedOrdinal);
+                if (v != null)
+                {
+                    ISoodaObjectFactory factory = GetTransaction().GetFactory(fi.ReferencedClass);
+                    SoodaObject obj = factory.TryGet(GetTransaction(), v);
+
+                    if (obj != null && (object)obj != (object)this)
+                        if (obj.IsInsertMode())
+                            obj.DelayedUpdate();
+                }
+            }
+        }
+
+
         internal void SaveOuterReferences()
         {
             // iterate outer references
@@ -896,15 +941,22 @@ namespace Sooda
                     ISoodaObjectFactory factory = GetTransaction().GetFactory(fi.ReferencedClass);
                     SoodaObject obj = factory.TryGet(GetTransaction(), v);
 
-
                     if (obj != null && (object)obj != (object)this)
                     {
                         if (obj.IsInsertMode())
                         {
                             if (obj.VisitedOnCommit && !obj.WrittenIntoDatabase)
                             {
-                                throw new Exception("Cyclic reference between " + GetObjectKeyString() + " and " + obj.GetObjectKeyString());
-                                // cyclic reference
+                                if (!obj.InsertedIntoDatabase)
+                                {
+                                    // cyclic reference
+                                    if (_fieldForDelayedUpdate == null)
+                                        _fieldForDelayedUpdate = new Hashtable();
+                                    if (!fi.IsNullable)
+                                        throw new Exception("Cyclic reference between " + GetObjectKeyString() + " and " + obj.GetObjectKeyString());
+                                    _fieldForDelayedUpdate.Add(fi.ClassUnifiedOrdinal, v);
+                                    _fieldValues.SetFieldValue(fi.ClassUnifiedOrdinal, null);
+                                }
                             }
                             else
                             {
@@ -919,15 +971,20 @@ namespace Sooda
         internal void SaveObjectChanges()
         {
             VisitedOnCommit = true;
+            if (WrittenIntoDatabase)
+            {
+                //CallDelayedUpdates();
+                DelayedUpdate();
+                return;
+            }
+
             if (IsObjectDirty())
             {
                 SaveOuterReferences();
             }
 
-            if (WrittenIntoDatabase)
-                return;
-
-            if ((IsObjectDirty() || IsInsertMode()) && !WrittenIntoDatabase)
+            //if ((IsObjectDirty() || IsInsertMode()) && (!WrittenIntoDatabase || ((_fieldForDelayedUpdate != null) && (_fieldForDelayedUpdate.Count > 0))))
+            if ((IsObjectDirty() || IsInsertMode()) && (!WrittenIntoDatabase))
             {
                 // deletes are performed in a separate pass
                 if (!IsMarkedForDelete())
