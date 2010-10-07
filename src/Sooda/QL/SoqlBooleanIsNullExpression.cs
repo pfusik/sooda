@@ -56,8 +56,6 @@ namespace Sooda.QL
         public override object Evaluate(ISoqlEvaluateContext context)
         {
             object val = this.Expr.Evaluate(context);
-            if (val == null)
-                return null;
 
             if (NotNull)
             {
