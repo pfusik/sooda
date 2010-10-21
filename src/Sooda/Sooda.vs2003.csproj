@@ -244,6 +244,7 @@
         <File RelPath='Sql\SqlServerBuilder.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Sql\SqlTopSupportMode.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Utils\QPCStopWatch.cs' SubType='Code' BuildAction='Compile' />
+        <File RelPath='Utils\SqlTypesUtil.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Utils\StopWatch.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Xml\XmlDataSource.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Schema\SoodaSchema.xsd' BuildAction='EmbeddedResource' />

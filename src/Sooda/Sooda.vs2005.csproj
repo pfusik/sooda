@@ -711,6 +711,9 @@
     <Compile Include="Utils\QPCStopWatch.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Utils\SqlTypesUtil.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Utils\StopWatch.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -54,26 +54,7 @@ namespace Sooda
         public override void SetFieldValue(int fieldOrdinal, object val)
         {
             System.Reflection.FieldInfo fi = this.GetType().GetField(_orderedFieldNames[fieldOrdinal]);
-            if (typeof(System.Data.SqlTypes.INullable).IsAssignableFrom(fi.FieldType))
-            {
-                if (val == null)
-                {
-                    FieldInfo nullProperty = fi.FieldType.GetField("Null", BindingFlags.Static | BindingFlags.Public);
-                    object sqlNullValue = nullProperty.GetValue(null);
-                    fi.SetValue(this, sqlNullValue);
-                }
-                else
-                {
-                    Type[] constructorParameterTypes = new Type[] { val.GetType() };
-                    ConstructorInfo constructorInfo = fi.FieldType.GetConstructor(constructorParameterTypes);
-                    object sqlValue = constructorInfo.Invoke(new object[] { val });
-                    fi.SetValue(this, sqlValue);
-                }
-            }
-            else
-            {
-                fi.SetValue(this, val);
-            }
+            Sooda.Utils.SqlTypesUtil.SetValue(fi, this, val);
         }
 
         public override object GetBoxedFieldValue(int fieldOrdinal)
@@ -81,21 +62,8 @@ namespace Sooda
             System.Reflection.FieldInfo fi = this.GetType().GetField(_orderedFieldNames[fieldOrdinal]);
             object rawValue = fi.GetValue(this);
 
-            if (rawValue == null)
-                return null;
-
             // we got raw value, it's possible that it's a sqltype, nullables are already boxed here
-
-            System.Data.SqlTypes.INullable sqlType = rawValue as System.Data.SqlTypes.INullable;
-            if (sqlType != null)
-            {
-                if (sqlType.IsNull)
-                    return null;
-
-                return rawValue.GetType().GetProperty("Value").GetValue(rawValue, null);
-            }
-
-            return rawValue;
+            return Sooda.Utils.SqlTypesUtil.Unwrap(rawValue);
         }
 
         public override int Length
