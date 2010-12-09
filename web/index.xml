@@ -29,8 +29,8 @@
     </p>
     <ul>
         <li>Microsoft SQL Server - primary development platform, most thoroughly tested, production quality support</li>
+        <li>Oracle 8i and higher - secondary development platform</li>
         <li>MySQL 4.x and higher - experimental support</li>
         <li>PostgreSQL 8.x - experimental support</li>
-        <li>Oracle 8i and higher - experimental support</li>
     </ul>
 </content>

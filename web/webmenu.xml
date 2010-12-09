@@ -2,7 +2,7 @@
 <common>
     <navigation>
         <nav href="index" label="Introduction" />
-        <nav href="http://sourceforge.net/project/showfiles.php?group_id=71422" label="Download" />
+        <nav href="http://sourceforge.net/projects/sooda/files/sooda/" label="Download" />
         <nav href="examples" label="Examples" />
         <nav href="documentation" label="Documentation" />
         <nav href="faq" label="FAQ" />
