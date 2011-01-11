@@ -59,7 +59,7 @@ namespace Sooda.Sql
                         return "varchar2(" + fi.Size + ")";
 
                 case FieldDataType.String:
-                    if (fi.Size >= 4000)
+                    if (fi.Size >= 2000)
                         return "nclob";
                     else
                         return "nvarchar2(" + fi.Size + ")";
