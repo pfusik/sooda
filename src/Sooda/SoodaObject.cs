@@ -62,7 +62,7 @@ namespace Sooda
 
         public bool AreFieldUpdateTriggersEnabled()
         {
-            return (_flags & SoodaObjectFlags.DisableTriggers) == 0;
+            return (_flags & SoodaObjectFlags.DisableFieldTriggers) == 0;
         }
 
         public bool EnableFieldUpdateTriggers()
@@ -80,11 +80,38 @@ namespace Sooda
             bool oldValue = AreFieldUpdateTriggersEnabled();
 
             if (!enable)
-                _flags |= SoodaObjectFlags.DisableTriggers;
+                _flags |= SoodaObjectFlags.DisableFieldTriggers;
             else
-                _flags &= ~SoodaObjectFlags.DisableTriggers;
+                _flags &= ~SoodaObjectFlags.DisableFieldTriggers;
             return oldValue;
         }
+
+        public bool AreObjectTriggersEnabled()
+        {
+            return (_flags & SoodaObjectFlags.DisableObjectTriggers) == 0;
+        }
+
+        public bool EnableObjectTriggers()
+        {
+            return EnableObjectTriggers(true);
+        }
+
+        public bool DisableObjectTriggers()
+        {
+            return EnableObjectTriggers(false);
+        }
+
+        public bool EnableObjectTriggers(bool enable)
+        {
+            bool oldValue = AreObjectTriggersEnabled();
+
+            if (!enable)
+                _flags |= SoodaObjectFlags.DisableObjectTriggers;
+            else
+                _flags &= ~SoodaObjectFlags.DisableObjectTriggers;
+            return oldValue;
+        }
+
 
         private bool InsertMode
         {
@@ -1039,12 +1066,14 @@ namespace Sooda
         {
             if (IsInsertMode())
             {
-                AfterObjectInsert();
+                if (AreObjectTriggersEnabled())
+                    AfterObjectInsert();
                 InsertMode = false;
             }
             else
             {
-                AfterObjectUpdate();
+                if (AreObjectTriggersEnabled())
+                    AfterObjectUpdate();
             }
         }
 
@@ -1052,11 +1081,13 @@ namespace Sooda
         {
             if (IsInsertMode())
             {
-                BeforeObjectInsert();
+                if (AreObjectTriggersEnabled())
+                    BeforeObjectInsert();
             }
             else
             {
-                BeforeObjectUpdate();
+                if (AreObjectTriggersEnabled())
+                    BeforeObjectUpdate();
             }
             GetTransaction().AddToPostCommitQueue(this);
         }
@@ -1100,6 +1131,9 @@ namespace Sooda
             xw.WriteAttributeString("class", GetClassInfo().Name);
             if (!IsObjectDirty())
                 xw.WriteAttributeString("dirty", "false");
+
+            if (!AreObjectTriggersEnabled())
+                xw.WriteAttributeString("disableobjecttriggers", "true");
 
             if (PostCommitForced)
                 xw.WriteAttributeString("forcepostcommit", "true");
@@ -1146,6 +1180,7 @@ namespace Sooda
                 xw.WriteAttributeString("objectDirty", IsObjectDirty() ? "true" : "false");
                 xw.WriteAttributeString("dataLoaded", IsAllDataLoaded() ? "true" : "false");
                 xw.WriteAttributeString("disableTriggers", AreFieldUpdateTriggersEnabled() ? "false" : "true");
+                xw.WriteAttributeString("disableObjectTriggers", AreObjectTriggersEnabled() ? "false" : "true");
                 xw.WriteEndElement();
             }
             NameValueCollection persistentValues = GetTransaction().GetPersistentValues(this);
