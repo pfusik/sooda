@@ -365,8 +365,14 @@ namespace Sooda.Sql
                 if (!currentClass.IsAbstractClass())
                 {
                     Output.Write(" when ");
-                    if (currentClass.SubclassSelectorField.DataType == FieldDataType.String 
-                        || currentClass.SubclassSelectorField.DataType == FieldDataType.AnsiString)
+                    if (currentClass.SubclassSelectorField.DataType == FieldDataType.String)
+                    {
+                        Output.Write("N'");
+                        Output.Write(currentClass.SubclassSelectorValue);
+                        Output.Write('\'');
+                    }
+                    else
+                    if (currentClass.SubclassSelectorField.DataType == FieldDataType.AnsiString)
                     {
                         Output.Write('\'');
                         Output.Write(currentClass.SubclassSelectorValue);
@@ -386,8 +392,14 @@ namespace Sooda.Sql
                     {
 
                         Output.Write(" when ");
-                        if (subci.SubclassSelectorField.DataType == FieldDataType.String
-                            || subci.SubclassSelectorField.DataType == FieldDataType.AnsiString)
+                        if (subci.SubclassSelectorField.DataType == FieldDataType.String)
+                        {
+                            Output.Write("N'");
+                            Output.Write(subci.SubclassSelectorValue);
+                            Output.Write('\'');
+                        }
+                        else
+                        if (subci.SubclassSelectorField.DataType == FieldDataType.AnsiString)
                         {
                             Output.Write('\'');
                             Output.Write(subci.SubclassSelectorValue);
@@ -1226,7 +1238,8 @@ namespace Sooda.Sql
 
         public SoqlBooleanExpression BuildClassRestriction(string startingAlias, Sooda.Schema.ClassInfo classInfo)
         {
-            if (classInfo.GetSubclassesForSchema(Schema).Count == 0 && classInfo.InheritsFromClass == null)
+            // returns no additional filter clause for parent (master-parent) class
+            if (classInfo.InheritsFromClass == null)
                 return null;
 
             SoqlExpressionCollection literals = new SoqlExpressionCollection();
@@ -1242,6 +1255,10 @@ namespace Sooda.Sql
             {
                 literals.Add(new SoqlLiteralExpression(classInfo.SubclassSelectorValue));
             }
+
+            // returns false when class is abstract (no SubClassSelectorValue) and there is no subclasses
+            if (literals.Count == 0)
+                return new SoqlBooleanLiteralExpression(false);
 
             SoqlBooleanExpression restriction =
                 new SoqlBooleanInExpression(
