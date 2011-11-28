@@ -529,6 +529,24 @@ namespace Sooda.Sql
                         throw new ArgumentException("Unexpected character in parameter specification");
                     }
                 }
+                else if (c == '(' || c == ' ' || c == ',' || c == '=' || c == '>' || c == '<')
+                {
+                    sb.Append(c);
+                    c = query[i+1];
+                    if (c >= '0' && c <= '9' && !UseSafeLiterals)
+                    {
+                        int v = 0;
+                        do                                                                                        
+                        {                                                                                         
+                            v = v * 10 + c - '0';                                                                 
+                            i++;                                                                                  
+                            if (i < query.Length - 1)
+                                c = query[i+1];
+                        } while (c >= '0' && c <= '9' && (i < query.Length - 1));
+                        string paramName = AddParameterFromValue(command, v.ToString(), null);
+                        sb.Append(paramName);
+                    }
+                }
                 else
                 {
                     sb.Append(c);
