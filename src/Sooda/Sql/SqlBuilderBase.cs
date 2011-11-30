@@ -543,7 +543,7 @@ namespace Sooda.Sql
                             if (i < query.Length - 1)
                                 c = query[i+1];
                         } while (c >= '0' && c <= '9' && (i < query.Length - 1));
-                        string paramName = AddParameterFromValue(command, v.ToString(), null);
+                        string paramName = AddParameterFromValue(command, v, null);
                         sb.Append(paramName);
                     }
                 }
