@@ -529,22 +529,51 @@ namespace Sooda.Sql
                         throw new ArgumentException("Unexpected character in parameter specification");
                     }
                 }
-                else if (c == '(' || c == ' ' || c == ',' || c == '=' || c == '>' || c == '<')
+                else if (c == '(' || c == ' ' || c == ',' || c == '=' || c == '>' || c == '<' || c == '+' || c == '-' || c == '*' || c == '/')
                 {
                     sb.Append(c);
-                    c = query[i+1];
-                    if (c >= '0' && c <= '9' && !UseSafeLiterals)
+                    if (i < query.Length - 1)
                     {
-                        int v = 0;
-                        do                                                                                        
-                        {                                                                                         
-                            v = v * 10 + c - '0';                                                                 
-                            i++;                                                                                  
-                            if (i < query.Length - 1)
-                                c = query[i+1];
-                        } while (c >= '0' && c <= '9' && (i < query.Length - 1));
-                        string paramName = AddParameterFromValue(command, v, null);
-                        sb.Append(paramName);
+                        c = query[i + 1];
+                        if (c >= '0' && c <= '9' && !UseSafeLiterals)
+                        {
+                            int v = 0;
+                            double f = 0;
+                            double dp = 0;
+                            bool isDouble = false;
+                            do                                                                                        
+                            {                                                                                         
+                                if (c != '.')
+                                {
+                                    if (!isDouble)
+                                        v = v * 10 + c - '0';                                                                 
+                                    else
+                                    {
+                                        f = f + dp * (c - '0');
+                                        dp = dp * 0.1;
+                                    }
+                                }
+                                else
+                                {
+                                   isDouble = true;
+                                   f = v;
+                                   dp = 0.1;
+                                }
+                                i++;                                                                                  
+                                if (i < query.Length - 1)
+                                    c = query[i+1];
+                            } while (((c >= '0' && c <= '9') || c == '.') && (i < query.Length - 1));
+                            if (!isDouble)
+                            {
+                                string paramName = AddParameterFromValue(command, v, null);
+                                sb.Append(paramName);
+                            }
+                            else
+                            {
+                                string paramName = AddParameterFromValue(command, f, null);
+                                sb.Append(paramName);
+                            }
+                        }
                     }
                 }
                 else
