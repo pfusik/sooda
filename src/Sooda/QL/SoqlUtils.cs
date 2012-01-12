@@ -41,6 +41,15 @@ namespace Sooda.QL
 
         private static string ConvertSql2Regex(string s)
         {
+            s = Regex.Escape(s);
+            if (s.StartsWith("%"))
+                s = s.Substring(1);
+            else
+                s = "\\A" + s;
+            if (s.EndsWith("%"))
+                s = s.Substring(0, s.Length - 1);
+            else
+                s += "\\z";
             return s.Replace("%", ".*").Replace('_', '.');
         }
     }
