@@ -28,12 +28,11 @@
 // 
 
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 [assembly: AssemblyTitle("Sooda Logging Wrapper for log4net")]
 [assembly: AssemblyDescription("Sooda")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Sooda")]
+[assembly: AssemblyCompany("Sooda Community - sooda.sourceforge.net")]
 [assembly: AssemblyProduct("Sooda - Simple Object Oriented Database Access")]
 [assembly: AssemblyCopyright("Copyright (c) 2002-2006 by Jaroslaw Kowalski")]
 [assembly: AssemblyCulture("")]

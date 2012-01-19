@@ -44,23 +44,36 @@
     <target name="libraries" depends="Sooda, Sooda.Logging.NLog, Sooda.Logging.log4net" />
 
     <target name="update-build-number">
-        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/Sooda/AssemblyBuildInfo.cs build/Sooda.buildversion" />
-        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/Sooda.CodeGen/AssemblyBuildInfo.cs build/Sooda.buildversion" />
-        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaStubGen/AssemblyBuildInfo.cs build/Sooda.buildversion" />
-        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaCompileStubs/AssemblyBuildInfo.cs build/Sooda.buildversion" />
-        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaFixKeygen/AssemblyBuildInfo.cs build/Sooda.buildversion" />
-        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaSchemaTool/AssemblyBuildInfo.cs build/Sooda.buildversion" />
-        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaQuery/AssemblyBuildInfo.cs build/Sooda.buildversion" />
-        <exec program="tools/UpdateBuildNumber.exe" commandline="Sooda.version src/SoodaAddin.UI/AssemblyBuildInfo.cs build/Sooda.buildversion" />
-        <foreach item="Line" in="build/Sooda.buildversion" delim="." property="tmp1,tmp2,tmp3,tmp4">
+        <foreach item="Line" in="Sooda.version" delim="." property="tmp1,tmp2,tmp3,tmp4">
             <property name="sooda.version.major" value="${tmp1}" />
             <property name="sooda.version.minor" value="${tmp2}" />
             <property name="sooda.version.revision" value="${tmp3}" />
             <property name="sooda.version.build" value="${tmp4}" />
         </foreach>
-
+        <if test="${sooda.version.build=='*'}">
+            <exec program="svnversion" output="build/Sooda.svnversion" />
+            <loadfile file="build/Sooda.svnversion" property="sooda.version.svnversion" />
+            <regex input="${sooda.version.svnversion}" pattern="(?'tmp4'\d+)" /><!-- cannot assign to property with dots in its name -->
+            <property name="sooda.version.build" value="${tmp4}" />
+        </if>
         <property name="sooda.version" value="${sooda.version.major}.${sooda.version.minor}.${sooda.version.revision}.${sooda.version.build}" />
         <property name="release.version" value="${tstamp.date}.${sooda.version.build}" unless="${property::exists('release.version')}" />
+
+        <loadfile file="build/Sooda.buildversion" property="sooda.oldversion" if="${file::exists('build/Sooda.buildversion')}" />
+        <if test="${not(property::exists('sooda.oldversion')) or sooda.version!=string::trim(sooda.oldversion)}">
+            <echo message="sooda.version=${sooda.version}" />
+            <foreach item="String" in="Sooda,Sooda.CodeGen,SoodaStubGen,SoodaCompileStubs,SoodaFixKeygen,SoodaSchemaTool,SoodaQuery,SoodaAddin.UI" delim="," property="assembly.dir">
+                <do>
+                    <property name="assemblybuildinfo.cs" value="src/${assembly.dir}/AssemblyBuildInfo.cs" />
+                    <echo message="using System.Reflection;
+// do not modify this file, it will be automatically regenerated
+[assembly: AssemblyVersion(&quot;${sooda.version}&quot;)]
+[assembly: AssemblyFileVersion(&quot;${sooda.version}&quot;)]
+" file="${assemblybuildinfo.cs}" />
+                </do>
+            </foreach>
+            <echo message="${sooda.version}" file="build/Sooda.buildversion" />
+        </if>
     </target>
 
     <target name="configure">
