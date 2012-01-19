@@ -361,7 +361,9 @@ namespace Sooda.ObjectMapper
 
         public void CopyTo(Array array, int index)
         {
-            items.CopyTo(array, index);
+            if (itemsArray == null)
+                LoadData();
+            ((ICollection) itemsArray).CopyTo(array, index);
         }
 
         public object SyncRoot
