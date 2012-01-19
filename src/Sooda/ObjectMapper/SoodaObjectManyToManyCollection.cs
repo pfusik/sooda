@@ -357,7 +357,12 @@ namespace Sooda.ObjectMapper
 
         public int IndexOf(object value)
         {
-            throw new NotSupportedException();
+            if (items == null)
+                LoadData();
+            if (items.Contains((SoodaObject) value))
+                return items[(SoodaObject) value];
+            else
+                return -1;
         }
 
         public bool IsFixedSize
