@@ -37,7 +37,7 @@
     <target name="build-mono-2.0" depends="build-common, minitools" />
 
     <target name="build-common" depends="configure, libraries" />
-    <target name="tools" depends="SoodaStubGen, SoodaSchemaTool, SoodaFixKeygen, SoodaCompileStubs, SoodaQuery" />
+    <target name="tools" depends="SoodaStubGen, SoodaSchemaTool, SoodaFixKeygen, SoodaCompileStubs" />
     <target name="guitools" depends="ConfigureSoodaProject" />
     <target name="minitools" depends="SoodaStubGen, SoodaCompileStubs" />
 

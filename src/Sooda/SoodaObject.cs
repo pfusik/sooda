@@ -298,7 +298,7 @@ namespace Sooda
 
         private void InitFieldData(bool justLoading)
         {
-            if (!InsertMode)
+            if (!InsertMode && GetTransaction().CachingPolicy.ShouldCacheObject(this))
             {
                 SoodaCacheEntry cachedData = GetTransaction().Cache.Find(GetClassInfo().GetRootClass().Name, _primaryKeyValue);
                 if (cachedData != null)
