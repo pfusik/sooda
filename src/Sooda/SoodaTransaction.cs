@@ -593,13 +593,13 @@ namespace Sooda
                 }
             }
 
+			foreach (SoodaDataSource source in _dataSources)
+			{
+				source.Commit();
+			}
+			
             using (Cache.Lock())
             {
-                foreach (SoodaDataSource source in _dataSources)
-                {
-                    source.Commit();
-                }
-
                 foreach (SoodaObject o in _dirtyObjects)
                 {
                     o.InvalidateCacheAfterCommit();
