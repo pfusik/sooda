@@ -51,6 +51,8 @@ namespace SoodaSchemaTool
             XmlTextReader xr = new XmlTextReader(schemaFileName);
             SchemaInfo schemaInfo = SchemaManager.ReadAndValidateSchema(xr, Path.GetDirectoryName(schemaFileName));
             schemaInfo.Includes.Clear();
+            schemaInfo.Classes.SortByName();
+            schemaInfo.Relations.SortByName();
 
             XmlSerializer ser = new XmlSerializer(typeof(SchemaInfo));
             XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
@@ -71,5 +73,6 @@ namespace SoodaSchemaTool
 
             return 0;
         }
+
     }
 }

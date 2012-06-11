@@ -228,5 +228,21 @@ namespace Sooda.Schema
         {
             return new ClassInfoCollection.Enumerator(this);
         }
+
+        public void SortByName() 
+        {
+            System.Collections.IComparer sorter = new NameSortHelper();
+            InnerList.Sort(sorter);
+        }
+
+        private class NameSortHelper : System.Collections.IComparer 
+        {
+            public int Compare(object x, object y) 
+            {
+                  ClassInfo ci1 = (ClassInfo) x;
+                  ClassInfo ci2 = (ClassInfo) y;
+                  return ci1.Name.CompareTo(ci2.Name);
+            }
+        }
     }
 }
