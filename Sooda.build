@@ -31,6 +31,7 @@
     <target name="build-net-1.1" depends="build-common, tools, guitools" />
     <target name="build-net-2.0" depends="build-common, tools, Sooda.Web, guitools" />
     <target name="build-net-3.5" depends="build-common, tools, Sooda.Web, guitools" />
+    <target name="build-net-4.0" depends="build-common, tools, Sooda.Web, guitools" />
     <target name="build-netcf-1.0" depends="build-common" />
     <target name="build-netcf-2.0" depends="build-common" />
     <target name="build-mono-1.0" depends="build-common, minitools" />
@@ -109,6 +110,11 @@
     </target>
 
     <target name="configure-net-3.5">
+        <property name="sooda.csc.args" value="/nowarn:1591,1699" />
+        <property name="sooda.define" value="${sooda.define},DOTNET2" />
+    </target>
+
+    <target name="configure-net-4.0">
         <property name="sooda.csc.args" value="/nowarn:1591,1699" />
         <property name="sooda.define" value="${sooda.define},DOTNET2" />
     </target>
