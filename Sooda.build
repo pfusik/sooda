@@ -18,6 +18,7 @@
     <property name="sooda.external" value="${project::get-base-directory()}/external" unless="${property::exists('sooda.external')}" />
     <property name="sooda.nlog.dir" value="${sooda.external}" unless="${property::exists('sooda.nlog.dir')}" />
     <property name="sooda.log4net.dir" value="${sooda.external}" unless="${property::exists('sooda.log4net.dir')}" />
+    <property name="sooda.query" value="false" unless="${property::exists('sooda.query')}" />
 
     <property name="clover.enabled" value="false" />
     <property name="clover.home" value="C:\Program Files\Cenqua\Clover.NET" />
@@ -39,7 +40,11 @@
 
     <target name="build-common" depends="configure, libraries" />
     <target name="tools" depends="SoodaStubGen, SoodaSchemaTool, SoodaFixKeygen, SoodaCompileStubs" />
-    <target name="guitools" depends="ConfigureSoodaProject" />
+    <target name="guitools" depends="ConfigureSoodaProject">
+       <if test="${sooda.query=='true'}">
+          <call target="SoodaQuery" />
+       </if>
+    </target>
     <target name="minitools" depends="SoodaStubGen, SoodaCompileStubs" />
 
     <target name="libraries" depends="Sooda, Sooda.Logging.NLog, Sooda.Logging.log4net" />
@@ -303,7 +308,7 @@
 
     <target name="SoodaQuery" depends="configure, update-build-number, Sooda">
         <copy file="external/ICSharpCode.TextEditor.dll" tofile="${sooda.dir}/ICSharpCode.TextEditor.dll" />
-        <csc target="exe" output="${sooda.dir}/SoodaQuery.exe" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
+        <csc target="winexe" output="${sooda.dir}/SoodaQuery.exe" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
             <references>                                  
                 <include name="System.Data.dll" asis="true" />
                 <include name="System.Data.OracleClient.dll" asis="true" />
