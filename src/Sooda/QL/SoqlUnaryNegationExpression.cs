@@ -50,7 +50,7 @@ namespace Sooda.QL
 
         public override SoqlExpression Simplify()
         {
-            par = (SoqlBooleanExpression)par.Simplify();
+            par = par.Simplify();
             return this;
         }
 
