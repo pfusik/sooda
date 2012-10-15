@@ -48,11 +48,6 @@ namespace Sooda.QL
             set { _innerExpression = value; }
         }
 
-        public override SoqlExpression Simplify()
-        {
-            return this;
-        }
-
         public override object Evaluate(ISoqlEvaluateContext context)
         {
             return InnerExpression.Evaluate(context);
