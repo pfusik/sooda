@@ -30,6 +30,7 @@
 #if DOTNET35
 
 using System;
+using System.Collections;
 using System.Data.SqlTypes;
 using System.Linq;
 using System.Linq.Expressions;
@@ -206,59 +207,60 @@ namespace Sooda.Linq
             }
         }
 
+        LambdaExpression GetLambda(MethodCallExpression mc)
+        {
+            if (mc.Arguments.Count == 2)
+            {
+                LambdaExpression lambda = (LambdaExpression) ((UnaryExpression) mc.Arguments[1]).Operand;
+                if (lambda.Parameters.Count == 1)
+                    return lambda;
+            }
+            throw new NotSupportedException("Unsupported overload of " + mc.Method.Name);
+        }
+
         void TranslateQuery(Expression expr)
         {
             switch (expr.NodeType)
             {
             case ExpressionType.Constant:
-                return;
+                break;
             case ExpressionType.Call:
                 MethodCallExpression mc = (MethodCallExpression) expr;
                 if (mc.Method.DeclaringType != typeof(Queryable))
                     throw new NotSupportedException(mc.Method.DeclaringType.FullName);
                 TranslateQuery(mc.Arguments[0]);
+                LambdaExpression lambda;
                 switch (mc.Method.Name)
                 {
                 case "Where":
-                    if (mc.Arguments.Count == 2)
-                    {
-                        LambdaExpression lambda = (LambdaExpression) ((UnaryExpression) mc.Arguments[1]).Operand;
-                        if (lambda.Parameters.Count == 1)
-                        {
-                            if (_topCount >= 0)
-                                throw new NotSupportedException("Take().Where() not supported");
-                            SoqlBooleanExpression where = (SoqlBooleanExpression) TranslateBoolean(lambda.Body).Simplify();
-                            _where = _where == null ? where : _where.And(where);
-                            return;
-                        }
-                    }
+                    lambda = GetLambda(mc);
+                    if (_topCount >= 0)
+                        throw new NotSupportedException("Take().Where() not supported");
+                    SoqlBooleanExpression where = (SoqlBooleanExpression) TranslateBoolean(lambda.Body).Simplify();
+                    _where = _where == null ? where : _where.And(where);
                     break;
                 case "OrderBy":
                 case "OrderByDescending":
                 case "ThenBy":
                 case "ThenByDescending":
-                    if (mc.Arguments.Count == 2)
+                    lambda = GetLambda(mc);
+                    SoqlExpression orderBy = TranslateExpression(lambda.Body);
+                    if (_topCount >= 0)
+                        throw new NotSupportedException("Take().OrderBy() not supported");
+                    switch (mc.Method.Name)
                     {
-                        LambdaExpression lambda = (LambdaExpression) ((UnaryExpression) mc.Arguments[1]).Operand;
-                        SoqlExpression orderBy = TranslateExpression(lambda.Body);
-                        if (_topCount >= 0)
-                            throw new NotSupportedException("Take().OrderBy() not supported");
-                        switch (mc.Method.Name)
-                        {
-                        case "OrderBy":
-                            _orderBy = new SoodaOrderBy(orderBy, SortOrder.Ascending, _orderBy);
-                            break;
-                        case "OrderByDescending":
-                            _orderBy = new SoodaOrderBy(orderBy, SortOrder.Descending, _orderBy);
-                            break;
-                        case "ThenBy":
-                            _orderBy = new SoodaOrderBy(_orderBy, orderBy, SortOrder.Ascending);
-                            break;
-                        case "ThenByDescending":
-                            _orderBy = new SoodaOrderBy(_orderBy, orderBy, SortOrder.Descending);
-                            break;
-                        }
-                        return;
+                    case "OrderBy":
+                        _orderBy = new SoodaOrderBy(orderBy, SortOrder.Ascending, _orderBy);
+                        break;
+                    case "OrderByDescending":
+                        _orderBy = new SoodaOrderBy(orderBy, SortOrder.Descending, _orderBy);
+                        break;
+                    case "ThenBy":
+                        _orderBy = new SoodaOrderBy(_orderBy, orderBy, SortOrder.Ascending);
+                        break;
+                    case "ThenByDescending":
+                        _orderBy = new SoodaOrderBy(_orderBy, orderBy, SortOrder.Descending);
+                        break;
                     }
                     break;
                 case "Take":
@@ -267,14 +269,25 @@ namespace Sooda.Linq
                         count = 0;
                     if (_topCount < 0 || _topCount > count)
                         _topCount = count;
-                    return;
-                default:
                     break;
+                default:
+                    throw new NotSupportedException(mc.Method.Name);
                 }
-                throw new NotSupportedException(mc.Method.Name);
+                break;
             default:
                 throw new NotSupportedException(expr.NodeType.ToString());
             }
+        }
+
+        IEnumerable GetList()
+        {
+            return new SoodaObjectListSnapshot(_transaction, new SoodaWhereClause(_where), _orderBy, _topCount, _options, _classInfo);
+        }
+
+        static IEnumerable Select(IEnumerable source, Delegate d)
+        {
+            foreach (object obj in source)
+                yield return d.DynamicInvoke(obj);
         }
 
         public object Execute(Expression expr)
@@ -282,8 +295,14 @@ namespace Sooda.Linq
             _where = null;
             _orderBy = null;
             _topCount = -1;
+            MethodCallExpression mc = expr as MethodCallExpression;
+            if (mc != null && mc.Method.DeclaringType == typeof(Queryable) && mc.Method.Name == "Select" && mc.Arguments.Count == 2)
+            {
+                TranslateQuery(mc.Arguments[0]);
+                return Select(GetList(), GetLambda(mc).Compile());
+            }
             TranslateQuery(expr);
-            return new SoodaObjectListSnapshot(_transaction, new SoodaWhereClause(_where), _orderBy, _topCount, _options, _classInfo);
+            return GetList();
         }
 
         public TResult Execute<TResult>(Expression expr)
