@@ -63,23 +63,31 @@ namespace Sooda.Linq
             };
         }
 
-        public SoodaLinqQuery OrderBy(SoqlExpression expression, SortOrder sortOrder)
+        public SoodaLinqQuery OrderBy(string methodName, SoqlExpression expression)
         {
             if (this.TopCount >= 0)
                 throw new NotSupportedException("Take().OrderBy() not supported");
+            SoodaOrderBy orderBy;
+            switch (methodName)
+            {
+            case "OrderBy":
+                orderBy = new SoodaOrderBy(expression, SortOrder.Ascending, this.OrderByClause);
+                break;
+            case "OrderByDescending":
+                orderBy = new SoodaOrderBy(expression, SortOrder.Descending, this.OrderByClause);
+                break;
+            case "ThenBy":
+                orderBy = new SoodaOrderBy(this.OrderByClause, expression, SortOrder.Ascending);
+                break;
+            case "ThenByDescending":
+                orderBy = new SoodaOrderBy(this.OrderByClause, expression, SortOrder.Descending);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException("methodName");
+            }
             return new SoodaLinqQuery(this.Transaction, this.ClassInfo, this.Options) {
                 WhereClause = this.WhereClause,
-                OrderByClause = new SoodaOrderBy(expression, sortOrder, this.OrderByClause)
-            };
-        }
-
-        public SoodaLinqQuery ThenBy(SoqlExpression expression, SortOrder sortOrder)
-        {
-            if (this.TopCount >= 0)
-                throw new NotSupportedException("Take().ThenBy() not supported");
-            return new SoodaLinqQuery(this.Transaction, this.ClassInfo, this.Options) {
-                WhereClause = this.WhereClause,
-                OrderByClause = new SoodaOrderBy(this.OrderByClause, expression, sortOrder)
+                OrderByClause = orderBy
             };
         }
 

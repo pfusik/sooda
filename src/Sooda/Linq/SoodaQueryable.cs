@@ -260,20 +260,13 @@ namespace Sooda.Linq
                 {
                 case "OrderBy":
                 case "OrderByDescending":
-                    if (mc.Arguments.Count == 2)
-                    {
-                        LambdaExpression lambda = (LambdaExpression) ((UnaryExpression) mc.Arguments[1]).Operand;
-                        SoqlExpression orderBy = TranslateExpression(lambda.Body);
-                        return TranslateQuery(mc.Arguments[0]).OrderBy(orderBy, mc.Method.Name == "OrderBy" ? SortOrder.Ascending : SortOrder.Descending);
-                    }
-                    break;
                 case "ThenBy":
                 case "ThenByDescending":
                     if (mc.Arguments.Count == 2)
                     {
                         LambdaExpression lambda = (LambdaExpression) ((UnaryExpression) mc.Arguments[1]).Operand;
                         SoqlExpression orderBy = TranslateExpression(lambda.Body);
-                        return TranslateQuery(mc.Arguments[0]).ThenBy(orderBy, mc.Method.Name == "ThenBy" ? SortOrder.Ascending : SortOrder.Descending);
+                        return TranslateQuery(mc.Arguments[0]).OrderBy(mc.Method.Name, orderBy);
                     }
                     break;
                 case "Take":
