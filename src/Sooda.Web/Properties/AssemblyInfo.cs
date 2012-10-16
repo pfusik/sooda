@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Sooda.Web")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Sooda Project")]
+[assembly: AssemblyCompany("Sooda Community - sooda.sourceforge.net")]
 [assembly: AssemblyProduct("Sooda.Web")]
 [assembly: AssemblyCopyright("Copyright © Sooda Project 2006")]
 [assembly: AssemblyTrademark("")]

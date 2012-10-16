@@ -28,14 +28,11 @@
 // 
 
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 [assembly: AssemblyTitle("Sooda NAnt Tasks")]
 [assembly: AssemblyDescription("Sooda NAnt Tasks Library")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Sooda Community - www.sooda.org")]
+[assembly: AssemblyCompany("Sooda Community - sooda.sourceforge.net")]
 [assembly: AssemblyProduct("Sooda - Simple Object Oriented Database Access")]
 [assembly: AssemblyCopyright("Copyright (c) 2002-2006 by Jaroslaw Kowalski")]
-
 [assembly: AssemblyCulture("")]
-

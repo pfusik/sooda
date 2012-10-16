@@ -21,12 +21,11 @@
 // 
 
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 [assembly: AssemblyTitle("Sooda Query Analyzer")]
 [assembly: AssemblyDescription("Sooda Query Analyzer")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Sooda")]
+[assembly: AssemblyCompany("Sooda Community - sooda.sourceforge.net")]
 [assembly: AssemblyProduct("Sooda - Simple Object Oriented Database Access")]
 [assembly: AssemblyCopyright("Copyright (c) 2003 by Jaroslaw Kowalski")]
 [assembly: AssemblyCulture("")]
