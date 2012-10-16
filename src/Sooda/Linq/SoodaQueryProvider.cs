@@ -130,6 +130,8 @@ namespace Sooda.Linq
                         if (name == "IsNull")
                             return new SoqlBooleanIsNullExpression(parent, false);
                     }
+                    if (t == typeof(SoodaObjectCollectionWrapper) && name == "Count")
+                        return new SoqlCountExpression(parentPath.Left, parentPath.PropertyName);
                 }
                 throw new NotSupportedException(string.Format("{0}.{1}", t.FullName, name));
             }
@@ -296,7 +298,7 @@ namespace Sooda.Linq
             _orderBy = null;
             _topCount = -1;
             MethodCallExpression mc = expr as MethodCallExpression;
-            if (mc != null && mc.Method.DeclaringType == typeof(Queryable) && mc.Method.Name == "Select" && mc.Arguments.Count == 2)
+            if (mc != null && mc.Method.DeclaringType == typeof(Queryable) && mc.Method.Name == "Select")
             {
                 TranslateQuery(mc.Arguments[0]);
                 return Select(GetList(), GetLambda(mc).Compile());
