@@ -43,7 +43,7 @@ using Sooda.QL;
 
 namespace Sooda.Linq
 {
-    public class SoodaQueryable<T> : IQueryable<T>, IQueryProvider
+    public class SoodaQueryable<T> : IOrderedQueryable<T>, IQueryProvider
     {
         readonly Expression _expr;
         readonly SoodaLinqQuery _query;
@@ -258,6 +258,24 @@ namespace Sooda.Linq
                     throw new NotSupportedException(mc.Method.DeclaringType.FullName);
                 switch (mc.Method.Name)
                 {
+                case "OrderBy":
+                case "OrderByDescending":
+                    if (mc.Arguments.Count == 2)
+                    {
+                        LambdaExpression lambda = (LambdaExpression) ((UnaryExpression) mc.Arguments[1]).Operand;
+                        SoqlExpression orderBy = TranslateExpression(lambda.Body);
+                        return TranslateQuery(mc.Arguments[0]).OrderBy(orderBy, mc.Method.Name == "OrderBy" ? SortOrder.Ascending : SortOrder.Descending);
+                    }
+                    break;
+                case "ThenBy":
+                case "ThenByDescending":
+                    if (mc.Arguments.Count == 2)
+                    {
+                        LambdaExpression lambda = (LambdaExpression) ((UnaryExpression) mc.Arguments[1]).Operand;
+                        SoqlExpression orderBy = TranslateExpression(lambda.Body);
+                        return TranslateQuery(mc.Arguments[0]).ThenBy(orderBy, mc.Method.Name == "ThenBy" ? SortOrder.Ascending : SortOrder.Descending);
+                    }
+                    break;
                 case "Take":
                     int count = (int) ((ConstantExpression) mc.Arguments[1]).Value;
                     return TranslateQuery(mc.Arguments[0]).Take(count);
@@ -284,7 +302,7 @@ namespace Sooda.Linq
         public object Execute(Expression expr)
         {
             SoodaLinqQuery query = TranslateQuery(expr);
-            return new SoodaObjectListSnapshot(query.Transaction, new SoodaWhereClause(query.WhereClause), SoodaOrderBy.Unsorted, query.TopCount, query.Options, query.ClassInfo);
+            return new SoodaObjectListSnapshot(query.Transaction, new SoodaWhereClause(query.WhereClause), query.OrderByClause, query.TopCount, query.Options, query.ClassInfo);
         }
 
         public TResult Execute<TResult>(Expression expr)

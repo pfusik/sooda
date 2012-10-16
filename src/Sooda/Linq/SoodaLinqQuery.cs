@@ -29,6 +29,8 @@
 
 #if DOTNET35
 
+using System;
+
 using Sooda;
 using Sooda.QL;
 using Sooda.Schema;
@@ -41,6 +43,7 @@ namespace Sooda.Linq
         public readonly ClassInfo ClassInfo;
         public readonly SoodaSnapshotOptions Options;
         public SoqlBooleanExpression WhereClause = null;
+        public SoodaOrderBy OrderByClause = null;
         public int TopCount = -1;
 
         public SoodaLinqQuery(SoodaTransaction transaction, ClassInfo classInfo, SoodaSnapshotOptions options)
@@ -55,7 +58,28 @@ namespace Sooda.Linq
             if (this.TopCount >= 0)
                 throw new NotSupportedException("Take().Where() not supported");
             return new SoodaLinqQuery(this.Transaction, this.ClassInfo, this.Options) {
-                WhereClause = this.WhereClause == null ? additionalWhere : this.WhereClause.And(additionalWhere)
+                WhereClause = this.WhereClause == null ? additionalWhere : this.WhereClause.And(additionalWhere),
+                OrderByClause = this.OrderByClause
+            };
+        }
+
+        public SoodaLinqQuery OrderBy(SoqlExpression expression, SortOrder sortOrder)
+        {
+            if (this.TopCount >= 0)
+                throw new NotSupportedException("Take().OrderBy() not supported");
+            return new SoodaLinqQuery(this.Transaction, this.ClassInfo, this.Options) {
+                WhereClause = this.WhereClause,
+                OrderByClause = new SoodaOrderBy(expression, sortOrder, this.OrderByClause)
+            };
+        }
+
+        public SoodaLinqQuery ThenBy(SoqlExpression expression, SortOrder sortOrder)
+        {
+            if (this.TopCount >= 0)
+                throw new NotSupportedException("Take().ThenBy() not supported");
+            return new SoodaLinqQuery(this.Transaction, this.ClassInfo, this.Options) {
+                WhereClause = this.WhereClause,
+                OrderByClause = new SoodaOrderBy(this.OrderByClause, expression, sortOrder)
             };
         }
 
@@ -66,6 +90,8 @@ namespace Sooda.Linq
             if (this.TopCount >= 0 && this.TopCount <= count)
                 return this;
             return new SoodaLinqQuery(this.Transaction, this.ClassInfo, this.Options) {
+                WhereClause = this.WhereClause,
+                OrderByClause = this.OrderByClause,
                 TopCount = count
             };
         }
