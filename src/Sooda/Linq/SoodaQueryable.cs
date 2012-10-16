@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010 Piotr Fusik <piotr@fusik.info>
+// Copyright (c) 2010-2012 Piotr Fusik <piotr@fusik.info>
 //
 // All rights reserved.
 //
@@ -38,38 +38,41 @@ using System.Linq.Expressions;
 using System.Reflection;
 
 using Sooda;
-using Sooda.QL;
 using Sooda.ObjectMapper;
+using Sooda.QL;
 
 namespace Sooda.Linq
 {
     public class SoodaQueryable<T> : IQueryable<T>, IQueryProvider
     {
         readonly Expression _expr;
+        readonly SoodaLinqQuery _query;
 
-        protected SoodaQueryable()
+        public SoodaQueryable(SoodaTransaction transaction, Sooda.Schema.ClassInfo classInfo, SoodaSnapshotOptions options)
         {
             _expr = Expression.Constant(this);
+            _query = new SoodaLinqQuery(transaction, classInfo, options);
         }
 
         SoodaQueryable(Expression expr)
         {
             _expr = expr;
+            _query = null;
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            IEnumerable ie = (IEnumerable) Execute(this.Expression);
+            IEnumerable ie = Execute<IEnumerable>(this.Expression);
             return ie.GetEnumerator();
         }
 
-        public IEnumerator<T> GetEnumerator()
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
-            IEnumerable ie = (IEnumerable) Execute(this.Expression);
-            return ie.OfType<T>().GetEnumerator();
+            IEnumerable ie = Execute<IEnumerable>(this.Expression);
+            return ie.Cast<T>().GetEnumerator();
         }
 
-        public Type ElementType
+        Type IQueryable.ElementType
         {
             get
             {
@@ -85,7 +88,7 @@ namespace Sooda.Linq
             }
         }
 
-        public IQueryProvider Provider
+        IQueryProvider IQueryable.Provider
         {
             get
             {
@@ -93,65 +96,34 @@ namespace Sooda.Linq
             }
         }
 
-        public IQueryable CreateQuery(Expression expr)
+        IQueryable IQueryProvider.CreateQuery(Expression expr)
         {
             throw new NotImplementedException(); // TODO
         }
 
-        public IQueryable<TElement> CreateQuery<TElement>(Expression expr)
+        IQueryable<TElement> IQueryProvider.CreateQuery<TElement>(Expression expr)
         {
             return new SoodaQueryable<TElement>(expr);
         }
 
-        static SoodaQueryableContext<T> GetQueryableContext(MethodCallExpression mc)
-        {
-            if (mc.Arguments.Count == 2)
-            {
-                ConstantExpression expr = (ConstantExpression) mc.Arguments[0];
-                return (SoodaQueryableContext<T>) expr.Value;
-            }
-            throw new NotSupportedException();
-        }
-
-        static LambdaExpression GetLambdaWithParamCheck(MethodCallExpression mc)
-        {
-            if (mc.Arguments.Count == 2)
-            {
-                Expression expr = mc.Arguments[1];
-                while (expr.NodeType == ExpressionType.Quote)
-                    expr = ((UnaryExpression) expr).Operand;
-                LambdaExpression lambda = (LambdaExpression) expr;
-                if (lambda.Parameters.Count == 1)
-                    return lambda;
-            }
-            throw new NotSupportedException();
-        }
-
         static SoqlBooleanExpression TranslateAnd(BinaryExpression expr)
         {
-            SoqlBooleanExpression left = TranslateBoolean(expr.Left);
-            SoqlBooleanExpression right = TranslateBoolean(expr.Right);
-            return new SoqlBooleanAndExpression(left, right);
+            return TranslateBoolean(expr.Left).And(TranslateBoolean(expr.Right));
         }
 
         static SoqlBooleanExpression TranslateOr(BinaryExpression expr)
         {
-            SoqlBooleanExpression left = TranslateBoolean(expr.Left);
-            SoqlBooleanExpression right = TranslateBoolean(expr.Right);
-            return new SoqlBooleanOrExpression(left, right);
+            return TranslateBoolean(expr.Left).Or(TranslateBoolean(expr.Right));
         }
 
         static SoqlBooleanExpression TranslateNot(UnaryExpression expr)
         {
-            SoqlBooleanExpression operand = TranslateBoolean(expr.Operand);
-            return new SoqlBooleanNegationExpression(operand);
+            return new SoqlBooleanNegationExpression(TranslateBoolean(expr.Operand));
         }
 
         static SoqlBinaryExpression TranslateBinary(BinaryExpression expr, SoqlBinaryOperator op)
         {
-            SoqlExpression left = TranslateExpression(expr.Left);
-            SoqlExpression right = TranslateExpression(expr.Right);
-            return new SoqlBinaryExpression(left, right, op);
+            return new SoqlBinaryExpression(TranslateExpression(expr.Left), TranslateExpression(expr.Right), op);
         }
 
         static SoqlBooleanExpression TranslateRelational(BinaryExpression expr, SoqlRelationalOperator op)
@@ -179,22 +151,22 @@ namespace Sooda.Linq
         {
             string name = expr.Member.Name;
             if (expr.Expression.NodeType == ExpressionType.Parameter)
-                return new SoqlPathExpression(name);
+                return new SoqlPathExpression(name); // FIXME: different parameters
             SoqlExpression parent = TranslateExpression(expr.Expression);
             SoqlPathExpression parentPath = parent as SoqlPathExpression;
             if (parentPath != null)
             {
-                Type t = expr.Member.ReflectedType;
-                if (typeof(SoodaObject).IsAssignableFrom(t))
-                    return new SoqlPathExpression(parentPath, name);
-                if (typeof(INullable).IsAssignableFrom(t))
+                Type t = expr.Member.DeclaringType;
+                if (expr.Member.MemberType == MemberTypes.Property)
                 {
-                    if (name == "Value")
-                        return TranslateExpression(expr.Expression);
-                    if (name == "IsNull")
+                    if (t.IsSubclassOf(typeof(SoodaObject)))
+                        return new SoqlPathExpression(parentPath, name);
+                    if (typeof(INullable).IsAssignableFrom(t))
                     {
-                        SoqlExpression operand = TranslateExpression(expr.Expression);
-                        return new SoqlBooleanIsNullExpression(operand, false);
+                        if (name == "Value")
+                            return parent;
+                        if (name == "IsNull")
+                            return new SoqlBooleanIsNullExpression(parent, false);
                     }
                 }
                 throw new NotSupportedException(string.Format("{0}.{1}", t.FullName, name));
@@ -273,23 +245,46 @@ namespace Sooda.Linq
             }
         }
 
+        SoodaLinqQuery TranslateQuery(Expression expr)
+        {
+            switch (expr.NodeType)
+            {
+            case ExpressionType.Constant:
+                var queryable = (SoodaQueryable<T>) ((ConstantExpression) expr).Value;
+                return queryable._query;
+            case ExpressionType.Call:
+                MethodCallExpression mc = (MethodCallExpression) expr;
+                if (mc.Method.DeclaringType != typeof(Queryable))
+                    throw new NotSupportedException(mc.Method.DeclaringType.FullName);
+                switch (mc.Method.Name)
+                {
+                case "Take":
+                    int count = (int) ((ConstantExpression) mc.Arguments[1]).Value;
+                    return TranslateQuery(mc.Arguments[0]).Take(count);
+                case "Where":
+                    if (mc.Arguments.Count == 2)
+                    {
+                        LambdaExpression lambda = (LambdaExpression) ((UnaryExpression) mc.Arguments[1]).Operand;
+                        if (lambda.Parameters.Count == 1)
+                        {
+                            SoqlBooleanExpression where = (SoqlBooleanExpression) TranslateBoolean(lambda.Body).Simplify();
+                            return TranslateQuery(mc.Arguments[0]).Where(where);
+                        }
+                    }
+                    break;
+                default:
+                    break;
+                }
+                throw new NotSupportedException(mc.Method.Name);
+            default:
+                throw new NotSupportedException(expr.NodeType.ToString());
+            }
+        }
+
         public object Execute(Expression expr)
         {
-            MethodCallExpression mc = (MethodCallExpression) expr;
-            if (mc.Method.DeclaringType != typeof(Queryable))
-                throw new NotSupportedException(mc.Method.DeclaringType.FullName);
-            switch (mc.Method.Name)
-            {
-            case "Where":
-                SoodaQueryableContext<T> context = GetQueryableContext(mc);
-                LambdaExpression lambda = GetLambdaWithParamCheck(mc);
-                SoqlBooleanExpression filter = (SoqlBooleanExpression) TranslateBoolean(lambda.Body).Simplify();
-                //new SoqlPrettyPrinter(Console.Out).PrintExpression(filter);
-                return new SoodaObjectListSnapshot(context.Transaction, new SoodaWhereClause(filter), SoodaOrderBy.Unsorted, -1, context.Options, context.ClassInfo);
-            default:
-                break;
-            }
-            throw new NotSupportedException(mc.Method.Name);
+            SoodaLinqQuery query = TranslateQuery(expr);
+            return new SoodaObjectListSnapshot(query.Transaction, new SoodaWhereClause(query.WhereClause), SoodaOrderBy.Unsorted, query.TopCount, query.Options, query.ClassInfo);
         }
 
         public TResult Execute<TResult>(Expression expr)

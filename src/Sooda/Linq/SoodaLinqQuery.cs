@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010 Piotr Fusik <piotr@fusik.info>
+// Copyright (c) 2010-2012 Piotr Fusik <piotr@fusik.info>
 //
 // All rights reserved.
 //
@@ -29,24 +29,45 @@
 
 #if DOTNET35
 
-using System.Linq.Expressions;
-
 using Sooda;
+using Sooda.QL;
 using Sooda.Schema;
 
 namespace Sooda.Linq
 {
-    public class SoodaQueryableContext<T> : SoodaQueryable<T>
+    class SoodaLinqQuery
     {
         public readonly SoodaTransaction Transaction;
         public readonly ClassInfo ClassInfo;
         public readonly SoodaSnapshotOptions Options;
+        public SoqlBooleanExpression WhereClause = null;
+        public int TopCount = -1;
 
-        public SoodaQueryableContext(SoodaTransaction tran, ClassInfo classInfo, SoodaSnapshotOptions options)
+        public SoodaLinqQuery(SoodaTransaction transaction, ClassInfo classInfo, SoodaSnapshotOptions options)
         {
-            this.Transaction = tran;
+            this.Transaction = transaction;
             this.ClassInfo = classInfo;
             this.Options = options;
+        }
+
+        public SoodaLinqQuery Where(SoqlBooleanExpression additionalWhere)
+        {
+            if (this.TopCount >= 0)
+                throw new NotSupportedException("Take().Where() not supported");
+            return new SoodaLinqQuery(this.Transaction, this.ClassInfo, this.Options) {
+                WhereClause = this.WhereClause == null ? additionalWhere : this.WhereClause.And(additionalWhere)
+            };
+        }
+
+        public SoodaLinqQuery Take(int count)
+        {
+            if (count < 0)
+                count = 0;
+            if (this.TopCount >= 0 && this.TopCount <= count)
+                return this;
+            return new SoodaLinqQuery(this.Transaction, this.ClassInfo, this.Options) {
+                TopCount = count
+            };
         }
     }
 }
