@@ -193,16 +193,7 @@ namespace Sooda.Linq
             if (cwg != null && cwg.IsGenericType && cwg.GetGenericTypeDefinition() == typeof(SoodaObjectCollectionWrapperGeneric<>) && mc.Method.Name == "Contains")
             {
                 SoqlPathExpression haystack = (SoqlPathExpression) TranslateExpression(mc.Object);
-                SoqlExpression needle;
-                if (mc.Arguments[0].NodeType == ExpressionType.Parameter)
-                {
-                    Sooda.Schema.FieldInfo[] pks = _classInfo.GetPrimaryKeyFields();
-                    if (pks.Length != 1)
-                        throw new NotSupportedException(mc.Method.DeclaringType + ".Contains(composite_primary_key)");
-                    needle = new SoqlPathExpression(pks[0].Name);
-                }
-                else
-                    needle = TranslateExpression(mc.Arguments[0]);
+                SoqlExpression needle = TranslateExpression(mc.Arguments[0]);
                 return new SoqlContainsExpression(haystack.Left, haystack.PropertyName, needle);
             }
 
@@ -215,6 +206,11 @@ namespace Sooda.Linq
             {
             case ExpressionType.Constant:
                 return new SoqlLiteralExpression(((ConstantExpression) expr).Value);
+            case ExpressionType.Parameter:
+                Sooda.Schema.FieldInfo[] pks = _classInfo.GetPrimaryKeyFields();
+                if (pks.Length != 1)
+                    throw new NotSupportedException("composite primary key");
+                return new SoqlPathExpression(pks[0].Name);
             case ExpressionType.MemberAccess:
                 return TranslateMember((MemberExpression) expr);
             case ExpressionType.Add:
