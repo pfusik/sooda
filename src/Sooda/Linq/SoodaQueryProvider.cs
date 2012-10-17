@@ -78,11 +78,6 @@ namespace Sooda.Linq
             return TranslateBoolean(expr.Left).Or(TranslateBoolean(expr.Right));
         }
 
-        static SoqlBooleanExpression TranslateNot(UnaryExpression expr)
-        {
-            return new SoqlBooleanNegationExpression(TranslateBoolean(expr.Operand));
-        }
-
         static SoqlBinaryExpression TranslateBinary(BinaryExpression expr, SoqlBinaryOperator op)
         {
             return new SoqlBinaryExpression(TranslateExpression(expr.Left), TranslateExpression(expr.Right), op);
@@ -162,7 +157,7 @@ namespace Sooda.Linq
             case ExpressionType.OrElse:
                 return TranslateOr((BinaryExpression) expr);
             case ExpressionType.Not:
-                return TranslateNot((UnaryExpression) expr);
+                return new SoqlBooleanNegationExpression(TranslateBoolean(((UnaryExpression) expr).Operand));
             case ExpressionType.Equal:
                 return TranslateRelational((BinaryExpression) expr, SoqlRelationalOperator.Equal);
             case ExpressionType.NotEqual:
@@ -204,6 +199,8 @@ namespace Sooda.Linq
                 return TranslateBinary((BinaryExpression) expr, SoqlBinaryOperator.Div);
             case ExpressionType.Modulo:
                 return TranslateBinary((BinaryExpression) expr, SoqlBinaryOperator.Mod);
+            case ExpressionType.Negate:
+                return new SoqlUnaryNegationExpression(TranslateExpression(((UnaryExpression) expr).Operand));
             default:
                 return TranslateBoolean(expr);
             }
