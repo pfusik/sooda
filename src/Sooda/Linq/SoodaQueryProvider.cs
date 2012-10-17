@@ -68,22 +68,22 @@ namespace Sooda.Linq
             return new SoodaQueryable<TElement>(this, expr);
         }
 
-        static SoqlBooleanExpression TranslateAnd(BinaryExpression expr)
+        SoqlBooleanExpression TranslateAnd(BinaryExpression expr)
         {
             return TranslateBoolean(expr.Left).And(TranslateBoolean(expr.Right));
         }
 
-        static SoqlBooleanExpression TranslateOr(BinaryExpression expr)
+        SoqlBooleanExpression TranslateOr(BinaryExpression expr)
         {
             return TranslateBoolean(expr.Left).Or(TranslateBoolean(expr.Right));
         }
 
-        static SoqlBinaryExpression TranslateBinary(BinaryExpression expr, SoqlBinaryOperator op)
+        SoqlBinaryExpression TranslateBinary(BinaryExpression expr, SoqlBinaryOperator op)
         {
             return new SoqlBinaryExpression(TranslateExpression(expr.Left), TranslateExpression(expr.Right), op);
         }
 
-        static SoqlBooleanExpression TranslateRelational(BinaryExpression expr, SoqlRelationalOperator op)
+        SoqlBooleanExpression TranslateRelational(BinaryExpression expr, SoqlRelationalOperator op)
         {
             SoqlExpression left = TranslateExpression(expr.Left).Simplify();
             SoqlExpression right = TranslateExpression(expr.Right).Simplify();
@@ -104,7 +104,7 @@ namespace Sooda.Linq
             return new SoqlBooleanRelationalExpression(left, right, op);
         }
 
-        static SoqlExpression TranslateMember(MemberExpression expr)
+        SoqlExpression TranslateMember(MemberExpression expr)
         {
             string name = expr.Member.Name;
             if (expr.Expression.NodeType == ExpressionType.Parameter)
@@ -160,7 +160,28 @@ namespace Sooda.Linq
             throw new NotSupportedException(expr.Expression.ToString());
         }
 
-        static SoqlBooleanExpression TranslateBoolean(Expression expr)
+        SoqlBooleanExpression TranslateCall(MethodCallExpression mc)
+        {
+            Type cwg = mc.Method.DeclaringType.BaseType;
+            if (cwg != null && cwg.IsGenericType && cwg.GetGenericTypeDefinition() == typeof(SoodaObjectCollectionWrapperGeneric<>) && mc.Method.Name == "Contains")
+            {
+                SoqlPathExpression haystack = (SoqlPathExpression) TranslateExpression(mc.Object);
+                SoqlExpression needle;
+                if (mc.Arguments[0].NodeType == ExpressionType.Parameter)
+                {
+                    Sooda.Schema.FieldInfo[] pks = _classInfo.GetPrimaryKeyFields();
+                    if (pks.Length != 1)
+                        throw new NotSupportedException(mc.Method.DeclaringType + ".Contains(composite_primary_key)");
+                    needle = new SoqlPathExpression(pks[0].Name);
+                }
+                else
+                    needle = TranslateExpression(mc.Arguments[0]);
+                return new SoqlContainsExpression(haystack.Left, haystack.PropertyName, needle);
+            }
+            throw new NotSupportedException(string.Format("{0}.{1}", mc.Method.DeclaringType.FullName, mc.Method.Name));
+        }
+
+        SoqlBooleanExpression TranslateBoolean(Expression expr)
         {
             switch (expr.NodeType)
             {
@@ -190,12 +211,14 @@ namespace Sooda.Linq
                 if (qlBool != null)
                     return qlBool;
                 return new SoqlBooleanRelationalExpression(ql, SoqlBooleanLiteralExpression.True, SoqlRelationalOperator.Equal);
+            case ExpressionType.Call:
+                return TranslateCall((MethodCallExpression) expr);
             default:
                 throw new NotSupportedException(expr.NodeType.ToString());
             }
         }
 
-        static SoqlExpression TranslateExpression(Expression expr)
+        SoqlExpression TranslateExpression(Expression expr)
         {
             switch (expr.NodeType)
             {
