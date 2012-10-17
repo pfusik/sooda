@@ -109,11 +109,23 @@ namespace Sooda.Linq
             string name = expr.Member.Name;
             if (expr.Expression.NodeType == ExpressionType.Parameter)
                 return new SoqlPathExpression(name); // FIXME: different parameters
+            Type t = expr.Member.DeclaringType;
+
+            if (t == typeof(MemberInfo) && name == "Name" && expr.Expression.NodeType == ExpressionType.Call)
+            {
+                MethodCallExpression mc = (MethodCallExpression) expr.Expression;
+                if (mc.Method.DeclaringType == typeof(object) && mc.Method.Name == "GetType")
+                {
+                    if (mc.Object.NodeType == ExpressionType.Parameter)
+                        return new SoqlSoodaClassExpression();
+                    return new SoqlSoodaClassExpression((SoqlPathExpression) TranslateExpression(mc.Object));
+                }
+            }
+
             SoqlExpression parent = TranslateExpression(expr.Expression);
             SoqlPathExpression parentPath = parent as SoqlPathExpression;
             if (parentPath != null)
             {
-                Type t = expr.Member.DeclaringType;
                 if (expr.Member.MemberType == MemberTypes.Property)
                 {
                     if (t.IsSubclassOf(typeof(SoodaObject)))
@@ -130,6 +142,7 @@ namespace Sooda.Linq
                 }
                 throw new NotSupportedException(string.Format("{0}.{1}", t.FullName, name));
             }
+
             // partial evaluation
             SoqlLiteralExpression parentConst = parent as SoqlLiteralExpression;
             if (parentConst != null)
@@ -143,6 +156,7 @@ namespace Sooda.Linq
                     return new SoqlLiteralExpression(pi.GetValue(obj, null));
                 throw new NotSupportedException(expr.Member.MemberType.ToString());
             }
+
             throw new NotSupportedException(expr.Expression.ToString());
         }
 
