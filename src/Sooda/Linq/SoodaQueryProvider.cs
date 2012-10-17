@@ -76,18 +76,62 @@ namespace Sooda.Linq
             {
             case ExpressionType.Constant:
                 return true;
+            case ExpressionType.Parameter:
+                return false;
+            case ExpressionType.Negate:
+            case ExpressionType.NegateChecked:
+            case ExpressionType.Not:
+            case ExpressionType.Convert:
+            case ExpressionType.ConvertChecked:
+            case ExpressionType.ArrayLength:
+            case ExpressionType.Quote:
+            case ExpressionType.TypeAs:
+                return IsConstant(((UnaryExpression) expr).Operand);
             case ExpressionType.Add:
+            case ExpressionType.AddChecked:
             case ExpressionType.Subtract:
+            case ExpressionType.SubtractChecked:
             case ExpressionType.Multiply:
+            case ExpressionType.MultiplyChecked:
             case ExpressionType.Divide:
             case ExpressionType.Modulo:
+            case ExpressionType.And:
+            case ExpressionType.AndAlso:
+            case ExpressionType.Or:
+            case ExpressionType.OrElse:
+            case ExpressionType.ExclusiveOr:
+            case ExpressionType.LessThan:
+            case ExpressionType.LessThanOrEqual:
+            case ExpressionType.GreaterThan:
+            case ExpressionType.GreaterThanOrEqual:
+            case ExpressionType.Equal:
+            case ExpressionType.NotEqual:
+            case ExpressionType.Coalesce:
+            case ExpressionType.ArrayIndex:
+            case ExpressionType.LeftShift:
+            case ExpressionType.RightShift:
                 BinaryExpression be = (BinaryExpression) expr;
                 return IsConstant(be.Left) && IsConstant(be.Right);
+            case ExpressionType.Conditional:
+                ConditionalExpression ce = (ConditionalExpression) expr;
+                return IsConstant(ce.Test) && IsConstant(ce.IfTrue) && IsConstant(ce.IfFalse);
             case ExpressionType.MemberAccess:
                 return IsConstant(((MemberExpression) expr).Expression);
             case ExpressionType.Call:
                 MethodCallExpression mc = (MethodCallExpression) expr;
-                return IsConstant(mc.Object) && mc.Arguments.All(arg => IsConstant(arg));
+                return IsConstant(mc.Object) && mc.Arguments.All(IsConstant);
+            case ExpressionType.Lambda:
+                return IsConstant(((LambdaExpression) expr).Body);
+            case ExpressionType.New:
+                return ((NewExpression) expr).Arguments.All(IsConstant);
+            case ExpressionType.NewArrayBounds:
+            case ExpressionType.NewArrayInit:
+                return ((NewArrayExpression) expr).Expressions.All(IsConstant);
+            case ExpressionType.Invoke:
+                InvocationExpression ie = (InvocationExpression) expr;
+                return IsConstant(ie.Expression) && ie.Arguments.All(IsConstant);
+            case ExpressionType.MemberInit:
+            case ExpressionType.ListInit:
             default:
                 throw new NotSupportedException(expr.NodeType.ToString());
             }
@@ -193,7 +237,16 @@ namespace Sooda.Linq
             if (cwg != null && cwg.IsGenericType && cwg.GetGenericTypeDefinition() == typeof(SoodaObjectCollectionWrapperGeneric<>) && mc.Method.Name == "Contains")
             {
                 SoqlPathExpression haystack = (SoqlPathExpression) TranslateExpression(mc.Object);
-                SoqlExpression needle = TranslateExpression(mc.Arguments[0]);
+                SoqlExpression needle;
+                if (mc.Arguments[0].NodeType == ExpressionType.Parameter)
+                {
+                    Sooda.Schema.FieldInfo[] pks = _classInfo.GetPrimaryKeyFields();
+                    if (pks.Length != 1)
+                        throw new NotSupportedException(mc.Method.DeclaringType + ".Contains(composite_primary_key)");
+                    needle = new SoqlPathExpression(pks[0].Name);
+                }
+                else
+                    needle = TranslateExpression(mc.Arguments[0]);
                 return new SoqlContainsExpression(haystack.Left, haystack.PropertyName, needle);
             }
 
@@ -206,11 +259,6 @@ namespace Sooda.Linq
             {
             case ExpressionType.Constant:
                 return new SoqlLiteralExpression(((ConstantExpression) expr).Value);
-            case ExpressionType.Parameter:
-                Sooda.Schema.FieldInfo[] pks = _classInfo.GetPrimaryKeyFields();
-                if (pks.Length != 1)
-                    throw new NotSupportedException("composite primary key");
-                return new SoqlPathExpression(pks[0].Name);
             case ExpressionType.MemberAccess:
                 return TranslateMember((MemberExpression) expr);
             case ExpressionType.Add:
