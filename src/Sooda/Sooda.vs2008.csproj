@@ -384,7 +384,7 @@
     <Compile Include="QL\SoqlContainsExpression.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlCountPathExpression.cs">
+    <Compile Include="QL\SoqlCountExpression.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="QL\SoqlException.cs">

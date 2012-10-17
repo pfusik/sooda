@@ -154,7 +154,7 @@
         <File RelPath='QL\SoqlBooleanOrExpression.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='QL\SoqlBooleanRelationalExpression.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='QL\SoqlContainsExpression.cs' SubType='Code' BuildAction='Compile' />
-        <File RelPath='QL\SoqlCountPathExpression.cs' SubType='Code' BuildAction='Compile' />
+        <File RelPath='QL\SoqlCountExpression.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='QL\SoqlException.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='QL\SoqlExistsExpression.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='QL\SoqlExpression.cs' SubType='Code' BuildAction='Compile' />
