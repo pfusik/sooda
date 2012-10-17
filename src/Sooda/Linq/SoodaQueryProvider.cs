@@ -68,30 +68,26 @@ namespace Sooda.Linq
             return new SoodaQueryable<TElement>(this, expr);
         }
 
-        static object Evaluate(Expression expr)
+        static bool IsConstant(Expression expr)
         {
-            object obj;
+            if (expr == null)
+                return true;
             switch (expr.NodeType)
             {
             case ExpressionType.Constant:
-                return ((ConstantExpression) expr).Value;
+                return true;
+            case ExpressionType.Add:
+            case ExpressionType.Subtract:
+            case ExpressionType.Multiply:
+            case ExpressionType.Divide:
+            case ExpressionType.Modulo:
+                BinaryExpression be = (BinaryExpression) expr;
+                return IsConstant(be.Left) && IsConstant(be.Right);
             case ExpressionType.MemberAccess:
-                MemberExpression me = (MemberExpression) expr;
-                obj = Evaluate(me.Expression);
-                switch (me.Member.MemberType)
-                {
-                case MemberTypes.Field:
-                    return ((FieldInfo) me.Member).GetValue(obj);
-                case MemberTypes.Property:
-                    return ((PropertyInfo) me.Member).GetValue(obj, null); // TODO: args
-                default:
-                    throw new NotSupportedException(me.Member.MemberType.ToString());
-                }
+                return IsConstant(((MemberExpression) expr).Expression);
             case ExpressionType.Call:
                 MethodCallExpression mc = (MethodCallExpression) expr;
-                obj = mc.Object == null ? null : Evaluate(mc.Object);
-                object[] args = mc.Arguments.Select(arg => Evaluate(arg)).ToArray();
-                return mc.Method.Invoke(obj, args);
+                return IsConstant(mc.Object) && mc.Arguments.All(arg => IsConstant(arg));
             default:
                 throw new NotSupportedException(expr.NodeType.ToString());
             }
@@ -99,14 +95,9 @@ namespace Sooda.Linq
 
         static SoqlLiteralExpression FoldConstant(Expression expr, Func<string> error)
         {
-            try
-            {
-                return new SoqlLiteralExpression(Evaluate(expr));
-            }
-            catch (NotSupportedException)
-            {
-                throw new NotSupportedException(error());
-            }
+            if (IsConstant(expr))
+                return new SoqlLiteralExpression(Expression.Lambda(expr).Compile().DynamicInvoke(null));
+            throw new NotSupportedException(error());
         }
 
         SoqlBooleanExpression TranslateAnd(BinaryExpression expr)
