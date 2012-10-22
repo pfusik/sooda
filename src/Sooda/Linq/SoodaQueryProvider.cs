@@ -74,66 +74,66 @@ namespace Sooda.Linq
                 return true;
             switch (expr.NodeType)
             {
-            case ExpressionType.Constant:
-                return true;
-            case ExpressionType.Parameter:
-                return false;
-            case ExpressionType.Negate:
-            case ExpressionType.NegateChecked:
-            case ExpressionType.Not:
-            case ExpressionType.Convert:
-            case ExpressionType.ConvertChecked:
-            case ExpressionType.ArrayLength:
-            case ExpressionType.Quote:
-            case ExpressionType.TypeAs:
-                return IsConstant(((UnaryExpression) expr).Operand);
-            case ExpressionType.Add:
-            case ExpressionType.AddChecked:
-            case ExpressionType.Subtract:
-            case ExpressionType.SubtractChecked:
-            case ExpressionType.Multiply:
-            case ExpressionType.MultiplyChecked:
-            case ExpressionType.Divide:
-            case ExpressionType.Modulo:
-            case ExpressionType.And:
-            case ExpressionType.AndAlso:
-            case ExpressionType.Or:
-            case ExpressionType.OrElse:
-            case ExpressionType.ExclusiveOr:
-            case ExpressionType.LessThan:
-            case ExpressionType.LessThanOrEqual:
-            case ExpressionType.GreaterThan:
-            case ExpressionType.GreaterThanOrEqual:
-            case ExpressionType.Equal:
-            case ExpressionType.NotEqual:
-            case ExpressionType.Coalesce:
-            case ExpressionType.ArrayIndex:
-            case ExpressionType.LeftShift:
-            case ExpressionType.RightShift:
-                BinaryExpression be = (BinaryExpression) expr;
-                return IsConstant(be.Left) && IsConstant(be.Right);
-            case ExpressionType.Conditional:
-                ConditionalExpression ce = (ConditionalExpression) expr;
-                return IsConstant(ce.Test) && IsConstant(ce.IfTrue) && IsConstant(ce.IfFalse);
-            case ExpressionType.MemberAccess:
-                return IsConstant(((MemberExpression) expr).Expression);
-            case ExpressionType.Call:
-                MethodCallExpression mc = (MethodCallExpression) expr;
-                return IsConstant(mc.Object) && mc.Arguments.All(IsConstant);
-            case ExpressionType.Lambda:
-                return IsConstant(((LambdaExpression) expr).Body);
-            case ExpressionType.New:
-                return ((NewExpression) expr).Arguments.All(IsConstant);
-            case ExpressionType.NewArrayBounds:
-            case ExpressionType.NewArrayInit:
-                return ((NewArrayExpression) expr).Expressions.All(IsConstant);
-            case ExpressionType.Invoke:
-                InvocationExpression ie = (InvocationExpression) expr;
-                return IsConstant(ie.Expression) && ie.Arguments.All(IsConstant);
-            case ExpressionType.MemberInit:
-            case ExpressionType.ListInit:
-            default:
-                throw new NotSupportedException(expr.NodeType.ToString());
+                case ExpressionType.Constant:
+                    return true;
+                case ExpressionType.Parameter:
+                    return false;
+                case ExpressionType.Negate:
+                case ExpressionType.NegateChecked:
+                case ExpressionType.Not:
+                case ExpressionType.Convert:
+                case ExpressionType.ConvertChecked:
+                case ExpressionType.ArrayLength:
+                case ExpressionType.Quote:
+                case ExpressionType.TypeAs:
+                    return IsConstant(((UnaryExpression) expr).Operand);
+                case ExpressionType.Add:
+                case ExpressionType.AddChecked:
+                case ExpressionType.Subtract:
+                case ExpressionType.SubtractChecked:
+                case ExpressionType.Multiply:
+                case ExpressionType.MultiplyChecked:
+                case ExpressionType.Divide:
+                case ExpressionType.Modulo:
+                case ExpressionType.And:
+                case ExpressionType.AndAlso:
+                case ExpressionType.Or:
+                case ExpressionType.OrElse:
+                case ExpressionType.ExclusiveOr:
+                case ExpressionType.LessThan:
+                case ExpressionType.LessThanOrEqual:
+                case ExpressionType.GreaterThan:
+                case ExpressionType.GreaterThanOrEqual:
+                case ExpressionType.Equal:
+                case ExpressionType.NotEqual:
+                case ExpressionType.Coalesce:
+                case ExpressionType.ArrayIndex:
+                case ExpressionType.LeftShift:
+                case ExpressionType.RightShift:
+                    BinaryExpression be = (BinaryExpression) expr;
+                    return IsConstant(be.Left) && IsConstant(be.Right);
+                case ExpressionType.Conditional:
+                    ConditionalExpression ce = (ConditionalExpression) expr;
+                    return IsConstant(ce.Test) && IsConstant(ce.IfTrue) && IsConstant(ce.IfFalse);
+                case ExpressionType.MemberAccess:
+                    return IsConstant(((MemberExpression) expr).Expression);
+                case ExpressionType.Call:
+                    MethodCallExpression mc = (MethodCallExpression) expr;
+                    return IsConstant(mc.Object) && mc.Arguments.All(IsConstant);
+                case ExpressionType.Lambda:
+                    return IsConstant(((LambdaExpression) expr).Body);
+                case ExpressionType.New:
+                    return ((NewExpression) expr).Arguments.All(IsConstant);
+                case ExpressionType.NewArrayBounds:
+                case ExpressionType.NewArrayInit:
+                    return ((NewArrayExpression) expr).Expressions.All(IsConstant);
+                case ExpressionType.Invoke:
+                    InvocationExpression ie = (InvocationExpression) expr;
+                    return IsConstant(ie.Expression) && ie.Arguments.All(IsConstant);
+                case ExpressionType.MemberInit:
+                case ExpressionType.ListInit:
+                default:
+                    throw new NotSupportedException(expr.NodeType.ToString());
             }
         }
 
@@ -169,12 +169,12 @@ namespace Sooda.Linq
             {
                 switch (op)
                 {
-                case SoqlRelationalOperator.Equal:
-                    return new SoqlBooleanIsNullExpression(left, false);
-                case SoqlRelationalOperator.NotEqual:
-                    return new SoqlBooleanIsNullExpression(left, true);
-                default:
-                    throw new NotSupportedException(op + " NULL");
+                    case SoqlRelationalOperator.Equal:
+                        return new SoqlBooleanIsNullExpression(left, false);
+                    case SoqlRelationalOperator.NotEqual:
+                        return new SoqlBooleanIsNullExpression(left, true);
+                    default:
+                        throw new NotSupportedException(op + " NULL");
                 }
             }
             return new SoqlBooleanRelationalExpression(left, right, op);
@@ -192,7 +192,7 @@ namespace Sooda.Linq
             if (t == typeof(MemberInfo) && name == "Name" && expr.Expression.NodeType == ExpressionType.Call)
             {
                 MethodCallExpression mc = (MethodCallExpression) expr.Expression;
-                if (mc.Method.DeclaringType == typeof(object) && mc.Method.Name == "GetType")
+                if (SoodaLinqMethodUtil.Get(mc.Method) == SoodaLinqMethod.GetType)
                 {
                     if (mc.Object.NodeType == ExpressionType.Parameter)
                         return new SoqlSoodaClassExpression();
@@ -232,8 +232,10 @@ namespace Sooda.Linq
 
         SoqlExpression TranslateCall(MethodCallExpression mc)
         {
+            Type t = mc.Method.DeclaringType;
+
             // x.SoodaCollection.Contains(expr) -> SoqlContainsExpression
-            Type cwg = mc.Method.DeclaringType.BaseType;
+            Type cwg = t.BaseType;
             if (cwg != null && cwg.IsGenericType && cwg.GetGenericTypeDefinition() == typeof(SoodaObjectCollectionWrapperGeneric<>) && mc.Method.Name == "Contains")
             {
                 SoqlPathExpression haystack = (SoqlPathExpression) TranslateExpression(mc.Object);
@@ -242,7 +244,7 @@ namespace Sooda.Linq
                 {
                     Sooda.Schema.FieldInfo[] pks = _classInfo.GetPrimaryKeyFields();
                     if (pks.Length != 1)
-                        throw new NotSupportedException(mc.Method.DeclaringType + ".Contains(composite_primary_key)");
+                        throw new NotSupportedException(t.FullName + ".Contains(composite_primary_key)");
                     needle = new SoqlPathExpression(pks[0].Name);
                 }
                 else
@@ -250,53 +252,53 @@ namespace Sooda.Linq
                 return new SoqlContainsExpression(haystack.Left, haystack.PropertyName, needle);
             }
 
-            return FoldConstant(mc, () => mc.Method.DeclaringType.FullName + "." + mc.Method.Name);
+            return FoldConstant(mc, () => t.FullName + "." + mc.Method.Name);
         }
 
         SoqlExpression TranslateExpression(Expression expr)
         {
             switch (expr.NodeType)
             {
-            case ExpressionType.Constant:
-                return new SoqlLiteralExpression(((ConstantExpression) expr).Value);
-            case ExpressionType.MemberAccess:
-                return TranslateMember((MemberExpression) expr);
-            case ExpressionType.Add:
-                return TranslateBinary((BinaryExpression) expr, SoqlBinaryOperator.Add);
-            case ExpressionType.Subtract:
-                return TranslateBinary((BinaryExpression) expr, SoqlBinaryOperator.Sub);
-            case ExpressionType.Multiply:
-                return TranslateBinary((BinaryExpression) expr, SoqlBinaryOperator.Mul);
-            case ExpressionType.Divide:
-                return TranslateBinary((BinaryExpression) expr, SoqlBinaryOperator.Div);
-            case ExpressionType.Modulo:
-                return TranslateBinary((BinaryExpression) expr, SoqlBinaryOperator.Mod);
-            case ExpressionType.Negate:
-                return new SoqlUnaryNegationExpression(TranslateExpression(((UnaryExpression) expr).Operand));
-            case ExpressionType.And:
-            case ExpressionType.AndAlso:
-                return TranslateAnd((BinaryExpression) expr);
-            case ExpressionType.Or:
-            case ExpressionType.OrElse:
-                return TranslateOr((BinaryExpression) expr);
-            case ExpressionType.Not:
-                return new SoqlBooleanNegationExpression(TranslateBoolean(((UnaryExpression) expr).Operand));
-            case ExpressionType.Equal:
-                return TranslateRelational((BinaryExpression) expr, SoqlRelationalOperator.Equal);
-            case ExpressionType.NotEqual:
-                return TranslateRelational((BinaryExpression) expr, SoqlRelationalOperator.NotEqual);
-            case ExpressionType.LessThan:
-                return TranslateRelational((BinaryExpression) expr, SoqlRelationalOperator.Less);
-            case ExpressionType.LessThanOrEqual:
-                return TranslateRelational((BinaryExpression) expr, SoqlRelationalOperator.LessOrEqual);
-            case ExpressionType.GreaterThan:
-                return TranslateRelational((BinaryExpression) expr, SoqlRelationalOperator.Greater);
-            case ExpressionType.GreaterThanOrEqual:
-                return TranslateRelational((BinaryExpression) expr, SoqlRelationalOperator.GreaterOrEqual);
-            case ExpressionType.Call:
-                return TranslateCall((MethodCallExpression) expr);
-            default:
-                throw new NotSupportedException(expr.NodeType.ToString());
+                case ExpressionType.Constant:
+                    return new SoqlLiteralExpression(((ConstantExpression) expr).Value);
+                case ExpressionType.MemberAccess:
+                    return TranslateMember((MemberExpression) expr);
+                case ExpressionType.Add:
+                    return TranslateBinary((BinaryExpression) expr, SoqlBinaryOperator.Add);
+                case ExpressionType.Subtract:
+                    return TranslateBinary((BinaryExpression) expr, SoqlBinaryOperator.Sub);
+                case ExpressionType.Multiply:
+                    return TranslateBinary((BinaryExpression) expr, SoqlBinaryOperator.Mul);
+                case ExpressionType.Divide:
+                    return TranslateBinary((BinaryExpression) expr, SoqlBinaryOperator.Div);
+                case ExpressionType.Modulo:
+                    return TranslateBinary((BinaryExpression) expr, SoqlBinaryOperator.Mod);
+                case ExpressionType.Negate:
+                    return new SoqlUnaryNegationExpression(TranslateExpression(((UnaryExpression) expr).Operand));
+                case ExpressionType.And:
+                case ExpressionType.AndAlso:
+                    return TranslateAnd((BinaryExpression) expr);
+                case ExpressionType.Or:
+                case ExpressionType.OrElse:
+                    return TranslateOr((BinaryExpression) expr);
+                case ExpressionType.Not:
+                    return new SoqlBooleanNegationExpression(TranslateBoolean(((UnaryExpression) expr).Operand));
+                case ExpressionType.Equal:
+                    return TranslateRelational((BinaryExpression) expr, SoqlRelationalOperator.Equal);
+                case ExpressionType.NotEqual:
+                    return TranslateRelational((BinaryExpression) expr, SoqlRelationalOperator.NotEqual);
+                case ExpressionType.LessThan:
+                    return TranslateRelational((BinaryExpression) expr, SoqlRelationalOperator.Less);
+                case ExpressionType.LessThanOrEqual:
+                    return TranslateRelational((BinaryExpression) expr, SoqlRelationalOperator.LessOrEqual);
+                case ExpressionType.GreaterThan:
+                    return TranslateRelational((BinaryExpression) expr, SoqlRelationalOperator.Greater);
+                case ExpressionType.GreaterThanOrEqual:
+                    return TranslateRelational((BinaryExpression) expr, SoqlRelationalOperator.GreaterOrEqual);
+                case ExpressionType.Call:
+                    return TranslateCall((MethodCallExpression) expr);
+                default:
+                    throw new NotSupportedException(expr.NodeType.ToString());
             }
         }
 
@@ -308,76 +310,69 @@ namespace Sooda.Linq
 
         LambdaExpression GetLambda(MethodCallExpression mc)
         {
-            if (mc.Arguments.Count == 2)
-            {
-                LambdaExpression lambda = (LambdaExpression) ((UnaryExpression) mc.Arguments[1]).Operand;
-                if (lambda.Parameters.Count == 1)
-                    return lambda;
-            }
-            throw new NotSupportedException("Unsupported overload of " + mc.Method.Name);
+            return (LambdaExpression) ((UnaryExpression) mc.Arguments[1]).Operand;
         }
 
         void TranslateQuery(Expression expr)
         {
             switch (expr.NodeType)
             {
-            case ExpressionType.Constant:
-                break;
-            case ExpressionType.Call:
-                MethodCallExpression mc = (MethodCallExpression) expr;
-                if (mc.Method.DeclaringType != typeof(Queryable))
-                    throw new NotSupportedException(mc.Method.DeclaringType.FullName);
-                TranslateQuery(mc.Arguments[0]);
-                LambdaExpression lambda;
-                switch (mc.Method.Name)
-                {
-                case "Where":
-                    lambda = GetLambda(mc);
-                    if (_topCount >= 0)
-                        throw new NotSupportedException("Take().Where() not supported");
-                    SoqlBooleanExpression where = (SoqlBooleanExpression) TranslateBoolean(lambda.Body).Simplify();
-                    _where = _where == null ? where : _where.And(where);
+                case ExpressionType.Constant:
                     break;
-
-                case "OrderBy":
-                case "OrderByDescending":
-                case "ThenBy":
-                case "ThenByDescending":
-                    lambda = GetLambda(mc);
-                    SoqlExpression orderBy = TranslateExpression(lambda.Body);
-                    if (_topCount >= 0)
-                        throw new NotSupportedException("Take().OrderBy() not supported");
-                    switch (mc.Method.Name)
+                case ExpressionType.Call:
+                    MethodCallExpression mc = (MethodCallExpression) expr;
+                    SoodaLinqMethod method = SoodaLinqMethodUtil.Get(mc.Method);
+                    TranslateQuery(mc.Arguments[0]);
+                    LambdaExpression lambda;
+                    switch (method)
                     {
-                    case "OrderBy":
-                        _orderBy = new SoodaOrderBy(orderBy, SortOrder.Ascending, _orderBy);
-                        break;
-                    case "OrderByDescending":
-                        _orderBy = new SoodaOrderBy(orderBy, SortOrder.Descending, _orderBy);
-                        break;
-                    case "ThenBy":
-                        _orderBy = new SoodaOrderBy(_orderBy, orderBy, SortOrder.Ascending);
-                        break;
-                    case "ThenByDescending":
-                        _orderBy = new SoodaOrderBy(_orderBy, orderBy, SortOrder.Descending);
-                        break;
+                        case SoodaLinqMethod.Where:
+                            lambda = GetLambda(mc);
+                            if (_topCount >= 0)
+                                throw new NotSupportedException("Take().Where() not supported");
+                            SoqlBooleanExpression where = (SoqlBooleanExpression) TranslateBoolean(lambda.Body).Simplify();
+                            _where = _where == null ? where : _where.And(where);
+                            break;
+
+                        case SoodaLinqMethod.OrderBy:
+                        case SoodaLinqMethod.OrderByDescending:
+                        case SoodaLinqMethod.ThenBy:
+                        case SoodaLinqMethod.ThenByDescending:
+                            lambda = GetLambda(mc);
+                            SoqlExpression orderBy = TranslateExpression(lambda.Body);
+                            if (_topCount >= 0)
+                                throw new NotSupportedException("Take().OrderBy() not supported");
+                            switch (method)
+                            {
+                                case SoodaLinqMethod.OrderBy:
+                                    _orderBy = new SoodaOrderBy(orderBy, SortOrder.Ascending, _orderBy);
+                                    break;
+                                case SoodaLinqMethod.OrderByDescending:
+                                    _orderBy = new SoodaOrderBy(orderBy, SortOrder.Descending, _orderBy);
+                                    break;
+                                case SoodaLinqMethod.ThenBy:
+                                    _orderBy = new SoodaOrderBy(_orderBy, orderBy, SortOrder.Ascending);
+                                    break;
+                                case SoodaLinqMethod.ThenByDescending:
+                                    _orderBy = new SoodaOrderBy(_orderBy, orderBy, SortOrder.Descending);
+                                    break;
+                            }
+                            break;
+
+                        case SoodaLinqMethod.Take:
+                            int count = (int) ((ConstantExpression) mc.Arguments[1]).Value;
+                            if (count < 0)
+                                count = 0;
+                            if (_topCount < 0 || _topCount > count)
+                                _topCount = count;
+                            break;
+
+                        default:
+                            throw new NotSupportedException(mc.Method.Name);
                     }
                     break;
-
-                case "Take":
-                    int count = (int) ((ConstantExpression) mc.Arguments[1]).Value;
-                    if (count < 0)
-                        count = 0;
-                    if (_topCount < 0 || _topCount > count)
-                        _topCount = count;
-                    break;
-
                 default:
-                    throw new NotSupportedException(mc.Method.Name);
-                }
-                break;
-            default:
-                throw new NotSupportedException(expr.NodeType.ToString());
+                    throw new NotSupportedException(expr.NodeType.ToString());
             }
         }
 
@@ -398,7 +393,7 @@ namespace Sooda.Linq
             _orderBy = null;
             _topCount = -1;
             MethodCallExpression mc = expr as MethodCallExpression;
-            if (mc != null && mc.Method.DeclaringType == typeof(Queryable) && mc.Method.Name == "Select")
+            if (mc != null && SoodaLinqMethodUtil.Get(mc.Method) == SoodaLinqMethod.Select)
             {
                 TranslateQuery(mc.Arguments[0]);
                 return Select(GetList(), GetLambda(mc).Compile());
