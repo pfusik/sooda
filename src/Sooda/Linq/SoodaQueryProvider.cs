@@ -387,16 +387,32 @@ namespace Sooda.Linq
                 yield return d.DynamicInvoke(obj);
         }
 
+        static IEnumerable SelectIndexed(IEnumerable source, Delegate d)
+        {
+            int i = 0;
+            foreach (object obj in source)
+                yield return d.DynamicInvoke(obj, i++);
+        }
+
         public object Execute(Expression expr)
         {
             _where = null;
             _orderBy = null;
             _topCount = -1;
             MethodCallExpression mc = expr as MethodCallExpression;
-            if (mc != null && SoodaLinqMethodUtil.Get(mc.Method) == SoodaLinqMethod.Select)
+            if (mc != null)
             {
-                TranslateQuery(mc.Arguments[0]);
-                return Select(GetList(), GetLambda(mc).Compile());
+                switch (SoodaLinqMethodUtil.Get(mc.Method))
+                {
+                    case SoodaLinqMethod.Select:
+                        TranslateQuery(mc.Arguments[0]);
+                        return Select(GetList(), GetLambda(mc).Compile());
+                    case SoodaLinqMethod.SelectIndexed:
+                        TranslateQuery(mc.Arguments[0]);
+                        return SelectIndexed(GetList(), GetLambda(mc).Compile());
+                    default:
+                        break;
+                }
             }
             TranslateQuery(expr);
             return GetList();

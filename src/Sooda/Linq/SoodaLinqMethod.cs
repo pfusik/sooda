@@ -45,6 +45,7 @@ enum SoodaLinqMethod
 	ThenByDescending,
 	Take,
 	Select,
+	SelectIndexed,
 	GetType,
 }
 
@@ -76,6 +77,7 @@ static class SoodaLinqMethodUtil
 			dict.Add(MethodOf(() => Queryable.ThenByDescending(null, selector)), SoodaLinqMethod.ThenByDescending);
 			dict.Add(MethodOf(() => Queryable.Take<object>(null, 0)), SoodaLinqMethod.Take);
 			dict.Add(MethodOf(() => Queryable.Select(null, selector)), SoodaLinqMethod.Select);
+			dict.Add(MethodOf(() => Queryable.Select(null, (object o, int i) => i)), SoodaLinqMethod.SelectIndexed);
 			dict.Add(MethodOf(() => string.Empty.GetType()), SoodaLinqMethod.GetType);
 			_dict = dict;
 		}
