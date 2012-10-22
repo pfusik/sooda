@@ -46,6 +46,8 @@ enum SoodaLinqMethod
 	Take,
 	Select,
 	SelectIndexed,
+	SingleOrDefault,
+	SingleOrDefaultFiltered,
 	GetType,
 }
 
@@ -69,7 +71,8 @@ static class SoodaLinqMethodUtil
 		if (dict == null)
 		{
 			dict = new Dictionary<MethodInfo, SoodaLinqMethod>();
-			dict.Add(MethodOf(() => Queryable.Where(null, (object o) => true)), SoodaLinqMethod.Where);
+			Expression<Func<object, bool>> predicate = o => true;
+			dict.Add(MethodOf(() => Queryable.Where(null, predicate)), SoodaLinqMethod.Where);
 			Expression<Func<object, int>> selector = o => 0;
 			dict.Add(MethodOf(() => Queryable.OrderBy(null, selector)), SoodaLinqMethod.OrderBy);
 			dict.Add(MethodOf(() => Queryable.OrderByDescending(null, selector)), SoodaLinqMethod.OrderByDescending);
@@ -78,6 +81,8 @@ static class SoodaLinqMethodUtil
 			dict.Add(MethodOf(() => Queryable.Take<object>(null, 0)), SoodaLinqMethod.Take);
 			dict.Add(MethodOf(() => Queryable.Select(null, selector)), SoodaLinqMethod.Select);
 			dict.Add(MethodOf(() => Queryable.Select(null, (object o, int i) => i)), SoodaLinqMethod.SelectIndexed);
+			dict.Add(MethodOf(() => Queryable.SingleOrDefault<object>(null)), SoodaLinqMethod.SingleOrDefault);
+			dict.Add(MethodOf(() => Queryable.SingleOrDefault<object>(null, predicate)), SoodaLinqMethod.SingleOrDefaultFiltered);
 			dict.Add(MethodOf(() => string.Empty.GetType()), SoodaLinqMethod.GetType);
 			_dict = dict;
 		}

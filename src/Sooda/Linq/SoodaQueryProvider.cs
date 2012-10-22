@@ -313,6 +313,21 @@ namespace Sooda.Linq
             return (LambdaExpression) ((UnaryExpression) mc.Arguments[1]).Operand;
         }
 
+        void Where(MethodCallExpression mc)
+        {
+            if (_topCount >= 0)
+                throw new NotSupportedException("Take().Where() not supported");
+            LambdaExpression lambda = GetLambda(mc);
+            SoqlBooleanExpression where = (SoqlBooleanExpression) TranslateBoolean(lambda.Body).Simplify();
+            _where = _where == null ? where : _where.And(where);
+        }
+
+        void Take(int count)
+        {
+            if (_topCount < 0 || _topCount > count)
+                _topCount = count;
+        }
+
         void TranslateQuery(Expression expr)
         {
             switch (expr.NodeType)
@@ -327,11 +342,7 @@ namespace Sooda.Linq
                     switch (method)
                     {
                         case SoodaLinqMethod.Where:
-                            lambda = GetLambda(mc);
-                            if (_topCount >= 0)
-                                throw new NotSupportedException("Take().Where() not supported");
-                            SoqlBooleanExpression where = (SoqlBooleanExpression) TranslateBoolean(lambda.Body).Simplify();
-                            _where = _where == null ? where : _where.And(where);
+                            Where(mc);
                             break;
 
                         case SoodaLinqMethod.OrderBy:
@@ -363,8 +374,7 @@ namespace Sooda.Linq
                             int count = (int) ((ConstantExpression) mc.Arguments[1]).Value;
                             if (count < 0)
                                 count = 0;
-                            if (_topCount < 0 || _topCount > count)
-                                _topCount = count;
+                            Take(count);
                             break;
 
                         default:
@@ -376,7 +386,7 @@ namespace Sooda.Linq
             }
         }
 
-        IEnumerable GetList()
+        ISoodaObjectList GetList()
         {
             return new SoodaObjectListSnapshot(_transaction, new SoodaWhereClause(_where), _orderBy, _topCount, _options, _classInfo);
         }
@@ -410,6 +420,15 @@ namespace Sooda.Linq
                     case SoodaLinqMethod.SelectIndexed:
                         TranslateQuery(mc.Arguments[0]);
                         return SelectIndexed(GetList(), GetLambda(mc).Compile());
+                    case SoodaLinqMethod.SingleOrDefault:
+                        TranslateQuery(mc.Arguments[0]);
+                        Take(2);
+                        return SoodaObjectImpl.SelectSingleObjectBE(_where, GetList());
+                    case SoodaLinqMethod.SingleOrDefaultFiltered:
+                        TranslateQuery(mc.Arguments[0]);
+                        Where(mc);
+                        Take(2);
+                        return SoodaObjectImpl.SelectSingleObjectBE(_where, GetList());
                     default:
                         break;
                 }
