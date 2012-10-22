@@ -335,4 +335,27 @@ begin
     return cast(${ClassName}, arg(tran).FindObjectWithKey('${ClassName}', arg(tuple), typeof(${ClassName})))
 end
 
+#if Linq
+method Linq()
+	attributes Public,Static,Overloaded,Final${OptionalNewAttribute}
+	returns generic(System.Linq.IQueryable, ${ClassName})
+begin
+	return defaultscope.Linq(typeref(SoodaTransaction).ActiveTransaction, typeref(SoodaSnapshotOptions).Default$);
+end
+
+method Linq(SoodaSnapshotOptions options)
+	attributes Public,Static,Overloaded,Final${OptionalNewAttribute}
+	returns generic(System.Linq.IQueryable, ${ClassName})
+begin
+	return defaultscope.Linq(typeref(SoodaTransaction).ActiveTransaction, arg(options));
+end
+
+method Linq(SoodaTransaction tran, SoodaSnapshotOptions options)
+	attributes Public,Static,Overloaded,Final${OptionalNewAttribute}
+	returns generic(System.Linq.IQueryable, ${ClassName})
+begin
+	return new generic(Sooda.Linq.SoodaQueryable, ${ClassName})(arg(tran), typeref(${ClassName}_Factory).TheClassInfo, arg(options));
+end
+#endif
+
 end

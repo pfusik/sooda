@@ -515,6 +515,11 @@ namespace Sooda.CodeGen
             }
             else
                 context["LoaderClass"] = /*Project.OutputNamespace.Replace(".", "") + "Stubs." + */ci.Name + "_Stub";
+#if DOTNET35
+            context["Linq"] = true;
+#else
+            context["Linq"] = false;
+#endif
             CodeTypeDeclaration ctd = CDILParser.ParseClass(CDILTemplate.Get("Loader.cdil"), context);
             foreach (FieldInfo fi in ci.LocalFields)
             {
