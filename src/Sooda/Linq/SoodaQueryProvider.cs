@@ -404,6 +404,17 @@ namespace Sooda.Linq
                 yield return d.DynamicInvoke(obj, i++);
         }
 
+        SoodaObject Single(int topCount, bool orDefault)
+        {
+            Take(topCount);
+            ISoodaObjectList list = GetList();
+            if (list.Count == 1)
+                return list.GetItem(0);
+            if (orDefault && list.Count == 0)
+                return null;
+            throw new InvalidOperationException("Found " + list.Count + " matches");
+        }
+
         public object Execute(Expression expr)
         {
             _where = null;
@@ -420,15 +431,61 @@ namespace Sooda.Linq
                     case SoodaLinqMethod.SelectIndexed:
                         TranslateQuery(mc.Arguments[0]);
                         return SelectIndexed(GetList(), GetLambda(mc).Compile());
+
+                    case SoodaLinqMethod.All:
+                        TranslateQuery(mc.Arguments[0]);
+                        if (_topCount >= 0)
+                            throw new NotSupportedException("Take().All() not supported");
+                        LambdaExpression lambda = GetLambda(mc);
+                        SoqlBooleanExpression where = new SoqlBooleanNegationExpression((SoqlBooleanExpression) TranslateBoolean(lambda.Body).Simplify());
+                        _where = _where == null ? where : _where.And(where);
+                        Take(1);
+                        return GetList().Count == 0;
+                    case SoodaLinqMethod.Any:
+                        TranslateQuery(mc.Arguments[0]);
+                        Take(1);
+                        return GetList().Count > 0;
+                    case SoodaLinqMethod.AnyFiltered:
+                        TranslateQuery(mc.Arguments[0]);
+                        Where(mc);
+                        Take(1);
+                        return GetList().Count > 0;
+                    case SoodaLinqMethod.Count:
+                        TranslateQuery(mc.Arguments[0]);
+                        return GetList().Count;
+                    case SoodaLinqMethod.CountFiltered:
+                        TranslateQuery(mc.Arguments[0]);
+                        Where(mc);
+                        return GetList().Count;
+
+                    case SoodaLinqMethod.First:
+                        TranslateQuery(mc.Arguments[0]);
+                        return Single(1, false);
+                    case SoodaLinqMethod.FirstFiltered:
+                        TranslateQuery(mc.Arguments[0]);
+                        Where(mc);
+                        return Single(1, false);
+                    case SoodaLinqMethod.FirstOrDefault:
+                        TranslateQuery(mc.Arguments[0]);
+                        return Single(1, true);
+                    case SoodaLinqMethod.FirstOrDefaultFiltered:
+                        TranslateQuery(mc.Arguments[0]);
+                        Where(mc);
+                        return Single(1, true);
+                    case SoodaLinqMethod.Single:
+                        TranslateQuery(mc.Arguments[0]);
+                        return Single(2, false);
+                    case SoodaLinqMethod.SingleFiltered:
+                        TranslateQuery(mc.Arguments[0]);
+                        Where(mc);
+                        return Single(2, false);
                     case SoodaLinqMethod.SingleOrDefault:
                         TranslateQuery(mc.Arguments[0]);
-                        Take(2);
-                        return SoodaObjectImpl.SelectSingleObjectBE(_where, GetList());
+                        return Single(2, true);
                     case SoodaLinqMethod.SingleOrDefaultFiltered:
                         TranslateQuery(mc.Arguments[0]);
                         Where(mc);
-                        Take(2);
-                        return SoodaObjectImpl.SelectSingleObjectBE(_where, GetList());
+                        return Single(2, true);
                     default:
                         break;
                 }

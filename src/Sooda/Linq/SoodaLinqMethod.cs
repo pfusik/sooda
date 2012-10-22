@@ -46,6 +46,17 @@ enum SoodaLinqMethod
 	Take,
 	Select,
 	SelectIndexed,
+	All,
+	Any,
+	AnyFiltered,
+	Count,
+	CountFiltered,
+	First,
+	FirstFiltered,
+	FirstOrDefault,
+	FirstOrDefaultFiltered,
+	Single,
+	SingleFiltered,
 	SingleOrDefault,
 	SingleOrDefaultFiltered,
 	GetType,
@@ -81,6 +92,17 @@ static class SoodaLinqMethodUtil
 			dict.Add(MethodOf(() => Queryable.Take<object>(null, 0)), SoodaLinqMethod.Take);
 			dict.Add(MethodOf(() => Queryable.Select(null, selector)), SoodaLinqMethod.Select);
 			dict.Add(MethodOf(() => Queryable.Select(null, (object o, int i) => i)), SoodaLinqMethod.SelectIndexed);
+			dict.Add(MethodOf(() => Queryable.All<object>(null, predicate)), SoodaLinqMethod.All);
+			dict.Add(MethodOf(() => Queryable.Any<object>(null)), SoodaLinqMethod.Any);
+			dict.Add(MethodOf(() => Queryable.Any<object>(null, predicate)), SoodaLinqMethod.AnyFiltered);
+			dict.Add(MethodOf(() => Queryable.Count<object>(null)), SoodaLinqMethod.Count);
+			dict.Add(MethodOf(() => Queryable.Count<object>(null, predicate)), SoodaLinqMethod.CountFiltered);
+			dict.Add(MethodOf(() => Queryable.First<object>(null)), SoodaLinqMethod.First);
+			dict.Add(MethodOf(() => Queryable.First<object>(null, predicate)), SoodaLinqMethod.FirstFiltered);
+			dict.Add(MethodOf(() => Queryable.FirstOrDefault<object>(null)), SoodaLinqMethod.FirstOrDefault);
+			dict.Add(MethodOf(() => Queryable.FirstOrDefault<object>(null, predicate)), SoodaLinqMethod.FirstOrDefaultFiltered);
+			dict.Add(MethodOf(() => Queryable.Single<object>(null)), SoodaLinqMethod.Single);
+			dict.Add(MethodOf(() => Queryable.Single<object>(null, predicate)), SoodaLinqMethod.SingleFiltered);
 			dict.Add(MethodOf(() => Queryable.SingleOrDefault<object>(null)), SoodaLinqMethod.SingleOrDefault);
 			dict.Add(MethodOf(() => Queryable.SingleOrDefault<object>(null, predicate)), SoodaLinqMethod.SingleOrDefaultFiltered);
 			dict.Add(MethodOf(() => string.Empty.GetType()), SoodaLinqMethod.GetType);
