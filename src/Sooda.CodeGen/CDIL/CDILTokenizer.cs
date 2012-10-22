@@ -146,51 +146,38 @@ namespace Sooda.CodeGen.CDIL
                 _tokenValue = minus ? -Convert.ToInt32(text) : Convert.ToInt32(text);
                 return;
             }
-            if (ch == '(')
+            switch (ch)
             {
-                ReadChar();
-                _tokenType = CDILToken.LeftParen;
-                return;
-            }
-            if (ch == ')')
-            {
-                ReadChar();
-                _tokenType = CDILToken.RightParen;
-                return;
-            }
-            if (ch == '=')
-            {
-                ReadChar();
-                _tokenType = CDILToken.Assign;
-                return;
-            }
-
-            if (ch == ',')
-            {
-                ReadChar();
-                _tokenType = CDILToken.Comma;
-                return;
-            }
-
-            if (ch == '.')
-            {
-                ReadChar();
-                _tokenType = CDILToken.Dot;
-                return;
-            }
-
-            if (ch == '$')
-            {
-                ReadChar();
-                _tokenType = CDILToken.Dollar;
-                return;
-            }
-
-            if (ch == ';')
-            {
-                ReadChar();
-                _tokenType = CDILToken.Semicolon;
-                return;
+                case '(':
+                    ReadChar();
+                    _tokenType = CDILToken.LeftParen;
+                    return;
+                case ')':
+                    ReadChar();
+                    _tokenType = CDILToken.RightParen;
+                    return;
+                case '=':
+                    ReadChar();
+                    _tokenType = CDILToken.Assign;
+                    return;
+                case ',':
+                    ReadChar();
+                    _tokenType = CDILToken.Comma;
+                    return;
+                case '.':
+                    ReadChar();
+                    _tokenType = CDILToken.Dot;
+                    return;
+                case '$':
+                    ReadChar();
+                    _tokenType = CDILToken.Dollar;
+                    return;
+                case ';':
+                    ReadChar();
+                    _tokenType = CDILToken.Semicolon;
+                    return;
+                default:
+                    break;
             }
 
             if (Char.IsLetter(ch) || ch == '_')
