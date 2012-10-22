@@ -117,13 +117,9 @@ namespace Sooda.CodeGen.CDIL
                     if (ch == '\'')
                         break;
                     if (ch == '\\')
-                    {
                         text += (char)ReadChar();
-                    }
                     else
-                    {
                         text += ch;
-                    }
                 }
                 _tokenType = CDILToken.String;
                 _tokenValue = text;
@@ -131,19 +127,21 @@ namespace Sooda.CodeGen.CDIL
             }
             if (Char.IsNumber(ch) || ch == '-')
             {
-                bool minus = ch == '-';
-                if (minus) ReadChar();
-
                 string text = "";
+                if (ch == '-')
+                {
+                    text = "-";
+                    ReadChar();
+                }
                 while ((p = PeekChar()) != -1 && Char.IsNumber((char)p))
                 {
                     ch = (char)p;
                     ReadChar();
                     text += ch;
                 }
-                if (text.Length == 0) throw BuildException("Number expected after -: " + ch);
+                if (text == "-") throw BuildException("Number expected after -");
                 _tokenType = CDILToken.Integer;
-                _tokenValue = minus ? -Convert.ToInt32(text) : Convert.ToInt32(text);
+                _tokenValue = Convert.ToInt32(text);
                 return;
             }
             switch (ch)
@@ -183,12 +181,12 @@ namespace Sooda.CodeGen.CDIL
             if (Char.IsLetter(ch) || ch == '_')
             {
                 string tokenName = "";
-
-                while (Char.IsLetterOrDigit(ch) || ch == '_')
+                do
                 {
                     tokenName += (char)ReadChar();
                     ch = (char)PeekChar();
                 }
+                while (Char.IsLetterOrDigit(ch) || ch == '_');
                 _tokenValue = tokenName;
                 _tokenType = CDILToken.Keyword;
                 return;
