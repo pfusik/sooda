@@ -309,6 +309,8 @@ namespace Sooda.Linq
                     return new SoqlFunctionCallExpression("floor", TranslateExpression(mc.Arguments[0]));
                 case SoodaLinqMethod.Math_Pow:
                     return new SoqlFunctionCallExpression("power", TranslateExpression(mc.Arguments[0]), TranslateExpression(mc.Arguments[1]));
+                case SoodaLinqMethod.Math_Round:
+                    return new SoqlFunctionCallExpression("round", TranslateExpression(mc.Arguments[0]), TranslateExpression(mc.Arguments[1]));
                 case SoodaLinqMethod.Math_Sign:
                     return new SoqlFunctionCallExpression("sign", TranslateExpression(mc.Arguments[0]));
                 case SoodaLinqMethod.Math_Sin:

@@ -83,6 +83,7 @@ enum SoodaLinqMethod
 	Math_Exp,
 	Math_Floor,
 	Math_Pow,
+	Math_Round,
 	Math_Sign,
 	Math_Sin,
 	Math_Sqrt,
@@ -163,6 +164,8 @@ static class SoodaLinqMethodUtil
 			dict.Add(MethodOf(() => Math.Floor(0M)), SoodaLinqMethod.Math_Floor);
 			dict.Add(MethodOf(() => Math.Floor(0D)), SoodaLinqMethod.Math_Floor);
 			dict.Add(MethodOf(() => Math.Pow(1, 1)), SoodaLinqMethod.Math_Pow);
+			dict.Add(MethodOf(() => Math.Round(0M, 0)), SoodaLinqMethod.Math_Round);
+			dict.Add(MethodOf(() => Math.Round(0D, 0)), SoodaLinqMethod.Math_Round);
 			dict.Add(MethodOf(() => Math.Sign(0M)), SoodaLinqMethod.Math_Sign);
 			dict.Add(MethodOf(() => Math.Sign(0D)), SoodaLinqMethod.Math_Sign);
 			dict.Add(MethodOf(() => Math.Sign((short) 0)), SoodaLinqMethod.Math_Sign);
