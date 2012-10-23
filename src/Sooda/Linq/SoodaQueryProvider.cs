@@ -273,11 +273,15 @@ namespace Sooda.Linq
                 case SoodaLinqMethod.Enumerable_Count:
                     SoqlPathExpression parentPath = (SoqlPathExpression) TranslateExpression(mc.Arguments[0]);
                     return new SoqlCountExpression(parentPath.Left, parentPath.PropertyName);
+                case SoodaLinqMethod.String_Concat:
+                    return new SoqlFunctionCallExpression("concat", TranslateExpression(mc.Arguments[0]), TranslateExpression(mc.Arguments[1]));
                 case SoodaLinqMethod.String_Like:
                     return new SoqlBooleanRelationalExpression(
                         TranslateExpression(mc.Arguments[0]),
                         TranslateExpression(mc.Arguments[1]),
                         SoqlRelationalOperator.Like);
+                case SoodaLinqMethod.String_Remove:
+                    return new SoqlFunctionCallExpression("left", TranslateExpression(mc.Object), TranslateExpression(mc.Arguments[0]));
                 case SoodaLinqMethod.String_Replace:
                     SoqlExpressionCollection parameters = new SoqlExpressionCollection {
                         TranslateExpression(mc.Object),

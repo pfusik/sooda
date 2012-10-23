@@ -69,7 +69,9 @@ enum SoodaLinqMethod
 	Enumerable_AnyFiltered,
 	Enumerable_Count,
 	Object_GetType,
+	String_Concat,
 	String_Like,
+	String_Remove,
 	String_Replace,
 	String_ToLower,
 	String_ToUpper,
@@ -140,7 +142,9 @@ static class SoodaLinqMethodUtil
 			dict.Add(MethodOf(() => Enumerable.Any(null, (object o) => true)), SoodaLinqMethod.Enumerable_AnyFiltered);
 			dict.Add(MethodOf(() => Enumerable.Count<object>(null)), SoodaLinqMethod.Enumerable_Count);
 			dict.Add(MethodOf(() => string.Empty.GetType()), SoodaLinqMethod.Object_GetType);
+			dict.Add(MethodOf(() => string.Concat(string.Empty, string.Empty)), SoodaLinqMethod.String_Concat);
 			dict.Add(MethodOf(() => LinqUtils.Like(string.Empty, string.Empty)), SoodaLinqMethod.String_Like);
+			dict.Add(MethodOf(() => string.Empty.Remove(0)), SoodaLinqMethod.String_Remove);
 			dict.Add(MethodOf(() => string.Empty.Replace(string.Empty, string.Empty)), SoodaLinqMethod.String_Replace);
 			dict.Add(MethodOf(() => string.Empty.ToLower()), SoodaLinqMethod.String_ToLower);
 			dict.Add(MethodOf(() => string.Empty.ToUpper()), SoodaLinqMethod.String_ToUpper);
