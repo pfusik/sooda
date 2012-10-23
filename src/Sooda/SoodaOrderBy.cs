@@ -83,6 +83,14 @@ namespace Sooda
             _comparer = ec;
         }
 
+        public SoodaOrderBy(SoqlExpression[] expressions, SortOrder[] sortOrders)
+        {
+            SoodaObjectExpressionComparer ec = new SoodaObjectExpressionComparer();
+            for (int i = 0; i < expressions.Length; ++i)
+                ec.AddExpression(expressions[i], sortOrders[i]);
+            _comparer = ec;
+        }
+
         public SoodaOrderBy(SoqlExpression expression, SortOrder sortOrder, SoodaOrderBy other)
         {
             SoodaObjectExpressionComparer ec = new SoodaObjectExpressionComparer();

@@ -322,6 +322,33 @@ namespace Sooda.Linq
             _where = _where == null ? where : _where.And(where);
         }
 
+        void Reverse()
+        {
+            if (_topCount >= 0)
+                throw new NotSupportedException("Take().Reverse() not supported");
+            if (_orderBy != null)
+            {
+                SortOrder[] sortOrders = _orderBy.SortOrders;
+                for (int i = 0; i < sortOrders.Length; i++)
+                    sortOrders[i] = sortOrders[i] == SortOrder.Descending ? SortOrder.Ascending : SortOrder.Descending;
+                _orderBy = new SoodaOrderBy(_orderBy.OrderByExpressions, sortOrders);
+            }
+            else
+            {
+                // There was no order - order by primary keys descending.
+                // This should do the trick for SQL Server if the primary keys are clustered.
+                Sooda.Schema.FieldInfo[] pks = _classInfo.GetPrimaryKeyFields();
+                string[] columnNames = new string[pks.Length];
+                SortOrder[] sortOrders = new SortOrder[pks.Length];
+                for (int i = 0; i < pks.Length; i++)
+                {
+                    columnNames[i] = pks[i].Name;
+                    sortOrders[i] = SortOrder.Descending;
+                }
+                _orderBy = new SoodaOrderBy(columnNames, sortOrders);
+            }
+        }
+
         void Take(int count)
         {
             if (_topCount < 0 || _topCount > count)
@@ -368,6 +395,9 @@ namespace Sooda.Linq
                                     _orderBy = new SoodaOrderBy(_orderBy, orderBy, SortOrder.Descending);
                                     break;
                             }
+                            break;
+                        case SoodaLinqMethod.Reverse:
+                            Reverse();
                             break;
 
                         case SoodaLinqMethod.Take:
@@ -471,6 +501,24 @@ namespace Sooda.Linq
                     case SoodaLinqMethod.FirstOrDefaultFiltered:
                         TranslateQuery(mc.Arguments[0]);
                         Where(mc);
+                        return Single(1, true);
+                    case SoodaLinqMethod.Last:
+                        TranslateQuery(mc.Arguments[0]);
+                        Reverse();
+                        return Single(1, false);
+                    case SoodaLinqMethod.LastFiltered:
+                        TranslateQuery(mc.Arguments[0]);
+                        Where(mc);
+                        Reverse();
+                        return Single(1, false);
+                    case SoodaLinqMethod.LastOrDefault:
+                        TranslateQuery(mc.Arguments[0]);
+                        Reverse();
+                        return Single(1, true);
+                    case SoodaLinqMethod.LastOrDefaultFiltered:
+                        TranslateQuery(mc.Arguments[0]);
+                        Where(mc);
+                        Reverse();
                         return Single(1, true);
                     case SoodaLinqMethod.Single:
                         TranslateQuery(mc.Arguments[0]);
