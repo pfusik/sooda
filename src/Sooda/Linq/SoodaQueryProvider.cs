@@ -245,6 +245,38 @@ namespace Sooda.Linq
                     return new SoqlFunctionCallExpression("lower", TranslateExpression(mc.Object));
                 case SoodaLinqMethod.String_ToUpper:
                     return new SoqlFunctionCallExpression("upper", TranslateExpression(mc.Object));
+                case SoodaLinqMethod.Math_Abs:
+                    return new SoqlFunctionCallExpression("abs", TranslateExpression(mc.Arguments[0]));
+                case SoodaLinqMethod.Math_Acos:
+                    return new SoqlFunctionCallExpression("acos", TranslateExpression(mc.Arguments[0]));
+                case SoodaLinqMethod.Math_Asin:
+                    return new SoqlFunctionCallExpression("asin", TranslateExpression(mc.Arguments[0]));
+                case SoodaLinqMethod.Math_Atan:
+                    return new SoqlFunctionCallExpression("atan", TranslateExpression(mc.Arguments[0]));
+                case SoodaLinqMethod.Math_Ceiling:
+                    return new SoqlFunctionCallExpression("ceiling", TranslateExpression(mc.Arguments[0]));
+                case SoodaLinqMethod.Math_Cos:
+                    return new SoqlFunctionCallExpression("cos", TranslateExpression(mc.Arguments[0]));
+                case SoodaLinqMethod.Math_Exp:
+                    return new SoqlFunctionCallExpression("exp", TranslateExpression(mc.Arguments[0]));
+                case SoodaLinqMethod.Math_Floor:
+                    return new SoqlFunctionCallExpression("floor", TranslateExpression(mc.Arguments[0]));
+                case SoodaLinqMethod.Math_Log:
+                    return new SoqlFunctionCallExpression("log", TranslateExpression(mc.Arguments[0]));
+                case SoodaLinqMethod.Math_Log10:
+                    return new SoqlFunctionCallExpression("log10", TranslateExpression(mc.Arguments[0]));
+                case SoodaLinqMethod.Math_Pow:
+                    return new SoqlFunctionCallExpression("power", TranslateExpression(mc.Arguments[0]), TranslateExpression(mc.Arguments[1]));
+                case SoodaLinqMethod.Math_Sign:
+                    return new SoqlFunctionCallExpression("sign", TranslateExpression(mc.Arguments[0]));
+                case SoodaLinqMethod.Math_Sin:
+                    return new SoqlFunctionCallExpression("sin", TranslateExpression(mc.Arguments[0]));
+                case SoodaLinqMethod.Math_Sqrt:
+                    return new SoqlFunctionCallExpression("sqrt", TranslateExpression(mc.Arguments[0]));
+                case SoodaLinqMethod.Math_Tan:
+                    return new SoqlFunctionCallExpression("tan", TranslateExpression(mc.Arguments[0]));
+                case SoodaLinqMethod.Random_NextDouble:
+                    return new SoqlFunctionCallExpression("rand", new SoqlExpressionCollection());
                 default:
                     break;
             }
