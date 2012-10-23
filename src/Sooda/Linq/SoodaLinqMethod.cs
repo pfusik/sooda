@@ -38,33 +38,36 @@ using System.Reflection;
 enum SoodaLinqMethod
 {
 	Unknown,
-	Where,
-	OrderBy,
-	OrderByDescending,
-	ThenBy,
-	ThenByDescending,
-	Take,
-	Select,
-	SelectIndexed,
-	Reverse,
-	All,
-	Any,
-	AnyFiltered,
-	Count,
-	CountFiltered,
-	First,
-	FirstFiltered,
-	FirstOrDefault,
-	FirstOrDefaultFiltered,
-	Last,
-	LastFiltered,
-	LastOrDefault,
-	LastOrDefaultFiltered,
-	Single,
-	SingleFiltered,
-	SingleOrDefault,
-	SingleOrDefaultFiltered,
-	GetType,
+	Queryable_Where,
+	Queryable_OrderBy,
+	Queryable_OrderByDescending,
+	Queryable_ThenBy,
+	Queryable_ThenByDescending,
+	Queryable_Take,
+	Queryable_Select,
+	Queryable_SelectIndexed,
+	Queryable_Reverse,
+	Queryable_All,
+	Queryable_Any,
+	Queryable_AnyFiltered,
+	Queryable_Count,
+	Queryable_CountFiltered,
+	Queryable_First,
+	Queryable_FirstFiltered,
+	Queryable_FirstOrDefault,
+	Queryable_FirstOrDefaultFiltered,
+	Queryable_Last,
+	Queryable_LastFiltered,
+	Queryable_LastOrDefault,
+	Queryable_LastOrDefaultFiltered,
+	Queryable_Single,
+	Queryable_SingleFiltered,
+	Queryable_SingleOrDefault,
+	Queryable_SingleOrDefaultFiltered,
+	Enumerable_All,
+	Enumerable_Any,
+	Enumerable_AnyFiltered,
+	Object_GetType,
 	String_Like,
 	String_Replace,
 	String_ToLower,
@@ -108,34 +111,37 @@ static class SoodaLinqMethodUtil
 		{
 			dict = new Dictionary<MethodInfo, SoodaLinqMethod>();
 			Expression<Func<object, bool>> predicate = o => true;
-			dict.Add(MethodOf(() => Queryable.Where(null, predicate)), SoodaLinqMethod.Where);
 			Expression<Func<object, int>> selector = o => 0;
-			dict.Add(MethodOf(() => Queryable.OrderBy(null, selector)), SoodaLinqMethod.OrderBy);
-			dict.Add(MethodOf(() => Queryable.OrderByDescending(null, selector)), SoodaLinqMethod.OrderByDescending);
-			dict.Add(MethodOf(() => Queryable.ThenBy(null, selector)), SoodaLinqMethod.ThenBy);
-			dict.Add(MethodOf(() => Queryable.ThenByDescending(null, selector)), SoodaLinqMethod.ThenByDescending);
-			dict.Add(MethodOf(() => Queryable.Take<object>(null, 0)), SoodaLinqMethod.Take);
-			dict.Add(MethodOf(() => Queryable.Select(null, selector)), SoodaLinqMethod.Select);
-			dict.Add(MethodOf(() => Queryable.Select(null, (object o, int i) => i)), SoodaLinqMethod.SelectIndexed);
-			dict.Add(MethodOf(() => Queryable.Reverse<object>(null)), SoodaLinqMethod.Reverse);
-			dict.Add(MethodOf(() => Queryable.All(null, predicate)), SoodaLinqMethod.All);
-			dict.Add(MethodOf(() => Queryable.Any<object>(null)), SoodaLinqMethod.Any);
-			dict.Add(MethodOf(() => Queryable.Any(null, predicate)), SoodaLinqMethod.AnyFiltered);
-			dict.Add(MethodOf(() => Queryable.Count<object>(null)), SoodaLinqMethod.Count);
-			dict.Add(MethodOf(() => Queryable.Count(null, predicate)), SoodaLinqMethod.CountFiltered);
-			dict.Add(MethodOf(() => Queryable.First<object>(null)), SoodaLinqMethod.First);
-			dict.Add(MethodOf(() => Queryable.First(null, predicate)), SoodaLinqMethod.FirstFiltered);
-			dict.Add(MethodOf(() => Queryable.FirstOrDefault<object>(null)), SoodaLinqMethod.FirstOrDefault);
-			dict.Add(MethodOf(() => Queryable.FirstOrDefault(null, predicate)), SoodaLinqMethod.FirstOrDefaultFiltered);
-			dict.Add(MethodOf(() => Queryable.Last<object>(null)), SoodaLinqMethod.Last);
-			dict.Add(MethodOf(() => Queryable.Last(null, predicate)), SoodaLinqMethod.LastFiltered);
-			dict.Add(MethodOf(() => Queryable.LastOrDefault<object>(null)), SoodaLinqMethod.LastOrDefault);
-			dict.Add(MethodOf(() => Queryable.LastOrDefault(null, predicate)), SoodaLinqMethod.LastOrDefaultFiltered);
-			dict.Add(MethodOf(() => Queryable.Single<object>(null)), SoodaLinqMethod.Single);
-			dict.Add(MethodOf(() => Queryable.Single(null, predicate)), SoodaLinqMethod.SingleFiltered);
-			dict.Add(MethodOf(() => Queryable.SingleOrDefault<object>(null)), SoodaLinqMethod.SingleOrDefault);
-			dict.Add(MethodOf(() => Queryable.SingleOrDefault(null, predicate)), SoodaLinqMethod.SingleOrDefaultFiltered);
-			dict.Add(MethodOf(() => string.Empty.GetType()), SoodaLinqMethod.GetType);
+			dict.Add(MethodOf(() => Queryable.Where(null, predicate)), SoodaLinqMethod.Queryable_Where);
+			dict.Add(MethodOf(() => Queryable.OrderBy(null, selector)), SoodaLinqMethod.Queryable_OrderBy);
+			dict.Add(MethodOf(() => Queryable.OrderByDescending(null, selector)), SoodaLinqMethod.Queryable_OrderByDescending);
+			dict.Add(MethodOf(() => Queryable.ThenBy(null, selector)), SoodaLinqMethod.Queryable_ThenBy);
+			dict.Add(MethodOf(() => Queryable.ThenByDescending(null, selector)), SoodaLinqMethod.Queryable_ThenByDescending);
+			dict.Add(MethodOf(() => Queryable.Take<object>(null, 0)), SoodaLinqMethod.Queryable_Take);
+			dict.Add(MethodOf(() => Queryable.Select(null, selector)), SoodaLinqMethod.Queryable_Select);
+			dict.Add(MethodOf(() => Queryable.Select(null, (object o, int i) => i)), SoodaLinqMethod.Queryable_SelectIndexed);
+			dict.Add(MethodOf(() => Queryable.Reverse<object>(null)), SoodaLinqMethod.Queryable_Reverse);
+			dict.Add(MethodOf(() => Queryable.All(null, predicate)), SoodaLinqMethod.Queryable_All);
+			dict.Add(MethodOf(() => Queryable.Any<object>(null)), SoodaLinqMethod.Queryable_Any);
+			dict.Add(MethodOf(() => Queryable.Any(null, predicate)), SoodaLinqMethod.Queryable_AnyFiltered);
+			dict.Add(MethodOf(() => Queryable.Count<object>(null)), SoodaLinqMethod.Queryable_Count);
+			dict.Add(MethodOf(() => Queryable.Count(null, predicate)), SoodaLinqMethod.Queryable_CountFiltered);
+			dict.Add(MethodOf(() => Queryable.First<object>(null)), SoodaLinqMethod.Queryable_First);
+			dict.Add(MethodOf(() => Queryable.First(null, predicate)), SoodaLinqMethod.Queryable_FirstFiltered);
+			dict.Add(MethodOf(() => Queryable.FirstOrDefault<object>(null)), SoodaLinqMethod.Queryable_FirstOrDefault);
+			dict.Add(MethodOf(() => Queryable.FirstOrDefault(null, predicate)), SoodaLinqMethod.Queryable_FirstOrDefaultFiltered);
+			dict.Add(MethodOf(() => Queryable.Last<object>(null)), SoodaLinqMethod.Queryable_Last);
+			dict.Add(MethodOf(() => Queryable.Last(null, predicate)), SoodaLinqMethod.Queryable_LastFiltered);
+			dict.Add(MethodOf(() => Queryable.LastOrDefault<object>(null)), SoodaLinqMethod.Queryable_LastOrDefault);
+			dict.Add(MethodOf(() => Queryable.LastOrDefault(null, predicate)), SoodaLinqMethod.Queryable_LastOrDefaultFiltered);
+			dict.Add(MethodOf(() => Queryable.Single<object>(null)), SoodaLinqMethod.Queryable_Single);
+			dict.Add(MethodOf(() => Queryable.Single(null, predicate)), SoodaLinqMethod.Queryable_SingleFiltered);
+			dict.Add(MethodOf(() => Queryable.SingleOrDefault<object>(null)), SoodaLinqMethod.Queryable_SingleOrDefault);
+			dict.Add(MethodOf(() => Queryable.SingleOrDefault(null, predicate)), SoodaLinqMethod.Queryable_SingleOrDefaultFiltered);
+			dict.Add(MethodOf(() => Enumerable.All(null, (object o) => true)), SoodaLinqMethod.Enumerable_All);
+			dict.Add(MethodOf(() => Enumerable.Any<object>(null)), SoodaLinqMethod.Enumerable_Any);
+			dict.Add(MethodOf(() => Enumerable.Any(null, (object o) => true)), SoodaLinqMethod.Enumerable_AnyFiltered);
+			dict.Add(MethodOf(() => string.Empty.GetType()), SoodaLinqMethod.Object_GetType);
 			dict.Add(MethodOf(() => LinqUtils.Like(string.Empty, string.Empty)), SoodaLinqMethod.String_Like);
 			dict.Add(MethodOf(() => string.Empty.Replace(string.Empty, string.Empty)), SoodaLinqMethod.String_Replace);
 			dict.Add(MethodOf(() => string.Empty.ToLower()), SoodaLinqMethod.String_ToLower);

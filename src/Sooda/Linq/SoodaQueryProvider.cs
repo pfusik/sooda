@@ -194,7 +194,7 @@ namespace Sooda.Linq
             if (t == typeof(MemberInfo) && name == "Name" && expr.Expression.NodeType == ExpressionType.Call)
             {
                 MethodCallExpression mc = (MethodCallExpression) expr.Expression;
-                if (SoodaLinqMethodUtil.Get(mc.Method) == SoodaLinqMethod.GetType)
+                if (SoodaLinqMethodUtil.Get(mc.Method) == SoodaLinqMethod.Object_GetType)
                 {
                     if (mc.Object.NodeType == ExpressionType.Parameter)
                         return new SoqlSoodaClassExpression();
@@ -247,10 +247,29 @@ namespace Sooda.Linq
             return FoldConstant(expr, () => t.FullName + "." + name);
         }
 
+        SoqlBooleanExpression TranslateCollectionAny(MethodCallExpression mc, SoqlBooleanExpression where)
+        {
+            SoqlPathExpression parentPath = (SoqlPathExpression) TranslateExpression(mc.Arguments[0]);
+            SoqlQueryExpression query = new SoqlQueryExpression();
+            query.From.Add(mc.Method.GetGenericArguments()[0].Name);
+            query.FromAliases.Add("");
+            query.WhereClause = where;
+            return new SoqlContainsExpression(parentPath.Left, parentPath.PropertyName, query);
+        }
+
         SoqlExpression TranslateCall(MethodCallExpression mc)
         {
+            LambdaExpression lambda;
             switch (SoodaLinqMethodUtil.Get(mc.Method))
             {
+                case SoodaLinqMethod.Enumerable_All:
+                    lambda = (LambdaExpression) mc.Arguments[1];
+                    return new SoqlBooleanNegationExpression(TranslateCollectionAny(mc, new SoqlBooleanNegationExpression(TranslateBoolean(lambda.Body))));
+                case SoodaLinqMethod.Enumerable_Any:
+                    return TranslateCollectionAny(mc, SoqlBooleanLiteralExpression.True);
+                case SoodaLinqMethod.Enumerable_AnyFiltered:
+                    lambda = (LambdaExpression) mc.Arguments[1];
+                    return TranslateCollectionAny(mc, TranslateBoolean(lambda.Body));
                 case SoodaLinqMethod.String_Like:
                     return new SoqlBooleanRelationalExpression(
                         TranslateExpression(mc.Arguments[0]),
@@ -446,39 +465,39 @@ namespace Sooda.Linq
                     LambdaExpression lambda;
                     switch (method)
                     {
-                        case SoodaLinqMethod.Where:
+                        case SoodaLinqMethod.Queryable_Where:
                             Where(mc);
                             break;
 
-                        case SoodaLinqMethod.OrderBy:
-                        case SoodaLinqMethod.OrderByDescending:
-                        case SoodaLinqMethod.ThenBy:
-                        case SoodaLinqMethod.ThenByDescending:
+                        case SoodaLinqMethod.Queryable_OrderBy:
+                        case SoodaLinqMethod.Queryable_OrderByDescending:
+                        case SoodaLinqMethod.Queryable_ThenBy:
+                        case SoodaLinqMethod.Queryable_ThenByDescending:
                             lambda = GetLambda(mc);
                             SoqlExpression orderBy = TranslateExpression(lambda.Body);
                             if (_topCount >= 0)
                                 throw new NotSupportedException("Take().OrderBy() not supported");
                             switch (method)
                             {
-                                case SoodaLinqMethod.OrderBy:
+                                case SoodaLinqMethod.Queryable_OrderBy:
                                     _orderBy = new SoodaOrderBy(orderBy, SortOrder.Ascending, _orderBy);
                                     break;
-                                case SoodaLinqMethod.OrderByDescending:
+                                case SoodaLinqMethod.Queryable_OrderByDescending:
                                     _orderBy = new SoodaOrderBy(orderBy, SortOrder.Descending, _orderBy);
                                     break;
-                                case SoodaLinqMethod.ThenBy:
+                                case SoodaLinqMethod.Queryable_ThenBy:
                                     _orderBy = new SoodaOrderBy(_orderBy, orderBy, SortOrder.Ascending);
                                     break;
-                                case SoodaLinqMethod.ThenByDescending:
+                                case SoodaLinqMethod.Queryable_ThenByDescending:
                                     _orderBy = new SoodaOrderBy(_orderBy, orderBy, SortOrder.Descending);
                                     break;
                             }
                             break;
-                        case SoodaLinqMethod.Reverse:
+                        case SoodaLinqMethod.Queryable_Reverse:
                             Reverse();
                             break;
 
-                        case SoodaLinqMethod.Take:
+                        case SoodaLinqMethod.Queryable_Take:
                             int count = (int) ((ConstantExpression) mc.Arguments[1]).Value;
                             if (count < 0)
                                 count = 0;
@@ -533,14 +552,14 @@ namespace Sooda.Linq
             {
                 switch (SoodaLinqMethodUtil.Get(mc.Method))
                 {
-                    case SoodaLinqMethod.Select:
+                    case SoodaLinqMethod.Queryable_Select:
                         TranslateQuery(mc.Arguments[0]);
                         return Select(GetList(), GetLambda(mc).Compile());
-                    case SoodaLinqMethod.SelectIndexed:
+                    case SoodaLinqMethod.Queryable_SelectIndexed:
                         TranslateQuery(mc.Arguments[0]);
                         return SelectIndexed(GetList(), GetLambda(mc).Compile());
 
-                    case SoodaLinqMethod.All:
+                    case SoodaLinqMethod.Queryable_All:
                         TranslateQuery(mc.Arguments[0]);
                         if (_topCount >= 0)
                             throw new NotSupportedException("Take().All() not supported");
@@ -549,66 +568,66 @@ namespace Sooda.Linq
                         _where = _where == null ? where : _where.And(where);
                         Take(1);
                         return GetList().Count == 0;
-                    case SoodaLinqMethod.Any:
+                    case SoodaLinqMethod.Queryable_Any:
                         TranslateQuery(mc.Arguments[0]);
                         Take(1);
                         return GetList().Count > 0;
-                    case SoodaLinqMethod.AnyFiltered:
+                    case SoodaLinqMethod.Queryable_AnyFiltered:
                         TranslateQuery(mc.Arguments[0]);
                         Where(mc);
                         Take(1);
                         return GetList().Count > 0;
-                    case SoodaLinqMethod.Count:
+                    case SoodaLinqMethod.Queryable_Count:
                         TranslateQuery(mc.Arguments[0]);
                         return GetList().Count;
-                    case SoodaLinqMethod.CountFiltered:
+                    case SoodaLinqMethod.Queryable_CountFiltered:
                         TranslateQuery(mc.Arguments[0]);
                         Where(mc);
                         return GetList().Count;
 
-                    case SoodaLinqMethod.First:
+                    case SoodaLinqMethod.Queryable_First:
                         TranslateQuery(mc.Arguments[0]);
                         return Single(1, false);
-                    case SoodaLinqMethod.FirstFiltered:
+                    case SoodaLinqMethod.Queryable_FirstFiltered:
                         TranslateQuery(mc.Arguments[0]);
                         Where(mc);
                         return Single(1, false);
-                    case SoodaLinqMethod.FirstOrDefault:
+                    case SoodaLinqMethod.Queryable_FirstOrDefault:
                         TranslateQuery(mc.Arguments[0]);
                         return Single(1, true);
-                    case SoodaLinqMethod.FirstOrDefaultFiltered:
+                    case SoodaLinqMethod.Queryable_FirstOrDefaultFiltered:
                         TranslateQuery(mc.Arguments[0]);
                         Where(mc);
                         return Single(1, true);
-                    case SoodaLinqMethod.Last:
+                    case SoodaLinqMethod.Queryable_Last:
                         TranslateQuery(mc.Arguments[0]);
                         Reverse();
                         return Single(1, false);
-                    case SoodaLinqMethod.LastFiltered:
+                    case SoodaLinqMethod.Queryable_LastFiltered:
                         TranslateQuery(mc.Arguments[0]);
                         Where(mc);
                         Reverse();
                         return Single(1, false);
-                    case SoodaLinqMethod.LastOrDefault:
+                    case SoodaLinqMethod.Queryable_LastOrDefault:
                         TranslateQuery(mc.Arguments[0]);
                         Reverse();
                         return Single(1, true);
-                    case SoodaLinqMethod.LastOrDefaultFiltered:
+                    case SoodaLinqMethod.Queryable_LastOrDefaultFiltered:
                         TranslateQuery(mc.Arguments[0]);
                         Where(mc);
                         Reverse();
                         return Single(1, true);
-                    case SoodaLinqMethod.Single:
+                    case SoodaLinqMethod.Queryable_Single:
                         TranslateQuery(mc.Arguments[0]);
                         return Single(2, false);
-                    case SoodaLinqMethod.SingleFiltered:
+                    case SoodaLinqMethod.Queryable_SingleFiltered:
                         TranslateQuery(mc.Arguments[0]);
                         Where(mc);
                         return Single(2, false);
-                    case SoodaLinqMethod.SingleOrDefault:
+                    case SoodaLinqMethod.Queryable_SingleOrDefault:
                         TranslateQuery(mc.Arguments[0]);
                         return Single(2, true);
-                    case SoodaLinqMethod.SingleOrDefaultFiltered:
+                    case SoodaLinqMethod.Queryable_SingleOrDefaultFiltered:
                         TranslateQuery(mc.Arguments[0]);
                         Where(mc);
                         return Single(2, true);
