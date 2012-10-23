@@ -77,18 +77,14 @@ enum SoodaLinqMethod
 	Math_Acos,
 	Math_Asin,
 	Math_Atan,
-	Math_Ceiling,
 	Math_Cos,
 	Math_Exp,
 	Math_Floor,
-	Math_Log,
-	Math_Log10,
 	Math_Pow,
 	Math_Sign,
 	Math_Sin,
 	Math_Sqrt,
 	Math_Tan,
-	Random_NextDouble,
 }
 
 static class SoodaLinqMethodUtil
@@ -158,14 +154,10 @@ static class SoodaLinqMethodUtil
 			dict.Add(MethodOf(() => Math.Acos(0)), SoodaLinqMethod.Math_Acos);
 			dict.Add(MethodOf(() => Math.Asin(0)), SoodaLinqMethod.Math_Asin);
 			dict.Add(MethodOf(() => Math.Atan(0)), SoodaLinqMethod.Math_Atan);
-			dict.Add(MethodOf(() => Math.Ceiling(0M)), SoodaLinqMethod.Math_Ceiling);
-			dict.Add(MethodOf(() => Math.Ceiling(0D)), SoodaLinqMethod.Math_Ceiling);
 			dict.Add(MethodOf(() => Math.Cos(0)), SoodaLinqMethod.Math_Cos);
 			dict.Add(MethodOf(() => Math.Exp(0)), SoodaLinqMethod.Math_Exp);
 			dict.Add(MethodOf(() => Math.Floor(0M)), SoodaLinqMethod.Math_Floor);
 			dict.Add(MethodOf(() => Math.Floor(0D)), SoodaLinqMethod.Math_Floor);
-			dict.Add(MethodOf(() => Math.Log(1)), SoodaLinqMethod.Math_Log);
-			dict.Add(MethodOf(() => Math.Log10(1)), SoodaLinqMethod.Math_Log10);
 			dict.Add(MethodOf(() => Math.Pow(1, 1)), SoodaLinqMethod.Math_Pow);
 			dict.Add(MethodOf(() => Math.Sign(0M)), SoodaLinqMethod.Math_Sign);
 			dict.Add(MethodOf(() => Math.Sign(0D)), SoodaLinqMethod.Math_Sign);
@@ -177,7 +169,6 @@ static class SoodaLinqMethodUtil
 			dict.Add(MethodOf(() => Math.Sin(0)), SoodaLinqMethod.Math_Sin);
 			dict.Add(MethodOf(() => Math.Sqrt(0)), SoodaLinqMethod.Math_Sqrt);
 			dict.Add(MethodOf(() => Math.Tan(0)), SoodaLinqMethod.Math_Tan);
-			dict.Add(MethodOf(() => new Random().NextDouble()), SoodaLinqMethod.Random_NextDouble);
 			_dict = dict;
 		}
 		SoodaLinqMethod result;
