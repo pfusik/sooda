@@ -183,9 +183,11 @@ namespace Sooda.Linq
         SoqlExpression TranslateMember(MemberExpression expr)
         {
             string name = expr.Member.Name;
+
             // x.SoodaField -> SoqlPathExpression
             if (expr.Expression.NodeType == ExpressionType.Parameter)
                 return new SoqlPathExpression(name); // FIXME: different parameters
+
             Type t = expr.Member.DeclaringType;
 
             // x.GetType().Name -> SoqlSoodaClassExpression
@@ -201,6 +203,31 @@ namespace Sooda.Linq
             }
 
             SoqlExpression parent = TranslateExpression(expr.Expression);
+            if (t == typeof(DateTime))
+            {
+                switch (name)
+                {
+                    case "Day":
+                        return new SoqlFunctionCallExpression("day", parent);
+                    case "Month":
+                        return new SoqlFunctionCallExpression("month", parent);
+                    case "Year":
+                        return new SoqlFunctionCallExpression("year", parent);
+                    default:
+                        break;
+                }
+            }
+
+            if (typeof(INullable).IsAssignableFrom(t))
+            {
+                // x.SoodaField1.Value -> x.SoodaField1
+                if (name == "Value")
+                    return parent;
+                // x.SoodaField1.IsNull -> SoqlBooleanIsNullExpression
+                if (name == "IsNull")
+                    return new SoqlBooleanIsNullExpression(parent, false);
+            }
+
             SoqlPathExpression parentPath = parent as SoqlPathExpression;
             if (parentPath != null)
             {
@@ -209,16 +236,6 @@ namespace Sooda.Linq
                     // x.SoodaField1.SoodaField2 -> SoqlPathExpression
                     if (t.IsSubclassOf(typeof(SoodaObject)))
                         return new SoqlPathExpression(parentPath, name);
-
-                    if (typeof(INullable).IsAssignableFrom(t))
-                    {
-                        // x.SoodaField1.Value -> x.SoodaField1
-                        if (name == "Value")
-                            return parent;
-                        // x.SoodaField1.IsNull -> SoqlBooleanIsNullExpression
-                        if (name == "IsNull")
-                            return new SoqlBooleanIsNullExpression(parent, false);
-                    }
 
                     // x.SoodaCollection.Count -> SoqlCountExpression
                     if (t == typeof(SoodaObjectCollectionWrapper) && name == "Count")
