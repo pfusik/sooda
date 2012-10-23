@@ -255,6 +255,11 @@ namespace Sooda.Linq
             return FoldConstant(mc, () => t.FullName + "." + mc.Method.Name);
         }
 
+        SoqlExpression TranslateCoalesce(BinaryExpression expr)
+        {
+            return new SoqlFunctionCallExpression("coalesce", TranslateExpression(expr.Left), TranslateExpression(expr.Right));
+        }
+
         SoqlExpression TranslateExpression(Expression expr)
         {
             switch (expr.NodeType)
@@ -283,6 +288,8 @@ namespace Sooda.Linq
                     return TranslateOr((BinaryExpression) expr);
                 case ExpressionType.Not:
                     return new SoqlBooleanNegationExpression(TranslateBoolean(((UnaryExpression) expr).Operand));
+                case ExpressionType.Coalesce:
+                    return TranslateCoalesce((BinaryExpression) expr);
                 case ExpressionType.Equal:
                     return TranslateRelational((BinaryExpression) expr, SoqlRelationalOperator.Equal);
                 case ExpressionType.NotEqual:
