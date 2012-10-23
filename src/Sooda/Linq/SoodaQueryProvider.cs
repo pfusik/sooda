@@ -232,6 +232,23 @@ namespace Sooda.Linq
 
         SoqlExpression TranslateCall(MethodCallExpression mc)
         {
+            switch (SoodaLinqMethodUtil.Get(mc.Method))
+            {
+                case SoodaLinqMethod.String_Replace:
+                    SoqlExpressionCollection parameters = new SoqlExpressionCollection {
+                        TranslateExpression(mc.Object),
+                        TranslateExpression(mc.Arguments[0]),
+                        TranslateExpression(mc.Arguments[1])
+                    };
+                    return new SoqlFunctionCallExpression("replace", parameters);
+                case SoodaLinqMethod.String_ToLower:
+                    return new SoqlFunctionCallExpression("lower", TranslateExpression(mc.Object));
+                case SoodaLinqMethod.String_ToUpper:
+                    return new SoqlFunctionCallExpression("upper", TranslateExpression(mc.Object));
+                default:
+                    break;
+            }
+
             Type t = mc.Method.DeclaringType;
 
             // x.SoodaCollection.Contains(expr) -> SoqlContainsExpression
