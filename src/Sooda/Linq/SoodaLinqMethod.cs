@@ -65,6 +65,7 @@ enum SoodaLinqMethod
 	SingleOrDefault,
 	SingleOrDefaultFiltered,
 	GetType,
+	String_Like,
 	String_Replace,
 	String_ToLower,
 	String_ToUpper,
@@ -135,6 +136,7 @@ static class SoodaLinqMethodUtil
 			dict.Add(MethodOf(() => Queryable.SingleOrDefault<object>(null)), SoodaLinqMethod.SingleOrDefault);
 			dict.Add(MethodOf(() => Queryable.SingleOrDefault(null, predicate)), SoodaLinqMethod.SingleOrDefaultFiltered);
 			dict.Add(MethodOf(() => string.Empty.GetType()), SoodaLinqMethod.GetType);
+			dict.Add(MethodOf(() => LinqUtils.Like(string.Empty, string.Empty)), SoodaLinqMethod.String_Like);
 			dict.Add(MethodOf(() => string.Empty.Replace(string.Empty, string.Empty)), SoodaLinqMethod.String_Replace);
 			dict.Add(MethodOf(() => string.Empty.ToLower()), SoodaLinqMethod.String_ToLower);
 			dict.Add(MethodOf(() => string.Empty.ToUpper()), SoodaLinqMethod.String_ToUpper);

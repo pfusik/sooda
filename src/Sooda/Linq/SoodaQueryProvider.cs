@@ -251,6 +251,11 @@ namespace Sooda.Linq
         {
             switch (SoodaLinqMethodUtil.Get(mc.Method))
             {
+                case SoodaLinqMethod.String_Like:
+                    return new SoqlBooleanRelationalExpression(
+                        TranslateExpression(mc.Arguments[0]),
+                        TranslateExpression(mc.Arguments[1]),
+                        SoqlRelationalOperator.Like);
                 case SoodaLinqMethod.String_Replace:
                     SoqlExpressionCollection parameters = new SoqlExpressionCollection {
                         TranslateExpression(mc.Object),
