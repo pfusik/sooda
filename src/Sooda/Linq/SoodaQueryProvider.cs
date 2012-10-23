@@ -270,6 +270,9 @@ namespace Sooda.Linq
                 case SoodaLinqMethod.Enumerable_AnyFiltered:
                     lambda = (LambdaExpression) mc.Arguments[1];
                     return TranslateCollectionAny(mc, TranslateBoolean(lambda.Body));
+                case SoodaLinqMethod.Enumerable_Count:
+                    SoqlPathExpression parentPath = (SoqlPathExpression) TranslateExpression(mc.Arguments[0]);
+                    return new SoqlCountExpression(parentPath.Left, parentPath.PropertyName);
                 case SoodaLinqMethod.String_Like:
                     return new SoqlBooleanRelationalExpression(
                         TranslateExpression(mc.Arguments[0]),
