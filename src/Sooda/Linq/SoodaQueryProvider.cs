@@ -203,6 +203,23 @@ namespace Sooda.Linq
             }
 
             SoqlExpression parent = TranslateExpression(expr.Expression);
+
+            if (typeof(INullable).IsAssignableFrom(t))
+            {
+                if (name == "Value")
+                    return parent;
+                if (name == "IsNull")
+                    return new SoqlBooleanIsNullExpression(parent, false);
+            }
+
+            if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                if (name == "Value")
+                    return parent;
+                if (name == "HasValue")
+                    return new SoqlBooleanIsNullExpression(parent, true);
+            }
+
             if (t == typeof(DateTime))
             {
                 switch (name)
@@ -216,16 +233,6 @@ namespace Sooda.Linq
                     default:
                         break;
                 }
-            }
-
-            if (typeof(INullable).IsAssignableFrom(t))
-            {
-                // x.SoodaField1.Value -> x.SoodaField1
-                if (name == "Value")
-                    return parent;
-                // x.SoodaField1.IsNull -> SoqlBooleanIsNullExpression
-                if (name == "IsNull")
-                    return new SoqlBooleanIsNullExpression(parent, false);
             }
 
             SoqlPathExpression parentPath = parent as SoqlPathExpression;
