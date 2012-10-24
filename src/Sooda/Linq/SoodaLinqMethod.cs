@@ -64,6 +64,14 @@ enum SoodaLinqMethod
 	Queryable_SingleFiltered,
 	Queryable_SingleOrDefault,
 	Queryable_SingleOrDefaultFiltered,
+	Queryable_Average,
+	Queryable_AverageNullable,
+	Queryable_Max,
+	Queryable_Min,
+	Queryable_SumDecimal,
+	Queryable_SumDouble,
+	Queryable_SumInt,
+	Queryable_SumLong,
 	Enumerable_All,
 	Enumerable_Any,
 	Enumerable_AnyFiltered,
@@ -112,6 +120,13 @@ static class SoodaLinqMethodUtil
 			dict = new Dictionary<MethodInfo, SoodaLinqMethod>();
 			Expression<Func<object, bool>> predicate = o => true;
 			Expression<Func<object, int>> selector = o => 0;
+			Expression<Func<object, decimal>> selectorM = o => 0;
+			Expression<Func<object, double>> selectorD = o => 0;
+			Expression<Func<object, long>> selectorL = o => 0;
+			Expression<Func<object, int?>> selectorN = o => 0;
+			Expression<Func<object, decimal?>> selectorNM = o => 0;
+			Expression<Func<object, double?>> selectorND = o => 0;
+			Expression<Func<object, long?>> selectorNL = o => 0;
 			dict.Add(MethodOf(() => Queryable.Where(null, predicate)), SoodaLinqMethod.Queryable_Where);
 			dict.Add(MethodOf(() => Queryable.OrderBy(null, selector)), SoodaLinqMethod.Queryable_OrderBy);
 			dict.Add(MethodOf(() => Queryable.OrderByDescending(null, selector)), SoodaLinqMethod.Queryable_OrderByDescending);
@@ -138,6 +153,24 @@ static class SoodaLinqMethodUtil
 			dict.Add(MethodOf(() => Queryable.Single(null, predicate)), SoodaLinqMethod.Queryable_SingleFiltered);
 			dict.Add(MethodOf(() => Queryable.SingleOrDefault<object>(null)), SoodaLinqMethod.Queryable_SingleOrDefault);
 			dict.Add(MethodOf(() => Queryable.SingleOrDefault(null, predicate)), SoodaLinqMethod.Queryable_SingleOrDefaultFiltered);
+			dict.Add(MethodOf(() => Queryable.Average(null, selectorM)), SoodaLinqMethod.Queryable_Average);
+			dict.Add(MethodOf(() => Queryable.Average(null, selectorD)), SoodaLinqMethod.Queryable_Average);
+			dict.Add(MethodOf(() => Queryable.Average(null, selector)), SoodaLinqMethod.Queryable_Average);
+			dict.Add(MethodOf(() => Queryable.Average(null, selectorL)), SoodaLinqMethod.Queryable_Average);
+			dict.Add(MethodOf(() => Queryable.Average(null, selectorNM)), SoodaLinqMethod.Queryable_AverageNullable);
+			dict.Add(MethodOf(() => Queryable.Average(null, selectorND)), SoodaLinqMethod.Queryable_AverageNullable);
+			dict.Add(MethodOf(() => Queryable.Average(null, selectorN)), SoodaLinqMethod.Queryable_AverageNullable);
+			dict.Add(MethodOf(() => Queryable.Average(null, selectorNL)), SoodaLinqMethod.Queryable_AverageNullable);
+			dict.Add(MethodOf(() => Queryable.Max(null, selector)), SoodaLinqMethod.Queryable_Max);
+			dict.Add(MethodOf(() => Queryable.Min(null, selector)), SoodaLinqMethod.Queryable_Min);
+			dict.Add(MethodOf(() => Queryable.Sum(null, selectorM)), SoodaLinqMethod.Queryable_SumDecimal);
+			dict.Add(MethodOf(() => Queryable.Sum(null, selectorD)), SoodaLinqMethod.Queryable_SumDouble);
+			dict.Add(MethodOf(() => Queryable.Sum(null, selector)), SoodaLinqMethod.Queryable_SumInt);
+			dict.Add(MethodOf(() => Queryable.Sum(null, selectorL)), SoodaLinqMethod.Queryable_SumLong);
+			dict.Add(MethodOf(() => Queryable.Sum(null, selectorNM)), SoodaLinqMethod.Queryable_SumDecimal);
+			dict.Add(MethodOf(() => Queryable.Sum(null, selectorND)), SoodaLinqMethod.Queryable_SumDouble);
+			dict.Add(MethodOf(() => Queryable.Sum(null, selectorN)), SoodaLinqMethod.Queryable_SumInt);
+			dict.Add(MethodOf(() => Queryable.Sum(null, selectorNL)), SoodaLinqMethod.Queryable_SumLong);
 			dict.Add(MethodOf(() => Enumerable.All(null, (object o) => true)), SoodaLinqMethod.Enumerable_All);
 			dict.Add(MethodOf(() => Enumerable.Any<object>(null)), SoodaLinqMethod.Enumerable_Any);
 			dict.Add(MethodOf(() => Enumerable.Any(null, (object o) => true)), SoodaLinqMethod.Enumerable_AnyFiltered);

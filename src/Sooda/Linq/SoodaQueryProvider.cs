@@ -31,6 +31,7 @@
 
 using System;
 using System.Collections;
+using System.Data;
 using System.Data.SqlTypes;
 using System.Linq;
 using System.Linq.Expressions;
@@ -259,7 +260,7 @@ namespace Sooda.Linq
             SoqlPathExpression parentPath = (SoqlPathExpression) TranslateExpression(mc.Arguments[0]);
             SoqlQueryExpression query = new SoqlQueryExpression();
             query.From.Add(mc.Method.GetGenericArguments()[0].Name);
-            query.FromAliases.Add("");
+            query.FromAliases.Add(string.Empty);
             query.WhereClause = where;
             return new SoqlContainsExpression(parentPath.Left, parentPath.PropertyName, query);
         }
@@ -550,6 +551,42 @@ namespace Sooda.Linq
             throw new InvalidOperationException("Found " + list.Count + " matches");
         }
 
+        object ExecuteScalar(MethodCallExpression mc, string function, object onNull)
+        {
+            TranslateQuery(mc.Arguments[0]);
+            if (_topCount >= 0)
+                throw new NotSupportedException("Take().aggregate() not supported");
+
+            SoqlExpression selector = TranslateExpression(GetLambda(mc).Body);
+            SoqlQueryExpression query = new SoqlQueryExpression();
+            query.SelectExpressions.Add(new SoqlFunctionCallExpression(function, selector));
+            query.SelectAliases.Add("result");
+            query.From.Add(_classInfo.Name);
+            query.FromAliases.Add(string.Empty);
+            query.WhereClause = _where;
+
+            SoodaDataSource ds = _transaction.OpenDataSource(_classInfo.GetDataSource());
+            using (IDataReader r = ds.ExecuteQuery(query, _classInfo.Schema))
+            {
+                if (!r.Read())
+                    throw new SoodaObjectNotFoundException();
+                object result = r.GetValue(0);
+                if (result != DBNull.Value)
+                    return result;
+                if (onNull != this)
+                    return onNull;
+                throw new InvalidOperationException("Aggregate on an empty collection");
+            }
+        }
+
+        object ExecuteAvg(MethodCallExpression mc, object onNull)
+        {
+            object result = ExecuteScalar(mc, "avg", onNull);
+            if (result is int || result is long)
+                return Convert.ToDouble(result);
+            return result;
+        }
+
         public object Execute(Expression expr)
         {
             _where = null;
@@ -639,6 +676,24 @@ namespace Sooda.Linq
                         TranslateQuery(mc.Arguments[0]);
                         Where(mc);
                         return Single(2, true);
+
+                    case SoodaLinqMethod.Queryable_Average:
+                        return ExecuteAvg(mc, this);
+                    case SoodaLinqMethod.Queryable_AverageNullable:
+                        return ExecuteAvg(mc, null);
+                    case SoodaLinqMethod.Queryable_Max:
+                        return ExecuteScalar(mc, "max", this);
+                    case SoodaLinqMethod.Queryable_Min:
+                        return ExecuteScalar(mc, "min", this);
+                    case SoodaLinqMethod.Queryable_SumDecimal:
+                        return ExecuteScalar(mc, "sum", 0M);
+                    case SoodaLinqMethod.Queryable_SumDouble:
+                        return ExecuteScalar(mc, "sum", 0D);
+                    case SoodaLinqMethod.Queryable_SumInt:
+                        return ExecuteScalar(mc, "sum", 0);
+                    case SoodaLinqMethod.Queryable_SumLong:
+                        return ExecuteScalar(mc, "sum", 0L);
+
                     default:
                         break;
                 }
