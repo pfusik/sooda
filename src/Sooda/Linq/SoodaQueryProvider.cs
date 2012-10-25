@@ -408,7 +408,7 @@ namespace Sooda.Linq
                 case ExpressionType.Call:
                     return TranslateCall((MethodCallExpression) expr);
                 default:
-                    throw new NotSupportedException(expr.NodeType.ToString());
+                    return FoldConstant(expr, () => expr.NodeType.ToString());
             }
         }
 
