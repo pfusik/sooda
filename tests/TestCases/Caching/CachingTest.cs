@@ -86,6 +86,7 @@ namespace Sooda.UnitTests.TestCases.Caching
         }
 
         [Test]
+        [Ignore("N-N cache disabled because it doesn't get updated properly")]
         public void Test5()
         {
             using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
@@ -120,6 +121,7 @@ namespace Sooda.UnitTests.TestCases.Caching
         }
 
         [Test]
+        [Ignore("N-N cache disabled because it doesn't get updated properly")]
         public void Test6()
         {
             using (TestSqlDataSource testDataSource = new TestSqlDataSource("default"))
