@@ -322,92 +322,61 @@ namespace Sooda.Sql
             {
                 char c = query[i];
 
-                if (c == '\'')  // locate the string
+                if (c == '\'')
                 {
-                    int stringStartPos = i;
-                    int stringEndPos = -1;
-
-                    for (int j = i + 1; j < query.Length; ++j)
+                    int j = ++i;
+                    for (;;++j)
                     {
+                        if (j >= query.Length)
+                            throw new ArgumentException("Query has unbalanced quotes");
                         if (query[j] == '\'')
                         {
-                            // possible end of string, need to check for double apostrophes,
-                            // which don't mean EOS
+                            if (j + 1 >= query.Length || query[j + 1] != '\'')
+                                break;
+                            // double apostrophe
+                            j++;
+                        }
+                    }
 
-                            if (j + 1 < query.Length && query[j + 1] == '\'')
-                            {
-                                j++;
-                                continue;
-                            }
+                    string stringValue = query.Substring(i, j - i);
+                    char modifier = j + 1 < query.Length ? query[j + 1] : ' ';
+                    string paramName;
 
-                            stringEndPos = j;
+                    switch (modifier)
+                    {
+                        case 'V':
+                            sb.Append('\'');
+                            sb.Append(stringValue);
+                            sb.Append('\'');
+                            j++;
                             break;
-                        }
-                    }
-
-                    if (stringEndPos == -1)
-                    {
-                        throw new ArgumentException("Query has unbalanced quotes");
-                    }
-
-                    string stringValue = query.Substring(stringStartPos + 1, stringEndPos - stringStartPos - 1);
-                    bool requireParameter = false;
-
-                    if (stringEndPos + 1 < query.Length && query[stringEndPos + 1] == 'V')
-                    {
-                        // requireParameter = false;
-                        stringEndPos++;
-                    }
-                    else
-                    {
-                        // dates and ansi-string definitely require parameters
-                        if (stringEndPos + 1 < query.Length && (query[stringEndPos + 1] == 'D' || query[stringEndPos + 1] == 'A'))
-                        {
-                            requireParameter = true;
-                        }
-
-                        if (!requireParameter)
-                        {
-                            if (!IsStringSafeForLiteral(stringValue) && !isRaw)
-                                requireParameter = true;
-                        }
-
-                        if (!UseSafeLiterals && !isRaw)
-                            requireParameter = true;
-                    }
-
-                    if (requireParameter)
-                    {
-                        // replace double quotes with single quotes
-                        stringValue = stringValue.Replace("''", "'");
-                        string paramName;
-
-                        if (stringEndPos + 1 < query.Length && query[stringEndPos + 1] == 'D')
-                        {
-                            // datetime literal
+                        case 'D':
                             paramName = AddParameterFromValue(command, DateTime.ParseExact(stringValue, "yyyyMMddHH:mm:ss", CultureInfo.InvariantCulture), null);
-                            stringEndPos++;
-                        }
-                        else if (stringEndPos + 1 < query.Length && query[stringEndPos + 1] == 'A')
-                        {
+                            sb.Append(paramName);
+                            j++;
+                            break;
+                        case 'A':
+                            stringValue = stringValue.Replace("''", "'");
                             paramName = AddParameterFromValue(command, stringValue, SoqlLiteralValueModifiers.AnsiString);
-                            stringEndPos++;
-                        }
-                        else
-                        {
-                            paramName = AddParameterFromValue(command, stringValue, null);
-                        }
-                        sb.Append(paramName);
-
-                        i = stringEndPos;
+                            sb.Append(paramName);
+                            j++;
+                            break;
+                        default:
+                            if (!isRaw && (!UseSafeLiterals || !IsStringSafeForLiteral(stringValue)))
+                            {
+                                stringValue = stringValue.Replace("''", "'");
+                                paramName = AddParameterFromValue(command, stringValue, null);
+                                sb.Append(paramName);
+                            }
+                            else
+                            {
+                                sb.Append('\'');
+                                sb.Append(stringValue);
+                                sb.Append('\'');
+                            }
+                            break;
                     }
-                    else
-                    {
-                        sb.Append('\'');
-                        sb.Append(stringValue);
-                        sb.Append('\'');
-                        i = stringEndPos;
-                    }
+                    i = j;
                 }
                 else if (c == '{')
                 {
