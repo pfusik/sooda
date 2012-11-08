@@ -618,7 +618,7 @@
     </target>
 
     <target name="Sooda.UnitTests.TestCases" depends="libraries, Sooda.UnitTests.Objects, Sooda.UnitTests.BaseObjects">
-        <copy file="${nant::get-base-directory()}/lib/${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}/nunit.framework.dll" tofile="${sooda.dir}/nunit.framework.dll" />
+        <copy file="${nant::get-base-directory()}/lib/common/2.0/nunit.framework.dll" tofile="${sooda.dir}/nunit.framework.dll" />
         <csc target="library" output="${sooda.dir}/Sooda.UnitTests.TestCases.dll" debug="true">
             <references>                                  
                 <include name="${sooda.dir}/Sooda.dll" />
@@ -638,8 +638,8 @@
         <csc target="exe" output="${sooda.dir}/ConsoleTest.exe" debug="true">
             <references>                                  
                 <include name="${sooda.dir}/Sooda.dll" />
+                <include name="${sooda.dir}/Sooda.UnitTests.BaseObjects.dll" />
                 <include name="${sooda.dir}/Sooda.UnitTests.Objects.dll" />
-                <include name="${sooda.dir}/Sooda.UnitTests.Objects.Stubs.dll" />
                 <include name="${sooda.dir}/Sooda.UnitTests.TestCases.dll" />
                 <include name="${sooda.dir}/NUnit.Framework.dll" />
                 <include name="${sooda.dir}/NLog.dll" />
