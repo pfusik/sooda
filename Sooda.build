@@ -30,6 +30,8 @@
     <target name="build-netcf-2.0" depends="build-common" />
     <target name="build-mono-1.0" depends="build-common, minitools" />
     <target name="build-mono-2.0" depends="build-common, minitools" />
+    <target name="build-mono-3.5" depends="build-common, minitools" />
+    <target name="build-mono-4.0" depends="build-common, minitools" />
 
     <target name="build-common" depends="configure, libraries" />
     <target name="tools" depends="SoodaStubGen, SoodaSchemaTool, SoodaFixKeygen, SoodaCompileStubs" />
@@ -109,16 +111,27 @@
 
     <target name="configure-net-3.5">
         <property name="sooda.csc.args" value="/nowarn:1591,1699" />
-        <property name="sooda.define" value="${sooda.define},DOTNET2" />
+        <property name="sooda.define" value="${sooda.define},DOTNET2,DOTNET35" />
     </target>
 
     <target name="configure-net-4.0">
         <property name="sooda.csc.args" value="/nowarn:1591,1699" />
-        <property name="sooda.define" value="${sooda.define},DOTNET2" />
+        <property name="sooda.define" value="${sooda.define},DOTNET2,DOTNET35" />
     </target>
 
     <target name="configure-mono-2.0">
-        <property name="sooda.define" value="${sooda.define},DOTNET2" />
+        <property name="sooda.csc.args" value="/nowarn:1591,1699" />
+        <property name="sooda.define" value="${sooda.define},MONO,DOTNET2" />
+    </target>
+
+    <target name="configure-mono-3.5">
+        <property name="sooda.csc.args" value="/nowarn:1591,1699" />
+        <property name="sooda.define" value="${sooda.define},MONO,DOTNET2,DOTNET35" />
+    </target>
+
+    <target name="configure-mono-4.0">
+        <property name="sooda.csc.args" value="/nowarn:1591,1699" />
+        <property name="sooda.define" value="${sooda.define},MONO,DOTNET2,DOTNET35" />
     </target>
 
     <target name="release">

@@ -219,7 +219,7 @@ namespace Sooda.Sql
 
         public override bool IsFatalException(IDbConnection connection, Exception e)
         {
-#if DOTNET2
+#if DOTNET2 && !MONO
             #pragma warning disable 618
             OracleConnection.ClearAllPools();
             #pragma warning restore 618

@@ -423,7 +423,6 @@ namespace Sooda.Schema
             int newSize = oldSize + mergeSize;
             System.Type elementType = oldArray.GetType().GetElementType();
             System.Array newArray = System.Array.CreateInstance(elementType, newSize);
-            int preserveLength = System.Math.Min(oldSize,newSize);
             System.Array.Copy(oldArray, 0, newArray, 0, oldSize);
             System.Array.Copy(merge, 0, newArray, oldSize, mergeSize);
             return newArray;

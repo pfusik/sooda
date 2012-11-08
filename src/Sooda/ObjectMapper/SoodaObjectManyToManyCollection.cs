@@ -222,9 +222,7 @@ namespace Sooda.ObjectMapper
                 }
                 else
                 {
-                    string tmpCacheKey = relationInfo.Name + " where " + relationInfo.Table.Fields[1 - masterColumn].Name + " = " + masterValue;
-
-                    logger.Debug("Cache miss. Cannot use cache for {0} because objects have been precommitted.", cacheKey);
+                    logger.Debug("Cache miss. Cannot use cache for {0} where {1} = {2} because objects have been precommitted.", relationInfo.Name, relationInfo.Table.Fields[1 - masterColumn].Name, masterValue);
                     SoodaStatistics.Global.RegisterCollectionCacheMiss();
                     transaction.Statistics.RegisterCollectionCacheMiss();
                 }
