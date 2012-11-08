@@ -108,6 +108,12 @@ namespace Sooda.QL
 
         public virtual void Visit(SoqlBooleanInExpression v)
         {
+            if (v.Right.Count == 0)
+            {
+                Output.Write("0=1");
+                return;
+            }
+
             v.Left.Accept(this);
             Output.Write(" in (");
             bool first = true;
@@ -256,6 +262,10 @@ namespace Sooda.QL
                 Output.Write('\'');
                 Output.Write(((DateTime)v.LiteralValue).ToString("yyyyMMdd HH:mm:ss"));
                 Output.Write('\'');
+            }
+            else if (v.LiteralValue == null)
+            {
+                Output.Write("null");
             }
             else
             {

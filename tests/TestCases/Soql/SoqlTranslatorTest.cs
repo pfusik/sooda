@@ -101,6 +101,7 @@ select   t0.id as [ContactId],
          t0.type as [Type],
          t0.name as [Name],
          t0.active as [Active],
+         t0.manager as [Manager],
          t0.last_salary as [LastSalary]
 from     Contact t0"
 );

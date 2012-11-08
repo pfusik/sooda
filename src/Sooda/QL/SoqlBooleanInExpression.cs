@@ -78,12 +78,15 @@ namespace Sooda.QL
 
         public override SoqlExpression Simplify()
         {
-            SoqlExpression lhsExpression = Left.Simplify();
+            if (this.Right.Count == 0)
+                return SoqlBooleanLiteralExpression.False;
+
+            SoqlExpression lhsExpression = this.Left.Simplify();
             SoqlBooleanExpression retVal = null;
 
-            for (int i = 0; i < Right.Count; ++i)
+            for (int i = 0; i < this.Right.Count; ++i)
             {
-                SoqlExpression e = (SoqlExpression)Right[i];
+                SoqlExpression e = (SoqlExpression)this.Right[i];
                 SoqlBooleanRelationalExpression bre =
                     new SoqlBooleanRelationalExpression(lhsExpression, e, SoqlRelationalOperator.Equal);
 

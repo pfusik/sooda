@@ -206,6 +206,10 @@ namespace Sooda.Sql
                 Output.Write(((DateTime)literalValue).ToString("yyyyMMddHH:mm:ss"));
                 Output.Write("'D");
             }
+            else if (literalValue == null)
+            {
+                Output.Write("null");
+            }
             else
             {
                 Output.Write(literalValue);

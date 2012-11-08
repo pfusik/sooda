@@ -230,5 +230,14 @@ namespace Sooda.UnitTests.TestCases.Soql
             AssertExpression("1 + 2 * 3 - 4 * 5", -13);
             AssertExpression("1 - 4 / 2 - 4 % 2", -1);
         }
+
+        [Test]
+        public void TestIn()
+        {
+            AssertExpression("42 in (1, 5, 42)", true);
+            AssertExpression("13 in (1, 5, 42)", false);
+            AssertExpression("42 in (42)", true);
+            AssertExpression("13 in ()", false);
+        }
     }
 }

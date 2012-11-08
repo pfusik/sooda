@@ -308,11 +308,14 @@ namespace Sooda.QL
 
             tokenizer.ExpectKeyword("in");
             tokenizer.Expect(SoqlTokenType.LeftParen);
-            rhs.Add(ParseAdditiveExpression());
-            while (tokenizer.TokenType == SoqlTokenType.Comma)
+            if (!tokenizer.IsToken(SoqlTokenType.RightParen))
             {
-                tokenizer.Expect(SoqlTokenType.Comma);
                 rhs.Add(ParseAdditiveExpression());
+                while (tokenizer.TokenType == SoqlTokenType.Comma)
+                {
+                    tokenizer.Expect(SoqlTokenType.Comma);
+                    rhs.Add(ParseAdditiveExpression());
+                }
             }
             tokenizer.Expect(SoqlTokenType.RightParen);
             return new SoqlBooleanInExpression(lhs, rhs);

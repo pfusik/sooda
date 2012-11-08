@@ -35,12 +35,14 @@
             <field name="Type" dbcolumn="type" type="String" size="16" references="ContactType" findList="true" />
             <field name="Name" dbcolumn="name" type="AnsiString" size="64" nullable="false" find="true" findList="true" />
             <field name="Active" dbcolumn="active" type="BooleanAsInteger" />
+            <field name="Manager" dbcolumn="manager" type="Integer" references="Contact" nullable="true" />
         </table>
         <table name="Contact">
             <field name="ContactId" dbcolumn="id" type="Integer" primaryKey="true" />
             <field name="LastSalary" dbcolumn="last_salary" type="Decimal" size="20" precision="10" nullable="true" />
         </table>
 
+        <collectionOneToMany name="Subordinates" class="Contact" foreignField="Manager" />
         <collectionManyToMany name="Roles" relation="ContactToRole" masterField="1" />
         <collectionManyToMany name="Vehicles" relation="ContactToVehicle" masterField="1" />
         <collectionManyToMany name="Bikes" relation="ContactToBike" masterField="1" />

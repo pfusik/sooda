@@ -46,7 +46,8 @@ create table Contact
 	last_salary decimal(20,10) null,
 	name varchar(64) null,
 	type varchar(16) not null references ContactType(code),
-	primary_group int null references _Group(id)
+	primary_group int null references _Group(id),
+	manager int null references Contact(id)
 )
 go
 
@@ -213,14 +214,14 @@ insert into ContactType values('Customer','External Contact');
 insert into _Group values(10,'Group1',1);
 insert into _Group values(11,'Group2',2);
 
-insert into Contact values(1,1,123.123456789,'Mary Manager','Manager',10);
-insert into Contact values(2,1,234.0,'Ed Employee','Employee',10);
-insert into Contact values(3,1,345.0,'Eva Employee','Employee',11);
+insert into Contact values(1,1,123.123456789,'Mary Manager','Manager',10,null);
+insert into Contact values(2,1,234.0,'Ed Employee','Employee',10,1);
+insert into Contact values(3,1,345.0,'Eva Employee','Employee',11,1);
 
-insert into Contact values(50,1,99.123,'Catie Customer','Customer',null);
-insert into Contact values(51,1,3.14159,'Caroline Customer','Customer',10);
-insert into Contact values(52,1,123,'Chris Customer','Customer',null);
-insert into Contact values(53,1,-1,'Chuck Customer','Customer',10);
+insert into Contact values(50,1,99.123,'Catie Customer','Customer',null,null);
+insert into Contact values(51,1,3.14159,'Caroline Customer','Customer',10,null);
+insert into Contact values(52,1,123,'Chris Customer','Customer',null,null);
+insert into Contact values(53,1,-1,'Chuck Customer','Customer',10,null);
 
 insert into _Role values(1,'Employee');
 insert into _Role values(2,'Manager');
