@@ -45,20 +45,18 @@ namespace Sooda.Sql
     {
         private bool _useSafeLiterals = true;
 
-        private string HashString(string input)
+        static string HashString(string input)
         {
-            int tmp = 0;
+            int sum = 0;
             for (int i = 0; i < input.Length; i++)
-            {
-                tmp += i*input[i];
-                tmp = tmp % 65536;
-            }
-            return tmp.ToString("x4");
+                sum += i * input[i];
+            sum &= 0xffff;
+            return sum.ToString("x4");
         }
 
         public string GetTruncatedIdentifier(string identifier)
         {
-            if (identifier.Length < MaxIdentifierLength)
+            if (identifier.Length <= MaxIdentifierLength)
                 return identifier;
             string hash = HashString(identifier);
             return identifier.Substring(0, MaxIdentifierLength - 5) + "_" + hash;
@@ -211,7 +209,6 @@ namespace Sooda.Sql
         }
 
         private static Hashtable paramTypes = new Hashtable();
-        private static bool[] _isCharSafe = new bool[128];
 
         static SqlBuilderBase()
         {
@@ -229,21 +226,6 @@ namespace Sooda.Sql
             paramTypes[typeof(byte[])] = DbType.Binary;
             paramTypes[typeof(System.Drawing.Image)] = DbType.Binary;
             paramTypes[typeof(System.Drawing.Bitmap)] = DbType.Binary;
-
-            // we-re very conservative about what 'safe' means
-            for(char c = 'A'; c <= 'Z'; ++c)
-                _isCharSafe[(int)c] = true;
-            for(char c = 'a'; c <= 'z'; ++c)
-                _isCharSafe[(int)c] = true;
-            for(char c = '0'; c <= '9'; ++c)
-                _isCharSafe[(int)c] = true;
-            _isCharSafe[(int)' '] = true;
-            _isCharSafe[(int)'.'] = true;
-            _isCharSafe[(int)','] = true;
-            _isCharSafe[(int)'-'] = true;
-            _isCharSafe[(int)'%'] = true;
-            _isCharSafe[(int)'_'] = true;
-            _isCharSafe[(int)'@'] = true;
         }
 
         public virtual string QuoteFieldName(string s)
@@ -260,15 +242,84 @@ namespace Sooda.Sql
         {
             if (v.Length > 500)
                 return false;
-            for (int i = 0; i < v.Length; ++i)
+            foreach (char ch in v)
             {
-                int ch = (int)v[i];
-                if (ch < 32)
-                    return false; // ASCII control characters
-                if (ch >= 128)
-                    return false; // high code characters - may require some quoting
-                if (!_isCharSafe[ch])
-                    return false;
+                switch (ch)
+                {
+                    // we are very conservative about what 'safe' means
+                    case ' ':
+                    case '.':
+                    case ',':
+                    case '-':
+                    case '%':
+                    case '_':
+                    case '@':
+                    case '0':
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                    case '6':
+                    case '7':
+                    case '8':
+                    case '9':
+                    case 'A':
+                    case 'B':
+                    case 'C':
+                    case 'D':
+                    case 'E':
+                    case 'F':
+                    case 'G':
+                    case 'H':
+                    case 'I':
+                    case 'J':
+                    case 'K':
+                    case 'L':
+                    case 'M':
+                    case 'N':
+                    case 'O':
+                    case 'P':
+                    case 'Q':
+                    case 'R':
+                    case 'S':
+                    case 'T':
+                    case 'U':
+                    case 'V':
+                    case 'W':
+                    case 'X':
+                    case 'Y':
+                    case 'Z':
+                    case 'a':
+                    case 'b':
+                    case 'c':
+                    case 'd':
+                    case 'e':
+                    case 'f':
+                    case 'g':
+                    case 'h':
+                    case 'i':
+                    case 'j':
+                    case 'k':
+                    case 'l':
+                    case 'm':
+                    case 'n':
+                    case 'o':
+                    case 'p':
+                    case 'q':
+                    case 'r':
+                    case 's':
+                    case 't':
+                    case 'u':
+                    case 'v':
+                    case 'w':
+                    case 'x':
+                    case 'y':
+                    case 'z':
+                        break;
+                    default:
+                        return false;
+                }
             }
             return true;
         }
@@ -397,17 +448,12 @@ namespace Sooda.Sql
                         int valueStartPos = endPos + 1;
                         bool anyEscape = false;
 
-                        for (i = valueStartPos; i < query.Length; ++i)
+                        for (i = valueStartPos; i < query.Length && query[i] != '}'; ++i)
                         {
                             if (query[i] == '\\')
                             {
                                 i++;
                                 anyEscape = true;
-                                continue;
-                            }
-                            if (query[i] == '}')
-                            {
-                                break;
                             }
                         }
 
