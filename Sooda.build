@@ -13,8 +13,6 @@
     <property name="sooda.log4net.dir" value="${sooda.external}" unless="${property::exists('sooda.log4net.dir')}" />
     <property name="sooda.query" value="false" unless="${property::exists('sooda.query')}" />
 
-    <property name="clover.enabled" value="false" />
-    <property name="clover.home" value="C:\Program Files\Cenqua\Clover.NET" />
     <property name="boo.home" value="d:\Work\Boo\build" />
     <property name="ironpython.home" value="d:\Apps\IronPython" />
 
@@ -82,7 +80,7 @@
         <property name="sooda.optimize" value="false" />
         <property name="sooda.optimize" value="true" unless="${sooda.debug}" />
 
-        <property name="buildsubdir" value="${framework::get-target-framework()}${if(clover.enabled,'-clover','')}${if(sooda.debug,'-debug','')}" />
+        <property name="buildsubdir" value="${framework::get-target-framework()}${if(sooda.debug,'-debug','')}" />
 
         <property name="sooda.dir" value="${project::get-base-directory()}/build/${buildsubdir}/bin" unless="${property::exists('sooda.dir')}" />
         <property name="web.dir" value="build/${buildsubdir}/web" unless="${property::exists('web.dir')}" />
@@ -847,39 +845,6 @@
                 <include name="sooda.jpg" />
             </fileset>
         </copy>
-    </target>
-
-    <target name="coverage">
-        <call target="clover" />
-        <call target="build" />
-        <call target="test" />
-        <call target="clover-html-report" />
-    </target>
-
-    <target name="load-clover">
-        <loadtasks assembly="${clover.home}\CloverNAnt-0.85.dll" />
-    </target>
-
-    <target name="clover" depends="configure, load-clover">
-        <!--
-        <delete dir="CloverBuild" failonerror="false" />
-        <mkdir dir="CloverBuild" />
-        -->
-        <property name="clover.enabled" value="true" />
-        <clover-setup
-            initstring="CloverBuild/clover.cdb"
-            builddir="CloverBuild"
-            enabled="${clover.enabled}"
-            flushinterval="1000"
-            />
-    </target>
-
-    <target name="clover-html-report" depends="clover">
-        <clover-report>
-            <current title="Sooda Coverage" output="temp/clover-report">
-                <format type="html" />
-            </current>
-        </clover-report>
     </target>
 
     <target name="source_snapshot" depends="update-build-number">
