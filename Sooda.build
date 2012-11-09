@@ -5,7 +5,6 @@
     <property name="sooda.optimize" value="false" unless="${property::exists('sooda.optimize')}" />
 
     <property name="ndoc.console.exe" value="D:\Apps\NDoc\1.1\ndocconsole.exe" />
-    <property name="prettyprinter.exe" value="tools/PrettyPrinter.exe" />
 
     <property name="sooda.csc.args" value="/nowarn:1591" />
     <property name="sooda.external" value="${project::get-base-directory()}/external" unless="${property::exists('sooda.external')}" />
@@ -182,42 +181,21 @@
         </csc>
     </target>
 
-    <target name="ConfigureSoodaProject" depends="configure, update-build-number, SoodaAddin.UI">
-        <csc target="winexe" output="${sooda.dir}/ConfigureSoodaProject.exe" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true" win32icon="src/ConfigureSoodaProject/App.ico">
+    <target name="Sooda.Logging.log4net" depends="configure, update-build-number, log4net" description="Sooda">
+        <csc target="library" output="${sooda.dir}/Sooda.Logging.log4net.dll" doc="${sooda.dir}/Sooda.Logging.log4net.xml" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
             <references>
                 <include name="mscorlib.dll" />
                 <include name="System.dll" />
                 <include name="System.XML.dll" />
                 <include name="System.Data.dll" />
                 <include name="System.Drawing.dll" />
-                <include name="${sooda.dir}/SoodaAddin.UI.dll" />
+                <include name="${sooda.dir}/log4net.dll" />
+                <include name="${sooda.dir}/Sooda.dll" />
             </references>
-            <sources basedir="src/ConfigureSoodaProject">
+            <sources basedir="src/Sooda.Logging.log4net">
                 <include name="**/*.cs" />
             </sources>
-            <resources basedir="src/ConfigureSoodaProject" prefix="SoodaAddin.UI" dynamicprefix="true">
-                <include name="**/*.resx" />
-            </resources>
-        </csc>
-    </target>
-
-    <target name="SoodaAddin.UI" depends="configure, update-build-number">
-        <copy file="external/Interop.SQLDMO.dll" tofile="${sooda.dir}/Interop.SQLDMO.dll" />
-        <csc target="library" output="${sooda.dir}/SoodaAddin.UI.dll" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
-            <references>
-                <include name="mscorlib.dll" />
-                <include name="System.dll" />
-                <include name="System.XML.dll" />
-                <include name="System.Data.dll" />
-                <include name="System.Drawing.dll" />
-                <include name="${sooda.dir}/Interop.SQLDMO.dll" />
-            </references>
-            <sources basedir="src/SoodaAddin.UI">
-                <include name="**/*.cs" />
-            </sources>
-            <resources basedir="src/SoodaAddin.UI" prefix="SoodaAddin.UI" dynamicprefix="true">
-                <include name="**/*.resx" />
-            </resources>
+            <arg value="${sooda.csc.args}"/>
         </csc>
     </target>
 
@@ -234,24 +212,6 @@
             <sources basedir="src/Sooda.Web">
                 <include name="**/*.cs" />
             </sources>
-        </csc>
-    </target>
-
-    <target name="Sooda.Logging.log4net" depends="configure, update-build-number, log4net" description="Sooda">
-        <csc target="library" output="${sooda.dir}/Sooda.Logging.log4net.dll" doc="${sooda.dir}/Sooda.Logging.log4net.xml" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
-            <references>
-                <include name="mscorlib.dll" />
-                <include name="System.dll" />
-                <include name="System.XML.dll" />
-                <include name="System.Data.dll" />
-                <include name="System.Drawing.dll" />
-                <include name="${sooda.dir}/log4net.dll" />
-                <include name="${sooda.dir}/Sooda.dll" />
-            </references>
-            <sources basedir="src/Sooda.Logging.log4net">
-                <include name="**/*.cs" />
-            </sources>
-            <arg value="${sooda.csc.args}"/>
         </csc>
     </target>
 
@@ -344,6 +304,59 @@
         </csc>
     </target>
 
+    <target name="ConfigureSoodaProject" depends="configure, update-build-number, SoodaAddin.UI">
+        <csc target="winexe" output="${sooda.dir}/ConfigureSoodaProject.exe" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true" win32icon="src/ConfigureSoodaProject/App.ico">
+            <references>
+                <include name="mscorlib.dll" />
+                <include name="System.dll" />
+                <include name="System.XML.dll" />
+                <include name="System.Data.dll" />
+                <include name="System.Drawing.dll" />
+                <include name="${sooda.dir}/SoodaAddin.UI.dll" />
+            </references>
+            <sources basedir="src/ConfigureSoodaProject">
+                <include name="**/*.cs" />
+            </sources>
+            <resources basedir="src/ConfigureSoodaProject" prefix="SoodaAddin.UI" dynamicprefix="true">
+                <include name="**/*.resx" />
+            </resources>
+        </csc>
+    </target>
+
+    <target name="SoodaAddin.UI" depends="configure, update-build-number">
+        <copy file="external/Interop.SQLDMO.dll" tofile="${sooda.dir}/Interop.SQLDMO.dll" />
+        <csc target="library" output="${sooda.dir}/SoodaAddin.UI.dll" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
+            <references>
+                <include name="mscorlib.dll" />
+                <include name="System.dll" />
+                <include name="System.XML.dll" />
+                <include name="System.Data.dll" />
+                <include name="System.Drawing.dll" />
+                <include name="${sooda.dir}/Interop.SQLDMO.dll" />
+            </references>
+            <sources basedir="src/SoodaAddin.UI">
+                <include name="**/*.cs" />
+            </sources>
+            <resources basedir="src/SoodaAddin.UI" prefix="SoodaAddin.UI" dynamicprefix="true">
+                <include name="**/*.resx" />
+            </resources>
+        </csc>
+    </target>
+
+    <target name="Sooda.NAnt.Tasks" depends="Sooda, Sooda.CodeGen">
+        <csc target="library" output="${sooda.dir}/Sooda.NAnt.Tasks.dll" debug="true">
+            <references>
+                <include name="${sooda.dir}/Sooda.dll" />
+                <include name="${sooda.dir}/Sooda.CodeGen.dll" />
+                <include name="${nant::get-base-directory()}/NAnt.Core.dll" />
+            </references>
+            <sources basedir="src/Sooda.NAnt.Tasks">
+                <include name="*.cs" />
+            </sources>
+        </csc>
+        <loadtasks assembly="${sooda.dir}/Sooda.NAnt.Tasks.dll" />
+    </target>
+
     <target name="clean" depends="configure" description="Delete *.exe,*.dll,*.pdb and *.exe files from output directory">
         <delete>
             <fileset defaultexcludes="false">
@@ -382,26 +395,6 @@
         </foreach>
     </target>
 
-    <target name="tarbz2" description="Creates a .tar.bz2 snapshot of sources" depends="configure, clean">
-        <tstamp property="build.date" pattern="yyyyMMdd_HHmm" verbose="true" />
-        <exec workingdir=".." program="tar" commandline="cvf sooda-${build.date}.tar sooda/" />
-        <exec workingdir=".." program="bzip2" commandline="-9 sooda-${build.date}.tar" />
-    </target>
-
-    <target name="zip" depends="clean">
-        <tstamp property="build.date" pattern="yyyyMMdd" verbose="true" />
-        <property name="zipfile" value="sooda_${build.date}.zip" />
-        <zip zipfile="${zipfile}">
-            <fileset>
-                <include name="**/*" />
-                <exclude name="**/*.swp" />
-                <exclude name="**/.svn" />
-                <exclude name="**/.svn/**" />
-                <exclude name="${zipfile}" />
-            </fileset>
-        </zip>
-    </target>
-
     <target name="contest" depends="ConsoleTest">
         <exec workingdir="bin" program="${sooda.dir}/ConsoleTest.exe" commandline="" />
     </target>
@@ -419,20 +412,6 @@
             <formatter type="Plain" />
             <test assemblyname="${sooda.dir}/Sooda.UnitTests.TestCases.dll" appconfig="tests/TestCases/App.config" />
         </nunit2>
-    </target>
-
-    <target name="Sooda.NAnt.Tasks" depends="Sooda, Sooda.CodeGen">
-        <csc target="library" output="${sooda.dir}/Sooda.NAnt.Tasks.dll" debug="true">
-            <references>
-                <include name="${sooda.dir}/Sooda.dll" />
-                <include name="${sooda.dir}/Sooda.CodeGen.dll" />
-                <include name="${nant::get-base-directory()}/NAnt.Core.dll" />
-            </references>
-            <sources basedir="src/Sooda.NAnt.Tasks">
-                <include name="*.cs" />
-            </sources>
-        </csc>
-        <loadtasks assembly="${sooda.dir}/Sooda.NAnt.Tasks.dll" />
     </target>
 
     <target name="Sooda.UnitTests.BaseObjects" depends="Sooda, Sooda.NAnt.Tasks, SoodaStubGen">
@@ -660,7 +639,6 @@
         <property name="sooda.debug" value="false" />
         <property name="sooda.dir" value="bin" />
 
-        <call target="newbuild" />
         <call target="clean" />
         <call target="build" />
         <call target="installer" />
@@ -672,6 +650,7 @@
 
         <call target="installer" />
     </target>
+
     <target name="installer" depends="update-build-number">
         <exec program="nant" commandline="-t:net-1.1 -D:sooda.debug=${sooda.debug} -D:sooda.optimize=${sooda.optimize} build" />
         <exec program="nant" commandline="-t:net-2.0 -D:sooda.debug=${sooda.debug} -D:sooda.optimize=${sooda.optimize} build" />
@@ -700,46 +679,12 @@
         </copy>
     </target>
 
-    <target name="disttest">
-        <nant buildfile="UnitTests/unittests.build" target="clean" />
-        <nant buildfile="UnitTests/unittests.build" target="test" />
-        <nant buildfile="UnitTests/unittests.build" target="teststubs" />
-    </target>
-
-    <target name="updateversion">
-        <foreach item="Line" in="sooda.version" delim=";" property="sooda.version">
-            <exec workingdir="${project::get-base-directory()}" program="tools/ReplaceVersion.exe" commandline="src ${sooda.version}" />
-        </foreach>
-    </target>
-
-    <target name="newbuild">
-        <exec workingdir="${project::get-base-directory()}"
-            program="tools/NewBuild.exe"
-            commandline="${project::get-base-directory()}/sooda.version build" />
-        <call target="updateversion" />
-    </target>
-
-    <target name="newrevision">
-        <exec workingdir="${project::get-base-directory()}" program="tools/NewBuild.exe" commandline="${project::get-base-directory()}/sooda.version revision" />
-        <call target="updateversion" />
-    </target>
-
-    <target name="newminor">
-        <exec workingdir="${project::get-base-directory()}" program="tools/NewBuild.exe" commandline="${project::get-base-directory()}/sooda.version minor" />
-        <call target="updateversion" />
-    </target>
-
-    <target name="newmajor">
-        <exec workingdir="${project::get-base-directory()}" program="tools/NewBuild.exe" commandline="${project::get-base-directory()}/sooda.version major" />
-        <call target="updateversion" />
-    </target>
-
     <target name="sln">
-        <solution configuration="Release" solutionfile="Sooda.sln" />
+        <solution configuration="Release" solutionfile="Sooda.vs2003.sln" />
     </target>
 
     <target name="msbuild">
-        <exec program="${nant.settings.currentframework.frameworkdirectory}/msbuild.exe" commandline="Sooda-net-2.0.sln" />
+        <exec program="${framework::get-framework-directory(framework::get-target-framework())}/msbuild.exe" commandline="Sooda.vs2008.sln" />
     </target>
 
     <target name="precommitcheck">
@@ -759,15 +704,6 @@
     <target name="keyfile-mono">
         <exec program="${nant.settings.currentframework.sdkdirectory}/sn.exe" workingdir="${project::get-base-directory()}" commandline="-q -k Sooda.snk"/>
         <exec program="${nant.settings.currentframework.sdkdirectory}/sn.exe" workingdir="${project::get-base-directory()}" commandline="-q -i Sooda.snk SoodaPublisherKey"/>
-    </target>
-
-    <target name="astyle">
-        <astyle style="NAnt" cleanup="true">
-            <fileset>
-                <include name="**/*.cs" />
-                <exclude name="**/_*.cs" />
-            </fileset>
-        </astyle>
     </target>
 
     <target name="doc" depends="configure, build, website">
