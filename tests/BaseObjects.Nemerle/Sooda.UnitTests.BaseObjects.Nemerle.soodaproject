@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <sooda-project xmlns="http://www.sooda.org/schemas/SoodaProject.xsd">
   <schema-file>../DBSchemaBase.xml</schema-file>
-  <language>Nemerle.Compiler.NemerleCodeProvider, Nemerle.Compiler, Version=0.9.3.0, Culture=neutral, PublicKeyToken=5291d186334f6101, processorArchitecture=MSIL</language>
+  <language>Nemerle.Compiler.NemerleCodeProvider, Nemerle.Compiler, Version=1.1.746.0, Culture=neutral, PublicKeyToken=5291d186334f6101, processorArchitecture=MSIL</language>
   <output-namespace>Sooda.UnitTests.BaseObjects</output-namespace>
   <output-path>.</output-path>
   <nullable-representation>Nullable</nullable-representation>

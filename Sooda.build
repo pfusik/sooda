@@ -3,17 +3,14 @@
     <tstamp />
     <property name="sooda.debug" value="true" unless="${property::exists('sooda.debug')}" />
     <property name="sooda.optimize" value="false" unless="${property::exists('sooda.optimize')}" />
-
-    <property name="ndoc.console.exe" value="D:\Apps\NDoc\1.1\ndocconsole.exe" />
-
     <property name="sooda.csc.args" value="/nowarn:1591" />
     <property name="sooda.external" value="${project::get-base-directory()}/external" unless="${property::exists('sooda.external')}" />
     <property name="sooda.nlog.dir" value="${sooda.external}" unless="${property::exists('sooda.nlog.dir')}" />
     <property name="sooda.log4net.dir" value="${sooda.external}" unless="${property::exists('sooda.log4net.dir')}" />
     <property name="sooda.query" value="false" unless="${property::exists('sooda.query')}" />
 
-    <property name="boo.home" value="d:\Work\Boo\build" />
-    <property name="ironpython.home" value="d:\Apps\IronPython" />
+    <property name="boo.home" value="C:\bin\boo\bin" />
+    <property name="nemerle.home" value="C:\Program Files (x86)\Nemerle\net-4.0" />
 
     <property name="sources" value="src" />
 
@@ -475,46 +472,6 @@
         </booc>
     </target>
 
-    <target name="Sooda.UnitTests.BaseObjects.IronPython" depends="Sooda, Sooda.NAnt.Tasks">
-        <copy todir="${sooda.dir}">
-            <fileset basedir="${ironpython.home}">
-                <include name="IronPython.dll" />
-                <include name="IronMath.dll" />
-            </fileset>
-        </copy>
-        <sooda-generate-code project="tests/BaseObjects.IronPython/Sooda.UnitTests.BaseObjects.IronPython.soodaproject" verbose="true" />
-
-        <booc target="library" output="${sooda.dir}/Sooda.UnitTests.BaseObjects.IronPython.dll" debug="true" verbose="true">
-            <references>
-                <include name="${sooda.dir}/NLog.dll" />
-                <include name="${sooda.dir}/Sooda.dll" />
-                <include name="System.Data.dll" asis="true" />
-            </references>
-            <sources basedir="tests/BaseObjects.IronPython">
-                <include name="*.boo" />
-            </sources>
-        </booc>
-    </target>
-
-    <target name="Sooda.UnitTests.BaseObjects.VJSharp" depends="Sooda, Sooda.NAnt.Tasks">
-        <sooda-generate-code project="tests/BaseObjects.VJSharp/Sooda.UnitTests.BaseObjects.VJSharp.soodaproject" verbose="true" />
-
-        <vjc target="library" output="${sooda.dir}/Sooda.UnitTests.BaseObjects.VJSharp.dll" debug="true" verbose="true">
-            <references>
-                <include name="${sooda.dir}/NLog.dll" />
-                <include name="${sooda.dir}/Sooda.dll" />
-                <include name="System.Data.dll" asis="true" />
-                <include name="System.Xml.dll" />
-            </references>
-            <sources basedir="tests/BaseObjects.VJSharp">
-                <include name="*.jsl" />
-            </sources>
-            <resources basedir="tests/BaseObjects.VJSharp" prefix="Sooda.UnitTests.BaseObjects.VJSharp" dynamicprefix="true">
-                <include name="_DBSchema.*" />
-            </resources>
-        </vjc>
-    </target>
-
     <target name="Sooda.UnitTests.BaseObjects.JScript" depends="Sooda, Sooda.NAnt.Tasks">
         <sooda-generate-code project="tests/BaseObjects.JScript/Sooda.UnitTests.BaseObjects.JScript.soodaproject" verbose="true" />
 
@@ -537,7 +494,7 @@
     <target name="Sooda.UnitTests.BaseObjects.Nemerle" depends="Sooda, Sooda.NAnt.Tasks">
         <sooda-generate-code project="tests/BaseObjects.Nemerle/Sooda.UnitTests.BaseObjects.Nemerle.soodaproject" verbose="true" />
 
-        <loadtasks assembly="c:/program files/nemerle/Nemerle.NAnt.Tasks.dll" />
+        <loadtasks assembly="${nemerle.home}/Nemerle.NAnt.Tasks.dll" />
 
         <ncc target="library" output="${sooda.dir}/Sooda.UnitTests.BaseObjects.dll" debug="true">
             <references>
