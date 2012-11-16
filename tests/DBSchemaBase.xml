@@ -43,6 +43,7 @@
         </table>
 
         <collectionOneToMany name="Subordinates" class="Contact" foreignField="Manager" />
+        <collectionOneToMany name="Bikes1" class="Bike" foreignField="Owner" />
         <collectionManyToMany name="Roles" relation="ContactToRole" masterField="1" />
         <collectionManyToMany name="Vehicles" relation="ContactToVehicle" masterField="1" />
         <collectionManyToMany name="Bikes" relation="ContactToBike" masterField="1" />
@@ -75,6 +76,7 @@
             <field name="Id" dbcolumn="id" type="Integer" primaryKey="true" />
             <field name="Type" dbcolumn="type" type="Integer" />
             <field name="Name" dbcolumn="name" type="String" size="64" nullable="true" />
+            <field name="Owner" dbcolumn="owner" type="Integer" references="Contact" nullable="true" />
         </table>
     </class>
 

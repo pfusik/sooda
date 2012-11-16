@@ -62,8 +62,8 @@ namespace ConsoleTest
     {
         static void Main(string[] args)
         {
-            Sooda.UnitTests.TestCases.Caching.CollectionEvictTest ct = new Sooda.UnitTests.TestCases.Caching.CollectionEvictTest();
-            ct.Test5();
+            Sooda.UnitTests.TestCases.Soql.CollectionTest ct = new Sooda.UnitTests.TestCases.Soql.CollectionTest();
+            ct.ContainsOnSubclassTPT();
         }
     }
 }

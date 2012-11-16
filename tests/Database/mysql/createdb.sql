@@ -40,7 +40,8 @@ create table Vehicle
     type int not null,
 	name varchar(64) null,
 	abs varchar(64) null,
-	four_wheel_drive varchar(64) null
+	four_wheel_drive varchar(64) null,
+	owner int null references Contact(id)
 );
 
 create table Bike
@@ -194,15 +195,15 @@ insert into ContactRole values(53,3);
 insert into KeyGen values('Contact',100);
 insert into KeyGen values('Group',100);
 
-insert into Vehicle values(1,1,'some vehicle',null,null);
-insert into Vehicle values(2,1,'a car',null,null);
-insert into Vehicle values(3,2,'a bike',null,null);
-insert into Vehicle values(4,3,'a super-bike',null,null);
-insert into Vehicle values(5,3,'another super-bike',null,null);
-insert into Vehicle values(6,4,'mega super-bike',null,null);
-insert into Vehicle values(10,7,'an extended bike',null,null);
-insert into Vehicle values(11,5,'concrete bike 1',null,null);
-insert into Vehicle values(12,6,'concrete bike 2',null,null);
+insert into Vehicle values(1,1,'some vehicle',null,null,null);
+insert into Vehicle values(2,1,'a car',null,null,1);
+insert into Vehicle values(3,2,'a bike',null,null,2);
+insert into Vehicle values(4,3,'a super-bike',null,null,null);
+insert into Vehicle values(5,3,'another super-bike',null,null,null);
+insert into Vehicle values(6,4,'mega super-bike',null,null,null);
+insert into Vehicle values(10,7,'an extended bike',null,null,null);
+insert into Vehicle values(11,5,'concrete bike 1',null,null,null);
+insert into Vehicle values(12,6,'concrete bike 2',null,null,null);
 
 insert into Bike values(3,1);
 insert into Bike values(4,1);

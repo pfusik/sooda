@@ -130,5 +130,87 @@ namespace Sooda.UnitTests.TestCases.Soql
                 Assert.AreEqual(2, cl.Count);
             }
         }
+
+        [Test]
+        public void CountOnSelfReferencing()
+        {
+            using (new SoodaTransaction())
+            {
+                ContactList cl = Contact.GetList(ContactField.Subordinates.Count == 2);
+                Assert.AreEqual(1, cl.Count);
+                Assert.AreEqual(cl[0].Name, "Mary Manager");
+            }
+        }
+
+        [Test]
+        public void CountOnFiltered()
+        {
+            using (new SoodaTransaction())
+            {
+                GroupList gl = Group.GetList(GroupField.Members.Count == 4);
+                Assert.AreEqual(1, gl.Count);
+                Assert.AreEqual(10, gl[0].Id);
+                gl = Group.GetList(GroupField.Managers.Count == 1);
+                Assert.AreEqual(2, gl.Count);
+                gl = Group.GetList(GroupField.Managers.Count != 1);
+                Assert.AreEqual(0, gl.Count);
+            }
+        }
+
+        [Test]
+        public void CountOnSubclassTPT()
+        {
+            using (new SoodaTransaction())
+            {
+                ContactList cl = Contact.GetList(ContactField.Bikes1.Count == 1);
+                Assert.AreEqual(1, cl.Count);
+                Assert.AreEqual(cl[0].Name, "Ed Employee");
+            }
+        }
+
+        [Test]
+        public void ContainsOnSelfReferencing()
+        {
+            using (new SoodaTransaction())
+            {
+                ContactList cl = Contact.GetList(ContactField.Subordinates.Contains(Contact.Ed));
+                Assert.AreEqual(1, cl.Count);
+                Assert.AreEqual(cl[0].Name, "Mary Manager");
+            }
+        }
+
+        [Test]
+        public void ContainsOnFiltered()
+        {
+            using (new SoodaTransaction())
+            {
+                GroupList gl = Group.GetList(GroupField.Members.Contains(Contact.Mary));
+                Assert.AreEqual(1, gl.Count);
+                gl = Group.GetList(GroupField.Managers.Contains(Contact.Mary));
+                Assert.AreEqual(0, gl.Count);
+            }
+        }
+
+        [Test]
+        public void ContainsOnSubclassTPT()
+        {
+            using (new SoodaTransaction())
+            {
+                ContactList cl = Contact.GetList(ContactField.Bikes1.Contains(Bike.GetRef(3)));
+                Assert.AreEqual(1, cl.Count);
+                Assert.AreEqual(cl[0].Name, "Ed Employee");
+            }
+        }
+
+        [Test]
+        public void ContainsOnSubclassTPTWhere()
+        {
+            using (new SoodaTransaction())
+            {
+                ContactList cl = Contact.GetList(ContactField.Bikes1.ContainsBikeWhere(BikeField.TwoWheels == 1));
+                Assert.AreEqual(1, cl.Count);
+                Assert.AreEqual(cl[0].Name, "Ed Employee");
+            }
+        }
     }
 }

@@ -533,7 +533,7 @@ namespace Sooda.Sql
                     // it is recommended to use SOQL - to avoid problems with missing joins, multi-table classes, for filtered relation etc.
                     // this pattern should be used probably in many places in this class ...
                     SoqlExistsExpression subExists = new SoqlExistsExpression();
-                    string query = "select * from " + col1n.Class.Name + " where " + col1n.ForeignField2.Name + "=" + currentClass.Name + "." + currentClass.GetFirstPrimaryKeyField().Name;
+                    string query = "select * from " + col1n.Class.Name + " where " + col1n.ForeignField2.Name + "=" + p + "." + currentClass.GetFirstPrimaryKeyField().Name;
                     if (col1n.Where != null && col1n.Where.Length > 0)
                         query += " and " + col1n.Where;
                     query += " and " + col1n.Class.GetFirstPrimaryKeyField().Name + " in (" + v.Expr + ")";
