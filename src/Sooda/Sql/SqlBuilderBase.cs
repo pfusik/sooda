@@ -556,12 +556,12 @@ namespace Sooda.Sql
                             double f = 0;
                             double dp = 0;
                             bool isDouble = false;
-                            do                                                                                        
-                            {                                                                                         
+                            do
+                            {
                                 if (c != '.')
                                 {
                                     if (!isDouble)
-                                        v = v * 10 + c - '0';                                                                 
+                                        v = v * 10 + c - '0';
                                     else
                                     {
                                         f = f + dp * (c - '0');
@@ -574,7 +574,7 @@ namespace Sooda.Sql
                                    f = v;
                                    dp = 0.1;
                                 }
-                                i++;                                                                                  
+                                i++;
                                 if (i < query.Length - 1)
                                     c = query[i+1];
                             } while (((c >= '0' && c <= '9') || c == '.') && (i < query.Length - 1));

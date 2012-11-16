@@ -110,10 +110,9 @@ namespace Sooda.Sql
             string lastTableAlias = GetTableAliasForExpressionPrefix(p);
             firstTableAlias = lastTableAlias;
 
-            SoqlPathExpression currentToken;
             bool nullable = false;
 
-            for (currentToken = startingToken; currentToken != null; currentToken = currentToken.Next)
+            for (SoqlPathExpression currentToken = startingToken; currentToken != null; currentToken = currentToken.Next)
             {
                 lastTableAlias = GetTableAliasForExpressionPrefix(p);
                 // logger.Trace("Container: {0} Prop: {1} {2} {3}", currentContainer.Name, currentToken.PropertyName, currentContainer.GetType().FullName, currentToken.GetType().FullName);
@@ -225,37 +224,17 @@ namespace Sooda.Sql
         {
             if (DisableBooleanExpansion)
             {
-                if (v.Value)
-                {
-                    Output.Write('1');
-                }
-                else
-                {
-                    Output.Write('0');
-                }
+                Output.Write(v.Value ? '1' : '0');
             }
             else
             {
-                if (v.Value)
-                {
-                    Output.Write("(1=1)");
-                }
-                else
-                {
-                    Output.Write("(0=1)");
-                }
+                Output.Write(v.Value ? "(1=1)" : "(0=1)");
             }
         }
 
         public override void Visit(Sooda.QL.TypedWrappers.SoqlBooleanWrapperExpression v)
         {
-            if (DisableBooleanExpansion)
-            {
-                base.Visit(v);
-                return;
-            }
-
-            if (v.InnerExpression is SoqlBooleanExpression)
+            if (DisableBooleanExpansion || v.InnerExpression is SoqlBooleanExpression)
             {
                 base.Visit(v);
             }
@@ -331,6 +310,33 @@ namespace Sooda.Sql
             }
         }
 
+        void OutputSoodaClassCase(ClassInfo ci)
+        {
+            if (ci.IsAbstractClass())
+                return;
+
+            Output.Write(" when ");
+            switch (ci.SubclassSelectorField.DataType)
+            {
+                case FieldDataType.String:
+                    Output.Write("N'");
+                    Output.Write(ci.SubclassSelectorValue);
+                    Output.Write('\'');
+                    break;
+                case FieldDataType.AnsiString:
+                    Output.Write('\'');
+                    Output.Write(ci.SubclassSelectorValue);
+                    Output.Write('\'');
+                    break;
+                default:
+                    Output.Write(ci.SubclassSelectorValue);
+                    break;
+            }
+            Output.Write(" then '");
+            Output.Write(ci.Name);
+            Output.Write('\'');
+        }
+
         public override void Visit(SoqlSoodaClassExpression v)
         {
             ClassInfo currentClass;
@@ -344,17 +350,14 @@ namespace Sooda.Sql
             }
             else
             {
-                if (Query.From.Count == 1)
-                {
-                    p = ExpressionPrefixToTableAlias[Query.From[0]];
-                    currentClass = (ClassInfo)FindContainerByName(Query.From[0]);
-                }
-                else
-                {
+                if (Query.From.Count != 1)
                     throw new Exception("Ambiguous SoodaClass!");
-                }
+                p = ExpressionPrefixToTableAlias[Query.From[0]];
+                currentClass = (ClassInfo)FindContainerByName(Query.From[0]);
             }
-            if (currentClass.GetSubclassesForSchema(Schema).Count == 0)
+
+            ClassInfoCollection subclasses = currentClass.GetSubclassesForSchema(Schema);
+            if (subclasses.Count == 0)
             {
                 Output.Write('\'');
                 Output.Write(currentClass.Name);
@@ -366,58 +369,11 @@ namespace Sooda.Sql
                 Output.Write(p);
                 Output.Write('.');
                 Output.Write(currentClass.SubclassSelectorField.DBColumnName);
-                if (!currentClass.IsAbstractClass())
-                {
-                    Output.Write(" when ");
-                    if (currentClass.SubclassSelectorField.DataType == FieldDataType.String)
-                    {
-                        Output.Write("N'");
-                        Output.Write(currentClass.SubclassSelectorValue);
-                        Output.Write('\'');
-                    }
-                    else
-                    if (currentClass.SubclassSelectorField.DataType == FieldDataType.AnsiString)
-                    {
-                        Output.Write('\'');
-                        Output.Write(currentClass.SubclassSelectorValue);
-                        Output.Write('\'');
-                    }
-                    else
-                        Output.Write(currentClass.SubclassSelectorValue);
-                    Output.Write(" then ");
-                    Output.Write('\'');
-                    Output.Write(currentClass.Name);
-                    Output.Write('\'');
-                }
 
-                foreach (ClassInfo subci in currentClass.GetSubclassesForSchema(Schema))
-                {
-                    if (!subci.IsAbstractClass())
-                    {
+                OutputSoodaClassCase(currentClass);
+                foreach (ClassInfo subci in subclasses)
+                    OutputSoodaClassCase(subci);
 
-                        Output.Write(" when ");
-                        if (subci.SubclassSelectorField.DataType == FieldDataType.String)
-                        {
-                            Output.Write("N'");
-                            Output.Write(subci.SubclassSelectorValue);
-                            Output.Write('\'');
-                        }
-                        else
-                        if (subci.SubclassSelectorField.DataType == FieldDataType.AnsiString)
-                        {
-                            Output.Write('\'');
-                            Output.Write(subci.SubclassSelectorValue);
-                            Output.Write('\'');
-                        }
-                        else
-                            Output.Write(subci.SubclassSelectorValue);
-                        
-                        Output.Write(" then ");
-                        Output.Write('\'');
-                        Output.Write(subci.Name);
-                        Output.Write('\'');
-                    }
-                }
                 Output.Write(" else null end)");
             }
         }
@@ -631,20 +587,20 @@ namespace Sooda.Sql
                         {
                             if (constInfo.Name == secondToken)
                             {
-                                if (ci.GetFirstPrimaryKeyField().DataType == FieldDataType.Integer)
+                                switch (ci.GetFirstPrimaryKeyField().DataType)
                                 {
-                                    OutputLiteral(Convert.ToInt32(constInfo.Key), null);
+                                    case FieldDataType.Integer:
+                                        OutputLiteral(Convert.ToInt32(constInfo.Key), null);
+                                        break;
+                                    case FieldDataType.String:
+                                        OutputLiteral(constInfo.Key, null);
+                                        break;
+                                    case FieldDataType.AnsiString:
+                                        OutputLiteral(constInfo.Key, SoqlLiteralValueModifiers.AnsiString);
+                                        break;
+                                    default:
+                                        throw new NotSupportedException("Constant of type: " + ci.GetFirstPrimaryKeyField().DataType + " not supported in SOQL");
                                 }
-                                else if (ci.GetFirstPrimaryKeyField().DataType == FieldDataType.String)
-                                {
-                                    OutputLiteral(constInfo.Key, null);
-                                }
-                                else if (ci.GetFirstPrimaryKeyField().DataType == FieldDataType.AnsiString)
-                                {
-                                    OutputLiteral(constInfo.Key, SoqlLiteralValueModifiers.AnsiString);
-                                }
-                                else
-                                    throw new NotSupportedException("Constant of type: " + ci.GetFirstPrimaryKeyField().DataType + " not supported in SOQL");
                                 return null;
                             }
                         }
@@ -698,14 +654,7 @@ namespace Sooda.Sql
             try
             {
                 WriteIndentString();
-                if (IndentOutput)
-                {
-                    Output.Write("select   ");
-                }
-                else
-                {
-                    Output.Write("select ");
-                }
+                Output.Write(IndentOutput ? "select   " : "select ");
 
                 if (v.TopCount != -1)
                 {
@@ -714,14 +663,7 @@ namespace Sooda.Sql
                         Output.Write(" * from (");
                         IndentLevel++;
                         WriteIndentString();
-                        if (IndentOutput)
-                        {
-                            Output.Write("select   ");
-                        }
-                        else
-                        {
-                            Output.Write("select ");
-                        }
+                        Output.Write(IndentOutput ? "select   " : "select ");
                         Output.Write(' ');
                         GenerateUniqueAliases = true;
                     }
@@ -780,7 +722,7 @@ namespace Sooda.Sql
                             Output.Write(" as ");
                             Output.Write(_builder.QuoteFieldName(v.SelectAliases[i]));
                         }
-                        else 
+                        else
                         {
                             if (GenerateColumnAliases)
                             {
@@ -791,10 +733,9 @@ namespace Sooda.Sql
                                     ((ISoqlSelectAliasProvider)v.SelectExpressions[i]).WriteDefaultSelectAlias(Output);
                                 }
                             }
-                            else
-                            if (GenerateUniqueAliases)
+                            else if (GenerateUniqueAliases)
                             {
-                                    Output.Write(String.Format(" as col_{0}", UniqueColumnId++));
+                                Output.Write(String.Format(" as col_{0}", UniqueColumnId++));
                             }
                         }
                     }
@@ -861,13 +802,10 @@ namespace Sooda.Sql
                     _generatingOrderBy = false;
                 }
 
-                if (v.TopCount != -1)
+                if (v.TopCount != -1 && _builder.TopSupport == SqlTopSupportMode.Limit)
                 {
-                    if (_builder.TopSupport == SqlTopSupportMode.Limit)
-                    {
-                        Output.Write(" limit ");
-                        Output.Write(v.TopCount);
-                    }
+                    Output.Write(" limit ");
+                    Output.Write(v.TopCount);
                 }
 
                 StringWriter whereSW = new StringWriter();
@@ -885,17 +823,10 @@ namespace Sooda.Sql
 
                     if (restriction != null)
                     {
-                        if (limitedWhere == null)
-                        {
-                            limitedWhere = restriction;
-                        }
-                        else
-                        {
-                            limitedWhere = new SoqlBooleanAndExpression(limitedWhere, restriction);
-                        }
+                        limitedWhere = limitedWhere == null ? restriction : new SoqlBooleanAndExpression(limitedWhere, restriction);
                     }
                 }
-                
+
                 if (limitedWhere != null || WhereJoins.Count > 0)
                 {
                     if (IndentOutput)
@@ -974,21 +905,17 @@ namespace Sooda.Sql
 
                 Output.Write(whereSW.ToString());
                 Output.Write(sw.ToString());
-                if (v.TopCount != -1)
+                if (v.TopCount != -1 && _builder.TopSupport == SqlTopSupportMode.Oracle)
                 {
-                    if (_builder.TopSupport == SqlTopSupportMode.Oracle)
+                    if (IndentOutput)
                     {
-                        if (IndentOutput)
-                        {
-                            Output.WriteLine();
-                            WriteIndentString();
-                        }
-                        Output.Write(") where rownum <= ");
-                        Output.Write(v.TopCount);
-                        IndentLevel--;
+                        Output.WriteLine();
+                        WriteIndentString();
                     }
+                    Output.Write(") where rownum <= ");
+                    Output.Write(v.TopCount);
+                    IndentLevel--;
                 }
-
 
             }
             finally
@@ -1144,31 +1071,39 @@ namespace Sooda.Sql
             ClassInfo ci = Schema.FindClassByName(name);
             if (ci != null)
                 return ci;
-            RelationInfo ri = Schema.FindRelationByName(name);
 
+            RelationInfo ri = Schema.FindRelationByName(name);
             if (ri != null)
                 return ri;
 
             throw new Exception(String.Format("'{0}' is neither a class nor a relation", name));
         }
 
-        string AddJoin(TableInfo rightTable, string leftPrefix, string rightPrefix, FieldInfo leftField, FieldInfo rightField, bool innerJoin)
+        void AddJoin(string fromTableAlias, TableInfo rightTable, string leftPrefix, string rightPrefix, FieldInfo leftField, FieldInfo rightField, bool innerJoin)
         {
-            if (SoodaConfig.GetString("sooda.innerjoins", "false") != "true")
+            if (innerJoin && SoodaConfig.GetString("sooda.innerjoins", "false") != "true")
                 innerJoin = false;
+
+            string s;
             if (_builder.OuterJoinSyntax == SqlOuterJoinSyntax.Oracle)
             {
                 WhereJoins.Add(String.Format("({0}.{2} = {1}.{3}{4})",
                     leftPrefix, rightPrefix, leftField.DBColumnName, rightField.DBColumnName,
                     innerJoin ? "" : " (+)"));
-                return String.Format(", {0} {1}", rightTable.DBTableName, rightPrefix);
+                s = String.Format(", {0} {1}", rightTable.DBTableName, rightPrefix);
             }
             else
             {
-                return String.Format("{6} join {0} {2} {5} on ({1}.{3} = {2}.{4})",
+                s = String.Format("{6} join {0} {2} {5} on ({1}.{3} = {2}.{4})",
                     rightTable.DBTableName, leftPrefix, rightPrefix, leftField.DBColumnName, rightField.DBColumnName,
                     this.GetTableUsageHint(rightTable), innerJoin ? "inner" : "left outer");
             }
+
+            int foundPos = ActualFromAliases.IndexOf(fromTableAlias);
+            if (foundPos == -1)
+                throw new NotSupportedException();
+            StringCollection coll = (StringCollection)FromJoins[foundPos];
+            coll.Add(s);
         }
 
         public string AddPrimaryKeyJoin(string fromTableAlias, ClassInfo classInfo, string rootPrefix, FieldInfo fieldToReach)
@@ -1185,16 +1120,8 @@ namespace Sooda.Sql
             TableAliases[newPrefix] = "EXT";
 
             FieldInfo fi = classInfo.UnifiedTables[0].Fields[0];
-            string s = AddJoin(fieldToReach.Table, rootPrefix, newPrefix,
+            AddJoin(fromTableAlias, fieldToReach.Table, rootPrefix, newPrefix,
                 fi, classInfo.UnifiedTables[fieldToReach.Table.OrdinalInClass].Fields[0], !fi.IsNullable);
-
-            int foundPos = ActualFromAliases.IndexOf(fromTableAlias);
-
-            if (foundPos == -1)
-                throw new NotSupportedException();
-
-            StringCollection coll = (StringCollection)FromJoins[foundPos];
-            coll.Add(s);
 
             return newPrefix;
         }
@@ -1208,16 +1135,8 @@ namespace Sooda.Sql
             string tbl = GetNextTablePrefix();
             ExpressionPrefixToTableAlias.Add(newPrefix, tbl);
 
-            int foundPos = ActualFromAliases.IndexOf(fromTableAlias);
-
-            if (foundPos == -1)
-                throw new NotSupportedException();
-
-            string s = AddJoin(field.ReferencedClass.UnifiedTables[0], lastTableAlias, tbl,
+            AddJoin(fromTableAlias, field.ReferencedClass.UnifiedTables[0], lastTableAlias, tbl,
                 field, field.ReferencedClass.GetFirstPrimaryKeyField(), !nullable);
-
-            StringCollection coll = (StringCollection)FromJoins[foundPos];
-            coll.Add(s);
         }
 
         public string GetTableAliasForExpressionPrefix(string prefix)
@@ -1236,8 +1155,7 @@ namespace Sooda.Sql
         {
             if (Parent != null)
                 return Parent.GetNextTablePrefix();
-            else
-                return String.Format("t{0}", CurrentTablePrefix++);
+            return "t" + CurrentTablePrefix++;
         }
 
         public SoqlBooleanExpression BuildClassRestriction(string startingAlias, Sooda.Schema.ClassInfo classInfo)
@@ -1331,14 +1249,14 @@ namespace Sooda.Sql
             //
             // this is to support type coercions. Whenever we have
             //
-            // path.expression OPERATOR literal 
+            // path.expression OPERATOR literal
             // or
             // path.expression OPERATOR parametrized literal
-            // 
+            //
             // we may want to change the Modifiers of the literal to reflect the actual type of
             // the property being compared with.
             //
-            // Unfortunately MSSQL crawls without this when comparing varchar() columns 
+            // Unfortunately MSSQL crawls without this when comparing varchar() columns
             // against nvarchar() parameter values.
             //
 
