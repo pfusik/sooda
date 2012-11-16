@@ -21,6 +21,7 @@
         <File RelPath='CommandAttribute.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='CommandFactory.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='CommandGenDDL.cs' SubType='Code' BuildAction='Compile' />
+        <File RelPath='CommandGenFullSchema.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='CommandGenSchema.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='CommandHelp.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='CommandUpdateSchema.cs' SubType='Code' BuildAction='Compile' />

@@ -42,6 +42,7 @@
         <File RelPath='SoodaObjectMultiFieldComparer.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='SoodaObjectNotFoundException.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='SoodaObjectReflectionBasedFieldValues.cs' SubType='Code' BuildAction='Compile' />
+        <File RelPath='SoodaObjectReflectionCachingFieldValues.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='SoodaObjectsAssemblyAttribute.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='SoodaOrderBy.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='SoodaProcessBoundTransactionStrategy.cs' SubType='Code' BuildAction='Compile' />
@@ -240,6 +241,7 @@
         <File RelPath='Sql\SqlBuilderNamedArg.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Sql\SqlBuilderPositionalArg.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Sql\SqlDataSource.cs' SubType='Code' BuildAction='Compile' />
+        <File RelPath='Sql\SqlDataSourceDT.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Sql\SqlOuterJoinSyntax.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Sql\SqlServerBuilder.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Sql\SqlTopSupportMode.cs' SubType='Code' BuildAction='Compile' />
