@@ -170,8 +170,8 @@ namespace Sooda.Linq
 
         SoqlBooleanExpression TranslateRelational(BinaryExpression expr, SoqlRelationalOperator op)
         {
-            SoqlExpression left = TranslateExpression(expr.Left).Simplify();
-            SoqlExpression right = TranslateExpression(expr.Right).Simplify();
+            SoqlExpression left = TranslateExpression(expr.Left);
+            SoqlExpression right = TranslateExpression(expr.Right);
             SoqlLiteralExpression rightConst = right as SoqlLiteralExpression;
             if (rightConst != null && rightConst.GetConstantValue() == null
                 && !(left is SoqlLiteralExpression))
@@ -273,6 +273,18 @@ namespace Sooda.Linq
             return new SoqlContainsExpression(parentPath.Left, parentPath.PropertyName, query);
         }
 
+        SoqlBooleanInExpression TranslateCollectionContains(Expression haystack, Expression needle)
+        {
+            IEnumerable haystack2;
+            if (haystack.NodeType == ExpressionType.NewArrayInit)
+                haystack2 = ((NewArrayExpression) haystack).Expressions.Select(e => TranslateExpression(e));
+            else
+                haystack2 = (IEnumerable) FoldConstant(haystack, () => haystack.NodeType.ToString()).GetConstantValue();
+            if (needle.NodeType == ExpressionType.Convert && needle.Type == typeof(object)) // IList.Contains(object)
+                needle = ((UnaryExpression) needle).Operand;
+            return new SoqlBooleanInExpression(TranslateExpression(needle), haystack2);
+        }
+
         SoqlExpression TranslateCall(MethodCallExpression mc)
         {
             LambdaExpression lambda;
@@ -286,9 +298,13 @@ namespace Sooda.Linq
                 case SoodaLinqMethod.Enumerable_AnyFiltered:
                     lambda = (LambdaExpression) mc.Arguments[1];
                     return TranslateCollectionAny(mc, TranslateBoolean(lambda.Body));
+                case SoodaLinqMethod.Enumerable_Contains:
+                    return TranslateCollectionContains(mc.Arguments[0], mc.Arguments[1]);
                 case SoodaLinqMethod.Enumerable_Count:
                     SoqlPathExpression parentPath = (SoqlPathExpression) TranslateExpression(mc.Arguments[0]);
                     return new SoqlCountExpression(parentPath.Left, parentPath.PropertyName);
+                case SoodaLinqMethod.ICollection_Contains:
+                    return TranslateCollectionContains(mc.Object, mc.Arguments[0]);
                 case SoodaLinqMethod.String_Concat:
                     return new SoqlFunctionCallExpression("concat", TranslateExpression(mc.Arguments[0]), TranslateExpression(mc.Arguments[1]));
                 case SoodaLinqMethod.String_Like:
@@ -428,7 +444,7 @@ namespace Sooda.Linq
             if (_topCount >= 0)
                 throw new NotSupportedException("Take().Where() not supported");
             LambdaExpression lambda = GetLambda(mc);
-            SoqlBooleanExpression where = (SoqlBooleanExpression) TranslateBoolean(lambda.Body).Simplify();
+            SoqlBooleanExpression where = TranslateBoolean(lambda.Body);
             _where = _where == null ? where : _where.And(where);
         }
 
@@ -613,7 +629,7 @@ namespace Sooda.Linq
                         if (_topCount >= 0)
                             throw new NotSupportedException("Take().All() not supported");
                         LambdaExpression lambda = GetLambda(mc);
-                        SoqlBooleanExpression where = new SoqlBooleanNegationExpression((SoqlBooleanExpression) TranslateBoolean(lambda.Body).Simplify());
+                        SoqlBooleanExpression where = new SoqlBooleanNegationExpression(TranslateBoolean(lambda.Body));
                         _where = _where == null ? where : _where.And(where);
                         Take(1);
                         return GetList().Count == 0;
