@@ -374,6 +374,14 @@ namespace Sooda.Linq
             return new SoqlFunctionCallExpression("coalesce", TranslateExpression(expr.Left), TranslateExpression(expr.Right));
         }
 
+        SoqlPathExpression GetPrimaryKeyExpression()
+        {
+            Sooda.Schema.FieldInfo[] pks = _classInfo.GetPrimaryKeyFields();
+            if (pks.Length != 1)
+                throw new NotSupportedException("Comparison of composite primary key");
+            return new SoqlPathExpression(pks[0].Name);
+        }
+
         SoqlExpression TranslateExpression(Expression expr)
         {
             switch (expr.NodeType)
@@ -381,10 +389,7 @@ namespace Sooda.Linq
                 case ExpressionType.Constant:
                     return Literal(((ConstantExpression) expr).Value);
                 case ExpressionType.Parameter:
-                    Sooda.Schema.FieldInfo[] pks = _classInfo.GetPrimaryKeyFields();
-                    if (pks.Length != 1)
-                        throw new NotSupportedException("Comparison of composite primary key)");
-                    return new SoqlPathExpression(pks[0].Name);
+                    return GetPrimaryKeyExpression();
                 case ExpressionType.MemberAccess:
                     return TranslateMember((MemberExpression) expr);
                 case ExpressionType.Add:
@@ -439,10 +444,15 @@ namespace Sooda.Linq
             return (LambdaExpression) ((UnaryExpression) mc.Arguments[1]).Operand;
         }
 
-        void Where(MethodCallExpression mc)
+        void TakeNotSupported()
         {
             if (_topCount >= 0)
-                throw new NotSupportedException("Take().Where() not supported");
+                throw new NotSupportedException("Take() not supported here");
+        }
+
+        void Where(MethodCallExpression mc)
+        {
+            TakeNotSupported();
             LambdaExpression lambda = GetLambda(mc);
             SoqlBooleanExpression where = TranslateBoolean(lambda.Body);
             _where = _where == null ? where : _where.And(where);
@@ -450,8 +460,7 @@ namespace Sooda.Linq
 
         void Reverse()
         {
-            if (_topCount >= 0)
-                throw new NotSupportedException("Take().Reverse() not supported");
+            TakeNotSupported();
             if (_orderBy != null)
             {
                 SortOrder[] sortOrders = _orderBy.SortOrders;
@@ -481,12 +490,38 @@ namespace Sooda.Linq
                 _topCount = count;
         }
 
+        SoqlBooleanExpression TranslateSubquery(Expression expr)
+        {
+            TakeNotSupported();
+
+            if (expr.NodeType == ExpressionType.Constant)
+            {
+                // e.g. Contact.Linq().Union(new Contact[] { Contact.Mary })
+                // TODO: NOT if .Union(Contact.Linq())
+                IEnumerable objects = (IEnumerable) ((ConstantExpression) expr).Value;
+                return new SoqlBooleanInExpression(GetPrimaryKeyExpression(), objects);
+            }
+
+            // TODO: compare _transaction, _classInfo, _options
+            SoqlBooleanExpression thisWhere = _where;
+            SoodaOrderBy thisOrderBy = _orderBy;
+            _where = null;
+            TranslateQuery(expr);
+            TakeNotSupported();
+            SoqlBooleanExpression thatWhere = _where;
+            _where = thisWhere;
+            _orderBy = thisOrderBy;
+            return thatWhere;
+        }
+
         void TranslateQuery(Expression expr)
         {
+            SoqlBooleanExpression thatWhere;
             switch (expr.NodeType)
             {
                 case ExpressionType.Constant:
                     break;
+
                 case ExpressionType.Call:
                     MethodCallExpression mc = (MethodCallExpression) expr;
                     SoodaLinqMethod method = SoodaLinqMethodUtil.Get(mc.Method);
@@ -504,8 +539,7 @@ namespace Sooda.Linq
                         case SoodaLinqMethod.Queryable_ThenByDescending:
                             lambda = GetLambda(mc);
                             SoqlExpression orderBy = TranslateExpression(lambda.Body);
-                            if (_topCount >= 0)
-                                throw new NotSupportedException("Take().OrderBy() not supported");
+                            TakeNotSupported();
                             switch (method)
                             {
                                 case SoodaLinqMethod.Queryable_OrderBy:
@@ -533,10 +567,27 @@ namespace Sooda.Linq
                             Take(count);
                             break;
 
+                        case SoodaLinqMethod.Queryable_Except:
+                            thatWhere = TranslateSubquery(mc.Arguments[1]);
+                            thatWhere = thatWhere == null ? (SoqlBooleanExpression) SoqlBooleanLiteralExpression.False : new SoqlBooleanNegationExpression(thatWhere);
+                            _where = _where == null ? thatWhere : _where.And(thatWhere);
+                            break;
+                        case SoodaLinqMethod.Queryable_Intersect:
+                            thatWhere = TranslateSubquery(mc.Arguments[1]);
+                            if (thatWhere != null)
+                                _where = _where == null ? thatWhere : _where.And(thatWhere);
+                            break;
+                        case SoodaLinqMethod.Queryable_Union:
+                            thatWhere = TranslateSubquery(mc.Arguments[1]);
+                            if (_where != null)
+                                _where = thatWhere == null ? null : _where.Or(thatWhere);
+                            break;
+
                         default:
                             throw new NotSupportedException(mc.Method.Name);
                     }
                     break;
+
                 default:
                     throw new NotSupportedException(expr.NodeType.ToString());
             }
@@ -574,8 +625,7 @@ namespace Sooda.Linq
         object ExecuteScalar(MethodCallExpression mc, string function, object onNull)
         {
             TranslateQuery(mc.Arguments[0]);
-            if (_topCount >= 0)
-                throw new NotSupportedException("Take().aggregate() not supported");
+            TakeNotSupported();
 
             SoqlExpression selector = TranslateExpression(GetLambda(mc).Body);
             SoqlQueryExpression query = new SoqlQueryExpression();
@@ -626,8 +676,7 @@ namespace Sooda.Linq
 
                     case SoodaLinqMethod.Queryable_All:
                         TranslateQuery(mc.Arguments[0]);
-                        if (_topCount >= 0)
-                            throw new NotSupportedException("Take().All() not supported");
+                        TakeNotSupported();
                         LambdaExpression lambda = GetLambda(mc);
                         SoqlBooleanExpression where = new SoqlBooleanNegationExpression(TranslateBoolean(lambda.Body));
                         _where = _where == null ? where : _where.And(where);

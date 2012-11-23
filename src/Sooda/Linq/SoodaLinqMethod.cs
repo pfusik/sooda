@@ -47,6 +47,9 @@ enum SoodaLinqMethod
     Queryable_Select,
     Queryable_SelectIndexed,
     Queryable_Reverse,
+    Queryable_Except,
+    Queryable_Intersect,
+    Queryable_Union,
     Queryable_All,
     Queryable_Any,
     Queryable_AnyFiltered,
@@ -138,6 +141,9 @@ static class SoodaLinqMethodUtil
             dict.Add(MethodOf(() => Queryable.Select(null, selector)), SoodaLinqMethod.Queryable_Select);
             dict.Add(MethodOf(() => Queryable.Select(null, (object o, int i) => i)), SoodaLinqMethod.Queryable_SelectIndexed);
             dict.Add(MethodOf(() => Queryable.Reverse<object>(null)), SoodaLinqMethod.Queryable_Reverse);
+            dict.Add(MethodOf(() => Queryable.Except<object>(null, null)), SoodaLinqMethod.Queryable_Except);
+            dict.Add(MethodOf(() => Queryable.Intersect<object>(null, null)), SoodaLinqMethod.Queryable_Intersect);
+            dict.Add(MethodOf(() => Queryable.Union<object>(null, null)), SoodaLinqMethod.Queryable_Union);
             dict.Add(MethodOf(() => Queryable.All(null, predicate)), SoodaLinqMethod.Queryable_All);
             dict.Add(MethodOf(() => Queryable.Any<object>(null)), SoodaLinqMethod.Queryable_Any);
             dict.Add(MethodOf(() => Queryable.Any(null, predicate)), SoodaLinqMethod.Queryable_AnyFiltered);

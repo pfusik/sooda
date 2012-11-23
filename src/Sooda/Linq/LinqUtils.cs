@@ -31,10 +31,10 @@
 
 public static class LinqUtils
 {
-	public static bool Like(this string text, string pattern)
-	{
-		return Sooda.QL.SoqlUtils.Like(text, pattern);
-	}
+    public static bool Like(this string text, string pattern)
+    {
+        return Sooda.QL.SoqlUtils.Like(text, pattern);
+    }
 }
 
 #endif
