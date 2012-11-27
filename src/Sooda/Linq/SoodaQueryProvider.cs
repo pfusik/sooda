@@ -192,72 +192,76 @@ namespace Sooda.Linq
         SoqlExpression TranslateMember(MemberExpression expr)
         {
             string name = expr.Member.Name;
-
-            // x.SoodaField -> SoqlPathExpression
-            if (expr.Expression.NodeType == ExpressionType.Parameter)
-                return new SoqlPathExpression(name); // FIXME: different parameters
-
             Type t = expr.Member.DeclaringType;
 
-            // x.GetType().Name -> SoqlSoodaClassExpression
-            if (t == typeof(MemberInfo) && name == "Name" && expr.Expression.NodeType == ExpressionType.Call)
+            if (expr.Expression != null)
             {
-                MethodCallExpression mc = (MethodCallExpression) expr.Expression;
-                if (SoodaLinqMethodUtil.Get(mc.Method) == SoodaLinqMethod.Object_GetType)
+                // non-static members
+
+                // x.SoodaField -> SoqlPathExpression
+                if (expr.Expression.NodeType == ExpressionType.Parameter)
+                    return new SoqlPathExpression(name); // FIXME: different parameters
+
+                // x.GetType().Name -> SoqlSoodaClassExpression
+                if (t == typeof(MemberInfo) && name == "Name" && expr.Expression.NodeType == ExpressionType.Call)
                 {
-                    if (mc.Object.NodeType == ExpressionType.Parameter)
-                        return new SoqlSoodaClassExpression();
-                    return new SoqlSoodaClassExpression((SoqlPathExpression) TranslateExpression(mc.Object));
+                    MethodCallExpression mc = (MethodCallExpression) expr.Expression;
+                    if (SoodaLinqMethodUtil.Get(mc.Method) == SoodaLinqMethod.Object_GetType)
+                    {
+                        if (mc.Object.NodeType == ExpressionType.Parameter)
+                            return new SoqlSoodaClassExpression();
+                        return new SoqlSoodaClassExpression((SoqlPathExpression) TranslateExpression(mc.Object));
+                    }
                 }
-            }
 
-            SoqlExpression parent = TranslateExpression(expr.Expression);
+                SoqlExpression parent = TranslateExpression(expr.Expression);
 
-            if (typeof(INullable).IsAssignableFrom(t))
-            {
-                if (name == "Value")
-                    return parent;
-                if (name == "IsNull")
-                    return new SoqlBooleanIsNullExpression(parent, false);
-            }
-
-            if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>))
-            {
-                if (name == "Value")
-                    return parent;
-                if (name == "HasValue")
-                    return new SoqlBooleanIsNullExpression(parent, true);
-            }
-
-            if (t == typeof(DateTime))
-            {
-                switch (name)
+                if (typeof(INullable).IsAssignableFrom(t))
                 {
-                    case "Day":
-                        return new SoqlFunctionCallExpression("day", parent);
-                    case "Month":
-                        return new SoqlFunctionCallExpression("month", parent);
-                    case "Year":
-                        return new SoqlFunctionCallExpression("year", parent);
-                    default:
-                        break;
+                    if (name == "Value")
+                        return parent;
+                    if (name == "IsNull")
+                        return new SoqlBooleanIsNullExpression(parent, false);
                 }
-            }
 
-            SoqlPathExpression parentPath = parent as SoqlPathExpression;
-            if (parentPath != null)
-            {
-                if (expr.Member.MemberType == MemberTypes.Property)
+                if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>))
                 {
-                    // x.SoodaField1.SoodaField2 -> SoqlPathExpression
-                    if (t.IsSubclassOf(typeof(SoodaObject)))
-                        return new SoqlPathExpression(parentPath, name);
-
-                    // x.SoodaCollection.Count -> SoqlCountExpression
-                    if (t == typeof(SoodaObjectCollectionWrapper) && name == "Count")
-                        return new SoqlCountExpression(parentPath.Left, parentPath.PropertyName);
+                    if (name == "Value")
+                        return parent;
+                    if (name == "HasValue")
+                        return new SoqlBooleanIsNullExpression(parent, true);
                 }
-                throw new NotSupportedException(t.FullName + "." + name);
+
+                if (t == typeof(DateTime))
+                {
+                    switch (name)
+                    {
+                        case "Day":
+                            return new SoqlFunctionCallExpression("day", parent);
+                        case "Month":
+                            return new SoqlFunctionCallExpression("month", parent);
+                        case "Year":
+                            return new SoqlFunctionCallExpression("year", parent);
+                        default:
+                            break;
+                    }
+                }
+
+                SoqlPathExpression parentPath = parent as SoqlPathExpression;
+                if (parentPath != null)
+                {
+                    if (expr.Member.MemberType == MemberTypes.Property)
+                    {
+                        // x.SoodaField1.SoodaField2 -> SoqlPathExpression
+                        if (t.IsSubclassOf(typeof(SoodaObject)))
+                            return new SoqlPathExpression(parentPath, name);
+
+                        // x.SoodaCollection.Count -> SoqlCountExpression
+                        if (t == typeof(SoodaObjectCollectionWrapper) && name == "Count")
+                            return new SoqlCountExpression(parentPath.Left, parentPath.PropertyName);
+                    }
+                    throw new NotSupportedException(t.FullName + "." + name);
+                }
             }
 
             return FoldConstant(expr, () => t.FullName + "." + name);
