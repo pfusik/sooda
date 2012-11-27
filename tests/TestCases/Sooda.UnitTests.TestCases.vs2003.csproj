@@ -122,6 +122,21 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Caching\CachingTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Caching\CollectionTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Caching\CollectionEvictTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ObjectMapper\AbstractTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -213,6 +228,21 @@
                 />
                 <File
                     RelPath = "ObjectMapper\SerializationTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ObjectMapper\SoodaObjectReflectionBasedFieldValues.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ObjectMapper\TriggerTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Soql\CollectionTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

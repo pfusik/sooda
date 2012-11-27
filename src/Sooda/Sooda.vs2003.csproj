@@ -93,6 +93,10 @@
         <File RelPath='Config\AppSettingsConfigProvider.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Config\ISoodaConfigProvider.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Config\XmlConfigProvider.cs' SubType='Code' BuildAction='Compile' />
+        <File RelPath='Linq\LinqUtils.cs' SubType='Code' BuildAction='Compile' />
+        <File RelPath='Linq\SoodaLinqMethod.cs' SubType='Code' BuildAction='Compile' />
+        <File RelPath='Linq\SoodaQueryable.cs' SubType='Code' BuildAction='Compile' />
+        <File RelPath='Linq\SoodaQueryProvider.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Logging\BasicLogger.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Logging\ConsoleLogger.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Logging\ConsoleLoggingImplementation.cs' SubType='Code' BuildAction='Compile' />
