@@ -185,6 +185,7 @@ static class SoodaLinqMethodUtil
             dict.Add(MethodOf(() => Enumerable.Contains<object>(null, null)), SoodaLinqMethod.Enumerable_Contains);
             dict.Add(MethodOf(() => Enumerable.Count<object>(null)), SoodaLinqMethod.Enumerable_Count);
             dict.Add(MethodOf(() => ((ICollection<object>) null).Contains(null)), SoodaLinqMethod.ICollection_Contains); // FIXME: Ungeneric doesn't handle methods in generic classes, so this will only work on ICollection<object>
+            dict.Add(MethodOf(() => ((System.Collections.ArrayList) null).Contains(null)), SoodaLinqMethod.ICollection_Contains);
             dict.Add(MethodOf(() => ((System.Collections.IList) null).Contains(null)), SoodaLinqMethod.ICollection_Contains);
             dict.Add(MethodOf(() => string.Empty.GetType()), SoodaLinqMethod.Object_GetType);
             dict.Add(MethodOf(() => string.Concat(string.Empty, string.Empty)), SoodaLinqMethod.String_Concat);
