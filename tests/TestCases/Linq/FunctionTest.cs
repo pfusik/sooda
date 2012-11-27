@@ -52,11 +52,11 @@ namespace Sooda.UnitTests.TestCases.Linq
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Name.Like("Mar%"));
                 Assert.AreEqual(1, ce.Count());
-                Assert.AreEqual("Mary Manager", ce.First().Name);
+                Assert.AreEqual(Contact.Mary, ce.First());
 
                 ce = Contact.Linq().Where(c => c.Name.Like("Mary Manager"));
                 Assert.AreEqual(1, ce.Count());
-                Assert.AreEqual("Mary Manager", ce.First().Name);
+                Assert.AreEqual(Contact.Mary, ce.First());
 
                 ce = Contact.Linq().Where(c => c.Name.Like("% Customer"));
                 Assert.AreEqual(4, ce.Count());
@@ -69,6 +69,202 @@ namespace Sooda.UnitTests.TestCases.Linq
 
                 ce = Contact.Linq().Where(c => c.Name.Like("%%%"));
                 Assert.AreEqual(7, ce.Count());
+            }
+        }
+
+        [Test]
+        public void StringConcat()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => string.Concat(c.Name, c.PrimaryGroup.Name.Value) == "Mary ManagerGroup1");
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(Contact.Mary, ce.First());
+            }
+        }
+
+        [Test]
+        public void StringRemove()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Name.Remove(4) == "Mary");
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(Contact.Mary, ce.First());
+            }
+        }
+
+        [Test]
+        public void StringReplace()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Name.Replace("M", "G") == "Gary Ganager");
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(Contact.Mary, ce.First());
+            }
+        }
+
+        [Test]
+        public void StringToLower()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Name.ToLower() == "mary manager");
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(Contact.Mary, ce.First());
+            }
+        }
+
+        [Test]
+        public void StringToUpper()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Name.ToLower() == "MARY MANAGER");
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(Contact.Mary, ce.First());
+            }
+        }
+
+        [Test]
+        public void MathAbs()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => Math.Abs(c.LastSalary.Value) == 1);
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual("Chuck Customer", ce.First().Name);
+            }
+        }
+
+        [Test]
+        public void MathAcos()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => Math.Acos(c.ContactId) == 0);
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(Contact.Mary, ce.First());
+            }
+        }
+
+        [Test]
+        public void MathAsin()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => Math.Asin(c.ContactId - 1) == 0);
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(Contact.Mary, ce.First());
+            }
+        }
+
+        [Test]
+        public void MathAtan()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => Math.Atan(c.ContactId - 1) == 0);
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(Contact.Mary, ce.First());
+            }
+        }
+
+        [Test]
+        public void MathCos()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => Math.Cos(c.ContactId - 1) == 1);
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(Contact.Mary, ce.First());
+            }
+        }
+
+        [Test]
+        public void MathExp()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => Math.Exp(c.ContactId - 1) == 1);
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(Contact.Mary, ce.First());
+            }
+        }
+
+        [Test]
+        public void MathFloor()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => Math.Floor(c.LastSalary.Value) == 123M);
+                Assert.AreEqual(2, ce.Count());
+            }
+        }
+
+        [Test]
+        public void MathPow()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => Math.Pow(c.ContactId, 2) == 2500);
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(50, ce.First().ContactId);
+            }
+        }
+
+        [Test]
+        public void MathRound()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => Math.Round(c.LastSalary.Value, 2) == 123.12M);
+                Assert.AreEqual(1, ce.Count());
+            }
+        }
+
+        [Test]
+        public void MathSign()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => Math.Sign(c.LastSalary.Value) == -1);
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(53, ce.First().ContactId);
+            }
+        }
+
+        [Test]
+        public void MathSin()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => Math.Sin(c.ContactId - 1) == 0);
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(Contact.Mary, ce.First());
+            }
+        }
+
+        [Test]
+        public void MathSqrt()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => Math.Sqrt(c.ContactId) == 1);
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(Contact.Mary, ce.First());
+            }
+        }
+
+        [Test]
+        public void MathTan()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => Math.Tan(c.ContactId - 1) == 0);
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(Contact.Mary, ce.First());
             }
         }
 

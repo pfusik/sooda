@@ -32,6 +32,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
+using Sooda.Linq;
 using Sooda.UnitTests.Objects;
 using Sooda.UnitTests.BaseObjects;
 using Sooda.UnitTests.BaseObjects.TypedQueries;
@@ -237,5 +238,39 @@ namespace Sooda.UnitTests.TestCases.Linq
                 Assert.AreEqual(0, ge.Count());
             }
         }
+
+        [Test]
+        public void OneToManyAll()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Subordinates.All(s => s.Name.Like("E% Employee")));
+                Assert.AreEqual(7, ce.Count());
+            }
+        }
+
+        [Test]
+        public void OneToManyAny()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Subordinates.Any());
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(Contact.Mary, ce.First());
+            }
+        }
+
+        [Test]
+        public void OneToManyAnyFiltered()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Subordinates.Any(s => s.Name == "Ed Employee"));
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(Contact.Mary, ce.First());
+            }
+        }
+
+
     }
 }

@@ -111,6 +111,9 @@ namespace Sooda.UnitTests.TestCases.Linq
 
                 ce = Contact.Linq().Where(c => c.Active == true == true != false);
                 Assert.AreEqual(7, ce.Count());
+
+                ce = Contact.Linq().Where(c => (c.Active == true) == (c.Active == true));
+                Assert.AreEqual(7, ce.Count());
             }
         }
 
@@ -210,6 +213,81 @@ namespace Sooda.UnitTests.TestCases.Linq
                 Assert.AreEqual(2, ce.Count());
                 ce = Contact.Linq().Where(c => c.Manager.PrimaryGroup.Manager.ContactId == 1);
                 Assert.AreEqual(2, ce.Count());
+            }
+        }
+
+        [Test]
+        public void Add()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.ContactId + c.PrimaryGroup.Id == 61);
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(51, ce.First().ContactId);
+            }
+        }
+
+        [Test]
+        public void Subtract()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.ContactId - c.PrimaryGroup.Id == 41);
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(51, ce.First().ContactId);
+            }
+        }
+
+        [Test]
+        public void Multiply()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.ContactId * c.PrimaryGroup.Id == 33);
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(3, ce.First().ContactId);
+            }
+        }
+
+        [Test]
+        public void Divide()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.PrimaryGroup.Id / c.ContactId == 10);
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(1, ce.First().ContactId);
+            }
+        }
+
+        [Test]
+        public void Modulo()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.ContactId % 10 == 2);
+                Assert.AreEqual(2, ce.Count());
+            }
+        }
+
+        [Test]
+        public void Negate()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => -c.ContactId == -50);
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(50, ce.First().ContactId);
+            }
+        }
+
+        [Test]
+        public void Coalesce()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => (c.Manager ?? c) == Contact.Mary);
+                Assert.AreEqual(3, ce.Count());
             }
         }
 

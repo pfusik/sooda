@@ -479,7 +479,7 @@ namespace Sooda.Linq
             }
             else
             {
-                // There was no order - order by primary keys descending.
+                // There was no order, so order by primary keys descending.
                 // This should do the trick for SQL Server if the primary keys are clustered.
                 Sooda.Schema.FieldInfo[] pks = _classInfo.GetPrimaryKeyFields();
                 string[] columnNames = new string[pks.Length];
