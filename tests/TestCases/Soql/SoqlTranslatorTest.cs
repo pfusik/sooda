@@ -139,21 +139,21 @@ from     Contact t0"
         {
             AssertTranslation(
                 "select Name,Members.Count from Group",
-                "select t0.name as Name, (select count(*) from Contact where primary_group=t0.id) as Members_Count from _Group t0");
+                "select t0.name as Name, (select count(*) from Contact t1 where (t1.primary_group = t0.id)) as Members_Count from _Group t0");
         }
         [Test]
         public void OneToManyCountTest1()
         {
             AssertTranslation(
                 "select Name,Members.Count from Group where Members.Count = 0",
-                "select t0.name as Name, (select count(*) from Contact where primary_group=t0.id) as Members_Count from _Group t0 where ((select count(*) from Contact where primary_group=t0.id) = 0)");
+                "select t0.name as Name, (select count(*) from Contact t1 where (t1.primary_group = t0.id)) as Members_Count from _Group t0 where ((select count(*) from Contact t2 where (t2.primary_group = t0.id)) = 0)");
         }
         [Test]
         public void OneToManyCountTest2()
         {
             AssertTranslation(
                 "select Name,Members.Count from Group where Members.Count <> Members.Count",
-                "select t0.name as Name, (select count(*) from Contact where primary_group=t0.id) as Members_Count from _Group t0 where ((select count(*) from Contact where primary_group=t0.id) <> (select count(*) from Contact where primary_group=t0.id))");
+                "select t0.name as Name, (select count(*) from Contact t1 where (t1.primary_group = t0.id)) as Members_Count from _Group t0 where ((select count(*) from Contact t2 where (t2.primary_group = t0.id)) <> (select count(*) from Contact t3 where (t3.primary_group = t0.id)))");
         }
         [Test]
         public void SelectFromRelationTest1()
@@ -205,7 +205,7 @@ from     Contact t0"
         {
             AssertTranslation(
                 "select Name from Group where Members.Contains(select ContactId from Contact where Name='Mary Manager')",
-                "select t0.name as Name from _Group t0 where exists (select * from Contact where primary_group=t0.id and id in (select t1.id as ContactId from Contact t1 where (t1.name = {L:AnsiString:Mary Manager})))");
+                "select t0.name as Name from _Group t0 where exists (select * from Contact t1 where ((t1.primary_group = t0.id) and t1.id in (select t2.id as ContactId from Contact t2 where (t2.name = {L:AnsiString:Mary Manager}))))");
         }
 
         [Test]
@@ -216,10 +216,7 @@ from     Contact t0"
                 @"
 select   t0.name as Name
 from     _Group t0
-where    exists (select * from Contact t1 where ((t1.primary_group = t0.id) and t1.id in (
-    select   t2.id as [ContactId]
-    from     Contact t2
-    where    (t2.name = {L:AnsiString:Mary Manager}))))
+where    exists (select * from Contact t1 where ((t1.primary_group = t0.id) and (t1.name = {L:AnsiString:Mary Manager})))
 ");
         }
 
@@ -335,12 +332,19 @@ where    ((((t2.name = {L:AnsiString:zzz}) and exists (
     select   *
     from     _Group t5
              left outer join Contact t6 on (t5.manager = t6.id)
-    where    ((((t6.name = {L:AnsiString:Mary Manager}) and ((select count(*) from Contact where primary_group=t5.id) > 3)) and exists (select * from Contact t7 where ((t7.primary_group = t5.id) and t7.id in (
-        select   t8.id as [ContactId]
+    where    ((((t6.name = {L:AnsiString:Mary Manager}) and ((
+        select count(*)
+        from Contact t7
+        where (t7.primary_group = t5.id)) > 3)) and exists (
+        select   *
         from     Contact t8
                  left outer join _Group t9 on (t8.primary_group = t9.id)
-        where    ((t8.name = {L:AnsiString:ZZZ}) and exists (select * from Contact t10 where ((t10.primary_group = t9.id) and t10.id in (
-3)))))))) and exists (select * from ContactRole where contact_id=t6.id and role_id in (
+        where    ((t8.primary_group = t5.id) and ((t8.name = {L:AnsiString:ZZZ}) and exists (
+            select   *
+            from     Contact t10
+            where    ((t10.primary_group = t9.id) and t10.id in (3))
+)))
+)) and exists (select * from ContactRole where contact_id=t6.id and role_id in (
         select   t11.id as [Id]
         from     _Role t11
         where    (t11.name = {L:String:Customer}))))

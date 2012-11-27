@@ -212,5 +212,28 @@ namespace Sooda.UnitTests.TestCases.Soql
                 Assert.AreEqual(cl[0].Name, "Ed Employee");
             }
         }
+
+        [Test]
+        public void NestedContains()
+        {
+            using (new SoodaTransaction())
+            {
+                ContactList cl = Contact.GetList(ContactField.PrimaryGroup.Members.Contains(3));
+                Assert.AreEqual(1, cl.Count);
+            }
+        }
+
+        [Test]
+        public void ComplexTest5()
+        {
+            using (new SoodaTransaction())
+            {
+                GroupList gl = Group.GetList(GroupField.Manager.Name == "Mary Manager"
+                    && GroupField.Members.Count > 3
+                    && GroupField.Members.ContainsContactWhere(ContactField.Name == "ZZZ" && ContactField.PrimaryGroup.Members.Contains(3))
+                    && GroupField.Manager.Roles.ContainsRoleWhere(RoleField.Name == "Customer"));
+                Assert.AreEqual(0, gl.Count);
+            }
+        }
     }
 }

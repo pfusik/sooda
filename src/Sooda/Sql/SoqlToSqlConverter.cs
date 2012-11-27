@@ -388,42 +388,52 @@ namespace Sooda.Sql
             return subconverter;
         }
 
-        SoqlToSqlConverter CreateCollectionSubconverter(CollectionOnetoManyInfo col1n, SoqlQueryExpression query, out string tableAlias)
+        SoqlQueryExpression CreateCollectionQuery(ClassInfo currentClass, string p, CollectionOnetoManyInfo col1n, SoqlExpression selectExpression, SoqlExpression needle)
         {
-            if (col1n.Where != null && col1n.Where.Length > 0)
-            {
-                if (query == null)
-                {
-                    query = new SoqlQueryExpression();
-                    query.From.Add(col1n.ClassName);
-                    query.FromAliases.Add("");
-                }
-                SoqlToSqlConverter subconverter = CreateSubconverter();
-                subconverter.Init(query);
-                tableAlias = subconverter.ActualFromAliases[0];
-                return subconverter;
-            }
-            tableAlias = "";
-            return null;
-        }
+            SoqlBooleanExpression where = new SoqlBooleanRelationalExpression(
+                new SoqlPathExpression(col1n.ForeignField2.Name),
+                new SoqlPathExpression(new SoqlPathExpression(p.Split('.')), currentClass.GetFirstPrimaryKeyField().Name),
+                SoqlRelationalOperator.Equal);
 
-        void OutputCollectionWhere(ClassInfo currentClass, string p, CollectionOnetoManyInfo col1n, string tableAlias, SoqlToSqlConverter subconverter)
-        {
-            OutputColumn(tableAlias, col1n.ForeignField2);
-            Output.Write('=');
-            OutputColumn(GetTableAliasForExpressionPrefix(p), currentClass.GetFirstPrimaryKeyField());
             if (col1n.Where != null && col1n.Where.Length > 0)
+                where &= SoqlParser.ParseWhereClause(col1n.Where);
+
+            if (needle != null)
             {
-                Output.Write(" and ");
-                SoqlBooleanExpression expr = SoqlParser.ParseWhereClause(col1n.Where);
-                expr.Accept(subconverter);
+                SoqlQueryExpression nq = needle as SoqlQueryExpression;
+                if (nq != null
+                    && nq.TopCount == -1 && nq.SelectExpressions.Count == 0
+                    && nq.From.Count == 1 && nq.From[0] == col1n.ClassName && nq.FromAliases[0].Length == 0
+                    && nq.Having == null && nq.GroupByExpressions.Count == 0)
+                {
+                    if (nq.WhereClause != null)
+                        where &= nq.WhereClause;
+                }
+                else
+                {
+                    if (col1n.Class.GetPrimaryKeyFields().Length >= 2)
+                        throw new NotSupportedException("Contains() with composite primary key");
+                    SoqlExpressionCollection collection = new SoqlExpressionCollection();
+                    collection.Add(needle);
+                    where &= new SoqlBooleanInExpression(
+                        new SoqlPathExpression(col1n.Class.GetFirstPrimaryKeyField().Name),
+                        collection);
+                }
             }
+
+            SoqlQueryExpression query = new SoqlQueryExpression();
+            query.SelectExpressions.Add(selectExpression);
+            query.SelectAliases.Add("");
+            query.From.Add(col1n.ClassName);
+            query.FromAliases.Add("");
+            query.WhereClause = where;
+            return query;
         }
 
         public override void Visit(SoqlCountExpression v)
         {
             ClassInfo currentClass;
-            string p = "";
+            string p;
             string firstTableAlias = null;
 
             if (v.Path != null)
@@ -439,12 +449,11 @@ namespace Sooda.Sql
             CollectionOnetoManyInfo col1n = currentClass.FindCollectionOneToMany(v.CollectionName);
             if (col1n != null)
             {
-                string tableAlias;
-                SoqlToSqlConverter subconverter = CreateCollectionSubconverter(col1n, null, out tableAlias);
-                Output.Write("(select count(*) from ");
-                OutputTableFrom(col1n.Class.LocalTables[0], tableAlias);
-                Output.Write(" where ");
-                OutputCollectionWhere(currentClass, p, col1n, tableAlias, subconverter);
+                SoqlQueryExpression query = CreateCollectionQuery(currentClass, p, col1n, new SoqlFunctionCallExpression("count", new SoqlAsteriskExpression()), null);
+                Output.Write('(');
+                if (IndentOutput)
+                    Output.WriteLine();
+                query.Accept(this);
                 Output.Write(')');
                 return;
             }
@@ -493,7 +502,7 @@ namespace Sooda.Sql
         public override void Visit(SoqlContainsExpression v)
         {
             ClassInfo currentClass;
-            string p = "";
+            string p;
             string firstTableAlias = null;
 
             if (v.Path != null)
@@ -509,39 +518,9 @@ namespace Sooda.Sql
             CollectionOnetoManyInfo col1n = currentClass.FindCollectionOneToMany(v.CollectionName);
             if (col1n != null)
             {
-                if (col1n.Class.GetPrimaryKeyFields().Length >= 2 && v.Expr is SoqlQueryExpression)
-                {
-                    string tableAlias;
-                    SoqlToSqlConverter subconverter = CreateCollectionSubconverter(col1n, (SoqlQueryExpression) v.Expr, out tableAlias);
-                    if (subconverter == null)
-                    {
-                        subconverter = CreateSubconverter();
-                        subconverter.Init((SoqlQueryExpression) v.Expr);
-                        tableAlias = subconverter.ActualFromAliases[0];
-                    }
-                    Output.Write("exists (");
-                    if (IndentOutput)
-                        Output.WriteLine();
-                    subconverter.DoVisit((SoqlQueryExpression) v.Expr);
-                    Output.Write(" and ");
-                    OutputCollectionWhere(currentClass, p, col1n, tableAlias, subconverter);
-                    Output.Write(')');
-                }
-                else
-                {
-                    // "contains" is handled as a specific "exists" subquery
-                    // it is recommended to use SOQL - to avoid problems with missing joins, multi-table classes, for filtered relation etc.
-                    // this pattern should be used probably in many places in this class ...
-                    SoqlExistsExpression subExists = new SoqlExistsExpression();
-                    string query = "select * from " + col1n.Class.Name + " where " + col1n.ForeignField2.Name + "=" + p + "." + currentClass.GetFirstPrimaryKeyField().Name;
-                    if (col1n.Where != null && col1n.Where.Length > 0)
-                        query += " and " + col1n.Where;
-                    query += " and " + col1n.Class.GetFirstPrimaryKeyField().Name + " in (" + v.Expr + ")";
-                    
-                    Sooda.QL.SoqlQueryExpression subquery = Sooda.QL.SoqlParser.ParseQuery(query);
-                    subExists.Query = subquery;
-                    subExists.Accept(this);
-                }
+                SoqlQueryExpression query = CreateCollectionQuery(currentClass, p, col1n, new SoqlAsteriskExpression(), v.Expr);
+                SoqlExistsExpression subExists = new SoqlExistsExpression(query);
+                subExists.Accept(this);
                 return;
             }
 
