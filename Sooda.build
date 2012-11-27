@@ -396,11 +396,13 @@
         <exec workingdir="bin" program="${sooda.dir}/ConsoleTest.exe" commandline="" />
     </target>
 
-    <target name="nunit-gui" depends="Sooda.UnitTests.TestCases">
-        <exec workingdir="${sooda.dir}" program="nunit-gui.exe" commandline="${sooda.dir}/Sooda.UnitTests.TestCases.dll" />
+    <target name="nunit" depends="Sooda.UnitTests.TestCases">
+        <copy file="tests/TestCases/App.config" tofile="${sooda.dir}/Sooda.UnitTests.TestCases.dll.config" />
+        <exec workingdir="${sooda.dir}" program="nunit.exe" commandline="${sooda.dir}/Sooda.UnitTests.TestCases.dll" />
     </target>
 
     <target name="nunit-console" depends="Sooda.UnitTests.TestCases">
+        <copy file="tests/TestCases/App.config" tofile="${sooda.dir}/Sooda.UnitTests.TestCases.dll.config" />
         <exec verbose="true" workingdir="${sooda.dir}" program="nunit-console.exe" commandline="${sooda.dir}/Sooda.UnitTests.TestCases.dll" />
     </target>
 
@@ -581,7 +583,7 @@
                 <include name="${sooda.dir}/Sooda.UnitTests.BaseObjects.dll" />
                 <include name="${sooda.dir}/Sooda.UnitTests.Objects.dll" />
                 <include name="${sooda.dir}/Sooda.UnitTests.TestCases.dll" />
-                <include name="${sooda.dir}/NUnit.Framework.dll" />
+                <include name="${sooda.dir}/nunit.framework.dll" />
                 <include name="${sooda.dir}/NLog.dll" />
                 <include name="System.Data.dll" asis="true" />
             </references>
