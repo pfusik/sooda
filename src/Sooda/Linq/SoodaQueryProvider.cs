@@ -361,10 +361,15 @@ namespace Sooda.Linq
 
             Type t = mc.Method.DeclaringType;
 
-            // x.SoodaCollection.Contains(expr) -> SoqlContainsExpression
             Type cwg = t.BaseType;
             if (cwg != null && cwg.IsGenericType && cwg.GetGenericTypeDefinition() == typeof(SoodaObjectCollectionWrapperGeneric<>) && mc.Method.Name == "Contains")
             {
+                if (IsConstant(mc.Object))
+                {
+                    // ConstSoodaCollection.Contains(expr) -> SoqlBooleanInExpression
+                    return TranslateCollectionContains(mc.Object, mc.Arguments[0]);
+                }
+                // x.SoodaCollection.Contains(expr) -> SoqlContainsExpression
                 SoqlPathExpression haystack = (SoqlPathExpression) TranslateExpression(mc.Object);
                 SoqlExpression needle = TranslateExpression(mc.Arguments[0]);
                 return new SoqlContainsExpression(haystack.Left, haystack.PropertyName, needle);
