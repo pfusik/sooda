@@ -211,7 +211,12 @@ namespace Sooda.Sql
             }
             else
             {
-                Output.Write(literalValue);
+                // this is to output the decimal point as dot and not comma under Polish locale
+                IFormattable formattable = literalValue as IFormattable;
+                if (formattable != null)
+                    Output.Write(formattable.ToString(null, System.Globalization.CultureInfo.InvariantCulture));
+                else
+                    Output.Write(literalValue);
             }
         }
 
