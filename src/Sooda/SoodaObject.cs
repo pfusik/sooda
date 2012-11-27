@@ -54,6 +54,7 @@ namespace Sooda
 
         internal byte[] _fieldIsDirty;
         internal SoodaObjectFieldValues _fieldValues;
+        internal Hashtable _fieldForDelayedUpdate;
         private int _dataLoadedMask;
         private SoodaTransaction _transaction;
         private SoodaObjectFlags _flags;
@@ -61,7 +62,7 @@ namespace Sooda
 
         public bool AreFieldUpdateTriggersEnabled()
         {
-            return (_flags & SoodaObjectFlags.DisableTriggers) == 0;
+            return (_flags & SoodaObjectFlags.DisableFieldTriggers) == 0;
         }
 
         public bool EnableFieldUpdateTriggers()
@@ -79,11 +80,38 @@ namespace Sooda
             bool oldValue = AreFieldUpdateTriggersEnabled();
 
             if (!enable)
-                _flags |= SoodaObjectFlags.DisableTriggers;
+                _flags |= SoodaObjectFlags.DisableFieldTriggers;
             else
-                _flags &= ~SoodaObjectFlags.DisableTriggers;
+                _flags &= ~SoodaObjectFlags.DisableFieldTriggers;
             return oldValue;
         }
+
+        public bool AreObjectTriggersEnabled()
+        {
+            return (_flags & SoodaObjectFlags.DisableObjectTriggers) == 0;
+        }
+
+        public bool EnableObjectTriggers()
+        {
+            return EnableObjectTriggers(true);
+        }
+
+        public bool DisableObjectTriggers()
+        {
+            return EnableObjectTriggers(false);
+        }
+
+        public bool EnableObjectTriggers(bool enable)
+        {
+            bool oldValue = AreObjectTriggersEnabled();
+
+            if (!enable)
+                _flags |= SoodaObjectFlags.DisableObjectTriggers;
+            else
+                _flags &= ~SoodaObjectFlags.DisableObjectTriggers;
+            return oldValue;
+        }
+
 
         private bool InsertMode
         {
@@ -270,7 +298,7 @@ namespace Sooda
 
         private void InitFieldData(bool justLoading)
         {
-            if (!InsertMode)
+            if (!InsertMode && GetTransaction().CachingPolicy.ShouldCacheObject(this))
             {
                 SoodaCacheEntry cachedData = GetTransaction().Cache.Find(GetClassInfo().GetRootClass().Name, _primaryKeyValue);
                 if (cachedData != null)
@@ -391,8 +419,10 @@ namespace Sooda
                     for (int i = oldDeletePosition; i < newDeletePosition; ++i)
                     {
                         // logger.Debug("Actually deleting {0}", GetTransaction().DeletedObjects[i].GetObjectKeyString());
-                        deleted[i].CommitObjectChanges();
-                        deleted[i].SetObjectDirty();
+                        SoodaObject o = deleted[i];
+                        o.CommitObjectChanges();
+                        o.SetObjectDirty();
+                        GetTransaction().MarkPrecommitted(o);
                     }
                     foreach (SoodaDataSource source in GetTransaction()._dataSources)
                     {
@@ -879,6 +909,50 @@ namespace Sooda
             return GetTransaction().IsRegistered(this);
         }
 
+        internal void DelayedUpdate()
+        {
+            if (_fieldForDelayedUpdate != null)
+            {
+                if (_fieldForDelayedUpdate.Count > 0)
+                {
+                    for (int i = GetClassInfo().UnifiedFields.Count; i >= 0; i--)
+                        SetFieldDirty(i, false);
+                    this.InsertMode = false;
+                    foreach (object obj in _fieldForDelayedUpdate.Keys)
+                    {
+                        _fieldValues.SetFieldValue((int)obj, _fieldForDelayedUpdate[obj]);
+                        SetFieldDirty((int)obj, true);
+                    }
+                    CommitObjectChanges();
+                    _fieldForDelayedUpdate.Clear();
+                }
+                _fieldForDelayedUpdate = null;
+            }
+        }
+
+        internal void CallDelayedUpdates()
+        {
+            // iterate outer references
+
+            foreach (Sooda.Schema.FieldInfo fi in GetClassInfo().UnifiedFields)
+            {
+                if (fi.ReferencedClass == null)
+                    continue;
+
+                object v = _fieldValues.GetBoxedFieldValue(fi.ClassUnifiedOrdinal);
+                if (v != null)
+                {
+                    ISoodaObjectFactory factory = GetTransaction().GetFactory(fi.ReferencedClass);
+                    SoodaObject obj = factory.TryGet(GetTransaction(), v);
+
+                    if (obj != null && (object)obj != (object)this)
+                        if (obj.IsInsertMode())
+                            obj.DelayedUpdate();
+                }
+            }
+        }
+
+
         internal void SaveOuterReferences()
         {
             // iterate outer references
@@ -894,15 +968,22 @@ namespace Sooda
                     ISoodaObjectFactory factory = GetTransaction().GetFactory(fi.ReferencedClass);
                     SoodaObject obj = factory.TryGet(GetTransaction(), v);
 
-
                     if (obj != null && (object)obj != (object)this)
                     {
                         if (obj.IsInsertMode())
                         {
                             if (obj.VisitedOnCommit && !obj.WrittenIntoDatabase)
                             {
-                                throw new Exception("Cyclic reference between " + GetObjectKeyString() + " and " + obj.GetObjectKeyString());
-                                // cyclic reference
+                                if (!obj.InsertedIntoDatabase)
+                                {
+                                    // cyclic reference
+                                    if (_fieldForDelayedUpdate == null)
+                                        _fieldForDelayedUpdate = new Hashtable();
+                                    if (!fi.IsNullable)
+                                        throw new Exception("Cyclic reference between " + GetObjectKeyString() + " and " + obj.GetObjectKeyString());
+                                    _fieldForDelayedUpdate.Add(fi.ClassUnifiedOrdinal, v);
+                                    _fieldValues.SetFieldValue(fi.ClassUnifiedOrdinal, null);
+                                }
                             }
                             else
                             {
@@ -917,15 +998,20 @@ namespace Sooda
         internal void SaveObjectChanges()
         {
             VisitedOnCommit = true;
+            if (WrittenIntoDatabase)
+            {
+                //CallDelayedUpdates();
+                DelayedUpdate();
+                return;
+            }
+
             if (IsObjectDirty())
             {
                 SaveOuterReferences();
             }
 
-            if (WrittenIntoDatabase)
-                return;
-
-            if ((IsObjectDirty() || IsInsertMode()) && !WrittenIntoDatabase)
+            //if ((IsObjectDirty() || IsInsertMode()) && (!WrittenIntoDatabase || ((_fieldForDelayedUpdate != null) && (_fieldForDelayedUpdate.Count > 0))))
+            if ((IsObjectDirty() || IsInsertMode()) && (!WrittenIntoDatabase))
             {
                 // deletes are performed in a separate pass
                 if (!IsMarkedForDelete())
@@ -980,12 +1066,14 @@ namespace Sooda
         {
             if (IsInsertMode())
             {
-                AfterObjectInsert();
+                if (AreObjectTriggersEnabled())
+                    AfterObjectInsert();
                 InsertMode = false;
             }
             else
             {
-                AfterObjectUpdate();
+                if (AreObjectTriggersEnabled())
+                    AfterObjectUpdate();
             }
         }
 
@@ -993,11 +1081,13 @@ namespace Sooda
         {
             if (IsInsertMode())
             {
-                BeforeObjectInsert();
+                if (AreObjectTriggersEnabled())
+                    BeforeObjectInsert();
             }
             else
             {
-                BeforeObjectUpdate();
+                if (AreObjectTriggersEnabled())
+                    BeforeObjectUpdate();
             }
             GetTransaction().AddToPostCommitQueue(this);
         }
@@ -1041,6 +1131,9 @@ namespace Sooda
             xw.WriteAttributeString("class", GetClassInfo().Name);
             if (!IsObjectDirty())
                 xw.WriteAttributeString("dirty", "false");
+
+            if (!AreObjectTriggersEnabled())
+                xw.WriteAttributeString("disableobjecttriggers", "true");
 
             if (PostCommitForced)
                 xw.WriteAttributeString("forcepostcommit", "true");
@@ -1087,6 +1180,7 @@ namespace Sooda
                 xw.WriteAttributeString("objectDirty", IsObjectDirty() ? "true" : "false");
                 xw.WriteAttributeString("dataLoaded", IsAllDataLoaded() ? "true" : "false");
                 xw.WriteAttributeString("disableTriggers", AreFieldUpdateTriggersEnabled() ? "false" : "true");
+                xw.WriteAttributeString("disableObjectTriggers", AreObjectTriggersEnabled() ? "false" : "true");
                 xw.WriteEndElement();
             }
             NameValueCollection persistentValues = GetTransaction().GetPersistentValues(this);

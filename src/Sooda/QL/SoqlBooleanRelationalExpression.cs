@@ -166,6 +166,9 @@ namespace Sooda.QL
 
         public static object Compare(object v1, object v2, SoqlRelationalOperator op)
         {
+            v1 = Sooda.Utils.SqlTypesUtil.Unwrap(v1);
+            v2 = Sooda.Utils.SqlTypesUtil.Unwrap(v2);
+
             if (v1 == null || v2 == null)
                 return null;
 

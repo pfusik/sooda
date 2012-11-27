@@ -38,8 +38,6 @@ namespace Sooda.Sql
 {
     public class OracleBuilder : SqlBuilderPositionalArg
     {
-        //private int _internalCounter = 0;
-
         public override string GetDDLCommandTerminator()
         {
             return Environment.NewLine + "GO" + Environment.NewLine + Environment.NewLine;
@@ -50,43 +48,35 @@ namespace Sooda.Sql
             switch (fi.DataType)
             {
                 case FieldDataType.Integer:
+                case FieldDataType.BooleanAsInteger:
+                case FieldDataType.TimeSpan:
+                case FieldDataType.Long:
                     return "integer";
 
                 case FieldDataType.AnsiString:
                     if (fi.Size >= 4000)
                         return "clob";
-                    else
-                        return "varchar2(" + fi.Size + ")";
+                    return "varchar2(" + fi.Size + ")";
 
                 case FieldDataType.String:
-                    if (fi.Size >= 4000)
+                    if (fi.Size >= 2000)
                         return "nclob";
-                    else
-                        return "nvarchar2(" + fi.Size + ")";
+                    return "nvarchar2(" + fi.Size + ")";
 
                 case FieldDataType.Decimal:
                     if (fi.Size < 0)
                         return "number";
-                    else if (fi.Precision < 0)
+                    if (fi.Precision < 0)
                         return "number(" + fi.Size + ")";
-                    else
-                        return "number(" + fi.Size + "," + fi.Precision + ")";
+                    return "number(" + fi.Size + "," + fi.Precision + ")";
 
                 case FieldDataType.Double:
-                    if (fi.Size < 0)
-                        return "float";
-                    else if (fi.Precision < 0)
-                        return "float(" + fi.Size + ")";
-                    else
-                        return "float(" + fi.Size + "," + fi.Precision + ")";
-
                 case FieldDataType.Float:
                     if (fi.Size < 0)
                         return "float";
-                    else if (fi.Precision < 0)
+                    if (fi.Precision < 0)
                         return "float(" + fi.Size + ")";
-                    else
-                        return "float(" + fi.Size + "," + fi.Precision + ")";
+                    return "float(" + fi.Size + "," + fi.Precision + ")";
 
                 case FieldDataType.DateTime:
                     return "date";
@@ -94,20 +84,11 @@ namespace Sooda.Sql
                 case FieldDataType.Image:
                     return "blob";
 
-                case FieldDataType.BooleanAsInteger:
-                    return "integer";
-
-                case FieldDataType.TimeSpan:
-                    return "integer";
-
-                case FieldDataType.Long:
-                    return "integer";
-
                 case FieldDataType.Boolean:
                     return "byte";
 
                 default:
-                    throw new NotImplementedException(String.Format("Datatype {0} not supported for this database", fi.DataType.ToString()));
+                    throw new NotImplementedException(String.Format("Datatype {0} not supported for this database", fi.DataType));
             }
         }
 
@@ -116,14 +97,9 @@ namespace Sooda.Sql
             switch (fi.DataType)
             {
                 case FieldDataType.AnsiString:
-                    if (fi.Size < 4000)
-                        // dla clob IsNull dziala w oracle dobrze, a dla nvarchar2 isnull('') = true - niezgodne z ansi SQL-92
-                        return "null";
-                    break;
-
                 case FieldDataType.String:
                     if (fi.Size < 4000)
-                        // dla clob IsNull dziala w oracle dobrze, a dla nvarchar2 isnull('') = true - niezgodne z ansi SQL-92
+                        // IsNull works fine for Oracle clob, but for nvarchar2 isnull('') = true - contrary to ansi SQL-92
                         return "null";
                     break;
             }
@@ -131,29 +107,9 @@ namespace Sooda.Sql
             return fi.IsNullable ? "null" : "not null";
         }
 
-
-
-                //// truncate identifier and add a generated number to have unique identifiers
-        //private string TruncateIdentifier(string identifier, int length)
-        //{
-        //    if (identifier.Length < length)
-        //        return identifier;
-        //    string num = "_" + _internalCounter.ToString();
-        //    _internalCounter ++;
-        //    return identifier.Substring(0, length - num.Length) + num;
-        //    
-        //}
-
-        //public override string GetConstraintName(string tableName, string foreignKey)
-        //{
-        //      // we have to truncate FK name - length of object name must be < 30
-        //    string res = base.GetConstraintName(tableName, foreignKey);
-        //    return TruncateIdentifier(res, 30);
-        //}
-
         protected override string GetNameForParameter(int pos)
         {
-            return ":p" + pos.ToString();
+            return ":p" + pos;
         }
 
         public override string QuoteFieldName(string s)
@@ -168,7 +124,6 @@ namespace Sooda.Sql
                 return SqlTopSupportMode.Oracle;
             }
         }
-
 
         public override SqlOuterJoinSyntax OuterJoinSyntax
         {
@@ -185,14 +140,12 @@ namespace Sooda.Sql
                 case FieldDataType.AnsiString:
                     if (fi.Size > 2000)
                         return start ? "cast(substr(" : ", 0, 2000) as varchar2(2000))";
-                    else
-                        return "";
+                    return "";
 
                 case FieldDataType.String:
                     if (fi.Size > 2000)
                         return start ? "cast(substr(" : ", 0, 2000) as nvarchar2(2000))";
-                    else
-                        return "";
+                    return "";
 
                 default:
                     return "";
@@ -202,7 +155,7 @@ namespace Sooda.Sql
 
         public override string GetAlterTableStatement(Sooda.Schema.TableInfo tableInfo)
         {
-            string ident = GetTruncatedIdentifier(String.Format("PK_{0}", tableInfo.DBTableName));
+            string ident = GetTruncatedIdentifier("PK_" + tableInfo.DBTableName);
             return String.Format("alter table {0} add constraint {1} primary key", tableInfo.DBTableName, ident);
         }
 
@@ -210,17 +163,17 @@ namespace Sooda.Sql
         {
             string paramName = base.AddParameterFromValue(command, v, modifiers);
             OracleParameter param = (OracleParameter)command.Parameters[paramName];
-            if ((param.DbType == DbType.String) && (v.ToString().Length > 2000))
-            {
+            if (param.DbType == DbType.String && v.ToString().Length > 2000)
                 param.OracleType = OracleType.NClob;
-            }
             return paramName;
         }
 
         public override bool IsFatalException(IDbConnection connection, Exception e)
         {
-#if DOTNET2
+#if DOTNET2 && !MONO
+            #pragma warning disable 618
             OracleConnection.ClearAllPools();
+            #pragma warning restore 618
 #endif
             return false;
         }
@@ -231,7 +184,7 @@ namespace Sooda.Sql
             if (val == null)
                return true;
             if ((fi.DataType == FieldDataType.AnsiString) || (fi.DataType == FieldDataType.String))
-                return ((string)val) == "";
+                return ((string)val).Length == 0;
             return false;
         }
 

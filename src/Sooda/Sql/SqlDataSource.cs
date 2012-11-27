@@ -1023,7 +1023,7 @@ namespace Sooda.Sql
             try
             {
                 sw.Start();
-                IDataReader retval = cmd.ExecuteReader();
+                IDataReader retval = cmd.ExecuteReader(CmdBehavior);
                 sw.Stop();
                 return retval;
             }

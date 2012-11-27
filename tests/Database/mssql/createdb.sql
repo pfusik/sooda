@@ -46,7 +46,8 @@ create table Contact
 	last_salary decimal(20,10) null,
 	name varchar(64) null,
 	type varchar(16) not null references ContactType(code),
-	primary_group int null references _Group(id)
+	primary_group int null references _Group(id),
+	manager int null references Contact(id)
 )
 go
 
@@ -73,7 +74,8 @@ create table Vehicle
     type int not null,
 	name varchar(64) null,
 	abs varchar(64) null,
-	four_wheel_drive varchar(64) null
+	four_wheel_drive varchar(64) null,
+	owner int null references Contact(id)
 )
 go
 
@@ -213,14 +215,14 @@ insert into ContactType values('Customer','External Contact');
 insert into _Group values(10,'Group1',1);
 insert into _Group values(11,'Group2',2);
 
-insert into Contact values(1,1,123.123456789,'Mary Manager','Manager',10);
-insert into Contact values(2,1,234.0,'Ed Employee','Employee',10);
-insert into Contact values(3,1,345.0,'Eva Employee','Employee',11);
+insert into Contact values(1,1,123.123456789,'Mary Manager','Manager',10,null);
+insert into Contact values(2,1,234.0,'Ed Employee','Employee',10,1);
+insert into Contact values(3,1,345.0,'Eva Employee','Employee',11,1);
 
-insert into Contact values(50,1,99.123,'Catie Customer','Customer',null);
-insert into Contact values(51,1,3.14159,'Caroline Customer','Customer',10);
-insert into Contact values(52,1,123,'Chris Customer','Customer',null);
-insert into Contact values(53,1,-1,'Chuck Customer','Customer',10);
+insert into Contact values(50,1,99.123,'Catie Customer','Customer',null,null);
+insert into Contact values(51,1,3.14159,'Caroline Customer','Customer',10,null);
+insert into Contact values(52,1,123,'Chris Customer','Customer',null,null);
+insert into Contact values(53,1,-1,'Chuck Customer','Customer',10,null);
 
 insert into _Role values(1,'Employee');
 insert into _Role values(2,'Manager');
@@ -243,15 +245,15 @@ insert into KeyGen values('Contact',100);
 insert into KeyGen values('Group',100);
 insert into KeyGen values('Vehicle',100);
 
-insert into Vehicle values(1,1,'some vehicle',null,null);
-insert into Vehicle values(2,1,'a car',null,null);
-insert into Vehicle values(3,2,'a bike',null,null);
-insert into Vehicle values(4,3,'a super-bike',null,null);
-insert into Vehicle values(5,3,'another super-bike',null,null);
-insert into Vehicle values(6,4,'mega super-bike',null,null);
-insert into Vehicle values(10,7,'an extended bike',null,null);
-insert into Vehicle values(11,5,'concrete bike 1',null,null);
-insert into Vehicle values(12,6,'concrete bike 2',null,null);
+insert into Vehicle values(1,1,'some vehicle',null,null,null);
+insert into Vehicle values(2,1,'a car',null,null,1);
+insert into Vehicle values(3,2,'a bike',null,null,2);
+insert into Vehicle values(4,3,'a super-bike',null,null,null);
+insert into Vehicle values(5,3,'another super-bike',null,null,null);
+insert into Vehicle values(6,4,'mega super-bike',null,null,null);
+insert into Vehicle values(10,7,'an extended bike',null,null,null);
+insert into Vehicle values(11,5,'concrete bike 1',null,null,null);
+insert into Vehicle values(12,6,'concrete bike 2',null,null,null);
 
 insert into Bike values(3,1);
 insert into Bike values(4,1);

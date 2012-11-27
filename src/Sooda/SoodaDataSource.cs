@@ -91,6 +91,13 @@ namespace Sooda
             set { _statistics = value; }
         }
 
+        private CommandBehavior _cmdBehavior = CommandBehavior.Default;
+        public CommandBehavior CmdBehavior
+        {
+            get { return _cmdBehavior; }
+            set { _cmdBehavior = value; }
+        }
+
         public abstract bool IsOpen { get; }
         public abstract void Rollback();
         public abstract void Commit();

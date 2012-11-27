@@ -49,11 +49,6 @@ namespace Sooda.QL
             visitor.Visit(this);
         }
 
-        public override SoqlExpression Simplify()
-        {
-            return this;
-        }
-
         public override object Evaluate(ISoqlEvaluateContext context)
         {
             throw new NotImplementedException();

@@ -27,30 +27,52 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System.Text.RegularExpressions;
+using System;
+using System.Xml;
+using System.Xml.Serialization;
+using Sooda.Schema;
+using Sooda.Sql;
+using System.IO;
 
-namespace Sooda.QL
+namespace SoodaSchemaTool
 {
-    public sealed class SoqlUtils
+    [Command("genfullschema","Generate single file for merged schema")]
+    public class CommandGenFullSchema : Command
     {
-        public static bool Like(string text, string pattern)
+        public CommandGenFullSchema()
         {
-            Regex expr = new Regex(ConvertSql2Regex(pattern), RegexOptions.IgnoreCase);
-            return expr.IsMatch(text);
         }
 
-        private static string ConvertSql2Regex(string s)
+        public override int Run(string[] args)
         {
-            s = Regex.Escape(s);
-            if (s.StartsWith("%"))
-                s = s.Substring(1);
-            else
-                s = "\\A" + s;
-            if (s.EndsWith("%"))
-                s = s.Substring(0, s.Length - 1);
-            else
-                s += "\\z";
-            return s.Replace("%", ".*").Replace('_', '.');
+            string schemaFileName = args[0];
+            string outschemaFileName = args[1];
+
+            XmlTextReader xr = new XmlTextReader(schemaFileName);
+            SchemaInfo schemaInfo = SchemaManager.ReadAndValidateSchema(xr, Path.GetDirectoryName(schemaFileName));
+            schemaInfo.Includes.Clear();
+            schemaInfo.Classes.SortByName();
+            schemaInfo.Relations.SortByName();
+
+            XmlSerializer ser = new XmlSerializer(typeof(SchemaInfo));
+            XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
+            ns.Add("", SchemaInfo.XmlNamespace);
+
+            using (FileStream fs = File.Create(outschemaFileName))
+            {
+                try
+                {
+                    ser.Serialize(fs, schemaInfo, ns);
+                }
+                finally
+                {
+                    fs.Flush();
+                    fs.Close();
+                }
+            }
+
+            return 0;
         }
+
     }
 }

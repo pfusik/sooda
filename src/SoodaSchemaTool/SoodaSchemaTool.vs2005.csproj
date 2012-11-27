@@ -109,6 +109,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include='CommandFactory.cs' />
+    <Compile Include='CommandGenFullSchema.cs' />
     <Compile Include='CommandGenSchema.cs' />
     <Compile Include='CommandUpdateSchema.cs' />
     <Compile Include='ISchemaImporterOptions.cs' />
@@ -122,11 +123,6 @@
     <Compile Include='AssemblyBuildInfo.cs' />
     <Compile Include='AssemblyInfo.cs' />
   </ItemGroup>
-  <ItemGroup />
-  <ItemGroup />
-  <ItemGroup />
-  <ItemGroup />
-  <ItemGroup />
   <Import Project='$(MSBuildBinPath)\Microsoft.CSharp.targets' />
   <PropertyGroup>
     <PreBuildEvent>"$(ProjectDir)..\..\tools\UpdateBuildNumber.exe" "$(ProjectDir)..\..\Sooda.version" "$(ProjectDir)AssemblyBuildInfo.cs" "$(ProjectDir)..\..\build\Sooda.buildversion"</PreBuildEvent>

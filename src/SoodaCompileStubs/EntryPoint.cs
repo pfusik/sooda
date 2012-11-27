@@ -219,7 +219,7 @@ namespace SoodaCompileStubs
                 options.ReferencedAssemblies.Add("System.Xml.dll");
                 options.ReferencedAssemblies.Add("System.Drawing.dll");
                 options.ReferencedAssemblies.Add(objectsAssemblyDll);
-                options.CompilerOptions = "/doc:" + stubsDoc + " /res:" + Path.Combine(basePath, "_DBSchema.bin");
+                options.CompilerOptions = "/doc:\"" + stubsDoc + "\" /res:\"" + Path.Combine(basePath, "_DBSchema.bin") + "\"";
 
                 for (int i = 2; i < args.Length; ++i)
                 {

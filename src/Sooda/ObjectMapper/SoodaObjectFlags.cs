@@ -39,11 +39,12 @@ namespace Sooda.ObjectMapper
         MarkedForDeletion = 0x02,
         DataLoaded = 0x04,
         Dirty = 0x08,
-        DisableTriggers = 0x10,
+        DisableFieldTriggers = 0x10,
         FromCache = 0x20,
         WrittenIntoDatabase = 0x40,
         VisitedOnCommit = 0x80,
         InsertedIntoDatabase = 0x100,
         ForcePostCommit = 0x200,
+        DisableObjectTriggers = 0x400
     }
 }

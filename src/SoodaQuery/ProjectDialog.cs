@@ -396,7 +396,9 @@ namespace SoodaQuery {
                 comboBoxOleDbDriver.Text = "";
                 break;
                 case providerNameOracle:
+#pragma warning disable 618
                     textBoxConnectionType.Text = typeof(OracleConnection).AssemblyQualifiedName;
+#pragma warning restore 618
                     textBoxConnectionType.ReadOnly = true;
                     buttonFetchDbList.Enabled = false;
                     labelOleDbDriver.Enabled = false;

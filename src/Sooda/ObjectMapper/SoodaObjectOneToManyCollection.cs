@@ -328,11 +328,12 @@ namespace Sooda.ObjectMapper
 
         public int IndexOf(object value)
         {
-            object o = items[(SoodaObject)value];
-            if (o == null)
-                return -1;
+            if (items == null)
+                LoadData();
+            if (items.Contains((SoodaObject) value))
+                return items[(SoodaObject) value];
             else
-                return (int)o;
+                return -1;
         }
 
         public bool IsFixedSize
@@ -361,7 +362,9 @@ namespace Sooda.ObjectMapper
 
         public void CopyTo(Array array, int index)
         {
-            items.CopyTo(array, index);
+            if (itemsArray == null)
+                LoadData();
+            ((ICollection) itemsArray).CopyTo(array, index);
         }
 
         public object SyncRoot

@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2009-09-21 10:56:47 +0200 (Mon, 21 Sep 2009) $</last-modified-date> (revision <subversion-revision>$Revision: 498 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2012-11-27 11:32:37 +0100 (Tue, 27 Nov 2012) $</last-modified-date> (revision <subversion-revision>$Revision: 600 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright &#169; 2003-2006 by Jaros³aw Kowalski</div>
         <div class="pagebreak" />
     </div>
@@ -22,10 +22,10 @@
                 <p>
                     <b>Sooda</b> (Simple Object-Oriented Data Access) is an Object-To-Relational Mapping 
                     software for the <a href="http://www.microsoft.com/NET/">.NET</a> environment.
-                    O/R Mapping Software enables you to express your business rules without using SQL at all.
+                    O/R Mapping Software enables you to express your business rules without SQL.
                 </p>
                 <p>
-                    Sooda is a code generator, which can generate entire Data Access Layer for your application.
+                    Sooda includes a code generator, which can generate entire Data Access Layer for your application.
                     Each class of the DAL typically corresponds to a database table,
                     its properties map to database columns and relationships map to object references and collections.
                 </p>
@@ -56,15 +56,16 @@
                 <title>Supported Platforms</title>
                 <body>
                     <p>
-                        Sooda supports .NET Framework 1.1 and 2.0 and Mono profile 1.0 and 2.0. .NET Framework 1.0 is NOT supported.
+                        Sooda supports .NET Framework 1.1, 2.0, 3.5 and 4.0 and Mono profiles 1.0, 2.0 and 3.5. .NET Framework 1.0 is NOT supported.
                     </p>
                     <p>
                         The following development tools/build environments are supported:
                     </p>
                     <ul>
+                        <li>Visual Studio 2008 (.NET Framework 3.5)</li>
                         <li>Visual Studio 2005 (.NET Framework 2.0)</li>
                         <li>Visual Studio 2003 (.NET Framework 1.1)</li>
-                        <li>NAnt 0.85</li>
+                        <li>NAnt</li>
                     </ul>
                 </body>
             </section>
@@ -75,13 +76,13 @@
                         The following RDBMSes are supported:
                     </p>
                     <ul>
-                        <li>Microsoft SQL Server 2000, 2005, 2008 (including MSDE and SQL Server Express Edition)</li>
+                        <li>Microsoft SQL Server 2000, 2005, 2008, 2012 (including SQL Server Express Edition)</li>
                         <li>MySQL v4.x</li>
                         <li>PostgreSQL v8.x</li>
                         <li>Oracle 8i, 9i, 10g</li>
                     </ul>
                     <p>
-                        Sooda has been used in production systems for at least 3 years and things are generally working smooth.
+                        Sooda has been used in production systems for at least 9 years and things are generally working smooth.
                         Some graphical and command line tools to support the development are available, but they are generally
                         newer and still require some work.
                     </p>
@@ -98,11 +99,10 @@
                     <ul>
                         <li><a href="http://msdn.microsoft.com/vcsharp/">C#</a> - fully supported, code compiles cleanly, supports <a href="#soqltypedqueries">Typed Queries</a>.</li>
                         <li><a href="http://msdn.microsoft.com/vbasic/">VB.NET</a> - fully supported, some warnings may be raised during compilation of the generated code, but they can be ignored.</li>
-                        <li><a href="http://boo.codehaus.org/">Boo</a> - works - EXPERIMENTAL</li>
-                        <li><a href="http://msdn.microsoft.com/vjsharp/">VJ#</a> - works - EXPERIMENTAL</li>
-                        <li><a href="http://www.nemerle.org/">Nemerle</a> - not supported - compilation fails</li>
-                        <li><a href="http://msdn.microsoft.com/en-us/library/3bf5fs13.aspx">JScript.NET</a> - not supported - compilation fails with internal error</li>
-                        <li><a href="http://www.codeplex.com/Wiki/View.aspx?ProjectName=IronPython">IronPython</a> - code generation works, needs further investigation</li>
+                        <li><a href="http://www.nemerle.org/">Nemerle</a> - code generation works, needs further investigation</li>
+                        <li><a href="http://boo.codehaus.org/">Boo</a> - not supported - compilation fails</li>
+                        <li><a href="http://msdn.microsoft.com/en-us/library/3bf5fs13.aspx">JScript.NET</a> - not supported - compilation fails</li>
+                        <li><a href="http://ironpython.net">IronPython</a> - code generation used to work, but the necessary API has been removed</li>
                     </ul>
                 </body>
             </section>
@@ -2913,10 +2913,6 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                     <p>VB.NET:</p>
                                     <pre class="XML">
                                         <x><language>vb</language></x>
-                                    </pre>
-                                    <p>VJ#</p>
-                                    <pre class="XML">
-                                        <x><language>Microsoft.VJSharp.VJSharpCodeProvider, VJSharpCodeProvider, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=x86</language></x>
                                     </pre>
                                     <p>Boo:</p>
                                     <pre class="XML">

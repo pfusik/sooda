@@ -472,11 +472,16 @@ namespace Sooda
             SaveObjectChanges(true, null);
         }
 
+        internal void MarkPrecommitted(SoodaObject o)
+        {
+            _precommittedClassOrRelation[o.GetClassInfo().GetRootClass().Name] = true;
+        }
+
         internal void PrecommitObject(SoodaObject o)
         {
             if (!o.VisitedOnCommit && !o.IsMarkedForDelete())
             {
-                _precommittedClassOrRelation[o.GetClassInfo().GetRootClass().Name] = true;
+                MarkPrecommitted(o);
                 o.SaveObjectChanges();
             }
         }
@@ -510,7 +515,7 @@ namespace Sooda
                 {
                     if (!o.VisitedOnCommit && !o.IsMarkedForDelete())
                     {
-                        _precommittedClassOrRelation[o.GetClassInfo().GetRootClass().Name] = true;
+                        MarkPrecommitted(o);
                         o.SaveObjectChanges();
                     }
                 }
@@ -588,13 +593,13 @@ namespace Sooda
                 }
             }
 
+			foreach (SoodaDataSource source in _dataSources)
+			{
+				source.Commit();
+			}
+			
             using (Cache.Lock())
             {
-                foreach (SoodaDataSource source in _dataSources)
-                {
-                    source.Commit();
-                }
-
                 foreach (SoodaObject o in _dirtyObjects)
                 {
                     o.InvalidateCacheAfterCommit();
@@ -868,6 +873,7 @@ namespace Sooda
             // state data for just-being-read object
 
             bool objectForcePostCommit = false;
+            bool objectDisableObjectTriggers = false;
             bool objectDelete = false;
             string objectClassName;
             string objectMode = null;
@@ -919,6 +925,7 @@ namespace Sooda
 
                                 objectKeyCounter = 0;
                                 objectForcePostCommit = false;
+                                objectDisableObjectTriggers = false;
                                 objectClassName = reader.GetAttribute("class");
                                 objectMode = reader.GetAttribute("mode");
                                 objectDelete = false;
@@ -929,6 +936,8 @@ namespace Sooda
                                     objectPrimaryKey = new object[objectTotalKeyCounter];
                                 if (reader.GetAttribute("forcepostcommit") != null)
                                     objectForcePostCommit = true;
+                                if (reader.GetAttribute("disableobjecttriggers") != null)
+                                    objectDisableObjectTriggers = true;
                                 if (reader.GetAttribute("delete") != null)
                                     objectDelete = true;
                                 break;
@@ -960,6 +969,8 @@ namespace Sooda
                                     currentObject = BeginObjectDeserialization(objectFactory, primaryKey, objectMode);
                                     if (objectForcePostCommit)
                                         currentObject.ForcePostCommit();
+                                    if (objectDisableObjectTriggers)
+                                        currentObject.DisableObjectTriggers();
                                     currentObject.DisableFieldUpdateTriggers();
                                     if (objectDelete)
                                     {

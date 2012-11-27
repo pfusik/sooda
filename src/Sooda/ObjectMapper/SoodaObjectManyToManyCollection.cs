@@ -222,9 +222,7 @@ namespace Sooda.ObjectMapper
                 }
                 else
                 {
-                    string tmpCacheKey = relationInfo.Name + " where " + relationInfo.Table.Fields[1 - masterColumn].Name + " = " + masterValue;
-
-                    logger.Debug("Cache miss. Cannot use cache for {0} because objects have been precommitted.", cacheKey);
+                    logger.Debug("Cache miss. Cannot use cache for {0} where {1} = {2} because objects have been precommitted.", relationInfo.Name, relationInfo.Table.Fields[1 - masterColumn].Name, masterValue);
                     SoodaStatistics.Global.RegisterCollectionCacheMiss();
                     transaction.Statistics.RegisterCollectionCacheMiss();
                 }
@@ -357,7 +355,12 @@ namespace Sooda.ObjectMapper
 
         public int IndexOf(object value)
         {
-            throw new NotSupportedException();
+            if (items == null)
+                LoadData();
+            if (items.Contains((SoodaObject) value))
+                return items[(SoodaObject) value];
+            else
+                return -1;
         }
 
         public bool IsFixedSize
@@ -392,7 +395,9 @@ namespace Sooda.ObjectMapper
 
         public void CopyTo(Array array, int index)
         {
-            items.CopyTo(array, index);
+            if (itemsArray == null)
+                LoadData();
+            ((ICollection) itemsArray).CopyTo(array, index);
         }
 
         public object SyncRoot

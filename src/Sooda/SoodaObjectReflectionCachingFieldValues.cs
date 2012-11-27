@@ -29,37 +29,58 @@
 
 using System;
 using System.Reflection;
+using System.Collections;
 
 namespace Sooda
 {
-    public abstract class SoodaObjectReflectionBasedFieldValues : SoodaObjectFieldValues
+    ///Reflection based implementation, with caching
+    public abstract class SoodaObjectReflectionCachingFieldValues : SoodaObjectFieldValues
     {
         private string[] _orderedFieldNames;
-
-        protected SoodaObjectReflectionBasedFieldValues(string[] orderedFieldNames)
+        private static Hashtable _fieldCache = new Hashtable();
+        
+        private static FieldInfo GetField(Type t, string name)
+        {
+            string key = string.Format("{0}.{1}", t.FullName, name);
+            FieldInfo fi = (FieldInfo) _fieldCache[key];
+            if (fi != null) return fi;
+            lock(_fieldCache)
+            {
+                fi = (FieldInfo) _fieldCache[key];
+                if (fi != null) return fi;
+                fi = t.GetField(name);
+                if (fi != null)
+                {
+                    _fieldCache[key] = fi;
+                }
+                return fi;
+            }
+        }
+        
+        protected SoodaObjectReflectionCachingFieldValues(string[] orderedFieldNames)
         {
             _orderedFieldNames = orderedFieldNames;
         }
 
-        protected SoodaObjectReflectionBasedFieldValues(SoodaObjectReflectionBasedFieldValues other)
+        protected SoodaObjectReflectionCachingFieldValues(SoodaObjectReflectionCachingFieldValues other)
         {
             _orderedFieldNames = other.GetFieldNames();
             for (int i = 0; i < _orderedFieldNames.Length; ++i)
             {
-                FieldInfo fi = this.GetType().GetField(_orderedFieldNames[i]);
+                FieldInfo fi = GetField(this.GetType(), _orderedFieldNames[i]);
                 fi.SetValue(this, fi.GetValue(other));
             }
         }
 
         public override void SetFieldValue(int fieldOrdinal, object val)
         {
-            System.Reflection.FieldInfo fi = this.GetType().GetField(_orderedFieldNames[fieldOrdinal]);
+            System.Reflection.FieldInfo fi = GetField(this.GetType(), _orderedFieldNames[fieldOrdinal]);
             Sooda.Utils.SqlTypesUtil.SetValue(fi, this, val);
         }
 
         public override object GetBoxedFieldValue(int fieldOrdinal)
         {
-            System.Reflection.FieldInfo fi = this.GetType().GetField(_orderedFieldNames[fieldOrdinal]);
+            System.Reflection.FieldInfo fi = GetField(this.GetType(), _orderedFieldNames[fieldOrdinal]);
             object rawValue = fi.GetValue(this);
 
             // we got raw value, it's possible that it's a sqltype, nullables are already boxed here

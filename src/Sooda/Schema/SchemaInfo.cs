@@ -321,11 +321,16 @@ namespace Sooda.Schema
 
             if (includedSchema.DataSources != null)
             {
+                Hashtable sourceNames = new Hashtable();
+                foreach (DataSourceInfo nci in includedSchema.DataSources)
+                    sourceNames.Add(nci.Name, nci);
+
                 DataSourceInfoCollection newDataSources = new DataSourceInfoCollection();
 
                 foreach (DataSourceInfo ci in includedSchema.DataSources)
                 {
-                    newDataSources.Add(ci);
+                    if (!sourceNames.ContainsKey(ci.Name))
+                        newDataSources.Add(ci);
                 }
 
                 if (this.DataSources != null)

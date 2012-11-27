@@ -66,6 +66,7 @@ namespace Sooda.UnitTests.TestCases.Soql
             Assert.AreEqual(expectedClassNames.Length, visitor.Results.Count, "Extra involved classes returned by GetInvolvedClasses on " + expression);
         }
 
+        [Test]
         public void Test1()
         {
             AssertInvolved("Contact", "Name", "Contact");

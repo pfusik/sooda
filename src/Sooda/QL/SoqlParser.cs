@@ -113,6 +113,18 @@ namespace Sooda.QL
                     prop = new SoqlPathExpression(prop, keyword);
                 }
             }
+            if (tokenizer.TokenType == SoqlTokenType.LeftParen)
+            {
+                tokenizer.GetNextToken();
+                string functionName = prop.PropertyName;
+                while ((prop = prop.Left) != null)
+                    functionName = prop.PropertyName + "." + functionName;
+
+                if (0 == String.Compare(functionName, "rawquery", true, System.Globalization.CultureInfo.InvariantCulture))
+                    return ParseRawExpression();
+
+                return ParseFunctionCall(functionName);
+            }
             return prop;
         }
 
@@ -212,17 +224,6 @@ namespace Sooda.QL
                 if (0 == String.Compare(keyword, "false", true, System.Globalization.CultureInfo.InvariantCulture))
                     return new SoqlBooleanLiteralExpression(false);
 
-                if (tokenizer.TokenType == SoqlTokenType.LeftParen)
-                {
-                    tokenizer.GetNextToken();
-
-                    if (0 == String.Compare(keyword, "rawquery", true, System.Globalization.CultureInfo.InvariantCulture))
-                        return ParseRawExpression();
-
-                    SoqlFunctionCallExpression callExpr = ParseFunctionCall(keyword);
-                    return callExpr;
-                }
-
                 /*if (tokenizer.IsKeyword("as"))
                 {
                     tokenizer.GetNextToken();
@@ -307,11 +308,14 @@ namespace Sooda.QL
 
             tokenizer.ExpectKeyword("in");
             tokenizer.Expect(SoqlTokenType.LeftParen);
-            rhs.Add(ParseAdditiveExpression());
-            while (tokenizer.TokenType == SoqlTokenType.Comma)
+            if (!tokenizer.IsToken(SoqlTokenType.RightParen))
             {
-                tokenizer.Expect(SoqlTokenType.Comma);
                 rhs.Add(ParseAdditiveExpression());
+                while (tokenizer.TokenType == SoqlTokenType.Comma)
+                {
+                    tokenizer.Expect(SoqlTokenType.Comma);
+                    rhs.Add(ParseAdditiveExpression());
+                }
             }
             tokenizer.Expect(SoqlTokenType.RightParen);
             return new SoqlBooleanInExpression(lhs, rhs);

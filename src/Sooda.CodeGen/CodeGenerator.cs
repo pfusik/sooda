@@ -134,7 +134,7 @@ namespace Sooda.CodeGen
             if (ci.InheritFrom != null)
                 ctd.BaseTypes.Add(ci.InheritFrom + "_Values");
             else
-                ctd.BaseTypes.Add(typeof(SoodaObjectReflectionBasedFieldValues));
+                ctd.BaseTypes.Add(typeof(SoodaObjectReflectionCachingFieldValues));
             ctd.Attributes = MemberAttributes.Assembly;
 
             CodeMemberField field;
@@ -162,7 +162,7 @@ namespace Sooda.CodeGen
 
             CodeConstructor constructor2 = new CodeConstructor();
             constructor2.Attributes = MemberAttributes.Public;
-            constructor2.Parameters.Add(new CodeParameterDeclarationExpression(typeof(SoodaObjectReflectionBasedFieldValues), "other"));
+            constructor2.Parameters.Add(new CodeParameterDeclarationExpression(typeof(SoodaObjectReflectionCachingFieldValues), "other"));
             constructor2.BaseConstructorArgs.Add(new CodeArgumentReferenceExpression("other"));
             ctd.Members.Add(constructor2);
 

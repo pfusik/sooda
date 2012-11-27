@@ -382,7 +382,7 @@
     <Compile Include="QL\SoqlContainsExpression.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlCountPathExpression.cs">
+    <Compile Include="QL\SoqlCountExpression.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="QL\SoqlException.cs">
@@ -641,6 +641,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SoodaObjectReflectionBasedFieldValues.cs" />
+    <Compile Include="SoodaObjectReflectionCachingFieldValues.cs" />
     <Compile Include="SoodaObjectsAssemblyAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -709,6 +710,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Utils\QPCStopWatch.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Utils\SqlTypesUtil.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Utils\StopWatch.cs">

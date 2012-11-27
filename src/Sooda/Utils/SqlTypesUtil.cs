@@ -27,30 +27,47 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System.Text.RegularExpressions;
+using System;
+using System.Data.SqlTypes;
+using System.Reflection;
 
-namespace Sooda.QL
+namespace Sooda.Utils
 {
-    public sealed class SoqlUtils
+    public class SqlTypesUtil
     {
-        public static bool Like(string text, string pattern)
+        public static object Unwrap(object o)
         {
-            Regex expr = new Regex(ConvertSql2Regex(pattern), RegexOptions.IgnoreCase);
-            return expr.IsMatch(text);
+            INullable sqlType = o as INullable;
+            if (sqlType == null)
+                return o;
+            if (sqlType.IsNull)
+                return null;
+            return o.GetType().GetProperty("Value").GetValue(o, null);
         }
 
-        private static string ConvertSql2Regex(string s)
+        public static void SetValue(FieldInfo fi, object obj, object val)
         {
-            s = Regex.Escape(s);
-            if (s.StartsWith("%"))
-                s = s.Substring(1);
+            Type fieldType = fi.FieldType;
+            if (typeof(INullable).IsAssignableFrom(fieldType))
+            {
+                if (val == null)
+                {
+                    FieldInfo nullProperty = fieldType.GetField("Null", BindingFlags.Static | BindingFlags.Public);
+                    object sqlNullValue = nullProperty.GetValue(null);
+                    fi.SetValue(obj, sqlNullValue);
+                }
+                else
+                {
+                    Type[] constructorParameterTypes = new Type[] { val.GetType() };
+                    ConstructorInfo constructorInfo = fieldType.GetConstructor(constructorParameterTypes);
+                    object sqlValue = constructorInfo.Invoke(new object[] { val });
+                    fi.SetValue(obj, sqlValue);
+                }
+            }
             else
-                s = "\\A" + s;
-            if (s.EndsWith("%"))
-                s = s.Substring(0, s.Length - 1);
-            else
-                s += "\\z";
-            return s.Replace("%", ".*").Replace('_', '.');
+            {
+                fi.SetValue(obj, val);
+            }
         }
     }
 }
