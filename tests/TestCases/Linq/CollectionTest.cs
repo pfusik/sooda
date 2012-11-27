@@ -29,7 +29,8 @@
 
 using System;
 using System.Collections;
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
 
 using Sooda.UnitTests.Objects;
 using Sooda.UnitTests.BaseObjects;
@@ -37,7 +38,7 @@ using Sooda.UnitTests.BaseObjects.TypedQueries;
 
 using NUnit.Framework;
 
-namespace Sooda.UnitTests.TestCases.Soql
+namespace Sooda.UnitTests.TestCases.Linq
 {
     [TestFixture]
     public class CollectionTest
@@ -47,12 +48,12 @@ namespace Sooda.UnitTests.TestCases.Soql
         {
             using (new SoodaTransaction())
             {
-                ContactList cl = Contact.GetList(ContactField.ContactId.In(new int[0]));
-                Assert.AreEqual(0, cl.Count);
-                cl = Contact.GetList(ContactField.Manager.In(new Contact[0]));
-                Assert.AreEqual(0, cl.Count);
-                cl = Contact.GetList(ContactField.Manager.In(new ArrayList()));
-                Assert.AreEqual(0, cl.Count);
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => new int[0].Contains(c.ContactId));
+                Assert.AreEqual(0, ce.Count());
+                ce = Contact.Linq().Where(c => new Contact[0].Contains(c));
+                Assert.AreEqual(0, ce.Count());
+                ce = Contact.Linq().Where(c => new ArrayList().Contains(c.Manager));
+                Assert.AreEqual(0, ce.Count());
             }
         }
 
@@ -61,8 +62,8 @@ namespace Sooda.UnitTests.TestCases.Soql
         {
             using (new SoodaTransaction())
             {
-                ContactList cl = Contact.GetList(ContactField.ContactId.In(1));
-                Assert.AreEqual(1, cl.Count);
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => new int[] { 1 }.Contains(c.ContactId));
+                Assert.AreEqual(1, ce.Count());
             }
         }
 
@@ -71,8 +72,8 @@ namespace Sooda.UnitTests.TestCases.Soql
         {
             using (new SoodaTransaction())
             {
-                ContactList cl = Contact.GetList(ContactField.Manager.In(Contact.Mary));
-                Assert.AreEqual(2, cl.Count);
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => new Contact[] { Contact.Mary }.Contains(c.Manager));
+                Assert.AreEqual(2, ce.Count());
             }
         }
 
@@ -81,8 +82,8 @@ namespace Sooda.UnitTests.TestCases.Soql
         {
             using (new SoodaTransaction())
             {
-                ContactList cl = Contact.GetList(ContactField.ContactId.In(1, 2, 3));
-                Assert.AreEqual(3, cl.Count);
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => new int[] { 1, 2, 3 }.Contains(c.ContactId));
+                Assert.AreEqual(3, ce.Count());
             }
         }
 
@@ -93,8 +94,8 @@ namespace Sooda.UnitTests.TestCases.Soql
             {
                 ArrayList managers = new ArrayList();
                 managers.Add(Contact.Mary);
-                ContactList cl = Contact.GetList(ContactField.Manager.In(managers));
-                Assert.AreEqual(2, cl.Count);
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => managers.Contains(c.Manager));
+                Assert.AreEqual(2, ce.Count());
             }
         }
 
@@ -103,9 +104,9 @@ namespace Sooda.UnitTests.TestCases.Soql
         {
             using (new SoodaTransaction())
             {
-                ContactList cl = Contact.GetList(ContactField.Manager.In(ContactField.Manager));
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => new Contact[] { c.Manager }.Contains(c.Manager));
                 // "in" doesn't match nulls, at least in SQL Server
-                Assert.AreEqual(2, cl.Count);
+                Assert.AreEqual(2, ce.Count());
             }
         }
 
@@ -114,10 +115,10 @@ namespace Sooda.UnitTests.TestCases.Soql
         {
             using (new SoodaTransaction())
             {
-                Contact c = null;
-                ContactList cl = Contact.GetList(ContactField.Manager.In(c));
+                Contact c0 = null;
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => new Contact[] { c0 }.Contains(c.Manager));
                 // "in" doesn't match nulls, at least in SQL Server
-                Assert.AreEqual(0, cl.Count);
+                Assert.AreEqual(0, ce.Count());
             }
         }
 
@@ -126,8 +127,8 @@ namespace Sooda.UnitTests.TestCases.Soql
         {
             using (new SoodaTransaction())
             {
-                ContactList cl = Contact.GetList(ContactField.Manager.In(Role.Manager.Members));
-                Assert.AreEqual(2, cl.Count);
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => Role.Manager.Members.Contains(c.Manager));
+                Assert.AreEqual(2, ce.Count());
             }
         }
 
@@ -136,9 +137,9 @@ namespace Sooda.UnitTests.TestCases.Soql
         {
             using (new SoodaTransaction())
             {
-                ContactList cl = Contact.GetList(ContactField.Subordinates.Count == 2);
-                Assert.AreEqual(1, cl.Count);
-                Assert.AreEqual("Mary Manager", cl[0].Name);
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Subordinates.Count == 2);
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual("Mary Manager", ce.First().Name);
             }
         }
 
@@ -147,13 +148,13 @@ namespace Sooda.UnitTests.TestCases.Soql
         {
             using (new SoodaTransaction())
             {
-                GroupList gl = Group.GetList(GroupField.Members.Count == 4);
-                Assert.AreEqual(1, gl.Count);
-                Assert.AreEqual(10, gl[0].Id);
-                gl = Group.GetList(GroupField.Managers.Count == 1);
-                Assert.AreEqual(2, gl.Count);
-                gl = Group.GetList(GroupField.Managers.Count != 1);
-                Assert.AreEqual(0, gl.Count);
+                IEnumerable<Group> ge = Group.Linq().Where(g => g.Members.Count == 4);
+                Assert.AreEqual(1, ge.Count());
+                Assert.AreEqual(10, ge.First().Id);
+                ge = Group.Linq().Where(g => g.Managers.Count() == 1);
+                Assert.AreEqual(2, ge.Count());
+                ge = Group.Linq().Where(g => g.Managers.Count != 1);
+                Assert.AreEqual(0, ge.Count());
             }
         }
 
@@ -162,9 +163,9 @@ namespace Sooda.UnitTests.TestCases.Soql
         {
             using (new SoodaTransaction())
             {
-                ContactList cl = Contact.GetList(ContactField.Bikes1.Count == 1);
-                Assert.AreEqual(1, cl.Count);
-                Assert.AreEqual("Ed Employee", cl[0].Name);
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Bikes1.Count == 1);
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual("Ed Employee", ce.First().Name);
             }
         }
 
@@ -173,9 +174,9 @@ namespace Sooda.UnitTests.TestCases.Soql
         {
             using (new SoodaTransaction())
             {
-                ContactList cl = Contact.GetList(ContactField.Subordinates.Contains(Contact.Ed));
-                Assert.AreEqual(1, cl.Count);
-                Assert.AreEqual("Mary Manager", cl[0].Name);
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Subordinates.Contains(Contact.Ed));
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual("Mary Manager", ce.First().Name);
             }
         }
 
@@ -184,10 +185,10 @@ namespace Sooda.UnitTests.TestCases.Soql
         {
             using (new SoodaTransaction())
             {
-                GroupList gl = Group.GetList(GroupField.Members.Contains(Contact.Mary));
-                Assert.AreEqual(1, gl.Count);
-                gl = Group.GetList(GroupField.Managers.Contains(Contact.Mary));
-                Assert.AreEqual(0, gl.Count);
+                IEnumerable<Group> ge = Group.Linq().Where(g => g.Members.Contains(Contact.Mary));
+                Assert.AreEqual(1, ge.Count());
+                ge = Group.Linq().Where(g => g.Managers.Contains(Contact.Mary));
+                Assert.AreEqual(0, ge.Count());
             }
         }
 
@@ -196,9 +197,9 @@ namespace Sooda.UnitTests.TestCases.Soql
         {
             using (new SoodaTransaction())
             {
-                ContactList cl = Contact.GetList(ContactField.Bikes1.Contains(Bike.GetRef(3)));
-                Assert.AreEqual(1, cl.Count);
-                Assert.AreEqual("Ed Employee", cl[0].Name);
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Bikes1.Contains(Bike.GetRef(3)));
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual("Ed Employee", ce.First().Name);
             }
         }
 
@@ -207,9 +208,9 @@ namespace Sooda.UnitTests.TestCases.Soql
         {
             using (new SoodaTransaction())
             {
-                ContactList cl = Contact.GetList(ContactField.Bikes1.ContainsBikeWhere(BikeField.TwoWheels == 1));
-                Assert.AreEqual(1, cl.Count);
-                Assert.AreEqual("Ed Employee", cl[0].Name);
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Bikes1.Any(b => b.TwoWheels == 1));
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual("Ed Employee", ce.First().Name);
             }
         }
 
@@ -218,8 +219,8 @@ namespace Sooda.UnitTests.TestCases.Soql
         {
             using (new SoodaTransaction())
             {
-                ContactList cl = Contact.GetList(ContactField.PrimaryGroup.Members.Contains(3));
-                Assert.AreEqual(1, cl.Count);
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.PrimaryGroup.Members.Contains(Contact.GetRef(3)));
+                Assert.AreEqual(1, ce.Count());
             }
         }
 
@@ -228,11 +229,12 @@ namespace Sooda.UnitTests.TestCases.Soql
         {
             using (new SoodaTransaction())
             {
-                GroupList gl = Group.GetList(GroupField.Manager.Name == "Mary Manager"
-                    && GroupField.Members.Count > 3
-                    && GroupField.Members.ContainsContactWhere(ContactField.Name == "ZZZ" && ContactField.PrimaryGroup.Members.Contains(3))
-                    && GroupField.Manager.Roles.ContainsRoleWhere(RoleField.Name == "Customer"));
-                Assert.AreEqual(0, gl.Count);
+                IEnumerable<Group> ge = Group.Linq().Where(g =>
+                    g.Manager.Name == "Mary Manager"
+                    && g.Members.Count > 3
+                    && g.Members.Any(c => c.Name == "ZZZ" && c.PrimaryGroup.Members.Contains(Contact.GetRef(3)))
+                    && g.Manager.Roles.Any(r => r.Name.Value == "Customer"));
+                Assert.AreEqual(0, ge.Count());
             }
         }
     }
