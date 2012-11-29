@@ -28,30 +28,11 @@
 // 
 
 using System;
-using System.IO;
-using System.Data;
-using System.Runtime.InteropServices;
-using System.Runtime.Remoting;
-using System.Threading;
+using System.Linq;
 
 using Sooda;
-using Sooda.Sql;
-using Sooda.Schema;
-using Sooda.QL;
-using Sooda.ObjectMapper;
-
-using System.Collections;
-using System.Xml;
-using System.Xml.Serialization;
-using Sooda.Caching;
-
-using System.Security.Principal;
-using System.Security.Permissions;
 
 using Sooda.UnitTests.BaseObjects;
-using Sooda.UnitTests.Objects;
-using Sooda.UnitTests.BaseObjects.TypedQueries;
-using Sooda.UnitTests.TestCases;
 
 //[assembly: SoodaStubAssembly(typeof(Sooda.UnitTests.Objects._DatabaseSchema))]
 [assembly: SoodaConfig(XmlConfigFileName = "Sooda.config.xml")]

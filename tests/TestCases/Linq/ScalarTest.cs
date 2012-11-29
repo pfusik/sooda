@@ -86,7 +86,7 @@ namespace Sooda.UnitTests.TestCases.Linq
         {
             using (new SoodaTransaction())
             {
-                bool result = Contact.Linq().Any(false);
+                bool result = Contact.Linq().Any(c => false);
                 Assert.IsFalse(result);
             }
         }
