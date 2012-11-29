@@ -138,19 +138,22 @@ namespace Sooda.Linq
             }
         }
 
-        static SoqlLiteralExpression Literal(object value)
+        static SoqlLiteralExpression FoldConstant(Expression expr)
         {
+            if (!IsConstant(expr))
+                return null;
+
+            object value;
+            ConstantExpression constExpr = expr as ConstantExpression;
+            if (constExpr != null)
+                value = constExpr.Value;
+            else
+                value = Expression.Lambda(expr).Compile().DynamicInvoke(null);
+
             SoodaObject so = value as SoodaObject;
             if (so != null)
                 value = so.GetPrimaryKeyValue();
             return new SoqlLiteralExpression(value);
-        }
-
-        static SoqlLiteralExpression FoldConstant(Expression expr, Func<string> error)
-        {
-            if (IsConstant(expr))
-                return Literal(Expression.Lambda(expr).Compile().DynamicInvoke(null));
-            throw new NotSupportedException(error());
         }
 
         SoqlBooleanExpression TranslateAnd(BinaryExpression expr)
@@ -260,11 +263,10 @@ namespace Sooda.Linq
                         if (t == typeof(SoodaObjectCollectionWrapper) && name == "Count")
                             return new SoqlCountExpression(parentPath.Left, parentPath.PropertyName);
                     }
-                    throw new NotSupportedException(t.FullName + "." + name);
                 }
             }
 
-            return FoldConstant(expr, () => t.FullName + "." + name);
+            throw new NotSupportedException(t.FullName + "." + name);
         }
 
         SoqlBooleanExpression TranslateCollectionAny(MethodCallExpression mc, SoqlBooleanExpression where)
@@ -280,10 +282,13 @@ namespace Sooda.Linq
         SoqlBooleanInExpression TranslateCollectionContains(Expression haystack, Expression needle)
         {
             IEnumerable haystack2;
-            if (haystack.NodeType == ExpressionType.NewArrayInit)
+            SoqlLiteralExpression literal = FoldConstant(haystack);
+            if (literal != null)
+                haystack2 = (IEnumerable) literal.GetConstantValue();
+            else if (haystack.NodeType == ExpressionType.NewArrayInit)
                 haystack2 = ((NewArrayExpression) haystack).Expressions.Select(e => TranslateExpression(e));
             else
-                haystack2 = (IEnumerable) FoldConstant(haystack, () => haystack.NodeType.ToString()).GetConstantValue();
+                throw new NotSupportedException(haystack.NodeType.ToString());
             if (needle.NodeType == ExpressionType.Convert && needle.Type == typeof(object)) // IList.Contains(object)
                 needle = ((UnaryExpression) needle).Operand;
             return new SoqlBooleanInExpression(TranslateExpression(needle), haystack2);
@@ -375,7 +380,7 @@ namespace Sooda.Linq
                 return new SoqlContainsExpression(haystack.Left, haystack.PropertyName, needle);
             }
 
-            return FoldConstant(mc, () => t.FullName + "." + mc.Method.Name);
+            throw new NotSupportedException(t.FullName + "." + mc.Method.Name);
         }
 
         SoqlExpression TranslateCoalesce(BinaryExpression expr)
@@ -393,10 +398,12 @@ namespace Sooda.Linq
 
         SoqlExpression TranslateExpression(Expression expr)
         {
+            SoqlLiteralExpression literal = FoldConstant(expr);
+            if (literal != null)
+                return literal;
+
             switch (expr.NodeType)
             {
-                case ExpressionType.Constant:
-                    return Literal(((ConstantExpression) expr).Value);
                 case ExpressionType.Parameter:
                     return GetPrimaryKeyExpression();
                 case ExpressionType.MemberAccess:
@@ -438,8 +445,9 @@ namespace Sooda.Linq
                 case ExpressionType.Call:
                     return TranslateCall((MethodCallExpression) expr);
                 default:
-                    return FoldConstant(expr, () => expr.NodeType.ToString());
+                    break;
             }
+            throw new NotSupportedException(expr.NodeType.ToString());
         }
 
         SoqlBooleanExpression TranslateBoolean(Expression expr)
