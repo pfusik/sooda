@@ -53,6 +53,17 @@ namespace Sooda.UnitTests.TestCases.Linq
                 Assert.AreEqual(1, ce.Count());
             }
         }
+
+        [Test]
+        public void Is()
+        {
+            using (new SoodaTransaction())
+            {
+                object s = "Hello";
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => s is string);
+                Assert.AreEqual(7, ce.Count());
+            }
+        }
     }
 }
 

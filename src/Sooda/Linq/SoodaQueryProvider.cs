@@ -79,6 +79,7 @@ namespace Sooda.Linq
                     return true;
                 case ExpressionType.Parameter:
                     return false;
+                case ExpressionType.UnaryPlus:
                 case ExpressionType.Negate:
                 case ExpressionType.NegateChecked:
                 case ExpressionType.Not:
@@ -88,6 +89,8 @@ namespace Sooda.Linq
                 case ExpressionType.Quote:
                 case ExpressionType.TypeAs:
                     return IsConstant(((UnaryExpression) expr).Operand);
+                case ExpressionType.TypeIs:
+                    return IsConstant(((TypeBinaryExpression) expr).Expression);
                 case ExpressionType.Add:
                 case ExpressionType.AddChecked:
                 case ExpressionType.Subtract:
@@ -96,6 +99,7 @@ namespace Sooda.Linq
                 case ExpressionType.MultiplyChecked:
                 case ExpressionType.Divide:
                 case ExpressionType.Modulo:
+                case ExpressionType.Power:
                 case ExpressionType.And:
                 case ExpressionType.AndAlso:
                 case ExpressionType.Or:
