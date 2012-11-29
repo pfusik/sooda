@@ -229,17 +229,13 @@ namespace Sooda.UnitTests.TestCases.Soql
             CheckUnsupported(DateTime.Now, (ulong)1);
         }
 
-        static void ChainedEquals1()
-        {
-            Contact.GetList(new SoodaWhereClause("Active == true == true != false"));
-        }
-
         [Test]
+        [ExpectedException(typeof(SoqlException))]
         public void ChainedEquals()
         {
             using (new SoodaTransaction())
             {
-                Assert.Throws(typeof(SoqlException), ChainedEquals1);
+                Contact.GetList(new SoodaWhereClause("Active == true == true != false"));
             }
         }
     }

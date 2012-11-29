@@ -34,11 +34,9 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Sooda.Linq;
-using Sooda.UnitTests.Objects;
-using Sooda.UnitTests.BaseObjects;
-using Sooda.UnitTests.BaseObjects.TypedQueries;
 
 using NUnit.Framework;
+using Sooda.UnitTests.BaseObjects;
 
 namespace Sooda.UnitTests.TestCases.Linq
 {
@@ -215,6 +213,7 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        [SetCulture("pl-PL")] // Polish decimal point is comma, make sure it doesn't land in SQL
         public void MathRound()
         {
             using (new SoodaTransaction())

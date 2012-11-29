@@ -34,11 +34,9 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Sooda.Linq;
-using Sooda.UnitTests.Objects;
-using Sooda.UnitTests.BaseObjects;
-using Sooda.UnitTests.BaseObjects.TypedQueries;
 
 using NUnit.Framework;
+using Sooda.UnitTests.BaseObjects;
 
 namespace Sooda.UnitTests.TestCases.Linq
 {
@@ -73,6 +71,19 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void WhereBool()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => true);
+                Assert.AreEqual(7, ce.Count());
+
+                ce = Contact.Linq().Where(c => false);
+                Assert.AreEqual(0, ce.Count());
+            }
+        }
+
+        [Test]
         public void Select()
         {
             using (new SoodaTransaction())
@@ -84,6 +95,16 @@ namespace Sooda.UnitTests.TestCases.Linq
                 IEnumerable<bool> be = Contact.Linq().Select(c => c.Active);
                 Assert.AreEqual(7, be.Count());
                 Assert.IsTrue(be.All(b => b));
+            }
+        }
+
+        [Test]
+        public void SelectIndexed()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = Contact.Linq().OrderBy(c => c.ContactId).Select((c, i) => c.ContactId + i);
+                CollectionAssert.AreEqual(new int[] { 1 + 0, 2 + 1, 3 + 2, 50 + 3, 51 + 4, 52 + 5, 53 + 6 }, ie);
             }
         }
 
@@ -202,6 +223,20 @@ namespace Sooda.UnitTests.TestCases.Linq
 
                 ce = Contact.Linq().Where(c => c.Manager == Contact.Mary).Union(Contact.Linq());
                 Assert.AreEqual(7, ce.Count());
+            }
+        }
+
+        [Test]
+        public void Let()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce =
+                    from c in Contact.Linq()
+                    let initial = c.Name.Remove(1)
+                    where initial == "C"
+                    select c;
+                Assert.AreEqual(4, ce.Count());
             }
         }
 

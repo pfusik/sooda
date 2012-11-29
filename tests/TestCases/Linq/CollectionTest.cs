@@ -33,11 +33,9 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Sooda.Linq;
-using Sooda.UnitTests.Objects;
-using Sooda.UnitTests.BaseObjects;
-using Sooda.UnitTests.BaseObjects.TypedQueries;
 
 using NUnit.Framework;
+using Sooda.UnitTests.BaseObjects;
 
 namespace Sooda.UnitTests.TestCases.Linq
 {
