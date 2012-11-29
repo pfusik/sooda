@@ -171,6 +171,13 @@ namespace Sooda.Linq
             return new SoqlBinaryExpression(TranslateExpression(expr.Left), TranslateExpression(expr.Right), op);
         }
 
+        SoqlExpression TranslateConvert(UnaryExpression expr)
+        {
+            if (expr.Type == typeof(double) && expr.Operand.Type == typeof(int))
+                return TranslateExpression(expr.Operand);
+            throw new NotSupportedException("Convert " + expr.Operand.Type + " to " + expr.Type);
+        }
+
         SoqlBooleanExpression TranslateRelational(BinaryExpression expr, SoqlRelationalOperator op)
         {
             SoqlExpression left = TranslateExpression(expr.Left);
@@ -420,6 +427,8 @@ namespace Sooda.Linq
                     return TranslateBinary((BinaryExpression) expr, SoqlBinaryOperator.Mod);
                 case ExpressionType.Negate:
                     return new SoqlUnaryNegationExpression(TranslateExpression(((UnaryExpression) expr).Operand));
+                case ExpressionType.Convert:
+                    return TranslateConvert((UnaryExpression) expr);
                 case ExpressionType.And:
                 case ExpressionType.AndAlso:
                     return TranslateAnd((BinaryExpression) expr);
@@ -445,9 +454,8 @@ namespace Sooda.Linq
                 case ExpressionType.Call:
                     return TranslateCall((MethodCallExpression) expr);
                 default:
-                    break;
+                    throw new NotSupportedException(expr.NodeType.ToString());
             }
-            throw new NotSupportedException(expr.NodeType.ToString());
         }
 
         SoqlBooleanExpression TranslateBoolean(Expression expr)

@@ -141,9 +141,9 @@ namespace Sooda.UnitTests.TestCases.Linq
         {
             using (new SoodaTransaction())
             {
-                IEnumerable<Contact> ce = Contact.Linq().Where(c => Math.Acos(c.ContactId) == 0);
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => Math.Acos(c.PrimaryGroup.Id - 10) == 0);
                 Assert.AreEqual(1, ce.Count());
-                Assert.AreEqual(Contact.Mary, ce.First());
+                Assert.AreEqual(Contact.Eva, ce.First());
             }
         }
 
@@ -152,9 +152,9 @@ namespace Sooda.UnitTests.TestCases.Linq
         {
             using (new SoodaTransaction())
             {
-                IEnumerable<Contact> ce = Contact.Linq().Where(c => Math.Asin(c.ContactId - 1) == 0);
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => Math.Asin(c.PrimaryGroup.Id - 11) == 0);
                 Assert.AreEqual(1, ce.Count());
-                Assert.AreEqual(Contact.Mary, ce.First());
+                Assert.AreEqual(Contact.Eva, ce.First());
             }
         }
 
