@@ -268,6 +268,17 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void UnaryPlus()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => +c.ContactId == 50);
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(50, ce.First().ContactId);
+            }
+        }
+
+        [Test]
         public void Negate()
         {
             using (new SoodaTransaction())
@@ -285,6 +296,19 @@ namespace Sooda.UnitTests.TestCases.Linq
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => (c.Manager ?? c) == Contact.Mary);
                 Assert.AreEqual(3, ce.Count());
+            }
+        }
+
+        [Test]
+        public void Conditional()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => (GetNullContact() == null ? c : c.Manager) == c);
+                Assert.AreEqual(7, ce.Count());
+
+                ce = Contact.Linq().Where(c => (GetNullContact() != null ? c : c.Manager) == c);
+                Assert.AreEqual(0, ce.Count());
             }
         }
 

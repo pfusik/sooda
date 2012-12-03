@@ -203,6 +203,14 @@ namespace Sooda.Linq
             return new SoqlBooleanRelationalExpression(left, right, op);
         }
 
+        SoqlExpression TranslateConditional(ConditionalExpression expr)
+        {
+            SoqlLiteralExpression test = FoldConstant(expr.Test);
+            if (test == null)
+                throw new NotSupportedException("?: operator condition is not constant");
+            return TranslateExpression((bool) test.GetConstantValue() ? expr.IfTrue : expr.IfFalse);
+        }
+
         SoqlExpression TranslateMember(MemberExpression expr)
         {
             string name = expr.Member.Name;
@@ -457,6 +465,8 @@ namespace Sooda.Linq
                     return TranslateRelational((BinaryExpression) expr, SoqlRelationalOperator.Greater);
                 case ExpressionType.GreaterThanOrEqual:
                     return TranslateRelational((BinaryExpression) expr, SoqlRelationalOperator.GreaterOrEqual);
+                case ExpressionType.Conditional:
+                    return TranslateConditional((ConditionalExpression) expr);
                 case ExpressionType.Call:
                     return TranslateCall((MethodCallExpression) expr);
                 default:
