@@ -799,7 +799,7 @@ namespace Sooda.Sql
                     if (ci == null)
                         continue;
 
-                    SoqlBooleanExpression restriction = BuildClassRestriction(ActualFromAliases[i], ci);
+                    SoqlBooleanExpression restriction = Soql.ClassRestriction(new SoqlPathExpression(ActualFromAliases[i]), Schema, ci);
 
                     if (restriction != null)
                     {
@@ -1136,41 +1136,6 @@ namespace Sooda.Sql
             if (Parent != null)
                 return Parent.GetNextTablePrefix();
             return "t" + CurrentTablePrefix++;
-        }
-
-        public SoqlBooleanExpression BuildClassRestriction(string startingAlias, Sooda.Schema.ClassInfo classInfo)
-        {
-            // returns no additional filter clause for parent (master-parent) class
-            if (classInfo.InheritsFromClass == null)
-                return null;
-
-            SoqlExpressionCollection literals = new SoqlExpressionCollection();
-
-            foreach (ClassInfo subclass in classInfo.GetSubclassesForSchema(Schema))
-            {
-                if (subclass.SubclassSelectorValue != null)
-                {
-                    literals.Add(new SoqlLiteralExpression(subclass.SubclassSelectorValue));
-                }
-            }
-            if (classInfo.SubclassSelectorValue != null)
-            {
-                literals.Add(new SoqlLiteralExpression(classInfo.SubclassSelectorValue));
-            }
-
-            // returns false when class is abstract (no SubClassSelectorValue) and there is no subclasses
-            if (literals.Count == 0)
-                return new SoqlBooleanLiteralExpression(false);
-
-            SoqlBooleanExpression restriction =
-                new SoqlBooleanInExpression(
-                new SoqlPathExpression(
-                new SoqlPathExpression(startingAlias),
-                classInfo.SubclassSelectorField.Name),
-                literals
-                );
-
-            return restriction;
         }
 
         public void ConvertQuery(SoqlQueryExpression expr)

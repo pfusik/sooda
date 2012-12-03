@@ -41,6 +41,7 @@ using System.Reflection;
 using Sooda;
 using Sooda.ObjectMapper;
 using Sooda.QL;
+using Sooda.Schema;
 
 namespace Sooda.Linq
 {
@@ -50,16 +51,16 @@ namespace Sooda.Linq
         const string DefaultAlias = "t0";
 
         readonly SoodaTransaction _transaction;
-        readonly Sooda.Schema.ClassInfo _classInfo;
+        readonly ClassInfo _classInfo;
         readonly SoodaSnapshotOptions _options;
         SoqlBooleanExpression _where;
         SoodaOrderBy _orderBy;
         int _topCount;
-        readonly Dictionary<ParameterExpression, Sooda.Schema.ClassInfo> _param2classInfo = new Dictionary<ParameterExpression, Sooda.Schema.ClassInfo>();
+        readonly Dictionary<ParameterExpression, ClassInfo> _param2classInfo = new Dictionary<ParameterExpression, ClassInfo>();
         readonly Dictionary<ParameterExpression, string> _param2alias = new Dictionary<ParameterExpression, string>();
         int _currentPrefix = 0;
 
-        public SoodaQueryProvider(SoodaTransaction transaction, Sooda.Schema.ClassInfo classInfo, SoodaSnapshotOptions options)
+        public SoodaQueryProvider(SoodaTransaction transaction, ClassInfo classInfo, SoodaSnapshotOptions options)
         {
             _transaction = transaction;
             _classInfo = classInfo;
@@ -262,6 +263,13 @@ namespace Sooda.Linq
             return new SoqlPathExpression(DefaultAlias);
         }
 
+        SoqlPathExpression TranslateToPathExpression(Expression expr)
+        {
+            if (expr.NodeType == ExpressionType.Parameter)
+                return TranslateParameter((ParameterExpression) expr);
+            return (SoqlPathExpression) TranslateExpression(expr);
+        }
+
         SoqlExpression TranslateMember(MemberExpression expr)
         {
             string name = expr.Member.Name;
@@ -280,14 +288,7 @@ namespace Sooda.Linq
                 {
                     MethodCallExpression mc = (MethodCallExpression) expr.Expression;
                     if (SoodaLinqMethodUtil.Get(mc.Method) == SoodaLinqMethod.Object_GetType)
-                    {
-                        SoqlPathExpression path;
-                        if (mc.Object.NodeType == ExpressionType.Parameter)
-                            path = TranslateParameter((ParameterExpression) mc.Object);
-                        else
-                            path = (SoqlPathExpression) TranslateExpression(mc.Object);
-                        return new SoqlSoodaClassExpression(path);
-                    }
+                        return new SoqlSoodaClassExpression(TranslateToPathExpression(mc.Object));
                 }
 
                 SoqlExpression parent = TranslateExpression(expr.Expression);
@@ -480,6 +481,32 @@ namespace Sooda.Linq
             return new SoqlFunctionCallExpression(function, TranslateExpression(expr.Left), TranslateExpression(expr.Right));
         }
 
+        SoqlBooleanExpression TranslateTypeIs(TypeBinaryExpression expr)
+        {
+            Type type = expr.TypeOperand;
+            if (!type.IsSubclassOf(typeof(SoodaObject)))
+                throw new NotSupportedException("'is' operator supported only for Sooda classes");
+            SchemaInfo schema = _transaction.Schema;
+            ClassInfo classInfo = schema.FindClassByName(type.Name);
+            if (classInfo == null)
+                throw new NotSupportedException("is " + type.Name);
+
+            SoqlPathExpression path = TranslateToPathExpression(expr.Expression);
+            SoqlBooleanExpression result = Soql.ClassRestriction(path, schema, classInfo);
+            if (result != null)
+                return result;
+
+            if (expr.Expression.NodeType == ExpressionType.Parameter)
+            {
+                // path is probably not valid SoqlPathExpression.
+                // Fortunately, primary keys should non-null.
+                return SoqlBooleanLiteralExpression.True;
+            }
+
+            // path IS NOT NULL
+            return new SoqlBooleanIsNullExpression(path, true);
+        }
+
         SoqlExpression TranslateExpression(Expression expr)
         {
             ISoqlConstantExpression literal = FoldConstant(expr);
@@ -490,7 +517,7 @@ namespace Sooda.Linq
             {
                 case ExpressionType.Parameter:
                     ParameterExpression pe = (ParameterExpression) expr;
-                    Sooda.Schema.ClassInfo classInfo;
+                    ClassInfo classInfo;
                     if (!_param2classInfo.TryGetValue(pe, out classInfo))
                         classInfo = _classInfo;
                     return new SoqlPathExpression(TranslateParameter(pe), classInfo.GetPrimaryKeyFields().Single().Name);
@@ -538,6 +565,8 @@ namespace Sooda.Linq
                     return TranslateConditional((ConditionalExpression) expr);
                 case ExpressionType.Call:
                     return TranslateCall((MethodCallExpression) expr);
+                case ExpressionType.TypeIs:
+                    return TranslateTypeIs((TypeBinaryExpression) expr);
                 default:
                     throw new NotSupportedException(expr.NodeType.ToString());
             }

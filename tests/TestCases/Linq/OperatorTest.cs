@@ -346,7 +346,7 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
-        public void Is()
+        public void TypeIs()
         {
             using (new SoodaTransaction())
             {
@@ -354,7 +354,28 @@ namespace Sooda.UnitTests.TestCases.Linq
                 Assert.AreEqual(7, ce.Count());
 
                 IEnumerable<Vehicle> ve = Vehicle.Linq().Where(c => c is Car);
-                Assert.AreEqual(2, ce.Count());
+                Assert.AreEqual(2, ve.Count());
+            }
+        }
+
+        [Test]
+        public void TypeIs2()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Vehicle> ve = Vehicle.Linq().Where(v => v.Owner is Contact);
+                Assert.AreEqual(2, ve.Count());
+            }
+        }
+
+        [Test]
+        public void TypeIs3()
+        {
+            using (new SoodaTransaction())
+            {
+                Contact.Mary.Vehicles.Add(Bike.GetRef(6));
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Vehicles.Any(v => v is Bike));
+                Assert.AreEqual(1, ce.Count());
             }
         }
     }

@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
+using Sooda.Schema;
+
 namespace Sooda.QL
 {
     public class Soql
@@ -40,5 +42,38 @@ namespace Sooda.QL
         {
             return new SoqlRawExpression(text);
         }
+
+        public static SoqlBooleanExpression ClassRestriction(SoqlPathExpression path, SchemaInfo schema, ClassInfo classInfo)
+        {
+            // returns no additional filter clause for parent (master-parent) class
+            if (classInfo.InheritsFromClass == null)
+                return null;
+
+            SoqlExpressionCollection literals = new SoqlExpressionCollection();
+
+            foreach (ClassInfo subclass in classInfo.GetSubclassesForSchema(schema))
+            {
+                if (subclass.SubclassSelectorValue != null)
+                {
+                    literals.Add(new SoqlLiteralExpression(subclass.SubclassSelectorValue));
+                }
+            }
+            if (classInfo.SubclassSelectorValue != null)
+            {
+                literals.Add(new SoqlLiteralExpression(classInfo.SubclassSelectorValue));
+            }
+
+            // returns false when class is abstract (no SubClassSelectorValue) and there is no subclasses
+            if (literals.Count == 0)
+                return new SoqlBooleanLiteralExpression(false);
+
+            SoqlBooleanExpression restriction = new SoqlBooleanInExpression(
+                new SoqlPathExpression(path, classInfo.SubclassSelectorField.Name),
+                literals
+            );
+
+            return restriction;
+        }
+
     }
 }
