@@ -269,6 +269,34 @@ namespace Sooda.UnitTests.TestCases.Linq
             }
         }
 
+        [Test]
+        public void AnyWithOuterRange()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Subordinates.Any(s => s == c));
+                Assert.AreEqual(0, ce.Count());
+            }
+        }
 
+        [Test]
+        public void AnyWithRangeVariableComparison()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Group> ge = Group.Linq().Where(g => g.Members.Any(c => c == Contact.Mary));
+                Assert.AreEqual(1, ge.Count());
+            }
+        }
+
+        [Test]
+        public void AnyWithSoodaClass()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Group> ge = Group.Linq().Where(g => g.Members.Any(c => g.GetType().Name == "Group" && c.GetType().Name == "Contact"));
+                Assert.AreEqual(2, ge.Count());
+            }
+        }
     }
 }

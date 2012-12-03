@@ -91,13 +91,8 @@ namespace Sooda.Sql
             }
             else
             {
-                if (Parent != null)
-                {
-                    if (Parent.TableAliases.ContainsKey(firstToken.PropertyName))
-                    {
-                        return Parent.GenerateTableJoins(expr, out p, out firstTableAlias);
-                    };
-                };
+                if (Parent != null && Parent.TableAliases.ContainsKey(firstToken.PropertyName))
+                    return Parent.GenerateTableJoins(expr, out p, out firstTableAlias);
 
                 // artificial first token
 
@@ -125,7 +120,6 @@ namespace Sooda.Sql
 
                 if (p.Length > 0)
                     p += '.';
-
                 p += currentToken.PropertyName;
 
                 if (fi.ReferencedClass == null)
@@ -403,14 +397,16 @@ namespace Sooda.Sql
             if (col1n.Where != null && col1n.Where.Length > 0)
                 where &= SoqlParser.ParseWhereClause(col1n.Where);
 
+            string fromAlias = string.Empty;
             if (needle != null)
             {
                 SoqlQueryExpression nq = needle as SoqlQueryExpression;
                 if (nq != null
                     && nq.TopCount == -1 && nq.SelectExpressions.Count == 0
-                    && nq.From.Count == 1 && nq.From[0] == col1n.ClassName && nq.FromAliases[0].Length == 0
+                    && nq.From.Count == 1 && nq.From[0] == col1n.ClassName
                     && nq.Having == null && nq.GroupByExpressions.Count == 0)
                 {
+                    fromAlias = nq.FromAliases[0];
                     if (nq.WhereClause != null)
                         where &= nq.WhereClause;
                 }
@@ -430,7 +426,7 @@ namespace Sooda.Sql
             query.SelectExpressions.Add(selectExpression);
             query.SelectAliases.Add("");
             query.From.Add(col1n.ClassName);
-            query.FromAliases.Add("");
+            query.FromAliases.Add(fromAlias);
             query.WhereClause = where;
             return query;
         }
