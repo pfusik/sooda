@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="windows-1250" ?>
+<?xml version="1.0" ?>
 <?xml-stylesheet type="text/xsl" href="style.xsl" ?>
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2012-11-27 11:32:37 +0100 (Tue, 27 Nov 2012) $</last-modified-date> (revision <subversion-revision>$Revision: 600 $</subversion-revision>)</div>
-        <div class="titlecopyright">Copyright &#169; 2003-2006 by Jarosław Kowalski</div>
-        <div class="pagebreak" />
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2012-12-03 22:04:18 +0100 (Mon, 03 Dec 2012) $</last-modified-date> (revision <subversion-revision>$Revision: 619 $</subversion-revision>)</div>
+        <div class="titlecopyright">Copyright &#169; 2003-2006 by JarosĹ‚aw Kowalski</div>
+        <div class="pagebreak">&#160;</div>
     </div>
     <p class="dontprintthis">
         <h1>Sooda Documentation</h1>
@@ -45,6 +45,7 @@
                         <li>strongly-typed, database-based <a href="#schemaconst">enumerations</a></li>
                         <li><a href="#lazyloading">lazy loading</a></li>
                         <li><a href="#serialization">differential serialization and deserialization</a> of uncommitted changes (enables long-running transactions)</li>
+                        <li><a href="#querylanguage">LINQ</a></li>
                         <li>strongly-typed <a href="#querylanguage">query language</a> (based on C# operator overloading)</li>
                         <li>text-based <a href="#querylanguage">query language</a> - SOQL</li>
                         <li><a href="#mappingmultipletablestoclasses">vertical partitioning</a> of data (load-on-demand for large columns)</li>
@@ -122,7 +123,7 @@
 
                         Working with objects, we use method calls, properties
                         events, collections, inheritance, polymorphism, and so on, while working with relational data 
-                        requires us to think in terms of SELECT,INSERT,UPDATE and DELETE SQL operations
+                        requires us to think in terms of SELECT, INSERT, UPDATE and DELETE SQL operations
                         on rectangular tables.
                     </p>
                     <p>
@@ -578,14 +579,15 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         <li>enumerations</li>
                     </ul>
                     <p>
-                        Sooda supports two variants of its object-oriented query language:
+                        Sooda supports three object-oriented query languages:
                     </p>
                     <ul>
                         <li>text-based query language called <a href="#soqltext">SOQL</a></li>
                         <li>a <a href="#soqltypedqueries">strongly-typed</a>, in-code variant of SOQL implemented using C# operator overloading</li>
+                        <li><a href="#linq">LINQ</a></li>
                     </ul>
                     <p>
-                        Both of them let you use path expressions and collections to write join-free powerful
+                        All of them let you use path expressions and collections to write join-free powerful
                         object-oriented queries. This is described <sectionlink id="soql" />.
                     </p>
                 </body>
@@ -830,18 +832,26 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 </code>
                 <p>
                     What if we wanted to find people by their names? 
-                    Sooda supports a query language called <a href="#soql">SOQL</a> that lets you formulate object-oriented queries to find
-                    objects that meet some specified criteria. Two variants of SOQL are supported: <a href="#soqltypedqueries">typed queries</a>
-                    (presented below - only supported in C#) or <a href="#soqltext">textual queries</a> available in all languages.
+                    Sooda supports three query languages: <a href="#linq">LINQ</a>,
+                    <a href="#soqltypedqueries">typed queries</a> (supported only in C#) and <a href="#soqltext">SOQL</a>.
                 </p>
                 <code lang="C#">
-                foreach (Employee emp in Employee.GetList(EmployeeField.LastName == "Suyama"))
-                {
-                    Console.WriteLine("{0}", emp.FirstName);
-                }
+                    foreach (Employee emp in Employee.Linq().Where(e => e.LastName == "Suyama"))
+                    {
+                        Console.WriteLine("{0}", emp.FirstName);
+                    }
                 </code>
                 <p>
-                    The following code uses a textual query to get the same result:
+                    Same query using Typed Queries:
+                </p>
+                <code lang="C#">
+                    foreach (Employee emp in Employee.GetList(EmployeeField.LastName == "Suyama"))
+                    {
+                        Console.WriteLine("{0}", emp.FirstName);
+                    }
+                </code>
+                <p>
+                    Same query using SOQL:
                 </p>
                 <code lang="C#">
                     foreach (Employee emp in Employee.GetList(new SoodaWhereClause("LastName == {0}", "Suyama")))
@@ -850,14 +860,15 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     }
                 </code>
                 <p>
-                    The former method uses C# operator overloading and has the advantage of using C# compiler to validate all queries.
-                    That means you cannot write invalid queries because they will fail to compile. This is great when developing large
-                    ever-changing projects, as you can immediately know the impact of removing a field or changing its data type.
+                    LINQ and Typed Queries have the advantage of queries being validated at compile time.
+                    This is great when developing large ever-changing projects, as you can immediately know the impact
+                    of removing a field or changing its data type.
                 </p>
                 <p>
-                    SOQL lets you write powerful query expressions without the use of SQL <code>JOIN</code> operators
-                    thanks to the support for <a href="#soqlpathexpressions">path expressions</a>. The following 
-                    example displays the details of all shipments made via "Speedy Express" carrier that have more than 3 items:
+                    In all three Sooda query languages you use <a href="#soqlpathexpressions">path expressions</a>
+                    instead of SQL <code>JOIN</code> operators.
+                    The following example displays the details of all shipments made via "Speedy Express"
+                    carrier that have more than 3 items:
                 </p>
                 <code lang="C#">
                     <![CDATA[
@@ -2429,7 +2440,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                 </p>
                 <p>
                     It is recommended to run SoodaStubGen as part of your (preferably fully automated and repeatable) build process so Sooda supports 
-                    calling stub generator from a batch file, NAnt script or Visual Studio 2003/2005 solution 
+                    calling stub generator from a batch file, NAnt script or Visual Studio 2003/2005/2008/2010 solution 
                     (Visual Studio 2002 is not supported).
                 </p>
                 <p>
@@ -4393,12 +4404,12 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         Sooda uses a <a href="#soql">query language called SOQL</a> to select
                         objects that meet the specific criteria. To get a list of matching objects you 
                         use the <code>GetList()</code> method. 
-                        To load a single object by SQL query use <code>LoadSingleObject()</code>.
+                        To load a single object by SOQL query use <code>LoadSingleObject()</code>.
                     </p>
                     <p>
                         <code>GetList()</code> method is overloaded to support various usage scenarios.
                         The most complex variant of the method takes five parameters, but <a href="#soodastubgen">SoodaStubGen</a>
-                        also generates simplified variants of the GetList() method which only accept 1,2,3 or 4 parameters. There are
+                        also generates simplified variants of the GetList() method which only accept 1, 2, 3 or 4 parameters. There are
                         32 overloads generated for each class.
                     </p>
                     <code lang="C#">
@@ -5015,7 +5026,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     <li><code>DirtyObjects</code> property - returns a collection of dirty objects (objects modified within
                         the transaction)</li>
                     <li><code>DeletedObjects</code> property - returns a collection of objects marked for delete</li>
-                    <li><code>FindObjectWithKey(className,keyValue,expectedType)</code> method - returns an cached object whose class name 
+                    <li><code>FindObjectWithKey(className,keyValue,expectedType)</code> method -&#160;returns a cached object whose class name 
                         is <code>className</code> and primary key is <code>keyValue</code>. If the object is not found in L1 cache or if the object
                         is not of <code>expectedType</code>, this function returns <code>null</code>.</li>
                     <li><code>GetObject(className,keyValueString)</code> method - gets a reference to the object of the specified class
@@ -5864,7 +5875,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
         </section>
     </section>
     <section id="soql">
-        <title>Query Language - SOQL</title>
+        <title>Query Languages</title>
         <body>
             <p>
                 Sooda supports a query language named SOQL which is similar to SQL (Structured Query Language)
@@ -6411,7 +6422,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                     <code lang="SQL">
                                         PrimaryGroup.Manager is not null
                                     </code>
-                                </td>                                    
+                                </td>
                             </tr>
                             <tr>
                                 <td>in (a1,a2,...,aN)</td>
@@ -6528,6 +6539,146 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     Group.GetList(GroupField.Manager == Contact.Mary);
                 </code>
             </body>
+        </section>
+        <section id="linq">
+            <title>Language Integrated Query - LINQ</title>
+            <body>
+                <p>
+                    Sooda now supports LINQ, which is the standard query language for .NET since version 3.5.
+                    LINQ has all the benefits of Typed Queries, which existed in Sooda before LINQ appeared.
+                    It is recommended that you use LINQ for new code. Typed Queries exist for backward compatibility.
+                </p>
+            </body>
+            <section id="linqsource">
+                <title>LINQ Sources</title>
+                <body>
+                    <p>
+                        Each Sooda class contains a method called <code>Linq()</code>
+                        which is the root of all LINQ queries.
+                        If not followed by LINQ methods, <code>Linq()</code> returns all objects of the given class:
+                    </p>
+                    <code lang="C#">
+                        foreach (Contact c in Contact.Linq())
+                            Console.WriteLine(c.Name);
+                    </code>
+                    <p>
+                        The <code>Linq()</code> method is overloaded and you can pass a <code>SoodaTransaction</code>
+                        and <a href="#loadingbyquery">SoodaSnapshotOptions</a> to it:
+                    </p>
+                    <code lang="C#">
+                        foreach (Contact c in Contact.Linq(SoodaSnapshotOptions.NoWriteObjects))
+                            Console.WriteLine(c.Name);
+                    </code>
+                    <code lang="C#">
+                        foreach (Contact c in Contact.Linq(transaction, SoodaSnapshotOptions.Default))
+                            Console.WriteLine(c.Name);
+                    </code>
+                    <p>
+                        LINQ methods become available on the result of <code>Linq()</code>
+                        when you import <code>System.Linq</code> namespace
+                        (note <code>System.Linq</code> and not <code>Sooda.Linq</code>).
+                        This is necessary for all LINQ queries except for the trivial cases such as the above.
+                    </p>
+                </body>
+            </section>
+            <section id="linqquery">
+                <title>LINQ Queries</title>
+                <body>
+                    <p>
+                        There are two ways of writing LINQ queries: method calls and LINQ keywords.
+                        These two are equivalent: C#/VB.NET compiler translates LINQ keywords to method calls.
+                    </p>
+                    <p>
+                        Let's start with method calls. Most LINQ methods accept lambda expressions where
+                        the only parameter is the so called range variable.
+                    </p>
+                    <code lang="C#">
+                        Contact.Linq().Where(c => c.Name == "Mary Manager");
+                    </code>
+                    <p>
+                        In the above code, the <code>Where()</code> method is called with the lambda expression
+                        <code>c => c.Name == "Mary Manager"</code>.
+                        In this expression <code>c</code> is the range variable and
+                        <code>c.Name == "Mary Manager"</code> is the body of the lambda expression.
+                        This code is equivalent to:
+                    </p>
+                    <code lang="C#">
+                        Contact.GetList(ContactField.Name == "Mary Manager");
+                    </code>
+                    <p>
+                        The body of the lambda expression is specified in C#, but you need to be aware
+                        that this code gets translated to SQL and executed by the database engine.
+                        If you use a construct that is not supported, you will get a runtime error.
+                        Therefore you must write lambda expressions carefully. When in doubt, always test your code.
+                    </p>
+                </body>
+            </section>
+            <!--
+Where().Where()
+OrderBy/ThenBy[Descending]()
+Reverse()
+Take()
+
+Except, Intersect, Union
+
+Select()
+Select((c, i) => ...)
+
+from c in Contact.Linq() where ... select
+
+-
+
+First/Last/Single[OrDefault]([filter])
+
+-
+
+Any()
+Any(filter)
+All(filter)
+Count()
+Count(filter)
+Average(...), Min(...), Max(...), Sum(...)
+
+-
+
+path expressions: <code>rangeVariable.FieldName</code>
+	sqlType.Value, nullableType.Value
+comparisons: ==, !=, <, <=, >, >=
+logical operators: &&, ||, !
+arithmetic operators: +, -, *, /, %
+unary negation: -
+null tests: == null, != null, IsNull for SqlTypes, !HasValue for Nullable
+like: using Sooda.Linq;
+collection Count
+collection Contains: c.Members.Contains(Contact.Mary)
+collection tests: c.Members.Any(m => m....) corresponds to c.Members.ContainsContactWhere(condition)
+UNIQUE TO LINQ: c.Members.Any() => c.Members.Count > 0
+UNIQUE TO LINQ: c.Members.All(m => m...)
+new Contact[] { Contact.Mary, Contact.Ed }.Contains(c.Manager) corresponds to c.Manager.In(Contact.Mary, Contact.Ed)
+c.GetType().Name -> SoodaClass
+UNIQUE TO LINQ: ??
+UNIQUE TO LINQ: c is Contact
+
+UNIQUE TO LINQ: string.Concat, string.Remove, string.Replace, string.Lower, string.Upper, Math.*
+
+unsupported LINQ methods, let
+
+            -->
+            <section id="linqvar">
+                <title>LINQ results</title>
+                <body>
+                    <code lang="C#">
+                        IEnumerable&lt;Contact&gt; contacts = Contact.Linq();
+                        foreach (Contact c in contacts)
+                            Console.WriteLine(c.Name);
+                    </code>
+                    <code lang="C#">
+                        var contacts = Contact.Linq();
+                        foreach (Contact c in contacts)
+                            Console.WriteLine(c.Name);
+                    </code>
+                </body>
+            </section>
         </section>
     </section>
     <section id="advancedtopics">

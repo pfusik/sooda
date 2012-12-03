@@ -50,10 +50,40 @@ namespace Sooda.UnitTests.TestCases.Linq
             {
                 IEnumerable<Contact> ce = Contact.Linq();
                 Assert.AreEqual(7, ce.Count());
+            }
+        }
+
+        [Test]
+        public void ToArray()
+        {
+            using (new SoodaTransaction())
+            {
                 Contact[] ca = Contact.Linq().ToArray();
                 Assert.AreEqual(7, ca.Length);
             }
         }
+
+        [Test]
+        public void ToList()
+        {
+            using (new SoodaTransaction())
+            {
+                List<Contact> cl = Contact.Linq().ToList();
+                Assert.AreEqual(7, cl.Count);
+            }
+        }
+
+        // not implemented yet
+        //[Test]
+        //public void ToSoodaList()
+        //{
+        //    using (new SoodaTransaction())
+        //    {
+        //        ContactList cl = new ContactList(Contact.Linq());
+        //        or? ContactList cl = Contact.Linq().ToSoodaList();
+        //        Assert.AreEqual(7, cl.Count);
+        //    }
+        //}
 
         [Test]
         public void Where()

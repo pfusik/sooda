@@ -255,8 +255,11 @@ namespace Sooda.Linq
 
         SoqlPathExpression TranslateParameter(ParameterExpression pe)
         {
+            // Don't use DefaultAlias if not needed.
+            // This is necessary because OrderBy clauses don't handle table aliases.
             if (_param2alias.Count == 0)
                 return null;
+
             string alias;
             if (_param2alias.TryGetValue(pe, out alias))
                 return new SoqlPathExpression(alias);
@@ -385,8 +388,10 @@ namespace Sooda.Linq
                 haystack2 = ((NewArrayExpression) haystack).Expressions.Select(e => TranslateExpression(e));
             else
                 throw new NotSupportedException(haystack.NodeType.ToString());
+
             if (needle.NodeType == ExpressionType.Convert && needle.Type == typeof(object)) // IList.Contains(object)
                 needle = ((UnaryExpression) needle).Operand;
+
             return new SoqlBooleanInExpression(TranslateExpression(needle), haystack2);
         }
 

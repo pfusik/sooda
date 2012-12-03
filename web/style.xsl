@@ -18,7 +18,7 @@
                 <link rel="stylesheet" href="syntax.css" type="text/css" />
                 <link rel="stylesheet" href="custom.css" type="text/css" />
                 <title>Sooda<xsl:if test="$mode = 'web'"> - <xsl:value-of select="document('webmenu.xml')/common/navigation/nav[@href=$page_id]/@label" /></xsl:if></title>
-                <meta name="keywords" content="Sooda, O/R mapping, .NET, C#, object relational mapper, persistence, open source, simple object oriented data access, database, sql, soql" />
+                <meta name="keywords" content="Sooda, O/R mapping, .NET, C#, object relational mapper, LINQ, persistence, open source, simple object oriented data access, database, sql, soql" />
                 <meta name="author" content="Jaroslaw Kowalski" />
                 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
                 <meta name="description" content="Sooda is an open source object-to-relational mapping software providing easy-to-use API to create,read,search,update and delete objects without the use of SQL." />
