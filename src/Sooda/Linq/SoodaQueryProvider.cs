@@ -394,9 +394,9 @@ namespace Sooda.Linq
             throw new NotSupportedException(t.FullName + "." + mc.Method.Name);
         }
 
-        SoqlExpression TranslateCoalesce(BinaryExpression expr)
+        SoqlExpression TranslateToFunction(string function, BinaryExpression expr)
         {
-            return new SoqlFunctionCallExpression("coalesce", TranslateExpression(expr.Left), TranslateExpression(expr.Right));
+            return new SoqlFunctionCallExpression(function, TranslateExpression(expr.Left), TranslateExpression(expr.Right));
         }
 
         SoqlPathExpression GetPrimaryKeyExpression()
@@ -429,6 +429,8 @@ namespace Sooda.Linq
                     return TranslateBinary((BinaryExpression) expr, SoqlBinaryOperator.Div);
                 case ExpressionType.Modulo:
                     return TranslateBinary((BinaryExpression) expr, SoqlBinaryOperator.Mod);
+                case ExpressionType.Power:
+                    return TranslateToFunction("power", (BinaryExpression) expr);
                 case ExpressionType.Negate:
                     return new SoqlUnaryNegationExpression(TranslateExpression(((UnaryExpression) expr).Operand));
                 case ExpressionType.Convert:
@@ -442,7 +444,7 @@ namespace Sooda.Linq
                 case ExpressionType.Not:
                     return new SoqlBooleanNegationExpression(TranslateBoolean(((UnaryExpression) expr).Operand));
                 case ExpressionType.Coalesce:
-                    return TranslateCoalesce((BinaryExpression) expr);
+                    return TranslateToFunction("coalesce", (BinaryExpression) expr);
                 case ExpressionType.Equal:
                     return TranslateRelational((BinaryExpression) expr, SoqlRelationalOperator.Equal);
                 case ExpressionType.NotEqual:
