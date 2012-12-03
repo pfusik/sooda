@@ -95,6 +95,16 @@ namespace Sooda.UnitTests.TestCases.Linq
                 Assert.AreEqual(7, ce.Count());
                 ce = Contact.Linq().Where(c => c.Active != true);
                 Assert.AreEqual(0, ce.Count());
+
+                ce = Contact.Linq().Where(c => true == c.Active);
+                Assert.AreEqual(7, ce.Count());
+                ce = Contact.Linq().Where(c => false == c.Active);
+                Assert.AreEqual(0, ce.Count());
+
+                ce = Contact.Linq().Where(c => false != c.Active);
+                Assert.AreEqual(7, ce.Count());
+                ce = Contact.Linq().Where(c => true != c.Active);
+                Assert.AreEqual(0, ce.Count());
             }
         }
 
@@ -109,7 +119,20 @@ namespace Sooda.UnitTests.TestCases.Linq
                 ce = Contact.Linq().Where(c => c.Active == true == true != false);
                 Assert.AreEqual(7, ce.Count());
 
-                ce = Contact.Linq().Where(c => (c.Active == true) == (c.Active == true));
+                ce = Contact.Linq().Where(c => true == (c.Active == true));
+                Assert.AreEqual(7, ce.Count());
+
+                ce = Contact.Linq().Where(c => false != (true == (c.Active == true)));
+                Assert.AreEqual(7, ce.Count());
+            }
+        }
+
+        [Test]
+        public void Equivalence()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => (c.Active == true) == (c.Active == true));
                 Assert.AreEqual(7, ce.Count());
             }
         }
@@ -173,6 +196,16 @@ namespace Sooda.UnitTests.TestCases.Linq
                 ce = Contact.Linq().Where(c => c.Manager == GetNullContact());
                 Assert.AreEqual(5, ce.Count());
                 ce = Contact.Linq().Where(c => c.Manager != GetNullContact());
+                Assert.AreEqual(2, ce.Count());
+
+                ce = Contact.Linq().Where(c => null == c.Manager);
+                Assert.AreEqual(5, ce.Count());
+                ce = Contact.Linq().Where(c => null != c.Manager);
+                Assert.AreEqual(2, ce.Count());
+
+                ce = Contact.Linq().Where(c => GetNullContact() == c.Manager);
+                Assert.AreEqual(5, ce.Count());
+                ce = Contact.Linq().Where(c => GetNullContact() != c.Manager);
                 Assert.AreEqual(2, ce.Count());
             }
         }

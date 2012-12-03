@@ -142,7 +142,7 @@ namespace Sooda.Linq
             }
         }
 
-        static SoqlLiteralExpression FoldConstant(Expression expr)
+        static ISoqlConstantExpression FoldConstant(Expression expr)
         {
             if (!IsConstant(expr))
                 return null;
@@ -157,6 +157,12 @@ namespace Sooda.Linq
             SoodaObject so = value as SoodaObject;
             if (so != null)
                 value = so.GetPrimaryKeyValue();
+
+            if (value == null)
+                return new SoqlNullLiteral();
+            if (value is bool)
+                return (bool) value ? SoqlBooleanLiteralExpression.True : SoqlBooleanLiteralExpression.False;
+
             return new SoqlLiteralExpression(value);
         }
 
@@ -182,30 +188,58 @@ namespace Sooda.Linq
             throw new NotSupportedException("Convert " + expr.Operand.Type + " to " + expr.Type);
         }
 
+        SoqlBooleanExpression TranslateEqualsLiteral(SoqlExpression left, SoqlExpression right, bool notEqual)
+        {
+            ISoqlConstantExpression rightConst = right as ISoqlConstantExpression;
+            if (rightConst != null)
+            {
+                object value = rightConst.GetConstantValue();
+
+                // left == null -> left IS NULL
+                // left != null -> left IS NOT NULL
+                if (value == null || value == DBNull.Value)
+                    return new SoqlBooleanIsNullExpression(left, notEqual);
+
+                if (value is bool)
+                {
+                    SoqlBooleanExpression leftBool = left as SoqlBooleanExpression;
+                    if (leftBool != null)
+                    {
+                        // left == true, left != false -> left
+                        if ((bool) value ^ notEqual)
+                            return leftBool;
+                        // left == false, left != true -> NOT(left)
+                        return new SoqlBooleanNegationExpression(leftBool);
+                    }
+                }
+            }
+            return null;
+        }
+
         SoqlBooleanExpression TranslateRelational(BinaryExpression expr, SoqlRelationalOperator op)
         {
             SoqlExpression left = TranslateExpression(expr.Left);
             SoqlExpression right = TranslateExpression(expr.Right);
-            SoqlLiteralExpression rightConst = right as SoqlLiteralExpression;
-            if (rightConst != null && rightConst.GetConstantValue() == null
-                && !(left is SoqlLiteralExpression))
+            SoqlBooleanExpression result;
+
+            switch (op)
             {
-                switch (op)
-                {
-                    case SoqlRelationalOperator.Equal:
-                        return new SoqlBooleanIsNullExpression(left, false);
-                    case SoqlRelationalOperator.NotEqual:
-                        return new SoqlBooleanIsNullExpression(left, true);
-                    default:
-                        throw new NotSupportedException(op + " NULL");
-                }
+                case SoqlRelationalOperator.Equal:
+                    result = TranslateEqualsLiteral(left, right, false) ?? TranslateEqualsLiteral(right, left, false);
+                    break;
+                case SoqlRelationalOperator.NotEqual:
+                    result = TranslateEqualsLiteral(left, right, true) ?? TranslateEqualsLiteral(right, left, true);
+                    break;
+                default:
+                    result = null;
+                    break;
             }
-            return new SoqlBooleanRelationalExpression(left, right, op);
+            return result ?? new SoqlBooleanRelationalExpression(left, right, op);
         }
 
         SoqlExpression TranslateConditional(ConditionalExpression expr)
         {
-            SoqlLiteralExpression test = FoldConstant(expr.Test);
+            ISoqlConstantExpression test = FoldConstant(expr.Test);
             if (test == null)
                 throw new NotSupportedException("?: operator condition is not constant");
             return TranslateExpression((bool) test.GetConstantValue() ? expr.IfTrue : expr.IfFalse);
@@ -301,7 +335,7 @@ namespace Sooda.Linq
         SoqlBooleanInExpression TranslateCollectionContains(Expression haystack, Expression needle)
         {
             IEnumerable haystack2;
-            SoqlLiteralExpression literal = FoldConstant(haystack);
+            ISoqlConstantExpression literal = FoldConstant(haystack);
             if (literal != null)
                 haystack2 = (IEnumerable) literal.GetConstantValue();
             else if (haystack.NodeType == ExpressionType.NewArrayInit)
@@ -417,9 +451,9 @@ namespace Sooda.Linq
 
         SoqlExpression TranslateExpression(Expression expr)
         {
-            SoqlLiteralExpression literal = FoldConstant(expr);
+            ISoqlConstantExpression literal = FoldConstant(expr);
             if (literal != null)
-                return literal;
+                return (SoqlExpression) literal;
 
             switch (expr.NodeType)
             {
