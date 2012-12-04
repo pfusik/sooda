@@ -51,8 +51,9 @@ namespace Sooda.Linq
         const string DefaultAlias = "t0";
 
         readonly SoodaTransaction _transaction;
-        readonly ClassInfo _classInfo;
+        readonly ClassInfo _rootClassInfo;
         readonly SoodaSnapshotOptions _options;
+        ClassInfo _classInfo;
         SoqlBooleanExpression _where;
         SoodaOrderBy _orderBy;
         int _topCount;
@@ -63,7 +64,7 @@ namespace Sooda.Linq
         public SoodaQueryProvider(SoodaTransaction transaction, ClassInfo classInfo, SoodaSnapshotOptions options)
         {
             _transaction = transaction;
-            _classInfo = classInfo;
+            _rootClassInfo = classInfo;
             _options = options;
         }
 
@@ -654,6 +655,44 @@ namespace Sooda.Linq
                 _topCount = count;
         }
 
+        static bool IsSameOrSubclassOf(ClassInfo subClass, ClassInfo baseClass)
+        {
+            while (subClass.Name != baseClass.Name)
+            {
+                subClass = subClass.InheritsFromClass;
+                if (subClass == null)
+                    return false;
+            }
+            return true;
+        }
+
+        void OfType(Type type)
+        {
+            // x.OfType<object>() -> x
+            // x.OfType<SoodaObject>() -> x
+            if (type != typeof(object) && type != typeof(SoodaObject))
+            {
+                if (!type.IsSubclassOf(typeof(SoodaObject)))
+                    throw new NotSupportedException("OfType() supported only for Sooda classes and object");
+                ClassInfo classInfo = _transaction.Schema.FindClassByName(type.Name);
+                if (classInfo == null)
+                    throw new NotSupportedException("OfType() supported only for Sooda classes and object");
+
+                if (IsSameOrSubclassOf(_classInfo, classInfo))
+                {
+                    // x.OfType<X>() -> x
+                    // x.OfType<BaseClass>() -> x
+                }
+                else if (IsSameOrSubclassOf(classInfo, _classInfo))
+                {
+                    // x.OfType<SubClass>() -> from SubClass ...
+                    _classInfo = classInfo;
+                }
+                else
+                    _where = SoqlBooleanLiteralExpression.False;
+            }
+        }
+
         SoqlBooleanExpression TranslateSubquery(Expression expr)
         {
             TakeNotSupported();
@@ -668,6 +707,7 @@ namespace Sooda.Linq
             }
 
             // TODO: compare _transaction, _classInfo, _options
+            // TODO: OfType?
             SoqlBooleanExpression thisWhere = _where;
             SoodaOrderBy thisOrderBy = _orderBy;
             _where = null;
@@ -728,6 +768,10 @@ namespace Sooda.Linq
                             if (count < 0)
                                 count = 0;
                             Take(count);
+                            break;
+
+                        case SoodaLinqMethod.Queryable_OfType:
+                            OfType(mc.Method.GetGenericArguments()[0]);
                             break;
 
                         case SoodaLinqMethod.Queryable_Except:
@@ -835,6 +879,7 @@ namespace Sooda.Linq
 
         public object Execute(Expression expr)
         {
+            _classInfo = _rootClassInfo;
             _where = null;
             _orderBy = null;
             _topCount = -1;

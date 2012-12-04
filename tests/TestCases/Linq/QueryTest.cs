@@ -36,6 +36,7 @@ using System.Linq;
 using Sooda.Linq;
 
 using NUnit.Framework;
+using Sooda.UnitTests.Objects;
 using Sooda.UnitTests.BaseObjects;
 
 namespace Sooda.UnitTests.TestCases.Linq
@@ -356,6 +357,53 @@ namespace Sooda.UnitTests.TestCases.Linq
             {
                 IEnumerable<int> ie = Contact.Linq().Select(c => c.ContactId / 10).Distinct();
                 CollectionAssert.AreEquivalent(new int[] { 0, 5 }, ie);
+            }
+        }
+
+        [Test]
+        public void DistinctDistinct()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = Contact.Linq().Select(c => c.ContactId / 10).Distinct().Distinct();
+                CollectionAssert.AreEquivalent(new int[] { 0, 5 }, ie);
+            }
+        }
+
+        [Test]
+        public void DistinctSelect()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = Contact.Linq().Select(c => c.ContactId / 10).Distinct().Select(i => i + 1);
+                CollectionAssert.AreEquivalent(new int[] { 1, 6 }, ie);
+            }
+        }
+
+        [Test]
+        public void ManyQueries()
+        {
+            using (new SoodaTransaction())
+            {
+                IQueryable<Contact> cq = Contact.Linq();
+                Assert.AreEqual(1, cq.Where(c => c.ContactId == 3).Count());
+                Assert.AreEqual(2, cq.Where(c => c.ContactId < 3).Count());
+                Assert.AreEqual(7, cq.Count());
+            }
+        }
+
+        [Test]
+        public void OfType()
+        {
+            using (new SoodaTransaction())
+            {
+                IQueryable<Vehicle> vq = Vehicle.Linq();
+                Assert.AreEqual(9, vq.OfType<object>().Count());
+                Assert.AreEqual(9, vq.OfType<SoodaObject>().Count());
+                Assert.AreEqual(9, vq.OfType<Vehicle>().Count());
+                Assert.AreEqual(2, vq.OfType<Car>().Count());
+                Assert.AreEqual(7, vq.OfType<Bike>().Count());
+                Assert.AreEqual(3, vq.OfType<MegaSuperBike>().Count());
             }
         }
 

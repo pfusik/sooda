@@ -48,6 +48,7 @@ enum SoodaLinqMethod
     Queryable_SelectIndexed,
     Queryable_Reverse,
     Queryable_Distinct,
+    Queryable_OfType,
     Queryable_Except,
     Queryable_Intersect,
     Queryable_Union,
@@ -149,6 +150,7 @@ static class SoodaLinqMethodDictionary
             method2id.Add(MethodOf(() => Queryable.Select(null, (object o, int i) => i)), SoodaLinqMethod.Queryable_SelectIndexed);
             method2id.Add(MethodOf(() => Queryable.Reverse<object>(null)), SoodaLinqMethod.Queryable_Reverse);
             method2id.Add(MethodOf(() => Queryable.Distinct<object>(null)), SoodaLinqMethod.Queryable_Distinct);
+            method2id.Add(MethodOf(() => Queryable.OfType<object>(null)), SoodaLinqMethod.Queryable_OfType);
             method2id.Add(MethodOf(() => Queryable.Except<object>(null, null)), SoodaLinqMethod.Queryable_Except);
             method2id.Add(MethodOf(() => Queryable.Intersect<object>(null, null)), SoodaLinqMethod.Queryable_Intersect);
             method2id.Add(MethodOf(() => Queryable.Union<object>(null, null)), SoodaLinqMethod.Queryable_Union);

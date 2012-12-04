@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2012-12-03 22:04:18 +0100 (Mon, 03 Dec 2012) $</last-modified-date> (revision <subversion-revision>$Revision: 619 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2012-12-04 14:18:38 +0100 (Tue, 04 Dec 2012) $</last-modified-date> (revision <subversion-revision>$Revision: 625 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright &#169; 2003-2006 by Jarosław Kowalski</div>
         <div class="pagebreak">&#160;</div>
     </div>
@@ -6618,11 +6618,13 @@ Where().Where()
 OrderBy/ThenBy[Descending]()
 Reverse()
 Take()
+OfType<>()
 
 Except, Intersect, Union
 
 Select()
 Select((c, i) => ...)
+Distinct()
 
 from c in Contact.Linq() where ... select
 
@@ -6635,6 +6637,7 @@ First/Last/Single[OrDefault]([filter])
 Any()
 Any(filter)
 All(filter)
+Contains(item)
 Count()
 Count(filter)
 Average(...), Min(...), Max(...), Sum(...)
