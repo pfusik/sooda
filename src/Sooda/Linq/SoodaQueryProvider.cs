@@ -826,11 +826,9 @@ namespace Sooda.Linq
                 switch (SoodaLinqMethodUtil.Get(mc.Method))
                 {
                     case SoodaLinqMethod.Queryable_Select:
-                        TranslateQuery(mc.Arguments[0]);
-                        return Select(GetList(), GetLambda(mc).Compile());
+                        return Select(Execute<IEnumerable>(mc.Arguments[0]), GetLambda(mc).Compile());
                     case SoodaLinqMethod.Queryable_SelectIndexed:
-                        TranslateQuery(mc.Arguments[0]);
-                        return SelectIndexed(GetList(), GetLambda(mc).Compile());
+                        return SelectIndexed(Execute<IEnumerable>(mc.Arguments[0]), GetLambda(mc).Compile());
 
                     case SoodaLinqMethod.Queryable_All:
                         TranslateQuery(mc.Arguments[0]);

@@ -340,6 +340,16 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void SelectSelect()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = Contact.Linq().Select(c => c.ContactId).Select(i => 2 * i);
+                CollectionAssert.AreEquivalent(new int[] { 2 * 1, 2 * 2, 2 * 3, 2 * 50, 2 * 51, 2 * 52, 2 * 53 }, ie);
+            }
+        }
+
+        [Test]
         public void Let()
         {
             using (new SoodaTransaction())
