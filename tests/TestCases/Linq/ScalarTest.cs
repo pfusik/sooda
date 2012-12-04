@@ -92,6 +92,20 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void Contains()
+        {
+            using (new SoodaTransaction())
+            {
+                bool result = Contact.Linq().Contains(Contact.Mary);
+                Assert.IsTrue(result);
+                result = Contact.Linq().Where(c => c.ContactId > 1).Contains(Contact.Mary);
+                Assert.IsFalse(result);
+                result = Contact.Linq().Contains(null);
+                Assert.IsFalse(result);
+            }
+        }
+
+        [Test]
         public void Count()
         {
             using (new SoodaTransaction())

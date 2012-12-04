@@ -54,6 +54,7 @@ enum SoodaLinqMethod
     Queryable_All,
     Queryable_Any,
     Queryable_AnyFiltered,
+    Queryable_Contains,
     Queryable_Count,
     Queryable_CountFiltered,
     Queryable_First,
@@ -154,6 +155,7 @@ static class SoodaLinqMethodDictionary
             method2id.Add(MethodOf(() => Queryable.All(null, predicate)), SoodaLinqMethod.Queryable_All);
             method2id.Add(MethodOf(() => Queryable.Any<object>(null)), SoodaLinqMethod.Queryable_Any);
             method2id.Add(MethodOf(() => Queryable.Any(null, predicate)), SoodaLinqMethod.Queryable_AnyFiltered);
+            method2id.Add(MethodOf(() => Queryable.Contains<object>(null, null)), SoodaLinqMethod.Queryable_Contains);
             method2id.Add(MethodOf(() => Queryable.Count<object>(null)), SoodaLinqMethod.Queryable_Count);
             method2id.Add(MethodOf(() => Queryable.Count(null, predicate)), SoodaLinqMethod.Queryable_CountFiltered);
             method2id.Add(MethodOf(() => Queryable.First<object>(null)), SoodaLinqMethod.Queryable_First);

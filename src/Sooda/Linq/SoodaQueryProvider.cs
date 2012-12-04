@@ -608,11 +608,15 @@ namespace Sooda.Linq
             }
         }
 
+        void Where(SoqlBooleanExpression where)
+        {
+            _where = _where == null ? where : _where.And(where);
+        }
+
         void Where(MethodCallExpression mc)
         {
             TakeNotSupported();
-            SoqlBooleanExpression where = TranslateBoolean(GetLambda(mc).Body);
-            _where = _where == null ? where : _where.And(where);
+            Where(TranslateBoolean(GetLambda(mc).Body));
         }
 
         void Reverse()
@@ -726,12 +730,12 @@ namespace Sooda.Linq
                         case SoodaLinqMethod.Queryable_Except:
                             thatWhere = TranslateSubquery(mc.Arguments[1]);
                             thatWhere = thatWhere == null ? (SoqlBooleanExpression) SoqlBooleanLiteralExpression.False : new SoqlBooleanNegationExpression(thatWhere);
-                            _where = _where == null ? thatWhere : _where.And(thatWhere);
+                            Where(thatWhere);
                             break;
                         case SoodaLinqMethod.Queryable_Intersect:
                             thatWhere = TranslateSubquery(mc.Arguments[1]);
                             if (thatWhere != null)
-                                _where = _where == null ? thatWhere : _where.And(thatWhere);
+                                Where(thatWhere);
                             break;
                         case SoodaLinqMethod.Queryable_Union:
                             thatWhere = TranslateSubquery(mc.Arguments[1]);
@@ -846,8 +850,7 @@ namespace Sooda.Linq
                     case SoodaLinqMethod.Queryable_All:
                         TranslateQuery(mc.Arguments[0]);
                         TakeNotSupported();
-                        SoqlBooleanExpression where = new SoqlBooleanNegationExpression(TranslateBoolean(GetLambda(mc).Body));
-                        _where = _where == null ? where : _where.And(where);
+                        Where(new SoqlBooleanNegationExpression(TranslateBoolean(GetLambda(mc).Body)));
                         Take(1);
                         return GetList().Count == 0;
                     case SoodaLinqMethod.Queryable_Any:
@@ -857,6 +860,16 @@ namespace Sooda.Linq
                     case SoodaLinqMethod.Queryable_AnyFiltered:
                         TranslateQuery(mc.Arguments[0]);
                         Where(mc);
+                        Take(1);
+                        return GetList().Count > 0;
+                    case SoodaLinqMethod.Queryable_Contains:
+                        TranslateQuery(mc.Arguments[0]);
+                        TakeNotSupported();
+                        SoqlBooleanExpression where = new SoqlBooleanRelationalExpression(
+                            new SoqlPathExpression(_classInfo.GetPrimaryKeyFields().Single().Name),
+                            (SoqlExpression) FoldConstant(mc.Arguments[1]),
+                            SoqlRelationalOperator.Equal);
+                        Where(where);
                         Take(1);
                         return GetList().Count > 0;
                     case SoodaLinqMethod.Queryable_Count:
