@@ -591,7 +591,21 @@ namespace Sooda.Linq
         void TakeNotSupported()
         {
             if (_topCount >= 0)
-                throw new NotSupportedException("Take() not supported here");
+            {
+                SoqlQueryExpression query = new SoqlQueryExpression();
+                query.TopCount = _topCount;
+                query.From.Add(_classInfo.Name);
+                query.FromAliases.Add(string.Empty);
+                query.WhereClause = _where;
+                if (_orderBy != null)
+                    query.SetOrderBy(_orderBy);
+                SoqlPathExpression needle = new SoqlPathExpression(_classInfo.GetPrimaryKeyFields().Single().Name);
+                SoqlExpressionCollection haystack = new SoqlExpressionCollection();
+                haystack.Add(query);
+                _where = new SoqlBooleanInExpression(needle, haystack);
+                _topCount = -1;
+                // _orderBy must be in both the subquery and the outer query
+            }
         }
 
         void Where(MethodCallExpression mc)

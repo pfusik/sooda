@@ -257,6 +257,89 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void TakeWhere()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Take(2).Where(c => c.ContactId > 0);
+                Assert.AreEqual(2, ce.Count());
+            }
+        }
+
+        [Test]
+        public void TakeOrderBy()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().OrderBy(c => c.ContactId).Take(2).OrderBy(c => c.Name).ToArray();
+                CollectionAssert.AreEqual(new Contact[] { Contact.Ed, Contact.Mary }, ce);
+            }
+        }
+
+        [Test]
+        public void TakeReverse()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Take(2).Reverse();
+                Assert.AreEqual(2, ce.Count());
+            }
+        }
+
+        [Test]
+        public void TakeUnion()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().OrderBy(c => c.ContactId).Take(2).Union(new Contact[] { Contact.Eva });
+                Assert.AreEqual(3, ce.Count());
+
+                ce = Contact.Linq().OrderBy(c => c.ContactId).Take(2).Union(Contact.Linq().Where(c => c.ContactId == 3));
+                Assert.AreEqual(3, ce.Count());
+            }
+        }
+
+        [Test]
+        public void UnionTake()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.ContactId == 3).Union(Contact.Linq().OrderBy(c => c.ContactId).Take(2));
+                Assert.AreEqual(3, ce.Count());
+            }
+        }
+
+        [Test]
+        public void TakeAll()
+        {
+            using (new SoodaTransaction())
+            {
+                bool result = Contact.Linq().Take(4).All(c => c.ContactId < 1000);
+                Assert.IsTrue(result);
+            }
+        }
+
+        [Test]
+        public void TakeAnyFiltered()
+        {
+            using (new SoodaTransaction())
+            {
+                bool result = Contact.Linq().Take(7).Any(c => c.ContactId == 51);
+                Assert.IsTrue(result);
+            }
+        }
+
+        [Test]
+        public void TakeScalar()
+        {
+            using (new SoodaTransaction())
+            {
+                int result = Contact.Linq().OrderBy(c => c.ContactId).Take(2).Sum(c => c.ContactId);
+                Assert.AreEqual(3, result);
+            }
+        }
+
+        [Test]
         public void Let()
         {
             using (new SoodaTransaction())
