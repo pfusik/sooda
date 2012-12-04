@@ -350,6 +350,16 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void Distinct()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = Contact.Linq().Select(c => c.ContactId / 10).Distinct();
+                CollectionAssert.AreEquivalent(new int[] { 0, 5 }, ie);
+            }
+        }
+
+        [Test]
         public void Let()
         {
             using (new SoodaTransaction())

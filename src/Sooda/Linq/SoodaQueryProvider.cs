@@ -290,7 +290,7 @@ namespace Sooda.Linq
                 if (t == typeof(MemberInfo) && name == "Name" && expr.Expression.NodeType == ExpressionType.Call)
                 {
                     MethodCallExpression mc = (MethodCallExpression) expr.Expression;
-                    if (SoodaLinqMethodUtil.Get(mc.Method) == SoodaLinqMethod.Object_GetType)
+                    if (SoodaLinqMethodDictionary.Get(mc.Method) == SoodaLinqMethod.Object_GetType)
                         return new SoqlSoodaClassExpression(TranslateToPathExpression(mc.Object));
                 }
 
@@ -397,7 +397,7 @@ namespace Sooda.Linq
 
         SoqlExpression TranslateCall(MethodCallExpression mc)
         {
-            switch (SoodaLinqMethodUtil.Get(mc.Method))
+            switch (SoodaLinqMethodDictionary.Get(mc.Method))
             {
                 case SoodaLinqMethod.Enumerable_All:
                     return new SoqlBooleanNegationExpression(TranslateCollectionAny(mc, SoodaLinqMethod.Enumerable_All));
@@ -682,7 +682,7 @@ namespace Sooda.Linq
 
                 case ExpressionType.Call:
                     MethodCallExpression mc = (MethodCallExpression) expr;
-                    SoodaLinqMethod method = SoodaLinqMethodUtil.Get(mc.Method);
+                    SoodaLinqMethod method = SoodaLinqMethodDictionary.Get(mc.Method);
                     TranslateQuery(mc.Arguments[0]);
                     switch (method)
                     {
@@ -749,22 +749,33 @@ namespace Sooda.Linq
             }
         }
 
+        // mc = "Queryable.Foo(source, extraParams)"
+        // methodId = "Enumerable.Foo(source, extraParams)"
+        object Invoke(MethodCallExpression mc, SoodaLinqMethod methodId, params object[] extraParams)
+        {
+            // TSource, ...
+            Type[] ga = mc.Method.GetGenericArguments();
+
+            // calculate source
+            object source = Execute<IEnumerable>(mc.Arguments[0]);
+
+            // source = source.Cast<TSource>();
+            MethodInfo cast = SoodaLinqMethodDictionary.Get(SoodaLinqMethod.Enumerable_Cast);
+            cast = cast.MakeGenericMethod(new Type[1] { ga[0] });
+            source = cast.Invoke(null, new object[1] { source });
+
+            // return Enumerable.Foo(source, extraParams);
+            MethodInfo method = SoodaLinqMethodDictionary.Get(methodId);
+            method = method.MakeGenericMethod(ga);
+            object[] parameters = new object[1 + extraParams.Length];
+            parameters[0] = source;
+            extraParams.CopyTo(parameters, 1);
+            return method.Invoke(null, parameters);
+        }
+
         ISoodaObjectList GetList()
         {
             return new SoodaObjectListSnapshot(_transaction, new SoodaWhereClause(_where), _orderBy, _topCount, _options, _classInfo);
-        }
-
-        static IEnumerable Select(IEnumerable source, Delegate d)
-        {
-            foreach (object obj in source)
-                yield return d.DynamicInvoke(obj);
-        }
-
-        static IEnumerable SelectIndexed(IEnumerable source, Delegate d)
-        {
-            int i = 0;
-            foreach (object obj in source)
-                yield return d.DynamicInvoke(obj, i++);
         }
 
         SoodaObject Single(int topCount, bool orDefault)
@@ -823,12 +834,14 @@ namespace Sooda.Linq
             MethodCallExpression mc = expr as MethodCallExpression;
             if (mc != null)
             {
-                switch (SoodaLinqMethodUtil.Get(mc.Method))
+                switch (SoodaLinqMethodDictionary.Get(mc.Method))
                 {
                     case SoodaLinqMethod.Queryable_Select:
-                        return Select(Execute<IEnumerable>(mc.Arguments[0]), GetLambda(mc).Compile());
+                        return Invoke(mc, SoodaLinqMethod.Enumerable_Select, GetLambda(mc).Compile());
                     case SoodaLinqMethod.Queryable_SelectIndexed:
-                        return SelectIndexed(Execute<IEnumerable>(mc.Arguments[0]), GetLambda(mc).Compile());
+                        return Invoke(mc, SoodaLinqMethod.Enumerable_SelectIndexed, GetLambda(mc).Compile());
+                    case SoodaLinqMethod.Queryable_Distinct:
+                        return Invoke(mc, SoodaLinqMethod.Enumerable_Distinct);
 
                     case SoodaLinqMethod.Queryable_All:
                         TranslateQuery(mc.Arguments[0]);
