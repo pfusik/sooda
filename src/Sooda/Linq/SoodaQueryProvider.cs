@@ -488,18 +488,21 @@ namespace Sooda.Linq
 
         SoqlBooleanExpression TranslateTypeIs(TypeBinaryExpression expr)
         {
-            Type type = expr.TypeOperand;
-            if (!type.IsSubclassOf(typeof(SoodaObject)))
-                throw new NotSupportedException("'is' operator supported only for Sooda classes");
-            SchemaInfo schema = _transaction.Schema;
-            ClassInfo classInfo = schema.FindClassByName(type.Name);
-            if (classInfo == null)
-                throw new NotSupportedException("is " + type.Name);
-
             SoqlPathExpression path = TranslateToPathExpression(expr.Expression);
-            SoqlBooleanExpression result = Soql.ClassRestriction(path, schema, classInfo);
-            if (result != null)
-                return result;
+            Type type = expr.TypeOperand;
+            if (type != typeof(object)) // x is object -> x IS NOT NULL
+            {
+                if (!type.IsSubclassOf(typeof(SoodaObject)))
+                    throw new NotSupportedException("'is' operator supported only for Sooda classes and object");
+                SchemaInfo schema = _transaction.Schema;
+                ClassInfo classInfo = schema.FindClassByName(type.Name);
+                if (classInfo == null)
+                    throw new NotSupportedException("is " + type.Name);
+
+                SoqlBooleanExpression result = Soql.ClassRestriction(path, schema, classInfo);
+                if (result != null)
+                    return result;
+            }
 
             if (expr.Expression.NodeType == ExpressionType.Parameter)
             {

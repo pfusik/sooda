@@ -378,6 +378,16 @@ namespace Sooda.UnitTests.TestCases.Linq
                 Assert.AreEqual(1, ce.Count());
             }
         }
+
+        [Test]
+        public void TypeIsObject()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Manager is object);
+                Assert.AreEqual(2, ce.Count());
+            }
+        }
     }
 }
 
