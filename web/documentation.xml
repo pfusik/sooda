@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2012-12-04 14:18:38 +0100 (Tue, 04 Dec 2012) $</last-modified-date> (revision <subversion-revision>$Revision: 625 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2012-12-05 17:03:23 +0100 (Wed, 05 Dec 2012) $</last-modified-date> (revision <subversion-revision>$Revision: 626 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright &#169; 2003-2006 by Jarosław Kowalski</div>
         <div class="pagebreak">&#160;</div>
     </div>
@@ -835,12 +835,12 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     Sooda supports three query languages: <a href="#linq">LINQ</a>,
                     <a href="#soqltypedqueries">typed queries</a> (supported only in C#) and <a href="#soqltext">SOQL</a>.
                 </p>
-                <code lang="C#">
+                <code lang="C#"><![CDATA[
                     foreach (Employee emp in Employee.Linq().Where(e => e.LastName == "Suyama"))
                     {
                         Console.WriteLine("{0}", emp.FirstName);
                     }
-                </code>
+                ]]></code>
                 <p>
                     Same query using Typed Queries:
                 </p>
@@ -6544,12 +6544,13 @@ foreach (WorkItem wi in WorkItem.GetList(true))
             <title>Language Integrated Query - LINQ</title>
             <body>
                 <p>
-                    Sooda now supports LINQ, which is the standard query language for .NET since version 3.5.
+                    Sooda now supports LINQ, which has been the standard query language for .NET since version 3.5.
                     LINQ has all the benefits of Typed Queries, which existed in Sooda before LINQ appeared.
-                    It is recommended that you use LINQ for new code. Typed Queries exist for backward compatibility.
+                    It is recommended that you use LINQ for all new code.
+                    Typed Queries remain in Sooda for backward compatibility.
                 </p>
             </body>
-            <section id="linqsource">
+            <section id="linqsources">
                 <title>LINQ Sources</title>
                 <body>
                     <p>
@@ -6575,13 +6576,13 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     </code>
                     <p>
                         LINQ methods become available on the result of <code>Linq()</code>
-                        when you import <code>System.Linq</code> namespace
+                        as you import the <code>System.Linq</code> namespace
                         (note <code>System.Linq</code> and not <code>Sooda.Linq</code>).
                         This is necessary for all LINQ queries except for the trivial cases such as the above.
                     </p>
                 </body>
             </section>
-            <section id="linqquery">
+            <section id="linqqueries">
                 <title>LINQ Queries</title>
                 <body>
                     <p>
@@ -6592,12 +6593,12 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         Let's start with method calls. Most LINQ methods accept lambda expressions where
                         the only parameter is the so called range variable.
                     </p>
-                    <code lang="C#">
+                    <code lang="C#"><![CDATA[
                         Contact.Linq().Where(c => c.Name == "Mary Manager");
-                    </code>
+                    ]]></code>
                     <p>
                         In the above code, the <code>Where()</code> method is called with the lambda expression
-                        <code>c => c.Name == "Mary Manager"</code>.
+                        <code><![CDATA[c => c.Name == "Mary Manager"]]></code>.
                         In this expression <code>c</code> is the range variable and
                         <code>c.Name == "Mary Manager"</code> is the body of the lambda expression.
                         This code is equivalent to:
@@ -6609,64 +6610,400 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         The body of the lambda expression is specified in C#, but you need to be aware
                         that this code gets translated to SQL and executed by the database engine.
                         If you use a construct that is not supported, you will get a runtime error.
-                        Therefore you must write lambda expressions carefully. When in doubt, always test your code.
+                        Therefore you must write lambda expressions carefully.
+                        <a href="#linqexpressions">A section below</a> lists the supported constructs.
+                        When in doubt, always test your code.
+                    </p>
+                    <p>
+                        <code>Where()</code> is used to filter queries, just like SQL <code>WHERE</code>.
+                        To sort results, use <code>OrderBy()</code> and <code>OrderByDescending()</code>:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact.Linq().OrderBy(c => c.Name);
+                        Contact.Linq().OrderByDescending(c => c.ContactId);
+                    ]]></code>
+                    <p>
+                        If you chain <code>OrderBy()</code> calls, they will be executed in order:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact.Linq().OrderByDescending(c => c.ContactId).OrderBy(c => c.Name);
+                    ]]></code>
+                    <p>
+                        Here, the list is first sorted by <code>ContactId</code> and then sorted again by <code>Name</code>.
+                        The result is that <code>Name</code> has priority for ordering.
+                        To write multiple order expressions as in SQL,
+                        use <code>ThenBy()</code> and <code>ThenByDescending()</code>:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact.Linq().OrderBy(c => c.Name).ThenByDescending(c => c.ContactId);
+                    ]]></code>
+                    <p>
+                        Or, using LINQ keywords:
+                    </p>
+                    <code lang="C#">
+                        from c in Contact.Linq()
+                        orderby c.Name, c.ContactId descending
+                        select c;
+                    </code>
+                    <p>
+                        <code>Select()</code> can be used to transform Sooda objects into any .NET object you want:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact.Linq().Select(c => c.Name);
+                        Contact.Linq().Select(c => new { Id = c.ContactId, Name = c.Name);
+                    ]]></code>
+                    <p>
+                        Unlike other LINQ methods, Sooda's <code>Select()</code> doesn't get translated to SQL,
+                        but is executed on the .NET side. This means you may use any valid .NET code
+                        in <code>Select()</code> lambda expression.
+                        The downside is that even if you query for a single column, such as <code>Name</code>,
+                        all columns are fetched from the database and Sooda objects are materialized.
+                        This might change in future versions.
+                    </p>
+                    <p>
+                        To limit the number of rows, use <code>Take()</code>:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact.Linq().OrderBy(c => c.Name).Take(2);
+                    ]]></code>
+                    <p>
+                        <code>Take()</code> corresponds to SQL Server's <code>TOP</code>.
+                    </p>
+                    <p>
+                        LINQ queries are syntax extensions to C# and VB.NET that make LINQ queries
+                        look like SQL queries:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        from c in Contact.Linq()
+                        where c.Active && c != Contact.Mary
+                        orderby c.LastSalary.Value descending, c.Name
+                        select c.ContactId;
+                    ]]></code>
+                    <p>
+                        <code>from</code> must come first, and <code>select</code> must come last.
+                        The C# compiler will replace the above query with method calls:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact.Linq()
+                        .Where(c => c.Active && c != Contact.Mary)
+                        .OrderByDescending(c => c.LastSalary.Value).ThenBy(c => c.Name)
+                        .Select(c => c.ContactId);
+                    ]]></code>
+                    <p>
+                        There are LINQ keywords for some, but not all LINQ methods.
+                        Sooda supports:
+                    </p>
+                    <ul>
+                        <li><code>from ... in ...</code> - doesn't correspond to any method,
+                        but merely introduces LINQ source and range variable</li>
+                        <li><code>where</code> - corresponds to <code>Where()</code></li>
+                        <li><code>orderby</code>, <code>ascending</code> (default), <code>descending</code>
+                        - correspond to <code>OrderBy</code>, <code>OrderByDescending</code>,
+                        <code>ThenBy</code>, <code>ThenByDescending</code></li>
+                        <li><code>select</code> - corresponds to <code>Select()</code>
+                        except when given just the range variable (<code>select</code> must not be omitted)</li>
+                    </ul>
+                    <p>
+                        Sooda doesn't support <code>join ... in ... on ... equals ...</code>,
+                        <code>group ... by ...</code>, <code>into</code> nor <code>let</code> LINQ keywords.
+                    </p>
+                    <p>
+                        These were the most commonly used LINQ query methods.
+                        The methods below might be useful especially when you build queries dynamically.
+                    </p>
+                    <p>
+                        <code>Reverse()</code> reverses the order of results.
+                    </p>
+                    <p>
+                        <code>OfType&lt;NewType&gt;()</code> filters results by their type, for example:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        var vehicles = Vehicle.Linq().Where(v => v.Owner == Contact.Mary);
+                        var cars = vehicles.OfType<Car>();
+                        var bikes = vehicles.OfType<Bike>();
+                    ]]></code>
+                    <p>
+                        <code>Except()</code>, <code>Intersect()</code> and <code>Union()</code>
+                        are set operations on two queries, or a query and a collection of objects:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact.Linq().Where(c => c.Subordinates.Any())
+                        .Union(Contact.Linq().Where(c => c.LastSalary.Value > 100));
+                    ]]></code>
+                    <code lang="C#"><![CDATA[
+                        Contact.Linq().Where(c => c.Name.Like("E%")
+                        .Except(new Contact[] { Contact.Ed });
+                    ]]></code>
+                    <p>
+                        <code>Select()</code> has an overload that passes a zero-based row index
+                        to the lambda expression:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact.Linq().Select((c, i) => new { RowNum = i, Name = c.Name });
+                    ]]></code>
+                    <p>
+                        <code>Distinct()</code> can be applied on the result of <code>Select()</code>
+                        to filter out duplicates:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        IEnumerable<Contact> owners = Vehicle().Linq().Select(v => v.Owner).Distinct();
+                    ]]></code>
+                </body>
+            </section>
+            <section id="linqsingle">
+                <title>Querying for single objects</title>
+                <body>
+                    <p>
+                        Often you need a single object that meets the specific criteria.
+                        There are LINQ methods that return a single object instead of a list.
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact c = Contact.Linq().OrderByDescending(c => c.LastSalary.Value).First();
+                    ]]></code>
+                    <p>
+                        This code will return a person with highest last salary.
+                        It throws <code>InvalidOperationException</code> if there are no Contacts.
+                        If you want a null instead, use <code>FirstOrDefault()</code>
+                        ("Default" for reference objects means <code>null</code>).
+                        You may also want to use <code>Last()</code> or <code>LastOrDefault()</code>:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact c = Contact.Linq().OrderBy(c => c.LastSalary.Value).LastOrDefault();
+                    ]]></code>
+                    <p>
+                        To make sure there is exactly one object that meets the criteria
+                        use <code>Single()</code>:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact c = Contact.Linq().Where(c => c.Name == "Mary Manager").Single();
+                    ]]></code>
+                    <p>
+                        <code>Single()</code> throws <code>InvalidOperationException</code>
+                        if there is no one match. <code>SingleOrDefault</code> will return
+                        null if there are no matches, but still throw <code>InvalidOperationException</code>
+                        if there is more than one match.
+                    </p>
+                    <p>
+                        You almost certainly need a filter for <code>Single()</code>,
+                        so as a shortcut you may pass it to an overload:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact c = Contact.Linq().Single(c => c.Name == "Mary Manager");
+                    ]]></code>
+                    <p>
+                        There are also overloads of <code>First()</code>, <code>FirstOrDefault()</code>,
+                        <code>Last()</code>, <code>LastOrDefault()</code> that accept a filter.
+                    </p>
+                    <p>
+                        In total, there are six methods, each with two overloads. The pattern is:
+                        <code>{First|Last|Single}[OrDefault]([filter])</code>
+                    </p>
+                </body>
+            </section>
+            <section id="linqscalar">
+                <title>Scalar queries</title>
+                <body>
+                    <p>
+                        Many times you want to ask about the number of objects
+                        not caring about the contents objects. Use <code>Count()</code> for that:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        int c = Contact.Linq().Where(c => c.LastSalary > 100).Count();
+                    ]]></code>
+                    <p>
+                        <code>Count()</code> also has an overload that accepts a filter:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        int c = Contact.Linq().Count(c => c.LastSalary > 100);
+                    ]]></code>
+                    <p>
+                        If all you care is if the count is zero or not,
+                        <code>Any()</code> performs better:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        bool b = Contact.Linq().Where(c => c.LastSalary > 100).Any();
+                    ]]></code>
+                    <code lang="C#"><![CDATA[
+                        bool b = Contact.Linq().Any(c => c.LastSalary > 100);
+                    ]]></code>
+                    <p>
+                        You may also ask if all objects meet a criteria:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        bool b = Contact.Linq().All(c => c.LastSalary > 100);
+                    ]]></code>
+                    <p>
+                        Use <code>Contains()</code> to check if query would return a specific Sooda object:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        bool b = Contact.Linq().Where(c => c.LastSalary > 100).Contains(Contact.Mary);
+                    ]]></code>
+                    <p>
+                        There are also aggregate functions: <code>Average()</code>, <code>Min()</code>,
+                        <code>Max()</code> and <code>Sum()</code>:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        decimal avgSalary = Contact.Linq().Average(c => c.LastSalary.Value);
+                        decimal minEmployeeSalary = Contact.Linq().Where(c => c.Type == ContactType.Employee).Min(c => c.LastSalary.Value);
+                        decimal maxManagerSalary = Contact.Linq().Where(c => c.Type == ContactType.Manager).Min(c => c.LastSalary.Value);
+                        decimal totalSalary = Contact.Linq().Sum(c => c.LastSalary.Value);
+                    ]]></code>
+                    <p>
+                        If there are no matching objects, <code>Average()</code>, <code>Min()</code>
+                        and <code>Max()</code> throw <code>InvalidOperationException</code>
+                        while <code>Sum()</code> returns zero.
+                    </p>
+                </body>
+            </section>
+            <section id="linqexpressions">
+                <title>LINQ expressions</title>
+                <body>
+                    <p>
+                        Path expressions are same as in SOQL, except they start with a range variable:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact.Linq().Where(c => c.Name == "Mary Manager");
+                        Contact.Linq().Where(c => c.Manager.PrimaryGroup.Id == 10);
+                    ]]></code>
+                    <p>
+                        For comparisons, use C# operators: ==, !=, &lt;, &lt;=, &gt;, &gt;=.
+                        However, if your field is of a SqlType, you would need to compare the <code>Value</code> property:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact.Linq().Where(c => c.LastSalary.Value > "Mary Manager");
+                    ]]></code>
+                    <p>
+                        Logical operators are: &amp;&amp;, || and !.
+                        On numbers you may use arithmetic operators: +, -, *, /, % (modulo) and unary negation (-).
+                    </p>
+                    <p>
+                        The syntax of null tests depends on the field type.
+                        For reference types, compare with <code>null</code>.
+                        For SqlTypes, use the <code>IsNull</code> property.
+                        For Nullables, use the <code>HasValue</code> property.
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact.Linq().Where(c => c.Manager != null);
+                        Contact.Linq().Where(c => !c.LastSalary.IsNull); // if using SqlTypes
+                        Contact.Linq().Where(c => c.LastSalary.HasValue); // if using Nullable
+                    ]]></code>
+                    <p>
+                        Sooda detects subexpressions that can be evaluated on the .NET side before sending the query to the database.
+                        For example:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact.Linq().Where(c => c.Name == myVariable.MyMethod().MyOtherMethod());
+                    ]]></code>
+                    <p>
+                        Here the SQL translation of <code>myVariable.MyMethod().MyOtherMethod()</code> is just a string literal
+                        that is the result of this expression computed in .NET.
+                    </p>
+                    <p>
+                        To use SQL LIKE operator, you need to import the <code>Sooda.Linq</code> namespace
+                        (in addition to the usual <code>System.Linq</code>):
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        using Sooda.Linq;
+                        Contact.Linq().Where(c => c.Name.Like("C%"));
+                        // as a bonus, the Like() method becomes available on all .NET strings
+                        bool ok = "Foo".Like("%o"); // computed in .NET, not the database
+                    ]]></code>
+                    <p>
+                        Currently <code>using Sooda.Linq</code> only exposes the string <code>Like()</code> method.
+                        There is no other use for this import.
+                    </p>
+                    <p>
+                        Collection sizes are available either through the <code>Count</code> property
+                        or <code>Count()</code> LINQ extension method.
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact.Linq().Where(c => c.Subordinates.Count == 2);
+                        Contact.Linq().Where(c => c.Subordinates.Count() == 2); // same
+                    ]]></code>
+                    <p>
+                        You may test if collections contain a specific object:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact.Linq().Where(c => c.Subordinates.Contains(Contact.Ed));
+                    ]]></code>
+                    <p>
+                        For more sophisticated collection tests, use <code>Any()</code>:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact.Linq().Where(c => c.Subordinates.Any(s => s.Name == "Ed Employee"));
+                    ]]></code>
+                    <p>
+                        The above code was the LINQ counterpart to:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact.GetList(ContactField.Subordinates.ContainsContactWhere(ContactField.Name == "Ed Employee"));
+                    ]]></code>
+                    <p>
+                        The SQL/SOQL <code>IN</code> operator is expressed by .NET <code>Contains()</code> method:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact.Linq().Where(c => new Contact[] { Contact.Mary, Contact.Ed }.Contains(c.Manager));
+                    ]]></code>
+                    <p>
+                        which is equivalent to the Typed Query:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact.GetList(ContactField.Manager.In(Contact.Mary, Contact.Ed));
+                    ]]></code>
+                    <p>
+                        The <code>SoodaClass</code> property known from SOQL is written in LINQ as <code>GetType().Name</code>:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Vehicle.Linq().Where(c => c.GetType().Name == "Car");
+                    ]]></code>
+                    <p>
+                        The following constructs are unique to LINQ and have no SOQL counterparts.
+                    </p>
+                    <p>
+                        ?? is the C#'s null-coalesce operator. When used in queries, it gets translated to SQL <code>COALESCE</code>:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact.Linq().Where(c => (c.Manager ?? c.PrimaryGroup.Manager) == Contact.Mary);
+                    ]]></code>
+                    <p>
+                        You may use the "is" type-test operator:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact.Linq().Where(c => c.Vehicles.Any(v => v is Bike || c == Contact.Mary));
+                    ]]></code>
+                    <p>
+                        Instead of comparing collection size against zero, you may use <code>Any()</code>:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact.Linq().Where(c => c.Subordinates.Any());
+                        Contact.Linq().Where(c => c.Subordinates.Count > 0); // same
+                    ]]></code>
+                    <p>
+                        <code>All()</code> is available for collections as well:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact.Linq().Where(c => c.Subordinates.All(s => s.LastSalary.Value > 100));
+                    ]]></code>
+                    <p>
+                        The following string methods may be used: <code>Concat()</code>,
+                        <code>Remove()</code> (gets translated to SQL <code>LEFT</code>),
+                        <code>Replace()</code>, <code>Lower()</code> and <code>Upper()</code>.
+                    </p>
+                    <p>
+                        Also, some static methods from the <code>Math</code> class are supported:
+                        <code>Abs()</code>, <code>Acos()</code>, <code>Asin()</code>, <code>Atan()</code>,
+                        <code>Cos()</code>, <code>Exp()</code>, <code>Floor()</code>, <code>Pow()</code>,
+                        <code>Round()</code>, <code>Sign()</code>, <code>Sin()</code>, <code>Sqrt()</code>,
+                        <code>Tan()</code>, however their support in databases other than SQL Server hasn't been verified.
+                    </p>
+                    <p>
+                        Methods not mentioned above have no translation to SQL.
+                        You may call them if they can be evaluated before the SQL translation,
+                        and in <code>Select()</code>.
                     </p>
                 </body>
             </section>
             <!--
-Where().Where()
-OrderBy/ThenBy[Descending]()
-Reverse()
-Take()
-OfType<>()
-
-Except, Intersect, Union
-
-Select()
-Select((c, i) => ...)
-Distinct()
-
-from c in Contact.Linq() where ... select
-
--
-
-First/Last/Single[OrDefault]([filter])
-
--
-
-Any()
-Any(filter)
-All(filter)
-Contains(item)
-Count()
-Count(filter)
-Average(...), Min(...), Max(...), Sum(...)
-
--
-
-path expressions: <code>rangeVariable.FieldName</code>
-	sqlType.Value, nullableType.Value
-comparisons: ==, !=, <, <=, >, >=
-logical operators: &&, ||, !
-arithmetic operators: +, -, *, /, %
-unary negation: -
-null tests: == null, != null, IsNull for SqlTypes, !HasValue for Nullable
-like: using Sooda.Linq;
-collection Count
-collection Contains: c.Members.Contains(Contact.Mary)
-collection tests: c.Members.Any(m => m....) corresponds to c.Members.ContainsContactWhere(condition)
-UNIQUE TO LINQ: c.Members.Any() => c.Members.Count > 0
-UNIQUE TO LINQ: c.Members.All(m => m...)
-new Contact[] { Contact.Mary, Contact.Ed }.Contains(c.Manager) corresponds to c.Manager.In(Contact.Mary, Contact.Ed)
-c.GetType().Name -> SoodaClass
-UNIQUE TO LINQ: ??
-UNIQUE TO LINQ: c is Contact
-
-UNIQUE TO LINQ: string.Concat, string.Remove, string.Replace, string.Lower, string.Upper, Math.*
-
-unsupported LINQ methods, let
-
-            -->
             <section id="linqvar">
                 <title>LINQ results</title>
                 <body>
@@ -6682,6 +7019,7 @@ unsupported LINQ methods, let
                     </code>
                 </body>
             </section>
+            -->
         </section>
     </section>
     <section id="advancedtopics">
