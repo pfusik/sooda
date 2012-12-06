@@ -434,6 +434,97 @@ namespace Sooda.UnitTests.TestCases.Linq
                 CollectionAssert.AreEqual(new int[] { 52, 50, 51, 53 }, ie);
             }
         }
+
+        [Test]
+        [ExpectedException(typeof(NotSupportedException))]
+        public void OnServer()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                IQueryable<Contact> ce = Contact.Linq();
+                // just call any function that has no SQL translation
+                Assert.IsTrue(ce.All(c => c.Name.GetEnumerator() != null));
+            }
+        }
+
+        [Test]
+        public void OnClient()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq();
+                // just call any function that has no SQL translation
+                Assert.IsTrue(ce.All(c => c.Name.GetEnumerator() != null));
+            }
+        }
+
+        [Test]
+        [ExpectedException(typeof(NotSupportedException))]
+        public void OnServer2()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                var ce = Contact.Linq();
+                // just call any function that has no SQL translation
+                Assert.IsTrue(ce.All(c => c.Name.GetEnumerator() != null));
+            }
+        }
+
+        [Test]
+        public void OnClient2()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                var ce = Contact.Linq().AsEnumerable();
+                // just call any function that has no SQL translation
+                Assert.IsTrue(ce.All(c => c.Name.GetEnumerator() != null));
+            }
+        }
+
+        [Test]
+        public void Deferred()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                // must not be executed
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Name.GetEnumerator() != null);
+                Assert.IsTrue(true);
+            }
+        }
+
+        [Test]
+        public void Deferred2()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                string name = "Unused";
+                var ce = Contact.Linq().Where(c => c.Name == name);
+                name = "Mary Manager";
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual("Mary Manager", ce.First().Name);
+            }
+        }
+
+        bool Deferred3HelperCalled;
+
+        string Deferred3Helper()
+        {
+            Deferred3HelperCalled = true;
+            return "Mary Manager";
+        }
+
+        [Test]
+        public void Deferred3()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                Deferred3HelperCalled = false;
+                var ce = Contact.Linq().Where(c => c.Name == Deferred3Helper());
+                Assert.IsFalse(Deferred3HelperCalled);
+                Assert.AreEqual(1, ce.Count());
+                Assert.IsTrue(Deferred3HelperCalled);
+            }
+        }
     }
 }
 
