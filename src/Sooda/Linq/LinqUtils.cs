@@ -29,11 +29,14 @@
 
 #if DOTNET35
 
-public static class LinqUtils
+namespace Sooda.Linq
 {
-    public static bool Like(this string text, string pattern)
+    public static class LinqUtils
     {
-        return Sooda.QL.SoqlUtils.Like(text, pattern);
+        public static bool Like(this string text, string pattern)
+        {
+            return Sooda.QL.SoqlUtils.Like(text, pattern);
+        }
     }
 }
 
