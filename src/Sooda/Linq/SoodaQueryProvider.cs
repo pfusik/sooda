@@ -68,9 +68,46 @@ namespace Sooda.Linq
             _options = options;
         }
 
+        static Type GetElementType(Type seqType)
+        {
+            // array?
+            Type elementType = seqType.GetElementType();
+            if (elementType != null)
+                return elementType;
+
+            do
+            {
+                if (seqType.IsGenericType)
+                {
+                    // X<T1, T2, ...> -> try T1, T2, ...
+                    foreach (Type type in seqType.GetGenericArguments())
+                    {
+                        Type enumerable = typeof(IEnumerable<>).MakeGenericType(new Type[1] { type });
+                        if (enumerable.IsAssignableFrom(seqType))
+                            return type;
+                    }
+                }
+
+                // : IX1, IX2, ... -> try GetElementType(IX1), ...
+                foreach (Type iface in seqType.GetInterfaces())
+                {
+                    elementType = GetElementType(iface);
+                    if (elementType != null)
+                        return elementType;
+                }
+
+                // GetElementType(baseType)
+                seqType = seqType.BaseType;
+            } while (seqType != null && seqType != typeof(object));
+
+            return null;
+        }
+
         IQueryable IQueryProvider.CreateQuery(Expression expr)
         {
-            throw new NotImplementedException(); // TODO
+            Type elementType = GetElementType(expr.Type);
+            return (IQueryable) Activator.CreateInstance(typeof(SoodaQueryable<>).MakeGenericType(new Type[1] { elementType }),
+                new object[] { this, expr });
         }
 
         IQueryable<TElement> IQueryProvider.CreateQuery<TElement>(Expression expr)
