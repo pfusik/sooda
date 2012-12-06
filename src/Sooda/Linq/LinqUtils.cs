@@ -29,6 +29,11 @@
 
 #if DOTNET35
 
+using System.Collections.Generic;
+
+using Sooda;
+using Sooda.ObjectMapper;
+
 namespace Sooda.Linq
 {
     public static class LinqUtils
@@ -36,6 +41,22 @@ namespace Sooda.Linq
         public static bool Like(this string text, string pattern)
         {
             return Sooda.QL.SoqlUtils.Like(text, pattern);
+        }
+
+        public static ISoodaObjectList ToSoodaObjectList<T>(this IEnumerable<T> source) where T : SoodaObject
+        {
+            ISoodaObjectList list = source as ISoodaObjectList;
+            if (list != null)
+                return list;
+
+            SoodaQueryable<T> query = source as SoodaQueryable<T>;
+            if (query != null)
+                return query.Provider.Execute<ISoodaObjectList>(query.Expression);
+
+            SoodaObjectListSnapshot snapshot = new SoodaObjectListSnapshot();
+            foreach (SoodaObject o in source)
+                snapshot.Add(o);
+            return snapshot;
         }
     }
 }

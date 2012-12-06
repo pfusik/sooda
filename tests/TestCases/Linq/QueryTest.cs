@@ -74,17 +74,16 @@ namespace Sooda.UnitTests.TestCases.Linq
             }
         }
 
-        // not implemented yet
-        //[Test]
-        //public void ToSoodaList()
-        //{
-        //    using (new SoodaTransaction())
-        //    {
-        //        ContactList cl = new ContactList(Contact.Linq());
-        //        or? ContactList cl = Contact.Linq().ToSoodaList();
-        //        Assert.AreEqual(7, cl.Count);
-        //    }
-        //}
+        [Test]
+        public void ToSoodaObjectList()
+        {
+            using (new SoodaTransaction())
+            {
+                ContactList cl = new ContactList(Contact.Linq().ToSoodaObjectList());
+                Assert.AreEqual(7, cl.Count);
+                CollectionAssert.Contains(cl, Contact.Mary);
+            }
+        }
 
         [Test]
         public void Where()
