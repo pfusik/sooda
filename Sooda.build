@@ -561,7 +561,7 @@
 
     <target name="Sooda.UnitTests.TestCases" depends="libraries, Sooda.UnitTests.Objects, Sooda.UnitTests.BaseObjects">
         <copy file="${nant::get-base-directory()}/lib/common/2.0/nunit.framework.dll" tofile="${sooda.dir}/nunit.framework.dll" />
-        <csc target="library" output="${sooda.dir}/Sooda.UnitTests.TestCases.dll" debug="true">
+        <csc target="library" output="${sooda.dir}/Sooda.UnitTests.TestCases.dll" debug="true" define="${sooda.define}">
             <references>
                 <include name="${sooda.dir}/Sooda.dll" />
                 <include name="${sooda.dir}/Sooda.UnitTests.BaseObjects.dll" />
@@ -847,6 +847,15 @@
                 <include name="*.csdproj" />
             </project-files>
             <source-files basedir="src/SoodaFixKeygen">
+                <include name="**/*.cs" />
+            </source-files>
+        </sync-vs-project-items>
+        <sync-vs-project-items>
+            <project-files basedir="tests/TestCases">
+                <include name="*.csproj" />
+                <include name="*.csdproj" />
+            </project-files>
+            <source-files basedir="tests/TestCases">
                 <include name="**/*.cs" />
             </source-files>
         </sync-vs-project-items>

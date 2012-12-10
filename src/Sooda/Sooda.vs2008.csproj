@@ -197,6 +197,18 @@
     <Compile Include="ISoodaObjectList.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Linq\LinqUtils.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Linq\SoodaLinqMethod.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Linq\SoodaQueryable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Linq\SoodaQueryProvider.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Logging\BasicLogger.cs">
       <SubType>Code</SubType>
     </Compile>

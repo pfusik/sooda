@@ -170,6 +170,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ObjectMapper\SoodaObjectReflectionBasedFieldValues.cs" />
+    <Compile Include="Soql\CollectionTest.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Soql\ConstantFoldingTest.cs">
       <SubType>Code</SubType>
     </Compile>

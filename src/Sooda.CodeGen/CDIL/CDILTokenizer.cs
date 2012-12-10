@@ -117,13 +117,9 @@ namespace Sooda.CodeGen.CDIL
                     if (ch == '\'')
                         break;
                     if (ch == '\\')
-                    {
                         text += (char)ReadChar();
-                    }
                     else
-                    {
                         text += ch;
-                    }
                 }
                 _tokenType = CDILToken.String;
                 _tokenValue = text;
@@ -131,77 +127,66 @@ namespace Sooda.CodeGen.CDIL
             }
             if (Char.IsNumber(ch) || ch == '-')
             {
-                bool minus = ch == '-';
-                if (minus) ReadChar();
-
                 string text = "";
+                if (ch == '-')
+                {
+                    text = "-";
+                    ReadChar();
+                }
                 while ((p = PeekChar()) != -1 && Char.IsNumber((char)p))
                 {
                     ch = (char)p;
                     ReadChar();
                     text += ch;
                 }
-                if (text.Length == 0) throw BuildException("Number expected after -: " + ch);
+                if (text == "-") throw BuildException("Number expected after -");
                 _tokenType = CDILToken.Integer;
-                _tokenValue = minus ? -Convert.ToInt32(text) : Convert.ToInt32(text);
+                _tokenValue = Convert.ToInt32(text);
                 return;
             }
-            if (ch == '(')
+            switch (ch)
             {
-                ReadChar();
-                _tokenType = CDILToken.LeftParen;
-                return;
-            }
-            if (ch == ')')
-            {
-                ReadChar();
-                _tokenType = CDILToken.RightParen;
-                return;
-            }
-            if (ch == '=')
-            {
-                ReadChar();
-                _tokenType = CDILToken.Assign;
-                return;
-            }
-
-            if (ch == ',')
-            {
-                ReadChar();
-                _tokenType = CDILToken.Comma;
-                return;
-            }
-
-            if (ch == '.')
-            {
-                ReadChar();
-                _tokenType = CDILToken.Dot;
-                return;
-            }
-
-            if (ch == '$')
-            {
-                ReadChar();
-                _tokenType = CDILToken.Dollar;
-                return;
-            }
-
-            if (ch == ';')
-            {
-                ReadChar();
-                _tokenType = CDILToken.Semicolon;
-                return;
+                case '(':
+                    ReadChar();
+                    _tokenType = CDILToken.LeftParen;
+                    return;
+                case ')':
+                    ReadChar();
+                    _tokenType = CDILToken.RightParen;
+                    return;
+                case '=':
+                    ReadChar();
+                    _tokenType = CDILToken.Assign;
+                    return;
+                case ',':
+                    ReadChar();
+                    _tokenType = CDILToken.Comma;
+                    return;
+                case '.':
+                    ReadChar();
+                    _tokenType = CDILToken.Dot;
+                    return;
+                case '$':
+                    ReadChar();
+                    _tokenType = CDILToken.Dollar;
+                    return;
+                case ';':
+                    ReadChar();
+                    _tokenType = CDILToken.Semicolon;
+                    return;
+                default:
+                    break;
             }
 
             if (Char.IsLetter(ch) || ch == '_')
             {
                 string tokenName = "";
-
-                while (Char.IsLetterOrDigit(ch) || ch == '_')
+                do
                 {
                     tokenName += (char)ReadChar();
                     ch = (char)PeekChar();
                 }
+                while (Char.IsLetterOrDigit(ch) || ch == '_');
                 _tokenValue = tokenName;
                 _tokenType = CDILToken.Keyword;
                 return;

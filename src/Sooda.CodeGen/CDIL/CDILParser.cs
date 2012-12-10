@@ -385,6 +385,21 @@ namespace Sooda.CodeGen.CDIL
                 Expect(CDILToken.RightParen);
                 return new CodeTypeReference(arrayItemType, 1);
             }
+#if DOTNET2
+            if (name == "generic")
+            {
+                Expect(CDILToken.LeftParen);
+                CodeTypeReference genericType = ParseType();
+                System.Collections.Generic.List<CodeTypeReference> typeArguments = new System.Collections.Generic.List<CodeTypeReference>();
+                while (TokenType == CDILToken.Comma)
+                {
+                    GetNextToken();
+                    typeArguments.Add(ParseType());
+                }
+                Expect(CDILToken.RightParen);
+                return new CodeTypeReference(genericType.BaseType, typeArguments.ToArray());
+            }
+#endif
             while (TokenType == CDILToken.Dot)
             {
                 GetNextToken();

@@ -93,6 +93,11 @@ namespace Sooda
             expressions.Add(new ExpressionCompareInfo(expression, sortOrder));
         }
 
+        public void AddExpressions(SoodaObjectExpressionComparer other)
+        {
+            expressions.AddRange(other.expressions);
+        }
+
         public int Compare(SoodaObject dbo1, SoodaObject dbo2)
         {
             _context1.SetRootObject(dbo1);

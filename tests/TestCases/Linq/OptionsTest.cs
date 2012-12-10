@@ -1,5 +1,5 @@
 // 
-// Copyright (c) 2003-2006 Jaroslaw Kowalski <jaak@jkowalski.net>
+// Copyright (c) 2012 Piotr Fusik <piotr@fusik.info>
 // 
 // All rights reserved.
 // 
@@ -27,25 +27,60 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
+#if DOTNET35
+
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
-using Sooda;
+using Sooda.Linq;
 
+using NUnit.Framework;
 using Sooda.UnitTests.BaseObjects;
 
-//[assembly: SoodaStubAssembly(typeof(Sooda.UnitTests.Objects._DatabaseSchema))]
-[assembly: SoodaConfig(XmlConfigFileName = "Sooda.config.xml")]
-
-namespace ConsoleTest
+namespace Sooda.UnitTests.TestCases.Linq
 {
-    class Class1
+    [TestFixture]
+    public class OptionsTest
     {
-        static void Main(string[] args)
+        [Test]
+        public void Default()
         {
-            Sooda.UnitTests.TestCases.Soql.CollectionTest ct = new Sooda.UnitTests.TestCases.Soql.CollectionTest();
-            ct.ContainsOnSubclassTPT();
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq();
+                Assert.AreEqual(7, ce.Count());
+            }
+        }
+
+        [Test]
+        public void NoWriteObjects()
+        {
+            using (new SoodaTransaction())
+            {
+                Contact c50 = Contact.Load(50);
+                c50.Name = "Barbra Streisland";
+                IEnumerable<Contact> ce = Contact.Linq(SoodaSnapshotOptions.NoWriteObjects).Where(c => c.Name == "Barbara Streisland");
+                Assert.AreEqual(0, ce.Count());
+            }
+        }
+
+        [Test]
+        public void Transaction()
+        {
+            using (SoodaTransaction trans1 = new SoodaTransaction())
+            {
+                using (new SoodaTransaction())
+                {
+                    Contact c50 = Contact.Load(50);
+                    c50.Name = "Barbra Streisland";
+
+                    IEnumerable<Contact> ce = Contact.Linq(trans1, SoodaSnapshotOptions.Default).Where(c => c.Name == "Barbara Streisland");
+                    Assert.AreEqual(0, ce.Count());
+                }
+            }
         }
     }
 }
 
+#endif

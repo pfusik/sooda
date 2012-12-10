@@ -138,7 +138,7 @@ namespace Sooda.UnitTests.TestCases.Soql
             {
                 ContactList cl = Contact.GetList(ContactField.Subordinates.Count == 2);
                 Assert.AreEqual(1, cl.Count);
-                Assert.AreEqual(cl[0].Name, "Mary Manager");
+                Assert.AreEqual("Mary Manager", cl[0].Name);
             }
         }
 
@@ -164,7 +164,7 @@ namespace Sooda.UnitTests.TestCases.Soql
             {
                 ContactList cl = Contact.GetList(ContactField.Bikes1.Count == 1);
                 Assert.AreEqual(1, cl.Count);
-                Assert.AreEqual(cl[0].Name, "Ed Employee");
+                Assert.AreEqual("Ed Employee", cl[0].Name);
             }
         }
 
@@ -175,7 +175,7 @@ namespace Sooda.UnitTests.TestCases.Soql
             {
                 ContactList cl = Contact.GetList(ContactField.Subordinates.Contains(Contact.Ed));
                 Assert.AreEqual(1, cl.Count);
-                Assert.AreEqual(cl[0].Name, "Mary Manager");
+                Assert.AreEqual("Mary Manager", cl[0].Name);
             }
         }
 
@@ -198,7 +198,7 @@ namespace Sooda.UnitTests.TestCases.Soql
             {
                 ContactList cl = Contact.GetList(ContactField.Bikes1.Contains(Bike.GetRef(3)));
                 Assert.AreEqual(1, cl.Count);
-                Assert.AreEqual(cl[0].Name, "Ed Employee");
+                Assert.AreEqual("Ed Employee", cl[0].Name);
             }
         }
 
@@ -209,7 +209,7 @@ namespace Sooda.UnitTests.TestCases.Soql
             {
                 ContactList cl = Contact.GetList(ContactField.Bikes1.ContainsBikeWhere(BikeField.TwoWheels == 1));
                 Assert.AreEqual(1, cl.Count);
-                Assert.AreEqual(cl[0].Name, "Ed Employee");
+                Assert.AreEqual("Ed Employee", cl[0].Name);
             }
         }
 

@@ -1,5 +1,5 @@
 // 
-// Copyright (c) 2003-2006 Jaroslaw Kowalski <jaak@jkowalski.net>
+// Copyright (c) 2012 Piotr Fusik <piotr@fusik.info>
 // 
 // All rights reserved.
 // 
@@ -27,25 +27,44 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
+#if DOTNET35
+
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
-using Sooda;
+using Sooda.Linq;
 
+using NUnit.Framework;
 using Sooda.UnitTests.BaseObjects;
 
-//[assembly: SoodaStubAssembly(typeof(Sooda.UnitTests.Objects._DatabaseSchema))]
-[assembly: SoodaConfig(XmlConfigFileName = "Sooda.config.xml")]
-
-namespace ConsoleTest
+namespace Sooda.UnitTests.TestCases.Linq
 {
-    class Class1
+    [TestFixture]
+    public class ConstantFoldingTest
     {
-        static void Main(string[] args)
+        [Test]
+        public void Enumerable_Count()
         {
-            Sooda.UnitTests.TestCases.Soql.CollectionTest ct = new Sooda.UnitTests.TestCases.Soql.CollectionTest();
-            ct.ContainsOnSubclassTPT();
+            using (new SoodaTransaction())
+            {
+                int[] a = new int[2];
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.ContactId == a.Count());
+                Assert.AreEqual(1, ce.Count());
+            }
+        }
+
+        [Test]
+        public void Is()
+        {
+            using (new SoodaTransaction())
+            {
+                object s = "Hello";
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => s is string);
+                Assert.AreEqual(7, ce.Count());
+            }
         }
     }
 }
 
+#endif

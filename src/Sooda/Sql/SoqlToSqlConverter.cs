@@ -91,13 +91,8 @@ namespace Sooda.Sql
             }
             else
             {
-                if (Parent != null)
-                {
-                    if (Parent.TableAliases.ContainsKey(firstToken.PropertyName))
-                    {
-                        return Parent.GenerateTableJoins(expr, out p, out firstTableAlias);
-                    };
-                };
+                if (Parent != null && Parent.TableAliases.ContainsKey(firstToken.PropertyName))
+                    return Parent.GenerateTableJoins(expr, out p, out firstTableAlias);
 
                 // artificial first token
 
@@ -125,7 +120,6 @@ namespace Sooda.Sql
 
                 if (p.Length > 0)
                     p += '.';
-
                 p += currentToken.PropertyName;
 
                 if (fi.ReferencedClass == null)
@@ -211,7 +205,12 @@ namespace Sooda.Sql
             }
             else
             {
-                Output.Write(literalValue);
+                // this is to output the decimal point as dot and not comma under Polish locale
+                IFormattable formattable = literalValue as IFormattable;
+                if (formattable != null)
+                    Output.Write(formattable.ToString(null, System.Globalization.CultureInfo.InvariantCulture));
+                else
+                    Output.Write(literalValue);
             }
         }
 
@@ -398,14 +397,16 @@ namespace Sooda.Sql
             if (col1n.Where != null && col1n.Where.Length > 0)
                 where &= SoqlParser.ParseWhereClause(col1n.Where);
 
+            string fromAlias = string.Empty;
             if (needle != null)
             {
                 SoqlQueryExpression nq = needle as SoqlQueryExpression;
                 if (nq != null
                     && nq.TopCount == -1 && nq.SelectExpressions.Count == 0
-                    && nq.From.Count == 1 && nq.From[0] == col1n.ClassName && nq.FromAliases[0].Length == 0
+                    && nq.From.Count == 1 && nq.From[0] == col1n.ClassName
                     && nq.Having == null && nq.GroupByExpressions.Count == 0)
                 {
+                    fromAlias = nq.FromAliases[0];
                     if (nq.WhereClause != null)
                         where &= nq.WhereClause;
                 }
@@ -425,7 +426,7 @@ namespace Sooda.Sql
             query.SelectExpressions.Add(selectExpression);
             query.SelectAliases.Add("");
             query.From.Add(col1n.ClassName);
-            query.FromAliases.Add("");
+            query.FromAliases.Add(fromAlias);
             query.WhereClause = where;
             return query;
         }
@@ -798,7 +799,7 @@ namespace Sooda.Sql
                     if (ci == null)
                         continue;
 
-                    SoqlBooleanExpression restriction = BuildClassRestriction(ActualFromAliases[i], ci);
+                    SoqlBooleanExpression restriction = Soql.ClassRestriction(new SoqlPathExpression(ActualFromAliases[i]), Schema, ci);
 
                     if (restriction != null)
                     {
@@ -1135,41 +1136,6 @@ namespace Sooda.Sql
             if (Parent != null)
                 return Parent.GetNextTablePrefix();
             return "t" + CurrentTablePrefix++;
-        }
-
-        public SoqlBooleanExpression BuildClassRestriction(string startingAlias, Sooda.Schema.ClassInfo classInfo)
-        {
-            // returns no additional filter clause for parent (master-parent) class
-            if (classInfo.InheritsFromClass == null)
-                return null;
-
-            SoqlExpressionCollection literals = new SoqlExpressionCollection();
-
-            foreach (ClassInfo subclass in classInfo.GetSubclassesForSchema(Schema))
-            {
-                if (subclass.SubclassSelectorValue != null)
-                {
-                    literals.Add(new SoqlLiteralExpression(subclass.SubclassSelectorValue));
-                }
-            }
-            if (classInfo.SubclassSelectorValue != null)
-            {
-                literals.Add(new SoqlLiteralExpression(classInfo.SubclassSelectorValue));
-            }
-
-            // returns false when class is abstract (no SubClassSelectorValue) and there is no subclasses
-            if (literals.Count == 0)
-                return new SoqlBooleanLiteralExpression(false);
-
-            SoqlBooleanExpression restriction =
-                new SoqlBooleanInExpression(
-                new SoqlPathExpression(
-                new SoqlPathExpression(startingAlias),
-                classInfo.SubclassSelectorField.Name),
-                literals
-                );
-
-            return restriction;
         }
 
         public void ConvertQuery(SoqlQueryExpression expr)

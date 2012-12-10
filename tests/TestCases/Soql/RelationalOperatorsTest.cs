@@ -31,9 +31,9 @@ using System;
 using System.Diagnostics;
 
 using Sooda.ObjectMapper;
-using System.IO;
-using Sooda.UnitTests.Objects;
 using Sooda.QL;
+using Sooda.UnitTests.Objects;
+using Sooda.UnitTests.BaseObjects;
 
 using NUnit.Framework;
 
@@ -229,5 +229,14 @@ namespace Sooda.UnitTests.TestCases.Soql
             CheckUnsupported(DateTime.Now, (ulong)1);
         }
 
+        [Test]
+        [ExpectedException(typeof(SoqlException))]
+        public void ChainedEquals()
+        {
+            using (new SoodaTransaction())
+            {
+                Contact.GetList(new SoodaWhereClause("Active == true == true != false"));
+            }
+        }
     }
 }

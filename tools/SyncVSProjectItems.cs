@@ -116,13 +116,10 @@ namespace Tools
                 _added = 0;
                 _removed = 0;
 
-                bool isOld = true;
-
                 if (doc.SelectSingleNode("//Files/Include") != null)
                 {
                     Log(Level.Verbose, "Visual Studio 2002/2003-style project.");
                     ProcessOldProject(doc);
-                    isOld = true;
                 }
                 else
                 {

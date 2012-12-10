@@ -460,11 +460,8 @@ namespace Sooda.QL
 
         private void ParseSelectExpressions(SoqlQueryExpression query)
         {
-            bool again;
-
-            do
+            for (;;)
             {
-                again = false;
                 SoqlExpression expr = ParseExpression();
                 string alias;
 
@@ -480,12 +477,10 @@ namespace Sooda.QL
                 query.SelectExpressions.Add(expr);
                 query.SelectAliases.Add(alias);
 
-                if (tokenizer.IsToken(SoqlTokenType.Comma))
-                {
-                    tokenizer.GetNextToken();
-                    again = true;
-                }
-            } while (again);
+                if (!tokenizer.IsToken(SoqlTokenType.Comma))
+                    break;
+                tokenizer.GetNextToken();
+            }
         }
 
         private void ParseGroupByExpressions(SoqlQueryExpression query)
@@ -493,20 +488,15 @@ namespace Sooda.QL
             tokenizer.ExpectKeyword("group");
             tokenizer.ExpectKeyword("by");
 
-            bool again;
-
-            do
+            for (;;)
             {
-                again = false;
                 SoqlExpression expr = ParseExpression();
                 query.GroupByExpressions.Add(expr);
 
-                if (tokenizer.IsToken(SoqlTokenType.Comma))
-                {
-                    tokenizer.GetNextToken();
-                    again = true;
-                }
-            } while (again);
+                if (!tokenizer.IsToken(SoqlTokenType.Comma))
+                    break;
+                tokenizer.GetNextToken();
+            }
         }
 
         private void ParseOrderByExpressions(SoqlQueryExpression query)
@@ -514,11 +504,8 @@ namespace Sooda.QL
             tokenizer.ExpectKeyword("order");
             tokenizer.ExpectKeyword("by");
 
-            bool again;
-
-            do
+            for (;;)
             {
-                again = false;
                 SoqlExpression expr = ParseExpression();
                 string order = "asc";
                 if (tokenizer.IsKeyword("asc"))
@@ -534,20 +521,16 @@ namespace Sooda.QL
                 query.OrderByExpressions.Add(expr);
                 query.OrderByOrder.Add(order);
 
-                if (tokenizer.IsToken(SoqlTokenType.Comma))
-                {
-                    tokenizer.GetNextToken();
-                    again = true;
-                }
-            } while (again);
+                if (!tokenizer.IsToken(SoqlTokenType.Comma))
+                    break;
+                tokenizer.GetNextToken();
+            }
         }
 
         private void ParseFrom(SoqlQueryExpression query)
         {
-            bool again;
-            do
+            for (;;)
             {
-                again = false;
                 string tableName = tokenizer.EatKeyword();
                 string alias;
 
@@ -568,12 +551,10 @@ namespace Sooda.QL
                 query.From.Add(tableName);
                 query.FromAliases.Add(alias);
 
-                if (tokenizer.IsToken(SoqlTokenType.Comma))
-                {
-                    tokenizer.GetNextToken();
-                    again = true;
-                }
-            } while (again);
+                if (!tokenizer.IsToken(SoqlTokenType.Comma))
+                    break;
+                tokenizer.GetNextToken();
+            }
         }
 
         private SoqlQueryExpression ParseQuery()
