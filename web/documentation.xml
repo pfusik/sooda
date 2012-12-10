@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2012-12-06 16:45:17 +0100 (Thu, 06 Dec 2012) $</last-modified-date> (revision <subversion-revision>$Revision: 630 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2012-12-10 13:50:12 +0100 (Mon, 10 Dec 2012) $</last-modified-date> (revision <subversion-revision>$Revision: 631 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright &#169; 2003-2006 by Jarosław Kowalski</div>
         <div class="pagebreak">&#160;</div>
     </div>
@@ -2451,7 +2451,8 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         This should be compatible with most languages and compilers, but can be slow for really large schemas (which generate huge stub classes). This mode also
                         causes Visual Studio to slow down.
                     </li>
-                    <li><a href="#compilationprocessseparate">Separate Stub Compilation</a> - enables stubs to be precompiled to a separate *.dll, which speeds up large builds but has some drawbacks which are described.</li>
+                    <li><a href="#compilationprocessseparate">Separate Stub Compilation</a> - enables stubs to be precompiled to a separate *.dll,
+                        which speeds up large builds but has some drawbacks which are described below.</li>
                 </ul>
                 <p>
                     Separate compilation of stubs is difficult because of cyclic dependency between stub classes and skeleton
@@ -2537,7 +2538,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         <li><a href="#soodastubgen">SoodaStubGen</a> which generates stub source code and source files necessary
                         to generate mini-stubs and full stubs.</li>
                     <li><a href="#soodacompilestubs">SoodaCompileStubs</a> which precompiles stubs to a DLL.</li>
-                        <li>C#/VB Compiler which compiles application code referencing the precompiled stub DLL</li>
+                        <li>C#/VB Compiler which compiles application code referencing the precompiled stub DLL.</li>
                     </ol>
                     <p>
                         The following figure provides an overview of the separate stub compilation process:
@@ -6704,14 +6705,14 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     </p>
                     <ul>
                         <li><code>from ... in ...</code> - doesn't correspond to any method,
-                        but merely introduces a LINQ source and a range variable</li>
+                            but merely introduces a LINQ source and a range variable</li>
                         <li><code>where</code> - corresponds to <code>Where()</code></li>
                         <li><code>orderby</code>, <code>ascending</code> (default), <code>descending</code>
-                        - correspond to <code>OrderBy()</code>, <code>OrderByDescending()</code>,
+                            - correspond to <code>OrderBy()</code>, <code>OrderByDescending()</code>,
                         <code>ThenBy()</code>, <code>ThenByDescending()</code></li>
                         <li><code>select</code> - corresponds to <code>Select()</code>,
-                        except when given just the range variable
-                        (<code>select</code> is mandatory in the LINQ keyword syntax)</li>
+                            except when given just the range variable
+                            (<code>select</code> is mandatory in the LINQ keyword syntax)</li>
                     </ul>
                     <p>
                         Sooda doesn't support <code>join ... in ... on ... equals ...</code>,

@@ -29,7 +29,6 @@
 
 using System;
 using System.Collections;
-using System.Collections.Specialized;
 
 using System.IO;
 using System.CodeDom;
@@ -40,6 +39,61 @@ namespace SoodaCompileStubs
 {
     class EntryPoint
     {
+#if DOTNET2
+        static CSharpCodeProvider compiler;
+#else
+        static ICodeCompiler compiler;
+#endif
+
+        static void Compile(string description, string outputAssembly, string sourceFile, string compilerOptions, string[] args, bool additionalSources, params string[] additionalReferences)
+        {
+            Console.WriteLine("Creating {0}: '{1}'...", description, Path.GetFileName(outputAssembly));
+
+            CompilerParameters options = new CompilerParameters();
+            options.ReferencedAssemblies.Add("System.dll");
+            options.ReferencedAssemblies.Add("System.Data.dll");
+            options.ReferencedAssemblies.Add("System.Drawing.dll");
+            foreach (string dll in additionalReferences)
+                options.ReferencedAssemblies.Add(dll);
+
+            ArrayList sourceFiles = new ArrayList();
+            sourceFiles.Add(sourceFile);
+
+            options.CompilerOptions = compilerOptions;
+
+            for (int i = 2; i < args.Length; ++i)
+            {
+                string arg = args[i];
+                if (arg.EndsWith(".dll"))
+                    options.ReferencedAssemblies.Add(Path.GetFullPath(arg));
+                else if (arg.StartsWith("/"))
+                    options.CompilerOptions += " " + arg;
+                else if (additionalSources)
+                    sourceFiles.Add(Path.GetFullPath(arg));
+            }
+
+            options.OutputAssembly = outputAssembly;
+            options.GenerateInMemory = false;
+
+            CompilerResults results;
+            if (sourceFiles.Count == 1)
+                results = compiler.CompileAssemblyFromFile(options, sourceFile);
+            else
+            {
+#if DOTNET2
+                results = compiler.CompileAssemblyFromFile(options, (string[]) sourceFiles.ToArray(typeof(string)));
+#else
+                results = compiler.CompileAssemblyFromFileBatch(options, (string[]) sourceFiles.ToArray(typeof(string)));
+#endif
+            }
+            if (results.NativeCompilerReturnValue != 0)
+            {
+                foreach (string s in results.Output)
+                    Console.WriteLine(s);
+                throw new Exception("Compilation failed");
+            }
+        }
+
         [STAThread]
         static int Main(string[] args)
         {
@@ -66,7 +120,6 @@ namespace SoodaCompileStubs
             DateTime maxSourceTime = DateTime.MinValue;
             DateTime minTargetTime = DateTime.MaxValue;
             DateTime dt;
-            bool success = false;
             ArrayList sourceFiles = new ArrayList();
             for (int i = 2; i < args.Length; ++i)
             {
@@ -82,188 +135,74 @@ namespace SoodaCompileStubs
 
             string[] targetFiles = { objectsAssemblyDll, stubsDll };
 
+            foreach (string fileName in sourceFiles)
+            {
+                if (File.Exists(fileName))
+                {
+                    dt = File.GetLastWriteTime(fileName);
+                    if (dt > maxSourceTime)
+                        maxSourceTime = dt;
+                }
+            }
+            foreach (string fileName in targetFiles)
+            {
+                if (File.Exists(fileName))
+                {
+                    dt = File.GetLastWriteTime(fileName);
+                    if (dt < minTargetTime)
+                        minTargetTime = dt;
+                }
+                else
+                    rebuildStubs = true;
+            }
+
+            // FAT filesystem...
+            if (maxSourceTime - minTargetTime > TimeSpan.FromSeconds(2))
+            {
+                rebuildStubs = true;
+            }
+
+            if (!rebuildStubs)
+            {
+                Console.WriteLine("Stubs assembly '{0}' doesn't need a rebuild!", stubsDll);
+                return 0;
+            }
+
+            Console.WriteLine("Rebuilding '{0}'", stubsDll);
+
+#if DOTNET2
+            compiler = new CSharpCodeProvider();
+#else
+            compiler = new CSharpCodeProvider().CreateCompiler();
+#endif
+
             try
             {
-
-                foreach (string fileName in sourceFiles)
-                {
-                    if (File.Exists(fileName))
-                    {
-                        dt = File.GetLastWriteTime(fileName);
-                        if (dt > maxSourceTime)
-                        {
-                            maxSourceTime = dt;
-                        }
-                    }
-                }
-                foreach (string fileName in targetFiles)
-                {
-                    if (File.Exists(fileName))
-                    {
-                        dt = File.GetLastWriteTime(fileName);
-                        if (dt < minTargetTime)
-                        {
-                            minTargetTime = dt;
-                        }
-                    }
-                    else
-                    {
-                        rebuildStubs = true;
-                    }
-                }
-
-                // FAT filesystem...
-                if (maxSourceTime - minTargetTime > TimeSpan.FromSeconds(2))
-                {
-                    rebuildStubs = true;
-                }
-                if (!rebuildStubs)
-                {
-                    success = true;
-                    Console.WriteLine("Stubs assembly '{0}.Stubs.dll' doesn't need a rebuild!", assemblyBaseName);
-                    return 0;
-                }
-
-                Console.WriteLine("Rebuilding '{0}.Stubs.dll'", assemblyBaseName);
-
-                CSharpCodeProvider codeProvider = new CSharpCodeProvider();
-#if DOTNET2
-                CSharpCodeProvider compiler = codeProvider;
-#else
-                ICodeCompiler compiler = codeProvider.CreateCompiler();
-#endif
-
                 // Step 1. Create mini-stubs
-
-                Console.WriteLine("Creating mini stubs: '{0}'...", Path.GetFileName(stubsDll));
-
-                CompilerParameters options = new CompilerParameters();
-                options.ReferencedAssemblies.Add(soodaDll);
-                options.ReferencedAssemblies.Add("System.dll");
-                options.ReferencedAssemblies.Add("System.Data.dll");
-                options.ReferencedAssemblies.Add("System.Drawing.dll");
-                for (int i = 2; i < args.Length; ++i)
-                {
-                    if (args[i].EndsWith(".dll"))
-                        options.ReferencedAssemblies.Add(Path.GetFullPath(args[i]));
-                    else
-                        if (args[i].StartsWith("/"))
-                        options.CompilerOptions += " " + args[i];
-                }
-                options.OutputAssembly = stubsDll;
-                options.GenerateInMemory = false;
-
-                CompilerResults results = compiler.CompileAssemblyFromFile(options, miniStubsCSX);
-                if (results.NativeCompilerReturnValue != 0)
-                {
-                    Console.WriteLine("Compilation failed:");
-                    foreach (string s in results.Output)
-                    {
-                        Console.WriteLine("{0}", s);
-                    }
-                    return 1;
-                }
+                Compile("mini stubs", stubsDll, miniStubsCSX, string.Empty, args, false, soodaDll);
 
                 // Step 2. Create mini-skeletons
+                Compile("mini skeletons", objectsAssemblyDll, string.Empty, miniSkeletonCSX, args, true, soodaDll, stubsDll);
 
-                Console.WriteLine("Creating mini skeletons: '{0}'...", Path.GetFileName(objectsAssemblyDll));
+                // Step 3. Create full stubs
+                string compilerOptions = "/doc:\"" + stubsDoc + "\" /res:\"" + dbschemaBIN + "\"";
+                Compile("full stubs", stubsDll, stubsCSX, compilerOptions, args, false, soodaDll, "System.Xml.dll", objectsAssemblyDll);
 
-                options = new CompilerParameters();
-                options.ReferencedAssemblies.Add(soodaDll);
-                options.ReferencedAssemblies.Add("System.dll");
-                options.ReferencedAssemblies.Add("System.Data.dll");
-                options.ReferencedAssemblies.Add("System.Drawing.dll");
-                options.ReferencedAssemblies.Add(stubsDll);
-                for (int i = 2; i < args.Length; ++i)
-                {
-                    if (args[i].EndsWith(".dll"))
-                        options.ReferencedAssemblies.Add(Path.GetFullPath(args[i]));
-                    else
-                        if (args[i].StartsWith("/"))
-                        options.CompilerOptions += " " + args[i];
-                }
-                options.OutputAssembly = objectsAssemblyDll;
-                options.GenerateInMemory = false;
-
-                ArrayList skeletonSourceFiles = new ArrayList();
-                skeletonSourceFiles.Add(miniSkeletonCSX);
-                for (int i = 2; i < args.Length; ++i)
-                {
-                    if (args[i].EndsWith(".dll"))
-                        continue;
-                    if (args[i].StartsWith("/"))
-                        continue;
-
-                    skeletonSourceFiles.Add(Path.GetFullPath(args[i]));
-                }
-
-#if DOTNET2
-                results = compiler.CompileAssemblyFromFile(options, (string[])skeletonSourceFiles.ToArray(typeof(string)));
-#else
-                results = compiler.CompileAssemblyFromFileBatch(options, (string[])skeletonSourceFiles.ToArray(typeof(string)));
-#endif
-                if (results.NativeCompilerReturnValue != 0)
-                {
-                    Console.WriteLine("Compilation failed:");
-                    foreach (string s in results.Output)
-                    {
-                        Console.WriteLine("{0}", s);
-                    }
-                    return 1;
-                }
-
-                options = new CompilerParameters();
-                options.ReferencedAssemblies.Add(soodaDll);
-                options.ReferencedAssemblies.Add("System.dll");
-                options.ReferencedAssemblies.Add("System.Data.dll");
-                options.ReferencedAssemblies.Add("System.Xml.dll");
-                options.ReferencedAssemblies.Add("System.Drawing.dll");
-                options.ReferencedAssemblies.Add(objectsAssemblyDll);
-                options.CompilerOptions = "/doc:\"" + stubsDoc + "\" /res:\"" + Path.Combine(basePath, "_DBSchema.bin") + "\"";
-
-                for (int i = 2; i < args.Length; ++i)
-                {
-                    if (args[i].EndsWith(".dll"))
-                        options.ReferencedAssemblies.Add(Path.GetFullPath(args[i]));
-                    else
-                        if (args[i].StartsWith("/"))
-                        options.CompilerOptions += " " + args[i];
-                }
-                
-                options.OutputAssembly = stubsDll;
-                options.GenerateInMemory = false;
-
-                Console.WriteLine("Creating full stubs: '{0}'...", Path.GetFileName(stubsDll));
-
-                results = compiler.CompileAssemblyFromFile(options, stubsCSX);
-                if (results.NativeCompilerReturnValue != 0)
-                {
-                    Console.WriteLine("Compilation failed:");
-                    foreach (string s in results.Output)
-                    {
-                        Console.WriteLine("{0}", s);
-                    }
-                    return 1;
-                }
-
-                success = true;
                 Console.WriteLine("Success.");
                 return 0;
             }
-            finally
+            catch
             {
-                if (!success)
+                Console.WriteLine("Deleting partially written output files.");
+                foreach (string s in targetFiles)
                 {
-                    Console.WriteLine("Deleting partially written output files.");
-                    foreach (string s in targetFiles)
+                    if (File.Exists(s))
                     {
-                        if (File.Exists(s))
-                        {
-                            Console.WriteLine("'{0}'...", s);
-                            File.Delete(s);
-                        }
+                        Console.WriteLine("'{0}'...", s);
+                        File.Delete(s);
                     }
                 }
+                throw;
             }
         }
     }
