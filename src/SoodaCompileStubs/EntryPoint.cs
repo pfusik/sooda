@@ -186,7 +186,11 @@ namespace SoodaCompileStubs
 
                 // Step 3. Create full stubs
                 string compilerOptions = "/doc:\"" + stubsDoc + "\" /res:\"" + dbschemaBIN + "\"";
-                Compile("full stubs", stubsDll, stubsCSX, compilerOptions, args, false, soodaDll, "System.Xml.dll", objectsAssemblyDll);
+                Compile("full stubs", stubsDll, stubsCSX, compilerOptions, args, false, soodaDll, "System.Xml.dll", objectsAssemblyDll
+#if DOTNET35
+                    , typeof(System.Linq.IQueryable<>).Assembly.Location
+#endif
+                );
 
                 Console.WriteLine("Success.");
                 return 0;
