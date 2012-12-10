@@ -182,7 +182,7 @@ namespace SoodaCompileStubs
                 Compile("mini stubs", stubsDll, miniStubsCSX, string.Empty, args, false, soodaDll);
 
                 // Step 2. Create mini-skeletons
-                Compile("mini skeletons", objectsAssemblyDll, string.Empty, miniSkeletonCSX, args, true, soodaDll, stubsDll);
+                Compile("mini skeletons", objectsAssemblyDll, miniSkeletonCSX, string.Empty, args, true, soodaDll, stubsDll);
 
                 // Step 3. Create full stubs
                 string compilerOptions = "/doc:\"" + stubsDoc + "\" /res:\"" + dbschemaBIN + "\"";
