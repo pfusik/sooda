@@ -59,7 +59,7 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>VSNET,DOTNET2</DefineConstants>
+    <DefineConstants>VSNET,DOTNET2,DOTNET35</DefineConstants>
     <DocumentationFile>
     </DocumentationFile>
     <DebugSymbols>false</DebugSymbols>
