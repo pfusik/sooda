@@ -191,16 +191,14 @@ namespace Sooda.Schema
 
         internal void Merge(TableInfo merge)
         {
-            //            Hashtable mergeNames = new Hashtable();
-            //            foreach (FieldInfo fi in this.Fields)
-            //                mergeNames.Add(fi.Name, fi);
-            //            foreach (FieldInfo mfi in merge.Fields)
-            //                if (!mergeNames.ContainsKey(mfi.Name))
-            //                    this.AddField(mfi);
-            //                else
-            //                    throw new SoodaSchemaException(String.Format("Duplicate field '{0}' found!", fi.Name));
+            Hashtable mergeNames = new Hashtable();
+            foreach (FieldInfo fi in this.Fields)
+                mergeNames.Add(fi.Name, fi);
             foreach (FieldInfo mfi in merge.Fields)
-                this.AddField(mfi);
+                if (!mergeNames.ContainsKey(mfi.Name))
+                    this.AddField(mfi);
+                else
+                    ((FieldInfo)mergeNames[mfi.Name]).Merge(mfi);
         }
     }
 }
