@@ -108,6 +108,9 @@ namespace Sooda.Sql
                 case FieldDataType.Boolean:
                     return "bit";
 
+                case FieldDataType.Blob:
+                    return "varbinary(max)";
+
                 default:
                     throw new NotImplementedException(String.Format("Datatype {0} not supported for this database", fi.DataType.ToString()));
             }

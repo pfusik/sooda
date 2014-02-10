@@ -322,23 +322,22 @@ namespace Sooda.Schema
             if (includedSchema.DataSources != null)
             {
                 Hashtable sourceNames = new Hashtable();
-                foreach (DataSourceInfo nci in includedSchema.DataSources)
-                    sourceNames.Add(nci.Name, nci);
 
                 DataSourceInfoCollection newDataSources = new DataSourceInfoCollection();
-
-                foreach (DataSourceInfo ci in includedSchema.DataSources)
-                {
-                    if (!sourceNames.ContainsKey(ci.Name))
-                        newDataSources.Add(ci);
-                }
 
                 if (this.DataSources != null)
                 {
                     foreach (DataSourceInfo ci in this.DataSources)
                     {
                         newDataSources.Add(ci);
+                        sourceNames.Add(ci.Name, ci);
                     }
+                }
+
+                foreach (DataSourceInfo ci in includedSchema.DataSources)
+                {
+                    if (!sourceNames.ContainsKey(ci.Name))
+                        newDataSources.Add(ci);
                 }
 
                 this.DataSources = newDataSources;

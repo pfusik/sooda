@@ -57,6 +57,8 @@ namespace Sooda.Sql
         public ArrayList FromJoins = new ArrayList();
         public StringCollection WhereJoins = new StringCollection();
 
+        //private static Logger logger = LogManager.GetLogger("Sooda.SoqlToSqlConverter");
+
         public SoqlToSqlConverter(TextWriter output, SchemaInfo schema, ISqlBuilder builder)
             : base(output)
         {
@@ -775,7 +777,14 @@ namespace Sooda.Sql
                     {
                         if (i > 0)
                             Output.Write(", ");
+                        // logger.Debug("Create Order#{0} from {1}", i, v.OrderByExpressions[i].GetType().Name);
+
+                        bool orderByExpr = !(v.OrderByExpressions[i] is SoqlPathExpression);
+                        if (orderByExpr)
+                            Output.Write("(");
                         v.OrderByExpressions[i].Accept(this);
+                        if (orderByExpr)
+                            Output.Write(")");
                         Output.Write(' ');
                         Output.Write(v.OrderByOrder[i]);
                     }

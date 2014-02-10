@@ -210,5 +210,30 @@ namespace Sooda.Schema
             return String.Format("{0}.{1} ({2} ref {3})", ParentClass != null ? "class " + ParentClass.Name : "???", Name, DataType, References);
         }
 
+        internal void Merge(FieldInfo merge)
+        {
+            this.DataType = merge.DataType;
+            if (merge.Description != null)
+                this.Description = (this.Description != null ? this.Description + "\n" : "") + merge.Description;
+            if (merge.Size != -1)
+                this.Size = merge.Size;
+            if (merge.Precision != -1)
+                this.Precision = merge.Size;
+            if (merge.References != null)
+                this.References = merge.References;
+            if (merge.PrecommitValue != null)
+                this.PrecommitValue = merge.PrecommitValue;
+            this.IsPrimaryKey = merge.IsPrimaryKey;
+            this.IsNullable = merge.IsNullable;
+            this.ReadOnly = merge.ReadOnly;
+            this.ForceTrigger = merge.ForceTrigger;
+            this.DeleteAction = merge.DeleteAction;
+            this.IsLabel = merge.IsLabel;
+            this.PrefetchLevel = merge.PrefetchLevel;
+            this.FindMethod = merge.FindMethod;
+            this.FindListMethod = merge.FindListMethod;
+            if (merge.dbcolumn != null)
+                this.DBColumnName = merge.dbcolumn;
+        }
     }
 }

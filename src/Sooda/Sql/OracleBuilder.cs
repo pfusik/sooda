@@ -87,6 +87,9 @@ namespace Sooda.Sql
                 case FieldDataType.Boolean:
                     return "byte";
 
+                case FieldDataType.Blob:
+                    return "blob";
+
                 default:
                     throw new NotImplementedException(String.Format("Datatype {0} not supported for this database", fi.DataType));
             }
