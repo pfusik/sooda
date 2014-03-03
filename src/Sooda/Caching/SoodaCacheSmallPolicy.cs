@@ -44,7 +44,7 @@ namespace Sooda.Caching
                 return false;
         }
 
-        public override bool ShouldCacheCollection(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount)
+        public override bool ShouldCacheCollection(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int startIdx, int pageCount)
         {
             if (classInfo.Cardinality == ClassCardinality.Small)
                 return true;

@@ -226,7 +226,7 @@ namespace Sooda.ObjectMapper
                     transaction.Statistics.RegisterCollectionCacheMiss();
                 }
 
-                using (IDataReader reader = ds.LoadObjectList(transaction.Schema, classInfo, whereClause, null, -1, SoodaSnapshotOptions.Default, out loadedTables))
+                using (IDataReader reader = ds.LoadObjectList(transaction.Schema, classInfo, whereClause, null, 0, -1, SoodaSnapshotOptions.Default, out loadedTables))
                 {
                     SoodaObjectCollection readObjects = null;
 
@@ -258,7 +258,7 @@ namespace Sooda.ObjectMapper
                         bool slidingExpiration;
 
                         if (transaction.CachingPolicy.GetExpirationTimeout(
-                            classInfo, whereClause, null, -1, primaryKeys.Count,
+                            classInfo, whereClause, null, 0, -1, primaryKeys.Count,
                             out expirationTimeout, out slidingExpiration))
                         {
                             transaction.Cache.StoreCollection(cacheKey, 
@@ -350,6 +350,11 @@ namespace Sooda.ObjectMapper
             {
                 return false;
             }
+        }
+
+        public int PagedCount
+        {
+            get { return this.Length; }
         }
 
         public int Count

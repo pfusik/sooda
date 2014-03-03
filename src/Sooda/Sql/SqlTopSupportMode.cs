@@ -32,8 +32,8 @@ namespace Sooda.Sql
     public enum SqlTopSupportMode
     {
         None,
-        SelectTop,
-        Limit,
-        Oracle,
+        MSSQLRowNum,
+        MySqlLimit,
+        OracleRowNum
     }
 }

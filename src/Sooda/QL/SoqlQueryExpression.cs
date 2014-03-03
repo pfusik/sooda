@@ -36,7 +36,8 @@ namespace Sooda.QL
     public class SoqlQueryExpression : SoqlExpression
     {
         public bool Distinct = false;
-        public int TopCount = -1;
+        public int StartIdx = 0;
+        public int PageCount = -1;
 
         public SoqlExpressionCollection SelectExpressions = new SoqlExpressionCollection();
         public StringCollection SelectAliases = new StringCollection();

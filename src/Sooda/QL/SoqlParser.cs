@@ -565,7 +565,7 @@ namespace Sooda.QL
             if (tokenizer.IsKeyword("top"))
             {
                 tokenizer.EatKeyword();
-                query.TopCount = Convert.ToInt32(tokenizer.TokenValue);
+                query.PageCount = Convert.ToInt32(tokenizer.TokenValue);
                 tokenizer.GetNextToken();
             }
 

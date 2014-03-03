@@ -130,6 +130,10 @@ namespace Sooda.Schema
         [System.Xml.Serialization.XmlAttributeAttribute("keygen")]
         public string KeyGenName;
 
+        [System.Xml.Serialization.XmlAttributeAttribute("ignorePartial")]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool IgnorePartial = false;
+
         // array of FieldInfo's that point to this class
         [XmlIgnore()]
         [NonSerialized]

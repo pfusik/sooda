@@ -410,7 +410,7 @@ namespace Sooda.Sql
             return query;
         }
 
-        public override IDataReader LoadMatchingPrimaryKeys(SchemaInfo schemaInfo, ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount)
+        public override IDataReader LoadMatchingPrimaryKeys(SchemaInfo schemaInfo, ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int startIdx, int pageCount)
         {
             try
             {
@@ -426,7 +426,8 @@ namespace Sooda.Sql
                     queryExpression.SelectExpressions.Add(new SoqlPathExpression(classInfo.SubclassSelectorField.Name));
                     queryExpression.SelectAliases.Add("");
                 }
-                queryExpression.TopCount = topCount;
+                queryExpression.StartIdx = startIdx;
+                queryExpression.PageCount = pageCount;
                 queryExpression.From.Add(classInfo.Name);
                 queryExpression.FromAliases.Add("");
                 if (whereClause != null && whereClause.WhereExpression != null)
@@ -465,7 +466,7 @@ namespace Sooda.Sql
             }
         }
 
-        public override IDataReader LoadObjectList(SchemaInfo schemaInfo, ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount, SoodaSnapshotOptions options, out TableInfo[] tables)
+        public override IDataReader LoadObjectList(SchemaInfo schemaInfo, ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int startIdx, int pageCount, SoodaSnapshotOptions options, out TableInfo[] tables)
         {
             try
             {
@@ -473,7 +474,8 @@ namespace Sooda.Sql
 
                 ArrayList tablesArrayList = new ArrayList(classInfo.UnifiedTables.Count);
                 SoqlQueryExpression queryExpression = new SoqlQueryExpression();
-                queryExpression.TopCount = topCount;
+                queryExpression.StartIdx = startIdx;
+                queryExpression.PageCount = pageCount;
                 queryExpression.From.Add(classInfo.Name);
                 queryExpression.FromAliases.Add("");
                 foreach (TableInfo ti in classInfo.UnifiedTables)

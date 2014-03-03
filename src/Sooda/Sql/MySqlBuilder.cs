@@ -62,7 +62,7 @@ namespace Sooda.Sql
         {
             get
             {
-                return SqlTopSupportMode.Limit;
+                return SqlTopSupportMode.MySqlLimit;
             }
         }
 

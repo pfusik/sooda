@@ -58,7 +58,7 @@ namespace Sooda.Caching
             return true;
         }
 
-        public bool GetExpirationTimeout(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount, int itemCount, out TimeSpan expirationTimeout, out bool slidingExpiration)
+        public bool GetExpirationTimeout(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int startIdx, int pageCount, int itemCount, out TimeSpan expirationTimeout, out bool slidingExpiration)
         {
             expirationTimeout = _expirationTimeout;
             slidingExpiration = _slidingExpiration;
@@ -73,7 +73,7 @@ namespace Sooda.Caching
         }
 
         public abstract bool ShouldCacheObject(SoodaObject theObject);
-        public abstract bool ShouldCacheCollection(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount);
+        public abstract bool ShouldCacheCollection(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int startIdx, int pageCount);
         public abstract bool ShouldCacheRelation(RelationInfo relation, ClassInfo resultClass);
     }
 }

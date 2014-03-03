@@ -124,7 +124,7 @@ namespace Sooda.Sql
         {
             get
             {
-                return SqlTopSupportMode.Oracle;
+                return SqlTopSupportMode.OracleRowNum;
             }
         }
 

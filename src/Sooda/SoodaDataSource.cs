@@ -112,8 +112,8 @@ namespace Sooda
         public abstract IDataReader LoadObject(SoodaObject obj, object keyValue, out TableInfo[] tables);
         public abstract IDataReader LoadObjectTable(SoodaObject obj, object keyValue, int tableNumber, out TableInfo[] tables);
         public abstract void MakeTuple(string tableName, string leftColumn, string rightColumn, object leftVal, object rightVal, int mode);
-        public abstract IDataReader LoadMatchingPrimaryKeys(SchemaInfo schemaInfo, ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount);
-        public abstract IDataReader LoadObjectList(SchemaInfo schemaInfo, ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount, SoodaSnapshotOptions options, out TableInfo[] tables);
+        public abstract IDataReader LoadMatchingPrimaryKeys(SchemaInfo schemaInfo, ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int startIdx, int pageCount);
+        public abstract IDataReader LoadObjectList(SchemaInfo schemaInfo, ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int startIdx, int pageCount, SoodaSnapshotOptions options, out TableInfo[] tables);
         public abstract IDataReader LoadRefObjectList(SchemaInfo schemaInfo, RelationInfo relationInfo, int masterColumn, object masterValue, out TableInfo[] tables);
         public abstract IDataReader ExecuteQuery(Sooda.QL.SoqlQueryExpression query, SchemaInfo schema, params object[] parameters);
         public abstract IDataReader ExecuteRawQuery(string queryText, params object[] parameters);

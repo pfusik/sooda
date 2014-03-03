@@ -37,11 +37,11 @@ namespace Sooda.Caching
     public interface ISoodaCachingPolicy
     {
         bool ShouldCacheObject(SoodaObject theObject);
-        bool ShouldCacheCollection(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount);
+        bool ShouldCacheCollection(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int startIdx, int pageCount);
         bool ShouldCacheRelation(RelationInfo relation, ClassInfo resultClass);
 
         bool GetExpirationTimeout(SoodaObject theObject, out TimeSpan expirationTimeout, out bool slidingExpiration);
-        bool GetExpirationTimeout(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount, int itemCount, out TimeSpan expirationTimeout, out bool slidingExpiration);
+        bool GetExpirationTimeout(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int startIdx, int pageCount, int itemCount, out TimeSpan expirationTimeout, out bool slidingExpiration);
         bool GetExpirationTimeout(RelationInfo relation, ClassInfo resultClass, int itemCount, out TimeSpan expirationTimeout, out bool slidingExpiration);
     }
 }

@@ -388,6 +388,11 @@ namespace Sooda.ObjectMapper
             get { return false; }
         }
 
+        public int PagedCount
+        {
+            get { return this.Length; }
+        }
+
         public int Count
         {
             get { return this.Length; }

@@ -8,6 +8,7 @@
       <xs:element minOccurs="0" maxOccurs="1" name="output-assembly" type="xs:string" />
       <xs:element minOccurs="0" maxOccurs="1" name="output-namespace" type="xs:string" />
       <xs:element minOccurs="0" maxOccurs="1" name="output-path" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="output-partial-path" type="xs:string" />
       <xs:element minOccurs="1" maxOccurs="1" name="nullable-representation" type="tns:PrimitiveRepresentation" />
       <xs:element minOccurs="1" maxOccurs="1" name="not-null-representation" type="tns:PrimitiveRepresentation" />
       <xs:element minOccurs="0" maxOccurs="1" default="true" name="with-indexers" type="xs:boolean" />
@@ -17,8 +18,10 @@
       <xs:element minOccurs="0" maxOccurs="1" default="false" name="stubs-compiled-separately" type="xs:boolean" />
       <xs:element minOccurs="1" maxOccurs="1" name="embedded-schema-type" type="tns:EmbedSchema" />
       <xs:element minOccurs="0" maxOccurs="1" name="external-projects" type="tns:ArrayOfExternalProjectInfo" />
-    <xs:element minOccurs="0" maxOccurs="1" name="file-per-namespace" type="xs:boolean" />
-    <xs:element minOccurs="0" maxOccurs="1" name="loader-class" type="xs:boolean" />
+      <xs:element minOccurs="0" maxOccurs="1" name="file-per-namespace" type="xs:boolean" />
+      <xs:element minOccurs="0" maxOccurs="1" name="loader-class" type="xs:boolean" />
+      <xs:element minOccurs="0" maxOccurs="1" name="use-partial" type="xs:boolean" />
+      <xs:element minOccurs="0" maxOccurs="1" name="partial-suffix" type="xs:string" />
     </xs:choice>
 </xs:complexType>
   <xs:simpleType name="PrimitiveRepresentation">

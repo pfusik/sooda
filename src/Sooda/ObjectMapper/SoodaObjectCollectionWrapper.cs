@@ -150,6 +150,14 @@ namespace Sooda.ObjectMapper
             }
         }
 
+        public int PagedCount
+        {
+            get
+            {
+                return _theList.PagedCount;
+            }
+        }
+
         public void CopyTo(Array array, int index)
         {
             _theList.CopyTo(array, index);

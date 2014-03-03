@@ -41,7 +41,7 @@ namespace Sooda.Caching
             return true;
         }
 
-        public override bool ShouldCacheCollection(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount)
+        public override bool ShouldCacheCollection(ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int startIdx, int pageCount)
         {
             return true;
         }

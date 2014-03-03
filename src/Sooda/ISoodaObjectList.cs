@@ -35,6 +35,7 @@ namespace Sooda
     public interface ISoodaObjectList : System.Collections.IList
     {
         SoodaObject GetItem(int pos);
+        int PagedCount { get; }
 
         ISoodaObjectList GetSnapshot();
         ISoodaObjectList SelectFirst(int n);

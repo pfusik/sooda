@@ -117,6 +117,9 @@ namespace Sooda.CodeGen
         [XmlElement("output-path")]
         public string OutputPath;
 
+        [XmlElement("output-partial-path")]
+        public string OutputPartialPath;
+
         [XmlElement("nullable-representation")]
         public PrimitiveRepresentation NullableRepresentation = PrimitiveRepresentation.SqlType;
 
@@ -156,6 +159,13 @@ namespace Sooda.CodeGen
         [XmlArray("external-projects")]
         [XmlArrayItem("project")]
         public ExternalProjectInfoCollection ExternalProjects = new ExternalProjectInfoCollection();
+
+        [XmlElement("use-partial")]
+        [System.ComponentModel.DefaultValue(false)]
+        public bool UsePartial = false;
+
+        [XmlElement("partial-suffix")]
+        public string PartialSuffix = "";
 
         public void WriteTo(string fileName)
         {

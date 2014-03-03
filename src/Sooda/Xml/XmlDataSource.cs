@@ -56,12 +56,12 @@ namespace Sooda.Xml
             return null;
         }
 
-        public override IDataReader LoadMatchingPrimaryKeys(SchemaInfo schemaInfo, ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int topCount)
+        public override IDataReader LoadMatchingPrimaryKeys(SchemaInfo schemaInfo, ClassInfo classInfo, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int startIdx, int pageCount)
         {
             return null;
         }
 
-        public override IDataReader LoadObjectList(SchemaInfo schema, Sooda.Schema.ClassInfo classInfo, Sooda.SoodaWhereClause whereClause, Sooda.SoodaOrderBy orderBy, int topCount, SoodaSnapshotOptions options, out TableInfo[] tables)
+        public override IDataReader LoadObjectList(SchemaInfo schema, Sooda.Schema.ClassInfo classInfo, Sooda.SoodaWhereClause whereClause, Sooda.SoodaOrderBy orderBy, int startIdx, int pageCount, SoodaSnapshotOptions options, out TableInfo[] tables)
         {
             tables = null;
             // TODO:  Add XmlDataSource.LoadObjectList implementation

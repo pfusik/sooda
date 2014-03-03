@@ -45,9 +45,9 @@
   <xsd:complexType name="TableInfo">
     <xsd:sequence>
       <xsd:element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
-		<xsd:element name="field" type="sooda:FieldInfo" minOccurs="1" maxOccurs="unbounded" />
-	</xsd:sequence>
-	<xsd:attribute name="usage" use="optional" type="sooda:TableUsageType" default="Normal" />
+        <xsd:element name="field" type="sooda:FieldInfo" minOccurs="1" maxOccurs="unbounded" />
+    </xsd:sequence>
+    <xsd:attribute name="usage" use="optional" type="sooda:TableUsageType" default="Normal" />
     <xsd:attribute name="name" use="required" />
   </xsd:complexType>
   <xsd:complexType name="ClassInfo">
@@ -74,6 +74,7 @@
     <xsd:attribute name="disableTypeCache" use="optional" type="xsd:boolean" default="false" />
     <xsd:attribute name="triggers" use="optional" type="xsd:boolean" default="true" />
     <xsd:attribute name="readOnly" use="optional" type="xsd:boolean" default="false" />
+    <xsd:attribute name="ignorePartial" use="optional" type="xsd:boolean" default="false" />
     <xsd:anyAttribute processContents="lax" />
   </xsd:complexType>
   <xsd:complexType name="CollectionOnetoManyInfo">
@@ -161,11 +162,11 @@
       <xsd:enumeration value="Normal" />
     </xsd:restriction>
   </xsd:simpleType>
-	<xsd:simpleType name="TableUsageType">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="Normal" />
-			<xsd:enumeration value="Dictionary" />
-			<xsd:enumeration value="OccasionallyModificated" />
-		</xsd:restriction>
-	</xsd:simpleType>
+    <xsd:simpleType name="TableUsageType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Normal" />
+            <xsd:enumeration value="Dictionary" />
+            <xsd:enumeration value="OccasionallyModificated" />
+        </xsd:restriction>
+    </xsd:simpleType>
 </xsd:schema>

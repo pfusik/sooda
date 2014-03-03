@@ -125,7 +125,7 @@ namespace Sooda.Sql
         {
             get
             {
-                return SqlTopSupportMode.SelectTop;
+                return SqlTopSupportMode.MSSQLRowNum;
             }
         }
 

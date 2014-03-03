@@ -370,11 +370,11 @@ namespace Sooda.CodeGen
             nspace.Types.Add(factoryClass);
         }
 
-        public void GenerateClassSkeleton(CodeNamespace nspace, ClassInfo ci, bool useChainedConstructorCall, bool fakeSkeleton)
+        public void GenerateClassSkeleton(CodeNamespace nspace, ClassInfo ci, bool useChainedConstructorCall, bool fakeSkeleton, bool usePartial, string partialSuffix)
         {
             if ((ci.Schema.AssemblyName != null) && (ci.Schema.AssemblyName != ""))
                 return;
-            CodeTypeDeclaration ctd = new CodeTypeDeclaration(ci.Name);
+            CodeTypeDeclaration ctd = new CodeTypeDeclaration(ci.Name + (usePartial ? partialSuffix : ""));
             if (ci.Description != null)
             {
                 ctd.Comments.Add(new CodeCommentStatement("<summary>", true));
@@ -396,6 +396,42 @@ namespace Sooda.CodeGen
             {
                 ctd.Members.Add(gen.Method_InitObject());
             }
+
+            if (usePartial)
+            {
+                ctd = new CodeTypeDeclaration(ci.Name);
+                if (ci.Description != null)
+                {
+                    ctd.Comments.Add(new CodeCommentStatement("<summary>", true));
+                    ctd.Comments.Add(new CodeCommentStatement(ci.Description, true));
+                    ctd.Comments.Add(new CodeCommentStatement("</summary>", true));
+                }
+                ctd.BaseTypes.Add(ci.Name + partialSuffix);
+                if (ci.IsAbstractClass())
+                    ctd.TypeAttributes |= System.Reflection.TypeAttributes.Abstract;
+                ctd.IsPartial = true;
+                nspace.Types.Add(ctd);
+
+                gen = new CodeDomClassSkeletonGenerator();
+
+                ctd.Members.Add(gen.Constructor_Raw());
+                ctd.Members.Add(gen.Constructor_Inserting(useChainedConstructorCall));
+                ctd.Members.Add(gen.Constructor_Inserting2(useChainedConstructorCall));
+
+                if (!useChainedConstructorCall)
+                {
+                    ctd.Members.Add(gen.Method_InitObject());
+                }
+            }
+        }
+
+        public void GenerateClassPartialSkeleton(CodeNamespace nspace, ClassInfo ci)
+        {
+            if ((ci.Schema.AssemblyName != null) && (ci.Schema.AssemblyName != ""))
+                return;
+            CodeTypeDeclaration ctd = new CodeTypeDeclaration(ci.Name);
+            ctd.IsPartial = true;
+            nspace.Types.Add(ctd);
         }
 
         private void OutputFactories(CodeArrayCreateExpression cace, string ns, SchemaInfo schema)
@@ -989,7 +1025,7 @@ namespace Sooda.CodeGen
 
             foreach (ClassInfo ci in _schema.LocalClasses)
             {
-                GenerateClassSkeleton(nspace, ci, _codeGenerator.Supports(GeneratorSupport.ChainedConstructorArguments) ? true : false, true);
+                GenerateClassSkeleton(nspace, ci, _codeGenerator.Supports(GeneratorSupport.ChainedConstructorArguments) ? true : false, true, !ci.IgnorePartial && Project.UsePartial, Project.PartialSuffix);
             }
 
             foreach (ClassInfo ci in _schema.LocalClasses)
@@ -1023,15 +1059,30 @@ namespace Sooda.CodeGen
                     epi.ProjectProvider.AddCompileUnit(fname);
                 }
 
-                string outFile = Path.Combine(Project.OutputPath, fname);
+                bool usePartial = !ci.IgnorePartial && Project.UsePartial;
+
+                string outFile = Path.Combine(usePartial ? Project.OutputPartialPath : Project.OutputPath, fname);
 
                 if (!File.Exists(outFile) || RewriteSkeletons)
                 {
                     using (TextWriter tw = new StreamWriter(outFile))
                     {
                         CodeNamespace nspace = CreateBaseNamespace(_schema);
-                        GenerateClassSkeleton(nspace, ci, _codeGenerator.Supports(GeneratorSupport.ChainedConstructorArguments) ? true : false, false);
+                        GenerateClassSkeleton(nspace, ci, _codeGenerator.Supports(GeneratorSupport.ChainedConstructorArguments) ? true : false, false, usePartial, Project.PartialSuffix);
                         _codeGenerator.GenerateCodeFromNamespace(nspace, tw, _codeGeneratorOptions);
+                    }
+                }
+                if (usePartial)
+                {
+                    outFile = Path.Combine(Project.OutputPath, fname);
+                    if (!File.Exists(outFile) || RewriteSkeletons)
+                    {
+                        using (TextWriter tw = new StreamWriter(outFile))
+                        {
+                            CodeNamespace nspace = CreatePartialNamespace(_schema);
+                            GenerateClassPartialSkeleton(nspace, ci);
+                            _codeGenerator.GenerateCodeFromNamespace(nspace, tw, _codeGeneratorOptions);
+                        }
                     }
                 }
             }
@@ -1483,6 +1534,12 @@ namespace Sooda.CodeGen
             nspace.Imports.Add(new CodeNamespaceImport("Sooda"));
             nspace.Imports.Add(new CodeNamespaceImport(Project.OutputNamespace.Replace(".", "") + "Stubs = " + Project.OutputNamespace + ".Stubs"));
             AddImportsFromIncludedSchema(nspace, schema.Includes, false);
+            return nspace;
+        }
+
+        CodeNamespace CreatePartialNamespace(SchemaInfo schema)
+        {
+            CodeNamespace nspace = new CodeNamespace(Project.OutputNamespace);
             return nspace;
         }
 

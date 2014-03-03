@@ -634,7 +634,7 @@ namespace Sooda.Linq
             if (_topCount >= 0)
             {
                 SoqlQueryExpression query = new SoqlQueryExpression();
-                query.TopCount = _topCount;
+                query.PageCount = _topCount;
                 query.From.Add(_classInfo.Name);
                 query.FromAliases.Add(string.Empty);
                 query.WhereClause = _where;
@@ -863,7 +863,7 @@ namespace Sooda.Linq
 
         ISoodaObjectList GetList()
         {
-            return new SoodaObjectListSnapshot(_transaction, new SoodaWhereClause(_where), _orderBy, _topCount, _options, _classInfo);
+            return new SoodaObjectListSnapshot(_transaction, new SoodaWhereClause(_where), _orderBy, 0, _topCount, _options, _classInfo);
         }
 
         SoodaObject Single(int topCount, bool orDefault)
