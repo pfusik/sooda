@@ -569,6 +569,13 @@ namespace Sooda.QL
                 tokenizer.GetNextToken();
             }
 
+            if (tokenizer.IsKeyword("skip"))
+            {
+                tokenizer.EatKeyword();
+                query.StartIdx = Convert.ToInt32(tokenizer.TokenValue);
+                tokenizer.GetNextToken();
+            }
+
             if (tokenizer.IsKeyword("distinct"))
             {
                 tokenizer.EatKeyword();
