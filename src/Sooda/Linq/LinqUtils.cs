@@ -29,10 +29,12 @@
 
 #if DOTNET35
 
+using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using Sooda;
 using Sooda.ObjectMapper;
+using Sooda.QL;
 
 namespace Sooda.Linq
 {
@@ -57,6 +59,20 @@ namespace Sooda.Linq
             foreach (SoodaObject o in source)
                 snapshot.Add(o);
             return snapshot;
+        }
+
+        /// <summary>
+        /// Converts SoodaQueryable (IQueryable) to SoqlQueryExpression
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public static SoqlQueryExpression TranslateExpression(this IQueryable query)
+        {
+            var provider = query.Provider as SoodaQueryProvider;
+            if (provider == null)
+                throw new NotSupportedException(string.Format("TranslateExpression(query): provider '{0}' is NOT supported", query.Provider.GetType().FullName));
+
+            return provider.GetSoqlQuery(query.Expression);
         }
     }
 }

@@ -1041,6 +1041,38 @@ namespace Sooda.Linq
         {
             return (TResult) Execute(expr);
         }
+
+        /// <summary>
+        /// creates SoqlQueryExpression with whereClause and orderBy.
+        /// used for convert IQuerable&lt;T&gt; to SoqlBooleanExpression.
+        /// based on object Execute(Expression expr) method.
+        /// </summary>
+        /// <returns></returns>
+        internal SoqlQueryExpression GetSoqlQuery(Expression expr)
+        {
+            _classInfo = _rootClassInfo;
+            _where = null;
+            _orderBy = null;
+            _topCount = -1;
+
+            TranslateQuery(expr);
+
+            // replacement: return GetList():
+            SoqlQueryExpression query = new SoqlQueryExpression();
+
+            query.From.Add(_classInfo.Name);
+            query.FromAliases.Add(string.Empty);
+
+            query.WhereClause = _where;
+            if (_orderBy != null)
+            {
+                query.OrderByExpressions.AddRange(_orderBy.OrderByExpressions);
+                query.OrderByOrder.AddRange(_orderBy.SortOrders.Select(it => it == SortOrder.Ascending ? "asc" : "desc").ToArray());
+            }
+
+            query.PageCount = _topCount;
+            return query;
+        }
     }
 }
 
