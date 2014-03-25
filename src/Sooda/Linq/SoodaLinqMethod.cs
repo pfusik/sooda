@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Piotr Fusik <piotr@fusik.info>
+// Copyright (c) 2012-2014 Piotr Fusik <piotr@fusik.info>
 //
 // All rights reserved.
 //
@@ -45,6 +45,7 @@ namespace Sooda.Linq
         Queryable_OrderByDescending,
         Queryable_ThenBy,
         Queryable_ThenByDescending,
+        Queryable_Skip,
         Queryable_Take,
         Queryable_Select,
         Queryable_SelectIndexed,
@@ -147,6 +148,7 @@ namespace Sooda.Linq
                 method2id.Add(MethodOf(() => Queryable.OrderByDescending(null, selector)), SoodaLinqMethod.Queryable_OrderByDescending);
                 method2id.Add(MethodOf(() => Queryable.ThenBy(null, selector)), SoodaLinqMethod.Queryable_ThenBy);
                 method2id.Add(MethodOf(() => Queryable.ThenByDescending(null, selector)), SoodaLinqMethod.Queryable_ThenByDescending);
+                method2id.Add(MethodOf(() => Queryable.Skip<object>(null, 0)), SoodaLinqMethod.Queryable_Skip);
                 method2id.Add(MethodOf(() => Queryable.Take<object>(null, 0)), SoodaLinqMethod.Queryable_Take);
                 method2id.Add(MethodOf(() => Queryable.Select(null, selector)), SoodaLinqMethod.Queryable_Select);
                 method2id.Add(MethodOf(() => Queryable.Select(null, (object o, int i) => i)), SoodaLinqMethod.Queryable_SelectIndexed);

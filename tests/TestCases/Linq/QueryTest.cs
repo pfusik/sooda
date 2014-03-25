@@ -1,5 +1,5 @@
 // 
-// Copyright (c) 2012 Piotr Fusik <piotr@fusik.info>
+// Copyright (c) 2012-2014 Piotr Fusik <piotr@fusik.info>
 // 
 // All rights reserved.
 // 
@@ -181,6 +181,45 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void Skip()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Skip(3);
+                Assert.AreEqual(4, ce.Count());
+
+                ce = Contact.Linq().Skip(0);
+                Assert.AreEqual(7, ce.Count());
+
+                ce = Contact.Linq().Skip(-5);
+                Assert.AreEqual(7, ce.Count());
+
+                ce = Contact.Linq().Where(c => c.Manager == Contact.Mary).Skip(1);
+                Assert.AreEqual(1, ce.Count());
+
+                ce = Contact.Linq().Where(c => c.Manager == Contact.Mary).Skip(4);
+                Assert.AreEqual(0, ce.Count());
+
+                ce = Contact.Linq().Where(c => c.Type == ContactType.Customer).OrderBy(c => c.Name).Skip(2);
+                Assert.AreEqual(2, ce.Count());
+                Assert.AreEqual("Chris Customer", ce.First().Name);
+                Assert.AreEqual("Chuck Customer", ce.Last().Name);
+
+                ce = Contact.Linq().Skip(1).Skip(2);
+                Assert.AreEqual(4, ce.Count());
+
+                ce = Contact.Linq().Skip(2).Skip(-2);
+                Assert.AreEqual(5, ce.Count());
+
+                ce = Contact.Linq().Skip(-2).Skip(2);
+                Assert.AreEqual(5, ce.Count());
+
+                ce = Contact.Linq().Skip(0x7fffffff).Skip(0x7fffffff).Skip(5);
+                Assert.AreEqual(0, ce.Count());
+            }
+        }
+
+        [Test]
         public void Take()
         {
             using (new SoodaTransaction())
@@ -199,6 +238,35 @@ namespace Sooda.UnitTests.TestCases.Linq
 
                 ce = Contact.Linq().Where(c => c.Manager == Contact.Mary).Take(4);
                 Assert.AreEqual(2, ce.Count());
+
+                ce = Contact.Linq().Take(3).Take(5);
+                Assert.AreEqual(3, ce.Count());
+
+                ce = Contact.Linq().Take(5).Take(3);
+                Assert.AreEqual(3, ce.Count());
+            }
+        }
+
+        [Test]
+        public void SkipTake()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Skip(0).Take(3);
+                Assert.AreEqual(3, ce.Count());
+
+                ce = Contact.Linq().Skip(3).Take(3);
+                Assert.AreEqual(3, ce.Count());
+
+                ce = Contact.Linq().Skip(6).Take(3);
+                Assert.AreEqual(1, ce.Count());
+
+                ce = Contact.Linq().Where(c => c.Type == ContactType.Customer).Skip(2).Take(1);
+                Assert.AreEqual(1, ce.Count());
+
+                ce = Contact.Linq().Where(c => c.Type == ContactType.Customer).OrderBy(c => c.Name).Skip(2).Take(1);
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual("Chris Customer", ce.First().Name);
             }
         }
 
@@ -253,6 +321,26 @@ namespace Sooda.UnitTests.TestCases.Linq
 
                 ce = Contact.Linq().Where(c => c.Manager == Contact.Mary).Union(Contact.Linq());
                 Assert.AreEqual(7, ce.Count());
+            }
+        }
+
+        [Test]
+        public void SkipWhere()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Skip(4).Where(c => c.ContactId > 0);
+                Assert.AreEqual(3, ce.Count());
+            }
+        }
+
+        [Test]
+        public void SkipScalar()
+        {
+            using (new SoodaTransaction())
+            {
+                int result = Contact.Linq().OrderBy(c => c.ContactId).Skip(2).Min(c => c.ContactId);
+                Assert.AreEqual(3, result);
             }
         }
 

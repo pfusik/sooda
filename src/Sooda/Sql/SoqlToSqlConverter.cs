@@ -402,7 +402,7 @@ namespace Sooda.Sql
             {
                 SoqlQueryExpression nq = needle as SoqlQueryExpression;
                 if (nq != null
-                    && nq.PageCount == -1 && nq.SelectExpressions.Count == 0
+                    && nq.StartIdx == 0 && nq.PageCount == -1 && nq.SelectExpressions.Count == 0
                     && nq.From.Count == 1 && nq.From[0] == col1n.ClassName
                     && nq.Having == null && nq.GroupByExpressions.Count == 0)
                 {
@@ -727,9 +727,9 @@ namespace Sooda.Sql
                     Output.Write("select ");
                 }
 
-                if (v.PageCount != -1)
+                if (v.StartIdx != 0 || v.PageCount != -1)
                 {
-                    if ((_builder.TopSupport == SqlTopSupportMode.OracleRowNum) || (_builder.TopSupport == SqlTopSupportMode.MSSQLRowNum))
+                    if (_builder.TopSupport == SqlTopSupportMode.OracleRowNum || _builder.TopSupport == SqlTopSupportMode.MSSQLRowNum)
                     {
                         GenerateUniqueAliases = true;
                         OutputColumns(v, true);
@@ -767,7 +767,7 @@ namespace Sooda.Sql
 
                 OutputColumns(v);
 
-                if (v.PageCount != -1)
+                if (v.StartIdx != 0 || v.PageCount != -1)
                 {
                     if (_builder.TopSupport == SqlTopSupportMode.MSSQLRowNum)
                     {
@@ -836,7 +836,8 @@ namespace Sooda.Sql
                     Output.Write("having   ");
                     v.Having.Accept(this);
                 }
-                if (v.OrderByExpressions != null && v.OrderByExpressions.Count > 0)
+                if (v.OrderByExpressions != null && v.OrderByExpressions.Count > 0
+                    && ((v.StartIdx ==0 && v.PageCount == -1) || _builder.TopSupport != SqlTopSupportMode.MSSQLRowNum))
                 {
                     if (IndentOutput)
                     {
@@ -847,20 +848,17 @@ namespace Sooda.Sql
                     {
                         Output.Write(' ');
                     }
-                    if ((v.PageCount == -1) || (_builder.TopSupport != SqlTopSupportMode.MSSQLRowNum))
+                    Output.Write("order by ");
+                    _generatingOrderBy = true;
+                    for (int i = 0; i < v.OrderByExpressions.Count; ++i)
                     {
-                        Output.Write("order by ");
-                        _generatingOrderBy = true;
-                        for (int i = 0; i < v.OrderByExpressions.Count; ++i)
-                        {
-                            if (i > 0)
-                                Output.Write(", ");
-                            v.OrderByExpressions[i].Accept(this);
-                            Output.Write(' ');
-                            Output.Write(v.OrderByOrder[i]);
-                        }
-                        _generatingOrderBy = false;
+                        if (i > 0)
+                            Output.Write(", ");
+                        v.OrderByExpressions[i].Accept(this);
+                        Output.Write(' ');
+                        Output.Write(v.OrderByOrder[i]);
                     }
+                    _generatingOrderBy = false;
                 }
 
                 if (v.PageCount != -1)
@@ -971,9 +969,9 @@ namespace Sooda.Sql
 
                 Output.Write(whereSW.ToString());
                 Output.Write(sw.ToString());
-                if (v.PageCount != -1)
+                if (v.StartIdx != 0 || v.PageCount != -1)
                 {
-                    if ((_builder.TopSupport == SqlTopSupportMode.OracleRowNum) || (_builder.TopSupport == SqlTopSupportMode.MSSQLRowNum))
+                    if (_builder.TopSupport == SqlTopSupportMode.OracleRowNum || _builder.TopSupport == SqlTopSupportMode.MSSQLRowNum)
                     {
                         if (_builder.TopSupport == SqlTopSupportMode.OracleRowNum)
                         {
@@ -990,10 +988,19 @@ namespace Sooda.Sql
                             Output.WriteLine();
                             WriteIndentString();
                         }
-                        Output.Write(") pg where rownum_ between ");
-                        Output.Write(v.StartIdx + 1);
-                        Output.Write(" and ");
-                        Output.Write(v.StartIdx + v.PageCount);
+                        Output.Write(") pg where rownum_ ");
+                        if (v.PageCount != -1)
+                        {
+                            Output.Write("between ");
+                            Output.Write(v.StartIdx + 1);
+                            Output.Write(" and ");
+                            Output.Write(v.StartIdx + v.PageCount);
+                        }
+                        else
+                        {
+                            Output.Write("> ");
+                            Output.Write(v.StartIdx);
+                        }
                         IndentLevel--;
                     }
                 }

@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2012-12-10 14:02:45 +0100 (Mon, 10 Dec 2012) $</last-modified-date> (revision <subversion-revision>$Revision: 633 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-03-25 22:50:19 +0100 (Tue, 25 Mar 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 648 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright &#169; 2003-2006 by Jarosław Kowalski</div>
         <div class="pagebreak">&#160;</div>
     </div>
@@ -6671,14 +6671,11 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         This might change in future versions.
                     </p>
                     <p>
-                        To limit the number of rows, use <code>Take()</code>:
+                        To limit the number of rows, use <code>Skip()</code> and <code>Take()</code>:
                     </p>
                     <code lang="C#"><![CDATA[
-                        Contact.Linq().OrderBy(c => c.Name).Take(2);
+                        Contact.Linq().OrderBy(c => c.Name).Skip(30).Take(10);
                     ]]></code>
-                    <p>
-                        <code>Take()</code> corresponds to SQL Server's <code>TOP</code>.
-                    </p>
                     <p>
                         There are syntax extensions to C# and VB.NET that make LINQ queries
                         look like SQL queries:
