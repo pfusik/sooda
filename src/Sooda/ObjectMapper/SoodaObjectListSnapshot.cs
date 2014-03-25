@@ -346,7 +346,7 @@ namespace Sooda.ObjectMapper
                 }
             }
 
-            if (cacheKey != null && useCache && (pageCount == -1) && (involvedClassNames != null))
+            if (cacheKey != null && useCache && startIdx == 0 && pageCount == -1 && involvedClassNames != null)
             {
                 object[] keys = new object[items.Count];
                 int p = 0;
