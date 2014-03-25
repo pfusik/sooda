@@ -263,7 +263,12 @@ namespace Sooda.ObjectMapper
                     count = items.Count;
 
                     if (startIdx > 0)
-                        items.RemoveRange(0, startIdx);
+                    {
+                        if (startIdx < count)
+                            items.RemoveRange(0, startIdx);
+                        else
+                            items.Clear();
+                    }
 
                     if (pageCount != -1 && pageCount < items.Count)
                     {
