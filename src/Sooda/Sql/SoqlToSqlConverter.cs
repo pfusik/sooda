@@ -772,16 +772,29 @@ namespace Sooda.Sql
                     if (_builder.TopSupport == SqlTopSupportMode.MSSQLRowNum)
                     {
                         Output.Write(", ROW_NUMBER() over (order by ");
-                        _generatingOrderBy = true;
-                        for (int i = 0; i < v.OrderByExpressions.Count; ++i)
+                        if (v.OrderByExpressions.Count > 0)
                         {
-                            if (i > 0)
-                                Output.Write(", ");
-                            v.OrderByExpressions[i].Accept(this);
-                            Output.Write(' ');
-                            Output.Write(v.OrderByOrder[i]);
+                            _generatingOrderBy = true;
+                            for (int i = 0; i < v.OrderByExpressions.Count; ++i)
+                            {
+                                if (i > 0)
+                                    Output.Write(", ");
+                                v.OrderByExpressions[i].Accept(this);
+                                Output.Write(' ');
+                                Output.Write(v.OrderByOrder[i]);
+                            }
+                            _generatingOrderBy = false;
                         }
-                        _generatingOrderBy = false;
+                        else
+                        {
+                            FieldInfo[] pkfis = Schema.FindClassByName(v.From[0]).GetPrimaryKeyFields();
+                            for (int i = 0; i < pkfis.Length; i++)
+                            {
+                                if (i > 0)
+                                    Output.Write(", ");
+                                OutputColumn(ActualFromAliases[0], pkfis[i]);
+                            }
+                        }
                         Output.Write(") as rownum_");
                     }
                 }
