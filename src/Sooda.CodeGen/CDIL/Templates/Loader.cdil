@@ -468,6 +468,15 @@ method Linq(SoodaTransaction tran, SoodaSnapshotOptions options)
 begin
 	return new generic(Sooda.Linq.SoodaQueryable, ${ClassName})(arg(tran), typeref(${ClassName}_Factory).TheClassInfo, arg(options));
 end
+
+
+property generic(System.Linq.IQueryable, ${ClassName}) AllQuery
+    attributes Public,Static,Final${OptionalNewAttribute}
+get
+    return defaultscope.Linq(); 
+end
+
+
 #endif
 
 end
