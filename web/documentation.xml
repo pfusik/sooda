@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-03-25 22:50:19 +0100 (Tue, 25 Mar 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 648 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-05-05 18:13:10 +0200 (Mon, 05 May 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 650 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright &#169; 2003-2006 by Jarosław Kowalski</div>
         <div class="pagebreak">&#160;</div>
     </div>
@@ -6906,7 +6906,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         This code will return a person with highest last salary.
                         It throws <code>InvalidOperationException</code> if there are no Contacts.
                         If you want a <code>null</code> instead, use <code>FirstOrDefault()</code>
-                        (origin of this name: "Default" for reference objects means <code>null</code>).
+                        (origin of this name: <i>default</i> value for reference objects is <code>null</code>).
                         You may also want to use <code>Last()</code> or <code>LastOrDefault()</code>:
                     </p>
                     <code lang="C#"><![CDATA[
@@ -6927,7 +6927,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     </p>
                     <p>
                         You almost certainly need a filter for <code>Single()</code>,
-                        this method is overloaded:
+                        thus this method is overloaded:
                     </p>
                     <code lang="C#"><![CDATA[
                         Contact c = Contact.Linq().Single(c => c.Name == "Mary Manager");
@@ -6969,13 +6969,13 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         bool b = Contact.Linq().Any(c => c.LastSalary.Value > 100);
                     ]]></code>
                     <p>
-                        You may also ask if all objects meet a criteria:
+                        You may also ask if all objects meet some criteria:
                     </p>
                     <code lang="C#"><![CDATA[
                         bool b = Contact.Linq().All(c => c.LastSalary.Value > 100);
                     ]]></code>
                     <p>
-                        Use <code>Contains()</code> to check if query would return a specific Sooda object:
+                        Use <code>Contains()</code> to check if the query would return a specific Sooda object:
                     </p>
                     <code lang="C#"><![CDATA[
                         bool b = Contact.Linq().Where(c => c.LastSalary.Value > 100).Contains(Contact.Mary);
@@ -6988,7 +6988,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     <code lang="C#"><![CDATA[
                         decimal avgSalary = Contact.Linq().Average(c => c.LastSalary.Value);
                         decimal minEmployeeSalary = Contact.Linq().Where(c => c.Type == ContactType.Employee).Min(c => c.LastSalary.Value);
-                        decimal maxManagerSalary = Contact.Linq().Where(c => c.Type == ContactType.Manager).Min(c => c.LastSalary.Value);
+                        decimal maxManagerSalary = Contact.Linq().Where(c => c.Type == ContactType.Manager).Max(c => c.LastSalary.Value);
                         decimal totalSalary = Contact.Linq().Sum(c => c.LastSalary.Value);
                     ]]></code>
                     <p>
@@ -7005,7 +7005,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         This section describes the subset of C# which Sooda can translate to SQL.
                     </p>
                     <p>
-                        Path expressions are same as in SOQL, except they start with a range variable:
+                        Path expressions are same as in SOQL, except that they start with a range variable:
                     </p>
                     <code lang="C#"><![CDATA[
                         Contact.Linq().Where(c => c.Name == "Mary Manager");
@@ -7056,7 +7056,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         using Sooda.Linq;
                         Contact.Linq().Where(c => c.Name.Like("C%"));
                         // as a bonus, the Like() method becomes available on all .NET strings
-                        bool ok = "Foo".Like("%o"); // computed in .NET, not the database
+                        bool ok = "Foo".Like("%o"); // computed in .NET, not the database engine
                     ]]></code>
                     <p>
                         Collection sizes are available either through the <code>Count</code> property
@@ -7097,7 +7097,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         Contact.GetList(ContactField.Manager.In(Contact.Mary, Contact.Ed));
                     ]]></code>
                     <p>
-                        The <code>SoodaClass</code> property known from SOQL is written in LINQ as <code>GetType().Name</code>:
+                        The <a href="#soqlsoodaclass">SoodaClass</a> property known from SOQL is written in LINQ as <code>GetType().Name</code>:
                     </p>
                     <code lang="C#"><![CDATA[
                         Vehicle.Linq().Where(c => c.GetType().Name == "Car");
