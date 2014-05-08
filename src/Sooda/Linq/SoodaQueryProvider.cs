@@ -78,16 +78,8 @@ namespace Sooda.Linq
 
             do
             {
-                if (seqType.IsGenericType)
-                {
-                    // X<T1, T2, ...> -> try T1, T2, ...
-                    foreach (Type type in seqType.GetGenericArguments())
-                    {
-                        Type enumerable = typeof(IEnumerable<>).MakeGenericType(new Type[1] { type });
-                        if (enumerable.IsAssignableFrom(seqType))
-                            return type;
-                    }
-                }
+                if (seqType.IsGenericType && seqType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                    return seqType.GetGenericArguments()[0];
 
                 // : IX1, IX2, ... -> try GetElementType(IX1), ...
                 foreach (Type iface in seqType.GetInterfaces())
