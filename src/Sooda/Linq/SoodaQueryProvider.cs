@@ -538,7 +538,7 @@ namespace Sooda.Linq
             if (expr.Expression.NodeType == ExpressionType.Parameter)
             {
                 // path is probably not valid SoqlPathExpression.
-                // Fortunately, primary keys should non-null.
+                // Fortunately, primary keys should be non-null.
                 return SoqlBooleanLiteralExpression.True;
             }
 
@@ -617,26 +617,33 @@ namespace Sooda.Linq
             return ql as SoqlBooleanExpression ?? new SoqlBooleanRelationalExpression(ql, SoqlBooleanLiteralExpression.True, SoqlRelationalOperator.Equal);
         }
 
-        LambdaExpression GetLambda(MethodCallExpression mc)
+        static LambdaExpression GetLambda(MethodCallExpression mc)
         {
             return (LambdaExpression) ((UnaryExpression) mc.Arguments[1]).Operand;
+        }
+
+        SoqlQueryExpression CreateSoqlQuery()
+        {
+            SoqlQueryExpression query = new SoqlQueryExpression();
+            query.StartIdx = _startIdx;
+            query.PageCount = _topCount;
+            query.From.Add(_classInfo.Name);
+            // string.Empty will result in DefaultAlias.
+            // Do NOT specify DefaultAlias here, because GetNextTablePrefix() could assign DefaultAlias to other tables.
+            query.FromAliases.Add(string.Empty);
+            query.WhereClause = _where;
+            if (_orderBy != null)
+                query.SetOrderBy(_orderBy);
+            return query;
         }
 
         void SkipTakeNotSupported()
         {
             if (_startIdx > 0 || _topCount >= 0)
             {
-                SoqlQueryExpression query = new SoqlQueryExpression();
-                query.StartIdx = _startIdx;
-                query.PageCount = _topCount;
-                query.From.Add(_classInfo.Name);
-                query.FromAliases.Add(string.Empty);
-                query.WhereClause = _where;
-                if (_orderBy != null)
-                    query.SetOrderBy(_orderBy);
                 SoqlPathExpression needle = new SoqlPathExpression(_classInfo.GetPrimaryKeyFields().Single().Name);
                 SoqlExpressionCollection haystack = new SoqlExpressionCollection();
-                haystack.Add(query);
+                haystack.Add(CreateSoqlQuery());
                 _where = new SoqlBooleanInExpression(needle, haystack);
                 _startIdx = 0;
                 _topCount = -1;
@@ -798,7 +805,8 @@ namespace Sooda.Linq
                         case SoodaLinqMethod.Queryable_Skip:
                             {
                                 int count = (int) ((ConstantExpression) mc.Arguments[1]).Value;
-                                if (count > 0) {
+                                if (count > 0)
+                                {
                                     if (_startIdx + count < 0) // int overflow
                                         SkipTakeNotSupported();
                                     _startIdx += count;
@@ -858,17 +866,57 @@ namespace Sooda.Linq
             object source = Execute<IEnumerable>(mc.Arguments[0]);
 
             // source = source.Cast<TSource>();
-            MethodInfo cast = SoodaLinqMethodDictionary.Get(SoodaLinqMethod.Enumerable_Cast);
-            cast = cast.MakeGenericMethod(new Type[1] { ga[0] });
-            source = cast.Invoke(null, new object[1] { source });
+            source = SoodaLinqMethodDictionary.Invoke(SoodaLinqMethod.Enumerable_Cast, new Type[] { ga[0] }, new object[] { source });
 
             // return Enumerable.Foo(source, extraParams);
-            MethodInfo method = SoodaLinqMethodDictionary.Get(methodId);
-            method = method.MakeGenericMethod(ga);
             object[] parameters = new object[1 + extraParams.Length];
             parameters[0] = source;
             extraParams.CopyTo(parameters, 1);
-            return method.Invoke(null, parameters);
+            return SoodaLinqMethodDictionary.Invoke(methodId, ga, parameters);
+        }
+
+        IDataReader ExecuteOneColumn(SoqlExpression selector)
+        {
+            SoqlQueryExpression query = CreateSoqlQuery();
+            query.SelectExpressions.Add(selector);
+            query.SelectAliases.Add("result");
+            SoodaDataSource ds = _transaction.OpenDataSource(_classInfo.GetDataSource());
+            return ds.ExecuteQuery(query, _transaction.Schema);
+        }
+
+        internal static List<T> SelectOneColumn<T>(IDataReader r)
+        {
+            List<T> list = new List<T>();
+            while (r.Read())
+            {
+                object value = r.GetValue(0);
+                if (value == DBNull.Value)
+                    value = null;
+                else if (typeof(T) == typeof(bool) && value is int)
+                    value = (int) value != 0;
+                list.Add((T) value);
+            }
+            return list;
+        }
+
+        object Select(MethodCallExpression mc)
+        {
+            LambdaExpression lambda = GetLambda(mc);
+            SoqlExpression selector;
+            try
+            {
+                selector = TranslateExpression(lambda.Body);
+            }
+            catch (NotSupportedException)
+            {
+                return Invoke(mc, SoodaLinqMethod.Enumerable_Select, lambda.Compile());
+            }
+
+            TranslateQuery(mc.Arguments[0]);
+            using (IDataReader r = ExecuteOneColumn(selector))
+            {
+                return SoodaLinqMethodDictionary.Invoke(SoodaLinqMethod.SoodaQueryProvider_SelectOneColumn, new Type[] { mc.Method.GetGenericArguments()[1] }, new object[] { r });
+            }
         }
 
         ISoodaObjectList GetList()
@@ -891,19 +939,10 @@ namespace Sooda.Linq
         {
             TranslateQuery(mc.Arguments[0]);
             SkipTakeNotSupported();
+            _orderBy = null;
 
-            SoqlExpression selector = TranslateExpression(GetLambda(mc).Body);
-            SoqlQueryExpression query = new SoqlQueryExpression();
-            query.SelectExpressions.Add(new SoqlFunctionCallExpression(function, selector));
-            query.SelectAliases.Add("result");
-            query.From.Add(_classInfo.Name);
-            // string.Empty will result in DefaultAlias.
-            // Do NOT specify DefaultAlias here, because GetNextTablePrefix() could assign DefaultAlias to other tables.
-            query.FromAliases.Add(string.Empty);
-            query.WhereClause = _where;
-
-            SoodaDataSource ds = _transaction.OpenDataSource(_classInfo.GetDataSource());
-            using (IDataReader r = ds.ExecuteQuery(query, _transaction.Schema))
+            SoqlExpression selector = new SoqlFunctionCallExpression(function, TranslateExpression(GetLambda(mc).Body));
+            using (IDataReader r = ExecuteOneColumn(selector))
             {
                 if (!r.Read())
                     throw new SoodaObjectNotFoundException();
@@ -937,7 +976,7 @@ namespace Sooda.Linq
                 switch (SoodaLinqMethodDictionary.Get(mc.Method))
                 {
                     case SoodaLinqMethod.Queryable_Select:
-                        return Invoke(mc, SoodaLinqMethod.Enumerable_Select, GetLambda(mc).Compile());
+                        return Select(mc);
                     case SoodaLinqMethod.Queryable_SelectIndexed:
                         return Invoke(mc, SoodaLinqMethod.Enumerable_SelectIndexed, GetLambda(mc).Compile());
                     case SoodaLinqMethod.Queryable_Distinct:
@@ -1068,23 +1107,7 @@ namespace Sooda.Linq
             _topCount = -1;
 
             TranslateQuery(expr);
-
-            // replacement: return GetList():
-            SoqlQueryExpression query = new SoqlQueryExpression();
-
-            query.From.Add(_classInfo.Name);
-            query.FromAliases.Add(string.Empty);
-
-            query.WhereClause = _where;
-            if (_orderBy != null)
-            {
-                query.OrderByExpressions.AddRange(_orderBy.OrderByExpressions);
-                query.OrderByOrder.AddRange(_orderBy.SortOrders.Select(it => it == SortOrder.Ascending ? "asc" : "desc").ToArray());
-            }
-
-            query.StartIdx = _startIdx;
-            query.PageCount = _topCount;
-            return query;
+            return CreateSoqlQuery();
         }
     }
 }

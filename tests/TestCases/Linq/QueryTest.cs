@@ -129,6 +129,56 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void SelectNew()
+        {
+            using (new SoodaTransaction())
+            {
+                var a = (from c in Contact.Linq() orderby c.ContactId select new { c.Name, c.Active }).ToArray();
+                Assert.AreEqual("Mary Manager", a.First().Name);
+                Assert.IsTrue(a.All(o => o.Active));
+            }
+        }
+
+        [Test]
+        public void SelectNewSkipTake()
+        {
+            using (new SoodaTransaction())
+            {
+                var a = (from c in Contact.Linq() orderby c.ContactId select new { c.Name, c.Active }).Skip(2).Take(1).ToArray();
+                Assert.AreEqual("Eva Employee", a.Single().Name);
+                Assert.AreEqual(true, a.Single().Active);
+            }
+        }
+
+        [Test]
+        public void SelectAggregate()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = from c in Contact.Linq() orderby c.ContactId select c.Subordinates.Count;
+                CollectionAssert.AreEquivalent(new int[] { 2, 0, 0, 0, 0, 0, 0 }, ie);
+
+                ie = from c in Contact.Linq() orderby c.ContactId select c.Subordinates.Count();
+                CollectionAssert.AreEquivalent(new int[] { 2, 0, 0, 0, 0, 0, 0 }, ie);
+
+                IEnumerable<bool> be = from c in Contact.Linq() orderby c.ContactId select c.Subordinates.Any();
+                CollectionAssert.AreEquivalent(new bool[] { true, false, false, false, false, false, false }, be);
+            }
+        }
+
+        [Test]
+        public void SelectNewAggregate()
+        {
+            using (new SoodaTransaction())
+            {
+                var l = (from c in Contact.Linq() orderby c.ContactId select new { c.Name, SubordinatesCount = c.Subordinates.Count, SubordinatesCount2 = c.Subordinates.Count(), HasSubordinates = c.Subordinates.Any() }).ToList();
+                CollectionAssert.AreEquivalent(new int[] { 2, 0, 0, 0, 0, 0, 0 }, l.Select(o => o.SubordinatesCount));
+                CollectionAssert.AreEquivalent(new int[] { 2, 0, 0, 0, 0, 0, 0 }, l.Select(o => o.SubordinatesCount2));
+                CollectionAssert.AreEquivalent(new bool[] { true, false, false, false, false, false, false }, l.Select(o => o.HasSubordinates));
+            }
+        }
+
+        [Test]
         public void SelectIndexed()
         {
             using (new SoodaTransaction())
