@@ -386,6 +386,8 @@ namespace Sooda.QL
                 {
                     WriteIndentString();
                     Output.Write("select   ");
+                    if (v.Distinct)
+                        Output.Write("distinct ");
                     for (int i = 0; i < v.SelectExpressions.Count; ++i)
                     {
                         if (i > 0)

@@ -135,6 +135,13 @@ from     Contact t0"
                 "select t0.id as id from _Group t0");
         }
         [Test]
+        public void Distinct()
+        {
+            AssertTranslation(
+                "select distinct ContactId from Contact",
+                "select distinct t0.id as ContactId from Contact t0");
+        }
+        [Test]
         public void OneToManyCountTest3()
         {
             AssertTranslation(

@@ -628,11 +628,6 @@ namespace Sooda.Sql
             VisitAndGetFieldInfo(v, true);
         }
 
-        void OutputColumns(SoqlQueryExpression v)
-        {
-            OutputColumns(v, false);
-        }
-
         void OutputColumns(SoqlQueryExpression v, bool onlyAliases)
         {
                 if (v.SelectExpressions.Count == 0)
@@ -765,7 +760,9 @@ namespace Sooda.Sql
                     }
                 }
 
-                OutputColumns(v);
+                if (v.Distinct)
+                    Output.Write("distinct ");
+                OutputColumns(v, false);
 
                 if (v.StartIdx != 0 || v.PageCount != -1)
                 {
