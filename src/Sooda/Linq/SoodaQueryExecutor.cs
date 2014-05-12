@@ -53,6 +53,9 @@ namespace Sooda.Linq
         SoodaTransaction _transaction;
         ClassInfo _classInfo;
         SoodaSnapshotOptions _options;
+        SoqlExpression _select = null;
+        Type _elementType;
+        bool _distinct = false;
         SoqlBooleanExpression _where = null;
         SoodaOrderBy _orderBy = null;
         int _startIdx = 0;
@@ -604,6 +607,12 @@ namespace Sooda.Linq
             }
         }
 
+        void Select(MethodCallExpression mc)
+        {
+            _select = TranslateExpression(GetLambda(mc).Body);
+            _elementType = mc.Method.GetGenericArguments()[1];
+        }
+
         void Where(SoqlBooleanExpression where)
         {
             _where = _where == null ? where : _where.And(where);
@@ -729,6 +738,10 @@ namespace Sooda.Linq
                     TranslateQuery(mc.Arguments[0]);
                     switch (method)
                     {
+                        case SoodaLinqMethod.Queryable_Select:
+                            Select(mc);
+                            break;
+
                         case SoodaLinqMethod.Queryable_Where:
                             Where(mc);
                             break;
@@ -780,6 +793,11 @@ namespace Sooda.Linq
                                     count = 0;
                                 Take(count);
                             }
+                            break;
+
+                        case SoodaLinqMethod.Queryable_Distinct:
+                            SkipTakeNotSupported();
+                            _distinct = true;
                             break;
 
                         case SoodaLinqMethod.Queryable_OfType:
@@ -837,6 +855,7 @@ namespace Sooda.Linq
             SoqlQueryExpression query = CreateSoqlQuery();
             query.SelectExpressions.Add(selector);
             query.SelectAliases.Add("result");
+            query.Distinct = _distinct;
             SoodaDataSource ds = _transaction.OpenDataSource(_classInfo.GetDataSource());
             return ds.ExecuteQuery(query, _transaction.Schema);
         }
@@ -856,37 +875,24 @@ namespace Sooda.Linq
             return list;
         }
 
-        object Select(MethodCallExpression mc)
+        IList GetList()
         {
-            LambdaExpression lambda = GetLambda(mc);
-            SoqlExpression selector;
-            try
+            if (_select != null)
             {
-                selector = TranslateExpression(lambda.Body);
+                using (IDataReader r = ExecuteOneColumn(_select))
+                {
+                    return (IList) SoodaLinqMethodDictionary.Invoke(SoodaLinqMethod.SoodaQueryExecutor_SelectOneColumn, new Type[] { _elementType }, new object[] { r });
+                }
             }
-            catch (NotSupportedException)
-            {
-                return Invoke(mc, SoodaLinqMethod.Enumerable_Select, lambda.Compile());
-            }
-
-            TranslateQuery(mc.Arguments[0]);
-            using (IDataReader r = ExecuteOneColumn(selector))
-            {
-                return SoodaLinqMethodDictionary.Invoke(SoodaLinqMethod.SoodaQueryExecutor_SelectOneColumn, new Type[] { mc.Method.GetGenericArguments()[1] }, new object[] { r });
-            }
-        }
-
-        ISoodaObjectList GetList()
-        {
             return new SoodaObjectListSnapshot(_transaction, new SoodaWhereClause(_where), _orderBy, _startIdx, _topCount, _options, _classInfo);
         }
 
-        SoodaObject Single(int topCount, bool orDefault)
+        object Single(int topCount, bool orDefault)
         {
             Take(topCount);
-            ISoodaObjectList list = GetList();
+            IList list = GetList();
             if (list.Count == 1)
-                return list.GetItem(0);
+                return list[0];
             if (orDefault && list.Count == 0)
                 return null;
             throw new InvalidOperationException("Found " + list.Count + " matches");
@@ -936,6 +942,7 @@ namespace Sooda.Linq
 
         internal object Execute(Expression expr)
         {
+            _select = null;
             _where = null;
             _orderBy = null;
             _startIdx = 0;
@@ -947,11 +954,18 @@ namespace Sooda.Linq
                 switch (SoodaLinqMethodDictionary.Get(mc.Method))
                 {
                     case SoodaLinqMethod.Queryable_Select:
-                        return Select(mc);
+                        LambdaExpression lambda = GetLambda(mc);
+                        try
+                        {
+                            TranslateExpression(lambda.Body);
+                        }
+                        catch (NotSupportedException)
+                        {
+                            return Invoke(mc, SoodaLinqMethod.Enumerable_Select, lambda.Compile());
+                        }
+                        break;
                     case SoodaLinqMethod.Queryable_SelectIndexed:
                         return Invoke(mc, SoodaLinqMethod.Enumerable_SelectIndexed, GetLambda(mc).Compile());
-                    case SoodaLinqMethod.Queryable_Distinct:
-                        return Invoke(mc, SoodaLinqMethod.Enumerable_Distinct);
 
                     case SoodaLinqMethod.Queryable_All:
                         TranslateQuery(mc.Arguments[0]);

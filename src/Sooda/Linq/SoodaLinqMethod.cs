@@ -89,7 +89,6 @@ namespace Sooda.Linq
         Enumerable_Count,
         Enumerable_Select,
         Enumerable_SelectIndexed,
-        Enumerable_Distinct,
         ICollection_Contains,
         Object_GetType,
         String_Concat,
@@ -253,7 +252,6 @@ namespace Sooda.Linq
                 id2method.Add(SoodaLinqMethod.Enumerable_Cast, MethodOf(() => Enumerable.Cast<object>(null)));
                 id2method.Add(SoodaLinqMethod.Enumerable_Select, MethodOf(() => Enumerable.Select(null, (object o) => o)));
                 id2method.Add(SoodaLinqMethod.Enumerable_SelectIndexed, MethodOf(() => Enumerable.Select(null, (object o, int i) => i)));
-                id2method.Add(SoodaLinqMethod.Enumerable_Distinct, MethodOf(() => Enumerable.Distinct<object>(null)));
                 id2method.Add(SoodaLinqMethod.SoodaQueryExecutor_SelectOneColumn, MethodOf(() => SoodaQueryExecutor.SelectOneColumn<object>(null)));
                 _id2method = id2method;
             }
