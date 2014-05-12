@@ -111,7 +111,7 @@ namespace Sooda.Linq
         Math_Sin,
         Math_Sqrt,
         Math_Tan,
-        SoodaQueryProvider_SelectOneColumn,
+        SoodaQueryExecutor_SelectOneColumn,
     }
 
     static class SoodaLinqMethodDictionary
@@ -254,7 +254,7 @@ namespace Sooda.Linq
                 id2method.Add(SoodaLinqMethod.Enumerable_Select, MethodOf(() => Enumerable.Select(null, (object o) => o)));
                 id2method.Add(SoodaLinqMethod.Enumerable_SelectIndexed, MethodOf(() => Enumerable.Select(null, (object o, int i) => i)));
                 id2method.Add(SoodaLinqMethod.Enumerable_Distinct, MethodOf(() => Enumerable.Distinct<object>(null)));
-                id2method.Add(SoodaLinqMethod.SoodaQueryProvider_SelectOneColumn, MethodOf(() => SoodaQueryProvider.SelectOneColumn<object>(null)));
+                id2method.Add(SoodaLinqMethod.SoodaQueryExecutor_SelectOneColumn, MethodOf(() => SoodaQueryExecutor.SelectOneColumn<object>(null)));
                 _id2method = id2method;
             }
             MethodInfo method = id2method[id].MakeGenericMethod(typeArguments);

@@ -96,7 +96,8 @@
         <File RelPath='Linq\LinqUtils.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Linq\SoodaLinqMethod.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Linq\SoodaQueryable.cs' SubType='Code' BuildAction='Compile' />
-        <File RelPath='Linq\SoodaQueryProvider.cs' SubType='Code' BuildAction='Compile' />
+        <File RelPath='Linq\SoodaQueryExecutor.cs' SubType='Code' BuildAction='Compile' />
+        <File RelPath='Linq\SoodaQuerySource.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Logging\BasicLogger.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Logging\ConsoleLogger.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Logging\ConsoleLoggingImplementation.cs' SubType='Code' BuildAction='Compile' />

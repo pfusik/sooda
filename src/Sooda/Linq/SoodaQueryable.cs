@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2012 Piotr Fusik <piotr@fusik.info>
+// Copyright (c) 2010-2014 Piotr Fusik <piotr@fusik.info>
 //
 // All rights reserved.
 //
@@ -35,17 +35,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-using Sooda;
+using Sooda.QL;
 
 namespace Sooda.Linq
 {
-    public class SoodaQueryable<T> : IOrderedQueryable<T>
+    public class SoodaQueryable<T> : IOrderedQueryable<T>, IQueryProvider
     {
-        public IQueryProvider Provider { get; private set; }
+        readonly Expression _expression;
 
-        public Expression Expression { get; private set; }
+        IQueryProvider IQueryable.Provider
+        {
+            get
+            {
+                return this;
+            }
+        }
 
-        public Type ElementType
+        Expression IQueryable.Expression
+        {
+            get
+            {
+                return _expression;
+            }
+        }
+
+        Type IQueryable.ElementType
         {
             get
             {
@@ -53,28 +67,79 @@ namespace Sooda.Linq
             }
         }
 
-        public SoodaQueryable(SoodaTransaction transaction, Sooda.Schema.ClassInfo classInfo, SoodaSnapshotOptions options)
+        internal SoodaQueryable()
         {
-            this.Provider = new SoodaQueryProvider(transaction, classInfo, options);
-            this.Expression = Expression.Constant(this);
+            _expression = Expression.Constant(this);
         }
 
-        public SoodaQueryable(IQueryProvider provider, Expression expression)
+        internal SoodaQueryable(Expression expression)
         {
-            this.Provider = provider;
-            this.Expression = expression;
+            _expression = expression;
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            IEnumerable ie = this.Provider.Execute<IEnumerable>(this.Expression);
+            IEnumerable ie = Execute<IEnumerable>();
             return ie.GetEnumerator();
         }
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
-            IEnumerable ie = this.Provider.Execute<IEnumerable>(this.Expression);
+            IEnumerable ie = Execute<IEnumerable>();
             return ie.Cast<T>().GetEnumerator();
+        }
+
+        static Type GetElementType(Type seqType)
+        {
+            // array?
+            Type elementType = seqType.GetElementType();
+            if (elementType != null)
+                return elementType;
+
+            do
+            {
+                if (seqType.IsGenericType && seqType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                    return seqType.GetGenericArguments()[0];
+
+                // : IX1, IX2, ... -> try GetElementType(IX1), ...
+                foreach (Type iface in seqType.GetInterfaces())
+                {
+                    elementType = GetElementType(iface);
+                    if (elementType != null)
+                        return elementType;
+                }
+
+                // GetElementType(baseType)
+                seqType = seqType.BaseType;
+            } while (seqType != null && seqType != typeof(object));
+
+            throw new ArgumentException("Type is not IEnumerable<T>");
+        }
+
+        IQueryable IQueryProvider.CreateQuery(Expression expr)
+        {
+            Type elementType = GetElementType(expr.Type);
+            return (IQueryable) Activator.CreateInstance(typeof(SoodaQueryable<>).MakeGenericType(new Type[1] { elementType }), new object[] { expr });
+        }
+
+        IQueryable<TElement> IQueryProvider.CreateQuery<TElement>(Expression expr)
+        {
+            return new SoodaQueryable<TElement>(expr);
+        }
+
+        object IQueryProvider.Execute(Expression expr)
+        {
+            return new SoodaQueryExecutor().Execute(expr);
+        }
+
+        TResult IQueryProvider.Execute<TResult>(Expression expr)
+        {
+            return (TResult) new SoodaQueryExecutor().Execute(expr);
+        }
+
+        internal TResult Execute<TResult>()
+        {
+            return (TResult) new SoodaQueryExecutor().Execute(_expression);
         }
     }
 }

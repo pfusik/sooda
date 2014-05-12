@@ -204,7 +204,10 @@
     <Compile Include="Linq\SoodaQueryable.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Linq\SoodaQueryProvider.cs">
+    <Compile Include="Linq\SoodaQueryExecutor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Linq\SoodaQuerySource.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Logging\BasicLogger.cs">

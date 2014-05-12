@@ -466,7 +466,7 @@ method Linq(SoodaTransaction tran, SoodaSnapshotOptions options)
 	attributes Public,Static,Overloaded,Final${OptionalNewAttribute}
 	returns generic(System.Linq.IQueryable, ${ClassName})
 begin
-	return new generic(Sooda.Linq.SoodaQueryable, ${ClassName})(arg(tran), typeref(${ClassName}_Factory).TheClassInfo, arg(options));
+	return new generic(Sooda.Linq.SoodaQuerySource, ${ClassName})(arg(tran), typeref(${ClassName}_Factory).TheClassInfo, arg(options));
 end
 
 

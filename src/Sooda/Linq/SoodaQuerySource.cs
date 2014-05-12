@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2014 Piotr Fusik <piotr@fusik.info>
+// Copyright (c) 2014 Piotr Fusik <piotr@fusik.info>
 //
 // All rights reserved.
 //
@@ -29,36 +29,52 @@
 
 #if DOTNET35
 
-using System;
-using System.Collections.Generic;
-
 using Sooda;
-using Sooda.ObjectMapper;
-using Sooda.QL;
 
 namespace Sooda.Linq
 {
-    public static class LinqUtils
+    interface ISoodaQuerySource
     {
-        public static bool Like(this string text, string pattern)
+        SoodaTransaction Transaction { get; }
+        Sooda.Schema.ClassInfo ClassInfo { get; }
+        SoodaSnapshotOptions Options { get; }
+    }
+
+    public class SoodaQuerySource<T> : SoodaQueryable<T>, ISoodaQuerySource
+    {
+        readonly SoodaTransaction _transaction;
+        readonly Sooda.Schema.ClassInfo _classInfo;
+        readonly SoodaSnapshotOptions _options;
+
+        SoodaTransaction ISoodaQuerySource.Transaction
         {
-            return Sooda.QL.SoqlUtils.Like(text, pattern);
+            get
+            {
+                return _transaction;
+            }
         }
 
-        public static ISoodaObjectList ToSoodaObjectList<T>(this IEnumerable<T> source) where T : SoodaObject
+        Sooda.Schema.ClassInfo ISoodaQuerySource.ClassInfo
         {
-            ISoodaObjectList list = source as ISoodaObjectList;
-            if (list != null)
-                return list;
+            get
+            {
+                return _classInfo;
+            }
+        }
 
-            SoodaQueryable<T> query = source as SoodaQueryable<T>;
-            if (query != null)
-                return query.Execute<ISoodaObjectList>();
+        SoodaSnapshotOptions ISoodaQuerySource.Options
+        {
+            get
+            {
+                return _options;
+            }
+        }
 
-            SoodaObjectListSnapshot snapshot = new SoodaObjectListSnapshot();
-            foreach (SoodaObject o in source)
-                snapshot.Add(o);
-            return snapshot;
+        public SoodaQuerySource(SoodaTransaction transaction, Sooda.Schema.ClassInfo classInfo, SoodaSnapshotOptions options)
+        {
+            _transaction = transaction;
+            _classInfo = classInfo;
+            _options = options;
         }
     }
 }

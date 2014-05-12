@@ -45,68 +45,21 @@ using Sooda.Schema;
 
 namespace Sooda.Linq
 {
-    public class SoodaQueryProvider : IQueryProvider
+    public class SoodaQueryExecutor
     {
         // Caution: this must match first result of SoqlToSqlConverter.GetNextTablePrefix()
         const string DefaultAlias = "t0";
 
-        readonly SoodaTransaction _transaction;
-        readonly ClassInfo _rootClassInfo;
-        readonly SoodaSnapshotOptions _options;
+        SoodaTransaction _transaction;
         ClassInfo _classInfo;
-        SoqlBooleanExpression _where;
-        SoodaOrderBy _orderBy;
-        int _startIdx;
-        int _topCount;
+        SoodaSnapshotOptions _options;
+        SoqlBooleanExpression _where = null;
+        SoodaOrderBy _orderBy = null;
+        int _startIdx = 0;
+        int _topCount = -1;
         readonly Dictionary<ParameterExpression, ClassInfo> _param2classInfo = new Dictionary<ParameterExpression, ClassInfo>();
         readonly Dictionary<ParameterExpression, string> _param2alias = new Dictionary<ParameterExpression, string>();
         int _currentPrefix = 0;
-
-        public SoodaQueryProvider(SoodaTransaction transaction, ClassInfo classInfo, SoodaSnapshotOptions options)
-        {
-            _transaction = transaction;
-            _rootClassInfo = classInfo;
-            _options = options;
-        }
-
-        static Type GetElementType(Type seqType)
-        {
-            // array?
-            Type elementType = seqType.GetElementType();
-            if (elementType != null)
-                return elementType;
-
-            do
-            {
-                if (seqType.IsGenericType && seqType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-                    return seqType.GetGenericArguments()[0];
-
-                // : IX1, IX2, ... -> try GetElementType(IX1), ...
-                foreach (Type iface in seqType.GetInterfaces())
-                {
-                    elementType = GetElementType(iface);
-                    if (elementType != null)
-                        return elementType;
-                }
-
-                // GetElementType(baseType)
-                seqType = seqType.BaseType;
-            } while (seqType != null && seqType != typeof(object));
-
-            return null;
-        }
-
-        IQueryable IQueryProvider.CreateQuery(Expression expr)
-        {
-            Type elementType = GetElementType(expr.Type);
-            return (IQueryable) Activator.CreateInstance(typeof(SoodaQueryable<>).MakeGenericType(new Type[1] { elementType }),
-                new object[] { this, expr });
-        }
-
-        IQueryable<TElement> IQueryProvider.CreateQuery<TElement>(Expression expr)
-        {
-            return new SoodaQueryable<TElement>(this, expr);
-        }
 
         static bool IsConstant(Expression expr)
         {
@@ -764,6 +717,10 @@ namespace Sooda.Linq
             switch (expr.NodeType)
             {
                 case ExpressionType.Constant:
+                     ISoodaQuerySource source = (ISoodaQuerySource) ((ConstantExpression) expr).Value;
+                    _transaction = source.Transaction;
+                    _classInfo = source.ClassInfo;
+                    _options = source.Options;
                     break;
 
                 case ExpressionType.Call:
@@ -863,7 +820,7 @@ namespace Sooda.Linq
             Type[] ga = mc.Method.GetGenericArguments();
 
             // calculate source
-            object source = Execute<IEnumerable>(mc.Arguments[0]);
+            object source = Execute(mc.Arguments[0]);
 
             // source = source.Cast<TSource>();
             source = SoodaLinqMethodDictionary.Invoke(SoodaLinqMethod.Enumerable_Cast, new Type[] { ga[0] }, new object[] { source });
@@ -915,7 +872,7 @@ namespace Sooda.Linq
             TranslateQuery(mc.Arguments[0]);
             using (IDataReader r = ExecuteOneColumn(selector))
             {
-                return SoodaLinqMethodDictionary.Invoke(SoodaLinqMethod.SoodaQueryProvider_SelectOneColumn, new Type[] { mc.Method.GetGenericArguments()[1] }, new object[] { r });
+                return SoodaLinqMethodDictionary.Invoke(SoodaLinqMethod.SoodaQueryExecutor_SelectOneColumn, new Type[] { mc.Method.GetGenericArguments()[1] }, new object[] { r });
             }
         }
 
@@ -963,13 +920,13 @@ namespace Sooda.Linq
             return result;
         }
 
-        public object Execute(Expression expr)
+        internal object Execute(Expression expr)
         {
-            _classInfo = _rootClassInfo;
             _where = null;
             _orderBy = null;
             _startIdx = 0;
             _topCount = -1;
+
             MethodCallExpression mc = expr as MethodCallExpression;
             if (mc != null)
             {
@@ -1087,25 +1044,8 @@ namespace Sooda.Linq
             return GetList();
         }
 
-        public TResult Execute<TResult>(Expression expr)
+        public SoqlQueryExpression GetSoqlQuery(Expression expr)
         {
-            return (TResult) Execute(expr);
-        }
-
-        /// <summary>
-        /// creates SoqlQueryExpression with whereClause and orderBy.
-        /// used for convert IQuerable&lt;T&gt; to SoqlBooleanExpression.
-        /// based on object Execute(Expression expr) method.
-        /// </summary>
-        /// <returns></returns>
-        internal SoqlQueryExpression GetSoqlQuery(Expression expr)
-        {
-            _classInfo = _rootClassInfo;
-            _where = null;
-            _orderBy = null;
-            _startIdx = 0;
-            _topCount = -1;
-
             TranslateQuery(expr);
             return CreateSoqlQuery();
         }
