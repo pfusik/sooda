@@ -892,13 +892,12 @@ namespace Sooda.Linq
             throw new InvalidOperationException("Found " + list.Count + " matches");
         }
 
-        object ExecuteScalar(MethodCallExpression mc, string function, object onNull)
+        object ExecuteScalar(SoqlExpression expr, string function, object onNull)
         {
-            TranslateQuery(mc.Arguments[0]);
             SkipTakeNotSupported();
             _orderBy = null;
 
-            SoqlExpression selector = new SoqlFunctionCallExpression(function, TranslateExpression(GetLambda(mc).Body));
+            SoqlExpression selector = new SoqlFunctionCallExpression(function, expr);
             using (IDataReader r = ExecuteOneColumn(selector))
             {
                 if (!r.Read())
@@ -910,6 +909,21 @@ namespace Sooda.Linq
                     return onNull;
                 throw new InvalidOperationException("Aggregate on an empty collection");
             }
+        }
+
+        object ExecuteScalar(MethodCallExpression mc, string function, object onNull)
+        {
+            TranslateQuery(mc.Arguments[0]);
+            return ExecuteScalar(TranslateExpression(GetLambda(mc).Body), function, onNull);
+        }
+
+        int Count()
+        {
+#if CACHE_LINQ_COUNT
+            return GetList().Count;
+#else
+            return (int) ExecuteScalar(new SoqlAsteriskExpression(), "count", this /* shouldn't matter */);
+#endif
         }
 
         object ExecuteAvg(MethodCallExpression mc, object onNull)
@@ -944,16 +958,16 @@ namespace Sooda.Linq
                         SkipTakeNotSupported();
                         Where(new SoqlBooleanNegationExpression(TranslateBoolean(GetLambda(mc).Body)));
                         Take(1);
-                        return GetList().Count == 0;
+                        return Count() == 0;
                     case SoodaLinqMethod.Queryable_Any:
                         TranslateQuery(mc.Arguments[0]);
                         Take(1);
-                        return GetList().Count > 0;
+                        return Count() > 0;
                     case SoodaLinqMethod.Queryable_AnyFiltered:
                         TranslateQuery(mc.Arguments[0]);
                         Where(mc);
                         Take(1);
-                        return GetList().Count > 0;
+                        return Count() > 0;
                     case SoodaLinqMethod.Queryable_Contains:
                         TranslateQuery(mc.Arguments[0]);
                         SkipTakeNotSupported();
@@ -963,14 +977,14 @@ namespace Sooda.Linq
                             SoqlRelationalOperator.Equal);
                         Where(where);
                         Take(1);
-                        return GetList().Count > 0;
+                        return Count() > 0;
                     case SoodaLinqMethod.Queryable_Count:
                         TranslateQuery(mc.Arguments[0]);
-                        return GetList().Count;
+                        return Count();
                     case SoodaLinqMethod.Queryable_CountFiltered:
                         TranslateQuery(mc.Arguments[0]);
                         Where(mc);
-                        return GetList().Count;
+                        return Count();
 
                     case SoodaLinqMethod.Queryable_First:
                         TranslateQuery(mc.Arguments[0]);
