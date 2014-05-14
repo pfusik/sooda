@@ -34,6 +34,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq.Expressions;
+using System.Reflection;
 
 using Sooda.QL;
 
@@ -72,17 +73,19 @@ namespace Sooda.Linq
             return pe;
         }
 
-        internal void Process(Expression body)
+        internal void Process(LambdaExpression lambda)
         {
-            _body = Visit(body);
+            _body = Visit(lambda.Body);
+            if (lambda.Parameters.Count == 2)
+                _parameters.Add(lambda.Parameters[1]);
         }
 
-        internal List<T> GetList<T>()
+        List<T> GetGenericList<T>()
         {
             using (IDataReader r = _executor.ExecuteQuery(_soqls))
             {
                 List<T> list = new List<T>();
-                if (_parameters.Count == 1 && _body == _parameters[0])
+                if (_soqls.Count == 1 && _body == _parameters[0])
                 {
                     while (r.Read())
                     {
@@ -97,10 +100,11 @@ namespace Sooda.Linq
                 else
                 {
                     Delegate d = Expression.Lambda(_body, _parameters).Compile();
+                    int columnCount = _soqls.Count;
                     object[] columns = new object[_parameters.Count];
-                    while (r.Read())
+                    for (int rowNum = 0; r.Read(); rowNum++)
                     {
-                        for (int i = 0; i < columns.Length; i++)
+                        for (int i = 0; i < columnCount; i++)
                         {
                             object value = r.GetValue(i);
                             if (value == DBNull.Value)
@@ -109,6 +113,8 @@ namespace Sooda.Linq
                                 value = (int) value != 0;
                             columns[i] = value;
                         }
+                        if (columnCount < columns.Length)
+                            columns[columnCount] = rowNum;
                         list.Add((T) d.DynamicInvoke(columns));
                     }
                 }
@@ -118,7 +124,8 @@ namespace Sooda.Linq
 
         internal IList GetList()
         {
-            return (IList) SoodaLinqMethodDictionary.Get(SoodaLinqMethod.SelectExecutor_GetList).MakeGenericMethod(_body.Type).Invoke(this, null);
+            MethodInfo method = typeof(SelectExecutor).GetMethod("GetGenericList", BindingFlags.Instance | BindingFlags.NonPublic);
+            return (IList) method.MakeGenericMethod(_body.Type).Invoke(this, null);
         }
     }
 }

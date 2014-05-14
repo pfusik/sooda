@@ -84,10 +84,8 @@ namespace Sooda.Linq
         Enumerable_All,
         Enumerable_Any,
         Enumerable_AnyFiltered,
-        Enumerable_Cast,
         Enumerable_Contains,
         Enumerable_Count,
-        Enumerable_SelectIndexed,
         ICollection_Contains,
         Object_GetType,
         String_Concat,
@@ -109,15 +107,11 @@ namespace Sooda.Linq
         Math_Sin,
         Math_Sqrt,
         Math_Tan,
-#if DOTNET4
-        SelectExecutor_GetList,
-#endif
     }
 
     static class SoodaLinqMethodDictionary
     {
         static Dictionary<MethodInfo, SoodaLinqMethod> _method2id;
-        static Dictionary<SoodaLinqMethod, MethodInfo> _id2method;
 
         static MethodInfo Ungeneric(MethodInfo method)
         {
@@ -242,22 +236,6 @@ namespace Sooda.Linq
             SoodaLinqMethod id;
             method2id.TryGetValue(Ungeneric(method), out id);
             return id;
-        }
-
-        public static MethodInfo Get(SoodaLinqMethod id)
-        {
-            Dictionary<SoodaLinqMethod, MethodInfo> id2method = _id2method;
-            if (id2method == null)
-            {
-                id2method = new Dictionary<SoodaLinqMethod, MethodInfo>();
-                id2method.Add(SoodaLinqMethod.Enumerable_Cast, MethodOf(() => Enumerable.Cast<object>(null)));
-                id2method.Add(SoodaLinqMethod.Enumerable_SelectIndexed, MethodOf(() => Enumerable.Select(null, (object o, int i) => i)));
-#if DOTNET4
-                id2method.Add(SoodaLinqMethod.SelectExecutor_GetList, MethodOf(() => ((SelectExecutor) null).GetList<object>()));
-#endif
-                _id2method = id2method;
-            }
-            return id2method[id];
         }
     }
 }

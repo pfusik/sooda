@@ -515,7 +515,7 @@ namespace Sooda.Linq
                     ParameterExpression pe = (ParameterExpression) expr;
                     ClassInfo classInfo;
                     if (!_param2classInfo.TryGetValue(pe, out classInfo))
-                        classInfo = _classInfo;
+                        throw new NotSupportedException();
                     return new SoqlPathExpression(TranslateParameter(pe), classInfo.GetPrimaryKeyFields().Single().Name);
                 case ExpressionType.MemberAccess:
                     return TranslateMember((MemberExpression) expr);
@@ -574,9 +574,11 @@ namespace Sooda.Linq
             return ql as SoqlBooleanExpression ?? new SoqlBooleanRelationalExpression(ql, SoqlBooleanLiteralExpression.True, SoqlRelationalOperator.Equal);
         }
 
-        static LambdaExpression GetLambda(MethodCallExpression mc)
+        LambdaExpression GetLambda(MethodCallExpression mc)
         {
-            return (LambdaExpression) ((UnaryExpression) mc.Arguments[1]).Operand;
+            LambdaExpression lambda = (LambdaExpression) ((UnaryExpression) mc.Arguments[1]).Operand;
+            _param2classInfo[lambda.Parameters[0]] = _classInfo;
+            return lambda;
         }
 
         SoqlQueryExpression CreateSoqlQuery()
@@ -612,7 +614,7 @@ namespace Sooda.Linq
         {
 #if DOTNET4
             _select = new SelectExecutor(this);
-            _select.Process(GetLambda(mc).Body);
+            _select.Process(GetLambda(mc));
 #else
             throw new NotImplementedException("Select() requires Sooda for .NET 4, this is .NET 3.5");
 #endif
@@ -744,6 +746,7 @@ namespace Sooda.Linq
                     switch (method)
                     {
                         case SoodaLinqMethod.Queryable_Select:
+                        case SoodaLinqMethod.Queryable_SelectIndexed:
                             Select(mc);
                             break;
 
@@ -833,26 +836,6 @@ namespace Sooda.Linq
                 default:
                     throw new NotSupportedException(expr.NodeType.ToString());
             }
-        }
-
-        // mc = "Queryable.Foo(source, extraParams)"
-        // methodId = "Enumerable.Foo(source, extraParams)"
-        object Invoke(MethodCallExpression mc, SoodaLinqMethod methodId, params object[] extraParams)
-        {
-            // TSource, ...
-            Type[] ga = mc.Method.GetGenericArguments();
-
-            // calculate source
-            object source = Execute(mc.Arguments[0]);
-
-            // source = source.Cast<TSource>();
-            source = SoodaLinqMethodDictionary.Get(SoodaLinqMethod.Enumerable_Cast).MakeGenericMethod(ga[0]).Invoke(null, new object[] { source });
-
-            // return Enumerable.Foo(source, extraParams);
-            object[] parameters = new object[1 + extraParams.Length];
-            parameters[0] = source;
-            extraParams.CopyTo(parameters, 1);
-            return SoodaLinqMethodDictionary.Get(methodId).MakeGenericMethod(ga).Invoke(null, parameters);
         }
 
         internal IDataReader ExecuteQuery(IEnumerable<SoqlExpression> columns)
@@ -960,9 +943,6 @@ namespace Sooda.Linq
             {
                 switch (SoodaLinqMethodDictionary.Get(mc.Method))
                 {
-                    case SoodaLinqMethod.Queryable_SelectIndexed:
-                        return Invoke(mc, SoodaLinqMethod.Enumerable_SelectIndexed, GetLambda(mc).Compile());
-
                     case SoodaLinqMethod.Queryable_All:
                         TranslateQuery(mc.Arguments[0]);
                         SkipTakeNotSupported();
