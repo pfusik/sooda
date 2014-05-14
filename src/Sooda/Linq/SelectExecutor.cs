@@ -94,6 +94,8 @@ namespace Sooda.Linq
                             value = null;
                         else if (typeof(T) == typeof(bool) && value is int)
                             value = (int) value != 0;
+                        else if (typeof(T).IsSubclassOf(typeof(SoodaObject)))
+                            value = _executor.GetRef(typeof(T), value);
                         list.Add((T) value);
                     }
                 }
@@ -109,8 +111,14 @@ namespace Sooda.Linq
                             object value = r.GetValue(i);
                             if (value == DBNull.Value)
                                 value = null;
-                            else if (_parameters[i].Type == typeof(bool) && value is int)
-                                value = (int) value != 0;
+                            else 
+                            {
+                                Type t = _parameters[i].Type;
+                                if (t == typeof(bool) && value is int)
+                                    value = (int) value != 0;
+                                else if (t.IsSubclassOf(typeof(SoodaObject)))
+                                    value = _executor.GetRef(t, value);
+                            }
                             columns[i] = value;
                         }
                         if (columnCount < columns.Length)

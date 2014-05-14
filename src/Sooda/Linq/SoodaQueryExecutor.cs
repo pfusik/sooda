@@ -65,6 +65,13 @@ namespace Sooda.Linq
         readonly Dictionary<ParameterExpression, string> _param2alias = new Dictionary<ParameterExpression, string>();
         int _currentPrefix = 0;
 
+        internal SoodaObject GetRef(Type type, object keyValue)
+        {
+            //if (keyValue == null)
+            //    return null;
+            return _transaction.GetFactory(type).GetRef(_transaction, keyValue);
+        }
+
         internal static bool IsConstant(Expression expr)
         {
             if (expr == null)

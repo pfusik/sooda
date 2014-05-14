@@ -151,18 +151,58 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void SelectSoodaObject()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<SoodaObject> oe = from c in Contact.Linq() orderby c.ContactId select c.Manager;
+                CollectionAssert.AreEqual(new SoodaObject[] { null, Contact.Mary, Contact.Mary, null, null, null, null }, oe);
+            }
+        }
+
+        [Test]
+        public void SelectPath()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<string> se = from c in Contact.Linq() orderby c.ContactId select c.Manager.Name;
+                CollectionAssert.AreEqual(new string[] { null, "Mary Manager", "Mary Manager", null, null, null, null }, se);
+            }
+        }
+
+        [Test]
+        public void SelectNewSoodaObject()
+        {
+            using (new SoodaTransaction())
+            {
+                var oe = from c in Contact.Linq() orderby c.ContactId select new { c.Manager };
+                CollectionAssert.AreEqual(new SoodaObject[] { null, Contact.Mary, Contact.Mary, null, null, null, null }, oe.Select(o => o.Manager));
+            }
+        }
+
+        [Test]
+        public void SelectNewPath()
+        {
+            using (new SoodaTransaction())
+            {
+                var oe = from c in Contact.Linq() orderby c.ContactId select new { c.Manager.Name };
+                CollectionAssert.AreEqual(new string[] { null, "Mary Manager", "Mary Manager", null, null, null, null }, oe.Select(o => o.Name));
+            }
+        }
+
+        [Test]
         public void SelectAggregate()
         {
             using (new SoodaTransaction())
             {
                 IEnumerable<int> ie = from c in Contact.Linq() orderby c.ContactId select c.Subordinates.Count;
-                CollectionAssert.AreEquivalent(new int[] { 2, 0, 0, 0, 0, 0, 0 }, ie);
+                CollectionAssert.AreEqual(new int[] { 2, 0, 0, 0, 0, 0, 0 }, ie);
 
                 ie = from c in Contact.Linq() orderby c.ContactId select c.Subordinates.Count();
-                CollectionAssert.AreEquivalent(new int[] { 2, 0, 0, 0, 0, 0, 0 }, ie);
+                CollectionAssert.AreEqual(new int[] { 2, 0, 0, 0, 0, 0, 0 }, ie);
 
                 IEnumerable<bool> be = from c in Contact.Linq() orderby c.ContactId select c.Subordinates.Any();
-                CollectionAssert.AreEquivalent(new bool[] { true, false, false, false, false, false, false }, be);
+                CollectionAssert.AreEqual(new bool[] { true, false, false, false, false, false, false }, be);
             }
         }
 
@@ -172,9 +212,76 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 var l = (from c in Contact.Linq() orderby c.ContactId select new { c.Name, SubordinatesCount = c.Subordinates.Count, SubordinatesCount2 = c.Subordinates.Count(), HasSubordinates = c.Subordinates.Any() }).ToList();
-                CollectionAssert.AreEquivalent(new int[] { 2, 0, 0, 0, 0, 0, 0 }, l.Select(o => o.SubordinatesCount));
-                CollectionAssert.AreEquivalent(new int[] { 2, 0, 0, 0, 0, 0, 0 }, l.Select(o => o.SubordinatesCount2));
-                CollectionAssert.AreEquivalent(new bool[] { true, false, false, false, false, false, false }, l.Select(o => o.HasSubordinates));
+                CollectionAssert.AreEqual(new int[] { 2, 0, 0, 0, 0, 0, 0 }, l.Select(o => o.SubordinatesCount));
+                CollectionAssert.AreEqual(new int[] { 2, 0, 0, 0, 0, 0, 0 }, l.Select(o => o.SubordinatesCount2));
+                CollectionAssert.AreEqual(new bool[] { true, false, false, false, false, false, false }, l.Select(o => o.HasSubordinates));
+            }
+        }
+
+        [Test]
+        public void SelectConst()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = Contact.Linq().Select(c => 42);
+                CollectionAssert.AreEqual(Enumerable.Repeat(42, 7), ie);
+            }
+        }
+
+        [Test]
+        public void SelectNewObject()
+        {
+            using (new SoodaTransaction())
+            {
+                object[] oa = Contact.Linq().Select(c => new object()).ToArray();
+                Assert.AreEqual(7, oa.Length);
+                CollectionAssert.AllItemsAreUnique(oa);
+            }
+        }
+
+        /* error CS0834: A lambda expression with a statement body cannot be converted to an expression tree
+        [Test]
+        public void SelectDictionary()
+        {
+            using (new SoodaTransaction())
+            {
+                Dictionary<string, object>[] da = Contact.Linq().OrderBy(c => c.ContactId).Take(2).Select(c => {
+                        Dictionary<string, object> d = new Dictionary<string, object>();
+                        d.Add("Id", c.ContactId);
+                        d.Add("Name", c.Name);
+                        d.Add("SubordinatesCount", c.Subordinates.Count);
+                        return d;
+                    }).ToArray();
+                Assert.AreEqual(2, da.Length);
+
+                Assert.AreEqual(1, da[0]["Id"]);
+                Assert.AreEqual("Mary Manager", da[0]["Name"]);
+                Assert.AreEqual(2, da[0]["SubordinatesCount"]);
+
+                Assert.AreEqual(2, da[1]["Id"]);
+                Assert.AreEqual("Ed Employee", da[1]["Name"]);
+                Assert.AreEqual(0, da[1]["SubordinatesCount"]);
+            }
+        }
+        */
+
+        [Test]
+        public void SelectArray()
+        {
+            using (new SoodaTransaction())
+            {
+                object[][] da = Contact.Linq().OrderBy(c => c.ContactId).Take(2).Select(c =>
+                        new object[] { c.ContactId, c.Name, c.Subordinates.Count }
+                    ).ToArray();
+                Assert.AreEqual(2, da.Length);
+
+                Assert.AreEqual(1, da[0][0]);
+                Assert.AreEqual("Mary Manager", da[0][1]);
+                Assert.AreEqual(2, da[0][2]);
+
+                Assert.AreEqual(2, da[1][0]);
+                Assert.AreEqual("Ed Employee", da[1][1]);
+                Assert.AreEqual(0, da[1][2]);
             }
         }
 
@@ -185,6 +292,16 @@ namespace Sooda.UnitTests.TestCases.Linq
             {
                 IEnumerable<int> ie = Contact.Linq().OrderBy(c => c.ContactId).Select((c, i) => c.ContactId + i);
                 CollectionAssert.AreEqual(new int[] { 1 + 0, 2 + 1, 3 + 2, 50 + 3, 51 + 4, 52 + 5, 53 + 6 }, ie);
+            }
+        }
+
+        [Test]
+        public void SelectIndexedIndex()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = Contact.Linq().Select((c, i) => i);
+                CollectionAssert.AreEqual(Enumerable.Range(0, 7), ie);
             }
         }
 
