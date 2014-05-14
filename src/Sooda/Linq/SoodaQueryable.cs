@@ -72,7 +72,7 @@ namespace Sooda.Linq
             _expression = Expression.Constant(this);
         }
 
-        internal SoodaQueryable(Expression expression)
+        public SoodaQueryable(Expression expression)
         {
             _expression = expression;
         }
@@ -119,7 +119,7 @@ namespace Sooda.Linq
         IQueryable IQueryProvider.CreateQuery(Expression expr)
         {
             Type elementType = GetElementType(expr.Type);
-            return (IQueryable) Activator.CreateInstance(typeof(SoodaQueryable<>).MakeGenericType(new Type[1] { elementType }), new object[] { expr });
+            return (IQueryable) Activator.CreateInstance(typeof(SoodaQueryable<>).MakeGenericType(elementType), expr);
         }
 
         IQueryable<TElement> IQueryProvider.CreateQuery<TElement>(Expression expr)
