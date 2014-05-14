@@ -1677,35 +1677,27 @@ namespace Sooda
                     // if the class is actually inherited, we delegate the responsibility
                     // to the appropriate GetRefFromRecord which will be called by the snapshot
 
-                    // TODO - OPTIMIZE: REMOVE PARSING
-
-                    StringBuilder query = new StringBuilder();
+                    SoqlBooleanExpression where = null;
                     Sooda.Schema.FieldInfo[] pkFields = factory.GetClassInfo().GetPrimaryKeyFields();
                     object[] par = new object[pkFields.Length];
-
                     for (int i = 0; i < pkFields.Length; ++i)
                     {
-                        if (i > 0)
-                            query.Append(" and ");
-                        query.Append('(');
-                        query.Append(pkFields[i].Name);
-                        query.Append("={");
-                        query.Append(i);
-                        query.Append("})");
                         par[i] = SoodaTuple.GetValue(keyValue, i);
+                        SoqlBooleanExpression cmp = new SoqlBooleanRelationalExpression(
+                            new SoqlPathExpression(pkFields[i].Name),
+                            new SoqlParameterLiteralExpression(i),
+                            SoqlRelationalOperator.Equal);
+                        where = where == null ? cmp : where.And(cmp);
                     }
+                    SoodaWhereClause whereClause = new SoodaWhereClause(where, par);
 
-                    SoodaWhereClause whereClause = new SoodaWhereClause(query.ToString(), par);
                     IList list = factory.GetList(tran, whereClause, null, SoodaSnapshotOptions.NoTransaction | SoodaSnapshotOptions.NoWriteObjects | SoodaSnapshotOptions.NoCache);
                     if (list.Count == 1)
                         return (SoodaObject)list[0];
+                    else if (list.Count == 0)
+                        throw new SoodaObjectNotFoundException("No matching object.");
                     else
-                    {
-                        if (list.Count == 0)
-                            throw new SoodaObjectNotFoundException("No matching object.");
-                        else
-                            throw new SoodaObjectNotFoundException("More than one object found. Fatal error.");
-                    }
+                        throw new SoodaObjectNotFoundException("More than one object found. Fatal error.");
                 }
             }
 
