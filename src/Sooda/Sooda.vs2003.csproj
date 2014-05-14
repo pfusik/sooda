@@ -94,6 +94,7 @@
         <File RelPath='Config\ISoodaConfigProvider.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Config\XmlConfigProvider.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Linq\LinqUtils.cs' SubType='Code' BuildAction='Compile' />
+        <File RelPath='Linq\SelectExecutor.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Linq\SoodaLinqMethod.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Linq\SoodaQueryable.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Linq\SoodaQueryExecutor.cs' SubType='Code' BuildAction='Compile' />

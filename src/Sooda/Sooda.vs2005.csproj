@@ -198,6 +198,9 @@
     <Compile Include="Linq\LinqUtils.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Linq\SelectExecutor.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Linq\SoodaLinqMethod.cs">
       <SubType>Code</SubType>
     </Compile>

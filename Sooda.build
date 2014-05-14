@@ -144,7 +144,7 @@
 
     <target name="configure-net-4.0">
         <property name="sooda.csc.args" value="/nowarn:1591,1699" />
-        <property name="sooda.define" value="${sooda.define},DOTNET2,DOTNET35" />
+        <property name="sooda.define" value="${sooda.define},DOTNET2,DOTNET35,DOTNET4" />
     </target>
 
     <target name="configure-mono-2.0">
@@ -159,7 +159,7 @@
 
     <target name="configure-mono-4.0">
         <property name="sooda.csc.args" value="/nowarn:1591,1699" />
-        <property name="sooda.define" value="${sooda.define},MONO,DOTNET2,DOTNET35" />
+        <property name="sooda.define" value="${sooda.define},MONO,DOTNET2,DOTNET35,DOTNET4" />
     </target>
 
     <target name="release">

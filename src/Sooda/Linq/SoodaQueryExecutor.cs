@@ -53,8 +53,9 @@ namespace Sooda.Linq
         SoodaTransaction _transaction;
         ClassInfo _classInfo;
         SoodaSnapshotOptions _options;
-        SoqlExpression _select = null;
-        Type _elementType;
+#if DOTNET4
+        SelectExecutor _select = null;
+#endif
         bool _distinct = false;
         SoqlBooleanExpression _where = null;
         SoodaOrderBy _orderBy = null;
@@ -64,7 +65,7 @@ namespace Sooda.Linq
         readonly Dictionary<ParameterExpression, string> _param2alias = new Dictionary<ParameterExpression, string>();
         int _currentPrefix = 0;
 
-        static bool IsConstant(Expression expr)
+        internal static bool IsConstant(Expression expr)
         {
             if (expr == null)
                 return true;
@@ -502,7 +503,7 @@ namespace Sooda.Linq
             return new SoqlBooleanIsNullExpression(path, true);
         }
 
-        SoqlExpression TranslateExpression(Expression expr)
+        internal SoqlExpression TranslateExpression(Expression expr)
         {
             ISoqlConstantExpression literal = FoldConstant(expr);
             if (literal != null)
@@ -609,8 +610,12 @@ namespace Sooda.Linq
 
         void Select(MethodCallExpression mc)
         {
-            _select = TranslateExpression(GetLambda(mc).Body);
-            _elementType = mc.Method.GetGenericArguments()[1];
+#if DOTNET4
+            _select = new SelectExecutor(this);
+            _select.Process(GetLambda(mc).Body);
+#else
+            throw new NotImplementedException("Select() requires Sooda for .NET 4, this is .NET 3.5");
+#endif
         }
 
         void Where(SoqlBooleanExpression where)
@@ -841,20 +846,23 @@ namespace Sooda.Linq
             object source = Execute(mc.Arguments[0]);
 
             // source = source.Cast<TSource>();
-            source = SoodaLinqMethodDictionary.Invoke(SoodaLinqMethod.Enumerable_Cast, new Type[] { ga[0] }, new object[] { source });
+            source = SoodaLinqMethodDictionary.Get(SoodaLinqMethod.Enumerable_Cast).MakeGenericMethod(ga[0]).Invoke(null, new object[] { source });
 
             // return Enumerable.Foo(source, extraParams);
             object[] parameters = new object[1 + extraParams.Length];
             parameters[0] = source;
             extraParams.CopyTo(parameters, 1);
-            return SoodaLinqMethodDictionary.Invoke(methodId, ga, parameters);
+            return SoodaLinqMethodDictionary.Get(methodId).MakeGenericMethod(ga).Invoke(null, parameters);
         }
 
-        IDataReader ExecuteOneColumn(SoqlExpression selector)
+        internal IDataReader ExecuteQuery(IEnumerable<SoqlExpression> columns)
         {
             SoqlQueryExpression query = CreateSoqlQuery();
-            query.SelectExpressions.Add(selector);
-            query.SelectAliases.Add("result");
+            foreach (SoqlExpression column in columns)
+            {
+                query.SelectExpressions.Add(column);
+                query.SelectAliases.Add(string.Empty);
+            }
             query.Distinct = _distinct;
             SoodaDataSource ds = _transaction.OpenDataSource(_classInfo.GetDataSource());
             return ds.ExecuteQuery(query, _transaction.Schema);
@@ -877,13 +885,10 @@ namespace Sooda.Linq
 
         IList GetList()
         {
+#if DOTNET4
             if (_select != null)
-            {
-                using (IDataReader r = ExecuteOneColumn(_select))
-                {
-                    return (IList) SoodaLinqMethodDictionary.Invoke(SoodaLinqMethod.SoodaQueryExecutor_SelectOneColumn, new Type[] { _elementType }, new object[] { r });
-                }
-            }
+                return _select.GetList();
+#endif
             return new SoodaObjectListSnapshot(_transaction, new SoodaWhereClause(_where), _orderBy, _startIdx, _topCount, _options, _classInfo);
         }
 
@@ -904,7 +909,7 @@ namespace Sooda.Linq
             _orderBy = null;
 
             SoqlExpression selector = new SoqlFunctionCallExpression(function, expr);
-            using (IDataReader r = ExecuteOneColumn(selector))
+            using (IDataReader r = ExecuteQuery(new SoqlExpression[] { selector }))
             {
                 if (!r.Read())
                     throw new SoodaObjectNotFoundException();
@@ -942,7 +947,9 @@ namespace Sooda.Linq
 
         internal object Execute(Expression expr)
         {
+#if DOTNET4
             _select = null;
+#endif
             _where = null;
             _orderBy = null;
             _startIdx = 0;
@@ -953,17 +960,6 @@ namespace Sooda.Linq
             {
                 switch (SoodaLinqMethodDictionary.Get(mc.Method))
                 {
-                    case SoodaLinqMethod.Queryable_Select:
-                        LambdaExpression lambda = GetLambda(mc);
-                        try
-                        {
-                            TranslateExpression(lambda.Body);
-                        }
-                        catch (NotSupportedException)
-                        {
-                            return Invoke(mc, SoodaLinqMethod.Enumerable_Select, lambda.Compile());
-                        }
-                        break;
                     case SoodaLinqMethod.Queryable_SelectIndexed:
                         return Invoke(mc, SoodaLinqMethod.Enumerable_SelectIndexed, GetLambda(mc).Compile());
 
