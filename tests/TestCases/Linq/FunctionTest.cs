@@ -293,6 +293,20 @@ namespace Sooda.UnitTests.TestCases.Linq
                 CollectionAssert.AreEquivalent(new object[] { 1, 2, 3, 50, 51, 52, 53 }, oe);
             }
         }
+
+        [Test]
+        public void GetLabel()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.GetLabel(false) == "Mary Manager");
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(Contact.Mary, ce.First());
+
+                IEnumerable<string> se = Contact.Linq().Select(c => c.GetLabel(false));
+                CollectionAssert.AreEquivalent(new string[] { "Mary Manager", "Ed Employee", "Eva Employee", "Catie Customer", "Caroline Customer", "Chris Customer", "Chuck Customer" }, se);
+            }
+        }
     }
 }
 

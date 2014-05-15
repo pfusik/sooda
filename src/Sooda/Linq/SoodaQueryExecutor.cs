@@ -387,12 +387,9 @@ namespace Sooda.Linq
             return new SoqlBooleanInExpression(TranslateExpression(needle), haystack2);
         }
 
-        SoqlExpression TranslateGetPrimaryKeyValue(Expression obj)
+        ClassInfo FindClassInfo(Expression expr)
         {
-            SoqlExpression expr = TranslateExpression(obj);
-            if (obj.NodeType == ExpressionType.Parameter)
-                return expr;
-            return new SoqlPathExpression((SoqlPathExpression) expr, _transaction.Schema.FindClassByName(obj.Type.Name).GetPrimaryKeyFields().Single().Name);
+            return _transaction.Schema.FindClassByName(expr.Type.Name);
         }
 
         SoqlExpression TranslateCall(MethodCallExpression mc)
@@ -459,7 +456,12 @@ namespace Sooda.Linq
                 case SoodaLinqMethod.Math_Tan:
                     return new SoqlFunctionCallExpression("tan", TranslateExpression(mc.Arguments[0]));
                 case SoodaLinqMethod.SoodaObject_GetPrimaryKeyValue:
-                    return TranslateGetPrimaryKeyValue(mc.Object);
+                    return new SoqlPathExpression(TranslateToPathExpression(mc.Object), FindClassInfo(mc.Object).GetPrimaryKeyFields().Single().Name);
+                case SoodaLinqMethod.SoodaObject_GetLabel:
+                    string labelField = FindClassInfo(mc.Object).GetLabel();
+                    if (labelField == null)
+                        return new SoqlNullLiteral();
+                    return new SoqlPathExpression(TranslateToPathExpression(mc.Object), labelField);
                 default:
                     break;
             }
