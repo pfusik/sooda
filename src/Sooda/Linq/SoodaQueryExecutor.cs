@@ -243,10 +243,10 @@ namespace Sooda.Linq
 
         SoqlExpression TranslateConditional(ConditionalExpression expr)
         {
-            ISoqlConstantExpression test = FoldConstant(expr.Test);
-            if (test == null)
-                throw new NotSupportedException("?: operator condition is not constant");
-            return TranslateExpression((bool) test.GetConstantValue() ? expr.IfTrue : expr.IfFalse);
+            ISoqlConstantExpression constTest = FoldConstant(expr.Test);
+            if (constTest != null)
+                return TranslateExpression((bool) constTest.GetConstantValue() ? expr.IfTrue : expr.IfFalse);
+            return new SoqlConditionalExpression(TranslateBoolean(expr.Test), TranslateExpression(expr.IfTrue), TranslateExpression(expr.IfFalse));
         }
 
         SoqlPathExpression TranslateParameter(ParameterExpression pe)

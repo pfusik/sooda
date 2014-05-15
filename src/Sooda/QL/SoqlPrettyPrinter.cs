@@ -535,6 +535,17 @@ namespace Sooda.QL
             Output.Write(')');
         }
 
+        public virtual void Visit(SoqlConditionalExpression v)
+        {
+            Output.Write("case when ");
+            v.condition.Accept(this);
+            Output.Write(" then ");
+            v.ifTrue.Accept(this);
+            Output.Write(" else ");
+            v.ifFalse.Accept(this);
+            Output.Write(" end");
+        }
+
         public TextWriter Output;
         public int IndentLevel = -1;
         public int IndentStep = 4;

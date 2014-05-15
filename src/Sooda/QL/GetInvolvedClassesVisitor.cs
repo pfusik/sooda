@@ -219,5 +219,12 @@ namespace Sooda.QL
         {
             throw new NotSupportedException("RAW queries not supported.");
         }
+
+        void Sooda.QL.ISoqlVisitor.Visit(SoqlConditionalExpression v)
+        {
+            v.condition.Accept(this);
+            v.ifTrue.Accept(this);
+            v.ifFalse.Accept(this);
+        }
     }
 }

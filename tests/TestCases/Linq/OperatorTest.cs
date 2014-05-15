@@ -1,5 +1,5 @@
 // 
-// Copyright (c) 2012 Piotr Fusik <piotr@fusik.info>
+// Copyright (c) 2012-2014 Piotr Fusik <piotr@fusik.info>
 // 
 // All rights reserved.
 // 
@@ -342,6 +342,12 @@ namespace Sooda.UnitTests.TestCases.Linq
 
                 ce = Contact.Linq().Where(c => (GetNullContact() != null ? c : c.Manager) == c);
                 Assert.AreEqual(0, ce.Count());
+
+                IEnumerable<int> ie = Contact.Linq().Where(c => (c.ContactId <= 3 ? "foo" : "bar") == "foo").Select(c => c.ContactId);
+                CollectionAssert.AreEquivalent(new int[] { 1, 2, 3}, ie);
+
+                IEnumerable<string> se = Contact.Linq().Select(c => c.ContactId <= 3 ? "foo" : "bar");
+                CollectionAssert.AreEquivalent(new string[] { "foo", "foo", "foo", "bar", "bar", "bar", "bar" }, se);
             }
         }
 

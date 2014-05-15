@@ -160,6 +160,7 @@
         <File RelPath='QL\SoqlBooleanNegationExpression.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='QL\SoqlBooleanOrExpression.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='QL\SoqlBooleanRelationalExpression.cs' SubType='Code' BuildAction='Compile' />
+        <File RelPath='QL\SoqlConditionalExpression.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='QL\SoqlContainsExpression.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='QL\SoqlCountExpression.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='QL\SoqlException.cs' SubType='Code' BuildAction='Compile' />

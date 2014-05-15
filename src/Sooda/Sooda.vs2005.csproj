@@ -397,6 +397,9 @@
     <Compile Include="QL\SoqlBooleanRelationalExpression.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="QL\SoqlConditionalExpression.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="QL\SoqlContainsExpression.cs">
       <SubType>Code</SubType>
     </Compile>
