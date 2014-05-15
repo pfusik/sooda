@@ -107,6 +107,7 @@ namespace Sooda.Linq
         Math_Sin,
         Math_Sqrt,
         Math_Tan,
+        SoodaObject_GetPrimaryKeyValue,
     }
 
     static class SoodaLinqMethodDictionary
@@ -231,6 +232,7 @@ namespace Sooda.Linq
                 method2id.Add(MethodOf(() => Math.Sin(0)), SoodaLinqMethod.Math_Sin);
                 method2id.Add(MethodOf(() => Math.Sqrt(0)), SoodaLinqMethod.Math_Sqrt);
                 method2id.Add(MethodOf(() => Math.Tan(0)), SoodaLinqMethod.Math_Tan);
+                method2id.Add(MethodOf(() => ((SoodaObject) null).GetPrimaryKeyValue()), SoodaLinqMethod.SoodaObject_GetPrimaryKeyValue);
                 _method2id = method2id;
             }
             SoodaLinqMethod id;

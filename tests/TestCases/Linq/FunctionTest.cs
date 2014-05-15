@@ -279,6 +279,20 @@ namespace Sooda.UnitTests.TestCases.Linq
                 Assert.AreEqual(2, ve.Count());
             }
         }
+
+        [Test]
+        public void GetPrimaryKey()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => (int) c.GetPrimaryKeyValue() == 1);
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(Contact.Mary, ce.First());
+
+                IEnumerable<object> oe = Contact.Linq().Select(c => c.GetPrimaryKeyValue());
+                CollectionAssert.AreEquivalent(new object[] { 1, 2, 3, 50, 51, 52, 53 }, oe);
+            }
+        }
     }
 }
 

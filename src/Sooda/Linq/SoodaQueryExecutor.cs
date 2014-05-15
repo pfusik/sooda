@@ -186,7 +186,8 @@ namespace Sooda.Linq
 
         SoqlExpression TranslateConvert(UnaryExpression expr)
         {
-            if (expr.Type == typeof(double) && expr.Operand.Type == typeof(int))
+            if (expr.Operand.Type == typeof(object)
+             || (expr.Type == typeof(double) && expr.Operand.Type == typeof(int)))
                 return TranslateExpression(expr.Operand);
             throw new NotSupportedException("Convert " + expr.Operand.Type + " to " + expr.Type);
         }
@@ -323,18 +324,14 @@ namespace Sooda.Linq
                 }
 
                 SoqlPathExpression parentPath = parent as SoqlPathExpression;
-                if (parentPath != null)
-                {
-                    if (expr.Member.MemberType == MemberTypes.Property)
-                    {
-                        // x.SoodaField1.SoodaField2 -> SoqlPathExpression
-                        if (t.IsSubclassOf(typeof(SoodaObject)))
-                            return new SoqlPathExpression(parentPath, name);
+                if (parentPath != null && expr.Member.MemberType == MemberTypes.Property) {
+                    // x.SoodaField1.SoodaField2 -> SoqlPathExpression
+                    if (t.IsSubclassOf(typeof(SoodaObject)))
+                        return new SoqlPathExpression(parentPath, name);
 
-                        // x.SoodaCollection.Count -> SoqlCountExpression
-                        if (t == typeof(SoodaObjectCollectionWrapper) && name == "Count")
-                            return new SoqlCountExpression(parentPath.Left, parentPath.PropertyName);
-                    }
+                    // x.SoodaCollection.Count -> SoqlCountExpression
+                    if (t == typeof(SoodaObjectCollectionWrapper) && name == "Count")
+                        return new SoqlCountExpression(parentPath.Left, parentPath.PropertyName);
                 }
             }
 
@@ -388,6 +385,14 @@ namespace Sooda.Linq
                 needle = ((UnaryExpression) needle).Operand;
 
             return new SoqlBooleanInExpression(TranslateExpression(needle), haystack2);
+        }
+
+        SoqlExpression TranslateGetPrimaryKeyValue(Expression obj)
+        {
+            SoqlExpression expr = TranslateExpression(obj);
+            if (obj.NodeType == ExpressionType.Parameter)
+                return expr;
+            return new SoqlPathExpression((SoqlPathExpression) expr, _transaction.Schema.FindClassByName(obj.Type.Name).GetPrimaryKeyFields().Single().Name);
         }
 
         SoqlExpression TranslateCall(MethodCallExpression mc)
@@ -453,6 +458,8 @@ namespace Sooda.Linq
                     return new SoqlFunctionCallExpression("sqrt", TranslateExpression(mc.Arguments[0]));
                 case SoodaLinqMethod.Math_Tan:
                     return new SoqlFunctionCallExpression("tan", TranslateExpression(mc.Arguments[0]));
+                case SoodaLinqMethod.SoodaObject_GetPrimaryKeyValue:
+                    return TranslateGetPrimaryKeyValue(mc.Object);
                 default:
                     break;
             }
