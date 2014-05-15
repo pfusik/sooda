@@ -175,8 +175,8 @@ namespace Sooda.UnitTests.TestCases.Linq
         {
             using (new SoodaTransaction())
             {
-                var oe = from c in Contact.Linq() orderby c.ContactId select new { c.Manager };
-                CollectionAssert.AreEqual(new SoodaObject[] { null, Contact.Mary, Contact.Mary, null, null, null, null }, oe.Select(o => o.Manager));
+                var oa = (from c in Contact.Linq() orderby c.ContactId select new { c.Manager }).ToArray();
+                CollectionAssert.AreEqual(new SoodaObject[] { null, Contact.Mary, Contact.Mary, null, null, null, null }, oa.Select(o => o.Manager));
             }
         }
 
@@ -185,8 +185,8 @@ namespace Sooda.UnitTests.TestCases.Linq
         {
             using (new SoodaTransaction())
             {
-                var oe = from c in Contact.Linq() orderby c.ContactId select new { c.Manager.Name };
-                CollectionAssert.AreEqual(new string[] { null, "Mary Manager", "Mary Manager", null, null, null, null }, oe.Select(o => o.Name));
+                var oa = (from c in Contact.Linq() orderby c.ContactId select new { c.Manager.Name }).ToArray();
+                CollectionAssert.AreEqual(new string[] { null, "Mary Manager", "Mary Manager", null, null, null, null }, oa.Select(o => o.Name));
             }
         }
 
@@ -595,6 +595,7 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        [ExpectedException(typeof(NotSupportedException))]
         public void SelectSelect()
         {
             using (new SoodaTransaction())
@@ -626,6 +627,17 @@ namespace Sooda.UnitTests.TestCases.Linq
 
         [Test]
         public void DistinctSelect()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = Contact.Linq().Distinct().Select(c => c.ContactId / 10 + 1);
+                CollectionAssert.AreEquivalent(new int[] { 1, 1, 1, 6, 6, 6, 6 }, ie);
+            }
+        }
+
+        [Test]
+        [ExpectedException(typeof(NotSupportedException))]
+        public void SelectDistinctSelect()
         {
             using (new SoodaTransaction())
             {

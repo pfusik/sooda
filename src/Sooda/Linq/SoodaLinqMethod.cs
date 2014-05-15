@@ -173,6 +173,8 @@ namespace Sooda.Linq
                 method2id.Add(MethodOf(() => Queryable.Single(null, predicate)), SoodaLinqMethod.Queryable_SingleFiltered);
                 method2id.Add(MethodOf(() => Queryable.SingleOrDefault<object>(null)), SoodaLinqMethod.Queryable_SingleOrDefault);
                 method2id.Add(MethodOf(() => Queryable.SingleOrDefault(null, predicate)), SoodaLinqMethod.Queryable_SingleOrDefaultFiltered);
+                method2id.Add(MethodOf(() => Queryable.Max<int>(null)), SoodaLinqMethod.Queryable_Max);
+                method2id.Add(MethodOf(() => Queryable.Min<int>(null)), SoodaLinqMethod.Queryable_Min);
                 method2id.Add(MethodOf(() => Queryable.Average(null, selectorM)), SoodaLinqMethod.Queryable_Average);
                 method2id.Add(MethodOf(() => Queryable.Average(null, selectorD)), SoodaLinqMethod.Queryable_Average);
                 method2id.Add(MethodOf(() => Queryable.Average(null, selector)), SoodaLinqMethod.Queryable_Average);

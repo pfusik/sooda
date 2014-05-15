@@ -630,6 +630,8 @@ namespace Sooda.Linq
         void Select(MethodCallExpression mc)
         {
 #if DOTNET4
+            if (_select != null)
+                throw new NotSupportedException("Chaining Select()s not supported");
             _select = new SelectExecutor(this);
             _select.Process(GetLambda(mc));
 #else
@@ -821,8 +823,13 @@ namespace Sooda.Linq
                             break;
 
                         case SoodaLinqMethod.Queryable_Distinct:
-                            SkipTakeNotSupported();
-                            _distinct = true;
+#if DOTNET4
+                            if (_select != null)
+                            {
+                                SkipTakeNotSupported();
+                                _distinct = true;
+                            }
+#endif
                             break;
 
                         case SoodaLinqMethod.Queryable_OfType:
@@ -925,7 +932,20 @@ namespace Sooda.Linq
         object ExecuteScalar(MethodCallExpression mc, string function, object onNull)
         {
             TranslateQuery(mc.Arguments[0]);
-            return ExecuteScalar(TranslateExpression(GetLambda(mc).Body), function, onNull);
+            SoqlExpression expr;
+#if DOTNET4
+            if (mc.Arguments.Count == 1)
+            {
+                if (_select == null)
+                    throw new NotSupportedException("Cannot aggregate SoodaObjects");
+                expr = _select.GetSingleColumnExpression();
+            }
+            else
+#endif
+            {
+                expr = TranslateExpression(GetLambda(mc).Body);
+            }
+            return ExecuteScalar(expr, function, onNull);
         }
 
         int Count()

@@ -80,6 +80,13 @@ namespace Sooda.Linq
                 _parameters.Add(lambda.Parameters[1]);
         }
 
+        internal SoqlExpression GetSingleColumnExpression()
+        {
+            if (_soqls.Count != 1 || _body != _parameters[0])
+                throw new NotSupportedException("Select() is not scalar");
+            return _soqls[0];
+        }
+
         List<T> GetGenericList<T>()
         {
             using (IDataReader r = _executor.ExecuteQuery(_soqls))

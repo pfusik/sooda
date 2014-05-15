@@ -1,5 +1,5 @@
 // 
-// Copyright (c) 2012 Piotr Fusik <piotr@fusik.info>
+// Copyright (c) 2012-2014 Piotr Fusik <piotr@fusik.info>
 // 
 // All rights reserved.
 // 
@@ -281,6 +281,36 @@ namespace Sooda.UnitTests.TestCases.Linq
             {
                 decimal result = Contact.Linq().Where(c => c.ContactId > 1000).Max(c => c.LastSalary.Value);
                 Assert.AreEqual(0M, result);
+            }
+        }
+
+        [Test]
+        public void DistinctCount()
+        {
+            using (new SoodaTransaction())
+            {
+                int result = Contact.Linq().Select(c => c.ContactId / 10).Distinct().Count();
+                Assert.AreEqual(2, result);
+            }
+        }
+
+        [Test]
+        public void DistinctMax()
+        {
+            using (new SoodaTransaction())
+            {
+                int result = Contact.Linq().Select(c => c.ContactId / 10).Distinct().Max();
+                Assert.AreEqual(5, result);
+            }
+        }
+
+        [Test]
+        public void DistinctSum()
+        {
+            using (new SoodaTransaction())
+            {
+                int result = Contact.Linq().Select(c => c.ContactId / 10 + 1).Distinct().Sum();
+                Assert.AreEqual(7, result);
             }
         }
 
