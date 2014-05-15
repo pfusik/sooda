@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-05-05 18:13:10 +0200 (Mon, 05 May 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 650 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-05-15 15:32:38 +0200 (Thu, 15 May 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 669 $</subversion-revision>)</div>
         <div class="titlecopyright">Copyright &#169; 2003-2006 by Jarosław Kowalski</div>
         <div class="pagebreak">&#160;</div>
     </div>
@@ -6663,12 +6663,8 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         Contact.Linq().Select(c => new { Id = c.ContactId, Name = c.Name);
                     ]]></code>
                     <p>
-                        Unlike other LINQ methods, Sooda's <code>Select()</code> doesn't get translated to SQL,
-                        but is executed on the .NET side. This means that you may use any valid .NET code
-                        in the <code>Select()</code> lambda expression.
-                        The downside is that even if you query for a single column, such as <code>Name</code>,
-                        all columns are fetched from the database and Sooda objects are materialized.
-                        This might change in future versions.
+                        <code>Select()</code> fetches only the mentioned data from the database
+                        and skips the Sooda collection cache.
                     </p>
                     <p>
                         To limit the number of rows, use <code>Skip()</code> and <code>Take()</code>:
@@ -6780,7 +6776,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         get translated to SQL and executed as late as the sequence is enumerated.
                     </p>
                     <code lang="C#"><![CDATA[
-                        IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Name == "Mary Manager");
+                        IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Subordinates.Any());
                         // no database access yet
                         // ...
                         foreach (Contact c in ce) // query gets translated to SQL and executed as soon as we reach "foreach"
@@ -6789,7 +6785,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         }
                     ]]></code>
                     <code lang="C#"><![CDATA[
-                        IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Name == "Mary Manager");
+                        IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Subordinates.Any());
                         for (int i = 0; i < 1000; i++)
                         {
                             // BAD idea: 1000 queries (subject to Sooda cache)
@@ -6801,12 +6797,23 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     ]]></code>
                     <code lang="C#"><![CDATA[
                         // CORRECT: one query inside ToList()
-                        List<Contact> cl = Contact.Linq().Where(c => c.Name == "Mary Manager").ToList();
+                        List<Contact> cl = Contact.Linq().Where(c => c.Subordinates.Any()).ToList();
                         for (int i = 0; i < 1000; i++)
                         {
                             foreach (Contact c in cl)
                             {
                                 Console.WriteLine(c.Name);
+                            }
+                        }
+                    ]]></code>
+                    <code lang="C#"><![CDATA[
+                        // even better: only fetch data we need
+                        List<string> sl = Contact.Linq().Where(c => c.Subordinates.Any())..Select(c => c.Name).ToList();
+                        for (int i = 0; i < 1000; i++)
+                        {
+                            foreach (string s in sl)
+                            {
+                                Console.WriteLine(s);
                             }
                         }
                     ]]></code>
@@ -6989,6 +6996,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         decimal avgSalary = Contact.Linq().Average(c => c.LastSalary.Value);
                         decimal minEmployeeSalary = Contact.Linq().Where(c => c.Type == ContactType.Employee).Min(c => c.LastSalary.Value);
                         decimal maxManagerSalary = Contact.Linq().Where(c => c.Type == ContactType.Manager).Max(c => c.LastSalary.Value);
+                        decimal maxManagerSalary2 = (from c in Contact.Linq() where c.Type == ContactType.Manager select c.LastSalary.Value).Max(); // same as above
                         decimal totalSalary = Contact.Linq().Sum(c => c.LastSalary.Value);
                     ]]></code>
                     <p>
@@ -7019,7 +7027,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         Contact.Linq().Where(c => c.LastSalary.Value > 123);
                     ]]></code>
                     <p>
-                        Logical operators are: &amp;&amp;, || and !.
+                        Logical operators are: &amp;&amp;, ||, ! and a?b:c.
                         On numbers you may use arithmetic operators: +, -, *, /, % (modulo) and unary negation (-).
                     </p>
                     <p>
@@ -7129,6 +7137,19 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     </p>
                     <code lang="C#"><![CDATA[
                         Contact.Linq().Where(c => c.Subordinates.All(s => s.LastSalary.Value > 100));
+                    ]]></code>
+                    <p>
+                        <code>GetPrimaryKeyValue()</code> is a generic way to access the primary key.
+                    </p>
+                    <p>
+                        <code>GetLabel()</code> returns SoodaObject's label, as specified in the <a href="#schemaclasses">database schema</a>.
+                        The boolean argument to <code>GetLabel()</code>is ignored in LINQ queries.
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact.Linq().Select(c => new { ClassName = c.GetType().Name, Id = c.GetPrimaryKeyValue(), Label = c.GetLabel(false) );
+                    ]]></code>
+                    <code lang="C#"><![CDATA[
+                        Contact.Linq().Where(c => (int) c.GetPrimaryKeyValue() > 3);
                     ]]></code>
                     <p>
                         The following string methods may be used: <code>Concat()</code>,
