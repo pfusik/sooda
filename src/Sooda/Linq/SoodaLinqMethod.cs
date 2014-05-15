@@ -77,10 +77,7 @@ namespace Sooda.Linq
         Queryable_AverageNullable,
         Queryable_Max,
         Queryable_Min,
-        Queryable_SumDecimal,
-        Queryable_SumDouble,
-        Queryable_SumInt,
-        Queryable_SumLong,
+        Queryable_Sum,
         Enumerable_All,
         Enumerable_Any,
         Enumerable_AnyFiltered,
@@ -173,8 +170,24 @@ namespace Sooda.Linq
                 method2id.Add(MethodOf(() => Queryable.Single(null, predicate)), SoodaLinqMethod.Queryable_SingleFiltered);
                 method2id.Add(MethodOf(() => Queryable.SingleOrDefault<object>(null)), SoodaLinqMethod.Queryable_SingleOrDefault);
                 method2id.Add(MethodOf(() => Queryable.SingleOrDefault(null, predicate)), SoodaLinqMethod.Queryable_SingleOrDefaultFiltered);
+                method2id.Add(MethodOf(() => Queryable.Average((IQueryable<decimal>) null)), SoodaLinqMethod.Queryable_Average);
+                method2id.Add(MethodOf(() => Queryable.Average((IQueryable<double>) null)), SoodaLinqMethod.Queryable_Average);
+                method2id.Add(MethodOf(() => Queryable.Average((IQueryable<int>) null)), SoodaLinqMethod.Queryable_Average);
+                method2id.Add(MethodOf(() => Queryable.Average((IQueryable<long>) null)), SoodaLinqMethod.Queryable_Average);
+                method2id.Add(MethodOf(() => Queryable.Average((IQueryable<decimal?>) null)), SoodaLinqMethod.Queryable_AverageNullable);
+                method2id.Add(MethodOf(() => Queryable.Average((IQueryable<double?>) null)), SoodaLinqMethod.Queryable_AverageNullable);
+                method2id.Add(MethodOf(() => Queryable.Average((IQueryable<int?>) null)), SoodaLinqMethod.Queryable_AverageNullable);
+                method2id.Add(MethodOf(() => Queryable.Average((IQueryable<long?>) null)), SoodaLinqMethod.Queryable_AverageNullable);
                 method2id.Add(MethodOf(() => Queryable.Max<int>(null)), SoodaLinqMethod.Queryable_Max);
                 method2id.Add(MethodOf(() => Queryable.Min<int>(null)), SoodaLinqMethod.Queryable_Min);
+                method2id.Add(MethodOf(() => Queryable.Sum((IQueryable<decimal>) null)), SoodaLinqMethod.Queryable_Sum);
+                method2id.Add(MethodOf(() => Queryable.Sum((IQueryable<double>) null)), SoodaLinqMethod.Queryable_Sum);
+                method2id.Add(MethodOf(() => Queryable.Sum((IQueryable<int>) null)), SoodaLinqMethod.Queryable_Sum);
+                method2id.Add(MethodOf(() => Queryable.Sum((IQueryable<long>) null)), SoodaLinqMethod.Queryable_Sum);
+                method2id.Add(MethodOf(() => Queryable.Sum((IQueryable<decimal?>) null)), SoodaLinqMethod.Queryable_Sum);
+                method2id.Add(MethodOf(() => Queryable.Sum((IQueryable<double?>) null)), SoodaLinqMethod.Queryable_Sum);
+                method2id.Add(MethodOf(() => Queryable.Sum((IQueryable<int?>) null)), SoodaLinqMethod.Queryable_Sum);
+                method2id.Add(MethodOf(() => Queryable.Sum((IQueryable<long?>) null)), SoodaLinqMethod.Queryable_Sum);
                 method2id.Add(MethodOf(() => Queryable.Average(null, selectorM)), SoodaLinqMethod.Queryable_Average);
                 method2id.Add(MethodOf(() => Queryable.Average(null, selectorD)), SoodaLinqMethod.Queryable_Average);
                 method2id.Add(MethodOf(() => Queryable.Average(null, selector)), SoodaLinqMethod.Queryable_Average);
@@ -185,14 +198,14 @@ namespace Sooda.Linq
                 method2id.Add(MethodOf(() => Queryable.Average(null, selectorNL)), SoodaLinqMethod.Queryable_AverageNullable);
                 method2id.Add(MethodOf(() => Queryable.Max(null, selector)), SoodaLinqMethod.Queryable_Max);
                 method2id.Add(MethodOf(() => Queryable.Min(null, selector)), SoodaLinqMethod.Queryable_Min);
-                method2id.Add(MethodOf(() => Queryable.Sum(null, selectorM)), SoodaLinqMethod.Queryable_SumDecimal);
-                method2id.Add(MethodOf(() => Queryable.Sum(null, selectorD)), SoodaLinqMethod.Queryable_SumDouble);
-                method2id.Add(MethodOf(() => Queryable.Sum(null, selector)), SoodaLinqMethod.Queryable_SumInt);
-                method2id.Add(MethodOf(() => Queryable.Sum(null, selectorL)), SoodaLinqMethod.Queryable_SumLong);
-                method2id.Add(MethodOf(() => Queryable.Sum(null, selectorNM)), SoodaLinqMethod.Queryable_SumDecimal);
-                method2id.Add(MethodOf(() => Queryable.Sum(null, selectorND)), SoodaLinqMethod.Queryable_SumDouble);
-                method2id.Add(MethodOf(() => Queryable.Sum(null, selectorN)), SoodaLinqMethod.Queryable_SumInt);
-                method2id.Add(MethodOf(() => Queryable.Sum(null, selectorNL)), SoodaLinqMethod.Queryable_SumLong);
+                method2id.Add(MethodOf(() => Queryable.Sum(null, selectorM)), SoodaLinqMethod.Queryable_Sum);
+                method2id.Add(MethodOf(() => Queryable.Sum(null, selectorD)), SoodaLinqMethod.Queryable_Sum);
+                method2id.Add(MethodOf(() => Queryable.Sum(null, selector)), SoodaLinqMethod.Queryable_Sum);
+                method2id.Add(MethodOf(() => Queryable.Sum(null, selectorL)), SoodaLinqMethod.Queryable_Sum);
+                method2id.Add(MethodOf(() => Queryable.Sum(null, selectorNM)), SoodaLinqMethod.Queryable_Sum);
+                method2id.Add(MethodOf(() => Queryable.Sum(null, selectorND)), SoodaLinqMethod.Queryable_Sum);
+                method2id.Add(MethodOf(() => Queryable.Sum(null, selectorN)), SoodaLinqMethod.Queryable_Sum);
+                method2id.Add(MethodOf(() => Queryable.Sum(null, selectorNL)), SoodaLinqMethod.Queryable_Sum);
                 method2id.Add(MethodOf(() => Enumerable.All(null, (object o) => true)), SoodaLinqMethod.Enumerable_All);
                 method2id.Add(MethodOf(() => Enumerable.Any<object>(null)), SoodaLinqMethod.Enumerable_Any);
                 method2id.Add(MethodOf(() => Enumerable.Any(null, (object o) => true)), SoodaLinqMethod.Enumerable_AnyFiltered);

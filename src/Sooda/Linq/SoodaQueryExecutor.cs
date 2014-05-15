@@ -910,7 +910,7 @@ namespace Sooda.Linq
             throw new InvalidOperationException("Found " + list.Count + " matches");
         }
 
-        object ExecuteScalar(SoqlExpression expr, string function, object onNull)
+        object ExecuteScalar(SoqlExpression expr, string function)
         {
             SkipTakeNotSupported();
             _orderBy = null;
@@ -923,13 +923,11 @@ namespace Sooda.Linq
                 object result = r.GetValue(0);
                 if (result != DBNull.Value)
                     return result;
-                if (onNull != this)
-                    return onNull;
-                throw new InvalidOperationException("Aggregate on an empty collection");
+                return null;
             }
         }
 
-        object ExecuteScalar(MethodCallExpression mc, string function, object onNull)
+        object ExecuteScalar(MethodCallExpression mc, string function)
         {
             TranslateQuery(mc.Arguments[0]);
             SoqlExpression expr;
@@ -945,7 +943,7 @@ namespace Sooda.Linq
             {
                 expr = TranslateExpression(GetLambda(mc).Body);
             }
-            return ExecuteScalar(expr, function, onNull);
+            return ExecuteScalar(expr, function);
         }
 
         int Count()
@@ -953,13 +951,18 @@ namespace Sooda.Linq
 #if CACHE_LINQ_COUNT
             return GetList().Count;
 #else
-            return (int) ExecuteScalar(new SoqlAsteriskExpression(), "count", this /* shouldn't matter */);
+            return (int) ExecuteScalar(new SoqlAsteriskExpression(), "count");
 #endif
         }
 
-        object ExecuteAvg(MethodCallExpression mc, object onNull)
+        object ThrowEmptyAggregate()
         {
-            object result = ExecuteScalar(mc, "avg", onNull);
+            throw new InvalidOperationException("Aggregate on an empty collection");
+        }
+
+        object ExecuteAvg(MethodCallExpression mc)
+        {
+            object result = ExecuteScalar(mc, "avg");
             if (result is int || result is long)
                 return Convert.ToDouble(result);
             return result;
@@ -1061,21 +1064,16 @@ namespace Sooda.Linq
                         return Single(2, true);
 
                     case SoodaLinqMethod.Queryable_Average:
-                        return ExecuteAvg(mc, this);
+                        return ExecuteAvg(mc) ?? ThrowEmptyAggregate();
                     case SoodaLinqMethod.Queryable_AverageNullable:
-                        return ExecuteAvg(mc, null);
+                        return ExecuteAvg(mc);
                     case SoodaLinqMethod.Queryable_Max:
-                        return ExecuteScalar(mc, "max", this);
+                        return ExecuteScalar(mc, "max") ?? ThrowEmptyAggregate();
                     case SoodaLinqMethod.Queryable_Min:
-                        return ExecuteScalar(mc, "min", this);
-                    case SoodaLinqMethod.Queryable_SumDecimal:
-                        return ExecuteScalar(mc, "sum", 0M);
-                    case SoodaLinqMethod.Queryable_SumDouble:
-                        return ExecuteScalar(mc, "sum", 0D);
-                    case SoodaLinqMethod.Queryable_SumInt:
-                        return ExecuteScalar(mc, "sum", 0);
-                    case SoodaLinqMethod.Queryable_SumLong:
-                        return ExecuteScalar(mc, "sum", 0L);
+                        return ExecuteScalar(mc, "min") ?? ThrowEmptyAggregate();
+                    case SoodaLinqMethod.Queryable_Sum:
+                        return ExecuteScalar(mc, "sum")
+                            ?? Activator.CreateInstance(mc.Type); // 0, 0L, 0D or 0M
 
                     default:
                         break;
