@@ -145,7 +145,7 @@ namespace Sooda.Linq
             }
         }
 
-        static ISoqlConstantExpression FoldConstant(Expression expr)
+        static SoqlExpression FoldConstant(Expression expr)
         {
             if (!IsConstant(expr))
                 return null;
@@ -243,10 +243,11 @@ namespace Sooda.Linq
 
         SoqlExpression TranslateConditional(ConditionalExpression expr)
         {
-            ISoqlConstantExpression constTest = FoldConstant(expr.Test);
-            if (constTest != null)
-                return TranslateExpression((bool) constTest.GetConstantValue() ? expr.IfTrue : expr.IfFalse);
-            return new SoqlConditionalExpression(TranslateBoolean(expr.Test), TranslateExpression(expr.IfTrue), TranslateExpression(expr.IfFalse));
+            SoqlBooleanExpression condition = TranslateBoolean(expr.Test);
+            SoqlBooleanLiteralExpression constCondition = condition as SoqlBooleanLiteralExpression;
+            if (constCondition != null)
+                return TranslateExpression(constCondition.Value ? expr.IfTrue : expr.IfFalse);
+            return new SoqlConditionalExpression(condition, TranslateExpression(expr.IfTrue), TranslateExpression(expr.IfFalse));
         }
 
         SoqlPathExpression TranslateParameter(ParameterExpression pe)
@@ -373,9 +374,9 @@ namespace Sooda.Linq
         SoqlBooleanInExpression TranslateCollectionContains(Expression haystack, Expression needle)
         {
             IEnumerable haystack2;
-            ISoqlConstantExpression literal = FoldConstant(haystack);
+            SoqlExpression literal = FoldConstant(haystack);
             if (literal != null)
-                haystack2 = (IEnumerable) literal.GetConstantValue();
+                haystack2 = (IEnumerable) ((SoqlLiteralExpression) literal).GetConstantValue();
             else if (haystack.NodeType == ExpressionType.NewArrayInit)
                 haystack2 = ((NewArrayExpression) haystack).Expressions.Select(e => TranslateExpression(e));
             else
@@ -521,9 +522,9 @@ namespace Sooda.Linq
 
         internal SoqlExpression TranslateExpression(Expression expr)
         {
-            ISoqlConstantExpression literal = FoldConstant(expr);
+            SoqlExpression literal = FoldConstant(expr);
             if (literal != null)
-                return (SoqlExpression) literal;
+                return literal;
 
             switch (expr.NodeType)
             {
@@ -979,7 +980,7 @@ namespace Sooda.Linq
                         SkipTakeNotSupported();
                         SoqlBooleanExpression where = new SoqlBooleanRelationalExpression(
                             new SoqlPathExpression(_classInfo.GetPrimaryKeyFields().Single().Name),
-                            (SoqlExpression) FoldConstant(mc.Arguments[1]),
+                            FoldConstant(mc.Arguments[1]),
                             SoqlRelationalOperator.Equal);
                         Where(where);
                         Take(1);
