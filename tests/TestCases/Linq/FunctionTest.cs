@@ -281,7 +281,7 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
-        public void GetPrimaryKey()
+        public void GetPrimaryKeyValue()
         {
             using (new SoodaTransaction())
             {
@@ -305,6 +305,30 @@ namespace Sooda.UnitTests.TestCases.Linq
 
                 IEnumerable<string> se = Contact.Linq().Select(c => c.GetLabel(false));
                 CollectionAssert.AreEquivalent(new string[] { "Mary Manager", "Ed Employee", "Eva Employee", "Catie Customer", "Caroline Customer", "Chris Customer", "Chuck Customer" }, se);
+
+                se = from c in Contact.Linq() orderby c.GetLabel(false) select c.GetLabel(false);
+                CollectionAssert.AreEquivalent(new string[] { "Caroline Customer", "Catie Customer", "Chris Customer", "Chuck Customer", "Ed Employee", "Eva Employee", "Mary Manager" }, se);
+            }
+        }
+
+        [Test]
+        public void GetSoodaClassPrimaryKeyValueLabel()
+        {
+            using (new SoodaTransaction())
+            {
+                var oa = Contact.Linq().OrderBy(c => c.ContactId).Take(2).Select(c => new {
+                        ClassName = c.GetType().Name,
+                        Id = c.GetPrimaryKeyValue(),
+                        Label = c.GetLabel(false)
+                    }).ToArray();
+
+                Assert.AreEqual(2, oa.Length);
+                Assert.AreEqual("Contact", oa[0].ClassName);
+                Assert.AreEqual(1, oa[0].Id);
+                Assert.AreEqual("Mary Manager", oa[0].Label);
+                Assert.AreEqual("Contact", oa[1].ClassName);
+                Assert.AreEqual(2, oa[1].Id);
+                Assert.AreEqual("Ed Employee", oa[1].Label);
             }
         }
     }
