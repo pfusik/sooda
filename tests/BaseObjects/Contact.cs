@@ -70,5 +70,13 @@ namespace Sooda.UnitTests.BaseObjects
             base.AfterObjectInsert();
             AfterInsertCalled = true;
         }
+
+        public string NameAndType
+        {
+            get
+            {
+                return string.Format("{0} ({1})", Name, Type.Code);
+            }
+        }
     }
 }

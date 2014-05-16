@@ -792,6 +792,27 @@ namespace Sooda.UnitTests.TestCases.Linq
                 Assert.IsTrue(Deferred3HelperCalled);
             }
         }
+
+        [Test]
+        public void BikeOwners()
+        {
+            using (new SoodaTransaction())
+            {
+                var bikeOwners = Bike.Linq().Select(b => new {
+                        Label = b.Owner != null ? b.Owner.NameAndType : "nobody",
+                        Id = (b.Owner != null ? b.Owner.ContactId : (int?) null)
+                    }).ToList();
+
+                Assert.AreEqual(7, bikeOwners.Count);
+                Assert.AreEqual("Ed Employee (Employee)", bikeOwners[0].Label);
+                Assert.AreEqual(2, bikeOwners[0].Id);
+                for (int i = 1; i < 7; i++)
+                {
+                    Assert.AreEqual("nobody", bikeOwners[i].Label);
+                    Assert.IsNull(bikeOwners[i].Id);
+                }
+            }
+        }
     }
 }
 

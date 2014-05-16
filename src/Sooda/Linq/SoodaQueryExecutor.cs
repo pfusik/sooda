@@ -328,7 +328,11 @@ namespace Sooda.Linq
                 if (parentPath != null && expr.Member.MemberType == MemberTypes.Property) {
                     // x.SoodaField1.SoodaField2 -> SoqlPathExpression
                     if (t.IsSubclassOf(typeof(SoodaObject)))
+                    {
+                        if (!FindClassInfo(expr.Expression).ContainsField(name))
+                            throw new NotSupportedException(name + " is not a Sooda field");
                         return new SoqlPathExpression(parentPath, name);
+                    }
 
                     // x.SoodaCollection.Count -> SoqlCountExpression
                     if (t == typeof(SoodaObjectCollectionWrapper) && name == "Count")
@@ -337,6 +341,14 @@ namespace Sooda.Linq
             }
 
             throw new NotSupportedException(t.FullName + "." + name);
+        }
+
+        SoqlContainsExpression TranslateContains(Expression haystack, SoqlExpression needle)
+        {
+            MemberExpression me = haystack as MemberExpression;
+            if (me == null)
+                throw new NotSupportedException();
+            return new SoqlContainsExpression(TranslateToPathExpression(me.Expression), me.Member.Name, needle);
         }
 
         SoqlBooleanExpression TranslateCollectionAny(MethodCallExpression mc, SoodaLinqMethod method)
@@ -363,12 +375,11 @@ namespace Sooda.Linq
                     where = new SoqlBooleanNegationExpression(where);
             }
 
-            SoqlPathExpression parentPath = (SoqlPathExpression) TranslateExpression(mc.Arguments[0]);
             SoqlQueryExpression query = new SoqlQueryExpression();
             query.From.Add(className);
             query.FromAliases.Add(alias);
             query.WhereClause = where;
-            return new SoqlContainsExpression(parentPath.Left, parentPath.PropertyName, query);
+            return TranslateContains(mc.Arguments[0], query);
         }
 
         SoqlBooleanInExpression TranslateCollectionContains(Expression haystack, Expression needle)
@@ -390,7 +401,11 @@ namespace Sooda.Linq
 
         ClassInfo FindClassInfo(Expression expr)
         {
-            return _transaction.Schema.FindClassByName(expr.Type.Name);
+            string className = expr.Type.Name;
+            ClassInfo classInfo = _transaction.Schema.FindClassByName(className);
+            if (classInfo == null)
+                throw new NotSupportedException("Class " + className + " not found in database schema");
+            return classInfo;
         }
 
         SoqlExpression TranslateCall(MethodCallExpression mc)
@@ -478,9 +493,7 @@ namespace Sooda.Linq
                     return TranslateCollectionContains(mc.Object, mc.Arguments[0]);
                 }
                 // x.SoodaCollection.Contains(expr) -> SoqlContainsExpression
-                SoqlPathExpression haystack = (SoqlPathExpression) TranslateExpression(mc.Object);
-                SoqlExpression needle = TranslateExpression(mc.Arguments[0]);
-                return new SoqlContainsExpression(haystack.Left, haystack.PropertyName, needle);
+                return TranslateContains(mc.Object, TranslateExpression(mc.Arguments[0]));
             }
 
             throw new NotSupportedException(t.FullName + "." + mc.Method.Name);

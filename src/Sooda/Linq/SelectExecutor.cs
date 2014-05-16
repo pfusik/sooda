@@ -87,12 +87,12 @@ namespace Sooda.Linq
             return _soqls[0];
         }
 
-        List<T> GetGenericList<T>()
+        IList GetGenericList<T>()
         {
-            using (IDataReader r = _executor.ExecuteQuery(_soqls))
+            if (_soqls.Count == 1 && _body == _parameters[0])
             {
                 List<T> list = new List<T>();
-                if (_soqls.Count == 1 && _body == _parameters[0])
+                using (IDataReader r = _executor.ExecuteQuery(_soqls))
                 {
                     while (r.Read())
                     {
@@ -102,39 +102,54 @@ namespace Sooda.Linq
                         else if (typeof(T) == typeof(bool) && value is int)
                             value = (int) value != 0;
                         else if (typeof(T).IsSubclassOf(typeof(SoodaObject)))
-                            value = _executor.GetRef(typeof(T), value);
+                            value = _executor.GetRef(typeof(T), value); // FIXME: can fail if T has subclasses - concurrent query
                         list.Add((T) value);
-                    }
-                }
-                else
-                {
-                    Delegate d = Expression.Lambda(_body, _parameters).Compile();
-                    int columnCount = _soqls.Count;
-                    object[] columns = new object[_parameters.Count];
-                    for (int rowNum = 0; r.Read(); rowNum++)
-                    {
-                        for (int i = 0; i < columnCount; i++)
-                        {
-                            object value = r.GetValue(i);
-                            if (value == DBNull.Value)
-                                value = null;
-                            else 
-                            {
-                                Type t = _parameters[i].Type;
-                                if (t == typeof(bool) && value is int)
-                                    value = (int) value != 0;
-                                else if (t.IsSubclassOf(typeof(SoodaObject)))
-                                    value = _executor.GetRef(t, value);
-                            }
-                            columns[i] = value;
-                        }
-                        if (columnCount < columns.Length)
-                            columns[columnCount] = rowNum;
-                        list.Add((T) d.DynamicInvoke(columns));
                     }
                 }
                 return list;
             }
+
+            // First fetch all rows, call projection later.
+            // The projection possibly executes database queries
+            // and concurrent queries on the same connection
+            // are unsupported in SQL server by default.
+            List<object[]> rows = new List<object[]>();
+            int columnCount = _soqls.Count;
+            using (IDataReader r = _executor.ExecuteQuery(_soqls))
+            {
+                while (r.Read())
+                {
+                    object[] row = new object[_parameters.Count];
+                    for (int i = 0; i < columnCount; i++)
+                        row[i] = r.GetValue(i);
+                    rows.Add(row);
+                }
+            }
+
+            Delegate d = Expression.Lambda(_body, _parameters).Compile();
+            T[] array = new T[rows.Count];
+            for (int rowNum = 0; rowNum < rows.Count; rowNum++)
+            {
+                object[] row = rows[rowNum];
+                for (int i = 0; i < columnCount; i++)
+                {
+                    object value = row[i];
+                    if (value == DBNull.Value)
+                        row[i] = null;
+                    else 
+                    {
+                        Type t = _parameters[i].Type;
+                        if (t == typeof(bool) && value is int)
+                            row[i] = (int) value != 0;
+                        else if (t.IsSubclassOf(typeof(SoodaObject)))
+                            row[i] = _executor.GetRef(t, value);
+                    }
+                }
+                if (columnCount < row.Length)
+                    row[columnCount] = rowNum;
+                array[rowNum] = (T) d.DynamicInvoke(row);
+            }
+            return array;
         }
 
         internal IList GetList()
