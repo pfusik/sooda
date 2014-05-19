@@ -314,6 +314,9 @@
     <Compile Include="ObjectMapper\SoodaNullObjectFactoryCache.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ObjectMapper\SoodaObjectCollectionBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="ObjectMapper\SoodaObjectCollectionWrapper.cs">
       <SubType>Code</SubType>
     </Compile>

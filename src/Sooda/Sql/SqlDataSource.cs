@@ -936,11 +936,7 @@ namespace Sooda.Sql
                 {
                     if (fi.IsPrimaryKey)
                     {
-                        SoqlBooleanRelationalExpression expr =
-                            new SoqlBooleanRelationalExpression(
-                                    new SoqlPathExpression(fi.Name),
-                                    new SoqlParameterLiteralExpression(parameterPos),
-                                    SoqlRelationalOperator.Equal);
+                        SoqlBooleanRelationalExpression expr = Soql.FieldEqualsParam(fi.Name, parameterPos);
 
                         if (parameterPos == 0)
                         {

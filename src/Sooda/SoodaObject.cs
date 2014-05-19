@@ -1683,10 +1683,7 @@ namespace Sooda
                     for (int i = 0; i < pkFields.Length; ++i)
                     {
                         par[i] = SoodaTuple.GetValue(keyValue, i);
-                        SoqlBooleanExpression cmp = new SoqlBooleanRelationalExpression(
-                            new SoqlPathExpression(pkFields[i].Name),
-                            new SoqlParameterLiteralExpression(i),
-                            SoqlRelationalOperator.Equal);
+                        SoqlBooleanExpression cmp = Soql.FieldEqualsParam(pkFields[i].Name, i);
                         where = where == null ? cmp : where.And(cmp);
                     }
                     SoodaWhereClause whereClause = new SoodaWhereClause(where, par);

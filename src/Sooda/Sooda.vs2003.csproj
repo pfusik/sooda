@@ -114,6 +114,7 @@
         <File RelPath='ObjectMapper\SchemaLoader.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='ObjectMapper\SoodaFieldHandler.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='ObjectMapper\SoodaNullObjectFactoryCache.cs' SubType='Code' BuildAction='Compile' />
+        <File RelPath='ObjectMapper\SoodaObjectCollectionBase.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='ObjectMapper\SoodaObjectCollectionWrapper.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='ObjectMapper\SoodaObjectFactoryAttribute.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='ObjectMapper\SoodaObjectFactoryCache.cs' SubType='Code' BuildAction='Compile' />

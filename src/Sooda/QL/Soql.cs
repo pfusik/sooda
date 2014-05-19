@@ -75,5 +75,12 @@ namespace Sooda.QL
             return restriction;
         }
 
+        public static SoqlBooleanRelationalExpression FieldEqualsParam(string field, int parameterPos)
+        {
+            return new SoqlBooleanRelationalExpression(
+                new SoqlPathExpression(field),
+                new SoqlParameterLiteralExpression(parameterPos),
+                SoqlRelationalOperator.Equal);
+        }
     }
 }
