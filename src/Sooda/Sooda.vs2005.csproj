@@ -97,9 +97,6 @@
     <Compile Include="AssemblySign.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Caching\CacheUtils.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Caching\ISoodaCachingPolicyFixedTimeout.cs" />
     <Compile Include="Caching\SimpleCachingPolicy.cs" />
     <Compile Include="Caching\ISoodaCacheView.cs" />

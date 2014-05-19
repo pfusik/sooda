@@ -209,19 +209,10 @@ namespace Sooda.ObjectMapper
                     TimeSpan expirationTimeout;
                     bool slidingExpiration;
 
-                    IList primaryKeys = Sooda.Caching.CacheUtils.ConvertSoodaObjectListToKeyList(itemsArray);
-
                     if (transaction.CachingPolicy.GetExpirationTimeout(
-                        relationInfo, classInfo, primaryKeys.Count, out expirationTimeout, out slidingExpiration))
+                        relationInfo, classInfo, itemsArray.Count, out expirationTimeout, out slidingExpiration))
                     {
-                        transaction.Cache.StoreCollection(cacheKey,
-                            classInfo.GetRootClass().Name,
-                            primaryKeys,
-                            new string[] { relationInfo.Name },
-                            true,
-                            expirationTimeout,
-                            slidingExpiration
-                            );
+                        StoreInCache(cacheKey, itemsArray, new string[] { relationInfo.Name }, expirationTimeout, slidingExpiration);
                     }
                 }
             }

@@ -54,7 +54,6 @@
         <File RelPath='SoodaTransaction.cs' SubType='Component' BuildAction='Compile' />
         <File RelPath='SoodaTuple.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='SoodaWhereClause.cs' SubType='Code' BuildAction='Compile' />
-        <File RelPath='Caching\CacheUtils.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Caching\ISoodaCache.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Caching\ISoodaCacheLock.cs' SubType='Code' BuildAction='Compile' />
         <File RelPath='Caching\ISoodaCacheView.cs' SubType='Code' BuildAction='Compile' />

@@ -219,21 +219,14 @@ namespace Sooda.ObjectMapper
                     }
                     if (cached)
                     {
-                        IList primaryKeys = Sooda.Caching.CacheUtils.ConvertSoodaObjectListToKeyList(readObjects);
                         TimeSpan expirationTimeout;
                         bool slidingExpiration;
 
                         if (transaction.CachingPolicy.GetExpirationTimeout(
-                            classInfo, whereClause, null, 0, -1, primaryKeys.Count,
+                            classInfo, whereClause, null, 0, -1, readObjects.Count,
                             out expirationTimeout, out slidingExpiration))
                         {
-                            transaction.Cache.StoreCollection(cacheKey, 
-                                classInfo.GetRootClass().Name,
-                                primaryKeys, 
-                                null, 
-                                true, 
-                                expirationTimeout, 
-                                slidingExpiration);
+                            StoreInCache(cacheKey, readObjects, null, expirationTimeout, slidingExpiration);
                         }
                     }
                 }
