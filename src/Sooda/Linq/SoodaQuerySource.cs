@@ -30,6 +30,7 @@
 #if DOTNET35
 
 using Sooda;
+using Sooda.QL;
 
 namespace Sooda.Linq
 {
@@ -38,6 +39,7 @@ namespace Sooda.Linq
         SoodaTransaction Transaction { get; }
         Sooda.Schema.ClassInfo ClassInfo { get; }
         SoodaSnapshotOptions Options { get; }
+        SoqlBooleanExpression Where { get; }
     }
 
     public class SoodaQuerySource<T> : SoodaQueryable<T>, ISoodaQuerySource
@@ -45,6 +47,7 @@ namespace Sooda.Linq
         readonly SoodaTransaction _transaction;
         readonly Sooda.Schema.ClassInfo _classInfo;
         readonly SoodaSnapshotOptions _options;
+        readonly SoqlBooleanExpression _where;
 
         SoodaTransaction ISoodaQuerySource.Transaction
         {
@@ -70,11 +73,28 @@ namespace Sooda.Linq
             }
         }
 
+        SoqlBooleanExpression ISoodaQuerySource.Where
+        {
+            get
+            {
+                return _where;
+            }
+        }
+
         public SoodaQuerySource(SoodaTransaction transaction, Sooda.Schema.ClassInfo classInfo, SoodaSnapshotOptions options)
         {
             _transaction = transaction;
             _classInfo = classInfo;
             _options = options;
+            _where = null;
+        }
+
+        public SoodaQuerySource(SoodaTransaction transaction, Sooda.Schema.ClassInfo classInfo, SoqlBooleanExpression where)
+        {
+            _transaction = transaction;
+            _classInfo = classInfo;
+            _options = SoodaSnapshotOptions.Default;
+            _where = where;
         }
     }
 }

@@ -770,6 +770,7 @@ namespace Sooda.Linq
                     _transaction = source.Transaction;
                     _classInfo = source.ClassInfo;
                     _options = source.Options;
+                    _where = source.Where;
                     break;
 
                 case ExpressionType.Call:

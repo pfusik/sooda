@@ -357,6 +357,28 @@ namespace Sooda.CodeGen
                 new CodePrimitiveExpression(GetFieldRefCacheIndex(ci, fi)));
         }
 
+#if DOTNET35
+        static CodeMemberProperty GetCollectionLinqQuery(CollectionBaseInfo coli, CodeExpression whereExpression)
+        {
+            string elementType = coli.GetItemClass().Name;
+            CodeMemberProperty prop = new CodeMemberProperty();
+            prop.Name = coli.Name + "Query";
+            prop.Attributes = MemberAttributes.Final | MemberAttributes.Public;
+            prop.Type = new CodeTypeReference(new CodeTypeReference(typeof(System.Linq.IQueryable<>)).BaseType, new CodeTypeReference(elementType));
+
+            prop.GetStatements.Add(
+                new CodeMethodReturnStatement(
+                new CodeObjectCreateExpression(
+                    new CodeTypeReference(new CodeTypeReference(typeof(Sooda.Linq.SoodaQuerySource<>)).BaseType, new CodeTypeReference(elementType)),
+                    new CodeMethodInvokeExpression(This, "GetTransaction"),
+                    new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(elementType + "_Factory"), "TheClassInfo"),
+                    whereExpression
+                )));
+
+            return prop;
+        }
+#endif
+
         public void GenerateProperties(CodeTypeDeclaration ctd, ClassInfo ci)
         {
             CodeMemberProperty prop;
@@ -648,20 +670,36 @@ namespace Sooda.CodeGen
                                 new CodeObjectCreateExpression(new CodeTypeReference(options.OutputNamespace + "." + coli.ClassName + "List"),
                                 new CodeObjectCreateExpression(new CodeTypeReference(typeof(Sooda.ObjectMapper.SoodaObjectOneToManyCollection)),
                                 new CodeExpression[] {
-                                                         new CodeMethodInvokeExpression(This, "GetTransaction"),
-                                                         new CodeTypeOfExpression(new CodeTypeReference(coli.ClassName)),
-                                                         new CodeThisReferenceExpression(),
-                                                         new CodePrimitiveExpression(coli.ForeignFieldName),
-                                                         new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(coli.ClassName + "_Factory"), "TheClassInfo"),
-                                                         new CodeFieldReferenceExpression(null, "_collectionWhere_" + coli.Name),
-														 new CodePrimitiveExpression(coli.Cache)
+                                    new CodeMethodInvokeExpression(This, "GetTransaction"),
+                                    new CodeTypeOfExpression(new CodeTypeReference(coli.ClassName)),
+                                    new CodeThisReferenceExpression(),
+                                    new CodePrimitiveExpression(coli.ForeignFieldName),
+                                    new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(coli.ClassName + "_Factory"), "TheClassInfo"),
+                                    new CodeFieldReferenceExpression(null, "_collectionWhere_" + coli.Name),
+                                    new CodePrimitiveExpression(coli.Cache)
                             }))
                                 ),
                     }, new CodeStatement[] { }));
 
                     prop.GetStatements.Add(new CodeMethodReturnStatement(new CodeFieldReferenceExpression(This, "_collectionCache_" + coli.Name)));
-
                     ctd.Members.Add(prop);
+
+#if DOTNET35
+                    CodeExpression whereExpression = new CodeMethodInvokeExpression(
+                        new CodeTypeReferenceExpression(typeof(Sooda.QL.Soql)),
+                        "FieldEquals",
+                        new CodePrimitiveExpression(coli.ForeignFieldName),
+                        This);
+                    if (!string.IsNullOrEmpty(coli.Where))
+                    {
+                        whereExpression = new CodeObjectCreateExpression(
+                            typeof(Sooda.QL.SoqlBooleanAndExpression),
+                            whereExpression,
+                            new CodePropertyReferenceExpression(new CodeFieldReferenceExpression(null, "_collectionWhere_" + coli.Name), "WhereExpression"));
+                    }
+                    prop = GetCollectionLinqQuery(coli, whereExpression);
+                    ctd.Members.Add(prop);
+#endif
                 }
             }
 
@@ -704,6 +742,20 @@ namespace Sooda.CodeGen
                     prop.GetStatements.Add(new CodeMethodReturnStatement(new CodeFieldReferenceExpression(This, "_collectionCache_" + coli.Name)));
 
                     ctd.Members.Add(prop);
+
+#if DOTNET35
+                    CollectionManyToManyInfo coli2 = coli.OtherSide;
+                    if (coli2 != null)
+                    {
+                        CodeExpression whereExpression = new CodeMethodInvokeExpression(
+                            new CodeTypeReferenceExpression(typeof(Sooda.QL.Soql)),
+                            "CollectionContains",
+                            new CodePrimitiveExpression(coli2.Name),
+                            This);
+                        prop = GetCollectionLinqQuery(coli, whereExpression);
+                        ctd.Members.Add(prop);
+                    }
+#endif
                 }
             }
         }

@@ -82,5 +82,18 @@ namespace Sooda.QL
                 new SoqlParameterLiteralExpression(parameterPos),
                 SoqlRelationalOperator.Equal);
         }
+
+        public static SoqlBooleanExpression FieldEquals(string field, SoodaObject obj)
+        {
+            return new SoqlBooleanRelationalExpression(
+                new SoqlPathExpression(field),
+                new SoqlLiteralExpression(obj.GetPrimaryKeyValue()),
+                SoqlRelationalOperator.Equal);
+        }
+
+        public static SoqlBooleanExpression CollectionContains(string collectionName, SoodaObject obj)
+        {
+            return new SoqlContainsExpression(null, collectionName, new SoqlLiteralExpression(obj.GetPrimaryKeyValue()));
+        }
     }
 }
