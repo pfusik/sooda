@@ -755,18 +755,15 @@ namespace Sooda
                 SetDataLoaded(table.OrdinalInClass);
                 first = false;
             }
-            if (!IsObjectDirty() && (!FromCache || (_dataLoadedMask != oldDataLoadedMask)))
+            if (!IsObjectDirty() && (!FromCache || _dataLoadedMask != oldDataLoadedMask) && GetTransaction().CachingPolicy.ShouldCacheObject(this))
             {
-                if (GetTransaction().CachingPolicy.ShouldCacheObject(this))
-                {
-                    TimeSpan expirationTimeout;
-                    bool slidingExpiration;
+                TimeSpan expirationTimeout;
+                bool slidingExpiration;
 
-                    if (GetTransaction().CachingPolicy.GetExpirationTimeout(this, out expirationTimeout, out slidingExpiration))
-                    {
-                        GetTransaction().Cache.Add(GetClassInfo().GetRootClass().Name, GetPrimaryKeyValue(), GetCacheEntry(), expirationTimeout, slidingExpiration);
-                        FromCache = true;
-                    }
+                if (GetTransaction().CachingPolicy.GetExpirationTimeout(this, out expirationTimeout, out slidingExpiration))
+                {
+                    GetTransaction().Cache.Add(GetClassInfo().GetRootClass().Name, GetPrimaryKeyValue(), GetCacheEntry(), expirationTimeout, slidingExpiration);
+                    FromCache = true;
                 }
             }
 
@@ -776,21 +773,22 @@ namespace Sooda
                 // logger.Trace("Materializing extra objects...");
                 for (; i < tables.Length; ++i)
                 {
-                    if (tables[i].OrdinalInClass == 0)
+                    TableInfo table = tables[i];
+                    if (table.OrdinalInClass == 0)
                     {
                         GetTransaction().Statistics.RegisterExtraMaterialization();
                         SoodaStatistics.Global.RegisterExtraMaterialization();
 
                         // logger.Trace("Materializing {0} at {1}", tables[i].NameToken, recordPos);
 
-                        int pkOrdinal = tables[i].OwnerClass.GetFirstPrimaryKeyField().OrdinalInTable;
+                        int pkOrdinal = table.OwnerClass.GetFirstPrimaryKeyField().OrdinalInTable;
                         if (reader.IsDBNull(recordPos + pkOrdinal))
                         {
                             // logger.Trace("Object is null. Skipping.");
                         }
                         else
                         {
-                            ISoodaObjectFactory factory = GetTransaction().GetFactory(tables[i].OwnerClass);
+                            ISoodaObjectFactory factory = GetTransaction().GetFactory(table.OwnerClass);
                             SoodaObject.GetRefFromRecordHelper(GetTransaction(), factory, reader, recordPos, tables, i);
                         }
                     }
@@ -798,7 +796,7 @@ namespace Sooda
                     {
                         // TODO - can this be safely called?
                     }
-                    recordPos += tables[i].Fields.Count;
+                    recordPos += table.Fields.Count;
                 }
                 // logger.Trace("Finished materializing extra objects.");
             }
@@ -1435,6 +1433,34 @@ namespace Sooda
             return Evaluate(propertyAccessChain.Split('.'), throwOnError);
         }
 
+        static ISoodaObjectFactory GetFactory(SoodaTransaction tran, ISoodaObjectFactory factory, ClassInfoCollection subclasses, object keyValue, object selectorActualValue)
+        {
+            IComparer comparer = selectorActualValue is string ? (IComparer) CaseInsensitiveComparer.DefaultInvariant : Comparer.DefaultInvariant;
+
+            if (0 == comparer.Compare(selectorActualValue, factory.GetClassInfo().SubclassSelectorValue))
+                return factory;
+
+            ISoodaObjectFactory newFactory;
+            if (!factory.GetClassInfo().DisableTypeCache)
+            {
+                newFactory = SoodaTransaction.SoodaObjectFactoryCache.FindObjectFactory(factory.GetClassInfo().Name, keyValue);
+                if (newFactory != null)
+                    return newFactory;
+            }
+
+            foreach (ClassInfo ci in subclasses)
+            {
+                if (0 == comparer.Compare(selectorActualValue, ci.SubclassSelectorValue))
+                {
+                    newFactory = tran.GetFactory(ci);
+                    SoodaTransaction.SoodaObjectFactoryCache.SetObjectFactory(factory.GetClassInfo().Name, keyValue, newFactory);
+                    return newFactory;
+                }
+            }
+
+            throw new Exception("Cannot determine subclass. Selector actual value: " + selectorActualValue + " base class: " + factory.GetClassInfo().Name);
+        }
+
         public static SoodaObject GetRefFromRecordHelper(SoodaTransaction tran, ISoodaObjectFactory factory, IDataRecord record, int firstColumnIndex, TableInfo[] loadedTables, int tableIndex)
         {
             object keyValue;
@@ -1489,40 +1515,7 @@ namespace Sooda
 
                 int selectorFieldOrdinal = factory.GetClassInfo().SubclassSelectorField.OrdinalInTable;
                 object selectorActualValue = factory.GetFieldHandler(selectorFieldOrdinal).RawRead(record, firstColumnIndex + selectorFieldOrdinal);
-
-                IComparer comparer = Comparer.DefaultInvariant;
-                if (selectorActualValue is string)
-                    comparer = CaseInsensitiveComparer.DefaultInvariant;
-
-                if (0 != comparer.Compare(selectorActualValue, factory.GetClassInfo().SubclassSelectorValue))
-                {
-                    ISoodaObjectFactory newFactory = null;
-
-                    if (!factory.GetClassInfo().DisableTypeCache)
-                    {
-                        newFactory = SoodaTransaction.SoodaObjectFactoryCache.FindObjectFactory(factory.GetClassInfo().Name, keyValue);
-                    }
-                    if (newFactory == null)
-                    {
-                        foreach (ClassInfo ci in subclasses)
-                        {
-                            if (0 == comparer.Compare(selectorActualValue, ci.SubclassSelectorValue))
-                            {
-                                newFactory = tran.GetFactory(ci);
-                                break;
-                            }
-                        }
-                        if (newFactory != null)
-                        {
-                            SoodaTransaction.SoodaObjectFactoryCache.SetObjectFactory(factory.GetClassInfo().Name, keyValue, newFactory);
-                        }
-                    }
-
-                    if (newFactory == null)
-                        throw new Exception("Cannot determine subclass. Selector actual value: " + selectorActualValue + " base class: " + factory.GetClassInfo().Name);
-
-                    factory = newFactory;
-                }
+                factory = GetFactory(tran, factory, subclasses, keyValue, selectorActualValue);
             }
 
             retVal = factory.GetRawObject(tran);
@@ -1566,7 +1559,7 @@ namespace Sooda
             }
 
             SoodaObject retVal = factory.TryGet(tran, keyValue);
-            if ((retVal != null))
+            if (retVal != null)
             {
                 return retVal;
             }
@@ -1578,43 +1571,9 @@ namespace Sooda
                 // more complex case - we have to determine the actual factory to be
                 // used for object creation
 
-                // we have the selector field value as the last one in the record
-
                 int selectorFieldOrdinal = record.FieldCount - 1;
                 object selectorActualValue = factory.GetFieldHandler(selectorFieldOrdinal).RawRead(record, selectorFieldOrdinal);
-                IComparer comparer = Comparer.DefaultInvariant;
-                if (selectorActualValue is string)
-                    comparer = CaseInsensitiveComparer.DefaultInvariant;
-
-                if (0 != comparer.Compare(selectorActualValue, factory.GetClassInfo().SubclassSelectorValue))
-                {
-                    ISoodaObjectFactory newFactory = null;
-
-                    if (!factory.GetClassInfo().DisableTypeCache)
-                    {
-                        newFactory = SoodaTransaction.SoodaObjectFactoryCache.FindObjectFactory(factory.GetClassInfo().Name, keyValue);
-                    }
-                    if (newFactory == null)
-                    {
-                        foreach (ClassInfo ci in subclasses)
-                        {
-                            if (0 == comparer.Compare(selectorActualValue, ci.SubclassSelectorValue))
-                            {
-                                newFactory = tran.GetFactory(ci);
-                                break;
-                            }
-                        }
-                        if (newFactory != null)
-                        {
-                            SoodaTransaction.SoodaObjectFactoryCache.SetObjectFactory(factory.GetClassInfo().Name, keyValue, newFactory);
-                        }
-                    }
-
-                    if (newFactory == null)
-                        throw new Exception("Cannot determine subclass. Selector actual value: " + selectorActualValue + " base class: " + factory.GetClassInfo().Name);
-
-                    factory = newFactory;
-                }
+                factory = GetFactory(tran, factory, subclasses, keyValue, selectorActualValue);
             }
 
             retVal = factory.GetRawObject(tran);
