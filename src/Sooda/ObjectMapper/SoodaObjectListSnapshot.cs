@@ -320,14 +320,8 @@ namespace Sooda.ObjectMapper
                     while (reader.Read())
                     {
                         SoodaObject obj = SoodaObject.GetRefFromRecordHelper(transaction, factory, reader, 0, loadedTables, 0);
-                        if ((options & SoodaSnapshotOptions.VerifyAfterLoad) != 0)
-                        {
-                            if (whereClause != null && !whereClause.Matches(obj, false))
-                            {
-                                // don't add the object
-                                continue;
-                            }
-                        }
+                        if ((options & SoodaSnapshotOptions.VerifyAfterLoad) != 0 && whereClause != null && !whereClause.Matches(obj, false))
+                            continue; // don't add the object
                         items.Add(obj);
                     }
                     if (pageCount == -1)

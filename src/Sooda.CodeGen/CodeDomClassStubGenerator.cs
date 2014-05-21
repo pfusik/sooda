@@ -677,8 +677,7 @@ namespace Sooda.CodeGen
                                     new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(coli.ClassName + "_Factory"), "TheClassInfo"),
                                     new CodeFieldReferenceExpression(null, "_collectionWhere_" + coli.Name),
                                     new CodePrimitiveExpression(coli.Cache)
-                            }))
-                                ),
+                            }))),
                     }, new CodeStatement[] { }));
 
                     prop.GetStatements.Add(new CodeMethodReturnStatement(new CodeFieldReferenceExpression(This, "_collectionCache_" + coli.Name)));

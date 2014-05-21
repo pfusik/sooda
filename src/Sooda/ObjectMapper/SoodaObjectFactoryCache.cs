@@ -64,11 +64,6 @@ namespace Sooda.ObjectMapper
             }
         }
 
-        internal bool ExistsObjectWithKey(string className, object keyValue)
-        {
-            return GetObjectFactoryDictionaryForClass(className).Contains(keyValue);
-        }
-
         private ISoodaObjectFactory FindObjectWithKey(string className, object keyValue)
         {
             return GetObjectFactoryDictionaryForClass(className)[keyValue];
