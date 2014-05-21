@@ -1185,5 +1185,22 @@ namespace Sooda
             }
             return new RevertDisableKeyGenerators(this, disabled);
         }
+
+        internal IEnumerable LoadCollectionFromCache(string cacheKey, Logger logger)
+        {
+            IEnumerable keysCollection = this.Cache.LoadCollection(cacheKey);
+            if (keysCollection != null)
+            {
+                SoodaStatistics.Global.RegisterCollectionCacheHit();
+                this.Statistics.RegisterCollectionCacheHit();
+            }
+            else if (cacheKey != null)
+            {
+                logger.Debug("Cache miss. {0} not found in cache.", cacheKey);
+                SoodaStatistics.Global.RegisterCollectionCacheMiss();
+                this.Statistics.RegisterCollectionCacheMiss();
+            }
+            return keysCollection;
+        }
     }
 }

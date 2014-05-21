@@ -243,11 +243,9 @@ namespace Sooda.ObjectMapper
                     cacheKey = SoodaCache.GetCollectionKey(classInfo, whereClause);
                 }
 
-                IEnumerable keysCollection = transaction.Cache.LoadCollection(cacheKey);
+                IEnumerable keysCollection = transaction.LoadCollectionFromCache(cacheKey, logger);
                 if (keysCollection != null)
                 {
-                    SoodaStatistics.Global.RegisterCollectionCacheHit();
-                    transaction.Statistics.RegisterCollectionCacheHit();
                     foreach (object o in keysCollection)
                     {
                         SoodaObject obj = factory.GetRef(transaction, o);
@@ -276,15 +274,6 @@ namespace Sooda.ObjectMapper
                     }
 
                     return;
-                }
-                else
-                {
-                    if (cacheKey != null)
-                    {
-                        logger.Debug("Cache miss. {0} not found in cache.", cacheKey);
-                        SoodaStatistics.Global.RegisterCollectionCacheMiss();
-                        transaction.Statistics.RegisterCollectionCacheMiss();
-                    }
                 }
             }
 
