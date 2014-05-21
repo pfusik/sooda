@@ -176,6 +176,8 @@ namespace Sooda.ObjectMapper
             IEnumerable keysCollection = transaction.Cache.LoadCollection(cacheKey);
             if (keysCollection != null)
             {
+                SoodaStatistics.Global.RegisterCollectionCacheHit();
+                transaction.Statistics.RegisterCollectionCacheHit();
                 foreach (object o in keysCollection)
                 {
                     SoodaObject obj = factory.GetRef(transaction, o);
