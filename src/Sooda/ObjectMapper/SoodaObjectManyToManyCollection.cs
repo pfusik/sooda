@@ -204,7 +204,7 @@ namespace Sooda.ObjectMapper
                     if (transaction.CachingPolicy.GetExpirationTimeout(
                         relationInfo, classInfo, itemsArray.Count, out expirationTimeout, out slidingExpiration))
                     {
-                        StoreInCache(cacheKey, itemsArray, new string[] { relationInfo.Name }, expirationTimeout, slidingExpiration);
+                        transaction.StoreCollectionInCache(cacheKey, classInfo, itemsArray, new string[] { relationInfo.Name }, true, expirationTimeout, slidingExpiration);
                     }
                 }
             }

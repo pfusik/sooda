@@ -1202,5 +1202,16 @@ namespace Sooda
             }
             return keysCollection;
         }
+
+        internal void StoreCollectionInCache(string cacheKey, ClassInfo classInfo, IList list, string[] dependentClasses, bool evictWhenItemRemoved, TimeSpan expirationTimeout, bool slidingExpiration)
+        {
+            object[] keys = new object[list.Count];
+            for (int i = 0; i < list.Count; ++i)
+            {
+                keys[i] = ((SoodaObject) list[i]).GetPrimaryKeyValue();
+            }
+
+            this.Cache.StoreCollection(cacheKey, classInfo.GetRootClass().Name, keys, dependentClasses, evictWhenItemRemoved, expirationTimeout, slidingExpiration);
+        }
     }
 }

@@ -225,16 +225,5 @@ namespace Sooda.ObjectMapper
         {
             return new SoodaObjectListSnapshot(this).Sort(expression, SortOrder.Ascending);
         }
-
-        protected void StoreInCache(string cacheKey, SoodaObjectCollection list, string[] dependentClasses, TimeSpan expirationTimeout, bool slidingExpiration)
-        {
-            object[] keys = new object[list.Count];
-            for (int i = 0; i < list.Count; ++i)
-            {
-                keys[i] = list[i].GetPrimaryKeyValue();
-            }
-
-            transaction.Cache.StoreCollection(cacheKey, classInfo.GetRootClass().Name, keys, dependentClasses, true, expirationTimeout, slidingExpiration);
-        }
     }
 }

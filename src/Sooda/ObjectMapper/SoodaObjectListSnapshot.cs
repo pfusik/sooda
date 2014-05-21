@@ -337,28 +337,14 @@ namespace Sooda.ObjectMapper
 
             if (cacheKey != null && useCache && startIdx == 0 && pageCount == -1 && involvedClassNames != null)
             {
-                object[] keys = new object[items.Count];
-                int p = 0;
-
-                foreach (SoodaObject obj in items)
-                {
-                    keys[p++] = obj.GetPrimaryKeyValue();
-                }
-
                 TimeSpan expirationTimeout;
                 bool slidingExpiration;
 
                 if (transaction.CachingPolicy.GetExpirationTimeout(
-                            classInfo, whereClause, orderBy, startIdx, pageCount, keys.Length,
+                            classInfo, whereClause, orderBy, startIdx, pageCount, items.Count,
                             out expirationTimeout, out slidingExpiration))
                 {
-                    transaction.Cache.StoreCollection(cacheKey,
-                            classInfo.GetRootClass().Name,
-                            keys,
-                            involvedClassNames,
-                            ((options & SoodaSnapshotOptions.KeysOnly) != 0) ? false : true,
-                            expirationTimeout,
-                            slidingExpiration);
+                    transaction.StoreCollectionInCache(cacheKey, classInfo, items, involvedClassNames, (options & SoodaSnapshotOptions.KeysOnly) == 0, expirationTimeout, slidingExpiration);
                 }
             }
         }
@@ -391,7 +377,7 @@ namespace Sooda.ObjectMapper
             return items.GetEnumerator();
         }
 
-        private ArrayList items = new ArrayList();
+        private readonly ArrayList items = new ArrayList();
         private ClassInfo classInfo;
         private int count;
 

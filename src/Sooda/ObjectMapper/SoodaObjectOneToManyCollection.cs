@@ -219,7 +219,7 @@ namespace Sooda.ObjectMapper
                             classInfo, whereClause, null, 0, -1, readObjects.Count,
                             out expirationTimeout, out slidingExpiration))
                         {
-                            StoreInCache(cacheKey, readObjects, null, expirationTimeout, slidingExpiration);
+                            transaction.StoreCollectionInCache(cacheKey, classInfo, readObjects, null, true, expirationTimeout, slidingExpiration);
                         }
                     }
                 }
