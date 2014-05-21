@@ -205,6 +205,19 @@ create table RelStringToBool
 )
 go
 
+create table EightFields
+(
+	id int primary key not null,
+	parent int null references EightFields(id),
+	field3 int not null,
+	field4 int not null,
+	field5 int not null,
+	field6 int not null,
+	field7 int not null,
+	field8 int not null
+)
+go
+
 print 'Inserting sample data...'
 set nocount on
 
@@ -311,6 +324,7 @@ grant select,insert,update,delete on Vehicle to soodatest
 grant select,insert,update,delete on Bike to soodatest
 grant select,insert,update,delete on ExtendedBike to soodatest
 grant select,insert,update,delete on MultiKey to soodatest
+grant select,insert,update,delete on EightFields to soodatest
 
 go
 

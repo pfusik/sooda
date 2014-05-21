@@ -117,6 +117,9 @@
     <Compile Include="ConcreteMegaSuperBikeB.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="EightFields.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="ExtendedBike.cs">
       <SubType>Code</SubType>
     </Compile>
