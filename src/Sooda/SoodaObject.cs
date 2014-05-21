@@ -734,13 +734,8 @@ namespace Sooda
                             int ordinal = field.ClassUnifiedOrdinal;
                             if (!IsFieldDirty(ordinal))
                             {
-                                if (reader.IsDBNull(recordPos))
-                                    _fieldValues.SetFieldValue(ordinal, null);
-                                else
-                                {
-                                    SoodaFieldHandler handler = GetFieldHandler(ordinal);
-                                    _fieldValues.SetFieldValue(ordinal, handler.RawRead(reader, recordPos));
-                                }
+                                object value = reader.IsDBNull(recordPos) ? null : GetFieldHandler(ordinal).RawRead(reader, recordPos);
+                                _fieldValues.SetFieldValue(ordinal, value);
                             }
                         }
                         catch (Exception ex)
@@ -1433,17 +1428,28 @@ namespace Sooda
             return Evaluate(propertyAccessChain.Split('.'), throwOnError);
         }
 
-        static ISoodaObjectFactory GetFactory(SoodaTransaction tran, ISoodaObjectFactory factory, ClassInfoCollection subclasses, object keyValue, object selectorActualValue)
+        static ISoodaObjectFactory GetFactory(SoodaTransaction tran, ISoodaObjectFactory factory, IDataRecord record, int firstColumnIndex, object keyValue, bool loadData)
         {
+            ClassInfo classInfo = factory.GetClassInfo();
+            ClassInfoCollection subclasses = tran.Schema.GetSubclasses(classInfo);
+
+            if (subclasses.Count == 0)
+                return factory;
+
+            // more complex case - we have to determine the actual factory to be
+            // used for object creation
+
+            int selectorFieldOrdinal = loadData ? classInfo.SubclassSelectorField.OrdinalInTable : record.FieldCount - 1;
+            object selectorActualValue = factory.GetFieldHandler(selectorFieldOrdinal).RawRead(record, firstColumnIndex + selectorFieldOrdinal);
             IComparer comparer = selectorActualValue is string ? (IComparer) CaseInsensitiveComparer.DefaultInvariant : Comparer.DefaultInvariant;
 
-            if (0 == comparer.Compare(selectorActualValue, factory.GetClassInfo().SubclassSelectorValue))
+            if (0 == comparer.Compare(selectorActualValue, classInfo.SubclassSelectorValue))
                 return factory;
 
             ISoodaObjectFactory newFactory;
             if (!factory.GetClassInfo().DisableTypeCache)
             {
-                newFactory = SoodaTransaction.SoodaObjectFactoryCache.FindObjectFactory(factory.GetClassInfo().Name, keyValue);
+                newFactory = SoodaTransaction.SoodaObjectFactoryCache.FindObjectFactory(classInfo.Name, keyValue);
                 if (newFactory != null)
                     return newFactory;
             }
@@ -1453,135 +1459,71 @@ namespace Sooda
                 if (0 == comparer.Compare(selectorActualValue, ci.SubclassSelectorValue))
                 {
                     newFactory = tran.GetFactory(ci);
-                    SoodaTransaction.SoodaObjectFactoryCache.SetObjectFactory(factory.GetClassInfo().Name, keyValue, newFactory);
+                    SoodaTransaction.SoodaObjectFactoryCache.SetObjectFactory(classInfo.Name, keyValue, newFactory);
                     return newFactory;
                 }
             }
 
-            throw new Exception("Cannot determine subclass. Selector actual value: " + selectorActualValue + " base class: " + factory.GetClassInfo().Name);
+            throw new Exception("Cannot determine subclass. Selector actual value: " + selectorActualValue + " base class: " + classInfo.Name);
+        }
+
+        static SoodaObject GetRefFromRecordHelper(SoodaTransaction tran, ISoodaObjectFactory factory, IDataRecord record, int firstColumnIndex, TableInfo[] loadedTables, int tableIndex, bool loadData)
+        {
+            object keyValue;
+            Sooda.Schema.FieldInfo[] pkFields = factory.GetClassInfo().GetPrimaryKeyFields();
+            if (pkFields.Length == 1)
+            {
+                int pkFieldOrdinal = loadData ? firstColumnIndex + pkFields[0].OrdinalInTable : 0;
+                try
+                {
+                    keyValue = factory.GetPrimaryKeyFieldHandler().RawRead(record, pkFieldOrdinal);
+                }
+                catch (Exception ex)
+                {
+                    logger.Error("Error while reading field {0}.{1}: {2}", factory.GetClassInfo().Name, pkFieldOrdinal, ex);
+                    throw ex;
+                }
+            }
+            else
+            {
+                object[] pkParts = new object[pkFields.Length];
+                for (int currentPkPart = 0; currentPkPart < pkFields.Length; currentPkPart++)
+                {
+                    int pkFieldOrdinal = loadData ? firstColumnIndex + pkFields[currentPkPart].OrdinalInTable : currentPkPart;
+                    SoodaFieldHandler handler = factory.GetFieldHandler(pkFieldOrdinal);
+                    pkParts[currentPkPart] = handler.RawRead(record, pkFieldOrdinal);
+                }
+                keyValue = new SoodaTuple(pkParts);
+                //logger.Debug("Tuple: {0}", keyValue);
+            }
+
+            SoodaObject retVal = factory.TryGet(tran, keyValue);
+            if (retVal != null)
+            {
+                if (loadData && !retVal.IsDataLoaded(0))
+                    retVal.LoadDataFromRecord(record, firstColumnIndex, loadedTables, tableIndex);
+                return retVal;
+            }
+
+            factory = GetFactory(tran, factory, record, firstColumnIndex, keyValue, loadData);
+            retVal = factory.GetRawObject(tran);
+            tran.Statistics.RegisterObjectUpdate();
+            SoodaStatistics.Global.RegisterObjectUpdate();
+            retVal.InsertMode = false;
+            retVal.SetPrimaryKeyValue(keyValue);
+            if (loadData)
+                retVal.LoadDataFromRecord(record, firstColumnIndex, loadedTables, tableIndex);
+            return retVal;
         }
 
         public static SoodaObject GetRefFromRecordHelper(SoodaTransaction tran, ISoodaObjectFactory factory, IDataRecord record, int firstColumnIndex, TableInfo[] loadedTables, int tableIndex)
         {
-            object keyValue;
-            int pkSize = factory.GetClassInfo().GetPrimaryKeyFields().Length;
-
-            if (pkSize == 1)
-            {
-                int pkFieldOrdinal = factory.GetClassInfo().GetFirstPrimaryKeyField().OrdinalInTable;
-                try
-                {
-                    keyValue = factory.GetPrimaryKeyFieldHandler().RawRead(record, firstColumnIndex + pkFieldOrdinal);
-                }
-                catch (Exception ex)
-                {
-                    logger.Error("Error while reading field {0}.{1}: {2}", factory.GetClassInfo().Name, firstColumnIndex + pkFieldOrdinal, ex);
-                    throw ex;
-                }
-            }
-            else
-            {
-                object[] pkParts = new object[pkSize];
-                int currentPkPart = 0;
-                foreach (Sooda.Schema.FieldInfo fi in factory.GetClassInfo().UnifiedFields)
-                {
-                    if (fi.IsPrimaryKey)
-                    {
-                        int pkFieldOrdinal = firstColumnIndex + fi.OrdinalInTable;
-                        SoodaFieldHandler handler = factory.GetFieldHandler(pkFieldOrdinal);
-                        pkParts[currentPkPart++] = handler.RawRead(record, pkFieldOrdinal);
-                    }
-                }
-                keyValue = new SoodaTuple(pkParts);
-                //logger.Debug("Tuple: {0}", keyValue);
-            }
-
-            SoodaObject retVal = factory.TryGet(tran, keyValue);
-            if (retVal != null)
-            {
-                if (!retVal.IsDataLoaded(0))
-                {
-                    retVal.LoadDataFromRecord(record, firstColumnIndex, loadedTables, tableIndex);
-                }
-                return retVal;
-            }
-
-            ClassInfoCollection subclasses = tran.Schema.GetSubclasses(factory.GetClassInfo());
-
-            if (subclasses.Count > 0)
-            {
-                // more complex case - we have to determine the actual factory to be
-                // used for object creation
-
-                int selectorFieldOrdinal = factory.GetClassInfo().SubclassSelectorField.OrdinalInTable;
-                object selectorActualValue = factory.GetFieldHandler(selectorFieldOrdinal).RawRead(record, firstColumnIndex + selectorFieldOrdinal);
-                factory = GetFactory(tran, factory, subclasses, keyValue, selectorActualValue);
-            }
-
-            retVal = factory.GetRawObject(tran);
-            tran.Statistics.RegisterObjectUpdate();
-            SoodaStatistics.Global.RegisterObjectUpdate();
-            retVal.InsertMode = false;
-            retVal.SetPrimaryKeyValue(keyValue);
-            retVal.LoadDataFromRecord(record, firstColumnIndex, loadedTables, tableIndex);
-            return retVal;
+            return GetRefFromRecordHelper(tran, factory, record, firstColumnIndex, loadedTables, tableIndex, true);
         }
 
         internal static SoodaObject GetRefFromKeyRecordHelper(SoodaTransaction tran, ISoodaObjectFactory factory, IDataRecord record)
         {
-            object keyValue;
-            int pkSize = factory.GetClassInfo().GetPrimaryKeyFields().Length;
-
-            // TODO - REFACTORING: Merge GetRefFromKeyRecordHelper with GetRefFromRecordHelper
-
-            if (pkSize == 1)
-            {
-                try
-                {
-                    keyValue = factory.GetPrimaryKeyFieldHandler().RawRead(record, 0);
-                }
-                catch (Exception ex)
-                {
-                    logger.Error("Error while reading field {0}.{1}: {2}", factory.GetClassInfo().Name, 0, ex);
-                    throw ex;
-                }
-            }
-            else
-            {
-                object[] pkParts = new object[pkSize];
-                for (int currentPkPart = 0; currentPkPart < pkSize; currentPkPart++)
-                {
-                    SoodaFieldHandler handler = factory.GetFieldHandler(currentPkPart);
-                    pkParts[currentPkPart] = handler.RawRead(record, currentPkPart);
-                }
-                keyValue = new SoodaTuple(pkParts);
-                //logger.Debug("Tuple: {0}", keyValue);
-            }
-
-            SoodaObject retVal = factory.TryGet(tran, keyValue);
-            if (retVal != null)
-            {
-                return retVal;
-            }
-
-            ClassInfoCollection subclasses = tran.Schema.GetSubclasses(factory.GetClassInfo());
-
-            if (subclasses.Count > 0)
-            {
-                // more complex case - we have to determine the actual factory to be
-                // used for object creation
-
-                int selectorFieldOrdinal = record.FieldCount - 1;
-                object selectorActualValue = factory.GetFieldHandler(selectorFieldOrdinal).RawRead(record, selectorFieldOrdinal);
-                factory = GetFactory(tran, factory, subclasses, keyValue, selectorActualValue);
-            }
-
-            retVal = factory.GetRawObject(tran);
-            tran.Statistics.RegisterObjectUpdate();
-            SoodaStatistics.Global.RegisterObjectUpdate();
-            retVal.InsertMode = false;
-            retVal.SetPrimaryKeyValue(keyValue);
-            return retVal;
+            return GetRefFromRecordHelper(tran, factory, record, 0, null, -1, false);
         }
 
         public static SoodaObject GetRefHelper(SoodaTransaction tran, ISoodaObjectFactory factory, int keyValue)
