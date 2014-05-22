@@ -52,7 +52,7 @@ namespace Sooda.ObjectMapper.FieldHandlers
 
         public static bool GetFromReader(IDataRecord record, int pos)
         {
-            return (Convert.ToInt32(record.GetValue(pos)) != 0) ? true : false;
+            return Convert.ToInt32(record.GetValue(pos)) != 0 ? true : false;
         }
 
         public override string RawSerialize(object val)
@@ -72,12 +72,12 @@ namespace Sooda.ObjectMapper.FieldHandlers
 
         public static object DeserializeFromString(string s)
         {
-            return (s == "true") ? true : false;
+            return s == "true" ? true : false;
         }
 
-        private static object _zeroValue = false;
-        private static object _boxed1 = 1;
-        private static object _boxed0 = 0;
+        private static readonly object _zeroValue = false;
+        private static readonly object _boxed1 = 1;
+        private static readonly object _boxed0 = 0;
 
         public override object ZeroValue()
         {
@@ -107,14 +107,14 @@ namespace Sooda.ObjectMapper.FieldHandlers
             if (fieldValue == null)
                 return System.Data.SqlTypes.SqlBoolean.Null;
             else
-                return new System.Data.SqlTypes.SqlBoolean((Boolean)fieldValue);
+                return new System.Data.SqlTypes.SqlBoolean((bool) fieldValue);
         }
 
         public static bool GetNotNullValue(object val)
         {
             if (val == null)
                 throw new InvalidOperationException("Attempt to read a non-null value that isn't set yet");
-            return (bool)val;
+            return (bool) val;
         }
 
 #if DOTNET2
@@ -123,7 +123,7 @@ namespace Sooda.ObjectMapper.FieldHandlers
             if (fieldValue == null)
                 return null;
             else
-                return (bool)fieldValue;
+                return (bool) fieldValue;
         }
 
         public override Type GetNullableType()

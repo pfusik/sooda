@@ -68,7 +68,7 @@ namespace Sooda.ObjectMapper.FieldHandlers
 
         public static string SerializeToString(object obj)
         {
-            return Convert.ToInt32(((TimeSpan)obj).TotalSeconds).ToString(CultureInfo.InvariantCulture);
+            return Convert.ToInt32(((TimeSpan) obj).TotalSeconds).ToString(CultureInfo.InvariantCulture);
         }
 
         public static object DeserializeFromString(string s)
@@ -76,7 +76,7 @@ namespace Sooda.ObjectMapper.FieldHandlers
             return TimeSpan.FromSeconds(Int32.Parse(s, CultureInfo.InvariantCulture));
         }
 
-        private static object _zeroValue = TimeSpan.Zero;
+        private static readonly object _zeroValue = TimeSpan.Zero;
         public override object ZeroValue()
         {
             return _zeroValue;
@@ -95,7 +95,7 @@ namespace Sooda.ObjectMapper.FieldHandlers
         public override void SetupDBParameter(IDbDataParameter parameter, object value)
         {
             parameter.DbType = DbType.Int32;
-            parameter.Value = (int)(((TimeSpan)value).TotalSeconds);
+            parameter.Value = (int) ((TimeSpan) value).TotalSeconds;
         }
 
         // type conversions - used in generated stub code
@@ -104,7 +104,7 @@ namespace Sooda.ObjectMapper.FieldHandlers
         {
             if (val == null)
                 return TimeSpan.Zero;
-            return (TimeSpan)val;
+            return (TimeSpan) val;
         }
 
 #if DOTNET2
@@ -113,7 +113,7 @@ namespace Sooda.ObjectMapper.FieldHandlers
             if (fieldValue == null)
                 return null;
             else
-                return (TimeSpan)fieldValue;
+                return (TimeSpan) fieldValue;
         }
 
         public override Type GetNullableType()

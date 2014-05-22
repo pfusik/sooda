@@ -105,10 +105,7 @@ namespace Sooda.Caching
 
         public static string GetCollectionKey(string className, SoodaWhereClause wc)
         {
-            if (wc == null)
-                return className + " where True";
-
-            if (wc.WhereExpression == null)
+            if (wc == null || wc.WhereExpression == null)
                 return className + " where True";
 
             StringWriter sw = new StringWriter();

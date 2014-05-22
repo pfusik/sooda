@@ -172,8 +172,7 @@ namespace Sooda.ObjectMapper
 
             if (whereClause != null && whereClause.WhereExpression != null)
             {
-                if (((options & SoodaSnapshotOptions.NoWriteObjects) == 0)
-                    || useCache)
+                if ((options & SoodaSnapshotOptions.NoWriteObjects) == 0 || useCache)
                 {
                     try
                     {
