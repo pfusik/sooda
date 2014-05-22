@@ -13,7 +13,6 @@ namespace ConfigureSoodaProject
         private XmlDocument _projectXml;
         private XmlNamespaceManager _namespaceManager;
         private bool _modified = false;
-        private bool _isVS2003;
 
         public ProjectFileConfigurationStrategy(string projectFile)
         {
@@ -32,22 +31,13 @@ namespace ConfigureSoodaProject
                 _projectXml.Load(_projectFile);
                 _namespaceManager = new XmlNamespaceManager(_projectXml.NameTable);
                 _namespaceManager.AddNamespace("msbuild", "http://schemas.microsoft.com/developer/msbuild/2003");
-
-                _isVS2003 = _projectXml.DocumentElement.LocalName != "Project";
             }
         }
 
         public string AssemblyName
         {
             get { 
-                if (_isVS2003)
-                {
-                    return null;
-                }
-                else
-                {
-                    return _projectXml.SelectSingleNode("//msbuild:AssemblyName", _namespaceManager).InnerText;
-                }
+                return _projectXml.SelectSingleNode("//msbuild:AssemblyName", _namespaceManager).InnerText;
             }
         }
 
@@ -149,21 +139,14 @@ namespace ConfigureSoodaProject
 
         public string ProjectType
         {
-            get { return _isVS2003 ? "vs2003" : "vs2005"; }
+            get { return "vs2005"; }
         }
 
         public string DefaultNamespace
         {
             get 
             { 
-                if (_isVS2003)
-                {
-                    return ((XmlElement)_projectXml.SelectSingleNode("//Settings")).GetAttribute("RootNamespace");
-                }
-                else
-                {
-                    return _projectXml.SelectSingleNode("//msbuild:RootNamespace", _namespaceManager).InnerText;
-                }
+                return _projectXml.SelectSingleNode("//msbuild:RootNamespace", _namespaceManager).InnerText;
             }
         }
 

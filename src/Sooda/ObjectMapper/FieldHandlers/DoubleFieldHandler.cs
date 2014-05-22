@@ -115,7 +115,6 @@ namespace Sooda.ObjectMapper.FieldHandlers
             return (Double)val;
         }
 
-#if DOTNET2
         public static Double? GetNullableValue(object fieldValue)
         {
             if (fieldValue == null)
@@ -128,6 +127,5 @@ namespace Sooda.ObjectMapper.FieldHandlers
         {
             return typeof(Double?);
         }
-#endif
     }
 }

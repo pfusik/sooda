@@ -50,13 +50,8 @@ namespace Sooda.CodeGen
         private SchemaInfo _schema;
         private CodeGeneratorOptions _codeGeneratorOptions;
 
-#if DOTNET2
         private CodeDomProvider _codeGenerator;
         private CodeDomProvider _csharpCodeGenerator;
-#else
-        private ICodeGenerator _codeGenerator;
-        private ICodeGenerator _csharpCodeGenerator;
-#endif
 
         private string _fileExtensionWithoutPeriod;
 
@@ -488,18 +483,14 @@ namespace Sooda.CodeGen
             context["OptionalNewAttribute"] = (_codeProvider is Microsoft.VisualBasic.VBCodeProvider) ? "" : ",New";
             context["WithIndexers"] = Project.WithIndexers;
 
-#if DOTNET2
             if (!_codeGenerator.Supports(GeneratorSupport.DeclareIndexerProperties))
                 context["WithIndexers"] = false;
-#endif
 
             CodeTypeDeclaration listWrapperClass = CDILParser.ParseClass(CDILTemplate.Get("ListWrapper.cdil"), context);
-#if DOTNET2
             listWrapperClass.BaseTypes.Clear();
             listWrapperClass.BaseTypes.Add(
                 new CodeTypeReference("Sooda.ObjectMapper.SoodaObjectCollectionWrapperGeneric", 
                 new CodeTypeReference(Project.OutputNamespace + "." + ci.Name)));
-#endif
             nspace.Types.Add(listWrapperClass);
         }
 
@@ -1145,13 +1136,8 @@ namespace Sooda.CodeGen
                 CodeDomProvider codeProvider = GetCodeProvider(Project.Language);
                 _codeProvider = codeProvider;
 
-#if DOTNET2
                 CodeDomProvider codeGenerator = codeProvider;
                 CodeDomProvider csharpCodeGenerator = GetCodeProvider("c#");
-#else                
-                ICodeGenerator codeGenerator = codeProvider.CreateGenerator();
-                ICodeGenerator csharpCodeGenerator = GetCodeProvider("c#").CreateGenerator();
-#endif
                 _codeGenerator = codeGenerator;
                 _csharpCodeGenerator = csharpCodeGenerator;
 
@@ -1425,15 +1411,8 @@ namespace Sooda.CodeGen
                     return new Microsoft.VisualBasic.VBCodeProvider();
 #endif
 
-#if DOTNET2
                 case "c++/cli":
                     return GetCodeProvider("Microsoft.VisualC.CppCodeProvider, CppCodeProvider, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL");
-#endif
-
-#if !DOTNET2
-                case "mc++":
-                    return GetCodeProvider("Microsoft.MCpp.MCppCodeProvider, MCppCodeDomProvider, Version=7.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a");
-#endif
 
                 default:
                     {
@@ -1447,20 +1426,6 @@ namespace Sooda.CodeGen
 
         IProjectFile GetProjectProvider(string projectType, CodeDomProvider codeProvider)
         {
-            if (projectType == "vs2003" || projectType == "vs")
-            {
-                switch (codeProvider.FileExtension)
-                {
-                    case "cs":
-                        return new VScsprojProjectFile("Sooda.CodeGen.Template.Template71.csproj");
-
-                    case "vb":
-                        return new VSvbprojProjectFile("Sooda.CodeGen.Template.Template71.vbproj");
-
-                    default:
-                        throw new Exception("Visual Studio Project not supported for '" + codeProvider.FileExtension + "' files");
-                }
-            }
             if (projectType == "vs2005")
             {
                 switch (codeProvider.FileExtension)

@@ -116,7 +116,6 @@ namespace Sooda.ObjectMapper.FieldHandlers
             return (Int64)val;
         }
 
-#if DOTNET2
         public static Int64? GetNullableValue(object fieldValue)
         {
             if (fieldValue == null)
@@ -129,6 +128,5 @@ namespace Sooda.ObjectMapper.FieldHandlers
         {
             return typeof(Int64?);
         }
-#endif
     }
 }

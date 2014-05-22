@@ -107,7 +107,6 @@ namespace Sooda.ObjectMapper.FieldHandlers
             return (TimeSpan) val;
         }
 
-#if DOTNET2
         public static TimeSpan? GetNullableValue(object fieldValue)
         {
             if (fieldValue == null)
@@ -120,6 +119,5 @@ namespace Sooda.ObjectMapper.FieldHandlers
         {
             return typeof(TimeSpan?);
         }
-#endif
     }
 }

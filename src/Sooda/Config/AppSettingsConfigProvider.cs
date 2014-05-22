@@ -35,11 +35,7 @@ namespace Sooda.Config
     {
         public string GetString(string key)
         {
-#if DOTNET2
             return ConfigurationManager.AppSettings[key];
-#else
-            return ConfigurationSettings.AppSettings[key];
-#endif
         }
     }
 }

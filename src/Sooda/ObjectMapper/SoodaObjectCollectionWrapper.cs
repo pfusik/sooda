@@ -30,9 +30,7 @@
 using System;
 using System.Diagnostics;
 using System.Collections;
-#if DOTNET2
 using System.Collections.Generic;
-#endif
 
 namespace Sooda.ObjectMapper
 {
@@ -298,7 +296,6 @@ namespace Sooda.ObjectMapper
         }
     }
 
-#if DOTNET2
     public class SoodaObjectCollectionWrapperGeneric<T> : SoodaObjectCollectionWrapper, IList<T>
     {
         public SoodaObjectCollectionWrapperGeneric() : base()
@@ -396,5 +393,4 @@ namespace Sooda.ObjectMapper
 
         #endregion
     }
-#endif
 }

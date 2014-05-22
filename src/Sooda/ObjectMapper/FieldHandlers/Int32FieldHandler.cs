@@ -115,7 +115,6 @@ namespace Sooda.ObjectMapper.FieldHandlers
             return (Int32)val;
         }
 
-#if DOTNET2
         public static Int32? GetNullableValue(object fieldValue)
         {
             if (fieldValue == null)
@@ -128,6 +127,5 @@ namespace Sooda.ObjectMapper.FieldHandlers
         {
             return typeof(Int32?);
         }
-#endif
     }
 }

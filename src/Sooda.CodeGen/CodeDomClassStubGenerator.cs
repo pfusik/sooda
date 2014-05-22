@@ -203,10 +203,8 @@ namespace Sooda.CodeGen
                 case PrimitiveRepresentation.Raw:
                     return new CodeTypeReference(fi.GetFieldHandler().GetFieldType());
 
-#if DOTNET2
                 case PrimitiveRepresentation.Nullable:
                     return new CodeTypeReference(fi.GetFieldHandler().GetNullableType());
-#endif
 
                 default:
                     throw new NotImplementedException("Unknown PrimitiveRepresentation: " + rep);

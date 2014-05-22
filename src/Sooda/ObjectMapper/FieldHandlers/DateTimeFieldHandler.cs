@@ -116,7 +116,6 @@ namespace Sooda.ObjectMapper.FieldHandlers
             return (DateTime)val;
         }
 
-#if DOTNET2
         public static DateTime? GetNullableValue(object fieldValue)
         {
             if (fieldValue == null)
@@ -129,7 +128,5 @@ namespace Sooda.ObjectMapper.FieldHandlers
         {
             return typeof(DateTime?);
         }
-#endif
-
     }
 }

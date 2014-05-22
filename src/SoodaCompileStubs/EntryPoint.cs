@@ -39,11 +39,7 @@ namespace SoodaCompileStubs
 {
     class EntryPoint
     {
-#if DOTNET2
         static CSharpCodeProvider compiler;
-#else
-        static ICodeCompiler compiler;
-#endif
 
         static void Compile(string description, string outputAssembly, string sourceFile, string compilerOptions, string[] args, bool additionalSources, params string[] additionalReferences)
         {
@@ -80,11 +76,7 @@ namespace SoodaCompileStubs
                 results = compiler.CompileAssemblyFromFile(options, sourceFile);
             else
             {
-#if DOTNET2
                 results = compiler.CompileAssemblyFromFile(options, (string[]) sourceFiles.ToArray(typeof(string)));
-#else
-                results = compiler.CompileAssemblyFromFileBatch(options, (string[]) sourceFiles.ToArray(typeof(string)));
-#endif
             }
             if (results.NativeCompilerReturnValue != 0)
             {
@@ -170,11 +162,7 @@ namespace SoodaCompileStubs
 
             Console.WriteLine("Rebuilding '{0}'", stubsDll);
 
-#if DOTNET2
             compiler = new CSharpCodeProvider();
-#else
-            compiler = new CSharpCodeProvider().CreateCompiler();
-#endif
 
             try
             {

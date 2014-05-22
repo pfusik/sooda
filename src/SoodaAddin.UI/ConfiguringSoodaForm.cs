@@ -229,7 +229,7 @@ namespace SoodaAddin.UI
                     sw.WriteLine("  <language>c#</language>");
                     sw.WriteLine("  <output-namespace>{0}</output-namespace>", Strategy.DefaultNamespace);
                     sw.WriteLine("  <output-path>.</output-path>");
-                    sw.WriteLine("  <nullable-representation>{0}</nullable-representation>", (Strategy.ProjectType == "vs2003" ? "SqlType" : "Nullable"));
+                    sw.WriteLine("  <nullable-representation>Nullable</nullable-representation>");
                     sw.WriteLine("  <not-null-representation>Raw</not-null-representation>");
                     sw.WriteLine("  <with-indexers>true</with-indexers>");
                     sw.WriteLine("  <with-typed-queries>true</with-typed-queries>");
@@ -309,11 +309,7 @@ namespace SoodaAddin.UI
                     string[] lines = Strategy.PreBuildEvent.Replace("\r","").Split('\n');
                     ArrayList newLines = new ArrayList();
 
-                    string dotnetVersion = "2.0";
-                    if (Strategy.ProjectType == "vs2003")
-                        dotnetVersion = "1.1";
-
-                    newLines.Add("\"%SOODA_DIR%\\bin\\net-" + dotnetVersion + "\\SoodaStubGen.exe\" \"$(ProjectDir)" + soodaProjectFile + "\"");
+                    newLines.Add("\"%SOODA_DIR%\\bin\\net-2.0\\SoodaStubGen.exe\" \"$(ProjectDir)" + soodaProjectFile + "\"");
                     foreach (string line in lines)
                     {
                         if (line.IndexOf("Sooda") < 0)

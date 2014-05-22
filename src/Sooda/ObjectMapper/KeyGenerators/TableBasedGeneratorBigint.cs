@@ -67,7 +67,7 @@ namespace Sooda.ObjectMapper.KeyGenerators
             }
         }
 
-#if DOTNET2 && !MONO
+#if !MONO
         public void AcquireNextRange()
         {
             using (System.Transactions.TransactionScope ts = new System.Transactions.TransactionScope(System.Transactions.TransactionScopeOption.Suppress))

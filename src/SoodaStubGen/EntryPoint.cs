@@ -55,7 +55,7 @@ namespace SoodaStubGen
 
             Console.WriteLine("        --lang <type>    - generate code using the specified CodeDOM codeProvider");
             Console.WriteLine();
-            Console.WriteLine("        --project vs2003 - (default) generate VS.NET 2003 project file (.??proj)");
+            Console.WriteLine("        --project vs2005 - (default) generate VS 2005 project file (.??proj)");
             Console.WriteLine("        --project null   - generate no project file");
             Console.WriteLine("        --project <type> - generate project file using custom type");
             Console.WriteLine();

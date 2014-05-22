@@ -52,19 +52,11 @@ namespace Sooda
                 {
                     try
                     {
-#if DOTNET2
                         string typeName = System.Configuration.ConfigurationManager.AppSettings["sooda.config"];
-#else
-                        string typeName = System.Configuration.ConfigurationSettings.AppSettings["sooda.config"];
-#endif
                         // Console.WriteLine("typeName: {0}", typeName);
                         if (typeName == "xmlconfig")
                         {
-#if DOTNET2
                             string xmlconfigfile = System.Configuration.ConfigurationManager.AppSettings["sooda.xmlconfigfile"];
-#else
-                            string xmlconfigfile = System.Configuration.ConfigurationSettings.AppSettings["sooda.xmlconfigfile"];
-#endif
                             if (xmlconfigfile == null)
                                 xmlconfigfile = "sooda.config.xml";
                             SetConfigProvider(XmlConfigProvider.FindConfigFile(xmlconfigfile));

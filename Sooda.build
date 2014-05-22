@@ -14,9 +14,6 @@
 
     <property name="sources" value="src" />
 
-    <target name="set-build-net-1.1">
-        <property name="nant.settings.currentframework" value="net-1.1" />
-    </target>
     <target name="set-build-net-2.0">
         <property name="nant.settings.currentframework" value="net-2.0" />
     </target>
@@ -26,14 +23,8 @@
     <target name="set-build-net-4.0">
         <property name="nant.settings.currentframework" value="net-4.0" />
     </target>
-    <target name="set-build-netcf-1.0">
-        <property name="nant.settings.currentframework" value="netcf-1.0" />
-    </target>
     <target name="set-build-netcf-2.0">
         <property name="nant.settings.currentframework" value="netcf-2.0" />
-    </target>
-    <target name="set-build-mono-1.0">
-        <property name="nant.settings.currentframework" value="mono-1.0" />
     </target>
     <target name="set-build-mono-2.0">
         <property name="nant.settings.currentframework" value="mono-2.0" />
@@ -46,13 +37,10 @@
     </target>
 
     <target name="build" depends="build-${nant.settings.currentframework}" />
-    <target name="build-net-1.1" depends="set-build-net-1.1, build-common, tools, guitools" />
     <target name="build-net-2.0" depends="set-build-net-2.0, build-common, tools, Sooda.Web, guitools" />
     <target name="build-net-3.5" depends="set-build-net-3.5, build-common, tools, Sooda.Web, guitools" />
     <target name="build-net-4.0" depends="set-build-net-4.0, build-common, tools, Sooda.Web, guitools" />
-    <target name="build-netcf-1.0" depends="set-build-netcf-1.0, build-common" />
     <target name="build-netcf-2.0" depends="set-build-netcf-2.0, build-common" />
-    <target name="build-mono-1.0" depends="set-build-mono-1.0, build-common, minitools" />
     <target name="build-mono-2.0" depends="set-build-mono-2.0, build-common, minitools" />
     <target name="build-mono-3.5" depends="set-build-mono-3.5, build-common, minitools" />
     <target name="build-mono-4.0" depends="set-build-mono-4.0, build-common, minitools" />
@@ -126,32 +114,31 @@
 
     <target name="configure-net-2.0">
         <property name="sooda.csc.args" value="/nowarn:1591,1699" />
-        <property name="sooda.define" value="${sooda.define},DOTNET2" />
     </target>
 
     <target name="configure-net-3.5">
         <property name="sooda.csc.args" value="/nowarn:1591,1699" />
-        <property name="sooda.define" value="${sooda.define},DOTNET2,DOTNET35" />
+        <property name="sooda.define" value="${sooda.define},DOTNET35" />
     </target>
 
     <target name="configure-net-4.0">
         <property name="sooda.csc.args" value="/nowarn:1591,1699" />
-        <property name="sooda.define" value="${sooda.define},DOTNET2,DOTNET35,DOTNET4" />
+        <property name="sooda.define" value="${sooda.define},DOTNET35,DOTNET4" />
     </target>
 
     <target name="configure-mono-2.0">
         <property name="sooda.csc.args" value="/nowarn:1591,1699" />
-        <property name="sooda.define" value="${sooda.define},MONO,DOTNET2" />
+        <property name="sooda.define" value="${sooda.define},MONO" />
     </target>
 
     <target name="configure-mono-3.5">
         <property name="sooda.csc.args" value="/nowarn:1591,1699" />
-        <property name="sooda.define" value="${sooda.define},MONO,DOTNET2,DOTNET35" />
+        <property name="sooda.define" value="${sooda.define},MONO,DOTNET35" />
     </target>
 
     <target name="configure-mono-4.0">
         <property name="sooda.csc.args" value="/nowarn:1591,1699" />
-        <property name="sooda.define" value="${sooda.define},MONO,DOTNET2,DOTNET35,DOTNET4" />
+        <property name="sooda.define" value="${sooda.define},MONO,DOTNET35,DOTNET4" />
     </target>
 
     <target name="release">
@@ -630,14 +617,12 @@
     </target>
 
     <target name="cleaninstaller">
-        <exec program="nant" commandline="-t:net-1.1 clean" />
         <exec program="nant" commandline="-t:net-2.0 clean" />
 
         <call target="installer" />
     </target>
 
     <target name="installer" depends="update-build-number">
-        <exec program="nant" commandline="-t:net-1.1 -D:sooda.debug=${sooda.debug} -D:sooda.optimize=${sooda.optimize} build" />
         <exec program="nant" commandline="-t:net-2.0 -D:sooda.debug=${sooda.debug} -D:sooda.optimize=${sooda.optimize} build" />
 
         <readregistry property="nsis.dir" key="SOFTWARE\NSIS\" />
@@ -664,10 +649,6 @@
         </copy>
     </target>
 
-    <target name="sln">
-        <solution configuration="Release" solutionfile="Sooda.vs2003.sln" />
-    </target>
-
     <target name="msbuild">
         <exec program="${framework::get-framework-directory(framework::get-target-framework())}/msbuild.exe" commandline="Sooda.vs2008.sln" />
     </target>
@@ -676,9 +657,6 @@
         <call target="clean" />
         <property name="nant.settings.currentframework" value="net-2.0" />
         <call target="msbuild" />
-        <property name="nant.settings.currentframework" value="net-1.1" />
-        <call target="sln" />
-        <exec program="nant" commandline="-t:net-1.1 clean build" />
         <exec program="nant" commandline="-t:net-2.0 clean build" />
     </target>
 

@@ -113,7 +113,6 @@ namespace Sooda.ObjectMapper.FieldHandlers
             return (bool)val;
         }
 
-#if DOTNET2
         public static bool? GetNullableValue(object fieldValue)
         {
             if (fieldValue == null)
@@ -126,7 +125,5 @@ namespace Sooda.ObjectMapper.FieldHandlers
         {
             return typeof(bool?);
         }
-#endif
-
     }
 }

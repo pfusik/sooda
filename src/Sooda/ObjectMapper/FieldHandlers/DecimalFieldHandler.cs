@@ -114,7 +114,6 @@ namespace Sooda.ObjectMapper.FieldHandlers
             return (decimal)val;
         }
 
-#if DOTNET2
         public static decimal? GetNullableValue(object fieldValue)
         {
             if (fieldValue == null)
@@ -127,7 +126,5 @@ namespace Sooda.ObjectMapper.FieldHandlers
         {
             return typeof(decimal?);
         }
-#endif
-
     }
 }
