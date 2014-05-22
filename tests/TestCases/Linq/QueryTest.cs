@@ -813,6 +813,17 @@ namespace Sooda.UnitTests.TestCases.Linq
                 }
             }
         }
+
+        [Test]
+        public void BikeOwnerTypes()
+        {
+            using (new SoodaTransaction())
+            {
+                List<ContactType> tl = (from b in Bike.Linq() where b.Owner != null orderby b.Owner.Type.Code select b.Owner.Type).ToList();
+                CollectionAssert.AreEqual(new ContactType[] { ContactType.Employee }, tl);
+            }
+        }
+
     }
 }
 
