@@ -407,8 +407,6 @@ namespace SoodaQuery {
                     break;
 
 
-#if !SOODA_NO_ODBC
-
             case providerNameODBC:
                 textBoxConnectionType.Text = typeof(System.Data.Odbc.OdbcConnection).AssemblyQualifiedName;
                 textBoxConnectionType.ReadOnly = true;
@@ -417,7 +415,6 @@ namespace SoodaQuery {
                 comboBoxOleDbDriver.Enabled = false;
                 comboBoxOleDbDriver.Text = "";
                 break;
-#endif
 
             case providerNameOleDB:
                 textBoxConnectionType.Text = typeof(System.Data.OleDb.OleDbConnection).AssemblyQualifiedName;
@@ -450,11 +447,7 @@ namespace SoodaQuery {
             listBoxProviders.Items.Add(providerNameSqlServer);
             listBoxProviders.Items.Add(providerNameOracle);
             listBoxProviders.Items.Add(providerNameOleDB);
-#if !SOODA_NO_ODBC
-
             listBoxProviders.Items.Add(providerNameODBC);
-#endif
-
             listBoxProviders.Items.Add(providerNameCustom);
             listBoxProviders.SelectedItem = providerNameSqlServer;
         }

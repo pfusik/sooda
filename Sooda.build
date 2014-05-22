@@ -14,9 +14,6 @@
 
     <property name="sources" value="src" />
 
-    <target name="set-build-net-1.0">
-        <property name="nant.settings.currentframework" value="net-1.0" />
-    </target>
     <target name="set-build-net-1.1">
         <property name="nant.settings.currentframework" value="net-1.1" />
     </target>
@@ -49,7 +46,6 @@
     </target>
 
     <target name="build" depends="build-${nant.settings.currentframework}" />
-    <target name="build-net-1.0" depends="set-build-net-1.0, build-common, tools, guitools" />
     <target name="build-net-1.1" depends="set-build-net-1.1, build-common, tools, guitools" />
     <target name="build-net-2.0" depends="set-build-net-2.0, build-common, tools, Sooda.Web, guitools" />
     <target name="build-net-3.5" depends="set-build-net-3.5, build-common, tools, Sooda.Web, guitools" />
@@ -126,10 +122,6 @@
         <echo message="optimize:  ${sooda.optimize}" />
         <echo message="output:    ${sooda.dir}" />
         <echo message="framework: ${framework::get-description(framework::get-target-framework())}" />
-    </target>
-
-    <target name="configure-net-1.0">
-        <property name="sooda.define" value="${sooda.define},SOODA_NO_ODBC" />
     </target>
 
     <target name="configure-net-2.0">
