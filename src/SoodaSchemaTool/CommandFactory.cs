@@ -28,19 +28,19 @@
 // 
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace SoodaSchemaTool
 {
-	public class CommandFactory
-	{
-        private static Hashtable _commands = new Hashtable();
+    public class CommandFactory
+    {
+        private static readonly Dictionary<string, Type> _commands = new Dictionary<string, Type>();
 
         public static Command CreateCommand(string name)
         {
-            Type t = (Type)_commands[name];
-            if (t == null)
+            Type t;
+            if (!_commands.TryGetValue(name, out t))
                 throw new Exception("Unknown command: " + name);
             Command command = (Command)Activator.CreateInstance(t);
             return command;
@@ -50,7 +50,7 @@ namespace SoodaSchemaTool
         {
             foreach (Type t in Assembly.GetCallingAssembly().GetTypes())
             {
-                CommandAttribute ca = (CommandAttribute)Attribute.GetCustomAttribute(t, typeof(CommandAttribute));
+                CommandAttribute ca = (CommandAttribute) Attribute.GetCustomAttribute(t, typeof(CommandAttribute));
                 if (ca != null)
                 {
                     _commands[ca.Name] = t;
@@ -58,9 +58,9 @@ namespace SoodaSchemaTool
             }
         }
 
-        public static Type[] RegisteredTypes
+        public static IEnumerable<Type> RegisteredTypes
         {
-            get { return (Type[])new ArrayList(_commands.Values).ToArray(typeof(Type)); }
+            get { return _commands.Values; }
         }
     }
 }

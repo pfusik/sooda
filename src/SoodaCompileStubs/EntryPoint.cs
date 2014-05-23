@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 using System.IO;
 using System.CodeDom;
@@ -52,7 +53,7 @@ namespace SoodaCompileStubs
             foreach (string dll in additionalReferences)
                 options.ReferencedAssemblies.Add(dll);
 
-            ArrayList sourceFiles = new ArrayList();
+            List<string> sourceFiles = new List<string>();
             sourceFiles.Add(sourceFile);
 
             options.CompilerOptions = compilerOptions;
@@ -76,7 +77,7 @@ namespace SoodaCompileStubs
                 results = compiler.CompileAssemblyFromFile(options, sourceFile);
             else
             {
-                results = compiler.CompileAssemblyFromFile(options, (string[]) sourceFiles.ToArray(typeof(string)));
+                results = compiler.CompileAssemblyFromFile(options, sourceFiles.ToArray());
             }
             if (results.NativeCompilerReturnValue != 0)
             {
@@ -112,7 +113,7 @@ namespace SoodaCompileStubs
             DateTime maxSourceTime = DateTime.MinValue;
             DateTime minTargetTime = DateTime.MaxValue;
             DateTime dt;
-            ArrayList sourceFiles = new ArrayList();
+            List<string> sourceFiles = new List<string>();
             for (int i = 2; i < args.Length; ++i)
             {
                 if (!args[i].StartsWith("/"))

@@ -29,6 +29,7 @@
 
 using System;
 using System.IO;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 
 using Sooda.Schema;
@@ -54,7 +55,7 @@ namespace Sooda.Sql
         public bool GenerateUniqueAliases = false;
         public int UniqueColumnId = 0;
         public StringCollection ActualFromAliases = new StringCollection();
-        public ArrayList FromJoins = new ArrayList();
+        public List<StringCollection> FromJoins = new List<StringCollection>();
         public StringCollection WhereJoins = new StringCollection();
 
         public SoqlToSqlConverter(TextWriter output, SchemaInfo schema, ISqlBuilder builder)
@@ -957,7 +958,7 @@ namespace Sooda.Sql
 
                     TableInfo tbl = FindContainerByName(v.From[i]).GetAllFields()[0].Table;
                     OutputTableFrom(tbl, ActualFromAliases[i]);
-                    foreach (string s in (StringCollection)FromJoins[i])
+                    foreach (string s in FromJoins[i])
                     {
                         if (IndentOutput)
                         {
@@ -1196,7 +1197,7 @@ namespace Sooda.Sql
             int foundPos = ActualFromAliases.IndexOf(fromTableAlias);
             if (foundPos == -1)
                 throw new NotSupportedException();
-            StringCollection coll = (StringCollection)FromJoins[foundPos];
+            StringCollection coll = FromJoins[foundPos];
             coll.Add(s);
         }
 

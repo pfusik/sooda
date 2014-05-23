@@ -30,6 +30,7 @@
 using System;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Sooda
 {
@@ -65,7 +66,7 @@ namespace Sooda
             return sb.ToString();
         }
 
-        private ArrayList fields = new ArrayList();
+        private readonly List<FieldCompareInfo> fields = new List<FieldCompareInfo>();
 
         public SoodaObjectMultiFieldComparer() { }
 

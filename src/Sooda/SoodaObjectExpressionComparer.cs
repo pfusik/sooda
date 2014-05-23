@@ -30,6 +30,7 @@
 using System;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 
 using Sooda.QL;
 
@@ -74,7 +75,7 @@ namespace Sooda
             }
         }
         
-        private ArrayList expressions = new ArrayList();
+        private readonly List<ExpressionCompareInfo> expressions = new List<ExpressionCompareInfo>();
         private EvaluateContext _context1 = new EvaluateContext();
         private EvaluateContext _context2 = new EvaluateContext();
 

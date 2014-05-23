@@ -30,6 +30,7 @@
 using System;
 using System.Xml.Serialization;
 using System.Collections;
+using System.Collections.Generic;
 
 using Sooda.ObjectMapper.FieldHandlers;
 
@@ -408,16 +409,13 @@ namespace Sooda.Schema
                 }
             }
 
-            ArrayList pkFields = new ArrayList();
-
+            List<FieldInfo> pkFields = new List<FieldInfo>();
             foreach (FieldInfo fi in UnifiedFields)
             {
                 if (fi.IsPrimaryKey)
-                {
                     pkFields.Add(fi);
-                }
             }
-            _primaryKeyFields = (FieldInfo[])pkFields.ToArray(typeof(FieldInfo));
+            _primaryKeyFields = pkFields.ToArray();
         }
 
         internal Array MergeArray(Array oldArray, Array merge)

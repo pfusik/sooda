@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Xml.Serialization;
 using System.Text;
@@ -83,11 +84,11 @@ namespace Sooda.Schema
 
         [XmlIgnore]
         [NonSerialized]
-        private Hashtable _subclasses;
+        private Dictionary<string, ClassInfoCollection> _subclasses;
 
         [XmlIgnore]
         [NonSerialized]
-        private Hashtable _backRefCollections;
+        private Dictionary<string, StringCollection> _backRefCollections;
 
         public bool Contains(string className)
         {
@@ -134,7 +135,7 @@ namespace Sooda.Schema
             relationNameHash = new Hashtable(StringComparer.OrdinalIgnoreCase);
             Rehash();
 
-            _backRefCollections = new Hashtable();
+            _backRefCollections = new Dictionary<string, StringCollection>();
 
             foreach (ClassInfo ci in Classes)
             {
@@ -177,7 +178,7 @@ namespace Sooda.Schema
             foreach (DataSourceInfo dsi in DataSources)
             {
                 dsi.Resolve();
-            };
+            }
 
 
             LocalClasses = new ClassInfoCollection();
@@ -193,7 +194,7 @@ namespace Sooda.Schema
                     LocalRelations.Add(ri);
             }
 
-            _subclasses = new Hashtable();
+            _subclasses = new Dictionary<string, ClassInfoCollection>();
 
             foreach (ClassInfo ci in Classes)
             {
@@ -204,14 +205,16 @@ namespace Sooda.Schema
             {
                 for (ClassInfo ci = ci0.InheritsFromClass; ci != null; ci = ci.InheritsFromClass)
                 {
-                    ((ClassInfoCollection)_subclasses[ci.Name]).Add(ci0);
+                    _subclasses[ci.Name].Add(ci0);
                 }
             }
         }
 
         internal ClassInfoCollection GetSubclasses(ClassInfo ci)
         {
-            return (ClassInfoCollection)_subclasses[ci.Name];
+            ClassInfoCollection subclasses;
+            _subclasses.TryGetValue(ci.Name, out subclasses);
+            return subclasses;
         }
 
         private void Rehash()
@@ -268,7 +271,7 @@ namespace Sooda.Schema
 
             if (includedSchema.Classes != null)
             {
-                Hashtable classNames = new Hashtable();
+                Dictionary<string, ClassInfo> classNames = new Dictionary<string, ClassInfo>();
                 foreach (ClassInfo nci in includedSchema.Classes)
                     classNames.Add(nci.Name, nci);
 
@@ -278,9 +281,10 @@ namespace Sooda.Schema
                     foreach (ClassInfo ci in this.Classes)
                     {
                         newClasses.Add(ci);
-                        if (classNames.ContainsKey(ci.Name))
+                        ClassInfo ci2;
+                        if (classNames.TryGetValue(ci.Name, out ci2))
                         {
-                            ci.Merge((ClassInfo)classNames[ci.Name]);
+                            ci.Merge(ci2);
                             classNames.Remove(ci.Name);
                         }
                     }
@@ -316,7 +320,7 @@ namespace Sooda.Schema
 
             if (includedSchema.DataSources != null)
             {
-                Hashtable sourceNames = new Hashtable();
+                Dictionary<string, DataSourceInfo> sourceNames = new Dictionary<string, DataSourceInfo>();
 
                 DataSourceInfoCollection newDataSources = new DataSourceInfoCollection();
 
@@ -356,7 +360,9 @@ namespace Sooda.Schema
 
         public StringCollection GetBackRefCollections(FieldInfo fi)
         {
-            return (StringCollection)_backRefCollections[fi.NameTag];
+            StringCollection collections;
+            _backRefCollections.TryGetValue(fi.NameTag, out collections);
+            return collections;
         }
 
         internal void AddBackRefCollection(FieldInfo fi, string name)

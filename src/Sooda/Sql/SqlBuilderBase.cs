@@ -28,7 +28,7 @@
 // 
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Globalization;
@@ -97,7 +97,7 @@ namespace Sooda.Sql
         public void GenerateCreateTable(TextWriter xtw, Sooda.Schema.TableInfo tableInfo, string additionalSettings)
         {
             xtw.WriteLine("create table {0} (", tableInfo.DBTableName);
-            Hashtable processedFields = new Hashtable();
+            Dictionary<string, bool> processedFields = new Dictionary<string, bool>();
             for (int i = 0; i < tableInfo.Fields.Count; ++i)
             {
                 if (!processedFields.ContainsKey(tableInfo.Fields[i].DBColumnName))
@@ -107,7 +107,7 @@ namespace Sooda.Sql
                         Console.WriteLine();
                     else
                         Console.WriteLine(",");
-                    processedFields.Add(tableInfo.Fields[i].DBColumnName, 0);
+                    processedFields.Add(tableInfo.Fields[i].DBColumnName, true);
                 }
             }
             xtw.Write(')');
@@ -201,14 +201,14 @@ namespace Sooda.Sql
 
         protected virtual bool SetDbTypeFromValue(IDbDataParameter parameter, object value, SoqlLiteralValueModifiers modifiers)
         {
-            object o = paramTypes[value.GetType()];
-            if (o == null)
+            DbType dbType;
+            if (!paramTypes.TryGetValue(value.GetType(), out dbType))
                 return false;
-            parameter.DbType = (DbType)o;
+            parameter.DbType = dbType;
             return true;
         }
 
-        private static Hashtable paramTypes = new Hashtable();
+        private static readonly Dictionary<Type, DbType> paramTypes = new Dictionary<Type, DbType>();
 
         static SqlBuilderBase()
         {

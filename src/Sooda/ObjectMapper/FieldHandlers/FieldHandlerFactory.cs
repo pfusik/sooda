@@ -27,7 +27,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System.Collections;
+using System.Collections.Generic;
 
 using Sooda.Schema;
 
@@ -35,8 +35,8 @@ namespace Sooda.ObjectMapper.FieldHandlers
 {
     public class FieldHandlerFactory
     {
-        private static Hashtable _nullableHandlers = new Hashtable();
-        private static Hashtable _notNullHandlers = new Hashtable();
+        private static readonly Dictionary<FieldDataType, SoodaFieldHandler> _nullableHandlers = new Dictionary<FieldDataType, SoodaFieldHandler>();
+        private static readonly Dictionary<FieldDataType, SoodaFieldHandler> _notNullHandlers = new Dictionary<FieldDataType, SoodaFieldHandler>();
 
         static FieldHandlerFactory()
         {
@@ -78,17 +78,10 @@ namespace Sooda.ObjectMapper.FieldHandlers
 
         public static SoodaFieldHandler GetFieldHandler(FieldDataType type, bool nullable)
         {
-            object value;
-
-            if (nullable)
-                value = _nullableHandlers[type];
-            else
-                value = _notNullHandlers[type];
-
-            if (value == null)
-                throw new SoodaSchemaException("Field handler for type '" + type + "' not supported.");
-
-            return (SoodaFieldHandler)value;
+            SoodaFieldHandler handler;
+            if ((nullable ? _nullableHandlers : _notNullHandlers).TryGetValue(type, out handler))
+                return handler;
+            throw new SoodaSchemaException("Field handler for type '" + type + "' not supported.");
         }
     }
 }

@@ -307,7 +307,7 @@ namespace SoodaAddin.UI
                 if (WizardOptions.ModifyBuildEvent)
                 {
                     string[] lines = Strategy.PreBuildEvent.Replace("\r","").Split('\n');
-                    ArrayList newLines = new ArrayList();
+                    List<string> newLines = new List<string>();
 
                     newLines.Add("\"%SOODA_DIR%\\bin\\net-2.0\\SoodaStubGen.exe\" \"$(ProjectDir)" + soodaProjectFile + "\"");
                     foreach (string line in lines)
@@ -334,7 +334,7 @@ namespace SoodaAddin.UI
                         newLines.Add("\"%SOODA_DIR%\\bin\\net-" + dotnetVersion + "\\SoodaCompileStubs.exe\" \"" + Strategy.AssemblyName + "\" \"$(ProjectDir)Stubs\"" + extraFiles);
                     }
 
-                    string newPreBuildEvent = String.Join("\r\n", (string[])newLines.ToArray(typeof(string)));
+                    string newPreBuildEvent = String.Join("\r\n", newLines.ToArray());
                     WriteToLog("Setting Pre-Build Event to: " + newPreBuildEvent);
                     Strategy.PreBuildEvent = newPreBuildEvent;
                 }

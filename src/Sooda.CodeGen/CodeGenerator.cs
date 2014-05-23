@@ -32,6 +32,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 
 using System.CodeDom;
@@ -664,11 +665,11 @@ namespace Sooda.CodeGen
             //OutputRelationHalfTable(nspace, "R", relationName, rightColumnName, rightColumnType, ref2ClassInfo, Project);
         }
 
-        private Hashtable generatedMiniBaseClasses = new Hashtable();
+        private Dictionary<string, string> generatedMiniBaseClasses = new Dictionary<string, string>();
 
         private void GenerateMiniBaseClass(CodeCompileUnit ccu, string className)
         {
-            if (!generatedMiniBaseClasses.Contains(className))
+            if (!generatedMiniBaseClasses.ContainsKey(className))
             {
                 generatedMiniBaseClasses.Add(className, className);
 

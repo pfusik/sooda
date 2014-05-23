@@ -32,6 +32,7 @@ using System.Text;
 using System.Data;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 
 using Sooda.Schema;
 using Sooda.QL;
@@ -206,7 +207,7 @@ namespace Sooda.Sql
                 {
                     tries--;
                     logger.Warn("Exception on Open#{0}: {1}", maxtries-tries, e);
-                    if ((tries == 0) || SqlBuilder.IsFatalException(Connection, e))
+                    if (tries == 0 || SqlBuilder.IsFatalException(Connection, e))
                         throw e;
                 }
             }
@@ -214,7 +215,7 @@ namespace Sooda.Sql
 
         public override bool IsOpen
         {
-            get { return (Connection != null) && (Connection.State == ConnectionState.Open); }
+            get { return Connection != null && Connection.State == ConnectionState.Open; }
         }
 
         public override void Rollback()
@@ -224,7 +225,7 @@ namespace Sooda.Sql
                 Transaction.Rollback();
                 Transaction.Dispose();
                 Transaction = Connection.BeginTransaction(IsolationLevel);
-            };
+            }
         }
 
         public override void Commit()
@@ -234,7 +235,7 @@ namespace Sooda.Sql
                 Transaction.Commit();
                 Transaction.Dispose();
                 Transaction = Connection.BeginTransaction(IsolationLevel);
-            };
+            }
         }
 
         public override void Close()
@@ -244,7 +245,7 @@ namespace Sooda.Sql
                 Transaction.Rollback();
                 Transaction.Dispose();
                 Transaction = null;
-            };
+            }
             if (Connection != null)
             {
                 Connection.Dispose();
@@ -472,7 +473,7 @@ namespace Sooda.Sql
             {
                 Queue queue = new Queue();
 
-                ArrayList tablesArrayList = new ArrayList(classInfo.UnifiedTables.Count);
+                List<TableInfo> tablesArrayList = new List<TableInfo>(classInfo.UnifiedTables.Count);
                 SoqlQueryExpression queryExpression = new SoqlQueryExpression();
                 queryExpression.StartIdx = startIdx;
                 queryExpression.PageCount = pageCount;
@@ -557,7 +558,7 @@ namespace Sooda.Sql
 
                 SqlBuilder.BuildCommandWithParameters(cmd, false, query, whereClause.Parameters, false);
 
-                tables = (TableInfo[])tablesArrayList.ToArray(typeof(TableInfo));
+                tables = tablesArrayList.ToArray();
                 return TimedExecuteReader(cmd);
             }
             catch (Exception ex)
@@ -873,7 +874,7 @@ namespace Sooda.Sql
             if (!cacheLoadingSelectStatement.Contains(tableInfo))
             {
                 Queue queue = new Queue();
-                ArrayList additional = new ArrayList();
+                List<TableInfo> additional = new List<TableInfo>();
                 additional.Add(tableInfo);
 
                 SoqlQueryExpression queryExpression = new SoqlQueryExpression();
@@ -955,7 +956,7 @@ namespace Sooda.Sql
                 // logger.Debug("Loading statement for table {0}: {1}", tableInfo.NameToken, query);
 
                 cacheLoadingSelectStatement[tableInfo] = query;
-                cacheLoadedTables[tableInfo] = additional.ToArray(typeof(TableInfo));
+                cacheLoadedTables[tableInfo] = additional.ToArray();
             }
             loadedTables = (TableInfo[])cacheLoadedTables[tableInfo];
             return (string)cacheLoadingSelectStatement[tableInfo];
@@ -978,12 +979,10 @@ namespace Sooda.Sql
             return (string)cacheLoadRefObjectSelectStatement[masterColumn][relationInfo];
         }
 
-        private void UnifyTable(Hashtable tables, TableInfo ti, bool isInherited)
+        private void UnifyTable(Dictionary<string, TableInfo> tables, TableInfo ti, bool isInherited)
         {
             TableInfo baseTable;
-
-            baseTable = (TableInfo)tables[ti.DBTableName];
-            if (baseTable == null)
+            if (!tables.TryGetValue(ti.DBTableName, out baseTable))
             {
                 baseTable = new TableInfo();
                 baseTable.DBTableName = ti.DBTableName;
@@ -1100,8 +1099,8 @@ namespace Sooda.Sql
 
         public virtual void GenerateDdlForSchema(SchemaInfo schema, TextWriter tw)
         {
-            Hashtable tables = new Hashtable();
-            Hashtable processed = new Hashtable();
+            Dictionary<string, TableInfo> tables = new Dictionary<string, TableInfo>();
+            Dictionary<string, string> processed = new Dictionary<string, string>();
 
             while (processed.Count < schema.Classes.Count)
             {
@@ -1110,8 +1109,7 @@ namespace Sooda.Sql
                     if (!processed.ContainsKey(ci.Name))
                     {
                         bool isInherited = ci.InheritsFromClass != null;
-                        bool canProcess = isInherited ? processed.ContainsKey(ci.InheritsFromClass.Name) : true;
-                        if (canProcess)
+                        if (!isInherited || processed.ContainsKey(ci.InheritsFromClass.Name))
                         {
                             foreach (TableInfo ti in ci.UnifiedTables)
                             {
@@ -1128,7 +1126,7 @@ namespace Sooda.Sql
                 UnifyTable(tables, ri.Table, false);
             }
 
-            ArrayList names = new ArrayList();
+            List<string> names = new List<string>();
 
             foreach (TableInfo ti in tables.Values)
             {
@@ -1140,22 +1138,22 @@ namespace Sooda.Sql
             foreach (string s in names)
             {
                 tw.WriteLine("--- table {0}", s);
-                SqlBuilder.GenerateCreateTable(tw, (TableInfo)tables[s], this.CreateTable);
+                SqlBuilder.GenerateCreateTable(tw, tables[s], this.CreateTable);
             }
 
             foreach (string s in names)
             {
-                SqlBuilder.GeneratePrimaryKey(tw, (TableInfo)tables[s], this.CreateIndex);
+                SqlBuilder.GeneratePrimaryKey(tw, tables[s], this.CreateIndex);
             }
 
             foreach (string s in names)
             {
-                SqlBuilder.GenerateForeignKeys(tw, (TableInfo)tables[s]);
+                SqlBuilder.GenerateForeignKeys(tw, tables[s]);
             }
 
             foreach (string s in names)
             {
-                SqlBuilder.GenerateIndices(tw, (TableInfo)tables[s], this.CreateIndex);
+                SqlBuilder.GenerateIndices(tw, tables[s], this.CreateIndex);
             }
         }
     }
