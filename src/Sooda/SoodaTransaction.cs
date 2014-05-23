@@ -81,7 +81,7 @@ namespace Sooda
 
         internal SoodaDataSourceCollection _dataSources = new SoodaDataSourceCollection();
         private StringToISoodaObjectFactoryAssociation factoryForClassName = new StringToISoodaObjectFactoryAssociation();
-        private TypeToISoodaObjectFactoryAssociation factoryForType = new TypeToISoodaObjectFactoryAssociation();
+        private readonly Dictionary<Type, ISoodaObjectFactory> factoryForType = new Dictionary<Type, ISoodaObjectFactory>();
         private readonly Dictionary<SoodaObject, NameValueCollection> _persistentValues = new Dictionary<SoodaObject, NameValueCollection>();
         private IsolationLevel _isolationLevel = IsolationLevel.ReadCommitted;
         private Assembly _assembly;
@@ -738,9 +738,10 @@ namespace Sooda
 
         public ISoodaObjectFactory GetFactory(Type type, bool throwOnError)
         {
-            if (throwOnError && !factoryForType.Contains(type))
+            ISoodaObjectFactory factory;
+            if (!factoryForType.TryGetValue(type, out factory) && throwOnError)
                 throw new SoodaException("Class " + type.Name + " not registered for Sooda");
-            return factoryForType[type];
+            return factory;
         }
 
         public ISoodaObjectFactory GetFactory(ClassInfo classInfo)

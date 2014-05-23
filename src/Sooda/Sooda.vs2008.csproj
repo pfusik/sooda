@@ -147,9 +147,6 @@
     <Compile Include="Collections\StringToWeakSoodaObjectCollectionAssociation.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\TypeToISoodaObjectFactoryAssociation.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Collections\WeakSoodaObjectCollection.cs">
       <SubType>Code</SubType>
     </Compile>
