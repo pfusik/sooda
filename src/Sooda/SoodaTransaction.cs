@@ -76,7 +76,7 @@ namespace Sooda
         private SoodaObjectCollection _strongReferences = new SoodaObjectCollection();
         private StringToWeakSoodaObjectCollectionAssociation _objectsByClass = new StringToWeakSoodaObjectCollectionAssociation();
         private StringToWeakSoodaObjectCollectionAssociation _dirtyObjectsByClass = new StringToWeakSoodaObjectCollectionAssociation();
-        private StringToObjectToWeakSoodaObjectAssociation _objectDictByClass = new StringToObjectToWeakSoodaObjectAssociation();
+        private readonly Dictionary<string, ObjectToWeakSoodaObjectAssociation> _objectDictByClass = new Dictionary<string, ObjectToWeakSoodaObjectAssociation>();
         private StringCollection _disabledKeyGenerators = new StringCollection();
 
         internal SoodaDataSourceCollection _dataSources = new SoodaDataSourceCollection();
@@ -229,8 +229,8 @@ namespace Sooda
 
         private ObjectToWeakSoodaObjectAssociation GetObjectDictionaryForClass(string className)
         {
-            ObjectToWeakSoodaObjectAssociation dict = _objectDictByClass[className];
-            if (dict == null)
+            ObjectToWeakSoodaObjectAssociation dict;
+            if (!_objectDictByClass.TryGetValue(className, out dict))
             {
                 dict = new ObjectToWeakSoodaObjectAssociation();
                 _objectDictByClass[className] = dict;
