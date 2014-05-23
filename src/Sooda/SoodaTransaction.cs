@@ -63,7 +63,7 @@ namespace Sooda
         private SoodaTransaction previousTransaction;
 
         private SoodaTransactionOptions transactionOptions;
-        private TypeToSoodaRelationTableAssociation _relationTables = new TypeToSoodaRelationTableAssociation();
+        private readonly Dictionary<Type, SoodaRelationTable> _relationTables = new Dictionary<Type, SoodaRelationTable>();
         //private KeyToSoodaObjectMap _objects = new KeyToSoodaObjectMap();
         private bool _useWeakReferences = false;
         private SoodaStatistics _statistics = new SoodaStatistics();
@@ -521,12 +521,9 @@ namespace Sooda
                     }
                 }
 
-                if (_relationTables != null)
+                foreach (SoodaRelationTable rel in _relationTables.Values)
                 {
-                    foreach (SoodaRelationTable rel in _relationTables.Values)
-                    {
-                        rel.SaveTuples(this, isPrecommit);
-                    }
+                    rel.SaveTuples(this, isPrecommit);
                 }
 
                 foreach (SoodaDataSource source in _dataSources)
@@ -586,31 +583,25 @@ namespace Sooda
 
             // commit all transactions on all data sources
 
-            if (_relationTables != null)
+            foreach (SoodaRelationTable rel in _relationTables.Values)
             {
-                foreach (SoodaRelationTable rel in _relationTables.Values)
-                {
-                    rel.Commit();
-                }
+                rel.Commit();
             }
 
-			foreach (SoodaDataSource source in _dataSources)
-			{
-				source.Commit();
-			}
-			
+            foreach (SoodaDataSource source in _dataSources)
+            {
+                source.Commit();
+            }
+
             using (Cache.Lock())
             {
                 foreach (SoodaObject o in _dirtyObjects)
                 {
                     o.InvalidateCacheAfterCommit();
                 }
-                if (_relationTables != null)
+                foreach (SoodaRelationTable rel in _relationTables.Values)
                 {
-                    foreach (SoodaRelationTable rel in _relationTables.Values)
-                    {
-                        rel.InvalidateCacheAfterCommit(Cache);
-                    }
+                    rel.InvalidateCacheAfterCommit(Cache);
                 }
             }
 
@@ -680,8 +671,8 @@ namespace Sooda
 
         internal SoodaRelationTable GetRelationTable(Type relationType)
         {
-            SoodaRelationTable table = _relationTables[relationType];
-            if (table != null)
+            SoodaRelationTable table;
+            if (_relationTables.TryGetValue(relationType, out table))
                 return table;
 
             table = (SoodaRelationTable)Activator.CreateInstance(relationType);
