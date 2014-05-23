@@ -80,7 +80,7 @@ namespace Sooda
         private StringCollection _disabledKeyGenerators = new StringCollection();
 
         internal SoodaDataSourceCollection _dataSources = new SoodaDataSourceCollection();
-        private StringToISoodaObjectFactoryAssociation factoryForClassName = new StringToISoodaObjectFactoryAssociation();
+        private readonly Dictionary<string, ISoodaObjectFactory> factoryForClassName = new Dictionary<string, ISoodaObjectFactory>();
         private readonly Dictionary<Type, ISoodaObjectFactory> factoryForType = new Dictionary<Type, ISoodaObjectFactory>();
         private readonly Dictionary<SoodaObject, NameValueCollection> _persistentValues = new Dictionary<SoodaObject, NameValueCollection>();
         private IsolationLevel _isolationLevel = IsolationLevel.ReadCommitted;
@@ -726,9 +726,10 @@ namespace Sooda
 
         public ISoodaObjectFactory GetFactory(string className, bool throwOnError)
         {
-            if (throwOnError && !factoryForClassName.Contains(className))
+            ISoodaObjectFactory factory;
+            if (!factoryForClassName.TryGetValue(className, out factory) && throwOnError)
                 throw new SoodaException("Class " + className + " not registered for Sooda");
-            return factoryForClassName[className];
+            return factory;
         }
 
         public ISoodaObjectFactory GetFactory(Type type)
