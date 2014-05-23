@@ -126,9 +126,6 @@
     <Compile Include="Collections\ObjectToSoodaObjectFactoryAssociation.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\SoodaDataSourceCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Collections\SoodaObjectCollection.cs">
       <SubType>Code</SubType>
     </Compile>

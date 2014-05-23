@@ -79,7 +79,7 @@ namespace Sooda
         private readonly Dictionary<string, Dictionary<object, WeakSoodaObject>> _objectDictByClass = new Dictionary<string, Dictionary<object, WeakSoodaObject>>();
         private readonly StringCollection _disabledKeyGenerators = new StringCollection();
 
-        internal readonly SoodaDataSourceCollection _dataSources = new SoodaDataSourceCollection();
+        internal readonly List<SoodaDataSource> _dataSources = new List<SoodaDataSource>();
         private readonly Dictionary<string, ISoodaObjectFactory> factoryForClassName = new Dictionary<string, ISoodaObjectFactory>();
         private readonly Dictionary<Type, ISoodaObjectFactory> factoryForType = new Dictionary<Type, ISoodaObjectFactory>();
         private readonly Dictionary<SoodaObject, NameValueCollection> _persistentValues = new Dictionary<SoodaObject, NameValueCollection>();
@@ -413,10 +413,10 @@ namespace Sooda
 
         public SoodaDataSource OpenDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo)
         {
-            for (int i = 0; i < _dataSources.Count; ++i)
+            foreach (SoodaDataSource dataSource in _dataSources)
             {
-                if (_dataSources[i].Name == dataSourceInfo.Name)
-                    return _dataSources[i];
+                if (dataSource.Name == dataSourceInfo.Name)
+                    return dataSource;
             }
 
             SoodaDataSource ds = (SoodaDataSource)dataSourceInfo.CreateDataSource();
