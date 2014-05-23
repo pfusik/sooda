@@ -30,6 +30,7 @@
 using System;
 using System.Data;
 using System.Collections;
+using System.Collections.Generic;
 
 using Sooda.Collections;
 using Sooda.QL;
@@ -93,7 +94,7 @@ namespace Sooda.ObjectMapper
         {
             if (itemsArray == null)
                 return -1;
-            if (!items.Contains(obj))
+            if (!items.ContainsKey(obj))
             {
                 int pos = itemsArray.Add(obj);
                 items.Add(obj, pos);
@@ -106,9 +107,9 @@ namespace Sooda.ObjectMapper
             if (itemsArray == null)
                 return;
 
-            if (!items.Contains(obj))
+            int pos;
+            if (!items.TryGetValue(obj, out pos))
                 return;
-            int pos = items[obj];
 
             SoodaObject lastObj = itemsArray[itemsArray.Count - 1];
             if (lastObj != obj)
@@ -124,7 +125,7 @@ namespace Sooda.ObjectMapper
         {
             if (itemsArray == null)
                 LoadData();
-            return items.Contains(obj);
+            return items.ContainsKey(obj);
         }
 
         protected void LoadDataFromReader()
@@ -165,7 +166,7 @@ namespace Sooda.ObjectMapper
             bool useCache = false; //transaction.CachingPolicy.ShouldCacheRelation(relationInfo, classInfo);
             string cacheKey = null;
 
-            items = new SoodaObjectToInt32Association();
+            items = new Dictionary<SoodaObject, int>();
             itemsArray = new SoodaObjectCollection();
 
             if (useCache)

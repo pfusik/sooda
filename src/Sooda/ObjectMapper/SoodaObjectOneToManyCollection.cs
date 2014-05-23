@@ -30,6 +30,7 @@
 using System;
 using System.Data;
 using System.Collections;
+using System.Collections.Generic;
 
 using Sooda.Schema;
 using Sooda.Collections;
@@ -61,13 +62,6 @@ namespace Sooda.ObjectMapper
             this.childRefField = childRefField;
             this.additionalWhereClause = additionalWhereClause;
             this.cached = cached;
-        }
-
-        public override IEnumerator GetEnumerator()
-        {
-            if (items == null)
-                LoadData();
-            return items.Keys.GetEnumerator();
         }
 
         public override int Add(object obj)
@@ -114,7 +108,7 @@ namespace Sooda.ObjectMapper
                 return;
             }
 
-            if (items.Contains(c))
+            if (items.ContainsKey(c))
                 return;
 
             int pos = itemsArray.Add(c);
@@ -134,10 +128,9 @@ namespace Sooda.ObjectMapper
                 return;
             }
 
-            if (!items.Contains(c))
+            int pos;
+            if (!items.TryGetValue(c, out pos))
                 throw new InvalidOperationException("Attempt to remove object not in collection");
-
-            int pos = items[c];
 
             SoodaObject lastObj = itemsArray[itemsArray.Count - 1];
             if (lastObj != c)
@@ -154,7 +147,7 @@ namespace Sooda.ObjectMapper
             SoodaDataSource ds = transaction.OpenDataSource(classInfo.GetDataSource());
             TableInfo[] loadedTables;
 
-            items = new SoodaObjectToInt32Association();
+            items = new Dictionary<SoodaObject, int>();
             itemsArray = new SoodaObjectCollection();
 
             ISoodaObjectFactory factory = transaction.GetFactory(classInfo);
@@ -233,7 +226,7 @@ namespace Sooda.ObjectMapper
                     {
                         SoodaObject obj = (SoodaObject)entry.Key;
 
-                        if (!items.Contains(obj))
+                        if (!items.ContainsKey(obj))
                         {
                             int pos = itemsArray.Add(obj);
                             items.Add(obj, pos);

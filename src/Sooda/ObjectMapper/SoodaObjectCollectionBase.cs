@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 using Sooda;
 using Sooda.Collections;
@@ -42,7 +43,7 @@ namespace Sooda.ObjectMapper
         protected SoodaTransaction transaction;
         protected ClassInfo classInfo;
         protected SoodaObjectCollection itemsArray = null;
-        protected SoodaObjectToInt32Association items = null;
+        protected Dictionary<SoodaObject, int> items = null;
 
         protected SoodaObjectCollectionBase(SoodaTransaction transaction, ClassInfo classInfo)
         {
@@ -67,7 +68,7 @@ namespace Sooda.ObjectMapper
             }
         }
 
-        public virtual IEnumerator GetEnumerator()
+        public IEnumerator GetEnumerator()
         {
             if (itemsArray == null)
                 LoadData();
@@ -121,8 +122,9 @@ namespace Sooda.ObjectMapper
         {
             if (items == null)
                 LoadData();
-            if (items.Contains((SoodaObject) value))
-                return items[(SoodaObject) value];
+            int pos;
+            if (items.TryGetValue((SoodaObject) value, out pos))
+                return pos;
             else
                 return -1;
         }

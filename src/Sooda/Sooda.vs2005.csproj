@@ -136,9 +136,6 @@
     <Compile Include="Collections\SoodaObjectCollection.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\SoodaObjectToInt32Association.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Collections\SoodaObjectToNameValueCollectionAssociation.cs">
       <SubType>Code</SubType>
     </Compile>
