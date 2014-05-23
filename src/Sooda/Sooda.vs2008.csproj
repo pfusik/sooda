@@ -123,9 +123,6 @@
     <Compile Include="Caching\SoodaCacheEntry.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\ObjectToSoodaObjectAssociation.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Collections\ObjectToSoodaObjectFactoryAssociation.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -139,9 +136,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Collections\StringToISoodaObjectFactoryAssociation.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Collections\StringToObjectToSoodaObjectAssociation.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Collections\StringToObjectToSoodaObjectFactoryAssociation.cs">
