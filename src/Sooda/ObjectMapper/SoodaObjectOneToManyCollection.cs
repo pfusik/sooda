@@ -40,19 +40,22 @@ using Sooda.Logging;
 
 namespace Sooda.ObjectMapper
 {
+    enum CollectionChange
+    {
+        Added,
+        Removed
+    }
+
     public class SoodaObjectOneToManyCollection : SoodaObjectCollectionBase, ISoodaObjectList, ISoodaObjectListInternal
     {
         private static Logger logger = LogManager.GetLogger("Sooda.OneToManyCollection");
 
-        private SoodaObjectToObjectAssociation tempItems = null;
+        private Dictionary<SoodaObject, CollectionChange> tempItems = null;
         private SoodaObject parentObject;
         private string childRefField;
         private Type childType;
         private SoodaWhereClause additionalWhereClause;
         private bool cached;
-
-        private static readonly object markerAdded = new Object();
-        private static readonly object markerRemoved = new Object();
 
         public SoodaObjectOneToManyCollection(SoodaTransaction tran, Type childType, SoodaObject parentObject, string childRefField, Sooda.Schema.ClassInfo classInfo, SoodaWhereClause additionalWhereClause, bool cached)
             : base(tran, classInfo)
@@ -103,8 +106,8 @@ namespace Sooda.ObjectMapper
             if (items == null)
             {
                 if (tempItems == null)
-                    tempItems = new SoodaObjectToObjectAssociation();
-                tempItems[c] = markerAdded;
+                    tempItems = new Dictionary<SoodaObject, CollectionChange>();
+                tempItems[c] = CollectionChange.Added;
                 return;
             }
 
@@ -123,8 +126,8 @@ namespace Sooda.ObjectMapper
             if (items == null)
             {
                 if (tempItems == null)
-                    tempItems = new SoodaObjectToObjectAssociation();
-                tempItems[c] = markerRemoved;
+                    tempItems = new Dictionary<SoodaObject, CollectionChange>();
+                tempItems[c] = CollectionChange.Removed;
                 return;
             }
 
@@ -175,8 +178,12 @@ namespace Sooda.ObjectMapper
                     // this binds to cache
                     obj.EnsureFieldsInited();
 
-                    if (tempItems != null && tempItems[obj] == markerRemoved)
-                        continue;
+                    if (tempItems != null)
+                    {
+                        CollectionChange change;
+                        if (tempItems.TryGetValue(obj, out change) && change == CollectionChange.Removed)
+                            continue;
+                    }
 
                     int pos = itemsArray.Add(obj);
                     items.Add(obj, pos);
@@ -197,8 +204,12 @@ namespace Sooda.ObjectMapper
                         if (readObjects != null)
                             readObjects.Add(obj);
 
-                        if (tempItems != null && tempItems[obj] == markerRemoved)
-                            continue;
+                        if (tempItems != null)
+                        {
+                            CollectionChange change;
+                            if (tempItems.TryGetValue(obj, out change) && change == CollectionChange.Removed)
+                                continue;
+                        }
 
                         int pos = itemsArray.Add(obj);
                         items.Add(obj, pos);
@@ -220,11 +231,11 @@ namespace Sooda.ObjectMapper
 
             if (tempItems != null)
             {
-                foreach (DictionaryEntry entry in tempItems)
+                foreach (KeyValuePair<SoodaObject, CollectionChange> entry in tempItems)
                 {
-                    if (entry.Value == markerAdded)
+                    if (entry.Value == CollectionChange.Added)
                     {
-                        SoodaObject obj = (SoodaObject)entry.Key;
+                        SoodaObject obj = (SoodaObject) entry.Key;
 
                         if (!items.ContainsKey(obj))
                         {
