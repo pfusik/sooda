@@ -31,6 +31,7 @@ using System;
 using System.Data;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
 using System.Collections.Specialized;
@@ -407,7 +408,7 @@ namespace Sooda
                         source.BeginSaveChanges();
                     }
 
-                    SoodaObjectCollection deleted = GetTransaction().DeletedObjects;
+                    List<SoodaObject> deleted = GetTransaction().DeletedObjects;
 
                     for (int i = oldDeletePosition; i < newDeletePosition; ++i)
                     {

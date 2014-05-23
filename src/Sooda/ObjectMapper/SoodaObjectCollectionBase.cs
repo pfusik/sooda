@@ -32,7 +32,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 using Sooda;
-using Sooda.Collections;
 using Sooda.QL;
 using Sooda.Schema;
 
@@ -42,7 +41,7 @@ namespace Sooda.ObjectMapper
     {
         protected SoodaTransaction transaction;
         protected ClassInfo classInfo;
-        protected SoodaObjectCollection itemsArray = null;
+        protected List<SoodaObject> itemsArray = null;
         protected Dictionary<SoodaObject, int> items = null;
 
         protected SoodaObjectCollectionBase(SoodaTransaction transaction, ClassInfo classInfo)
@@ -72,7 +71,7 @@ namespace Sooda.ObjectMapper
         {
             if (itemsArray == null)
                 LoadData();
-            return ((IEnumerable) itemsArray).GetEnumerator();
+            return itemsArray.GetEnumerator();
         }
 
         public abstract int Add(object obj);

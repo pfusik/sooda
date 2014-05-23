@@ -122,14 +122,12 @@ namespace Sooda.ObjectMapper
                 // the filter expression may materialize new objects
                 // during checking. This way we avoid "collection modified" exception
 
-                SoodaObjectCollection clonedArray = new SoodaObjectCollection();
+                List<SoodaObject> clonedArray = new List<SoodaObject>();
                 foreach (WeakSoodaObject wr in al)
                 {
                     SoodaObject obj = wr.TargetSoodaObject;
                     if (obj != null)
-                    {
                         clonedArray.Add(obj);
-                    }
                 }
 
                 foreach (SoodaObject obj in clonedArray)
@@ -201,7 +199,7 @@ namespace Sooda.ObjectMapper
             {
                 if (involvedClasses != null)
                 {
-                    SoodaObjectCollection objectsToPrecommit = new SoodaObjectCollection();
+                    List<SoodaObject> objectsToPrecommit = new List<SoodaObject>();
 
                     // precommit objects
 

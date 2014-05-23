@@ -69,11 +69,11 @@ namespace Sooda
         private SoodaStatistics _statistics = new SoodaStatistics();
         private readonly List<WeakSoodaObject> _objectList = new List<WeakSoodaObject>();
         private Queue _precommitQueue = null;
-        private readonly SoodaObjectCollection _deletedObjects = new SoodaObjectCollection();
+        private readonly List<SoodaObject> _deletedObjects = new List<SoodaObject>();
         private readonly Hashtable _precommittedClassOrRelation = new Hashtable();
-        private readonly SoodaObjectCollection _postCommitQueue = new SoodaObjectCollection();
-        private readonly SoodaObjectCollection _dirtyObjects = new SoodaObjectCollection();
-        private readonly SoodaObjectCollection _strongReferences = new SoodaObjectCollection();
+        private readonly List<SoodaObject> _postCommitQueue = new List<SoodaObject>();
+        private readonly List<SoodaObject> _dirtyObjects = new List<SoodaObject>();
+        private readonly List<SoodaObject> _strongReferences = new List<SoodaObject>();
         private readonly Dictionary<string, List<WeakSoodaObject>> _objectsByClass = new Dictionary<string, List<WeakSoodaObject>>();
         private readonly Dictionary<string, List<WeakSoodaObject>> _dirtyObjectsByClass = new Dictionary<string, List<WeakSoodaObject>>();
         private readonly Dictionary<string, Dictionary<object, WeakSoodaObject>> _objectDictByClass = new Dictionary<string, Dictionary<object, WeakSoodaObject>>();
@@ -226,7 +226,7 @@ namespace Sooda
             return objects;
         }
 
-        public SoodaObjectCollection DirtyObjects
+        public List<SoodaObject> DirtyObjects
         {
             get { return _dirtyObjects; }
         }
@@ -495,7 +495,7 @@ namespace Sooda
             _precommittedClassOrRelation[ri.Name] = true;
         }
 
-        internal void SaveObjectChanges(bool isPrecommit, SoodaObjectCollection objectsToPrecommit)
+        internal void SaveObjectChanges(bool isPrecommit, List<SoodaObject> objectsToPrecommit)
         {
             try
             {
@@ -787,30 +787,20 @@ namespace Sooda
             Serialize(xtw, options);
         }
 
-        internal class KeyStringComparer : IComparer
+        static int Compare(SoodaObject o1, SoodaObject o2)
         {
-            public int Compare(object x, object y)
-            {
-                SoodaObject o1 = (SoodaObject)x;
-                SoodaObject o2 = (SoodaObject)y;
+            int retval = string.CompareOrdinal(o1.GetClassInfo().Name, o2.GetClassInfo().Name);
+            if (retval != 0)
+                return retval;
 
-                int retval = String.CompareOrdinal(o1.GetClassInfo().Name, o2.GetClassInfo().Name);
-                if (retval != 0)
-                    return retval;
-
-                retval = ((IComparable)o1.GetPrimaryKeyValue()).CompareTo(o2.GetPrimaryKeyValue());
-                if (retval != 0)
-                    return retval;
-
-                return 0;
-            }
+            return ((IComparable) o1.GetPrimaryKeyValue()).CompareTo(o2.GetPrimaryKeyValue());
         }
 
         public void Serialize(XmlWriter xw, SoodaSerializeOptions options)
         {
             xw.WriteStartElement("transaction");
 
-            SoodaObjectCollection orderedObjects = new SoodaObjectCollection();
+            List<SoodaObject> orderedObjects = new List<SoodaObject>();
             foreach (WeakSoodaObject wr in _objectList)
             {
                 SoodaObject obj = wr.TargetSoodaObject;
@@ -820,9 +810,7 @@ namespace Sooda
 
             if ((options & SoodaSerializeOptions.Canonical) != 0)
             {
-                ArrayList al = new ArrayList(orderedObjects);
-                al.Sort(new KeyStringComparer());
-                orderedObjects = new SoodaObjectCollection((SoodaObject[])al.ToArray(typeof(SoodaObject)));
+                orderedObjects.Sort(Compare);
             }
 
             foreach (SoodaObject o in DeletedObjects)
@@ -833,13 +821,13 @@ namespace Sooda
             {
                 if (!o.IsMarkedForDelete())
                 {
-                    if (o.IsObjectDirty() || ((options & SoodaSerializeOptions.IncludeNonDirtyObjects) != 0))
+                    if (o.IsObjectDirty() || (options & SoodaSerializeOptions.IncludeNonDirtyObjects) != 0)
                         o.PreSerialize(xw, options);
                 }
             }
             foreach (SoodaObject o in orderedObjects)
             {
-                if (o.IsObjectDirty() || ((options & SoodaSerializeOptions.IncludeNonDirtyObjects) != 0))
+                if (o.IsObjectDirty() || (options & SoodaSerializeOptions.IncludeNonDirtyObjects) != 0)
                     o.Serialize(xw, options);
             }
             // serialize N-N relation tables
@@ -1132,7 +1120,7 @@ namespace Sooda
             return _precommittedClassOrRelation.Contains(ri.Name);
         }
 
-        public SoodaObjectCollection DeletedObjects
+        public List<SoodaObject> DeletedObjects
         {
             get { return _deletedObjects; }
         }

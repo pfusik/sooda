@@ -32,7 +32,6 @@ using System.Data;
 using System.Collections;
 using System.Collections.Generic;
 
-using Sooda.Collections;
 using Sooda.QL;
 using Sooda.Logging;
 
@@ -96,8 +95,8 @@ namespace Sooda.ObjectMapper
                 return -1;
             if (!items.ContainsKey(obj))
             {
-                int pos = itemsArray.Add(obj);
-                items.Add(obj, pos);
+                items.Add(obj, itemsArray.Count);
+                itemsArray.Add(obj);
             }
             return -1;
         }
@@ -167,7 +166,7 @@ namespace Sooda.ObjectMapper
             string cacheKey = null;
 
             items = new Dictionary<SoodaObject, int>();
-            itemsArray = new SoodaObjectCollection();
+            itemsArray = new List<SoodaObject>();
 
             if (useCache)
             {

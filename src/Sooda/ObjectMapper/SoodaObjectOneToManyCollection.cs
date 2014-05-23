@@ -33,7 +33,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 using Sooda.Schema;
-using Sooda.Collections;
 using Sooda.Caching;
 using Sooda.QL;
 using Sooda.Logging;
@@ -114,8 +113,8 @@ namespace Sooda.ObjectMapper
             if (items.ContainsKey(c))
                 return;
 
-            int pos = itemsArray.Add(c);
-            items.Add(c, pos);
+            items.Add(c, itemsArray.Count);
+            itemsArray.Add(c);
         }
 
         public void InternalRemove(SoodaObject c)
@@ -151,7 +150,7 @@ namespace Sooda.ObjectMapper
             TableInfo[] loadedTables;
 
             items = new Dictionary<SoodaObject, int>();
-            itemsArray = new SoodaObjectCollection();
+            itemsArray = new List<SoodaObject>();
 
             ISoodaObjectFactory factory = transaction.GetFactory(classInfo);
             SoodaWhereClause whereClause = new SoodaWhereClause(Soql.FieldEqualsParam(childRefField, 0), parentObject.GetPrimaryKeyValue());
@@ -185,18 +184,18 @@ namespace Sooda.ObjectMapper
                             continue;
                     }
 
-                    int pos = itemsArray.Add(obj);
-                    items.Add(obj, pos);
+                    items.Add(obj, itemsArray.Count);
+                    itemsArray.Add(obj);
                 }
             }
             else
             {
                 using (IDataReader reader = ds.LoadObjectList(transaction.Schema, classInfo, whereClause, null, 0, -1, SoodaSnapshotOptions.Default, out loadedTables))
                 {
-                    SoodaObjectCollection readObjects = null;
+                    List<SoodaObject> readObjects = null;
 
                     if (cached)
-                        readObjects = new SoodaObjectCollection();
+                        readObjects = new List<SoodaObject>();
 
                     while (reader.Read())
                     {
@@ -211,8 +210,8 @@ namespace Sooda.ObjectMapper
                                 continue;
                         }
 
-                        int pos = itemsArray.Add(obj);
-                        items.Add(obj, pos);
+                        items.Add(obj, itemsArray.Count);
+                        itemsArray.Add(obj);
                     }
                     if (cached)
                     {
@@ -239,8 +238,8 @@ namespace Sooda.ObjectMapper
 
                         if (!items.ContainsKey(obj))
                         {
-                            int pos = itemsArray.Add(obj);
-                            items.Add(obj, pos);
+                            items.Add(obj, itemsArray.Count);
+                            itemsArray.Add(obj);
                         }
                     }
                 }
