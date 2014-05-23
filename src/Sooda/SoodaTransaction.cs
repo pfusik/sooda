@@ -76,7 +76,7 @@ namespace Sooda
         private SoodaObjectCollection _strongReferences = new SoodaObjectCollection();
         private StringToWeakSoodaObjectCollectionAssociation _objectsByClass = new StringToWeakSoodaObjectCollectionAssociation();
         private StringToWeakSoodaObjectCollectionAssociation _dirtyObjectsByClass = new StringToWeakSoodaObjectCollectionAssociation();
-        private readonly Dictionary<string, ObjectToWeakSoodaObjectAssociation> _objectDictByClass = new Dictionary<string, ObjectToWeakSoodaObjectAssociation>();
+        private readonly Dictionary<string, Dictionary<object, WeakSoodaObject>> _objectDictByClass = new Dictionary<string, Dictionary<object, WeakSoodaObject>>();
         private StringCollection _disabledKeyGenerators = new StringCollection();
 
         internal SoodaDataSourceCollection _dataSources = new SoodaDataSourceCollection();
@@ -227,12 +227,12 @@ namespace Sooda
             get { return _dirtyObjects; }
         }
 
-        private ObjectToWeakSoodaObjectAssociation GetObjectDictionaryForClass(string className)
+        private Dictionary<object, WeakSoodaObject> GetObjectDictionaryForClass(string className)
         {
-            ObjectToWeakSoodaObjectAssociation dict;
+            Dictionary<object, WeakSoodaObject> dict;
             if (!_objectDictByClass.TryGetValue(className, out dict))
             {
-                dict = new ObjectToWeakSoodaObjectAssociation();
+                dict = new Dictionary<object, WeakSoodaObject>();
                 _objectDictByClass[className] = dict;
             }
             return dict;
@@ -260,8 +260,8 @@ namespace Sooda
         private SoodaObject FindObjectWithKey(string className, object keyValue)
         {
             if (keyValue == null) keyValue = "";
-            WeakSoodaObject wo = GetObjectDictionaryForClass(className)[keyValue];
-            if (wo == null)
+            WeakSoodaObject wo;
+            if (!GetObjectDictionaryForClass(className).TryGetValue(keyValue, out wo))
                 return null;
             return wo.TargetSoodaObject;
         }
