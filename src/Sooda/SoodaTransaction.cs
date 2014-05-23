@@ -67,15 +67,15 @@ namespace Sooda
         //private KeyToSoodaObjectMap _objects = new KeyToSoodaObjectMap();
         private bool _useWeakReferences = false;
         private SoodaStatistics _statistics = new SoodaStatistics();
-        private readonly WeakSoodaObjectCollection _objectList = new WeakSoodaObjectCollection();
+        private readonly List<WeakSoodaObject> _objectList = new List<WeakSoodaObject>();
         private Queue _precommitQueue = null;
         private readonly SoodaObjectCollection _deletedObjects = new SoodaObjectCollection();
         private readonly Hashtable _precommittedClassOrRelation = new Hashtable();
         private readonly SoodaObjectCollection _postCommitQueue = new SoodaObjectCollection();
         private readonly SoodaObjectCollection _dirtyObjects = new SoodaObjectCollection();
         private readonly SoodaObjectCollection _strongReferences = new SoodaObjectCollection();
-        private readonly Dictionary<string, WeakSoodaObjectCollection> _objectsByClass = new Dictionary<string, WeakSoodaObjectCollection>();
-        private readonly Dictionary<string, WeakSoodaObjectCollection> _dirtyObjectsByClass = new Dictionary<string, WeakSoodaObjectCollection>();
+        private readonly Dictionary<string, List<WeakSoodaObject>> _objectsByClass = new Dictionary<string, List<WeakSoodaObject>>();
+        private readonly Dictionary<string, List<WeakSoodaObject>> _dirtyObjectsByClass = new Dictionary<string, List<WeakSoodaObject>>();
         private readonly Dictionary<string, Dictionary<object, WeakSoodaObject>> _objectDictByClass = new Dictionary<string, Dictionary<object, WeakSoodaObject>>();
         private readonly StringCollection _disabledKeyGenerators = new StringCollection();
 
@@ -212,16 +212,16 @@ namespace Sooda
             }
         }
 
-        internal WeakSoodaObjectCollection GetObjectsByClassName(string className)
+        internal List<WeakSoodaObject> GetObjectsByClassName(string className)
         {
-            WeakSoodaObjectCollection objects;
+            List<WeakSoodaObject> objects;
             _objectsByClass.TryGetValue(className, out objects);
             return objects;
         }
 
-        internal WeakSoodaObjectCollection GetDirtyObjectsByClassName(string className)
+        internal List<WeakSoodaObject> GetDirtyObjectsByClassName(string className)
         {
-            WeakSoodaObjectCollection objects;
+            List<WeakSoodaObject> objects;
             _dirtyObjectsByClass.TryGetValue(className, out objects);
             return objects;
         }
@@ -280,10 +280,10 @@ namespace Sooda
             {
                 AddObjectWithKey(ci.Name, pkValue, o);
 
-                WeakSoodaObjectCollection al;
+                List<WeakSoodaObject> al;
                 if (!_objectsByClass.TryGetValue(ci.Name, out al))
                 {
-                    al = new WeakSoodaObjectCollection();
+                    al = new List<WeakSoodaObject>();
                     _objectsByClass[ci.Name] = al;
                 }
                 al.Add(new WeakSoodaObject(o));
@@ -305,10 +305,10 @@ namespace Sooda
             _dirtyObjects.Add(o);
             for (ClassInfo ci = o.GetClassInfo(); ci != null; ci = ci.InheritsFromClass)
             {
-                WeakSoodaObjectCollection al;
+                List<WeakSoodaObject> al;
                 if (!_dirtyObjectsByClass.TryGetValue(ci.Name, out al))
                 {
-                    al = new WeakSoodaObjectCollection();
+                    al = new List<WeakSoodaObject>();
                     _dirtyObjectsByClass[ci.Name] = al;
                 }
                 al.Add(new WeakSoodaObject(o));
@@ -329,12 +329,11 @@ namespace Sooda
             }
         }
 
-        private void RemoveWeakSoodaObjectFromCollection(WeakSoodaObjectCollection collection, SoodaObject o)
+        private void RemoveWeakSoodaObjectFromCollection(List<WeakSoodaObject> collection, SoodaObject o)
         {
             for (int i = 0; i < collection.Count; ++i)
             {
-                SoodaObject obj = collection[i].TargetSoodaObject;
-                if (obj == o)
+                if (collection[i].TargetSoodaObject == o)
                 {
                     collection.RemoveAt(i);
                     break;
@@ -355,7 +354,7 @@ namespace Sooda
                 }
                 RemoveWeakSoodaObjectFromCollection(_objectList, o);
 
-                WeakSoodaObjectCollection al;
+                List<WeakSoodaObject> al;
                 if (_objectsByClass.TryGetValue(o.GetClassInfo().Name, out al))
                 {
                     RemoveWeakSoodaObjectFromCollection(al, o);

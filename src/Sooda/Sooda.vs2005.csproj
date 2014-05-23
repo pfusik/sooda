@@ -130,9 +130,6 @@
     <Compile Include="Collections\StringToObjectToSoodaObjectFactoryAssociation.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\WeakSoodaObjectCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Config\AppSettingsConfigProvider.cs">
       <SubType>Code</SubType>
     </Compile>

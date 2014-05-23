@@ -30,6 +30,7 @@
 using System;
 using System.Data;
 using System.Collections;
+using System.Collections.Generic;
 
 using Sooda.Schema;
 
@@ -113,7 +114,7 @@ namespace Sooda.ObjectMapper
         public SoodaObjectListSnapshot(SoodaTransaction tran, SoodaObjectFilter filter, ClassInfo ci)
         {
             this.classInfo = ci;
-            WeakSoodaObjectCollection al = tran.GetObjectsByClassName(ci.Name);
+            List<WeakSoodaObject> al = tran.GetObjectsByClassName(ci.Name);
 
             if (al != null)
             {
@@ -206,7 +207,7 @@ namespace Sooda.ObjectMapper
 
                     foreach (string involvedClassName in involvedClasses)
                     {
-                        WeakSoodaObjectCollection dirtyObjects = t.GetDirtyObjectsByClassName(involvedClassName);
+                        List<WeakSoodaObject> dirtyObjects = t.GetDirtyObjectsByClassName(involvedClassName);
                         if (dirtyObjects != null)
                         {
                             foreach (WeakSoodaObject wr in dirtyObjects)
