@@ -32,6 +32,7 @@ using System.Diagnostics;
 using System.Data;
 using System.Reflection;
 using System.Collections;
+using System.Collections.Generic;
 using System.Xml;
 using System.IO;
 using System.Collections.Specialized;
@@ -81,7 +82,7 @@ namespace Sooda
         internal SoodaDataSourceCollection _dataSources = new SoodaDataSourceCollection();
         private StringToISoodaObjectFactoryAssociation factoryForClassName = new StringToISoodaObjectFactoryAssociation();
         private TypeToISoodaObjectFactoryAssociation factoryForType = new TypeToISoodaObjectFactoryAssociation();
-        private SoodaObjectToNameValueCollectionAssociation _persistentValues = new SoodaObjectToNameValueCollectionAssociation();
+        private readonly Dictionary<SoodaObject, NameValueCollection> _persistentValues = new Dictionary<SoodaObject, NameValueCollection>();
         private IsolationLevel _isolationLevel = IsolationLevel.ReadCommitted;
         private Assembly _assembly;
         private SchemaInfo _schema;
@@ -1091,24 +1092,26 @@ namespace Sooda
 
         internal NameValueCollection GetPersistentValues(SoodaObject obj)
         {
-            return _persistentValues[obj];
+            NameValueCollection dict;
+            _persistentValues.TryGetValue(obj, out dict);
+            return dict;
         }
 
         internal string GetPersistentValue(SoodaObject obj, string name)
         {
-            NameValueCollection dict = _persistentValues[obj];
-            if (dict == null)
+            NameValueCollection dict;
+            if (!_persistentValues.TryGetValue(obj, out dict))
                 return null;
             return dict[name];
         }
 
         internal void SetPersistentValue(SoodaObject obj, string name, string value)
         {
-            NameValueCollection dict = _persistentValues[obj];
-            if (dict == null)
+            NameValueCollection dict;
+            if (!_persistentValues.TryGetValue(obj, out dict))
             {
                 dict = new NameValueCollection();
-                _persistentValues[obj] = dict;
+                _persistentValues.Add(obj, dict);
             }
             dict[name] = value;
         }
