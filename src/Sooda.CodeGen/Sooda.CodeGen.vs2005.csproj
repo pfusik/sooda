@@ -131,9 +131,6 @@
     <Compile Include="EmbedSchema.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ExternalProjectInfoCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="ICodeGeneratorOutput.cs">
       <SubType>Code</SubType>
     </Compile>

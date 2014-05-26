@@ -28,6 +28,7 @@
 // 
 
 using System;
+using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
@@ -158,7 +159,7 @@ namespace Sooda.CodeGen
 
         [XmlArray("external-projects")]
         [XmlArrayItem("project")]
-        public ExternalProjectInfoCollection ExternalProjects = new ExternalProjectInfoCollection();
+        public List<ExternalProjectInfo> ExternalProjects = new List<ExternalProjectInfo>();
 
         [XmlElement("use-partial")]
         [System.ComponentModel.DefaultValue(false)]
