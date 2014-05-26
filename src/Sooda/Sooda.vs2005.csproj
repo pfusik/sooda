@@ -505,9 +505,6 @@
     <Compile Include="Schema\CollectionBaseInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\CollectionBaseInfoCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Schema\CollectionNtoNInfo.cs">
       <SubType>Code</SubType>
     </Compile>

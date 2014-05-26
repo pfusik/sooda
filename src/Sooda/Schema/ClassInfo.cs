@@ -60,11 +60,11 @@ namespace Sooda.Schema
 
         [XmlIgnore]
         [NonSerialized]
-        public CollectionBaseInfoCollection UnifiedCollections = new CollectionBaseInfoCollection();
+        public List<CollectionBaseInfo> UnifiedCollections = new List<CollectionBaseInfo>();
 
         [XmlIgnore]
         [NonSerialized]
-        public CollectionBaseInfoCollection LocalCollections = new CollectionBaseInfoCollection();
+        public List<CollectionBaseInfo> LocalCollections = new List<CollectionBaseInfo>();
 
         [System.Xml.Serialization.XmlElementAttribute("const")]
         public ConstantInfo[] Constants;
@@ -330,8 +330,8 @@ namespace Sooda.Schema
                 }
             }
 
-            UnifiedCollections = new CollectionBaseInfoCollection();
-            LocalCollections = new CollectionBaseInfoCollection();
+            UnifiedCollections = new List<CollectionBaseInfo>();
+            LocalCollections = new List<CollectionBaseInfo>();
             for (ClassInfo ci = this; ci != null; ci = ci.InheritsFromClass)
             {
                 if (ci.Collections1toN != null)
