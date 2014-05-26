@@ -226,7 +226,7 @@ namespace Sooda.Schema
         [XmlIgnore]
         public TableInfoCollection UnifiedTables;
 
-        public ClassInfoCollection GetSubclassesForSchema(SchemaInfo schema)
+        public List<ClassInfo> GetSubclassesForSchema(SchemaInfo schema)
         {
             return schema.GetSubclasses(this);
         }

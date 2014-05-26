@@ -60,7 +60,7 @@ namespace Sooda.Schema
         public DataSourceInfoCollection DataSources = new DataSourceInfoCollection();
 
         [XmlElement("class", typeof(ClassInfo))]
-        public ClassInfoCollection Classes = new ClassInfoCollection();
+        public List<ClassInfo> Classes = new List<ClassInfo>();
 
         [XmlElement("defaultPrecommitValues")]
         [System.ComponentModel.DefaultValue(true)]
@@ -70,7 +70,7 @@ namespace Sooda.Schema
         public List<PrecommitValueInfo> PrecommitValues = new List<PrecommitValueInfo>();
 
         [XmlIgnore]
-        public ClassInfoCollection LocalClasses;
+        public List<ClassInfo> LocalClasses;
 
         [XmlIgnore]
         public RelationInfoCollection LocalRelations;
@@ -84,7 +84,7 @@ namespace Sooda.Schema
 
         [XmlIgnore]
         [NonSerialized]
-        private Dictionary<string, ClassInfoCollection> _subclasses;
+        private Dictionary<string, List<ClassInfo>> _subclasses;
 
         [XmlIgnore]
         [NonSerialized]
@@ -181,7 +181,7 @@ namespace Sooda.Schema
             }
 
 
-            LocalClasses = new ClassInfoCollection();
+            LocalClasses = new List<ClassInfo>();
             foreach (ClassInfo ci in Classes)
             {
                 if (ci.Schema == this)
@@ -194,11 +194,11 @@ namespace Sooda.Schema
                     LocalRelations.Add(ri);
             }
 
-            _subclasses = new Dictionary<string, ClassInfoCollection>();
+            _subclasses = new Dictionary<string, List<ClassInfo>>();
 
             foreach (ClassInfo ci in Classes)
             {
-                _subclasses[ci.Name] = new ClassInfoCollection();
+                _subclasses[ci.Name] = new List<ClassInfo>();
             }
 
             foreach (ClassInfo ci0 in Classes)
@@ -210,9 +210,9 @@ namespace Sooda.Schema
             }
         }
 
-        internal ClassInfoCollection GetSubclasses(ClassInfo ci)
+        internal List<ClassInfo> GetSubclasses(ClassInfo ci)
         {
-            ClassInfoCollection subclasses;
+            List<ClassInfo> subclasses;
             _subclasses.TryGetValue(ci.Name, out subclasses);
             return subclasses;
         }
@@ -275,7 +275,7 @@ namespace Sooda.Schema
                 foreach (ClassInfo nci in includedSchema.Classes)
                     classNames.Add(nci.Name, nci);
 
-                ClassInfoCollection newClasses = new ClassInfoCollection();
+                List<ClassInfo> newClasses = new List<ClassInfo>();
                 if (this.Classes != null)
                 {
                     foreach (ClassInfo ci in this.Classes)

@@ -28,8 +28,9 @@
 // 
 
 using System;
-using Sooda.Schema;
+using System.Collections.Generic;
 
+using Sooda.Schema;
 using Sooda.QL.TypedWrappers;
 
 namespace Sooda.QL
@@ -40,7 +41,7 @@ namespace Sooda.QL
     public class GetInvolvedClassesVisitor : ISoqlVisitor
     {
         private ClassInfo _rootClass;
-        private ClassInfoCollection _result = new ClassInfoCollection();
+        private readonly List<ClassInfo> _result = new List<ClassInfo>();
 
         public GetInvolvedClassesVisitor(ClassInfo rootClass)
         {
@@ -52,7 +53,7 @@ namespace Sooda.QL
             expr.Accept(this);
         }
 
-        public ClassInfoCollection Results
+        public List<ClassInfo> Results
         {
             get { return _result; }
         }

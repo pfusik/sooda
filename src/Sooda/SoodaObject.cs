@@ -1362,7 +1362,7 @@ namespace Sooda
         static ISoodaObjectFactory GetFactoryFromRecord(SoodaTransaction tran, ISoodaObjectFactory factory, IDataRecord record, int firstColumnIndex, object keyValue, bool loadData)
         {
             ClassInfo classInfo = factory.GetClassInfo();
-            ClassInfoCollection subclasses = tran.Schema.GetSubclasses(classInfo);
+            List<ClassInfo> subclasses = tran.Schema.GetSubclasses(classInfo);
             if (subclasses.Count == 0)
                 return factory;
 

@@ -28,6 +28,7 @@
 // 
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 using System.Xml.Serialization;
@@ -100,7 +101,7 @@ namespace Sooda.QL
             visitor.Visit(this);
         }
 
-        internal ClassInfo GetAndAddClassInfo(ClassInfo rootClass, ClassInfoCollection result)
+        internal ClassInfo GetAndAddClassInfo(ClassInfo rootClass, List<ClassInfo> result)
         {
             ClassInfo leftClass;
 

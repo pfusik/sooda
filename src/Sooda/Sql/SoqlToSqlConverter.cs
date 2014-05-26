@@ -356,7 +356,7 @@ namespace Sooda.Sql
                 currentClass = (ClassInfo)FindContainerByName(Query.From[0]);
             }
 
-            ClassInfoCollection subclasses = currentClass.GetSubclassesForSchema(Schema);
+            List<ClassInfo> subclasses = currentClass.GetSubclassesForSchema(Schema);
             if (subclasses.Count == 0)
             {
                 Output.Write('\'');

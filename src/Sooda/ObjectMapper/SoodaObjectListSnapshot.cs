@@ -147,7 +147,7 @@ namespace Sooda.ObjectMapper
             count = items.Count;
         }
 
-        private static string[] GetClassNames(ClassInfoCollection cic)
+        private static string[] GetClassNames(List<ClassInfo> cic)
         {
             string[] result = new string[cic.Count];
             for (int i = 0; i < cic.Count; ++i)
