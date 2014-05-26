@@ -556,9 +556,6 @@
     <Compile Include="Schema\TableInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\TableInfoCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="SoodaConfig.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -253,7 +253,7 @@ namespace SoodaSchemaTool
             ci.Name = MakePascalCase(table);
 
             TableInfo ti = new TableInfo();
-            ci.LocalTables = new TableInfoCollection();
+            ci.LocalTables = new List<TableInfo>();
             ti.DBTableName = table;
             ci.LocalTables.Add(ti);
 

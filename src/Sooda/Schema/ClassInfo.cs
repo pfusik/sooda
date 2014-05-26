@@ -50,7 +50,7 @@ namespace Sooda.Schema
         public string Description;
 
         [System.Xml.Serialization.XmlElementAttribute("table")]
-        public TableInfoCollection LocalTables;
+        public List<TableInfo> LocalTables;
 
         [System.Xml.Serialization.XmlElementAttribute("collectionOneToMany")]
         public CollectionOnetoManyInfo[] Collections1toN;
@@ -216,7 +216,7 @@ namespace Sooda.Schema
 
         [NonSerialized]
         [XmlIgnore]
-        public TableInfoCollection DatabaseTables;
+        public List<TableInfo> DatabaseTables;
 
         [NonSerialized]
         [XmlIgnore]
@@ -224,7 +224,7 @@ namespace Sooda.Schema
 
         [NonSerialized]
         [XmlIgnore]
-        public TableInfoCollection UnifiedTables;
+        public List<TableInfo> UnifiedTables;
 
         public List<ClassInfo> GetSubclassesForSchema(SchemaInfo schema)
         {
@@ -247,7 +247,7 @@ namespace Sooda.Schema
         {
             // Console.WriteLine(">>> FlattenTables for {0}", Name);
             if (LocalTables == null)
-                LocalTables = new TableInfoCollection();
+                LocalTables = new List<TableInfo>();
 
             if (InheritsFromClass != null)
             {
@@ -255,7 +255,7 @@ namespace Sooda.Schema
                 {
                     InheritsFromClass.FlattenTables();
                 }
-                UnifiedTables = new TableInfoCollection();
+                UnifiedTables = new List<TableInfo>();
                 foreach (TableInfo ti in InheritsFromClass.UnifiedTables)
                 {
                     UnifiedTables.Add(ti.Clone(this));
@@ -503,13 +503,13 @@ namespace Sooda.Schema
 
         internal void MergeTables()
         {
-            DatabaseTables = new TableInfoCollection();
-            Hashtable mergedTables = new Hashtable();
+            DatabaseTables = new List<TableInfo>();
+            Dictionary<string, TableInfo> mergedTables = new Dictionary<string, TableInfo>();
 
             foreach (TableInfo table in UnifiedTables)
             {
-                TableInfo mt = (TableInfo)mergedTables[table.DBTableName];
-                if (mt == null)
+                TableInfo mt;
+                if (!mergedTables.TryGetValue(table.DBTableName, out mt))
                 {
                     mt = new TableInfo();
                     mt.DBTableName = table.DBTableName;
