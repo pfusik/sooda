@@ -44,6 +44,7 @@ namespace Sooda.Sql
         SqlTopSupportMode TopSupport { get; }
         int MaxIdentifierLength { get; }
         bool UseSafeLiterals { get; set; }
+        string StringConcatenationOperator { get; }
 
         void BuildCommandWithParameters(IDbCommand command, bool append, string query, object[] par, bool isRaw);
 

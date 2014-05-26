@@ -39,6 +39,11 @@ namespace Sooda.Sql
     {
         public SqlServerBuilder() { }
 
+        public override string StringConcatenationOperator
+        {
+            get { return "+"; }
+        }
+
         public override string GetDDLCommandTerminator()
         {
             return Environment.NewLine + "GO" + Environment.NewLine + Environment.NewLine;

@@ -81,6 +81,11 @@ namespace Sooda.Sql
             }
         }
 
+        public virtual string StringConcatenationOperator
+        {
+            get { return "||"; }
+        }
+
         public virtual int MaxIdentifierLength
         {
             get

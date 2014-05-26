@@ -405,6 +405,17 @@ namespace Sooda.UnitTests.TestCases.Linq
                 Assert.AreEqual(2, ce.Count());
             }
         }
+
+        [Test]
+        public void StringConcatenate()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Name + "/" + c.Name == "Mary Manager/Mary Manager");
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(1, ce.First().ContactId);
+            }
+        }
     }
 }
 

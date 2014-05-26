@@ -36,5 +36,6 @@ namespace Sooda.QL
         Mul,
         Div,
         Mod,
+        Concat,
     }
 }

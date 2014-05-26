@@ -158,6 +158,9 @@ namespace Sooda.QL
                         return Convert.ToSByte(val1) % Convert.ToSByte(val2);
                     throw new NotSupportedException("Modulus not supported for arguments of type " + val1.GetType().Name + " and " + val2.GetType().Name);
 
+                case SoqlBinaryOperator.Concat:
+                    return Convert.ToString(val1) + Convert.ToString(val2);
+
                 default:
                     throw new NotSupportedException("Binary operator " + op + " is not supported.");
             }

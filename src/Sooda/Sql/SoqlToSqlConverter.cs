@@ -1400,5 +1400,13 @@ namespace Sooda.Sql
                 base.Visit(v);
             DisableBooleanExpansion = oldBooleanExpansion;
         }
+
+        protected override void Write(SoqlBinaryOperator op)
+        {
+            if (op == SoqlBinaryOperator.Concat)
+                Output.Write(_builder.StringConcatenationOperator);
+            else
+                base.Write(op);
+        }
     }
 }

@@ -551,6 +551,8 @@ namespace Sooda.Linq
                 case ExpressionType.MemberAccess:
                     return TranslateMember((MemberExpression) expr);
                 case ExpressionType.Add:
+                    if (expr.Type == typeof(string) || expr.Type == typeof(SqlString))
+                        return TranslateBinary((BinaryExpression) expr, SoqlBinaryOperator.Concat);
                     return TranslateBinary((BinaryExpression) expr, SoqlBinaryOperator.Add);
                 case ExpressionType.Subtract:
                     return TranslateBinary((BinaryExpression) expr, SoqlBinaryOperator.Sub);

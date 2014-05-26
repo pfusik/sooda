@@ -65,12 +65,9 @@ namespace Sooda.QL
             v.InnerExpression.Accept(this);
         }
 
-        public virtual void Visit(SoqlBinaryExpression v)
+        protected virtual void Write(SoqlBinaryOperator op)
         {
-            Output.Write('(');
-            v.par1.Accept(this);
-            Output.Write(' ');
-            switch (v.op)
+            switch (op)
             {
                 case SoqlBinaryOperator.Add:
                     Output.Write('+');
@@ -91,7 +88,19 @@ namespace Sooda.QL
                 case SoqlBinaryOperator.Mod:
                     Output.Write('%');
                     break;
+
+                case SoqlBinaryOperator.Concat:
+                    Output.Write("||");
+                    break;
             }
+        }
+
+        public virtual void Visit(SoqlBinaryExpression v)
+        {
+            Output.Write('(');
+            v.par1.Accept(this);
+            Output.Write(' ');
+            Write(v.op);
             Output.Write(' ');
             v.par2.Accept(this);
             Output.Write(')');
@@ -116,14 +125,12 @@ namespace Sooda.QL
 
             v.Left.Accept(this);
             Output.Write(" in (");
-            bool first = true;
 
             for (int i = 0; i < v.Right.Count; ++i)
             {
-                if (!first)
+                if (i > 0)
                     Output.Write(',');
-                first = false;
-                ((SoqlExpression)v.Right[i]).Accept(this);
+                v.Right[i].Accept(this);
             }
             Output.Write(')');
         }
