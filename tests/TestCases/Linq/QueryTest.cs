@@ -327,6 +327,26 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void SelectGuid()
+        {
+            using (new SoodaTransaction())
+            {
+                Guid g= (from e in EightFields.Linq() where e.Id == 1 select e.Guid).Single();
+                Assert.AreEqual(new Guid("757A29AF-2BB2-4974-829A-A944CF741265"), g);
+            }
+        }
+
+        [Test]
+        public void SelectBlob()
+        {
+            using (new SoodaTransaction())
+            {
+                byte[] b = (from e in EightFields.Linq() where e.Id == 1 select e.Blob).Single();
+                CollectionAssert.AreEqual(new byte[] { 0xf }, b);
+            }
+        }
+
+        [Test]
         public void OrderBy()
         {
             using (new SoodaTransaction())
