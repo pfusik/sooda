@@ -35,6 +35,7 @@ using System.Linq;
 
 using NUnit.Framework;
 using Sooda.UnitTests.BaseObjects;
+using Sooda.UnitTests.Objects;
 
 namespace Sooda.UnitTests.TestCases.Linq
 {
@@ -169,6 +170,16 @@ namespace Sooda.UnitTests.TestCases.Linq
 
                 ce = Contact.Linq().Where(c => c.LastSalary.Value >= 123);
                 Assert.AreEqual(4, ce.Count());
+            }
+        }
+
+        [Test]
+        public void TimeSpanCompare()
+        {
+            using (new SoodaTransaction())
+            {
+                int c = EightFields.Linq().Count(e => e.TimeSpan == TimeSpan.FromHours(1));
+                Assert.AreEqual(1, c);
             }
         }
 

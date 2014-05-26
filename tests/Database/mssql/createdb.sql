@@ -209,12 +209,12 @@ create table EightFields
 (
 	id int primary key not null,
 	parent int null references EightFields(id),
-	field3 int not null,
-	field4 int not null,
-	field5 int not null,
-	field6 int not null,
-	field7 int not null,
-	field8 int not null
+	timespan int not null,
+	timespan2 int null,
+	guid uniqueidentifier not null,
+	guid2 uniqueidentifier null,
+	blob varbinary(max) not null,
+	blob2 varbinary(max) null
 )
 go
 
@@ -298,6 +298,8 @@ insert into PKDateTime values('2000/01/01 02:00:00','test data 3','2000/01/01 00
 insert into PKString values('zzzzzzz','test data','zzzzzzz');
 insert into PKString values('xxxxxxx','test data 2','zzzzzzz');
 insert into PKString values('yyyyyyy','test data 3','zzzzzzz');
+
+insert into EightFields values (1, null, 3600, null, '757a29af-2bb2-4974-829a-a944cf741265', null, 0xf, null);
 go
 
 exec sp_grantdbaccess 'soodatest','soodatest'

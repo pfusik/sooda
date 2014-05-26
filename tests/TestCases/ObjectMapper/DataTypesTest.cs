@@ -34,6 +34,7 @@ using System.Data.SqlTypes;
 
 using Sooda.ObjectMapper;
 using Sooda.UnitTests.Objects;
+using Sooda.UnitTests.Objects.TypedQueries;
 using Sooda.UnitTests.BaseObjects;
 
 using NUnit.Framework;
@@ -219,6 +220,27 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
                     Assert.AreEqual(adt.NnStringVal, String.Empty);
                     Assert.AreEqual(adt.NnBoolVal, false);
                 }
+            }
+        }
+
+        [Test]
+        public void TimeSpan()
+        {
+            int id;
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                EightFields o = new EightFields();
+                id = o.Id;
+                o.TimeSpan = System.TimeSpan.FromHours(5);
+                tran.Commit();
+            }
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                EightFieldsList l = EightFields.GetList(EightFieldsField.TimeSpan == System.TimeSpan.FromHours(5) && EightFieldsField.Id == id);
+                Assert.AreEqual(1, l.Count);
+                EightFields o = EightFields.Load(id);
+                o.MarkForDelete();
+                tran.Commit();
             }
         }
     }

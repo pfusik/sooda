@@ -317,6 +317,16 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void SelectTimeSpan()
+        {
+            using (new SoodaTransaction())
+            {
+                TimeSpan t = (from e in EightFields.Linq() where e.Id == 1 select e.TimeSpan).Single();
+                Assert.AreEqual(TimeSpan.FromHours(1), t);
+            }
+        }
+
+        [Test]
         public void OrderBy()
         {
             using (new SoodaTransaction())

@@ -99,6 +99,10 @@ namespace Sooda.Linq
                 return value => value == DBNull.Value ? null : _executor.GetRef(type, value);
             if (typeof(INullable).IsAssignableFrom(type))
                 return value => SqlTypesUtil.Wrap(type, value == DBNull.Value ? null : value);
+            if (type == typeof(TimeSpan))
+                return value => TimeSpan.FromSeconds((int) value);
+            if (type == typeof(TimeSpan?))
+                return value => value == DBNull.Value ? null : (object) TimeSpan.FromSeconds((int) value);
             return value => value == DBNull.Value ? null : value;
         }
 

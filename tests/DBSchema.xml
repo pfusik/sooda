@@ -132,12 +132,12 @@
         <table name="EightFields">
             <field name="Id" type="Integer" dbcolumn="id" primaryKey="true" />
             <field name="Parent" type="Integer" dbcolumn="parent" nullable="true" references="EightFields" />
-            <field name="Field3" type="Integer" dbcolumn="field3" />
-            <field name="Field4" type="Integer" dbcolumn="field4" />
-            <field name="Field5" type="Integer" dbcolumn="field5" />
-            <field name="Field6" type="Integer" dbcolumn="field6" />
-            <field name="Field7" type="Integer" dbcolumn="field7" />
-            <field name="Field8" type="Integer" dbcolumn="field8" />
+            <field name="TimeSpan" type="TimeSpan" dbcolumn="timespan" />
+            <field name="NullableTimeSpan" type="TimeSpan" dbcolumn="timespan2" nullable="true" />
+            <field name="Guid" type="Guid" dbcolumn="guid" />
+            <field name="NullableGuid" type="Guid" dbcolumn="guid2" nullable="true" />
+            <field name="Blob" type="Blob" dbcolumn="blob" />
+            <field name="NullableBlob" type="Blob" dbcolumn="blob2" nullable="true" />
         </table>
     </class>
 
