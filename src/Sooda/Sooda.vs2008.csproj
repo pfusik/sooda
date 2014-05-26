@@ -519,9 +519,6 @@
     <Compile Include="Schema\DataSourceInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\DataSourceInfoCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Schema\DeleteAction.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -57,7 +57,7 @@ namespace Sooda.Schema
         public List<IncludeInfo> Includes = new List<IncludeInfo>();
 
         [XmlElement("datasource", typeof(DataSourceInfo))]
-        public DataSourceInfoCollection DataSources = new DataSourceInfoCollection();
+        public List<DataSourceInfo> DataSources = new List<DataSourceInfo>();
 
         [XmlElement("class", typeof(ClassInfo))]
         public List<ClassInfo> Classes = new List<ClassInfo>();
@@ -322,7 +322,7 @@ namespace Sooda.Schema
             {
                 Dictionary<string, DataSourceInfo> sourceNames = new Dictionary<string, DataSourceInfo>();
 
-                DataSourceInfoCollection newDataSources = new DataSourceInfoCollection();
+                List<DataSourceInfo> newDataSources = new List<DataSourceInfo>();
 
                 if (this.DataSources != null)
                 {
