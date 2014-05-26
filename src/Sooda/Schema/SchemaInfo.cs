@@ -67,7 +67,7 @@ namespace Sooda.Schema
         public bool DefaultPrecommitValues = true;
 
         [XmlElement("precommitValue", typeof(PrecommitValueInfo))]
-        public PrecommitValueInfoCollection PrecommitValues = new PrecommitValueInfoCollection();
+        public List<PrecommitValueInfo> PrecommitValues = new List<PrecommitValueInfo>();
 
         [XmlIgnore]
         public ClassInfoCollection LocalClasses;
@@ -347,9 +347,9 @@ namespace Sooda.Schema
         {
             if (PrecommitValues != null)
             {
-                for (int i = 0; i < PrecommitValues.Count; ++i)
-                    if (dataType == PrecommitValues[i].DataType)
-                        return PrecommitValues[i].Value;
+                foreach (PrecommitValue value in PrecommitValues)
+                    if (dataType == value.DataType)
+                        return value.Value;
             }
             if (DefaultPrecommitValues)
             {

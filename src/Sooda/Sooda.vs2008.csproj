@@ -549,9 +549,6 @@
     <Compile Include="Schema\PrecommitValueInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\PrecommitValueInfoCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Schema\RelationInfo.cs">
       <SubType>Code</SubType>
     </Compile>
