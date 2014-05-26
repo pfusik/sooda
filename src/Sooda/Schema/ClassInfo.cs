@@ -138,7 +138,7 @@ namespace Sooda.Schema
         // array of FieldInfo's that point to this class
         [XmlIgnore()]
         [NonSerialized]
-        public FieldInfoCollection OuterReferences;
+        public List<FieldInfo> OuterReferences;
 
         [XmlIgnore()]
         [NonSerialized]
@@ -208,11 +208,11 @@ namespace Sooda.Schema
 
         [NonSerialized]
         [XmlIgnore]
-        public FieldInfoCollection LocalFields;
+        public List<FieldInfo> LocalFields;
 
         [NonSerialized]
         [XmlIgnore]
-        public FieldInfoCollection UnifiedFields;
+        public List<FieldInfo> UnifiedFields;
 
         [NonSerialized]
         [XmlIgnore]
@@ -294,11 +294,11 @@ namespace Sooda.Schema
             if (parentSchema == null)
                 parentSchema = schema;
 
-            OuterReferences = new FieldInfoCollection();
+            OuterReferences = new List<FieldInfo>();
 
             // local fields - a sum of all tables local to the class
 
-            LocalFields = new FieldInfoCollection();
+            LocalFields = new List<FieldInfo>();
             int localOrdinal = 0;
             int count = 0;
             foreach (TableInfo table in LocalTables)
@@ -357,7 +357,7 @@ namespace Sooda.Schema
 
             // all inherited fields + local fields
 
-            UnifiedFields = new FieldInfoCollection();
+            UnifiedFields = new List<FieldInfo>();
 
             int unifiedOrdinal = 0;
             foreach (TableInfo ti in UnifiedTables)
@@ -628,7 +628,7 @@ namespace Sooda.Schema
             }
         }
 
-        public FieldInfoCollection GetAllFields()
+        public List<FieldInfo> GetAllFields()
         {
             return UnifiedFields;
         }

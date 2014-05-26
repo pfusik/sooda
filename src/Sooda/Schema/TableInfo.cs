@@ -33,6 +33,7 @@ namespace Sooda.Schema
     using System.Xml.Serialization;
     using System.Data;
     using System.Collections;
+    using System.Collections.Generic;
 
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     public enum TableUsageType
@@ -47,7 +48,7 @@ namespace Sooda.Schema
     public class TableInfo
     {
         [System.Xml.Serialization.XmlElementAttribute("field")]
-        public FieldInfoCollection Fields = new FieldInfoCollection();
+        public List<FieldInfo> Fields = new List<FieldInfo>();
 
         private string _dbTableName = null;
         private TableUsageType _usageType = TableUsageType.Normal;
@@ -120,7 +121,7 @@ namespace Sooda.Schema
                 throw new SoodaSchemaException(String.Format("Duplicate field '{0}' found!", fi.Name));
 
             if (Fields == null)
-                Fields = new FieldInfoCollection();
+                Fields = new List<FieldInfo>();
 
             Fields.Add(fi);
             Rehash();

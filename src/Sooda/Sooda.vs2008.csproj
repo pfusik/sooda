@@ -534,9 +534,6 @@
     <Compile Include="Schema\FieldInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\FieldInfoCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Schema\IFieldContainer.cs">
       <SubType>Code</SubType>
     </Compile>

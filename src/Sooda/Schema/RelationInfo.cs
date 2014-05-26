@@ -28,6 +28,7 @@
 // 
 
 using System;
+using System.Collections.Generic;
 
 namespace Sooda.Schema
 {
@@ -123,7 +124,7 @@ namespace Sooda.Schema
             return Table.FindFieldByName(name);
         }
 
-        public FieldInfoCollection GetAllFields()
+        public List<FieldInfo> GetAllFields()
         {
             return Table.Fields;
         }

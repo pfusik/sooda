@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
+using System.Collections.Generic;
+
 namespace Sooda.Schema
 {
     public interface IFieldContainer
@@ -35,6 +37,6 @@ namespace Sooda.Schema
         bool ContainsField(string name);
         int ContainsCollection(string name);
         FieldInfo FindFieldByName(string name);
-        FieldInfoCollection GetAllFields();
+        List<FieldInfo> GetAllFields();
     }
 }
