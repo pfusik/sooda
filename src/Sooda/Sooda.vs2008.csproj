@@ -543,9 +543,6 @@
     <Compile Include="Schema\RelationInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\RelationInfoCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Schema\SchemaInfo.cs">
       <SubType>Code</SubType>
     </Compile>

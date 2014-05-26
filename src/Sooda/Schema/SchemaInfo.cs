@@ -73,14 +73,14 @@ namespace Sooda.Schema
         public List<ClassInfo> LocalClasses;
 
         [XmlIgnore]
-        public RelationInfoCollection LocalRelations;
+        public List<RelationInfo> LocalRelations;
 
         [System.Xml.Serialization.XmlAnyAttribute()]
         [NonSerialized]
         public System.Xml.XmlAttribute[] Extensions;
 
         [XmlElement("relation", typeof(RelationInfo))]
-        public RelationInfoCollection Relations = new RelationInfoCollection();
+        public List<RelationInfo> Relations = new List<RelationInfo>();
 
         [XmlIgnore]
         [NonSerialized]
@@ -187,7 +187,7 @@ namespace Sooda.Schema
                 if (ci.Schema == this)
                     LocalClasses.Add(ci);
             }
-            LocalRelations = new RelationInfoCollection();
+            LocalRelations = new List<RelationInfo>();
             foreach (RelationInfo ri in Relations)
             {
                 if (ri.Schema == this)
@@ -300,7 +300,7 @@ namespace Sooda.Schema
 
             if (includedSchema.Relations != null)
             {
-                RelationInfoCollection newRelations = new RelationInfoCollection();
+                List<RelationInfo> newRelations = new List<RelationInfo>();
 
                 foreach (RelationInfo ci in includedSchema.Relations)
                 {
