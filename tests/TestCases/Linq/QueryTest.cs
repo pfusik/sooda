@@ -31,6 +31,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 
 using Sooda.Linq;
@@ -302,6 +303,16 @@ namespace Sooda.UnitTests.TestCases.Linq
             {
                 IEnumerable<int> ie = Contact.Linq().Select((c, i) => i);
                 CollectionAssert.AreEqual(Enumerable.Range(0, 7), ie);
+            }
+        }
+
+        [Test]
+        public void SelectNullable()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<SqlString> se = from v in Vehicle.Linq() orderby v.Name select v.Name;
+                CollectionAssert.AreEqual(new SqlString[] { "a bike", "a car", "a super-bike", "an extended bike", "another super-bike", "concrete bike 1", "concrete bike 2", "mega super-bike", "some vehicle" }, se);
             }
         }
 

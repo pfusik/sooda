@@ -33,10 +33,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlTypes;
 using System.Linq.Expressions;
 using System.Reflection;
 
 using Sooda.QL;
+using Sooda.Utils;
 
 namespace Sooda.Linq
 {
@@ -87,22 +89,31 @@ namespace Sooda.Linq
             return _soqls[0];
         }
 
+        Func<object, object> GetHandler(Type type)
+        {
+            if (type == typeof(bool))
+                return value => value is int ? (int) value != 0 : value;
+            if (type == typeof(bool?))
+                return value => value is int ? (int) value != 0 : value == DBNull.Value ? null : value;
+            if (type.IsSubclassOf(typeof(SoodaObject)))
+                return value => value == DBNull.Value ? null : _executor.GetRef(type, value);
+            if (typeof(INullable).IsAssignableFrom(type))
+                return value => SqlTypesUtil.Wrap(type, value == DBNull.Value ? null : value);
+            return value => value == DBNull.Value ? null : value;
+        }
+
         IList GetGenericList<T>()
         {
             if (_soqls.Count == 1 && _body == _parameters[0])
             {
                 List<T> list = new List<T>();
+                Func<object, object> handler = GetHandler(typeof(T));
                 using (IDataReader r = _executor.ExecuteQuery(_soqls))
                 {
                     while (r.Read())
                     {
                         object value = r.GetValue(0);
-                        if (value == DBNull.Value)
-                            value = null;
-                        else if (typeof(T) == typeof(bool) && value is int)
-                            value = (int) value != 0;
-                        else if (typeof(T).IsSubclassOf(typeof(SoodaObject)))
-                            value = _executor.GetRef(typeof(T), value); // FIXME: can fail if T has subclasses - concurrent query
+                        value = handler(value); // FIXME: can fail if T is SoodaObject with subclasses - concurrent query
                         list.Add((T) value);
                     }
                 }
@@ -119,13 +130,17 @@ namespace Sooda.Linq
             {
                 while (r.Read())
                 {
-                    object[] row = new object[_parameters.Count];
+                    object[] row = new object[columnCount];
                     for (int i = 0; i < columnCount; i++)
                         row[i] = r.GetValue(i);
                     rows.Add(row);
                 }
             }
 
+            Func<object, object>[] handlers = new Func<object, object>[columnCount];
+            for (int i = 0; i < columnCount; i++)
+                handlers[i] = GetHandler(_parameters[i].Type);
+            object[] args = new object[_parameters.Count];
             Delegate d = Expression.Lambda(_body, _parameters).Compile();
             T[] array = new T[rows.Count];
             for (int rowNum = 0; rowNum < rows.Count; rowNum++)
@@ -134,20 +149,11 @@ namespace Sooda.Linq
                 for (int i = 0; i < columnCount; i++)
                 {
                     object value = row[i];
-                    if (value == DBNull.Value)
-                        row[i] = null;
-                    else 
-                    {
-                        Type t = _parameters[i].Type;
-                        if (t == typeof(bool) && value is int)
-                            row[i] = (int) value != 0;
-                        else if (t.IsSubclassOf(typeof(SoodaObject)))
-                            row[i] = _executor.GetRef(t, value);
-                    }
+                    args[i] = handlers[i](value);
                 }
-                if (columnCount < row.Length)
-                    row[columnCount] = rowNum;
-                array[rowNum] = (T) d.DynamicInvoke(row);
+                if (columnCount < args.Length)
+                    args[columnCount] = rowNum;
+                array[rowNum] = (T) d.DynamicInvoke(args);
             }
             return array;
         }

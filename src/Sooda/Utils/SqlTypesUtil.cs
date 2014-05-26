@@ -45,29 +45,26 @@ namespace Sooda.Utils
             return o.GetType().GetProperty("Value").GetValue(o, null);
         }
 
+        internal static object Wrap(Type fieldType, object val)
+        {
+            if (val == null)
+            {
+                FieldInfo nullProperty = fieldType.GetField("Null", BindingFlags.Static | BindingFlags.Public);
+                return nullProperty.GetValue(null);
+            }
+            else
+            {
+                ConstructorInfo constructorInfo = fieldType.GetConstructor(new Type[] { val.GetType() });
+                return constructorInfo.Invoke(new object[] { val });
+            }
+        }
+
         public static void SetValue(FieldInfo fi, object obj, object val)
         {
             Type fieldType = fi.FieldType;
             if (typeof(INullable).IsAssignableFrom(fieldType))
-            {
-                if (val == null)
-                {
-                    FieldInfo nullProperty = fieldType.GetField("Null", BindingFlags.Static | BindingFlags.Public);
-                    object sqlNullValue = nullProperty.GetValue(null);
-                    fi.SetValue(obj, sqlNullValue);
-                }
-                else
-                {
-                    Type[] constructorParameterTypes = new Type[] { val.GetType() };
-                    ConstructorInfo constructorInfo = fieldType.GetConstructor(constructorParameterTypes);
-                    object sqlValue = constructorInfo.Invoke(new object[] { val });
-                    fi.SetValue(obj, sqlValue);
-                }
-            }
-            else
-            {
-                fi.SetValue(obj, val);
-            }
+                val = Wrap(fieldType, val);
+            fi.SetValue(obj, val);
         }
     }
 }
