@@ -1448,27 +1448,27 @@ namespace Sooda.CodeGen
             return Activator.CreateInstance(Type.GetType(projectType, true)) as IProjectFile;
         }
 
-        void AddImportsFromIncludedSchema(CodeNamespace nspace, IncludeInfoCollection includes, bool stubsSubnamespace)
+        void AddImportsFromIncludedSchema(CodeNamespace nspace, List<IncludeInfo> includes, bool stubsSubnamespace)
         {
             if (includes == null)
                 return;
 
             foreach (IncludeInfo ii in includes)
             {
-                if ((ii.Namespace != "") && (ii.Namespace != null))
+                if (!string.IsNullOrEmpty(ii.Namespace))
                     nspace.Imports.Add(new CodeNamespaceImport(ii.Namespace + (stubsSubnamespace ? ".Stubs" : "")));
                 AddImportsFromIncludedSchema(nspace, ii.Schema.Includes, stubsSubnamespace);
             }
         }
 
-        void AddTypedQueryImportsFromIncludedSchema(CodeNamespace nspace, IncludeInfoCollection includes)
+        void AddTypedQueryImportsFromIncludedSchema(CodeNamespace nspace, List<IncludeInfo> includes)
         {
             if (includes == null)
                 return;
 
             foreach (IncludeInfo ii in includes)
             {
-                if ((ii.Namespace != "") && (ii.Namespace != null))
+                if (!string.IsNullOrEmpty(ii.Namespace))
                     nspace.Imports.Add(new CodeNamespaceImport(ii.Namespace + ".TypedQueries"));
                 AddTypedQueryImportsFromIncludedSchema(nspace, ii.Schema.Includes);
             }

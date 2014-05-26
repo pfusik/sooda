@@ -54,7 +54,7 @@ namespace Sooda.Schema
         public string AssemblyName;
 
         [XmlElement("include", typeof(IncludeInfo))]
-        public IncludeInfoCollection Includes = new IncludeInfoCollection();
+        public List<IncludeInfo> Includes = new List<IncludeInfo>();
 
         [XmlElement("datasource", typeof(DataSourceInfo))]
         public DataSourceInfoCollection DataSources = new DataSourceInfoCollection();
@@ -129,7 +129,7 @@ namespace Sooda.Schema
         public void Resolve()
         {
             if (Includes == null)
-                Includes = new IncludeInfoCollection();
+                Includes = new List<IncludeInfo>();
 
             classNameHash = new Hashtable(StringComparer.OrdinalIgnoreCase);
             relationNameHash = new Hashtable(StringComparer.OrdinalIgnoreCase);
@@ -347,7 +347,7 @@ namespace Sooda.Schema
         {
             if (PrecommitValues != null)
             {
-                foreach (PrecommitValue value in PrecommitValues)
+                foreach (PrecommitValueInfo value in PrecommitValues)
                     if (dataType == value.DataType)
                         return value.Value;
             }

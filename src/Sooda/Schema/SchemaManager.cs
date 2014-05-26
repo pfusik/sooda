@@ -27,6 +27,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
@@ -64,12 +65,9 @@ namespace Sooda.Schema
             return new XmlTextReader(GetSchemaXsdStream());
         }
 
-        public static void ProcessIncludes(SchemaInfo resultSchema, IncludeInfoCollection includes, string baseDirectoryForIncludes)
+        public static void ProcessIncludes(SchemaInfo resultSchema, List<IncludeInfo> includes, string baseDirectoryForIncludes)
         {
             if (includes == null)
-                return;
-
-            if (includes.Count == 0)
                 return;
 
             foreach (IncludeInfo ii in includes)

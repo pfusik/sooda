@@ -541,9 +541,6 @@
     <Compile Include="Schema\IncludeInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Schema\IncludeInfoCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Schema\PrecommitValueInfo.cs">
       <SubType>Code</SubType>
     </Compile>
