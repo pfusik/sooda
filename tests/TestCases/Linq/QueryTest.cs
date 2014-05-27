@@ -156,8 +156,8 @@ namespace Sooda.UnitTests.TestCases.Linq
         {
             using (new SoodaTransaction())
             {
-                IEnumerable<SoodaObject> oe = from c in Contact.Linq() orderby c.ContactId select c.Manager;
-                CollectionAssert.AreEqual(new SoodaObject[] { null, Contact.Mary, Contact.Mary, null, null, null, null }, oe);
+                IEnumerable<Contact> oe = from c in Contact.Linq() orderby c.ContactId select c.Manager;
+                CollectionAssert.AreEqual(new Contact[] { null, Contact.Mary, Contact.Mary, null, null, null, null }, oe);
             }
         }
 
