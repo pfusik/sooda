@@ -1026,9 +1026,9 @@ namespace Sooda
         {
             string className = reader.GetAttribute("type");
             Type t = Type.GetType(className, true, false);
-            ConstructorInfo ci = t.GetConstructor(new Type[] { });
+            ConstructorInfo ci = t.GetConstructor(Type.EmptyTypes);
 
-            SoodaRelationTable retVal = (SoodaRelationTable)ci.Invoke(new object[] { });
+            SoodaRelationTable retVal = (SoodaRelationTable)ci.Invoke(new object[0]);
             _relationTables[t] = retVal;
             retVal.BeginDeserialization(Int32.Parse(reader.GetAttribute("tupleCount")));
             return retVal;
