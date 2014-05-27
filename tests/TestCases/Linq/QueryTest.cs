@@ -33,6 +33,8 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 
 using Sooda.Linq;
 
@@ -265,6 +267,38 @@ namespace Sooda.UnitTests.TestCases.Linq
             }
         }
         */
+
+#if DOTNET4
+        [Test]
+        public void SelectDictionary2()
+        {
+            using (new SoodaTransaction())
+            {
+                ParameterExpression c = Expression.Parameter(typeof(Contact));
+                ParameterExpression d = Expression.Variable(typeof(Dictionary<string, object>));
+                MethodInfo dictionaryAdd = typeof(Dictionary<string, object>).GetMethod("Add");
+                Expression<Func<Contact, Dictionary<string, object>>> selectLambda = Expression.Lambda<Func<Contact, Dictionary<string, object>>>(
+                    Expression.Block(
+                        new ParameterExpression[] { d },
+                        Expression.Assign(d, Expression.New(typeof(Dictionary<string, object>))), // Dictionary<string, object> d = new Dictionary<string, object>();
+                        Expression.Call(d, dictionaryAdd, Expression.Constant("Id"), Expression.Convert(Expression.Property(c, "ContactId"), typeof(object))), // d.Add("Id", c.ContactId);
+                        Expression.Call(d, dictionaryAdd, Expression.Constant("Name"), Expression.Property(c, "Name")), // d.Add("Name", c.Name);
+                        Expression.Call(d, dictionaryAdd, Expression.Constant("SubordinatesCount"), Expression.Convert(Expression.Property(Expression.Property(c, "Subordinates"), "Count"), typeof(object))), // d.Add("SubordinatesCount", c.Subordinates.Count);
+                        d), // return d;
+                    c);
+                Dictionary<string, object>[] da = Contact.Linq().OrderBy(c1 => c1.ContactId).Take(2).Select(selectLambda).ToArray();
+                Assert.AreEqual(2, da.Length);
+
+                Assert.AreEqual(1, da[0]["Id"]);
+                Assert.AreEqual("Mary Manager", da[0]["Name"]);
+                Assert.AreEqual(2, da[0]["SubordinatesCount"]);
+
+                Assert.AreEqual(2, da[1]["Id"]);
+                Assert.AreEqual("Ed Employee", da[1]["Name"]);
+                Assert.AreEqual(0, da[1]["SubordinatesCount"]);
+            }
+        }
+#endif
 
         [Test]
         public void SelectArray()

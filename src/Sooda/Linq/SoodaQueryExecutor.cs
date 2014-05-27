@@ -79,8 +79,17 @@ namespace Sooda.Linq
             switch (expr.NodeType)
             {
                 case ExpressionType.Constant:
+#if DOTNET4
+                case ExpressionType.DebugInfo:
+                case ExpressionType.Default:
+                case ExpressionType.Label:
+#endif
                     return true;
                 case ExpressionType.Parameter:
+                    // FIXME: local variables are fine
+#if DOTNET4
+                case ExpressionType.Throw:
+#endif
                     return false;
                 case ExpressionType.UnaryPlus:
                 case ExpressionType.Negate:
@@ -91,8 +100,23 @@ namespace Sooda.Linq
                 case ExpressionType.ArrayLength:
                 case ExpressionType.Quote:
                 case ExpressionType.TypeAs:
+#if DOTNET4
+                case ExpressionType.Increment:
+                case ExpressionType.Decrement:
+                case ExpressionType.Unbox:
+                case ExpressionType.PreIncrementAssign:
+                case ExpressionType.PreDecrementAssign:
+                case ExpressionType.PostIncrementAssign:
+                case ExpressionType.PostDecrementAssign:
+                case ExpressionType.OnesComplement:
+                case ExpressionType.IsTrue:
+                case ExpressionType.IsFalse:
+#endif
                     return IsConstant(((UnaryExpression) expr).Operand);
                 case ExpressionType.TypeIs:
+#if DOTNET4
+                case ExpressionType.TypeEqual:
+#endif
                     return IsConstant(((TypeBinaryExpression) expr).Expression);
                 case ExpressionType.Add:
                 case ExpressionType.AddChecked:
@@ -118,6 +142,23 @@ namespace Sooda.Linq
                 case ExpressionType.ArrayIndex:
                 case ExpressionType.LeftShift:
                 case ExpressionType.RightShift:
+#if DOTNET4
+                case ExpressionType.Assign:
+                case ExpressionType.AddAssign:
+                case ExpressionType.AddAssignChecked:
+                case ExpressionType.SubtractAssign:
+                case ExpressionType.SubtractAssignChecked:
+                case ExpressionType.MultiplyAssign:
+                case ExpressionType.MultiplyAssignChecked:
+                case ExpressionType.DivideAssign:
+                case ExpressionType.ModuloAssign:
+                case ExpressionType.AndAssign:
+                case ExpressionType.OrAssign:
+                case ExpressionType.ExclusiveOrAssign:
+                case ExpressionType.LeftShiftAssign:
+                case ExpressionType.RightShiftAssign:
+                case ExpressionType.PowerAssign:
+#endif
                     BinaryExpression be = (BinaryExpression) expr;
                     return IsConstant(be.Left) && IsConstant(be.Right);
                 case ExpressionType.Conditional:
@@ -138,8 +179,26 @@ namespace Sooda.Linq
                 case ExpressionType.Invoke:
                     InvocationExpression ie = (InvocationExpression) expr;
                     return IsConstant(ie.Expression) && ie.Arguments.All(IsConstant);
+#if DOTNET4
+                case ExpressionType.Block:
+                    return ((BlockExpression) expr).Expressions.All(IsConstant);
+                case ExpressionType.Index:
+                    IndexExpression ide = (IndexExpression) expr;
+                    return IsConstant(ide.Object) && ide.Arguments.All(IsConstant);
+                case ExpressionType.Loop:
+                    return IsConstant(((LoopExpression) expr).Body);
+                case ExpressionType.Switch:
+                    SwitchExpression se = (SwitchExpression) expr;
+                    return IsConstant(se.SwitchValue) && se.Cases.All(caze => IsConstant(caze.Body)) && IsConstant(se.DefaultBody);
+#endif
                 case ExpressionType.MemberInit:
                 case ExpressionType.ListInit:
+#if DOTNET4
+                case ExpressionType.Extension:
+                case ExpressionType.Goto:
+                case ExpressionType.RuntimeVariables:
+                case ExpressionType.Try:
+#endif
                 default:
                     throw new NotSupportedException(expr.NodeType.ToString());
             }
