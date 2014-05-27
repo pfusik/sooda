@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows.Forms;
@@ -331,7 +332,7 @@ namespace SoodaAddin.UI
                             extraFiles += " \"$(ProjectDir)AssemblyInfo.cs\"";
                         }
 
-                        newLines.Add("\"%SOODA_DIR%\\bin\\net-" + dotnetVersion + "\\SoodaCompileStubs.exe\" \"" + Strategy.AssemblyName + "\" \"$(ProjectDir)Stubs\"" + extraFiles);
+                        newLines.Add("\"%SOODA_DIR%\\bin\\net-2.0\\SoodaCompileStubs.exe\" \"" + Strategy.AssemblyName + "\" \"$(ProjectDir)Stubs\"" + extraFiles);
                     }
 
                     string newPreBuildEvent = String.Join("\r\n", newLines.ToArray());

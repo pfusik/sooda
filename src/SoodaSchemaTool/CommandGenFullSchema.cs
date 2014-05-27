@@ -43,6 +43,16 @@ namespace SoodaSchemaTool
         {
         }
 
+        static int CompareNames(ClassInfo x, ClassInfo y)
+        {
+            return x.Name.CompareTo(y.Name);
+        }
+
+        static int CompareNames(RelationInfo x, RelationInfo y)
+        {
+            return x.Name.CompareTo(y.Name);
+        }
+
         public override int Run(string[] args)
         {
             string schemaFileName = args[0];
@@ -51,8 +61,8 @@ namespace SoodaSchemaTool
             XmlTextReader xr = new XmlTextReader(schemaFileName);
             SchemaInfo schemaInfo = SchemaManager.ReadAndValidateSchema(xr, Path.GetDirectoryName(schemaFileName));
             schemaInfo.Includes.Clear();
-            schemaInfo.Classes.SortByName();
-            schemaInfo.Relations.SortByName();
+            schemaInfo.Classes.Sort(CompareNames);
+            schemaInfo.Relations.Sort(CompareNames);
 
             XmlSerializer ser = new XmlSerializer(typeof(SchemaInfo));
             XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
