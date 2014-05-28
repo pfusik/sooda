@@ -269,6 +269,11 @@ namespace Sooda.UnitTests.TestCases.Linq
         */
 
 #if DOTNET4
+        static Expression TryCatch(Expression body)
+        {
+            return Expression.TryCatch(body, Expression.Catch(typeof(Exception), Expression.Empty()));
+        }
+
         [Test]
         public void SelectDictionary2()
         {
@@ -280,11 +285,16 @@ namespace Sooda.UnitTests.TestCases.Linq
                 Expression<Func<Contact, Dictionary<string, object>>> selectLambda = Expression.Lambda<Func<Contact, Dictionary<string, object>>>(
                     Expression.Block(
                         new ParameterExpression[] { d },
-                        Expression.Assign(d, Expression.New(typeof(Dictionary<string, object>))), // Dictionary<string, object> d = new Dictionary<string, object>();
-                        Expression.Call(d, dictionaryAdd, Expression.Constant("Id"), Expression.Convert(Expression.Property(c, "ContactId"), typeof(object))), // d.Add("Id", c.ContactId);
-                        Expression.Call(d, dictionaryAdd, Expression.Constant("Name"), Expression.Property(c, "Name")), // d.Add("Name", c.Name);
-                        Expression.Call(d, dictionaryAdd, Expression.Constant("SubordinatesCount"), Expression.Convert(Expression.Property(Expression.Property(c, "Subordinates"), "Count"), typeof(object))), // d.Add("SubordinatesCount", c.Subordinates.Count);
-                        d), // return d;
+                        // Dictionary<string, object> d = new Dictionary<string, object>();
+                        Expression.Assign(d, Expression.New(typeof(Dictionary<string, object>))),
+                        // try { d.Add("Id", c.ContactId); } catch (Exception) { }
+                        TryCatch(Expression.Call(d, dictionaryAdd, Expression.Constant("Id"), Expression.Convert(Expression.Property(c, "ContactId"), typeof(object)))),
+                        // try { d.Add("Name", c.Name); } catch (Exception) { }
+                        TryCatch(Expression.Call(d, dictionaryAdd, Expression.Constant("Name"), Expression.Property(c, "Name"))),
+                        // d.Add("SubordinatesCount", c.Subordinates.Count);
+                        TryCatch(Expression.Call(d, dictionaryAdd, Expression.Constant("SubordinatesCount"), Expression.Convert(Expression.Property(Expression.Property(c, "Subordinates"), "Count"), typeof(object)))),
+                        // return d;
+                        d),
                     c);
                 Dictionary<string, object>[] da = Contact.Linq().OrderBy(c1 => c1.ContactId).Take(2).Select(selectLambda).ToArray();
                 Assert.AreEqual(2, da.Length);

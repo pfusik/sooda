@@ -72,6 +72,29 @@ namespace Sooda.Linq
             return _transaction.GetFactory(type).GetRef(_transaction, keyValue);
         }
 
+        static bool IsConstant(IEnumerable<ElementInit> initializers)
+        {
+            return initializers.All(ei => ei.Arguments.All(IsConstant));
+        }
+
+        static bool IsConstant(IEnumerable<MemberBinding> bindings)
+        {
+            return bindings.All(binding =>
+                {
+                    switch (binding.BindingType)
+                    {
+                    case MemberBindingType.Assignment:
+                        return IsConstant(((MemberAssignment) binding).Expression);
+                    case MemberBindingType.ListBinding:
+                        return IsConstant(((MemberListBinding) binding).Initializers);
+                    case MemberBindingType.MemberBinding:
+                        return IsConstant(((MemberMemberBinding) binding).Bindings);
+                    default:
+                        throw new NotImplementedException(binding.BindingType.ToString());
+                    }
+                });
+        }
+
         internal static bool IsConstant(Expression expr)
         {
             if (expr == null)
@@ -179,6 +202,12 @@ namespace Sooda.Linq
                 case ExpressionType.Invoke:
                     InvocationExpression ie = (InvocationExpression) expr;
                     return IsConstant(ie.Expression) && ie.Arguments.All(IsConstant);
+                case ExpressionType.ListInit:
+                    ListInitExpression lie = (ListInitExpression) expr;
+                    return IsConstant(lie.NewExpression) && IsConstant(lie.Initializers);
+                case ExpressionType.MemberInit:
+                    MemberInitExpression mie = (MemberInitExpression) expr;
+                    return IsConstant(mie.NewExpression) && IsConstant(mie.Bindings);
 #if DOTNET4
                 case ExpressionType.Block:
                     return ((BlockExpression) expr).Expressions.All(IsConstant);
@@ -189,15 +218,13 @@ namespace Sooda.Linq
                     return IsConstant(((LoopExpression) expr).Body);
                 case ExpressionType.Switch:
                     SwitchExpression se = (SwitchExpression) expr;
-                    return IsConstant(se.SwitchValue) && se.Cases.All(caze => IsConstant(caze.Body)) && IsConstant(se.DefaultBody);
-#endif
-                case ExpressionType.MemberInit:
-                case ExpressionType.ListInit:
-#if DOTNET4
+                    return IsConstant(se.SwitchValue) && se.Cases.All(kase => IsConstant(kase.Body)) && IsConstant(se.DefaultBody);
+                case ExpressionType.Try:
+                    TryExpression te = (TryExpression) expr;
+                    return IsConstant(te.Body) && IsConstant(te.Fault) && IsConstant(te.Finally) && te.Handlers.All(katch => IsConstant(katch.Body) && IsConstant(katch.Filter));
                 case ExpressionType.Extension:
                 case ExpressionType.Goto:
                 case ExpressionType.RuntimeVariables:
-                case ExpressionType.Try:
 #endif
                 default:
                     throw new NotSupportedException(expr.NodeType.ToString());
