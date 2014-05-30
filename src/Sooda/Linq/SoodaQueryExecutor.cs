@@ -272,7 +272,8 @@ namespace Sooda.Linq
 
         SoqlExpression TranslateConvert(UnaryExpression expr)
         {
-            if (expr.Operand.Type == typeof(object)
+            if (expr.Type == typeof(object)
+             || expr.Operand.Type == typeof(object)
              || Nullable.GetUnderlyingType(expr.Type) == expr.Operand.Type // T -> Nullable<T>
              || (expr.Type == typeof(double) && expr.Operand.Type == typeof(int)))
                 return TranslateExpression(expr.Operand);
