@@ -37,7 +37,7 @@ namespace Sooda
 {
     public class SoodaOrderBy
     {
-        private SoodaObjectExpressionComparer _comparer;
+        private readonly SoodaObjectExpressionComparer _comparer;
 
         public SoodaOrderBy(string columnName, SortOrder sortOrder)
         {
@@ -143,18 +143,17 @@ namespace Sooda
             for (int i = 0; i < components.Length; ++i)
             {
                 string[] tokens = components[i].Trim().Split(' ');
-                if (tokens.Length > 2 || tokens.Length == 0)
+                SortOrder order;
+                switch (tokens.Length)
                 {
-                    throw new ArgumentException("Invalid order by string");
-                }
-
-                SortOrder order = SortOrder.Ascending;
-                if (tokens.Length == 2)
-                {
-                    if (tokens[1].ToLower() == "desc")
-                    {
-                        order = SortOrder.Descending;
-                    }
+                    case 1:
+                        order = SortOrder.Ascending;
+                        break;
+                    case 2:
+                        order = tokens[1].Equals("desc", StringComparison.OrdinalIgnoreCase) ? SortOrder.Descending : SortOrder.Ascending;
+                        break;
+                    default:
+                        throw new ArgumentException("Invalid order by string");
                 }
 
                 columnNames[i] = tokens[0];

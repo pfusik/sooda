@@ -57,7 +57,7 @@ namespace Sooda
 
     public class SoodaTransaction : Component, IDisposable
     {
-        private static Logger transactionLogger = LogManager.GetLogger("Sooda.Transaction");
+        private static readonly Logger transactionLogger = LogManager.GetLogger("Sooda.Transaction");
         private static IDefaultSoodaTransactionStrategy _defaultTransactionStrategy = new SoodaThreadBoundTransactionStrategy();
 
         private SoodaTransaction previousTransaction;
@@ -117,7 +117,7 @@ namespace Sooda
 
             if (ObjectsAssembly == null)
             {
-                SoodaStubAssemblyAttribute[] attrs = (SoodaStubAssemblyAttribute[])callingAssembly.GetCustomAttributes(typeof(SoodaStubAssemblyAttribute), false);
+                SoodaStubAssemblyAttribute[] attrs = (SoodaStubAssemblyAttribute[]) callingAssembly.GetCustomAttributes(typeof(SoodaStubAssemblyAttribute), false);
                 if (attrs != null && attrs.Length == 1)
                 {
                     ObjectsAssembly = attrs[0].Assembly;
@@ -319,17 +319,10 @@ namespace Sooda
         {
             object pkValue = o.GetPrimaryKeyValue();
 
-            if (ExistsObjectWithKey(o.GetClassInfo().Name, pkValue))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return ExistsObjectWithKey(o.GetClassInfo().Name, pkValue);
         }
 
-        private void RemoveWeakSoodaObjectFromCollection(List<WeakSoodaObject> collection, SoodaObject o)
+        private static void RemoveWeakSoodaObjectFromCollection(List<WeakSoodaObject> collection, SoodaObject o)
         {
             for (int i = 0; i < collection.Count; ++i)
             {
@@ -906,7 +899,7 @@ namespace Sooda
 
                                     currentObject.EnableFieldUpdateTriggers();
                                     currentObject = null;
-                                };
+                                }
 
                                 objectKeyCounter = 0;
                                 objectForcePostCommit = false;
@@ -940,16 +933,7 @@ namespace Sooda
 
                                 if (objectKeyCounter == objectTotalKeyCounter)
                                 {
-                                    object primaryKey;
-
-                                    if (objectTotalKeyCounter == 1)
-                                    {
-                                        primaryKey = val;
-                                    }
-                                    else
-                                    {
-                                        primaryKey = new SoodaTuple(objectPrimaryKey);
-                                    }
+                                    object primaryKey = objectTotalKeyCounter == 1 ? val : new SoodaTuple(objectPrimaryKey);
 
                                     currentObject = BeginObjectDeserialization(objectFactory, primaryKey, objectMode);
                                     if (objectForcePostCommit)
@@ -1028,7 +1012,7 @@ namespace Sooda
             Type t = Type.GetType(className, true, false);
             ConstructorInfo ci = t.GetConstructor(Type.EmptyTypes);
 
-            SoodaRelationTable retVal = (SoodaRelationTable)ci.Invoke(new object[0]);
+            SoodaRelationTable retVal = (SoodaRelationTable)ci.Invoke(null);
             _relationTables[t] = retVal;
             retVal.BeginDeserialization(Int32.Parse(reader.GetAttribute("tupleCount")));
             return retVal;
@@ -1036,9 +1020,7 @@ namespace Sooda
 
         private SoodaObject BeginObjectDeserialization(ISoodaObjectFactory factory, object pkValue, string mode)
         {
-            SoodaObject retVal = null;
-
-            retVal = factory.TryGet(this, pkValue);
+            SoodaObject retVal = factory.TryGet(this, pkValue);
             if (retVal == null)
             {
                 if (mode == "update")
@@ -1056,12 +1038,9 @@ namespace Sooda
                     retVal.SetInsertMode();
                 }
             }
-            else
+            else if (mode == "insert")
             {
-                if (mode == "insert")
-                {
-                    retVal.SetInsertMode();
-                }
+                retVal.SetInsertMode();
             }
 
             return retVal;

@@ -82,17 +82,17 @@ namespace Sooda.ObjectMapper
         public SoodaObjectListSnapshot(IList list, int first, int length)
         {
             this.classInfo = null;
-            items.Capacity = length;
 
             int start = first;
             if (start < 0)
             {
                 length += start;
                 start = 0;
-            };
+            }
             if (start + length > list.Count)
                 length = list.Count - start;
 
+            items.Capacity = length;
             for (int i = 0; i < length; ++i)
             {
                 items.Add(list[start + i]);
