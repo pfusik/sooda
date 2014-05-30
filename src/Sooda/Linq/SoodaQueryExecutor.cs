@@ -487,6 +487,15 @@ namespace Sooda.Linq
             return new SoqlBooleanInExpression(TranslateExpression(needle), haystack2);
         }
 
+        SoqlStringContainsExpression TranslateStringContains(MethodCallExpression mc, SoqlStringContainsPosition position)
+        {
+            SoqlExpression literal = FoldConstant(mc.Arguments[0]);
+            if (literal == null)
+                throw new NotSupportedException(mc.Method.Name + " must be given a constant");
+            string needle = (string) ((SoqlLiteralExpression) literal).GetConstantValue();
+            return new SoqlStringContainsExpression(TranslateExpression(mc.Object), position, needle);
+        }
+
         ClassInfo FindClassInfo(Expression expr)
         {
             string className = expr.Type.Name;
@@ -533,6 +542,12 @@ namespace Sooda.Linq
                     return new SoqlFunctionCallExpression("lower", TranslateExpression(mc.Object));
                 case SoodaLinqMethod.String_ToUpper:
                     return new SoqlFunctionCallExpression("upper", TranslateExpression(mc.Object));
+                case SoodaLinqMethod.String_StartsWith:
+                    return TranslateStringContains(mc, SoqlStringContainsPosition.Start);
+                case SoodaLinqMethod.String_EndsWith:
+                    return TranslateStringContains(mc, SoqlStringContainsPosition.End);
+                case SoodaLinqMethod.String_Contains:
+                    return TranslateStringContains(mc, SoqlStringContainsPosition.Any);
                 case SoodaLinqMethod.Math_Abs:
                     return new SoqlFunctionCallExpression("abs", TranslateExpression(mc.Arguments[0]));
                 case SoodaLinqMethod.Math_Acos:

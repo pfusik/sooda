@@ -227,5 +227,10 @@ namespace Sooda.QL
             v.ifTrue.Accept(this);
             v.ifFalse.Accept(this);
         }
+
+        void Sooda.QL.ISoqlVisitor.Visit(SoqlStringContainsExpression v)
+        {
+            v.haystack.Accept(this);
+        }
     }
 }

@@ -553,6 +553,32 @@ namespace Sooda.QL
             Output.Write(" end");
         }
 
+        static readonly char[] LikeMetacharacters = { '%', '_', '[' };
+
+        public virtual void Visit(SoqlStringContainsExpression v)
+        {
+            Output.Write('(');
+            v.haystack.Accept(this);
+            Output.Write(" like '");
+            if (v.position != SoqlStringContainsPosition.Start)
+                Output.Write('%');
+            string s = v.needle.Replace("'", "''");
+            string suffix;
+            if (s.IndexOfAny(LikeMetacharacters) >= 0)
+            {
+                s = s.Replace("~", "~~").Replace("%", "~%").Replace("_", "~_").Replace("[", "~[");
+                suffix = "' escape '~')";
+            }
+            else
+            {
+                suffix = "')";
+            }
+            Output.Write(s);
+            if (v.position != SoqlStringContainsPosition.End)
+                Output.Write('%');
+            Output.Write(suffix);
+        }
+
         public TextWriter Output;
         public int IndentLevel = -1;
         public int IndentStep = 4;

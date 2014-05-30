@@ -57,5 +57,6 @@ namespace Sooda.QL
         void Visit(SoqlTypedWrapperExpression v);
         void Visit(SoqlBooleanWrapperExpression v);
         void Visit(SoqlConditionalExpression v);
+        void Visit(SoqlStringContainsExpression v);
     }
 }

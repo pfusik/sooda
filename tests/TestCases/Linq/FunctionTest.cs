@@ -126,6 +126,39 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void StringStartsWith()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Name.StartsWith("Mary M"));
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(Contact.Mary, ce.First());
+            }
+        }
+
+        [Test]
+        public void StringEndsWith()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Name.EndsWith("anager"));
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(Contact.Mary, ce.First());
+            }
+        }
+
+        [Test]
+        public void StringContains()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Name.Contains("ry Ma"));
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(Contact.Mary, ce.First());
+            }
+        }
+
+        [Test]
         public void MathAbs()
         {
             using (new SoodaTransaction())

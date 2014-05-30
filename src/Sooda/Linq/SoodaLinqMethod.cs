@@ -91,6 +91,9 @@ namespace Sooda.Linq
         String_Replace,
         String_ToLower,
         String_ToUpper,
+        String_StartsWith,
+        String_EndsWith,
+        String_Contains,
         Math_Abs,
         Math_Acos,
         Math_Asin,
@@ -221,6 +224,9 @@ namespace Sooda.Linq
                 method2id.Add(MethodOf(() => string.Empty.Replace(string.Empty, string.Empty)), SoodaLinqMethod.String_Replace);
                 method2id.Add(MethodOf(() => string.Empty.ToLower()), SoodaLinqMethod.String_ToLower);
                 method2id.Add(MethodOf(() => string.Empty.ToUpper()), SoodaLinqMethod.String_ToUpper);
+                method2id.Add(MethodOf(() => string.Empty.StartsWith(string.Empty)), SoodaLinqMethod.String_StartsWith);
+                method2id.Add(MethodOf(() => string.Empty.EndsWith(string.Empty)), SoodaLinqMethod.String_EndsWith);
+                method2id.Add(MethodOf(() => string.Empty.Contains(string.Empty)), SoodaLinqMethod.String_Contains);
                 method2id.Add(MethodOf(() => Math.Abs(0M)), SoodaLinqMethod.Math_Abs);
                 method2id.Add(MethodOf(() => Math.Abs(0D)), SoodaLinqMethod.Math_Abs);
                 method2id.Add(MethodOf(() => Math.Abs((short) 0)), SoodaLinqMethod.Math_Abs);
