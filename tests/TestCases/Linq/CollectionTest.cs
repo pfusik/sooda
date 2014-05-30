@@ -143,11 +143,37 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void CountOnSelfReferencingQuery()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.SubordinatesQuery.Count() == 2);
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual("Mary Manager", ce.First().Name);
+            }
+        }
+
+        [Test]
         public void CountOnFiltered()
         {
             using (new SoodaTransaction())
             {
                 IEnumerable<Group> ge = Group.Linq().Where(g => g.Members.Count == 4);
+                Assert.AreEqual(1, ge.Count());
+                Assert.AreEqual(10, ge.First().Id);
+                ge = Group.Linq().Where(g => g.Managers.Count() == 1);
+                Assert.AreEqual(2, ge.Count());
+                ge = Group.Linq().Where(g => g.Managers.Count != 1);
+                Assert.AreEqual(0, ge.Count());
+            }
+        }
+
+        [Test]
+        public void CountOnFilteredQuery()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Group> ge = Group.Linq().Where(g => g.MembersQuery.Count() == 4);
                 Assert.AreEqual(1, ge.Count());
                 Assert.AreEqual(10, ge.First().Id);
                 ge = Group.Linq().Where(g => g.Managers.Count() == 1);
@@ -169,11 +195,33 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void CountOnSubclassTPTQuery()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Bikes1Query.Count() == 1);
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual("Ed Employee", ce.First().Name);
+            }
+        }
+
+        [Test]
         public void ContainsOnSelfReferencing()
         {
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Subordinates.Contains(Contact.Ed));
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual("Mary Manager", ce.First().Name);
+            }
+        }
+
+        [Test]
+        public void ContainsOnSelfReferencingQuery()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.SubordinatesQuery.Contains(Contact.Ed));
                 Assert.AreEqual(1, ce.Count());
                 Assert.AreEqual("Mary Manager", ce.First().Name);
             }
@@ -192,11 +240,34 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void ContainsOnFilteredQuery()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Group> ge = Group.Linq().Where(g => g.MembersQuery.Contains(Contact.Mary));
+                Assert.AreEqual(1, ge.Count());
+                ge = Group.Linq().Where(g => g.Managers.Contains(Contact.Mary));
+                Assert.AreEqual(0, ge.Count());
+            }
+        }
+
+        [Test]
         public void ContainsOnSubclassTPT()
         {
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Bikes1.Contains(Bike.GetRef(3)));
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual("Ed Employee", ce.First().Name);
+            }
+        }
+
+        [Test]
+        public void ContainsOnSubclassTPTQuery()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Bikes1Query.Contains(Bike.GetRef(3)));
                 Assert.AreEqual(1, ce.Count());
                 Assert.AreEqual("Ed Employee", ce.First().Name);
             }
@@ -214,11 +285,32 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void ContainsOnSubclassTPTWhereQuery()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Bikes1Query.Any(b => b.TwoWheels == 1));
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual("Ed Employee", ce.First().Name);
+            }
+        }
+
+        [Test]
         public void NestedContains()
         {
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.PrimaryGroup.Members.Contains(Contact.GetRef(3)));
+                Assert.AreEqual(1, ce.Count());
+            }
+        }
+
+        [Test]
+        public void NestedContainsQuery()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.PrimaryGroup.MembersQuery.Contains(Contact.GetRef(3)));
                 Assert.AreEqual(1, ce.Count());
             }
         }
@@ -238,6 +330,20 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void ComplexTest5Query()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Group> ge = Group.Linq().Where(g =>
+                    g.Manager.Name == "Mary Manager"
+                    && g.MembersQuery.Count() > 3
+                    && g.MembersQuery.Any(c => c.Name == "ZZZ" && c.PrimaryGroup.MembersQuery.Contains(Contact.GetRef(3)))
+                    && g.Manager.RolesQuery.Any(r => r.Name.Value == "Customer"));
+                Assert.AreEqual(0, ge.Count());
+            }
+        }
+
+        [Test]
         public void OneToManyAll()
         {
             using (new SoodaTransaction())
@@ -248,11 +354,32 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void OneToManyAllQuery()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.SubordinatesQuery.All(s => s.Name.Like("E% Employee")));
+                Assert.AreEqual(7, ce.Count());
+            }
+        }
+
+        [Test]
         public void OneToManyAny()
         {
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Subordinates.Any());
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(Contact.Mary, ce.First());
+            }
+        }
+
+        [Test]
+        public void OneToManyAnyQuery()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.SubordinatesQuery.Any());
                 Assert.AreEqual(1, ce.Count());
                 Assert.AreEqual(Contact.Mary, ce.First());
             }
@@ -270,11 +397,32 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void OneToManyAnyFilteredQuery()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.SubordinatesQuery.Any(s => s.Name == "Ed Employee"));
+                Assert.AreEqual(1, ce.Count());
+                Assert.AreEqual(Contact.Mary, ce.First());
+            }
+        }
+
+        [Test]
         public void AnyWithOuterRange()
         {
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Subordinates.Any(s => s == c));
+                Assert.AreEqual(0, ce.Count());
+            }
+        }
+
+        [Test]
+        public void AnyWithOuterRangeQuery()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.SubordinatesQuery.Any(s => s == c));
                 Assert.AreEqual(0, ce.Count());
             }
         }
@@ -290,11 +438,31 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void AnyWithRangeVariableComparisonQuery()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Group> ge = Group.Linq().Where(g => g.MembersQuery.Any(c => c == Contact.Mary));
+                Assert.AreEqual(1, ge.Count());
+            }
+        }
+
+        [Test]
         public void AnyWithSoodaClass()
         {
             using (new SoodaTransaction())
             {
                 IEnumerable<Group> ge = Group.Linq().Where(g => g.Members.Any(c => g.GetType().Name == "Group" && c.GetType().Name == "Contact"));
+                Assert.AreEqual(2, ge.Count());
+            }
+        }
+
+        [Test]
+        public void AnyWithSoodaClassQuery()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Group> ge = Group.Linq().Where(g => g.MembersQuery.Any(c => g.GetType().Name == "Group" && c.GetType().Name == "Contact"));
                 Assert.AreEqual(2, ge.Count());
             }
         }
