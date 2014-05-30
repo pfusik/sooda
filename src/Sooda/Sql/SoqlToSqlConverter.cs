@@ -679,7 +679,7 @@ namespace Sooda.Sql
                                 expr.Accept(this);
                                 Output.Write(')');
                             }
-                            else if (expr is SoqlBooleanExpression)
+                            else if (expr is SoqlBooleanExpression && !(expr is SoqlRawExpression))
                             {
                                 Output.Write("case when ");
                                 expr.Accept(this);
