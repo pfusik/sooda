@@ -3,8 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-05-22 15:38:33 +0200 (Thu, 22 May 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 686 $</subversion-revision>)</div>
-        <div class="titlecopyright">Copyright &#169; 2003-2006 by Jarosław Kowalski</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-06-02 10:42:25 +0200 (Mon, 02 Jun 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 727 $</subversion-revision>)</div>
         <div class="pagebreak">&#160;</div>
     </div>
     <p class="dontprintthis">
@@ -6558,7 +6557,23 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                             Console.WriteLine(c.Name);
                     </code>
                     <p>
-                        LINQ methods described below become available on the result of <code>Linq()</code>
+                        The <code>AllQuery</code> property is a synonim for the <code>Linq()</code> method:
+                    </p>
+                    <code lang="C#">
+                        foreach (Contact c in Contact.AllQuery)
+                            Console.WriteLine(c.Name);
+                    </code>
+                    <p>
+                        Each 1-N and N-N relation has a corresponding LINQ source exposed as a property composed
+                        of the relation name with the <code>Query</code> suffix:
+                    </p>
+                    <code lang="C#">
+                        Contact boss = Contact.GetRef(1);
+                        foreach (Contact c in c.SubordinatesQuery)
+                            Console.WriteLine(c.Name);
+                    </code>
+                    <p>
+                        LINQ methods described below become available on LINQ sources
                         as you import the <code>System.Linq</code> namespace
                         (note <code>System.Linq</code> and not <code>Sooda.Linq</code>).
                         This is necessary for all LINQ queries except for the trivial cases such as the above.
@@ -7011,6 +7026,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     <p>
                         Logical operators are: &amp;&amp;, ||, ! and a?b:c.
                         On numbers you may use arithmetic operators: +, -, *, /, % (modulo) and unary negation (-).
+                        You can concatenate strings with the + operator.
                     </p>
                     <p>
                         The syntax of null tests depends on the field type.
@@ -7055,6 +7071,12 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     <code lang="C#"><![CDATA[
                         Contact.Linq().Where(c => c.Subordinates.Count == 2);
                         Contact.Linq().Where(c => c.Subordinates.Count() == 2); // same
+                    ]]></code>
+                    <p>
+                        It makes no difference if you query for collection properties with or without the <code>Query</code> suffix:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        Contact.Linq().Where(c => c.SubordinatesQuery.Count() == 2); // same as above
                     ]]></code>
                     <p>
                         You may test if collections contain a specific object:
@@ -7137,6 +7159,8 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         The following string methods may be used: <code>Concat()</code>,
                         <code>Remove()</code> (gets translated to SQL <code>LEFT</code>),
                         <code>Replace()</code>, <code>Lower()</code> and <code>Upper()</code>.
+                        <code>StartsWith()</code>, <code>EndsWith()</code> and <code>Contains()</code>
+                        can be used with the restriction that the argument cannot come from the database.
                     </p>
                     <p>
                         Also, some static methods from the <code>System.Math</code> class are supported:

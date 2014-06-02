@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="windows-1250" ?>
+<?xml version="1.0" ?>
 <?xml-stylesheet type="text/xsl" href="style.xsl" ?>
 <content lang="en" id="index">
     <p>
@@ -11,7 +11,7 @@
     </p>
     <h2>Features</h2>
     <p>
-        Sooda runs on the .NET Framework versions 1.1 and 2.0 and supports the following O/R features:
+        Sooda supports the following O/R features:
     </p>
     <ul>
         <li>transparent object materialization</li>
@@ -20,6 +20,7 @@
         <li>natural mapping of one-to-many relations as referenced objects and collections</li>
         <li>natural mapping of many-to-many relations as collections</li>
         <li>various models of object inheritance</li>
+        <li>Language Integrated Query (LINQ)</li>
         <li>differential XML serialization and deserialization for moving data across layers</li>
         <li>support for long running transactions</li>
         <li>data caching with copy-on-write support</li>
