@@ -391,6 +391,29 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void SelectObject()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<object> oe = from c in Contact.Linq() orderby c.ContactId select (object) c.Subordinates.Any();
+                CollectionAssert.AreEqual(new object[] { true, false, false, false, false, false, false }, oe);
+            }
+        }
+
+        [Test]
+        public void SelectIntToDouble()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<double> de = from c in Contact.Linq() orderby c.ContactId select (double) c.Subordinates.Count;
+                CollectionAssert.AreEqual(new double[] { 2, 0, 0, 0, 0, 0, 0 }, de);
+
+                IEnumerable<object> oe = from c in Contact.Linq() orderby c.ContactId select (object) (double) c.Subordinates.Count;
+                CollectionAssert.AreEqual(new object[] { 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }, oe.Cast<double>());
+            }
+        }
+
+        [Test]
         public void OrderBy()
         {
             using (new SoodaTransaction())

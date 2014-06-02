@@ -59,6 +59,9 @@ namespace Sooda.Linq
             if (SoodaQueryExecutor.IsConstant(node))
                 return node;
 
+            if (node.NodeType == ExpressionType.Convert)
+                return base.Visit(node);
+
             SoqlExpression soql;
             try
             {
