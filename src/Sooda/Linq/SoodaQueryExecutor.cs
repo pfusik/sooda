@@ -531,11 +531,12 @@ namespace Sooda.Linq
 
             SoqlPathExpression path = TranslateToPathExpression(expr);
             bool nullable = false;
+            Sooda.Schema.FieldInfo field = null;
             foreach (string part in labelPath.Split('.'))
             {
                 if (classInfo == null)
                     throw new InvalidOperationException("Invalid label for class " + expr.Type.Name + " - " + part + " is not a Sooda field");
-                Sooda.Schema.FieldInfo field = classInfo.FindFieldByName(part);
+                field = classInfo.FindFieldByName(part);
                 if (field == null)
                     throw new InvalidOperationException("Invalid label for class " + expr.Type.Name + " - " + part + " is not a Sooda field");
                 path = new SoqlPathExpression(path, part);
@@ -543,6 +544,8 @@ namespace Sooda.Linq
                     nullable = true;
                 classInfo = field.ParentClass;
             }
+            if (field.DataType != FieldDataType.String && field.DataType != FieldDataType.AnsiString)
+                throw new NotSupportedException("Class " + expr.Type.Name + " label is not a string");
             if (nullable)
                 return new SoqlFunctionCallExpression("coalesce", path, new SoqlLiteralExpression(string.Empty));
             return path;
