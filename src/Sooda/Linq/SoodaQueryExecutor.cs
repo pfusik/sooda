@@ -61,7 +61,6 @@ namespace Sooda.Linq
         SoodaOrderBy _orderBy = null;
         int _startIdx = 0;
         int _topCount = -1;
-        readonly Dictionary<ParameterExpression, ClassInfo> _param2classInfo = new Dictionary<ParameterExpression, ClassInfo>();
         readonly Dictionary<ParameterExpression, string> _param2alias = new Dictionary<ParameterExpression, string>();
         int _currentPrefix = 0;
 
@@ -70,6 +69,15 @@ namespace Sooda.Linq
             //if (keyValue == null)
             //    return null;
             return _transaction.GetFactory(type).GetRef(_transaction, keyValue);
+        }
+
+        ClassInfo FindClassInfo(Expression expr)
+        {
+            string className = expr.Type.Name;
+            ClassInfo classInfo = _transaction.Schema.FindClassByName(className);
+            if (classInfo == null)
+                throw new NotSupportedException("Class " + className + " not found in database schema");
+            return classInfo;
         }
 
         static bool IsConstant(IEnumerable<ElementInit> initializers)
@@ -358,6 +366,16 @@ namespace Sooda.Linq
             return (SoqlPathExpression) TranslateExpression(expr);
         }
 
+        SoqlPathExpression TranslatePrimaryKey()
+        {
+            return new SoqlPathExpression(_classInfo.GetPrimaryKeyFields().Single().Name);
+        }
+
+        SoqlPathExpression TranslatePrimaryKey(Expression expr)
+        {
+            return new SoqlPathExpression(TranslateToPathExpression(expr), FindClassInfo(expr).GetPrimaryKeyFields().Single().Name);
+        }
+
         SoqlExpression TranslateMember(MemberExpression expr)
         {
             string name = expr.Member.Name;
@@ -460,10 +478,8 @@ namespace Sooda.Linq
                     filter = ((UnaryExpression) filter).Operand;
                 LambdaExpression lambda = (LambdaExpression) filter;
                 ParameterExpression param = lambda.Parameters.Single();
-                _param2classInfo[param] = _transaction.Schema.FindClassByName(className);
                 _param2alias[param] = alias;
                 where = TranslateBoolean(lambda.Body);
-                _param2classInfo.Remove(param);
                 _param2alias.Remove(param);
                 if (mc.Method.Name == "All")
                     where = new SoqlBooleanNegationExpression(where);
@@ -511,15 +527,6 @@ namespace Sooda.Linq
                 throw new NotSupportedException(mc.Method.Name + " must be given a constant");
             string needle = (string) ((SoqlLiteralExpression) literal).GetConstantValue();
             return new SoqlStringContainsExpression(TranslateExpression(mc.Object), position, needle);
-        }
-
-        ClassInfo FindClassInfo(Expression expr)
-        {
-            string className = expr.Type.Name;
-            ClassInfo classInfo = _transaction.Schema.FindClassByName(className);
-            if (classInfo == null)
-                throw new NotSupportedException("Class " + className + " not found in database schema");
-            return classInfo;
         }
 
         SoqlExpression TranslateGetLabel(Expression expr)
@@ -637,7 +644,7 @@ namespace Sooda.Linq
                 case SoodaLinqMethod.Math_Tan:
                     return new SoqlFunctionCallExpression("tan", TranslateExpression(mc.Arguments[0]));
                 case SoodaLinqMethod.SoodaObject_GetPrimaryKeyValue:
-                    return new SoqlPathExpression(TranslateToPathExpression(mc.Object), FindClassInfo(mc.Object).GetPrimaryKeyFields().Single().Name);
+                    return TranslatePrimaryKey(mc.Object);
                 case SoodaLinqMethod.SoodaObject_GetLabel:
                     return TranslateGetLabel(mc.Object);
                 default:
@@ -696,11 +703,7 @@ namespace Sooda.Linq
             switch (expr.NodeType)
             {
                 case ExpressionType.Parameter:
-                    ParameterExpression pe = (ParameterExpression) expr;
-                    ClassInfo classInfo;
-                    if (!_param2classInfo.TryGetValue(pe, out classInfo))
-                        throw new NotSupportedException();
-                    return new SoqlPathExpression(TranslateParameter(pe), classInfo.GetPrimaryKeyFields().Single().Name);
+                    return TranslatePrimaryKey(expr);
                 case ExpressionType.MemberAccess:
                     return TranslateMember((MemberExpression) expr);
                 case ExpressionType.Add:
@@ -762,9 +765,7 @@ namespace Sooda.Linq
 
         LambdaExpression GetLambda(MethodCallExpression mc)
         {
-            LambdaExpression lambda = (LambdaExpression) ((UnaryExpression) mc.Arguments[1]).Operand;
-            _param2classInfo[lambda.Parameters[0]] = _classInfo;
-            return lambda;
+            return (LambdaExpression) ((UnaryExpression) mc.Arguments[1]).Operand;
         }
 
         SoqlQueryExpression CreateSoqlQuery()
@@ -786,7 +787,7 @@ namespace Sooda.Linq
         {
             if (_startIdx > 0 || _topCount >= 0)
             {
-                SoqlPathExpression needle = new SoqlPathExpression(_classInfo.GetPrimaryKeyFields().Single().Name);
+                SoqlPathExpression needle = TranslatePrimaryKey();
                 SoqlExpressionCollection haystack = new SoqlExpressionCollection();
                 haystack.Add(CreateSoqlQuery());
                 _where = new SoqlBooleanInExpression(needle, haystack);
@@ -897,7 +898,7 @@ namespace Sooda.Linq
             {
                 // e.g. Contact.Linq().Union(new Contact[] { Contact.Mary })
                 // TODO: NOT if .Union(Contact.Linq())
-                SoqlPathExpression needle = new SoqlPathExpression(_classInfo.GetPrimaryKeyFields().Single().Name);
+                SoqlPathExpression needle = TranslatePrimaryKey();
                 IEnumerable haystack = (IEnumerable) ((ConstantExpression) expr).Value;
                 return new SoqlBooleanInExpression(needle, haystack);
             }
@@ -1177,10 +1178,7 @@ namespace Sooda.Linq
                     case SoodaLinqMethod.Queryable_Contains:
                         TranslateQuery(mc.Arguments[0]);
                         SkipTakeNotSupported();
-                        SoqlBooleanExpression where = new SoqlBooleanRelationalExpression(
-                            new SoqlPathExpression(_classInfo.GetPrimaryKeyFields().Single().Name),
-                            FoldConstant(mc.Arguments[1]),
-                            SoqlRelationalOperator.Equal);
+                        SoqlBooleanExpression where = new SoqlBooleanRelationalExpression(TranslatePrimaryKey(), FoldConstant(mc.Arguments[1]), SoqlRelationalOperator.Equal);
                         Where(where);
                         Take(1);
                         return Count() > 0;
