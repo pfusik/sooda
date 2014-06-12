@@ -392,6 +392,8 @@ namespace Sooda.Linq
             string name = me.Member.Name;
             if (name.EndsWith("Query"))
                 name = name.Remove(name.Length - 5);
+            if (FindClassInfo(me.Expression).ContainsCollection(name) == 0)
+                throw new NotSupportedException(name + " is not a Sooda collection");
             return constructor(TranslateToPathExpression(me.Expression), name);
         }
 

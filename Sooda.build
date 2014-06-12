@@ -429,7 +429,7 @@
     <target name="Sooda.UnitTests.BaseObjects" depends="Sooda, Sooda.NAnt.Tasks, SoodaStubGen">
         <sooda-generate-code project="tests/BaseObjects/Sooda.UnitTests.BaseObjects.soodaproject" verbose="true" />
 
-        <csc target="library" output="${sooda.dir}/Sooda.UnitTests.BaseObjects.dll" debug="true">
+        <csc target="library" output="${sooda.dir}/Sooda.UnitTests.BaseObjects.dll" debug="true" define="${sooda.define}">
             <references>
                 <include name="${sooda.dir}/NLog.dll" />
                 <include name="${sooda.dir}/Sooda.dll" />

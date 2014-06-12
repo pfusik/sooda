@@ -78,5 +78,15 @@ namespace Sooda.UnitTests.BaseObjects
                 return string.Format("{0} ({1})", Name, Type.Code);
             }
         }
+
+#if DOTNET35
+        public System.Linq.IQueryable<Contact> SubordinatesInCode
+        {
+            get
+            {
+                return SubordinatesQuery;
+            }
+        }
+#endif
     }
 }

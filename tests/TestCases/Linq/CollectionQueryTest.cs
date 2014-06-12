@@ -28,6 +28,7 @@
 // 
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using NUnit.Framework;
@@ -123,6 +124,16 @@ namespace Sooda.UnitTests.TestCases.Linq
 
                 a = Contact.Mary.RolesQuery.Where(r => r.Name.Value == "Foo Bar").Any();
                 Assert.IsFalse(a);
+            }
+        }
+
+        [Test]
+        public void CodeAny()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<bool> be = from c in Contact.Linq() orderby c.ContactId select c.SubordinatesInCode.Any();
+                CollectionAssert.AreEqual(new bool[] { true, false, false, false, false, false, false }, be);
             }
         }
     }
