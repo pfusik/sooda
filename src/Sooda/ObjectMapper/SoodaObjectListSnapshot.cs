@@ -162,12 +162,13 @@ namespace Sooda.ObjectMapper
             this.classInfo = ci;
             string[] involvedClasses = null;
 
-            bool useCache = t.CachingPolicy.ShouldCacheCollection(ci, whereClause, orderBy, startIdx, pageCount);
-
-            if ((options & SoodaSnapshotOptions.Cache) != 0)
-                useCache = true;
+            bool useCache;
             if ((options & SoodaSnapshotOptions.NoCache) != 0)
                 useCache = false;
+            else if ((options & SoodaSnapshotOptions.Cache) != 0)
+                useCache = true;
+            else
+                useCache = t.CachingPolicy.ShouldCacheCollection(ci, whereClause, orderBy, startIdx, pageCount);
 
             if (whereClause != null && whereClause.WhereExpression != null)
             {
