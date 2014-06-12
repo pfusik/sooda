@@ -345,6 +345,22 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void GetLabelNone()
+        {
+            using (new SoodaTransaction())
+            {
+                string[] sa = ContactType.Linq().Select(t => t.GetLabel(false)).ToArray();
+                Assert.AreEqual(3, sa.Length);
+                Assert.IsNull(sa[0]);
+                Assert.IsNull(sa[1]);
+                Assert.IsNull(sa[2]);
+
+                int c = ContactType.Linq().Count(t => t.GetLabel(false) == null);
+                Assert.AreEqual(3, c);
+            }
+        }
+
+        [Test]
         public void GetLabelInt()
         {
             using (new SoodaTransaction())
