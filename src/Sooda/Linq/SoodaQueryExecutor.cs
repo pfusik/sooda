@@ -376,6 +376,35 @@ namespace Sooda.Linq
             return new SoqlPathExpression(TranslateToPathExpression(expr), FindClassInfo(expr).GetPrimaryKeyFields().Single().Name);
         }
 
+        SoqlPathExpression TranslatePath(SoqlPathExpression parent, MemberExpression expr)
+        {
+            string name = expr.Member.Name;
+            if (!FindClassInfo(expr.Expression).ContainsField(name))
+                throw new NotSupportedException(name + " is not a Sooda field");
+            return new SoqlPathExpression(parent, name);
+        }
+
+        T TranslateCollectionOp<T>(Expression expr, Func<SoqlPathExpression, string, T> constructor)
+        {
+            MemberExpression me = expr as MemberExpression;
+            if (me == null)
+                throw new NotSupportedException();
+            string name = me.Member.Name;
+            if (name.EndsWith("Query"))
+                name = name.Remove(name.Length - 5);
+            return constructor(TranslateToPathExpression(me.Expression), name);
+        }
+
+        SoqlCountExpression TranslateCollectionCount(Expression expr)
+        {
+            return TranslateCollectionOp(expr, (parent, name) => new SoqlCountExpression(parent, name));
+        }
+
+        SoqlContainsExpression TranslateCollectionContains(Expression haystack, SoqlExpression needle)
+        {
+            return TranslateCollectionOp(haystack, (parent, name) => new SoqlContainsExpression(parent, name, needle));
+        }
+
         SoqlExpression TranslateMember(MemberExpression expr)
         {
             string name = expr.Member.Name;
@@ -385,16 +414,32 @@ namespace Sooda.Linq
             {
                 // non-static members
 
-                // x.SoodaField -> SoqlPathExpression
-                if (expr.Expression.NodeType == ExpressionType.Parameter)
-                    return new SoqlPathExpression(TranslateParameter((ParameterExpression) expr.Expression), name);
-
-                // x.GetType().Name -> SoqlSoodaClassExpression
-                if (t == typeof(MemberInfo) && name == "Name" && expr.Expression.NodeType == ExpressionType.Call)
+                switch (expr.Expression.NodeType)
                 {
-                    MethodCallExpression mc = (MethodCallExpression) expr.Expression;
-                    if (SoodaLinqMethodDictionary.Get(mc.Method) == SoodaLinqMethod.Object_GetType)
-                        return new SoqlSoodaClassExpression(TranslateToPathExpression(mc.Object));
+                    case ExpressionType.Parameter:
+                        // x.SoodaField -> SoqlPathExpression
+                        return TranslatePath(TranslateParameter((ParameterExpression) expr.Expression), expr);
+
+                    case ExpressionType.MemberAccess:
+                        if (t == typeof(SoodaObjectCollectionWrapper) && name == "Count")
+                        {
+                            // x.SoodaCollection.Count -> SoqlCountExpression
+                            return TranslateCollectionCount(expr.Expression);
+                        }
+                        break;
+
+                    case ExpressionType.Call:
+                        if (t == typeof(MemberInfo) && name == "Name")
+                        {
+                            // x.GetType().Name -> SoqlSoodaClassExpression
+                            MethodCallExpression mc = (MethodCallExpression) expr.Expression;
+                            if (SoodaLinqMethodDictionary.Get(mc.Method) == SoodaLinqMethod.Object_GetType)
+                                return new SoqlSoodaClassExpression(TranslateToPathExpression(mc.Object));
+                        }
+                        break;
+
+                    default:
+                        break;
                 }
 
                 SoqlExpression parent = TranslateExpression(expr.Expression);
@@ -431,33 +476,14 @@ namespace Sooda.Linq
                 }
 
                 SoqlPathExpression parentPath = parent as SoqlPathExpression;
-                if (parentPath != null && expr.Member.MemberType == MemberTypes.Property) {
+                if (parentPath != null && expr.Member.MemberType == MemberTypes.Property && t.IsSubclassOf(typeof(SoodaObject)))
+                {
                     // x.SoodaField1.SoodaField2 -> SoqlPathExpression
-                    if (t.IsSubclassOf(typeof(SoodaObject)))
-                    {
-                        if (!FindClassInfo(expr.Expression).ContainsField(name))
-                            throw new NotSupportedException(name + " is not a Sooda field");
-                        return new SoqlPathExpression(parentPath, name);
-                    }
-
-                    // x.SoodaCollection.Count -> SoqlCountExpression
-                    if (t == typeof(SoodaObjectCollectionWrapper) && name == "Count")
-                        return new SoqlCountExpression(parentPath.Left, parentPath.PropertyName);
+                    return TranslatePath(parentPath, expr);
                 }
             }
 
             throw new NotSupportedException(t.FullName + "." + name);
-        }
-
-        SoqlContainsExpression TranslateCollectionContains(Expression haystack, SoqlExpression needle)
-        {
-            MemberExpression me = haystack as MemberExpression;
-            if (me == null)
-                throw new NotSupportedException();
-            string collection = me.Member.Name;
-            if (collection.EndsWith("Query"))
-                collection = collection.Remove(collection.Length - 5);
-            return new SoqlContainsExpression(TranslateToPathExpression(me.Expression), collection, needle);
         }
 
         SoqlBooleanExpression TranslateCollectionAny(MethodCallExpression mc)
@@ -576,19 +602,8 @@ namespace Sooda.Linq
                 case SoodaLinqMethod.Queryable_Contains:
                     return TranslateContains(mc.Arguments[0], mc.Arguments[1]);
                 case SoodaLinqMethod.Enumerable_Count:
-                    {
-                        SoqlPathExpression parentPath = (SoqlPathExpression) TranslateExpression(mc.Arguments[0]);
-                        return new SoqlCountExpression(parentPath.Left, parentPath.PropertyName);
-                    }
                 case SoodaLinqMethod.Queryable_Count:
-                    {
-                        SoqlPathExpression parentPath = (SoqlPathExpression) TranslateExpression(mc.Arguments[0]);
-                        string collection = parentPath.PropertyName;
-                        if (!collection.EndsWith("Query"))
-                            throw new NotImplementedException(collection);
-                        collection = collection.Remove(collection.Length - 5);
-                        return new SoqlCountExpression(parentPath.Left, collection);
-                    }
+                    return TranslateCollectionCount(mc.Arguments[0]);
                 case SoodaLinqMethod.ICollection_Contains:
                     return TranslateIn(mc.Object, mc.Arguments[0]);
                 case SoodaLinqMethod.String_Concat:

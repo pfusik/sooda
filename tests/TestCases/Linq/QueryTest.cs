@@ -414,6 +414,17 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void SelectCode()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<string> se = from c in Contact.Linq() orderby c.ContactId select c.NameAndType;
+                CollectionAssert.AreEqual(new string[] { "Mary Manager (Manager)", "Ed Employee (Employee)", "Eva Employee (Employee)",
+                    "Catie Customer (Customer)", "Caroline Customer (Customer)", "Chris Customer (Customer)", "Chuck Customer (Customer)" }, se);
+            }
+        }
+
+        [Test]
         public void OrderBy()
         {
             using (new SoodaTransaction())
