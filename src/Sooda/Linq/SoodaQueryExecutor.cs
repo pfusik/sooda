@@ -522,6 +522,32 @@ namespace Sooda.Linq
             return classInfo;
         }
 
+        SoqlExpression TranslateGetLabel(Expression expr)
+        {
+            ClassInfo classInfo = FindClassInfo(expr);
+            string labelPath = classInfo.GetLabel();
+            if (labelPath == null)
+                return new SoqlNullLiteral();
+
+            SoqlPathExpression path = TranslateToPathExpression(expr);
+            bool nullable = false;
+            foreach (string part in labelPath.Split('.'))
+            {
+                if (classInfo == null)
+                    throw new InvalidOperationException("Invalid label for class " + expr.Type.Name + " - " + part + " is not a Sooda field");
+                Sooda.Schema.FieldInfo field = classInfo.FindFieldByName(part);
+                if (field == null)
+                    throw new InvalidOperationException("Invalid label for class " + expr.Type.Name + " - " + part + " is not a Sooda field");
+                path = new SoqlPathExpression(path, part);
+                if (field.IsNullable)
+                    nullable = true;
+                classInfo = field.ParentClass;
+            }
+            if (nullable)
+                return new SoqlFunctionCallExpression("coalesce", path, new SoqlLiteralExpression(string.Empty));
+            return path;
+        }
+
         SoqlExpression TranslateCall(MethodCallExpression mc)
         {
             switch (SoodaLinqMethodDictionary.Get(mc.Method))
@@ -610,10 +636,7 @@ namespace Sooda.Linq
                 case SoodaLinqMethod.SoodaObject_GetPrimaryKeyValue:
                     return new SoqlPathExpression(TranslateToPathExpression(mc.Object), FindClassInfo(mc.Object).GetPrimaryKeyFields().Single().Name);
                 case SoodaLinqMethod.SoodaObject_GetLabel:
-                    string labelField = FindClassInfo(mc.Object).GetLabel();
-                    if (labelField == null)
-                        return new SoqlNullLiteral();
-                    return new SoqlPathExpression(TranslateToPathExpression(mc.Object), labelField);
+                    return TranslateGetLabel(mc.Object);
                 default:
                     break;
             }

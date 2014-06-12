@@ -345,6 +345,26 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void GetLabelInt()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<string> se = from r in Role.Linq() orderby r.Id select r.GetLabel(false);
+                CollectionAssert.AreEqual(new string[] { "1", "2", "3" }, se);
+            }
+        }
+
+        [Test]
+        public void GetLabelReferencedObject()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<string> se = from v in Vehicle.Linq() orderby v.Id select v.GetLabel(false);
+                CollectionAssert.AreEqual(new string[] { "", "Mary Manager", "Ed Employee", "", "", "", "", "", "" }, se);
+            }
+        }
+
+        [Test]
         public void GetSoodaClassPrimaryKeyValueLabel()
         {
             using (new SoodaTransaction())

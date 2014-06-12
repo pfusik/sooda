@@ -4,7 +4,7 @@
     <datasource name="default" type="Sooda.Sql.SqlDataSource" />
     <datasource name="xmldata1" type="Sooda.Xml.XmlDataSource" />
 
-    <class name="Role" cached="false" precacheAll="false" triggers="false">
+    <class name="Role" cached="false" precacheAll="false" triggers="false" label="Id">
         <table name="_Role">
             <field name="Id" dbcolumn="id" type="Integer" primaryKey="true" />
             <field name="Name" dbcolumn="name" type="String" size="64" nullable="true" />
@@ -60,7 +60,7 @@
         </table>
     </class>
 
-    <class name="Group" cached="true">
+    <class name="Group" cached="true" label="Members.Count">
         <table name="_Group">
             <field name="Id" dbcolumn="id" type="Integer" primaryKey="true" />
             <field name="Manager" dbcolumn="manager" type="Integer" references="Contact" onDelete="Cascade" prefetch="2" />
@@ -71,7 +71,7 @@
         <collectionOneToMany name="Managers" class="Contact" foreignField="PrimaryGroup" where="Type='Employee'" />
     </class>
 
-    <class name="Vehicle" subclassSelectorField="Type">
+    <class name="Vehicle" subclassSelectorField="Type" label="Owner.Name">
         <table name="Vehicle">
             <field name="Id" dbcolumn="id" type="Integer" primaryKey="true" />
             <field name="Type" dbcolumn="type" type="Integer" />
