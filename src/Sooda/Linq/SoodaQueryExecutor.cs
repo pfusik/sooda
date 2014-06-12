@@ -1041,6 +1041,12 @@ namespace Sooda.Linq
                 query.SelectAliases.Add(string.Empty);
             }
             query.Distinct = _distinct;
+
+            if ((_options & SoodaSnapshotOptions.NoWriteObjects) == 0)
+            {
+                _transaction.SaveObjectChanges();
+            }
+
             SoodaDataSource ds = _transaction.OpenDataSource(_classInfo.GetDataSource());
             return ds.ExecuteQuery(query, _transaction.Schema);
         }
