@@ -49,6 +49,7 @@ namespace Sooda.Linq
         Queryable_Take,
         Queryable_Select,
         Queryable_SelectIndexed,
+        Queryable_GroupBy,
         Queryable_Reverse,
         Queryable_Distinct,
         Queryable_OfType,
@@ -83,6 +84,10 @@ namespace Sooda.Linq
         Enumerable_AnyFiltered,
         Enumerable_Contains,
         Enumerable_Count,
+        Enumerable_Average,
+        Enumerable_Max,
+        Enumerable_Min,
+        Enumerable_Sum,
         ICollection_Contains,
         Object_GetType,
         String_Concat,
@@ -149,6 +154,7 @@ namespace Sooda.Linq
                 method2id.Add(MethodOf(() => Queryable.Take<object>(null, 0)), SoodaLinqMethod.Queryable_Take);
                 method2id.Add(MethodOf(() => Queryable.Select(null, selector)), SoodaLinqMethod.Queryable_Select);
                 method2id.Add(MethodOf(() => Queryable.Select(null, (object o, int i) => i)), SoodaLinqMethod.Queryable_SelectIndexed);
+                method2id.Add(MethodOf(() => Queryable.GroupBy(null, selector)), SoodaLinqMethod.Queryable_GroupBy);
                 method2id.Add(MethodOf(() => Queryable.Reverse<object>(null)), SoodaLinqMethod.Queryable_Reverse);
                 method2id.Add(MethodOf(() => Queryable.Distinct<object>(null)), SoodaLinqMethod.Queryable_Distinct);
                 method2id.Add(MethodOf(() => Queryable.OfType<object>(null)), SoodaLinqMethod.Queryable_OfType);
@@ -214,6 +220,24 @@ namespace Sooda.Linq
                 method2id.Add(MethodOf(() => Enumerable.Any(null, (object o) => true)), SoodaLinqMethod.Enumerable_AnyFiltered);
                 method2id.Add(MethodOf(() => Enumerable.Contains<object>(null, null)), SoodaLinqMethod.Enumerable_Contains);
                 method2id.Add(MethodOf(() => Enumerable.Count<object>(null)), SoodaLinqMethod.Enumerable_Count);
+                method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => 0M)), SoodaLinqMethod.Enumerable_Average);
+                method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => 0D)), SoodaLinqMethod.Enumerable_Average);
+                method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => 0)), SoodaLinqMethod.Enumerable_Average);
+                method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => 0L)), SoodaLinqMethod.Enumerable_Average);
+                method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => (decimal?) 0)), SoodaLinqMethod.Enumerable_Average);
+                method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => (double?) 0)), SoodaLinqMethod.Enumerable_Average);
+                method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => (int?) 0)), SoodaLinqMethod.Enumerable_Average);
+                method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => (long?) 0)), SoodaLinqMethod.Enumerable_Average);
+                method2id.Add(MethodOf(() => Enumerable.Max(null, (object o) => 0)), SoodaLinqMethod.Enumerable_Max);
+                method2id.Add(MethodOf(() => Enumerable.Min(null, (object o) => 0)), SoodaLinqMethod.Enumerable_Min);
+                method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => 0M)), SoodaLinqMethod.Enumerable_Sum);
+                method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => 0D)), SoodaLinqMethod.Enumerable_Sum);
+                method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => 0)), SoodaLinqMethod.Enumerable_Sum);
+                method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => 0L)), SoodaLinqMethod.Enumerable_Sum);
+                method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => (decimal?) 0)), SoodaLinqMethod.Enumerable_Sum);
+                method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => (double?) 0)), SoodaLinqMethod.Enumerable_Sum);
+                method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => (int?) 0)), SoodaLinqMethod.Enumerable_Sum);
+                method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => (long?) 0)), SoodaLinqMethod.Enumerable_Sum);
                 method2id.Add(MethodOf(() => ((ICollection<object>) null).Contains(null)), SoodaLinqMethod.ICollection_Contains); // FIXME: Ungeneric doesn't handle methods in generic classes, so this will only work on ICollection<object>
                 method2id.Add(MethodOf(() => ((System.Collections.ArrayList) null).Contains(null)), SoodaLinqMethod.ICollection_Contains);
                 method2id.Add(MethodOf(() => ((System.Collections.IList) null).Contains(null)), SoodaLinqMethod.ICollection_Contains);

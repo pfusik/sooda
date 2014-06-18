@@ -61,6 +61,8 @@ namespace Sooda.Linq
         SoodaOrderBy _orderBy = null;
         int _startIdx = 0;
         int _topCount = -1;
+        SoqlExpression _groupBy = null;
+        SoqlBooleanExpression _having = null;
         readonly Dictionary<ParameterExpression, string> _param2alias = new Dictionary<ParameterExpression, string>();
         int _currentPrefix = 0;
 
@@ -419,6 +421,9 @@ namespace Sooda.Linq
                 switch (expr.Expression.NodeType)
                 {
                     case ExpressionType.Parameter:
+                        // g.Key
+                        if (_groupBy != null && t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IGrouping<,>) && name == "Key")
+                            return _groupBy;
                         // x.SoodaField -> SoqlPathExpression
                         return TranslatePath(TranslateParameter((ParameterExpression) expr.Expression), expr);
 
@@ -586,6 +591,18 @@ namespace Sooda.Linq
             return path;
         }
 
+        bool IsGroupAggregate(MethodCallExpression mc)
+        {
+            return _groupBy != null && mc.Arguments[0].NodeType == ExpressionType.Parameter;
+        }
+
+        SoqlExpression TranslateGroupAggregate(MethodCallExpression mc, string function)
+        {
+            if (IsGroupAggregate(mc))
+                return new SoqlFunctionCallExpression(function, TranslateExpression(((LambdaExpression) mc.Arguments[1]).Body));
+            throw new NotSupportedException(function);
+        }
+
         SoqlExpression TranslateCall(MethodCallExpression mc)
         {
             switch (SoodaLinqMethodDictionary.Get(mc.Method))
@@ -605,7 +622,17 @@ namespace Sooda.Linq
                     return TranslateContains(mc.Arguments[0], mc.Arguments[1]);
                 case SoodaLinqMethod.Enumerable_Count:
                 case SoodaLinqMethod.Queryable_Count:
+                    if (IsGroupAggregate(mc))
+                        return new SoqlFunctionCallExpression("count", new SoqlAsteriskExpression());
                     return TranslateCollectionCount(mc.Arguments[0]);
+                case SoodaLinqMethod.Enumerable_Average:
+                    return TranslateGroupAggregate(mc, "avg");
+                case SoodaLinqMethod.Enumerable_Max:
+                    return TranslateGroupAggregate(mc, "max");
+                case SoodaLinqMethod.Enumerable_Min:
+                    return TranslateGroupAggregate(mc, "min");
+                case SoodaLinqMethod.Enumerable_Sum:
+                    return TranslateGroupAggregate(mc, "sum");
                 case SoodaLinqMethod.ICollection_Contains:
                     return TranslateIn(mc.Object, mc.Arguments[0]);
                 case SoodaLinqMethod.String_Concat:
@@ -797,6 +824,11 @@ namespace Sooda.Linq
             query.WhereClause = _where;
             if (_orderBy != null)
                 query.SetOrderBy(_orderBy);
+            if (_groupBy != null)
+            {
+                query.GroupByExpressions.Add(_groupBy);
+                query.Having = _having;
+            }
             return query;
         }
 
@@ -828,7 +860,10 @@ namespace Sooda.Linq
 
         void Where(SoqlBooleanExpression where)
         {
-            _where = _where == null ? where : _where.And(where);
+            if (_groupBy != null)
+                _having = _having == null ? where : _having.And(where);
+            else
+                _where = _where == null ? where : _where.And(where);
         }
 
         void Where(MethodCallExpression mc)
@@ -955,6 +990,14 @@ namespace Sooda.Linq
                         case SoodaLinqMethod.Queryable_Select:
                         case SoodaLinqMethod.Queryable_SelectIndexed:
                             Select(mc);
+                            break;
+
+                        case SoodaLinqMethod.Queryable_GroupBy:
+                            if (_groupBy != null)
+                                throw new NotSupportedException("Chaining GroupBy()s not supported");
+                            _orderBy = null;
+                            SkipTakeNotSupported();
+                            _groupBy = TranslateExpression(GetLambda(mc).Body);
                             break;
 
                         case SoodaLinqMethod.Queryable_Where:
