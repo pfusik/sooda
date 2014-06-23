@@ -596,6 +596,22 @@ namespace Sooda.Linq
             return _groupBy != null && mc.Arguments[0].NodeType == ExpressionType.Parameter;
         }
 
+        SoqlBooleanExpression TranslateEnumerableFilter(MethodCallExpression mc)
+        {
+            return TranslateBoolean(((LambdaExpression) mc.Arguments[1]).Body);
+        }
+
+        static SoqlExpression TranslateCountFiltered(SoqlBooleanExpression filter)
+        {
+            // count(case when ... then 1 end)
+            return new SoqlFunctionCallExpression("count", new SoqlConditionalExpression(filter, new SoqlLiteralExpression(1), null));
+        }
+
+        static SoqlExpression TranslateGroupAny(SoqlBooleanExpression filter, SoqlRelationalOperator op)
+        {
+            return new SoqlBooleanRelationalExpression(TranslateCountFiltered(filter), new SoqlLiteralExpression(0), op);
+        }
+
         SoqlExpression TranslateGroupAggregate(MethodCallExpression mc, string function)
         {
             if (IsGroupAggregate(mc))
@@ -609,12 +625,24 @@ namespace Sooda.Linq
             {
                 case SoodaLinqMethod.Enumerable_All:
                 case SoodaLinqMethod.Queryable_All:
+                    if (IsGroupAggregate(mc))
+                    {
+                        // count(case when ... then 1 end) = 0
+                        return TranslateGroupAny(new SoqlBooleanNegationExpression(TranslateEnumerableFilter(mc)), SoqlRelationalOperator.Equal);
+                    }
                     return new SoqlBooleanNegationExpression(TranslateCollectionAny(mc));
                 case SoodaLinqMethod.Enumerable_Any:
                 case SoodaLinqMethod.Queryable_Any:
+                    if (IsGroupAggregate(mc))
+                        return SoqlBooleanLiteralExpression.True;
                     return TranslateCollectionAny(mc);
                 case SoodaLinqMethod.Enumerable_AnyFiltered:
                 case SoodaLinqMethod.Queryable_AnyFiltered:
+                    if (IsGroupAggregate(mc))
+                    {
+                        // count(case when ... then 1 end) > 0
+                        return TranslateGroupAny(TranslateEnumerableFilter(mc), SoqlRelationalOperator.Greater);
+                    }
                     return TranslateCollectionAny(mc);
                 case SoodaLinqMethod.Enumerable_Contains:
                     return TranslateIn(mc.Arguments[0], mc.Arguments[1]);
@@ -627,10 +655,7 @@ namespace Sooda.Linq
                     return TranslateCollectionCount(mc.Arguments[0]);
                 case SoodaLinqMethod.Enumerable_CountFiltered:
                     if (IsGroupAggregate(mc))
-                    {
-                        SoqlBooleanExpression cond = TranslateBoolean(((LambdaExpression) mc.Arguments[1]).Body);
-                        return new SoqlFunctionCallExpression("count", new SoqlConditionalExpression(cond, new SoqlLiteralExpression(1), null));
-                    }
+                        return TranslateCountFiltered(TranslateEnumerableFilter(mc));
                     throw new NotSupportedException("Count");
                 case SoodaLinqMethod.Enumerable_Average:
                     return TranslateGroupAggregate(mc, "avg");

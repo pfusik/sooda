@@ -135,6 +135,36 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void All()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<string> se = from c in Contact.Linq() group c by c.Type.Code into g orderby g.Key where g.All(c => c.LastSalary.Value >= 100) select g.Key;
+                CollectionAssert.AreEqual(new string[] { "Employee", "Manager" }, se);
+            }
+        }
+
+        [Test]
+        public void Any()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<string> se = from c in Contact.Linq() group c by c.Type.Code into g orderby g.Key where g.Any() select g.Key;
+                CollectionAssert.AreEqual(new string[] { "Customer", "Employee", "Manager" }, se);
+            }
+        }
+
+        [Test]
+        public void AnyFiltered()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<string> se = from c in Contact.Linq() group c by c.Type.Code into g orderby g.Key where g.Any(c => c.LastSalary.Value < 100) select g.Key;
+                CollectionAssert.AreEqual(new string[] { "Customer" }, se);
+            }
+        }
+
+        [Test]
         public void Bool()
         {
             using (new SoodaTransaction())
