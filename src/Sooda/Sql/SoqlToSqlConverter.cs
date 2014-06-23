@@ -629,6 +629,26 @@ namespace Sooda.Sql
             VisitAndGetFieldInfo(v, true);
         }
 
+        void OutputScalar(SoqlExpression expr)
+        {
+            if (expr is SoqlQueryExpression)
+            {
+                Output.Write('(');
+                expr.Accept(this);
+                Output.Write(')');
+            }
+            else if (expr is SoqlBooleanExpression && !(expr is SoqlRawExpression))
+            {
+                Output.Write("case when ");
+                expr.Accept(this);
+                Output.Write(" then 1 else 0 end");
+            }
+            else
+            {
+                expr.Accept(this);
+            }
+        }
+
         void OutputColumns(SoqlQueryExpression v, bool onlyAliases)
         {
                 if (v.SelectExpressions.Count == 0)
@@ -672,24 +692,7 @@ namespace Sooda.Sql
                         }
                         SoqlExpression expr = v.SelectExpressions[i];
                         if (!onlyAliases)
-                        {
-                            if (expr is SoqlQueryExpression)
-                            {
-                                Output.Write('(');
-                                expr.Accept(this);
-                                Output.Write(')');
-                            }
-                            else if (expr is SoqlBooleanExpression && !(expr is SoqlRawExpression))
-                            {
-                                Output.Write("case when ");
-                                expr.Accept(this);
-                                Output.Write(" then 1 else 0 end");
-                            }
-                            else
-                            {
-                                expr.Accept(this);
-                            }
-                        }
+                            OutputScalar(expr);
                         if (v.SelectAliases[i].Length > 0)
                         {
                             if (!onlyAliases)
@@ -861,7 +864,7 @@ namespace Sooda.Sql
                     {
                         if (i > 0)
                             Output.Write(", ");
-                        v.OrderByExpressions[i].Accept(this);
+                        OutputScalar(v.OrderByExpressions[i]);
                         Output.Write(' ');
                         Output.Write(v.OrderByOrder[i]);
                     }
