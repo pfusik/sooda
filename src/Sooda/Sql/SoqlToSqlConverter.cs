@@ -829,7 +829,7 @@ namespace Sooda.Sql
                     {
                         if (i > 0)
                             Output.Write(", ");
-                        v.GroupByExpressions[i].Accept(this);
+                        OutputScalar(v.GroupByExpressions[i]);
                     }
                 }
                 if (v.Having != null)

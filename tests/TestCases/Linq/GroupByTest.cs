@@ -123,6 +123,16 @@ namespace Sooda.UnitTests.TestCases.Linq
                 CollectionAssert.AreEqual(new string[] { "Customer", "Employee" }, se);
             }
         }
+
+        [Test]
+        public void Bool()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = from c in Contact.Linq() group c by c.Name.StartsWith("C") into g orderby g.Key select g.Count();
+                CollectionAssert.AreEqual(new int[] { 3, 4 }, ie);
+            }
+        }
     }
 }
 
