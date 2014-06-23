@@ -457,6 +457,36 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void OrderByConstInt()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = from c in Contact.Linq() orderby 1000 orderby c.ContactId select c.ContactId;
+                CollectionAssert.AreEqual(new int[] { 1, 2, 3, 50, 51, 52, 53 }, ie);
+            }
+        }
+
+        [Test]
+        public void OrderByConstBool()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = from c in Contact.Linq() orderby true orderby c.ContactId select c.ContactId;
+                CollectionAssert.AreEqual(new int[] { 1, 2, 3, 50, 51, 52, 53 }, ie);
+            }
+        }
+
+        [Test]
+        public void OrderByConstString()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = from c in Contact.Linq() orderby "foo" orderby c.ContactId select c.ContactId;
+                CollectionAssert.AreEqual(new int[] { 1, 2, 3, 50, 51, 52, 53 }, ie);
+            }
+        }
+
+        [Test]
         public void Reverse()
         {
             using (new SoodaTransaction())

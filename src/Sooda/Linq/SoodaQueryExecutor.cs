@@ -1009,6 +1009,8 @@ namespace Sooda.Linq
                         case SoodaLinqMethod.Queryable_ThenBy:
                         case SoodaLinqMethod.Queryable_ThenByDescending:
                             SoqlExpression orderBy = TranslateExpression(GetLambda(mc).Body);
+                            if (orderBy is ISoqlConstantExpression)
+                                break;
                             SkipTakeNotSupported();
                             switch (method)
                             {
