@@ -720,6 +720,20 @@ namespace Sooda.Sql
                 }
         }
 
+        void OutputOrderBy(SoqlQueryExpression v)
+        {
+            _generatingOrderBy = true;
+            for (int i = 0; i < v.OrderByExpressions.Count; ++i)
+            {
+                if (i > 0)
+                    Output.Write(", ");
+                OutputScalar(v.OrderByExpressions[i]);
+                Output.Write(' ');
+                Output.Write(v.OrderByOrder[i]);
+            }
+            _generatingOrderBy = false;
+        }
+
         void DoVisit(SoqlQueryExpression v)
         {
             IndentLevel++;
@@ -784,16 +798,7 @@ namespace Sooda.Sql
                         Output.Write(", ROW_NUMBER() over (order by ");
                         if (v.OrderByExpressions.Count > 0)
                         {
-                            _generatingOrderBy = true;
-                            for (int i = 0; i < v.OrderByExpressions.Count; ++i)
-                            {
-                                if (i > 0)
-                                    Output.Write(", ");
-                                v.OrderByExpressions[i].Accept(this);
-                                Output.Write(' ');
-                                Output.Write(v.OrderByOrder[i]);
-                            }
-                            _generatingOrderBy = false;
+                            OutputOrderBy(v);
                         }
                         else
                         {
@@ -859,27 +864,15 @@ namespace Sooda.Sql
                         Output.Write(' ');
                     }
                     Output.Write("order by ");
-                    _generatingOrderBy = true;
-                    for (int i = 0; i < v.OrderByExpressions.Count; ++i)
-                    {
-                        if (i > 0)
-                            Output.Write(", ");
-                        OutputScalar(v.OrderByExpressions[i]);
-                        Output.Write(' ');
-                        Output.Write(v.OrderByOrder[i]);
-                    }
-                    _generatingOrderBy = false;
+                    OutputOrderBy(v);
                 }
 
-                if (v.PageCount != -1)
+                if (v.PageCount != -1 && _builder.TopSupport == SqlTopSupportMode.MySqlLimit)
                 {
-                    if (_builder.TopSupport == SqlTopSupportMode.MySqlLimit)
-                    {
-                        Output.Write(" limit ");
-                        Output.Write(v.StartIdx);
-                        Output.Write(",");
-                        Output.Write(v.PageCount);
-                    }
+                    Output.Write(" limit ");
+                    Output.Write(v.StartIdx);
+                    Output.Write(",");
+                    Output.Write(v.PageCount);
                 }
 
                 StringWriter whereSW = new StringWriter();

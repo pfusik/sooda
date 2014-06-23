@@ -467,6 +467,16 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void OrderByBoolTake()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = Contact.Linq().OrderBy(c => c.Name.StartsWith("E")).ThenBy(c => c.ContactId).Take(3).Select(c => c.ContactId);
+                CollectionAssert.AreEqual(new int[] { 1, 50, 51 }, ie);
+            }
+        }
+
+        [Test]
         public void OrderByConstInt()
         {
             using (new SoodaTransaction())
