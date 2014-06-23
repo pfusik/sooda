@@ -548,8 +548,11 @@ namespace Sooda.QL
             v.condition.Accept(this);
             Output.Write(" then ");
             v.ifTrue.Accept(this);
-            Output.Write(" else ");
-            v.ifFalse.Accept(this);
+            if (v.ifFalse != null)
+            {
+                Output.Write(" else ");
+                v.ifFalse.Accept(this);
+            }
             Output.Write(" end");
         }
 

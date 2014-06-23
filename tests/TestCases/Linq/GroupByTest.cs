@@ -62,6 +62,16 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void CountFiltered()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = from c in Contact.Linq() group c by c.Type.Code into g orderby g.Key select g.Count(c => c.LastSalary.Value >= 100);
+                CollectionAssert.AreEqual(new int[] { 1, 2, 1 }, ie);
+            }
+        }
+
+        [Test]
         public void KeyCount()
         {
             using (new SoodaTransaction())

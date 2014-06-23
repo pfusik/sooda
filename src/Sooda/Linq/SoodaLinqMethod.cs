@@ -84,6 +84,7 @@ namespace Sooda.Linq
         Enumerable_AnyFiltered,
         Enumerable_Contains,
         Enumerable_Count,
+        Enumerable_CountFiltered,
         Enumerable_Average,
         Enumerable_Max,
         Enumerable_Min,
@@ -220,6 +221,7 @@ namespace Sooda.Linq
                 method2id.Add(MethodOf(() => Enumerable.Any(null, (object o) => true)), SoodaLinqMethod.Enumerable_AnyFiltered);
                 method2id.Add(MethodOf(() => Enumerable.Contains<object>(null, null)), SoodaLinqMethod.Enumerable_Contains);
                 method2id.Add(MethodOf(() => Enumerable.Count<object>(null)), SoodaLinqMethod.Enumerable_Count);
+                method2id.Add(MethodOf(() => Enumerable.Count(null, (object o) => true)), SoodaLinqMethod.Enumerable_CountFiltered);
                 method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => 0M)), SoodaLinqMethod.Enumerable_Average);
                 method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => 0D)), SoodaLinqMethod.Enumerable_Average);
                 method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => 0)), SoodaLinqMethod.Enumerable_Average);

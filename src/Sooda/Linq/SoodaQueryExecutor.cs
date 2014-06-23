@@ -625,6 +625,13 @@ namespace Sooda.Linq
                     if (IsGroupAggregate(mc))
                         return new SoqlFunctionCallExpression("count", new SoqlAsteriskExpression());
                     return TranslateCollectionCount(mc.Arguments[0]);
+                case SoodaLinqMethod.Enumerable_CountFiltered:
+                    if (IsGroupAggregate(mc))
+                    {
+                        SoqlBooleanExpression cond = TranslateBoolean(((LambdaExpression) mc.Arguments[1]).Body);
+                        return new SoqlFunctionCallExpression("count", new SoqlConditionalExpression(cond, new SoqlLiteralExpression(1), null));
+                    }
+                    throw new NotSupportedException("Count");
                 case SoodaLinqMethod.Enumerable_Average:
                     return TranslateGroupAggregate(mc, "avg");
                 case SoodaLinqMethod.Enumerable_Max:

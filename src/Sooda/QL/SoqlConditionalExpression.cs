@@ -55,6 +55,8 @@ namespace Sooda.QL
                 return null;
 
             SoqlExpression expr = (bool) val ? ifTrue : ifFalse;
+            if (expr == null)
+                return null;
             return expr.Evaluate(context);
         }
     }
