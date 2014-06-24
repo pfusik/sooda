@@ -1,5 +1,5 @@
 // 
-// Copyright (c) 2003-2006 Jaroslaw Kowalski <jaak@jkowalski.net>
+// Copyright (c) 2014 Piotr Fusik <piotr@fusik.info>
 // 
 // All rights reserved.
 // 
@@ -27,37 +27,40 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using Sooda.QL.TypedWrappers;
+using System;
 
 namespace Sooda.QL
 {
-    public interface ISoqlVisitor
+    public class SoqlCastExpression : SoqlExpression
     {
-        void Visit(SoqlBinaryExpression v);
-        void Visit(SoqlBooleanAndExpression v);
-        void Visit(SoqlBooleanInExpression v);
-        void Visit(SoqlBooleanIsNullExpression v);
-        void Visit(SoqlBooleanLiteralExpression v);
-        void Visit(SoqlBooleanNegationExpression v);
-        void Visit(SoqlBooleanOrExpression v);
-        void Visit(SoqlBooleanRelationalExpression v);
-        void Visit(SoqlExistsExpression v);
-        void Visit(SoqlFunctionCallExpression v);
-        void Visit(SoqlContainsExpression v);
-        void Visit(SoqlSoodaClassExpression v);
-        void Visit(SoqlCountExpression v);
-        void Visit(SoqlAsteriskExpression v);
-        void Visit(SoqlLiteralExpression v);
-        void Visit(SoqlNullLiteral v);
-        void Visit(SoqlParameterLiteralExpression v);
-        void Visit(SoqlPathExpression v);
-        void Visit(SoqlQueryExpression v);
-        void Visit(SoqlUnaryNegationExpression v);
-        void Visit(SoqlRawExpression v);
-        void Visit(SoqlTypedWrapperExpression v);
-        void Visit(SoqlBooleanWrapperExpression v);
-        void Visit(SoqlConditionalExpression v);
-        void Visit(SoqlStringContainsExpression v);
-        void Visit(SoqlCastExpression v);
+        public readonly SoqlExpression source;
+        public readonly string type;
+
+        public SoqlCastExpression(SoqlExpression source, string type)
+        {
+            this.source = source;
+            this.type = type;
+        }
+
+        // visitor pattern
+        public override void Accept(ISoqlVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
+
+        public override object Evaluate(ISoqlEvaluateContext context)
+        {
+            object val = source.Evaluate(context);
+            if (val == null)
+                return null;
+            switch (type)
+            {
+                case "float":
+                    return Convert.ToDouble(val);
+                default:
+                    throw new NotImplementedException(type);
+            }
+        }
     }
+
 }

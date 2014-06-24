@@ -612,10 +612,21 @@ namespace Sooda.Linq
             return new SoqlBooleanRelationalExpression(TranslateCountFiltered(filter), new SoqlLiteralExpression(0), op);
         }
 
+        static SoqlExpression TranslateFunction(SoqlExpression expr, Type type, string function)
+        {
+            // needed by SQL Server, not needed by Oracle
+            if (function == "avg" && (type == typeof(int) || type == typeof(long)))
+                expr = new SoqlCastExpression(expr, "float");
+            return new SoqlFunctionCallExpression(function, expr);
+        }
+
         SoqlExpression TranslateGroupAggregate(MethodCallExpression mc, string function)
         {
             if (IsGroupAggregate(mc))
-                return new SoqlFunctionCallExpression(function, TranslateExpression(((LambdaExpression) mc.Arguments[1]).Body));
+            {
+                Expression expr = ((LambdaExpression) mc.Arguments[1]).Body;
+                return TranslateFunction(TranslateExpression(expr), expr.Type, function);
+            }
             throw new NotSupportedException(function);
         }
 
@@ -1181,13 +1192,12 @@ namespace Sooda.Linq
             throw new InvalidOperationException("Found " + list.Count + " matches");
         }
 
-        object ExecuteScalar(SoqlExpression expr, string function)
+        object ExecuteScalar(SoqlExpression expr)
         {
             SkipTakeNotSupported();
             _orderBy = null;
 
-            SoqlExpression selector = new SoqlFunctionCallExpression(function, expr);
-            using (IDataReader r = ExecuteQuery(new SoqlExpression[] { selector }))
+            using (IDataReader r = ExecuteQuery(new SoqlExpression[] { expr }))
             {
                 if (!r.Read())
                     throw new SoodaObjectNotFoundException();
@@ -1202,19 +1212,24 @@ namespace Sooda.Linq
         {
             TranslateQuery(mc.Arguments[0]);
             SoqlExpression expr;
+            Type type;
 #if DOTNET4
             if (mc.Arguments.Count == 1)
             {
                 if (_select == null)
                     throw new NotSupportedException("Cannot aggregate SoodaObjects");
-                expr = _select.GetSingleColumnExpression();
+                expr = _select.GetSingleColumnExpression(out type);
             }
             else
 #endif
             {
-                expr = TranslateExpression(GetLambda(mc).Body);
+                Expression arg = GetLambda(mc).Body;
+                type = arg.Type;
+                expr = TranslateExpression(arg);
             }
-            return ExecuteScalar(expr, function);
+
+            expr = TranslateFunction(expr, type, function);
+            return ExecuteScalar(expr);
         }
 
         int Count()
@@ -1222,21 +1237,13 @@ namespace Sooda.Linq
 #if CACHE_LINQ_COUNT
             return GetList().Count;
 #else
-            return (int) ExecuteScalar(new SoqlAsteriskExpression(), "count");
+            return (int) ExecuteScalar(new SoqlFunctionCallExpression("count", new SoqlAsteriskExpression()));
 #endif
         }
 
         object ThrowEmptyAggregate()
         {
             throw new InvalidOperationException("Aggregate on an empty collection");
-        }
-
-        object ExecuteAvg(MethodCallExpression mc)
-        {
-            object result = ExecuteScalar(mc, "avg");
-            if (result is int || result is long)
-                return Convert.ToDouble(result);
-            return result;
         }
 
         internal object Execute(Expression expr)
@@ -1332,9 +1339,9 @@ namespace Sooda.Linq
                         return Single(2, true);
 
                     case SoodaLinqMethod.Queryable_Average:
-                        return ExecuteAvg(mc) ?? ThrowEmptyAggregate();
+                        return ExecuteScalar(mc, "avg") ?? ThrowEmptyAggregate();
                     case SoodaLinqMethod.Queryable_AverageNullable:
-                        return ExecuteAvg(mc);
+                        return ExecuteScalar(mc, "avg");
                     case SoodaLinqMethod.Queryable_Max:
                         return ExecuteScalar(mc, "max") ?? ThrowEmptyAggregate();
                     case SoodaLinqMethod.Queryable_Min:

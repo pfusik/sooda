@@ -232,5 +232,10 @@ namespace Sooda.QL
         {
             v.haystack.Accept(this);
         }
+
+        void Sooda.QL.ISoqlVisitor.Visit(SoqlCastExpression v)
+        {
+            v.source.Accept(this);
+        }
     }
 }

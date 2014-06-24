@@ -582,6 +582,15 @@ namespace Sooda.QL
             Output.Write(suffix);
         }
 
+        void Sooda.QL.ISoqlVisitor.Visit(SoqlCastExpression v)
+        {
+            Output.Write("cast(");
+            v.source.Accept(this);
+            Output.Write(" as ");
+            Output.Write(v.type);
+            Output.Write(')');
+        }
+
         public TextWriter Output;
         public int IndentLevel = -1;
         public int IndentStep = 4;

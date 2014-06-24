@@ -85,10 +85,11 @@ namespace Sooda.Linq
                 _parameters.Add(lambda.Parameters[1]);
         }
 
-        internal SoqlExpression GetSingleColumnExpression()
+        internal SoqlExpression GetSingleColumnExpression(out Type type)
         {
             if (_soqls.Count != 1 || _body != _parameters[0])
                 throw new NotSupportedException("Select() is not scalar");
+            type = _body.Type;
             return _soqls[0];
         }
 
