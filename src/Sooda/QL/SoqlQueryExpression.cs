@@ -39,18 +39,18 @@ namespace Sooda.QL
         public int StartIdx = 0;
         public int PageCount = -1;
 
-        public SoqlExpressionCollection SelectExpressions = new SoqlExpressionCollection();
-        public StringCollection SelectAliases = new StringCollection();
+        public readonly SoqlExpressionCollection SelectExpressions = new SoqlExpressionCollection();
+        public readonly StringCollection SelectAliases = new StringCollection();
 
-        public StringCollection From = new StringCollection();
-        public StringCollection FromAliases = new StringCollection();
+        public readonly StringCollection From = new StringCollection();
+        public readonly StringCollection FromAliases = new StringCollection();
 
         public SoqlBooleanExpression WhereClause = null;
         public SoqlBooleanExpression Having = null;
 
-        public SoqlExpressionCollection GroupByExpressions = new SoqlExpressionCollection();
-        public SoqlExpressionCollection OrderByExpressions = new SoqlExpressionCollection();
-        public StringCollection OrderByOrder = new StringCollection();
+        public readonly SoqlExpressionCollection GroupByExpressions = new SoqlExpressionCollection();
+        public readonly SoqlExpressionCollection OrderByExpressions = new SoqlExpressionCollection();
+        public readonly StringCollection OrderByOrder = new StringCollection();
 
         public SoqlQueryExpression() { }
 

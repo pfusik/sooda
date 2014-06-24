@@ -560,30 +560,27 @@ namespace Sooda.Sql
                 string secondToken = v.PropertyName;
 
                 ClassInfo ci = Schema.FindClassByName(firstToken);
-                if (ci != null)
+                if (ci != null && ci.Constants != null)
                 {
-                    if (ci.Constants != null)
+                    foreach (ConstantInfo constInfo in ci.Constants)
                     {
-                        foreach (ConstantInfo constInfo in ci.Constants)
+                        if (constInfo.Name == secondToken)
                         {
-                            if (constInfo.Name == secondToken)
+                            switch (ci.GetFirstPrimaryKeyField().DataType)
                             {
-                                switch (ci.GetFirstPrimaryKeyField().DataType)
-                                {
-                                    case FieldDataType.Integer:
-                                        OutputLiteral(Convert.ToInt32(constInfo.Key), null);
-                                        break;
-                                    case FieldDataType.String:
-                                        OutputLiteral(constInfo.Key, null);
-                                        break;
-                                    case FieldDataType.AnsiString:
-                                        OutputLiteral(constInfo.Key, SoqlLiteralValueModifiers.AnsiString);
-                                        break;
-                                    default:
-                                        throw new NotSupportedException("Constant of type: " + ci.GetFirstPrimaryKeyField().DataType + " not supported in SOQL");
-                                }
-                                return null;
+                                case FieldDataType.Integer:
+                                    OutputLiteral(Convert.ToInt32(constInfo.Key), null);
+                                    break;
+                                case FieldDataType.String:
+                                    OutputLiteral(constInfo.Key, null);
+                                    break;
+                                case FieldDataType.AnsiString:
+                                    OutputLiteral(constInfo.Key, SoqlLiteralValueModifiers.AnsiString);
+                                    break;
+                                default:
+                                    throw new NotSupportedException("Constant of type: " + ci.GetFirstPrimaryKeyField().DataType + " not supported in SOQL");
                             }
+                            return null;
                         }
                     }
                 }
@@ -818,7 +815,7 @@ namespace Sooda.Sql
                 TextWriter oldOutput = Output;
                 Output = sw;
 
-                if (v.GroupByExpressions != null && v.GroupByExpressions.Count > 0)
+                if (v.GroupByExpressions.Count > 0)
                 {
                     if (IndentOutput)
                     {
@@ -851,8 +848,8 @@ namespace Sooda.Sql
                     Output.Write("having   ");
                     v.Having.Accept(this);
                 }
-                if (v.OrderByExpressions != null && v.OrderByExpressions.Count > 0
-                    && ((v.StartIdx ==0 && v.PageCount == -1) || _builder.TopSupport != SqlTopSupportMode.MSSQLRowNum))
+                if (v.OrderByExpressions.Count > 0
+                    && ((v.StartIdx == 0 && v.PageCount == -1) || _builder.TopSupport != SqlTopSupportMode.MSSQLRowNum))
                 {
                     if (IndentOutput)
                     {
