@@ -131,6 +131,7 @@ namespace Sooda.Sql
             get
             {
                 return SqlTopSupportMode.MSSQLRowNum;
+                // return SqlTopSupportMode.MSSQL2012;
             }
         }
 

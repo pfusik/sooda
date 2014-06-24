@@ -34,6 +34,7 @@ namespace Sooda.Sql
         None,
         MSSQLRowNum,
         MySqlLimit,
-        OracleRowNum
+        OracleRowNum,
+        MSSQL2012
     }
 }

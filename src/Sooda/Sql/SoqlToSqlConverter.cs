@@ -65,6 +65,19 @@ namespace Sooda.Sql
             _builder = builder;
         }
 
+        void StartClause()
+        {
+            if (IndentOutput)
+            {
+                Output.WriteLine();
+                WriteIndentString();
+            }
+            else
+            {
+                Output.Write(' ');
+            }
+        }
+
         private IFieldContainer GenerateTableJoins(SoqlPathExpression expr, out string p, out string firstTableAlias)
         {
             // logger.Debug("GenerateTableJoins({0})", expr);
@@ -717,18 +730,38 @@ namespace Sooda.Sql
                 }
         }
 
+        void WriteSelect()
+        {
+            WriteIndentString();
+            Output.Write(IndentOutput ? "select   " : "select ");
+        }
+
         void OutputOrderBy(SoqlQueryExpression v)
         {
-            _generatingOrderBy = true;
-            for (int i = 0; i < v.OrderByExpressions.Count; ++i)
+            Output.Write("order by ");
+            if (v.OrderByExpressions.Count > 0)
             {
-                if (i > 0)
-                    Output.Write(", ");
-                OutputScalar(v.OrderByExpressions[i]);
-                Output.Write(' ');
-                Output.Write(v.OrderByOrder[i]);
+                _generatingOrderBy = true;
+                for (int i = 0; i < v.OrderByExpressions.Count; ++i)
+                {
+                    if (i > 0)
+                        Output.Write(", ");
+                    OutputScalar(v.OrderByExpressions[i]);
+                    Output.Write(' ');
+                    Output.Write(v.OrderByOrder[i]);
+                }
+                _generatingOrderBy = false;
             }
-            _generatingOrderBy = false;
+            else
+            {
+                FieldInfo[] pkfis = Schema.FindClassByName(v.From[0]).GetPrimaryKeyFields();
+                for (int i = 0; i < pkfis.Length; i++)
+                {
+                    if (i > 0)
+                        Output.Write(", ");
+                    OutputColumn(ActualFromAliases[0], pkfis[i]);
+                }
+            }
         }
 
         void DoVisit(SoqlQueryExpression v)
@@ -736,15 +769,7 @@ namespace Sooda.Sql
             IndentLevel++;
             try
             {
-                WriteIndentString();
-                if (IndentOutput)
-                {
-                    Output.Write("select   ");
-                }
-                else
-                {
-                    Output.Write("select ");
-                }
+                WriteSelect();
 
                 if (v.StartIdx != 0 || v.PageCount != -1)
                 {
@@ -752,32 +777,17 @@ namespace Sooda.Sql
                     {
                         GenerateUniqueAliases = true;
                         OutputColumns(v, true);
-                        Output.Write(" from (");
+                        StartClause();
+                        Output.Write("from (");
                         IndentLevel++;
-                        WriteIndentString();
-                        if (IndentOutput)
-                        {
-                            Output.Write("select   ");
-                        }
-                        else
-                        {
-                            Output.Write("select ");
-                        }
+                        WriteSelect();
                         Output.Write(' ');
 
                         if (_builder.TopSupport == SqlTopSupportMode.OracleRowNum)
                         {
                             Output.Write("rownum as rownum_, pgo.* from (");
                             IndentLevel++;
-                            WriteIndentString();
-                            if (IndentOutput)
-                            {
-                                Output.Write("select   ");
-                            }
-                            else
-                            {
-                                Output.Write("select ");
-                            }
+                            WriteSelect();
                             Output.Write(' ');
                         }
                         UniqueColumnId = 0;
@@ -792,21 +802,8 @@ namespace Sooda.Sql
                 {
                     if (_builder.TopSupport == SqlTopSupportMode.MSSQLRowNum)
                     {
-                        Output.Write(", ROW_NUMBER() over (order by ");
-                        if (v.OrderByExpressions.Count > 0)
-                        {
-                            OutputOrderBy(v);
-                        }
-                        else
-                        {
-                            FieldInfo[] pkfis = Schema.FindClassByName(v.From[0]).GetPrimaryKeyFields();
-                            for (int i = 0; i < pkfis.Length; i++)
-                            {
-                                if (i > 0)
-                                    Output.Write(", ");
-                                OutputColumn(ActualFromAliases[0], pkfis[i]);
-                            }
-                        }
+                        Output.Write(", ROW_NUMBER() over (");
+                        OutputOrderBy(v);
                         Output.Write(") as rownum_");
                     }
                 }
@@ -817,15 +814,7 @@ namespace Sooda.Sql
 
                 if (v.GroupByExpressions.Count > 0)
                 {
-                    if (IndentOutput)
-                    {
-                        Output.WriteLine();
-                        WriteIndentString();
-                    }
-                    else
-                    {
-                        Output.Write(' ');
-                    }
+                    StartClause();
                     Output.Write("group by ");
                     for (int i = 0; i < v.GroupByExpressions.Count; ++i)
                     {
@@ -836,37 +825,40 @@ namespace Sooda.Sql
                 }
                 if (v.Having != null)
                 {
-                    if (IndentOutput)
-                    {
-                        Output.WriteLine();
-                        WriteIndentString();
-                    }
-                    else
-                    {
-                        Output.Write(' ');
-                    }
+                    StartClause();
                     Output.Write("having   ");
                     v.Having.Accept(this);
                 }
                 if (v.OrderByExpressions.Count > 0
                     && ((v.StartIdx == 0 && v.PageCount == -1) || _builder.TopSupport != SqlTopSupportMode.MSSQLRowNum))
                 {
-                    if (IndentOutput)
-                    {
-                        Output.WriteLine();
-                        WriteIndentString();
-                    }
-                    else
-                    {
-                        Output.Write(' ');
-                    }
-                    Output.Write("order by ");
+                    StartClause();
                     OutputOrderBy(v);
+                }
+
+                if (_builder.TopSupport == SqlTopSupportMode.MSSQL2012 && (v.StartIdx != 0 || v.PageCount != -1))
+                {
+                    if (v.OrderByExpressions.Count == 0)
+                    {
+                        StartClause();
+                        OutputOrderBy(v);
+                    }
+                    StartClause();
+                    Output.Write("offset ");
+                    Output.Write(v.StartIdx);
+                    Output.Write(" rows");
+                    if (v.PageCount != -1)
+                    {
+                        Output.Write(" fetch next ");
+                        Output.Write(v.PageCount);
+                        Output.Write(" rows only");
+                    }
                 }
 
                 if (v.PageCount != -1 && _builder.TopSupport == SqlTopSupportMode.MySqlLimit)
                 {
-                    Output.Write(" limit ");
+                    StartClause();
+                    Output.Write("limit ");
                     Output.Write(v.StartIdx);
                     Output.Write(",");
                     Output.Write(v.PageCount);
