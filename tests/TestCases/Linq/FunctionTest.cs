@@ -361,6 +361,16 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void OrderByGetLabelNone()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<ContactType> ce = ContactType.Linq().OrderBy(t => t.GetLabel(false));
+                CollectionAssert.AreEquivalent(ContactType.GetList(true), ce);
+            }
+        }
+
+        [Test]
         public void GetLabelInt()
         {
             using (new SoodaTransaction())
