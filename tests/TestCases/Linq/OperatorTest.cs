@@ -334,6 +334,16 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void DivideDouble()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.PrimaryGroup.Id / c.ContactId / 20.0 == 0.5);
+                CollectionAssert.AreEqual(new Contact[] { Contact.Mary }, ce);
+            }
+        }
+
+        [Test]
         public void Coalesce()
         {
             using (new SoodaTransaction())
@@ -414,6 +424,26 @@ namespace Sooda.UnitTests.TestCases.Linq
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Name + "/" + c.Name == "Mary Manager/Mary Manager");
                 Assert.AreEqual(1, ce.Count());
                 Assert.AreEqual(1, ce.First().ContactId);
+            }
+        }
+
+        [Test]
+        public void StringConcatenateInt()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.ContactId + "/" + c.Name == "1/Mary Manager");
+                CollectionAssert.AreEqual(new Contact[] { Contact.Mary }, ce);
+            }
+        }
+
+        [Test]
+        public void StringConcatenateBool()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Name + "/" + (c.ContactId == 1) == "Mary Manager/True");
+                CollectionAssert.AreEqual(new Contact[] { Contact.Mary }, ce);
             }
         }
     }

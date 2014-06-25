@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-06-02 10:42:25 +0200 (Mon, 02 Jun 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 727 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-06-25 17:08:09 +0200 (Wed, 25 Jun 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 750 $</subversion-revision>)</div>
         <div class="pagebreak">&#160;</div>
     </div>
     <p class="dontprintthis">
@@ -7158,9 +7158,13 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     <p>
                         The following string methods may be used: <code>Concat()</code>,
                         <code>Remove()</code> (gets translated to SQL <code>LEFT</code>),
+                        <code>Substring(startIndex, length)</code>,
                         <code>Replace()</code>, <code>Lower()</code> and <code>Upper()</code>.
                         <code>StartsWith()</code>, <code>EndsWith()</code> and <code>Contains()</code>
                         can be used with the restriction that the argument cannot come from the database.
+                    </p>
+                    <p>
+                        You can call <code>ToString()</code> on int, long, double, decimal and bool expressions.
                     </p>
                     <p>
                         Also, some static methods from the <code>System.Math</code> class are supported:

@@ -94,12 +94,18 @@ namespace Sooda.Linq
         String_Concat,
         String_Like,
         String_Remove,
+        String_Substring,
         String_Replace,
         String_ToLower,
         String_ToUpper,
         String_StartsWith,
         String_EndsWith,
         String_Contains,
+        Int_ToString,
+        Long_ToString,
+        Double_ToString,
+        Decimal_ToString,
+        Bool_ToString,
         Math_Abs,
         Math_Acos,
         Math_Asin,
@@ -131,159 +137,167 @@ namespace Sooda.Linq
             return Ungeneric(((MethodCallExpression) lambda.Body).Method);
         }
 
+        static Dictionary<MethodInfo, SoodaLinqMethod> Initialize()
+        {
+            Dictionary<MethodInfo, SoodaLinqMethod> method2id = new Dictionary<MethodInfo, SoodaLinqMethod>();
+            Expression<Func<object, bool>> predicate = o => true;
+            Expression<Func<object, int>> selector = o => 0;
+            Expression<Func<object, decimal>> selectorM = o => 0;
+            Expression<Func<object, double>> selectorD = o => 0;
+            Expression<Func<object, long>> selectorL = o => 0;
+            Expression<Func<object, int?>> selectorN = o => 0;
+            Expression<Func<object, decimal?>> selectorNM = o => 0;
+            Expression<Func<object, double?>> selectorND = o => 0;
+            Expression<Func<object, long?>> selectorNL = o => 0;
+            method2id.Add(MethodOf(() => Queryable.Where(null, predicate)), SoodaLinqMethod.Queryable_Where);
+            method2id.Add(MethodOf(() => Queryable.OrderBy(null, selector)), SoodaLinqMethod.Queryable_OrderBy);
+            method2id.Add(MethodOf(() => Queryable.OrderByDescending(null, selector)), SoodaLinqMethod.Queryable_OrderByDescending);
+            method2id.Add(MethodOf(() => Queryable.ThenBy(null, selector)), SoodaLinqMethod.Queryable_ThenBy);
+            method2id.Add(MethodOf(() => Queryable.ThenByDescending(null, selector)), SoodaLinqMethod.Queryable_ThenByDescending);
+            method2id.Add(MethodOf(() => Queryable.Skip<object>(null, 0)), SoodaLinqMethod.Queryable_Skip);
+            method2id.Add(MethodOf(() => Queryable.Take<object>(null, 0)), SoodaLinqMethod.Queryable_Take);
+            method2id.Add(MethodOf(() => Queryable.Select(null, selector)), SoodaLinqMethod.Queryable_Select);
+            method2id.Add(MethodOf(() => Queryable.Select(null, (object o, int i) => i)), SoodaLinqMethod.Queryable_SelectIndexed);
+            method2id.Add(MethodOf(() => Queryable.GroupBy(null, selector)), SoodaLinqMethod.Queryable_GroupBy);
+            method2id.Add(MethodOf(() => Queryable.Reverse<object>(null)), SoodaLinqMethod.Queryable_Reverse);
+            method2id.Add(MethodOf(() => Queryable.Distinct<object>(null)), SoodaLinqMethod.Queryable_Distinct);
+            method2id.Add(MethodOf(() => Queryable.OfType<object>(null)), SoodaLinqMethod.Queryable_OfType);
+            method2id.Add(MethodOf(() => Queryable.Except<object>(null, null)), SoodaLinqMethod.Queryable_Except);
+            method2id.Add(MethodOf(() => Queryable.Intersect<object>(null, null)), SoodaLinqMethod.Queryable_Intersect);
+            method2id.Add(MethodOf(() => Queryable.Union<object>(null, null)), SoodaLinqMethod.Queryable_Union);
+            method2id.Add(MethodOf(() => Queryable.All(null, predicate)), SoodaLinqMethod.Queryable_All);
+            method2id.Add(MethodOf(() => Queryable.Any<object>(null)), SoodaLinqMethod.Queryable_Any);
+            method2id.Add(MethodOf(() => Queryable.Any(null, predicate)), SoodaLinqMethod.Queryable_AnyFiltered);
+            method2id.Add(MethodOf(() => Queryable.Contains<object>(null, null)), SoodaLinqMethod.Queryable_Contains);
+            method2id.Add(MethodOf(() => Queryable.Count<object>(null)), SoodaLinqMethod.Queryable_Count);
+            method2id.Add(MethodOf(() => Queryable.Count(null, predicate)), SoodaLinqMethod.Queryable_CountFiltered);
+            method2id.Add(MethodOf(() => Queryable.First<object>(null)), SoodaLinqMethod.Queryable_First);
+            method2id.Add(MethodOf(() => Queryable.First(null, predicate)), SoodaLinqMethod.Queryable_FirstFiltered);
+            method2id.Add(MethodOf(() => Queryable.FirstOrDefault<object>(null)), SoodaLinqMethod.Queryable_FirstOrDefault);
+            method2id.Add(MethodOf(() => Queryable.FirstOrDefault(null, predicate)), SoodaLinqMethod.Queryable_FirstOrDefaultFiltered);
+            method2id.Add(MethodOf(() => Queryable.Last<object>(null)), SoodaLinqMethod.Queryable_Last);
+            method2id.Add(MethodOf(() => Queryable.Last(null, predicate)), SoodaLinqMethod.Queryable_LastFiltered);
+            method2id.Add(MethodOf(() => Queryable.LastOrDefault<object>(null)), SoodaLinqMethod.Queryable_LastOrDefault);
+            method2id.Add(MethodOf(() => Queryable.LastOrDefault(null, predicate)), SoodaLinqMethod.Queryable_LastOrDefaultFiltered);
+            method2id.Add(MethodOf(() => Queryable.Single<object>(null)), SoodaLinqMethod.Queryable_Single);
+            method2id.Add(MethodOf(() => Queryable.Single(null, predicate)), SoodaLinqMethod.Queryable_SingleFiltered);
+            method2id.Add(MethodOf(() => Queryable.SingleOrDefault<object>(null)), SoodaLinqMethod.Queryable_SingleOrDefault);
+            method2id.Add(MethodOf(() => Queryable.SingleOrDefault(null, predicate)), SoodaLinqMethod.Queryable_SingleOrDefaultFiltered);
+            method2id.Add(MethodOf(() => Queryable.Average((IQueryable<decimal>) null)), SoodaLinqMethod.Queryable_Average);
+            method2id.Add(MethodOf(() => Queryable.Average((IQueryable<double>) null)), SoodaLinqMethod.Queryable_Average);
+            method2id.Add(MethodOf(() => Queryable.Average((IQueryable<int>) null)), SoodaLinqMethod.Queryable_Average);
+            method2id.Add(MethodOf(() => Queryable.Average((IQueryable<long>) null)), SoodaLinqMethod.Queryable_Average);
+            method2id.Add(MethodOf(() => Queryable.Average((IQueryable<decimal?>) null)), SoodaLinqMethod.Queryable_AverageNullable);
+            method2id.Add(MethodOf(() => Queryable.Average((IQueryable<double?>) null)), SoodaLinqMethod.Queryable_AverageNullable);
+            method2id.Add(MethodOf(() => Queryable.Average((IQueryable<int?>) null)), SoodaLinqMethod.Queryable_AverageNullable);
+            method2id.Add(MethodOf(() => Queryable.Average((IQueryable<long?>) null)), SoodaLinqMethod.Queryable_AverageNullable);
+            method2id.Add(MethodOf(() => Queryable.Max<int>(null)), SoodaLinqMethod.Queryable_Max);
+            method2id.Add(MethodOf(() => Queryable.Min<int>(null)), SoodaLinqMethod.Queryable_Min);
+            method2id.Add(MethodOf(() => Queryable.Sum((IQueryable<decimal>) null)), SoodaLinqMethod.Queryable_Sum);
+            method2id.Add(MethodOf(() => Queryable.Sum((IQueryable<double>) null)), SoodaLinqMethod.Queryable_Sum);
+            method2id.Add(MethodOf(() => Queryable.Sum((IQueryable<int>) null)), SoodaLinqMethod.Queryable_Sum);
+            method2id.Add(MethodOf(() => Queryable.Sum((IQueryable<long>) null)), SoodaLinqMethod.Queryable_Sum);
+            method2id.Add(MethodOf(() => Queryable.Sum((IQueryable<decimal?>) null)), SoodaLinqMethod.Queryable_Sum);
+            method2id.Add(MethodOf(() => Queryable.Sum((IQueryable<double?>) null)), SoodaLinqMethod.Queryable_Sum);
+            method2id.Add(MethodOf(() => Queryable.Sum((IQueryable<int?>) null)), SoodaLinqMethod.Queryable_Sum);
+            method2id.Add(MethodOf(() => Queryable.Sum((IQueryable<long?>) null)), SoodaLinqMethod.Queryable_Sum);
+            method2id.Add(MethodOf(() => Queryable.Average(null, selectorM)), SoodaLinqMethod.Queryable_Average);
+            method2id.Add(MethodOf(() => Queryable.Average(null, selectorD)), SoodaLinqMethod.Queryable_Average);
+            method2id.Add(MethodOf(() => Queryable.Average(null, selector)), SoodaLinqMethod.Queryable_Average);
+            method2id.Add(MethodOf(() => Queryable.Average(null, selectorL)), SoodaLinqMethod.Queryable_Average);
+            method2id.Add(MethodOf(() => Queryable.Average(null, selectorNM)), SoodaLinqMethod.Queryable_AverageNullable);
+            method2id.Add(MethodOf(() => Queryable.Average(null, selectorND)), SoodaLinqMethod.Queryable_AverageNullable);
+            method2id.Add(MethodOf(() => Queryable.Average(null, selectorN)), SoodaLinqMethod.Queryable_AverageNullable);
+            method2id.Add(MethodOf(() => Queryable.Average(null, selectorNL)), SoodaLinqMethod.Queryable_AverageNullable);
+            method2id.Add(MethodOf(() => Queryable.Max(null, selector)), SoodaLinqMethod.Queryable_Max);
+            method2id.Add(MethodOf(() => Queryable.Min(null, selector)), SoodaLinqMethod.Queryable_Min);
+            method2id.Add(MethodOf(() => Queryable.Sum(null, selectorM)), SoodaLinqMethod.Queryable_Sum);
+            method2id.Add(MethodOf(() => Queryable.Sum(null, selectorD)), SoodaLinqMethod.Queryable_Sum);
+            method2id.Add(MethodOf(() => Queryable.Sum(null, selector)), SoodaLinqMethod.Queryable_Sum);
+            method2id.Add(MethodOf(() => Queryable.Sum(null, selectorL)), SoodaLinqMethod.Queryable_Sum);
+            method2id.Add(MethodOf(() => Queryable.Sum(null, selectorNM)), SoodaLinqMethod.Queryable_Sum);
+            method2id.Add(MethodOf(() => Queryable.Sum(null, selectorND)), SoodaLinqMethod.Queryable_Sum);
+            method2id.Add(MethodOf(() => Queryable.Sum(null, selectorN)), SoodaLinqMethod.Queryable_Sum);
+            method2id.Add(MethodOf(() => Queryable.Sum(null, selectorNL)), SoodaLinqMethod.Queryable_Sum);
+            method2id.Add(MethodOf(() => Enumerable.All(null, (object o) => true)), SoodaLinqMethod.Enumerable_All);
+            method2id.Add(MethodOf(() => Enumerable.Any<object>(null)), SoodaLinqMethod.Enumerable_Any);
+            method2id.Add(MethodOf(() => Enumerable.Any(null, (object o) => true)), SoodaLinqMethod.Enumerable_AnyFiltered);
+            method2id.Add(MethodOf(() => Enumerable.Contains<object>(null, null)), SoodaLinqMethod.Enumerable_Contains);
+            method2id.Add(MethodOf(() => Enumerable.Count<object>(null)), SoodaLinqMethod.Enumerable_Count);
+            method2id.Add(MethodOf(() => Enumerable.Count(null, (object o) => true)), SoodaLinqMethod.Enumerable_CountFiltered);
+            method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => 0M)), SoodaLinqMethod.Enumerable_Average);
+            method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => 0D)), SoodaLinqMethod.Enumerable_Average);
+            method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => 0)), SoodaLinqMethod.Enumerable_Average);
+            method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => 0L)), SoodaLinqMethod.Enumerable_Average);
+            method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => (decimal?) 0)), SoodaLinqMethod.Enumerable_Average);
+            method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => (double?) 0)), SoodaLinqMethod.Enumerable_Average);
+            method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => (int?) 0)), SoodaLinqMethod.Enumerable_Average);
+            method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => (long?) 0)), SoodaLinqMethod.Enumerable_Average);
+            method2id.Add(MethodOf(() => Enumerable.Max(null, (object o) => 0)), SoodaLinqMethod.Enumerable_Max);
+            method2id.Add(MethodOf(() => Enumerable.Min(null, (object o) => 0)), SoodaLinqMethod.Enumerable_Min);
+            method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => 0M)), SoodaLinqMethod.Enumerable_Sum);
+            method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => 0D)), SoodaLinqMethod.Enumerable_Sum);
+            method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => 0)), SoodaLinqMethod.Enumerable_Sum);
+            method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => 0L)), SoodaLinqMethod.Enumerable_Sum);
+            method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => (decimal?) 0)), SoodaLinqMethod.Enumerable_Sum);
+            method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => (double?) 0)), SoodaLinqMethod.Enumerable_Sum);
+            method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => (int?) 0)), SoodaLinqMethod.Enumerable_Sum);
+            method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => (long?) 0)), SoodaLinqMethod.Enumerable_Sum);
+            method2id.Add(MethodOf(() => ((ICollection<object>) null).Contains(null)), SoodaLinqMethod.ICollection_Contains); // FIXME: Ungeneric doesn't handle methods in generic classes, so this will only work on ICollection<object>
+            method2id.Add(MethodOf(() => ((System.Collections.ArrayList) null).Contains(null)), SoodaLinqMethod.ICollection_Contains);
+            method2id.Add(MethodOf(() => ((System.Collections.IList) null).Contains(null)), SoodaLinqMethod.ICollection_Contains);
+            method2id.Add(MethodOf(() => string.Empty.GetType()), SoodaLinqMethod.Object_GetType);
+            method2id.Add(MethodOf(() => string.Concat(string.Empty, string.Empty)), SoodaLinqMethod.String_Concat);
+            method2id.Add(MethodOf(() => LinqUtils.Like(string.Empty, string.Empty)), SoodaLinqMethod.String_Like);
+            method2id.Add(MethodOf(() => string.Empty.Remove(0)), SoodaLinqMethod.String_Remove);
+            method2id.Add(MethodOf(() => string.Empty.Substring(0, 0)), SoodaLinqMethod.String_Substring);
+            method2id.Add(MethodOf(() => string.Empty.Replace(string.Empty, string.Empty)), SoodaLinqMethod.String_Replace);
+            method2id.Add(MethodOf(() => string.Empty.ToLower()), SoodaLinqMethod.String_ToLower);
+            method2id.Add(MethodOf(() => string.Empty.ToUpper()), SoodaLinqMethod.String_ToUpper);
+            method2id.Add(MethodOf(() => string.Empty.StartsWith(string.Empty)), SoodaLinqMethod.String_StartsWith);
+            method2id.Add(MethodOf(() => string.Empty.EndsWith(string.Empty)), SoodaLinqMethod.String_EndsWith);
+            method2id.Add(MethodOf(() => string.Empty.Contains(string.Empty)), SoodaLinqMethod.String_Contains);
+            method2id.Add(MethodOf(() => 0.ToString()), SoodaLinqMethod.Int_ToString);
+            method2id.Add(MethodOf(() => 0L.ToString()), SoodaLinqMethod.Long_ToString);
+            method2id.Add(MethodOf(() => 0D.ToString()), SoodaLinqMethod.Double_ToString);
+            method2id.Add(MethodOf(() => 0M.ToString()), SoodaLinqMethod.Decimal_ToString);
+            method2id.Add(MethodOf(() => false.ToString()), SoodaLinqMethod.Bool_ToString);
+            method2id.Add(MethodOf(() => Math.Abs(0M)), SoodaLinqMethod.Math_Abs);
+            method2id.Add(MethodOf(() => Math.Abs(0D)), SoodaLinqMethod.Math_Abs);
+            method2id.Add(MethodOf(() => Math.Abs((short) 0)), SoodaLinqMethod.Math_Abs);
+            method2id.Add(MethodOf(() => Math.Abs(0)), SoodaLinqMethod.Math_Abs);
+            method2id.Add(MethodOf(() => Math.Abs(0L)), SoodaLinqMethod.Math_Abs);
+            method2id.Add(MethodOf(() => Math.Abs((sbyte) 0)), SoodaLinqMethod.Math_Abs);
+            method2id.Add(MethodOf(() => Math.Abs(0F)), SoodaLinqMethod.Math_Abs);
+            method2id.Add(MethodOf(() => Math.Acos(0)), SoodaLinqMethod.Math_Acos);
+            method2id.Add(MethodOf(() => Math.Asin(0)), SoodaLinqMethod.Math_Asin);
+            method2id.Add(MethodOf(() => Math.Atan(0)), SoodaLinqMethod.Math_Atan);
+            method2id.Add(MethodOf(() => Math.Cos(0)), SoodaLinqMethod.Math_Cos);
+            method2id.Add(MethodOf(() => Math.Exp(0)), SoodaLinqMethod.Math_Exp);
+            method2id.Add(MethodOf(() => Math.Floor(0M)), SoodaLinqMethod.Math_Floor);
+            method2id.Add(MethodOf(() => Math.Floor(0D)), SoodaLinqMethod.Math_Floor);
+            method2id.Add(MethodOf(() => Math.Pow(1, 1)), SoodaLinqMethod.Math_Pow);
+            method2id.Add(MethodOf(() => Math.Round(0M, 0)), SoodaLinqMethod.Math_Round);
+            method2id.Add(MethodOf(() => Math.Round(0D, 0)), SoodaLinqMethod.Math_Round);
+            method2id.Add(MethodOf(() => Math.Sign(0M)), SoodaLinqMethod.Math_Sign);
+            method2id.Add(MethodOf(() => Math.Sign(0D)), SoodaLinqMethod.Math_Sign);
+            method2id.Add(MethodOf(() => Math.Sign((short) 0)), SoodaLinqMethod.Math_Sign);
+            method2id.Add(MethodOf(() => Math.Sign(0)), SoodaLinqMethod.Math_Sign);
+            method2id.Add(MethodOf(() => Math.Sign(0L)), SoodaLinqMethod.Math_Sign);
+            method2id.Add(MethodOf(() => Math.Sign((sbyte) 0)), SoodaLinqMethod.Math_Sign);
+            method2id.Add(MethodOf(() => Math.Sign(0F)), SoodaLinqMethod.Math_Sign);
+            method2id.Add(MethodOf(() => Math.Sin(0)), SoodaLinqMethod.Math_Sin);
+            method2id.Add(MethodOf(() => Math.Sqrt(0)), SoodaLinqMethod.Math_Sqrt);
+            method2id.Add(MethodOf(() => Math.Tan(0)), SoodaLinqMethod.Math_Tan);
+            method2id.Add(MethodOf(() => ((SoodaObject) null).GetPrimaryKeyValue()), SoodaLinqMethod.SoodaObject_GetPrimaryKeyValue);
+            method2id.Add(MethodOf(() => ((SoodaObject) null).GetLabel(false)), SoodaLinqMethod.SoodaObject_GetLabel);
+            _method2id = method2id;
+            return method2id;
+        }
+
         public static SoodaLinqMethod Get(MethodInfo method)
         {
-            Dictionary<MethodInfo, SoodaLinqMethod> method2id = _method2id;
-            if (method2id == null)
-            {
-                method2id = new Dictionary<MethodInfo, SoodaLinqMethod>();
-                Expression<Func<object, bool>> predicate = o => true;
-                Expression<Func<object, int>> selector = o => 0;
-                Expression<Func<object, decimal>> selectorM = o => 0;
-                Expression<Func<object, double>> selectorD = o => 0;
-                Expression<Func<object, long>> selectorL = o => 0;
-                Expression<Func<object, int?>> selectorN = o => 0;
-                Expression<Func<object, decimal?>> selectorNM = o => 0;
-                Expression<Func<object, double?>> selectorND = o => 0;
-                Expression<Func<object, long?>> selectorNL = o => 0;
-                method2id.Add(MethodOf(() => Queryable.Where(null, predicate)), SoodaLinqMethod.Queryable_Where);
-                method2id.Add(MethodOf(() => Queryable.OrderBy(null, selector)), SoodaLinqMethod.Queryable_OrderBy);
-                method2id.Add(MethodOf(() => Queryable.OrderByDescending(null, selector)), SoodaLinqMethod.Queryable_OrderByDescending);
-                method2id.Add(MethodOf(() => Queryable.ThenBy(null, selector)), SoodaLinqMethod.Queryable_ThenBy);
-                method2id.Add(MethodOf(() => Queryable.ThenByDescending(null, selector)), SoodaLinqMethod.Queryable_ThenByDescending);
-                method2id.Add(MethodOf(() => Queryable.Skip<object>(null, 0)), SoodaLinqMethod.Queryable_Skip);
-                method2id.Add(MethodOf(() => Queryable.Take<object>(null, 0)), SoodaLinqMethod.Queryable_Take);
-                method2id.Add(MethodOf(() => Queryable.Select(null, selector)), SoodaLinqMethod.Queryable_Select);
-                method2id.Add(MethodOf(() => Queryable.Select(null, (object o, int i) => i)), SoodaLinqMethod.Queryable_SelectIndexed);
-                method2id.Add(MethodOf(() => Queryable.GroupBy(null, selector)), SoodaLinqMethod.Queryable_GroupBy);
-                method2id.Add(MethodOf(() => Queryable.Reverse<object>(null)), SoodaLinqMethod.Queryable_Reverse);
-                method2id.Add(MethodOf(() => Queryable.Distinct<object>(null)), SoodaLinqMethod.Queryable_Distinct);
-                method2id.Add(MethodOf(() => Queryable.OfType<object>(null)), SoodaLinqMethod.Queryable_OfType);
-                method2id.Add(MethodOf(() => Queryable.Except<object>(null, null)), SoodaLinqMethod.Queryable_Except);
-                method2id.Add(MethodOf(() => Queryable.Intersect<object>(null, null)), SoodaLinqMethod.Queryable_Intersect);
-                method2id.Add(MethodOf(() => Queryable.Union<object>(null, null)), SoodaLinqMethod.Queryable_Union);
-                method2id.Add(MethodOf(() => Queryable.All(null, predicate)), SoodaLinqMethod.Queryable_All);
-                method2id.Add(MethodOf(() => Queryable.Any<object>(null)), SoodaLinqMethod.Queryable_Any);
-                method2id.Add(MethodOf(() => Queryable.Any(null, predicate)), SoodaLinqMethod.Queryable_AnyFiltered);
-                method2id.Add(MethodOf(() => Queryable.Contains<object>(null, null)), SoodaLinqMethod.Queryable_Contains);
-                method2id.Add(MethodOf(() => Queryable.Count<object>(null)), SoodaLinqMethod.Queryable_Count);
-                method2id.Add(MethodOf(() => Queryable.Count(null, predicate)), SoodaLinqMethod.Queryable_CountFiltered);
-                method2id.Add(MethodOf(() => Queryable.First<object>(null)), SoodaLinqMethod.Queryable_First);
-                method2id.Add(MethodOf(() => Queryable.First(null, predicate)), SoodaLinqMethod.Queryable_FirstFiltered);
-                method2id.Add(MethodOf(() => Queryable.FirstOrDefault<object>(null)), SoodaLinqMethod.Queryable_FirstOrDefault);
-                method2id.Add(MethodOf(() => Queryable.FirstOrDefault(null, predicate)), SoodaLinqMethod.Queryable_FirstOrDefaultFiltered);
-                method2id.Add(MethodOf(() => Queryable.Last<object>(null)), SoodaLinqMethod.Queryable_Last);
-                method2id.Add(MethodOf(() => Queryable.Last(null, predicate)), SoodaLinqMethod.Queryable_LastFiltered);
-                method2id.Add(MethodOf(() => Queryable.LastOrDefault<object>(null)), SoodaLinqMethod.Queryable_LastOrDefault);
-                method2id.Add(MethodOf(() => Queryable.LastOrDefault(null, predicate)), SoodaLinqMethod.Queryable_LastOrDefaultFiltered);
-                method2id.Add(MethodOf(() => Queryable.Single<object>(null)), SoodaLinqMethod.Queryable_Single);
-                method2id.Add(MethodOf(() => Queryable.Single(null, predicate)), SoodaLinqMethod.Queryable_SingleFiltered);
-                method2id.Add(MethodOf(() => Queryable.SingleOrDefault<object>(null)), SoodaLinqMethod.Queryable_SingleOrDefault);
-                method2id.Add(MethodOf(() => Queryable.SingleOrDefault(null, predicate)), SoodaLinqMethod.Queryable_SingleOrDefaultFiltered);
-                method2id.Add(MethodOf(() => Queryable.Average((IQueryable<decimal>) null)), SoodaLinqMethod.Queryable_Average);
-                method2id.Add(MethodOf(() => Queryable.Average((IQueryable<double>) null)), SoodaLinqMethod.Queryable_Average);
-                method2id.Add(MethodOf(() => Queryable.Average((IQueryable<int>) null)), SoodaLinqMethod.Queryable_Average);
-                method2id.Add(MethodOf(() => Queryable.Average((IQueryable<long>) null)), SoodaLinqMethod.Queryable_Average);
-                method2id.Add(MethodOf(() => Queryable.Average((IQueryable<decimal?>) null)), SoodaLinqMethod.Queryable_AverageNullable);
-                method2id.Add(MethodOf(() => Queryable.Average((IQueryable<double?>) null)), SoodaLinqMethod.Queryable_AverageNullable);
-                method2id.Add(MethodOf(() => Queryable.Average((IQueryable<int?>) null)), SoodaLinqMethod.Queryable_AverageNullable);
-                method2id.Add(MethodOf(() => Queryable.Average((IQueryable<long?>) null)), SoodaLinqMethod.Queryable_AverageNullable);
-                method2id.Add(MethodOf(() => Queryable.Max<int>(null)), SoodaLinqMethod.Queryable_Max);
-                method2id.Add(MethodOf(() => Queryable.Min<int>(null)), SoodaLinqMethod.Queryable_Min);
-                method2id.Add(MethodOf(() => Queryable.Sum((IQueryable<decimal>) null)), SoodaLinqMethod.Queryable_Sum);
-                method2id.Add(MethodOf(() => Queryable.Sum((IQueryable<double>) null)), SoodaLinqMethod.Queryable_Sum);
-                method2id.Add(MethodOf(() => Queryable.Sum((IQueryable<int>) null)), SoodaLinqMethod.Queryable_Sum);
-                method2id.Add(MethodOf(() => Queryable.Sum((IQueryable<long>) null)), SoodaLinqMethod.Queryable_Sum);
-                method2id.Add(MethodOf(() => Queryable.Sum((IQueryable<decimal?>) null)), SoodaLinqMethod.Queryable_Sum);
-                method2id.Add(MethodOf(() => Queryable.Sum((IQueryable<double?>) null)), SoodaLinqMethod.Queryable_Sum);
-                method2id.Add(MethodOf(() => Queryable.Sum((IQueryable<int?>) null)), SoodaLinqMethod.Queryable_Sum);
-                method2id.Add(MethodOf(() => Queryable.Sum((IQueryable<long?>) null)), SoodaLinqMethod.Queryable_Sum);
-                method2id.Add(MethodOf(() => Queryable.Average(null, selectorM)), SoodaLinqMethod.Queryable_Average);
-                method2id.Add(MethodOf(() => Queryable.Average(null, selectorD)), SoodaLinqMethod.Queryable_Average);
-                method2id.Add(MethodOf(() => Queryable.Average(null, selector)), SoodaLinqMethod.Queryable_Average);
-                method2id.Add(MethodOf(() => Queryable.Average(null, selectorL)), SoodaLinqMethod.Queryable_Average);
-                method2id.Add(MethodOf(() => Queryable.Average(null, selectorNM)), SoodaLinqMethod.Queryable_AverageNullable);
-                method2id.Add(MethodOf(() => Queryable.Average(null, selectorND)), SoodaLinqMethod.Queryable_AverageNullable);
-                method2id.Add(MethodOf(() => Queryable.Average(null, selectorN)), SoodaLinqMethod.Queryable_AverageNullable);
-                method2id.Add(MethodOf(() => Queryable.Average(null, selectorNL)), SoodaLinqMethod.Queryable_AverageNullable);
-                method2id.Add(MethodOf(() => Queryable.Max(null, selector)), SoodaLinqMethod.Queryable_Max);
-                method2id.Add(MethodOf(() => Queryable.Min(null, selector)), SoodaLinqMethod.Queryable_Min);
-                method2id.Add(MethodOf(() => Queryable.Sum(null, selectorM)), SoodaLinqMethod.Queryable_Sum);
-                method2id.Add(MethodOf(() => Queryable.Sum(null, selectorD)), SoodaLinqMethod.Queryable_Sum);
-                method2id.Add(MethodOf(() => Queryable.Sum(null, selector)), SoodaLinqMethod.Queryable_Sum);
-                method2id.Add(MethodOf(() => Queryable.Sum(null, selectorL)), SoodaLinqMethod.Queryable_Sum);
-                method2id.Add(MethodOf(() => Queryable.Sum(null, selectorNM)), SoodaLinqMethod.Queryable_Sum);
-                method2id.Add(MethodOf(() => Queryable.Sum(null, selectorND)), SoodaLinqMethod.Queryable_Sum);
-                method2id.Add(MethodOf(() => Queryable.Sum(null, selectorN)), SoodaLinqMethod.Queryable_Sum);
-                method2id.Add(MethodOf(() => Queryable.Sum(null, selectorNL)), SoodaLinqMethod.Queryable_Sum);
-                method2id.Add(MethodOf(() => Enumerable.All(null, (object o) => true)), SoodaLinqMethod.Enumerable_All);
-                method2id.Add(MethodOf(() => Enumerable.Any<object>(null)), SoodaLinqMethod.Enumerable_Any);
-                method2id.Add(MethodOf(() => Enumerable.Any(null, (object o) => true)), SoodaLinqMethod.Enumerable_AnyFiltered);
-                method2id.Add(MethodOf(() => Enumerable.Contains<object>(null, null)), SoodaLinqMethod.Enumerable_Contains);
-                method2id.Add(MethodOf(() => Enumerable.Count<object>(null)), SoodaLinqMethod.Enumerable_Count);
-                method2id.Add(MethodOf(() => Enumerable.Count(null, (object o) => true)), SoodaLinqMethod.Enumerable_CountFiltered);
-                method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => 0M)), SoodaLinqMethod.Enumerable_Average);
-                method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => 0D)), SoodaLinqMethod.Enumerable_Average);
-                method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => 0)), SoodaLinqMethod.Enumerable_Average);
-                method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => 0L)), SoodaLinqMethod.Enumerable_Average);
-                method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => (decimal?) 0)), SoodaLinqMethod.Enumerable_Average);
-                method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => (double?) 0)), SoodaLinqMethod.Enumerable_Average);
-                method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => (int?) 0)), SoodaLinqMethod.Enumerable_Average);
-                method2id.Add(MethodOf(() => Enumerable.Average(null, (object o) => (long?) 0)), SoodaLinqMethod.Enumerable_Average);
-                method2id.Add(MethodOf(() => Enumerable.Max(null, (object o) => 0)), SoodaLinqMethod.Enumerable_Max);
-                method2id.Add(MethodOf(() => Enumerable.Min(null, (object o) => 0)), SoodaLinqMethod.Enumerable_Min);
-                method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => 0M)), SoodaLinqMethod.Enumerable_Sum);
-                method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => 0D)), SoodaLinqMethod.Enumerable_Sum);
-                method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => 0)), SoodaLinqMethod.Enumerable_Sum);
-                method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => 0L)), SoodaLinqMethod.Enumerable_Sum);
-                method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => (decimal?) 0)), SoodaLinqMethod.Enumerable_Sum);
-                method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => (double?) 0)), SoodaLinqMethod.Enumerable_Sum);
-                method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => (int?) 0)), SoodaLinqMethod.Enumerable_Sum);
-                method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => (long?) 0)), SoodaLinqMethod.Enumerable_Sum);
-                method2id.Add(MethodOf(() => ((ICollection<object>) null).Contains(null)), SoodaLinqMethod.ICollection_Contains); // FIXME: Ungeneric doesn't handle methods in generic classes, so this will only work on ICollection<object>
-                method2id.Add(MethodOf(() => ((System.Collections.ArrayList) null).Contains(null)), SoodaLinqMethod.ICollection_Contains);
-                method2id.Add(MethodOf(() => ((System.Collections.IList) null).Contains(null)), SoodaLinqMethod.ICollection_Contains);
-                method2id.Add(MethodOf(() => string.Empty.GetType()), SoodaLinqMethod.Object_GetType);
-                method2id.Add(MethodOf(() => string.Concat(string.Empty, string.Empty)), SoodaLinqMethod.String_Concat);
-                method2id.Add(MethodOf(() => LinqUtils.Like(string.Empty, string.Empty)), SoodaLinqMethod.String_Like);
-                method2id.Add(MethodOf(() => string.Empty.Remove(0)), SoodaLinqMethod.String_Remove);
-                method2id.Add(MethodOf(() => string.Empty.Replace(string.Empty, string.Empty)), SoodaLinqMethod.String_Replace);
-                method2id.Add(MethodOf(() => string.Empty.ToLower()), SoodaLinqMethod.String_ToLower);
-                method2id.Add(MethodOf(() => string.Empty.ToUpper()), SoodaLinqMethod.String_ToUpper);
-                method2id.Add(MethodOf(() => string.Empty.StartsWith(string.Empty)), SoodaLinqMethod.String_StartsWith);
-                method2id.Add(MethodOf(() => string.Empty.EndsWith(string.Empty)), SoodaLinqMethod.String_EndsWith);
-                method2id.Add(MethodOf(() => string.Empty.Contains(string.Empty)), SoodaLinqMethod.String_Contains);
-                method2id.Add(MethodOf(() => Math.Abs(0M)), SoodaLinqMethod.Math_Abs);
-                method2id.Add(MethodOf(() => Math.Abs(0D)), SoodaLinqMethod.Math_Abs);
-                method2id.Add(MethodOf(() => Math.Abs((short) 0)), SoodaLinqMethod.Math_Abs);
-                method2id.Add(MethodOf(() => Math.Abs(0)), SoodaLinqMethod.Math_Abs);
-                method2id.Add(MethodOf(() => Math.Abs(0L)), SoodaLinqMethod.Math_Abs);
-                method2id.Add(MethodOf(() => Math.Abs((sbyte) 0)), SoodaLinqMethod.Math_Abs);
-                method2id.Add(MethodOf(() => Math.Abs(0F)), SoodaLinqMethod.Math_Abs);
-                method2id.Add(MethodOf(() => Math.Acos(0)), SoodaLinqMethod.Math_Acos);
-                method2id.Add(MethodOf(() => Math.Asin(0)), SoodaLinqMethod.Math_Asin);
-                method2id.Add(MethodOf(() => Math.Atan(0)), SoodaLinqMethod.Math_Atan);
-                method2id.Add(MethodOf(() => Math.Cos(0)), SoodaLinqMethod.Math_Cos);
-                method2id.Add(MethodOf(() => Math.Exp(0)), SoodaLinqMethod.Math_Exp);
-                method2id.Add(MethodOf(() => Math.Floor(0M)), SoodaLinqMethod.Math_Floor);
-                method2id.Add(MethodOf(() => Math.Floor(0D)), SoodaLinqMethod.Math_Floor);
-                method2id.Add(MethodOf(() => Math.Pow(1, 1)), SoodaLinqMethod.Math_Pow);
-                method2id.Add(MethodOf(() => Math.Round(0M, 0)), SoodaLinqMethod.Math_Round);
-                method2id.Add(MethodOf(() => Math.Round(0D, 0)), SoodaLinqMethod.Math_Round);
-                method2id.Add(MethodOf(() => Math.Sign(0M)), SoodaLinqMethod.Math_Sign);
-                method2id.Add(MethodOf(() => Math.Sign(0D)), SoodaLinqMethod.Math_Sign);
-                method2id.Add(MethodOf(() => Math.Sign((short) 0)), SoodaLinqMethod.Math_Sign);
-                method2id.Add(MethodOf(() => Math.Sign(0)), SoodaLinqMethod.Math_Sign);
-                method2id.Add(MethodOf(() => Math.Sign(0L)), SoodaLinqMethod.Math_Sign);
-                method2id.Add(MethodOf(() => Math.Sign((sbyte) 0)), SoodaLinqMethod.Math_Sign);
-                method2id.Add(MethodOf(() => Math.Sign(0F)), SoodaLinqMethod.Math_Sign);
-                method2id.Add(MethodOf(() => Math.Sin(0)), SoodaLinqMethod.Math_Sin);
-                method2id.Add(MethodOf(() => Math.Sqrt(0)), SoodaLinqMethod.Math_Sqrt);
-                method2id.Add(MethodOf(() => Math.Tan(0)), SoodaLinqMethod.Math_Tan);
-                method2id.Add(MethodOf(() => ((SoodaObject) null).GetPrimaryKeyValue()), SoodaLinqMethod.SoodaObject_GetPrimaryKeyValue);
-                method2id.Add(MethodOf(() => ((SoodaObject) null).GetLabel(false)), SoodaLinqMethod.SoodaObject_GetLabel);
-                _method2id = method2id;
-            }
+            Dictionary<MethodInfo, SoodaLinqMethod> method2id = _method2id ?? Initialize();
             SoodaLinqMethod id;
             method2id.TryGetValue(Ungeneric(method), out id);
             return id;

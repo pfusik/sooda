@@ -287,8 +287,12 @@ namespace Sooda.Linq
             if (expr.Type == typeof(object)
              || expr.Operand.Type == typeof(object)
              || Nullable.GetUnderlyingType(expr.Type) == expr.Operand.Type // T -> Nullable<T>
-             || (expr.Type == typeof(double) && expr.Operand.Type == typeof(int)))
+             || (expr.Type == typeof(long) && expr.Operand.Type == typeof(int)))
                 return TranslateExpression(expr.Operand);
+            if (expr.Type == typeof(double))
+                return new SoqlCastExpression(TranslateExpression(expr.Operand), "float");
+            if (expr.Type == typeof(decimal))
+                return new SoqlCastExpression(TranslateExpression(expr.Operand), "decimal"); // FIXME: SQL Serverism
             throw new NotSupportedException("Convert " + expr.Operand.Type + " to " + expr.Type);
         }
 
@@ -648,6 +652,21 @@ namespace Sooda.Linq
             throw new NotSupportedException(function);
         }
 
+        SoqlExpression TranslateToString(Expression expr)
+        {
+            if (expr.Type == typeof(int))
+                return new SoqlCastExpression(TranslateExpression(expr), "varchar(11)");
+            if (expr.Type == typeof(double))
+                return new SoqlCastExpression(TranslateExpression(expr), "varchar(24)"); // -2.2250738585072020E-308
+            if (expr.Type == typeof(decimal))
+                return new SoqlCastExpression(TranslateExpression(expr), "varchar(42)");
+            if (expr.Type == typeof(long))
+                return new SoqlCastExpression(TranslateExpression(expr), "varchar(20)");
+            if (expr.Type == typeof(bool))
+                return new SoqlConditionalExpression(TranslateBoolean(expr), new SoqlLiteralExpression("True"), new SoqlLiteralExpression("False"));
+            throw new NotSupportedException(expr.Type.ToString());
+        }
+
         SoqlExpression TranslateCall(MethodCallExpression mc)
         {
             switch (SoodaLinqMethodDictionary.Get(mc.Method))
@@ -705,13 +724,24 @@ namespace Sooda.Linq
                         SoqlRelationalOperator.Like);
                 case SoodaLinqMethod.String_Remove:
                     return new SoqlFunctionCallExpression("left", TranslateExpression(mc.Object), TranslateExpression(mc.Arguments[0]));
+                case SoodaLinqMethod.String_Substring:
+                    {
+                        SoqlExpressionCollection parameters = new SoqlExpressionCollection {
+                            TranslateExpression(mc.Object),
+                            new SoqlBinaryExpression(new SoqlLiteralExpression(1), TranslateExpression(mc.Arguments[0]), SoqlBinaryOperator.Add),
+                            TranslateExpression(mc.Arguments[1])
+                        };
+                        return new SoqlFunctionCallExpression("substring", parameters);
+                    }
                 case SoodaLinqMethod.String_Replace:
-                    SoqlExpressionCollection parameters = new SoqlExpressionCollection {
-                        TranslateExpression(mc.Object),
-                        TranslateExpression(mc.Arguments[0]),
-                        TranslateExpression(mc.Arguments[1])
-                    };
-                    return new SoqlFunctionCallExpression("replace", parameters);
+                    {
+                        SoqlExpressionCollection parameters = new SoqlExpressionCollection {
+                            TranslateExpression(mc.Object),
+                            TranslateExpression(mc.Arguments[0]),
+                            TranslateExpression(mc.Arguments[1])
+                        };
+                        return new SoqlFunctionCallExpression("replace", parameters);
+                    }
                 case SoodaLinqMethod.String_ToLower:
                     return new SoqlFunctionCallExpression("lower", TranslateExpression(mc.Object));
                 case SoodaLinqMethod.String_ToUpper:
@@ -722,6 +752,12 @@ namespace Sooda.Linq
                     return TranslateStringContains(mc, SoqlStringContainsPosition.End);
                 case SoodaLinqMethod.String_Contains:
                     return TranslateStringContains(mc, SoqlStringContainsPosition.Any);
+                case SoodaLinqMethod.Int_ToString:
+                case SoodaLinqMethod.Long_ToString:
+                case SoodaLinqMethod.Double_ToString:
+                case SoodaLinqMethod.Decimal_ToString:
+                case SoodaLinqMethod.Bool_ToString:
+                    return TranslateToString(mc.Object);
                 case SoodaLinqMethod.Math_Abs:
                     return new SoqlFunctionCallExpression("abs", TranslateExpression(mc.Arguments[0]));
                 case SoodaLinqMethod.Math_Acos:
@@ -799,6 +835,13 @@ namespace Sooda.Linq
             return new SoqlBooleanIsNullExpression(path, true);
         }
 
+        SoqlExpression StringConcatArg(Expression expr)
+        {
+            if (expr.NodeType == ExpressionType.Convert)
+                return TranslateToString(((UnaryExpression) expr).Operand);
+            return TranslateExpression(expr);
+        }
+
         internal SoqlExpression TranslateExpression(Expression expr)
         {
             SoqlExpression literal = FoldConstant(expr);
@@ -813,7 +856,10 @@ namespace Sooda.Linq
                     return TranslateMember((MemberExpression) expr);
                 case ExpressionType.Add:
                     if (expr.Type == typeof(string) || expr.Type == typeof(SqlString))
-                        return TranslateBinary((BinaryExpression) expr, SoqlBinaryOperator.Concat);
+                    {
+                        BinaryExpression be = (BinaryExpression) expr;
+                        return new SoqlBinaryExpression(StringConcatArg(be.Left), StringConcatArg(be.Right), SoqlBinaryOperator.Concat);
+                    }
                     return TranslateBinary((BinaryExpression) expr, SoqlBinaryOperator.Add);
                 case ExpressionType.Subtract:
                     return TranslateBinary((BinaryExpression) expr, SoqlBinaryOperator.Sub);

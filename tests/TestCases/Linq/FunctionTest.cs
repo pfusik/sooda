@@ -93,6 +93,16 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void StringSubstring()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Name.Substring(1, 2) == "ar");
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Mary, Contact.GetRef(51) }, ce);
+            }
+        }
+
+        [Test]
         public void StringReplace()
         {
             using (new SoodaTransaction())
@@ -155,6 +165,56 @@ namespace Sooda.UnitTests.TestCases.Linq
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Name.Contains("ry Ma"));
                 Assert.AreEqual(1, ce.Count());
                 Assert.AreEqual(Contact.Mary, ce.First());
+            }
+        }
+
+        [Test]
+        public void IntToString()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = from c in Contact.Linq() where c.ContactId.ToString().Contains("2") orderby c.ContactId select c.ContactId;
+                CollectionAssert.AreEqual(new int[] { 2, 52 }, ie);
+            }
+        }
+
+        [Test]
+        public void LongToString()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = from c in Contact.Linq() where (1000000000000 + c.ContactId).ToString() == "1000000000003" select c.ContactId;
+                CollectionAssert.AreEqual(new int[] { 3 }, ie);
+            }
+        }
+
+        [Test]
+        public void DoubleToString()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = from c in Contact.Linq() where (c.ContactId / 2.0).ToString() == "0.5" select c.ContactId;
+                CollectionAssert.AreEqual(new int[] { 1 }, ie);
+            }
+        }
+
+        [Test]
+        public void DecimalToString()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = from c in Contact.Linq() where (c.ContactId / 2M).ToString().StartsWith("0.5") select c.ContactId;
+                CollectionAssert.AreEqual(new int[] { 1 }, ie);
+            }
+        }
+
+        [Test]
+        public void BoolToString()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = from c in Contact.Linq() where (c.Name == "Mary Manager").ToString().StartsWith("T") select c.ContactId;
+                CollectionAssert.AreEqual(new int[] { 1 }, ie);
             }
         }
 
