@@ -108,6 +108,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             }
         }
 
+#if DOTNET4 // Tuple
         [Test]
         public void MultiCount()
         {
@@ -124,6 +125,7 @@ namespace Sooda.UnitTests.TestCases.Linq
                     new Tuple<string, string, int>("Manager", "Internal Manager", 1) }, tq);
             }
         }
+#endif
 
         [Test]
         public void Min()
