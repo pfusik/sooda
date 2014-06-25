@@ -34,6 +34,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlTypes;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -61,7 +62,8 @@ namespace Sooda.Linq
         SoodaOrderBy _orderBy = null;
         int _startIdx = 0;
         int _topCount = -1;
-        SoqlExpression _groupBy = null;
+        readonly SoqlExpressionCollection _groupBy = new SoqlExpressionCollection();
+        readonly List<string> _groupByFields = new List<string>();
         SoqlBooleanExpression _having = null;
         readonly Dictionary<ParameterExpression, string> _param2alias = new Dictionary<ParameterExpression, string>();
         int _currentPrefix = 0;
@@ -409,6 +411,14 @@ namespace Sooda.Linq
             return TranslateCollectionOp(haystack, (parent, name) => new SoqlContainsExpression(parent, name, needle));
         }
 
+        static bool IsGroupingKey(MemberExpression expr)
+        {
+            if (expr.Expression == null || expr.Expression.NodeType != ExpressionType.Parameter)
+                return false;
+            Type t = expr.Member.DeclaringType;
+            return t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IGrouping<,>) && expr.Member.Name == "Key";
+        }
+
         SoqlExpression TranslateMember(MemberExpression expr)
         {
             string name = expr.Member.Name;
@@ -421,9 +431,11 @@ namespace Sooda.Linq
                 switch (expr.Expression.NodeType)
                 {
                     case ExpressionType.Parameter:
-                        // g.Key
-                        if (_groupBy != null && t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IGrouping<,>) && name == "Key")
-                            return _groupBy;
+                        if (_groupBy.Count == 1 && IsGroupingKey(expr))
+                        {
+                            // g.Key
+                            return _groupBy[0];
+                        }
                         // x.SoodaField -> SoqlPathExpression
                         return TranslatePath(TranslateParameter((ParameterExpression) expr.Expression), expr);
 
@@ -433,6 +445,12 @@ namespace Sooda.Linq
                             // x.SoodaCollection.Count -> SoqlCountExpression
                             return TranslateCollectionCount(expr.Expression);
                         }
+                        if (_groupByFields.Count > 0 && IsGroupingKey((MemberExpression) expr.Expression))
+                        {
+                            // g.Key.Field
+                            return _groupBy[_groupByFields.IndexOf(name)];
+                        }
+
                         break;
 
                     case ExpressionType.Call:
@@ -593,7 +611,7 @@ namespace Sooda.Linq
 
         bool IsGroupAggregate(MethodCallExpression mc)
         {
-            return _groupBy != null && mc.Arguments[0].NodeType == ExpressionType.Parameter;
+            return _groupBy.Count > 0 && mc.Arguments[0].NodeType == ExpressionType.Parameter;
         }
 
         SoqlBooleanExpression TranslateEnumerableFilter(MethodCallExpression mc)
@@ -867,11 +885,8 @@ namespace Sooda.Linq
             query.WhereClause = _where;
             if (_orderBy != null)
                 query.SetOrderBy(_orderBy);
-            if (_groupBy != null)
-            {
-                query.GroupByExpressions.Add(_groupBy);
-                query.Having = _having;
-            }
+            query.GroupByExpressions.AddRange(_groupBy);
+            query.Having = _having;
             return query;
         }
 
@@ -901,9 +916,31 @@ namespace Sooda.Linq
 #endif
         }
 
+        void GroupBy(MethodCallExpression mc)
+        {
+            if (_groupBy.Count > 0)
+                throw new NotSupportedException("Chaining GroupBy()s not supported");
+            _orderBy = null;
+            SkipTakeNotSupported();
+            Expression expr = GetLambda(mc).Body;
+            if (expr.NodeType == ExpressionType.New)
+            {
+                NewExpression ne = (NewExpression) expr;
+                if (ne.Members.Count == 0)
+                    throw new NotSupportedException("GroupBy(x => new...)");
+                Debug.Assert(ne.Arguments.Count == ne.Members.Count);
+                foreach (Expression arg in ne.Arguments)
+                    _groupBy.Add(TranslateExpression(arg));
+                foreach (MemberInfo mi in ne.Members)
+                    _groupByFields.Add(mi.Name);
+            }
+            else
+                _groupBy.Add(TranslateExpression(expr));
+        }
+
         void Where(SoqlBooleanExpression where)
         {
-            if (_groupBy != null)
+            if (_groupBy.Count > 0)
                 _having = _having == null ? where : _having.And(where);
             else
                 _where = _where == null ? where : _where.And(where);
@@ -1036,11 +1073,7 @@ namespace Sooda.Linq
                             break;
 
                         case SoodaLinqMethod.Queryable_GroupBy:
-                            if (_groupBy != null)
-                                throw new NotSupportedException("Chaining GroupBy()s not supported");
-                            _orderBy = null;
-                            SkipTakeNotSupported();
-                            _groupBy = TranslateExpression(GetLambda(mc).Body);
+                            GroupBy(mc);
                             break;
 
                         case SoodaLinqMethod.Queryable_Where:

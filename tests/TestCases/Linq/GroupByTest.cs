@@ -52,6 +52,30 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void KeyReference()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<string> se = from c in Contact.Linq() group c by c.Type into g orderby g.Key.Description select g.Key.Code;
+                CollectionAssert.AreEqual(new string[] { "Customer", "Employee", "Manager" }, se);
+            }
+        }
+
+        [Test]
+        public void Multi()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<string> se =
+                    from c in Contact.Linq()
+                    group c by new { c.Type.Code, c.Type.Description } into g
+                    orderby g.Key.Code, g.Key.Description
+                    select g.Key.Code;
+                CollectionAssert.AreEqual(new string[] { "Customer", "Employee", "Manager" }, se);
+            }
+        }
+
+        [Test]
         public void Count()
         {
             using (new SoodaTransaction())
@@ -76,11 +100,28 @@ namespace Sooda.UnitTests.TestCases.Linq
         {
             using (new SoodaTransaction())
             {
-                var oe = from c in Contact.Linq() group c by c.Type.Code into g orderby g.Key select new KeyValuePair<string, int>(g.Key, g.Count());
+                var pe = from c in Contact.Linq() group c by c.Type.Code into g orderby g.Key select new KeyValuePair<string, int>(g.Key, g.Count());
                 CollectionAssert.AreEqual(new KeyValuePair<string, int>[] {
                     new KeyValuePair<string, int>("Customer", 4),
                     new KeyValuePair<string, int>("Employee", 2),
-                    new KeyValuePair<string, int>("Manager", 1) }, oe);
+                    new KeyValuePair<string, int>("Manager", 1) }, pe);
+            }
+        }
+
+        [Test]
+        public void MultiCount()
+        {
+            using (new SoodaTransaction())
+            {
+                var tq =
+                    from c in Contact.Linq()
+                    group c by new { c.Type.Code, c.Type.Description } into g
+                    orderby g.Key.Code, g.Key.Description
+                    select new Tuple<string, string, int>(g.Key.Code, g.Key.Description.Value, g.Count());
+                CollectionAssert.AreEqual(new Tuple<string, string, int>[] {
+                    new Tuple<string, string, int>("Customer", "External Contact", 4),
+                    new Tuple<string, string, int>("Employee", "Internal Employee", 2),
+                    new Tuple<string, string, int>("Manager", "Internal Manager", 1) }, tq);
             }
         }
 
@@ -171,6 +212,46 @@ namespace Sooda.UnitTests.TestCases.Linq
             {
                 IEnumerable<int> ie = from c in Contact.Linq() group c by c.Name.StartsWith("C") into g orderby g.Key select g.Count();
                 CollectionAssert.AreEqual(new int[] { 3, 4 }, ie);
+            }
+        }
+
+        [Test]
+        public void Take()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = Contact.Linq().GroupBy(c => c.Type.Code).OrderBy(g => g.Key).Take(2).Select(g => g.Count());
+                CollectionAssert.AreEqual(new int[] { 4, 2 }, ie);
+            }
+        }
+
+        [Test]
+        public void Skip()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = Contact.Linq().GroupBy(c => c.Type.Code).OrderBy(g => g.Key).Skip(1).Select(g => g.Count());
+                CollectionAssert.AreEqual(new int[] { 2, 1 }, ie);
+            }
+        }
+
+        [Test]
+        public void SkipTake()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = Contact.Linq().GroupBy(c => c.Type.Code).OrderBy(g => g.Key).Skip(1).Take(1).Select(g => g.Count());
+                CollectionAssert.AreEqual(new int[] { 2 }, ie);
+            }
+        }
+
+        [Test]
+        public void TakeSkip()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = Contact.Linq().GroupBy(c => c.Type.Code).OrderBy(g => g.Key).Take(2).Skip(1).Select(g => g.Count());
+                CollectionAssert.AreEqual(new int[] { 2 }, ie);
             }
         }
     }
