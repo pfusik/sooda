@@ -194,6 +194,22 @@
     <Compile Include="TestSqlDataSource.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ObjectMapper\CyclicReferenceTest.cs" />
+    <Compile Include="ObjectMapper\LabelTest.cs" />
+    <Compile Include="Soql\QueryTest.cs" />
+    <Compile Include="TransactionTest.cs" />
+    <Compile Include="Linq\CollectionQueryTest.cs" />
+    <Compile Include="Linq\CollectionTest.cs" />
+    <Compile Include="Linq\ConstantFoldingTest.cs" />
+    <Compile Include="Linq\FunctionTest.cs" />
+    <Compile Include="Linq\GroupByTest.cs" />
+    <Compile Include="Linq\OperatorTest.cs" />
+    <Compile Include="Linq\OptionsTest.cs" />
+    <Compile Include="Linq\PrecommitTest.cs" />
+    <Compile Include="Linq\QueryTest.cs" />
+    <Compile Include="Linq\ScalarTest.cs" />
+    <Compile Include="Linq\SingleTest.cs" />
+    <Compile Include="Linq\UtilsTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -683,6 +683,8 @@
     </None>
     <Compile Include="QL\TypedWrappers\SoqlImageWrapperExpression.cs" />
     <Compile Include="QL\TypedWrappers\SoqlNullableImageWrapperExpression.cs" />
+    <Compile Include="QL\SoqlStringContainsExpression.cs" />
+    <Compile Include="QL\SoqlCastExpression.cs" />
     <Compile Include="AssemblyBuildInfo.cs" />
   </ItemGroup>
   <ItemGroup />
