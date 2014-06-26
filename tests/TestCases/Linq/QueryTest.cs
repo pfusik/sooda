@@ -764,7 +764,6 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
-        [ExpectedException(typeof(NotSupportedException))]
         public void SelectSelect()
         {
             using (new SoodaTransaction())
@@ -805,7 +804,6 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
-        [ExpectedException(typeof(NotSupportedException))]
         public void SelectDistinctSelect()
         {
             using (new SoodaTransaction())
