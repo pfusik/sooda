@@ -256,6 +256,26 @@ namespace Sooda.UnitTests.TestCases.Linq
                 CollectionAssert.AreEqual(new int[] { 2 }, ie);
             }
         }
+
+        [Test]
+        public void First()
+        {
+            using (new SoodaTransaction())
+            {
+                int i = Contact.Linq().GroupBy(c => c.Type.Code).OrderBy(g => g.Key).Select(g => g.Count()).First();
+                Assert.AreEqual(4, i);
+            }
+        }
+
+        [Test]
+        public void Distinct()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<int> ie = (from c in Contact.Linq() group c by c.ContactId % 10 into g orderby g.Count() descending select g.Count()).Distinct();
+                CollectionAssert.AreEqual(new int[] { 2, 1 }, ie);
+            }
+        }
     }
 }
 

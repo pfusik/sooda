@@ -372,6 +372,46 @@ namespace Sooda.UnitTests.TestCases.Linq
                 Contact.Linq().OrderBy(c => c.ContactId).SingleOrDefault(c => c.Active);
             }
         }
+
+        [Test]
+        public void SelectFirst()
+        {
+            using (new SoodaTransaction())
+            {
+                int result = Contact.Linq().OrderBy(c => c.ContactId).Select(c => c.ContactId).First();
+                Assert.AreEqual(1, result);
+            }
+        }
+
+        [Test]
+        public void SelectDefaultInt()
+        {
+            using (new SoodaTransaction())
+            {
+                int result = Contact.Linq().Where(c => c.Name == "Jarek").Select(c => c.ContactId).FirstOrDefault();
+                Assert.AreEqual(0, result);
+            }
+        }
+
+        [Test]
+        public void SelectSingle()
+        {
+            using (new SoodaTransaction())
+            {
+                string result = Contact.Linq().Where(c => c.ContactId == 1).Select(c => c.Name).Single();
+                Assert.AreEqual("Mary Manager", result);
+            }
+        }
+
+        [Test]
+        public void SelectFirstFiltered()
+        {
+            using (new SoodaTransaction())
+            {
+                string result = Contact.Linq().OrderBy(c => c.ContactId).Select(c => c.Name).First(s => s.StartsWith("M"));
+                Assert.AreEqual("Mary Manager", result);
+            }
+        }
     }
 }
 

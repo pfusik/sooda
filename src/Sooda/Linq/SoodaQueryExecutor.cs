@@ -1260,14 +1260,17 @@ namespace Sooda.Linq
             return new SoodaObjectListSnapshot(_transaction, new SoodaWhereClause(_where), _orderBy, _startIdx, _topCount, _options, _classInfo);
         }
 
-        object Single(int topCount, bool orDefault)
+        object Single(int topCount, MethodCallExpression orDefault)
         {
             Take(topCount);
             IList list = GetList();
             if (list.Count == 1)
                 return list[0];
-            if (orDefault && list.Count == 0)
-                return null;
+            if (list.Count == 0 && orDefault != null)
+            {
+                Type t = orDefault.Type;
+                return t.IsValueType ? Activator.CreateInstance(t) : null;
+            }
             throw new InvalidOperationException("Found " + list.Count + " matches");
         }
 
@@ -1372,50 +1375,50 @@ namespace Sooda.Linq
 
                     case SoodaLinqMethod.Queryable_First:
                         TranslateQuery(mc.Arguments[0]);
-                        return Single(1, false);
+                        return Single(1, null);
                     case SoodaLinqMethod.Queryable_FirstFiltered:
                         TranslateQuery(mc.Arguments[0]);
                         Where(mc);
-                        return Single(1, false);
+                        return Single(1, null);
                     case SoodaLinqMethod.Queryable_FirstOrDefault:
                         TranslateQuery(mc.Arguments[0]);
-                        return Single(1, true);
+                        return Single(1, mc);
                     case SoodaLinqMethod.Queryable_FirstOrDefaultFiltered:
                         TranslateQuery(mc.Arguments[0]);
                         Where(mc);
-                        return Single(1, true);
+                        return Single(1, mc);
                     case SoodaLinqMethod.Queryable_Last:
                         TranslateQuery(mc.Arguments[0]);
                         Reverse();
-                        return Single(1, false);
+                        return Single(1, null);
                     case SoodaLinqMethod.Queryable_LastFiltered:
                         TranslateQuery(mc.Arguments[0]);
                         Where(mc);
                         Reverse();
-                        return Single(1, false);
+                        return Single(1, null);
                     case SoodaLinqMethod.Queryable_LastOrDefault:
                         TranslateQuery(mc.Arguments[0]);
                         Reverse();
-                        return Single(1, true);
+                        return Single(1, mc);
                     case SoodaLinqMethod.Queryable_LastOrDefaultFiltered:
                         TranslateQuery(mc.Arguments[0]);
                         Where(mc);
                         Reverse();
-                        return Single(1, true);
+                        return Single(1, mc);
                     case SoodaLinqMethod.Queryable_Single:
                         TranslateQuery(mc.Arguments[0]);
-                        return Single(2, false);
+                        return Single(2, null);
                     case SoodaLinqMethod.Queryable_SingleFiltered:
                         TranslateQuery(mc.Arguments[0]);
                         Where(mc);
-                        return Single(2, false);
+                        return Single(2, null);
                     case SoodaLinqMethod.Queryable_SingleOrDefault:
                         TranslateQuery(mc.Arguments[0]);
-                        return Single(2, true);
+                        return Single(2, mc);
                     case SoodaLinqMethod.Queryable_SingleOrDefaultFiltered:
                         TranslateQuery(mc.Arguments[0]);
                         Where(mc);
-                        return Single(2, true);
+                        return Single(2, mc);
 
                     case SoodaLinqMethod.Queryable_Average:
                         return ExecuteScalar(mc, "avg") ?? ThrowEmptyAggregate();
