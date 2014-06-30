@@ -35,7 +35,7 @@ namespace Sooda.Schema
     using System.Collections;
     using System.Collections.Generic;
 
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
+    [XmlType(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     public enum TableUsageType
     {
         Normal,
@@ -43,11 +43,11 @@ namespace Sooda.Schema
         OccasionallyModificated
     }
 
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
+    [XmlType(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [Serializable]
     public class TableInfo
     {
-        [System.Xml.Serialization.XmlElementAttribute("field")]
+        [XmlElement("field")]
         public List<FieldInfo> Fields = new List<FieldInfo>();
 
         private string _dbTableName = null;
@@ -61,7 +61,7 @@ namespace Sooda.Schema
         [XmlIgnore]
         public int OrdinalInClass = 0;
 
-        [System.Xml.Serialization.XmlAnyAttribute()]
+        [XmlAnyAttribute()]
         [NonSerialized]
         public System.Xml.XmlAttribute[] Extensions;
 
@@ -69,7 +69,7 @@ namespace Sooda.Schema
         [XmlIgnore]
         public string NameToken;
 
-        [System.Xml.Serialization.XmlAttributeAttribute("name")]
+        [XmlAttribute("name")]
         public string DBTableName
         {
             get
@@ -82,7 +82,7 @@ namespace Sooda.Schema
             }
         }
 
-        [System.Xml.Serialization.XmlAttributeAttribute("usage")]
+        [XmlAttribute("usage")]
         [System.ComponentModel.DefaultValueAttribute(TableUsageType.Normal)]
         public TableUsageType TableUsageType
         {
@@ -95,6 +95,9 @@ namespace Sooda.Schema
                 _usageType = value;
             }
         }
+
+        [XmlElement("description")]
+        public string Description;
 
         public FieldInfo FindFieldByName(string fieldName)
         {

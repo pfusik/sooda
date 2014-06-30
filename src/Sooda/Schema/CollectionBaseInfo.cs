@@ -28,16 +28,20 @@
 // 
 
 using System;
+using System.Xml.Serialization;
 
 namespace Sooda.Schema
 {
     /// <remarks/>
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
+    [XmlType(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [Serializable]
     public abstract class CollectionBaseInfo
     {
-        [System.Xml.Serialization.XmlAttributeAttribute("name")]
+        [XmlAttribute("name")]
         public string Name;
+
+        [XmlElement("description")]
+        public string Description;
 
         public abstract ClassInfo GetItemClass();
     }

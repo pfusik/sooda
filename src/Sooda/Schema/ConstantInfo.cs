@@ -28,19 +28,23 @@
 // 
 
 using System;
+using System.Xml.Serialization;
 
 namespace Sooda.Schema
 {
 
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
+    [XmlType(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [Serializable]
     public class ConstantInfo
     {
 
-        [System.Xml.Serialization.XmlAttributeAttribute("name")]
+        [XmlAttribute("name")]
         public string Name;
 
-        [System.Xml.Serialization.XmlAttributeAttribute("key")]
+        [XmlAttribute("key")]
         public string Key;
+
+        [XmlElement("description")]
+        public string Description;
     }
 }
