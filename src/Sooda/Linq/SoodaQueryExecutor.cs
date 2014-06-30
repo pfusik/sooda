@@ -1090,7 +1090,7 @@ namespace Sooda.Linq
                 return new SoqlBooleanInExpression(needle, haystack);
             }
 
-            // TODO: compare _transaction, _classInfo, _options
+            // TODO: compare _transaction, _classInfo, _options, _groupBy
             // TODO: OfType?
             SoqlBooleanExpression thisWhere = _where;
             SoodaOrderBy thisOrderBy = _orderBy;
@@ -1245,21 +1245,6 @@ namespace Sooda.Linq
             return ds.ExecuteQuery(query, _transaction.Schema);
         }
 
-        internal static List<T> SelectOneColumn<T>(IDataReader r)
-        {
-            List<T> list = new List<T>();
-            while (r.Read())
-            {
-                object value = r.GetValue(0);
-                if (value == DBNull.Value)
-                    value = null;
-                else if (typeof(T) == typeof(bool) && value is int)
-                    value = (int) value != 0;
-                list.Add((T) value);
-            }
-            return list;
-        }
-
         IList GetList()
         {
 #if DOTNET4
@@ -1335,6 +1320,16 @@ namespace Sooda.Linq
         object ThrowEmptyAggregate()
         {
             throw new InvalidOperationException("Aggregate on an empty collection");
+        }
+
+        object ExecuteMinMax(MethodCallExpression mc, string function)
+        {
+            object result = ExecuteScalar(mc, function);
+            if (result == null)
+                ThrowEmptyAggregate();
+            if (mc.Type == typeof(TimeSpan) || mc.Type == typeof(TimeSpan?))
+                result = TimeSpan.FromSeconds((int) result);
+            return result;
         }
 
         internal object Execute(Expression expr)
@@ -1434,9 +1429,9 @@ namespace Sooda.Linq
                     case SoodaLinqMethod.Queryable_AverageNullable:
                         return ExecuteScalar(mc, "avg");
                     case SoodaLinqMethod.Queryable_Max:
-                        return ExecuteScalar(mc, "max") ?? ThrowEmptyAggregate();
+                        return ExecuteMinMax(mc, "max");
                     case SoodaLinqMethod.Queryable_Min:
-                        return ExecuteScalar(mc, "min") ?? ThrowEmptyAggregate();
+                        return ExecuteMinMax(mc, "min");
                     case SoodaLinqMethod.Queryable_Sum:
                         return ExecuteScalar(mc, "sum")
                             ?? Activator.CreateInstance(mc.Type); // 0, 0L, 0D or 0M

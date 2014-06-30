@@ -37,6 +37,7 @@ using Sooda.Linq;
 
 using NUnit.Framework;
 using Sooda.UnitTests.BaseObjects;
+using Sooda.UnitTests.Objects;
 
 namespace Sooda.UnitTests.TestCases.Linq
 {
@@ -199,6 +200,26 @@ namespace Sooda.UnitTests.TestCases.Linq
             {
                 decimal result = Contact.Linq().Min(c => c.LastSalary.Value);
                 Assert.AreEqual(-1M, result);
+            }
+        }
+
+        [Test]
+        public void MinTimeSpan()
+        {
+            using (new SoodaTransaction())
+            {
+                TimeSpan t = EightFields.Linq().Where(e => e.Id == 1).Min(e => e.TimeSpan);
+                Assert.AreEqual(TimeSpan.FromHours(1), t);
+            }
+        }
+
+        [Test]
+        public void MinNullableTimeSpan()
+        {
+            using (new SoodaTransaction())
+            {
+                TimeSpan? t = EightFields.Linq().Where(e => e.Id == 1).Min(e => (TimeSpan?) e.TimeSpan);
+                Assert.AreEqual(TimeSpan.FromHours(1), t);
             }
         }
 
