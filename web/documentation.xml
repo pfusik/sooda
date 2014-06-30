@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-06-25 17:08:09 +0200 (Wed, 25 Jun 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 750 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-06-30 17:01:57 +0200 (Mon, 30 Jun 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 756 $</subversion-revision>)</div>
         <div class="pagebreak">&#160;</div>
     </div>
     <p class="dontprintthis">
@@ -6702,11 +6702,12 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         <code>ThenBy()</code>, <code>ThenByDescending()</code></li>
                         <li><code>select</code> - corresponds to <code>Select()</code>,
                             except when given just the range variable
-                            (<code>select</code> is mandatory in the LINQ keyword syntax)</li>
+                            (<code>select</code> is mandatory in the C# LINQ keyword syntax)</li>
+                        <li><code>group ... by ... into ...</code> - corresponds to <code>GroupBy()</code></li>
                     </ul>
                     <p>
-                        Sooda doesn't support <code>join ... in ... on ... equals ...</code>,
-                        <code>group ... by ...</code>, <code>into</code> nor <code>let</code> LINQ keywords.
+                        Sooda doesn't support <code>join ... in ... on ... equals ...</code>
+                        nor <code>let</code> LINQ keywords.
                     </p>
                     <p>
                         These were the most commonly used LINQ query methods.
@@ -6751,6 +6752,37 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     </p>
                     <code lang="C#"><![CDATA[
                         IEnumerable<Contact> owners = Vehicle().Linq().Select(v => v.Owner).Distinct();
+                    ]]></code>
+                    <p>
+                        Use <code>GroupBy()</code> for aggregate queries. <code>GroupBy()</code> must be followed by a <code>Select()</code>
+                        and possibly <code>OrderBy()</code> and <code>Where()</code>. The result of <code>GroupBy()</code> is a <i>sequence</i>
+                        of <code>IGrouping&lt;TKey, TElement&gt;</code>, of which you can access:
+                    </p>
+                    <ul>
+                        <li><code>Key</code> - the grouping key</li>
+                        <li>aggregates: <code>Count()</code>, <code>Count(predicate)</code>, <code>Min(selector)</code>, <code>Max(selector)</code>,
+                        <code>Sum(selector)</code>, <code>Average(selector)</code>, <code>Any(predicate)</code>, <code>All(predicate)</code></li>
+                    </ul>
+                    <code lang="C#"><![CDATA[
+                        var contactTypes = Contact.Linq().GroupBy(c => c.Type.Code).OrderBy(g => g.Key).Select(g => new { Type = g.Key, Count = g.Count() });
+                        var contactTypes2 = from c in Contact.Linq() group c by c.Type.Code into g orderby g.Key select new { Type = g.Key, Count = g.Count() }; // same
+                    ]]></code>
+                    <code lang="C#"><![CDATA[
+                        var averageSalaryByContactType =
+                            from c in Contact.Linq()
+                            group c by c.Type.Code into g
+                            orderby g.Key
+                            select new { Type = g.Key, AvgSalary = g.Average(c => c.LastSalary.Value) };
+                    ]]></code>
+                    <p>
+                        To group by multiple expressions, use anonymous type as the key:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        var cheapestProducts =
+                            from p in Product.Linq()
+                            group p by new { p.Category, p.Vendor } into g
+                            orderby g.Count() descending, g.Key.Category, g.Key.Vendor
+                            select new { g.Key.Category, g.Key.Vendor, g.Count() };
                     ]]></code>
                 </body>
             </section>

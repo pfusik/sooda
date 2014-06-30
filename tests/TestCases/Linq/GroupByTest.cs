@@ -115,6 +115,17 @@ namespace Sooda.UnitTests.TestCases.Linq
         {
             using (new SoodaTransaction())
             {
+                var ol = (from c in Contact.Linq() group c by c.Type.Code into g orderby g.Key select new { Type = g.Key, Count = g.Count() }).ToList();
+                CollectionAssert.AreEqual(new string[] { "Customer", "Employee", "Manager" }, ol.Select(o => o.Type));
+                CollectionAssert.AreEqual(new int[] { 4, 2, 1}, ol.Select(o => o.Count));
+            }
+        }
+
+        [Test]
+        public void KeyCountKeyValuePair()
+        {
+            using (new SoodaTransaction())
+            {
                 var pe = from c in Contact.Linq() group c by c.Type.Code into g orderby g.Key select new KeyValuePair<string, int>(g.Key, g.Count());
                 CollectionAssert.AreEqual(new KeyValuePair<string, int>[] {
                     new KeyValuePair<string, int>("Customer", 4),
