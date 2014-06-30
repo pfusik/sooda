@@ -64,6 +64,7 @@ namespace Sooda.Linq
         int _topCount = -1;
         readonly SoqlExpressionCollection _groupBy = new SoqlExpressionCollection();
         readonly List<string> _groupByFields = new List<string>();
+        NewExpression _groupByNew = null;
         SoqlBooleanExpression _having = null;
         readonly Dictionary<ParameterExpression, string> _param2alias = new Dictionary<ParameterExpression, string>();
         int _currentPrefix = 0;
@@ -421,6 +422,13 @@ namespace Sooda.Linq
                 return false;
             Type t = expr.Member.DeclaringType;
             return t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IGrouping<,>) && expr.Member.Name == "Key";
+        }
+
+        internal NewExpression SubstituteGroupingKey(MemberExpression expr)
+        {
+            if (IsGroupingKey(expr))
+                return _groupByNew;
+            return null;
         }
 
         SoqlExpression TranslateMember(MemberExpression expr)
@@ -979,6 +987,7 @@ namespace Sooda.Linq
                     _groupBy.Add(TranslateExpression(arg));
                 foreach (MemberInfo mi in ne.Members)
                     _groupByFields.Add(mi.Name);
+                _groupByNew = ne;
             }
             else
                 _groupBy.Add(TranslateExpression(expr));

@@ -76,6 +76,21 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void MultiSelect()
+        {
+            using (new SoodaTransaction())
+            {
+                var ol =
+                    (from c in Contact.Linq()
+                    group c by new { c.Type.Code, c.Type.Description } into g
+                    orderby g.Key.Code
+                    select g.Key).ToList();
+                CollectionAssert.AreEqual(new string[] { "Customer", "Employee", "Manager" }, ol.Select(o => o.Code));
+                CollectionAssert.AreEqual(new string[] { "External Contact", "Internal Employee", "Internal Manager" }, ol.Select(o => o.Description.Value));
+            }
+        }
+
+        [Test]
         public void Count()
         {
             using (new SoodaTransaction())
@@ -274,6 +289,16 @@ namespace Sooda.UnitTests.TestCases.Linq
             {
                 IEnumerable<int> ie = (from c in Contact.Linq() group c by c.ContactId % 10 into g orderby g.Count() descending select g.Count()).Distinct();
                 CollectionAssert.AreEqual(new int[] { 2, 1 }, ie);
+            }
+        }
+
+        [Test]
+        public void NoSelect()
+        {
+            using (new SoodaTransaction())
+            {
+                var q = Contact.Linq().GroupBy(c => c.Type.Code);
+                Assert.AreEqual(3, q.Count());
             }
         }
     }

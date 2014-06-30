@@ -54,6 +54,14 @@ namespace Sooda.Linq
             _executor = executor;
         }
 
+        protected override Expression VisitMember(MemberExpression node)
+        {
+            NewExpression ne = _executor.SubstituteGroupingKey(node);
+            if (ne != null)
+                return VisitNew(ne);
+            return base.VisitMember(node);
+        }
+
         public override Expression Visit(Expression node)
         {
             if (SoodaQueryExecutor.IsConstant(node))
