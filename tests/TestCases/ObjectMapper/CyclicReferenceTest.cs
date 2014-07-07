@@ -47,6 +47,8 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
             {
                 EightFields o1 = new EightFields();
                 EightFields o2 = new EightFields();
+                o1.TimeSpan = TimeSpan.FromSeconds(1);
+                o2.TimeSpan = TimeSpan.FromSeconds(2);
                 id1 = o1.Id;
                 id2 = o2.Id;
                 o1.Parent = o2;

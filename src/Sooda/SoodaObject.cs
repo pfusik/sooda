@@ -55,7 +55,6 @@ namespace Sooda
 
         private byte[] _fieldIsDirty;
         internal SoodaObjectFieldValues _fieldValues;
-        private Hashtable _fieldForDelayedUpdate;
         private int _dataLoadedMask;
         private SoodaTransaction _transaction;
         private SoodaObjectFlags _flags;
@@ -861,53 +860,9 @@ namespace Sooda
             return GetTransaction().IsRegistered(this);
         }
 
-        void DelayedUpdate()
-        {
-            if (_fieldForDelayedUpdate != null)
-            {
-                if (_fieldForDelayedUpdate.Count > 0)
-                {
-                    for (int i = GetClassInfo().UnifiedFields.Count; i >= 0; i--)
-                        SetFieldDirty(i, false);
-                    this.InsertMode = false;
-                    foreach (object obj in _fieldForDelayedUpdate.Keys)
-                    {
-                        int i = (int) obj;
-                        _fieldValues.SetFieldValue(i, _fieldForDelayedUpdate[obj]);
-                        SetFieldDirty(i, true);
-                    }
-                    CommitObjectChanges();
-                    _fieldForDelayedUpdate.Clear();
-                }
-                _fieldForDelayedUpdate = null;
-            }
-        }
-
-        void CallDelayedUpdates()
-        {
-            // iterate outer references
-
-            foreach (Sooda.Schema.FieldInfo fi in GetClassInfo().UnifiedFields)
-            {
-                if (fi.ReferencedClass == null)
-                    continue;
-
-                object v = _fieldValues.GetBoxedFieldValue(fi.ClassUnifiedOrdinal);
-                if (v != null)
-                {
-                    ISoodaObjectFactory factory = GetTransaction().GetFactory(fi.ReferencedClass);
-                    SoodaObject obj = factory.TryGet(GetTransaction(), v);
-
-                    if (obj != null && obj != this && obj.IsInsertMode())
-                        obj.DelayedUpdate();
-                }
-            }
-        }
-
-
         void SaveOuterReferences()
         {
-            // iterate outer references
+            List<KeyValuePair<int, SoodaObject>> brokenReferences = null;
 
             foreach (Sooda.Schema.FieldInfo fi in GetClassInfo().UnifiedFields)
             {
@@ -920,20 +875,20 @@ namespace Sooda
                     ISoodaObjectFactory factory = GetTransaction().GetFactory(fi.ReferencedClass);
                     SoodaObject obj = factory.TryGet(GetTransaction(), v);
 
-                    if (obj != null && obj != this && obj.IsInsertMode())
+                    if (obj != null && obj != this && obj.IsInsertMode() && !obj.InsertedIntoDatabase)
                     {
                         if (obj.VisitedOnCommit && !obj.WrittenIntoDatabase)
                         {
-                            if (!obj.InsertedIntoDatabase)
+                            // cyclic reference
+                            if (!fi.IsNullable)
+                                throw new Exception("Cyclic reference between " + GetObjectKeyString() + " and " + obj.GetObjectKeyString());
+                            if (brokenReferences == null)
                             {
-                                // cyclic reference
-                                if (_fieldForDelayedUpdate == null)
-                                    _fieldForDelayedUpdate = new Hashtable();
-                                if (!fi.IsNullable)
-                                    throw new Exception("Cyclic reference between " + GetObjectKeyString() + " and " + obj.GetObjectKeyString());
-                                _fieldForDelayedUpdate.Add(fi.ClassUnifiedOrdinal, v);
-                                _fieldValues.SetFieldValue(fi.ClassUnifiedOrdinal, null);
+                                CopyOnWrite();
+                                brokenReferences = new List<KeyValuePair<int, SoodaObject>>();
                             }
+                            brokenReferences.Add(new KeyValuePair<int, SoodaObject>(fi.ClassUnifiedOrdinal, obj));
+                            _fieldValues.SetFieldValue(fi.ClassUnifiedOrdinal, null);
                         }
                         else
                         {
@@ -942,24 +897,35 @@ namespace Sooda
                     }
                 }
             }
+
+            if (brokenReferences != null)
+            {
+                // insert this object without the cyclic references
+                CommitObjectChanges();
+
+                foreach (KeyValuePair<int, SoodaObject> pair in brokenReferences)
+                {
+                    int ordinal = pair.Key;
+                    SoodaObject obj = pair.Value;
+                    // insert referenced object
+                    obj.SaveObjectChanges();
+                    // restore reference
+                    _fieldValues.SetFieldValue(ordinal, obj.GetPrimaryKeyValue());
+                }
+            }
         }
 
         internal void SaveObjectChanges()
         {
             VisitedOnCommit = true;
             if (WrittenIntoDatabase)
-            {
-                //CallDelayedUpdates();
-                DelayedUpdate();
                 return;
-            }
 
             if (IsObjectDirty())
             {
                 SaveOuterReferences();
             }
 
-            //if ((IsObjectDirty() || IsInsertMode()) && (!WrittenIntoDatabase || ((_fieldForDelayedUpdate != null) && (_fieldForDelayedUpdate.Count > 0))))
             if ((IsObjectDirty() || IsInsertMode()) && !WrittenIntoDatabase)
             {
                 // deletes are performed in a separate pass
