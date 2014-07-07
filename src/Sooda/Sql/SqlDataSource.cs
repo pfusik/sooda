@@ -389,10 +389,8 @@ namespace Sooda.Sql
 
             if (mode == 1)
             {
-                StringBuilder query2 = new StringBuilder();
-
-                query2.Append("insert into " + tableName + "(" + leftColumnName + "," + rightColumnName + ") values({0},{1})");
-                SqlBuilder.BuildCommandWithParameters(_updateCommand, true, query2.ToString(), parameters, false);
+                query = "insert into " + tableName + "(" + leftColumnName + "," + rightColumnName + ") values({0},{1})";
+                SqlBuilder.BuildCommandWithParameters(_updateCommand, true, query, parameters, false);
                 FlushUpdateCommand(false);
             }
         }
@@ -471,7 +469,7 @@ namespace Sooda.Sql
         {
             try
             {
-                Queue queue = new Queue();
+                Queue<_QueueItem> queue = new Queue<_QueueItem>();
 
                 List<TableInfo> tablesArrayList = new List<TableInfo>(classInfo.UnifiedTables.Count);
                 SoqlQueryExpression queryExpression = new SoqlQueryExpression();
@@ -501,7 +499,7 @@ namespace Sooda.Sql
 
                 while (queue.Count > 0)
                 {
-                    _QueueItem it = (_QueueItem)queue.Dequeue();
+                    _QueueItem it = queue.Dequeue();
 
                     foreach (TableInfo ti in it.classInfo.UnifiedTables)
                     {
@@ -697,7 +695,7 @@ namespace Sooda.Sql
                     builder.Append(',');
                 comma = true;
                 builder.Append(table.Fields[i].DBColumnName);
-            };
+            }
 
             builder.Append(") values (");
             comma = false;
@@ -710,27 +708,16 @@ namespace Sooda.Sql
                 comma = true;
 
                 object val = obj.GetFieldValue(table.Fields[i].ClassUnifiedOrdinal);
-                if (!table.Fields[i].IsNullable)
+                if (!table.Fields[i].IsNullable && SqlBuilder.IsNullValue(val, table.Fields[i]))
                 {
-                    if (SqlBuilder.IsNullValue(val, table.Fields[i]))
+                    if (!isPrecommit)
+                        throw new SoodaDatabaseException(obj.GetObjectKeyString() + "." + table.Fields[i].Name + " cannot be null on commit.");
+                    val = table.Fields[i].PrecommitTypedValue;
+                    if (val == null)
+                        throw new SoodaDatabaseException(obj.GetObjectKeyString() + "." + table.Fields[i].Name + " is null on precommit and no 'precommitValue' has been defined for it.");
+                    if (logger.IsDebugEnabled)
                     {
-                        if (isPrecommit)
-                        {
-                            if (table.Fields[i].PrecommitTypedValue != null)
-                            {
-                                val = table.Fields[i].PrecommitTypedValue;
-                                if (logger.IsDebugEnabled)
-                                {
-                                    logger.Debug("Using precommit value of {0} for {1}.{2}", val, table.NameToken, table.Fields[i].Name);
-                                }
-                            }
-                            else
-                            {
-                                throw new SoodaDatabaseException(obj.GetObjectKeyString() + "." + table.Fields[i].Name + " is null on precommit and no 'precommitValue' has been defined for it.");
-                            }
-                        }
-                        else
-                            throw new SoodaDatabaseException(obj.GetObjectKeyString() + "." + table.Fields[i].Name + " cannot be null on commit.");
+                        logger.Debug("Using precommit value of {0} for {1}.{2}", val, table.NameToken, table.Fields[i].Name);
                     }
                 }
 
@@ -740,7 +727,7 @@ namespace Sooda.Sql
                 builder.Append(':');
                 builder.Append(table.Fields[i].DataType);
                 builder.Append('}');
-            };
+            }
             builder.Append(')');
             SqlBuilder.BuildCommandWithParameters(_updateCommand, true, builder.ToString(), par.ToArray(), false);
             FlushUpdateCommand(false);
@@ -763,7 +750,6 @@ namespace Sooda.Sql
 
             ArrayList par = new ArrayList();
             bool anyChange = false;
-
             for (int i = 0; i < table.Fields.Count; ++i)
             {
                 int fieldNumber = table.Fields[i].ClassUnifiedOrdinal;
@@ -771,9 +757,7 @@ namespace Sooda.Sql
                 if (obj.IsFieldDirty(fieldNumber))
                 {
                     if (anyChange)
-                    {
                         builder.Append(", ");
-                    }
                     builder.Append(table.Fields[i].DBColumnName);
                     builder.Append("={");
                     int fieldnum = par.Add(obj.GetFieldValue(fieldNumber));
@@ -782,8 +766,11 @@ namespace Sooda.Sql
                     builder.Append(table.Fields[i].DataType);
                     builder.Append('}');
                     anyChange = true;
-                };
-            };
+                }
+            }
+            if (!anyChange)
+                return;
+
             builder.Append(" where ");
             int pkordinal = 0;
             foreach (FieldInfo fi in table.Fields)
@@ -791,9 +778,7 @@ namespace Sooda.Sql
                 if (fi.IsPrimaryKey)
                 {
                     if (pkordinal > 0)
-                    {
                         builder.Append(" and ");
-                    }
                     builder.Append('(');
                     builder.Append(fi.DBColumnName);
                     builder.Append("={");
@@ -804,11 +789,8 @@ namespace Sooda.Sql
                     pkordinal++;
                 }
             }
-            if (anyChange)
-            {
-                SqlBuilder.BuildCommandWithParameters(_updateCommand, true, builder.ToString(), par.ToArray(), false);
-                FlushUpdateCommand(false);
-            }
+            SqlBuilder.BuildCommandWithParameters(_updateCommand, true, builder.ToString(), par.ToArray(), false);
+            FlushUpdateCommand(false);
         }
 
         string StripWhitespace(string s)
@@ -858,9 +840,19 @@ namespace Sooda.Sql
             }
         }
 
-        private Hashtable cacheLoadingSelectStatement = new Hashtable();
-        private Hashtable cacheLoadedTables = new Hashtable();
-        private Hashtable[] cacheLoadRefObjectSelectStatement = new Hashtable[] { new Hashtable(), new Hashtable() };
+        class TableLoadingCache
+        {
+            public readonly string SelectStatement;
+            public readonly TableInfo[] LoadedTables;
+            public TableLoadingCache(string selectStatement, TableInfo[] loadedTables)
+            {
+                SelectStatement = selectStatement;
+                LoadedTables = loadedTables;
+            }
+        }
+
+        Dictionary<TableInfo, TableLoadingCache> tableLoadingCache = new Dictionary<TableInfo, TableLoadingCache>();
+        Dictionary<RelationInfo, string>[] cacheLoadRefObjectSelectStatement = new Dictionary<RelationInfo, string>[] { new Dictionary<RelationInfo, string>(), new Dictionary<RelationInfo, string>() };
 
         class _QueueItem
         {
@@ -871,112 +863,112 @@ namespace Sooda.Sql
 
         private string GetLoadingSelectStatement(ClassInfo classInfo, TableInfo tableInfo, out TableInfo[] loadedTables)
         {
-            if (!cacheLoadingSelectStatement.Contains(tableInfo))
+            TableLoadingCache cache;
+            if (tableLoadingCache.TryGetValue(tableInfo, out cache))
             {
-                Queue queue = new Queue();
-                List<TableInfo> additional = new List<TableInfo>();
-                additional.Add(tableInfo);
-
-                SoqlQueryExpression queryExpression = new SoqlQueryExpression();
-                queryExpression.From.Add(classInfo.Name);
-                queryExpression.FromAliases.Add("");
-
-                foreach (FieldInfo fi in tableInfo.Fields)
-                {
-                    SoqlPathExpression pathExpr = new SoqlPathExpression(fi.Name);
-                    queryExpression.SelectExpressions.Add(pathExpr);
-                    queryExpression.SelectAliases.Add("");
-
-                    if (fi.ReferencedClass != null && fi.PrefetchLevel > 0)
-                    {
-                        _QueueItem item = new _QueueItem();
-                        item.classInfo = fi.ReferencedClass;
-                        item.level = fi.PrefetchLevel;
-                        item.prefix = pathExpr;
-                        queue.Enqueue(item);
-                    }
-                }
-
-                // TODO - add prefetching
-                while (queue.Count > 0)
-                {
-                    _QueueItem it = (_QueueItem)queue.Dequeue();
-
-                    foreach (TableInfo ti in it.classInfo.UnifiedTables)
-                    {
-                        additional.Add(ti);
-
-                        foreach (FieldInfo fi in ti.Fields)
-                        {
-                            // TODO - this relies on the fact that path expressions
-                            // are never reconstructed or broken. We simply share previous prefix
-                            // perhaps it's cleaner to Clone() the expression here
-
-                            SoqlPathExpression extendedExpression = new SoqlPathExpression(it.prefix, fi.Name);
-
-                            queryExpression.SelectExpressions.Add(extendedExpression);
-                            queryExpression.SelectAliases.Add("");
-
-                            if (it.level >= 1 && fi.PrefetchLevel > 0 && fi.ReferencedClass != null)
-                            {
-                                _QueueItem newItem = new _QueueItem();
-                                newItem.classInfo = fi.ReferencedClass;
-                                newItem.prefix = extendedExpression;
-                                newItem.level = it.level - 1;
-                                queue.Enqueue(newItem);
-                            }
-                        }
-                    }
-                }
-
-                queryExpression.WhereClause = null;
-
-                int parameterPos = 0;
-
-                foreach (FieldInfo fi in tableInfo.Fields)
-                {
-                    if (fi.IsPrimaryKey)
-                    {
-                        SoqlBooleanRelationalExpression expr = Soql.FieldEqualsParam(fi.Name, parameterPos);
-
-                        if (parameterPos == 0)
-                        {
-                            queryExpression.WhereClause = expr;
-                        }
-                        else
-                        {
-                            queryExpression.WhereClause = new SoqlBooleanAndExpression(queryExpression.WhereClause, expr);
-                        }
-                        parameterPos++;
-                    }
-                }
-
-                string query = SoqlToSql(queryExpression, tableInfo.OwnerClass.Schema, false);
-
-                // logger.Debug("Loading statement for table {0}: {1}", tableInfo.NameToken, query);
-
-                cacheLoadingSelectStatement[tableInfo] = query;
-                cacheLoadedTables[tableInfo] = additional.ToArray();
+                loadedTables = cache.LoadedTables;
+                return cache.SelectStatement;
             }
-            loadedTables = (TableInfo[])cacheLoadedTables[tableInfo];
-            return (string)cacheLoadingSelectStatement[tableInfo];
+
+            Queue<_QueueItem> queue = new Queue<_QueueItem>();
+            List<TableInfo> additional = new List<TableInfo>();
+            additional.Add(tableInfo);
+
+            SoqlQueryExpression queryExpression = new SoqlQueryExpression();
+            queryExpression.From.Add(classInfo.Name);
+            queryExpression.FromAliases.Add("");
+
+            foreach (FieldInfo fi in tableInfo.Fields)
+            {
+                SoqlPathExpression pathExpr = new SoqlPathExpression(fi.Name);
+                queryExpression.SelectExpressions.Add(pathExpr);
+                queryExpression.SelectAliases.Add("");
+
+                if (fi.ReferencedClass != null && fi.PrefetchLevel > 0)
+                {
+                    _QueueItem item = new _QueueItem();
+                    item.classInfo = fi.ReferencedClass;
+                    item.level = fi.PrefetchLevel;
+                    item.prefix = pathExpr;
+                    queue.Enqueue(item);
+                }
+            }
+
+            // TODO - add prefetching
+            while (queue.Count > 0)
+            {
+                _QueueItem it = queue.Dequeue();
+
+                foreach (TableInfo ti in it.classInfo.UnifiedTables)
+                {
+                    additional.Add(ti);
+
+                    foreach (FieldInfo fi in ti.Fields)
+                    {
+                        // TODO - this relies on the fact that path expressions
+                        // are never reconstructed or broken. We simply share previous prefix
+                        // perhaps it's cleaner to Clone() the expression here
+
+                        SoqlPathExpression extendedExpression = new SoqlPathExpression(it.prefix, fi.Name);
+
+                        queryExpression.SelectExpressions.Add(extendedExpression);
+                        queryExpression.SelectAliases.Add("");
+
+                        if (it.level >= 1 && fi.PrefetchLevel > 0 && fi.ReferencedClass != null)
+                        {
+                            _QueueItem newItem = new _QueueItem();
+                            newItem.classInfo = fi.ReferencedClass;
+                            newItem.prefix = extendedExpression;
+                            newItem.level = it.level - 1;
+                            queue.Enqueue(newItem);
+                        }
+                    }
+                }
+            }
+
+            queryExpression.WhereClause = null;
+
+            int parameterPos = 0;
+
+            foreach (FieldInfo fi in tableInfo.Fields)
+            {
+                if (fi.IsPrimaryKey)
+                {
+                    SoqlBooleanRelationalExpression expr = Soql.FieldEqualsParam(fi.Name, parameterPos);
+
+                    if (parameterPos == 0)
+                    {
+                        queryExpression.WhereClause = expr;
+                    }
+                    else
+                    {
+                        queryExpression.WhereClause = new SoqlBooleanAndExpression(queryExpression.WhereClause, expr);
+                    }
+                    parameterPos++;
+                }
+            }
+
+            string query = SoqlToSql(queryExpression, tableInfo.OwnerClass.Schema, false);
+
+            // logger.Debug("Loading statement for table {0}: {1}", tableInfo.NameToken, query);
+
+            loadedTables = additional.ToArray();
+            tableLoadingCache[tableInfo] = new TableLoadingCache(query, loadedTables);
+            return query;
         }
 
         private string GetLoadRefObjectSelectStatement(RelationInfo relationInfo, int masterColumn)
         {
-            if (!cacheLoadRefObjectSelectStatement[masterColumn].Contains(relationInfo))
-            {
-                string soqlQuery;
-
-                soqlQuery = String.Format("select mt.{0}.* from {2} mt where mt.{1} = {{0}}",
-                        relationInfo.Table.Fields[masterColumn].Name,
-                        relationInfo.Table.Fields[1 - masterColumn].Name,
-                        relationInfo.Name);
-
-                string query = SoqlToSql(SoqlParser.ParseQuery(soqlQuery), relationInfo.Schema, false);
-                cacheLoadRefObjectSelectStatement[masterColumn][relationInfo] = query;
-            }
-            return (string)cacheLoadRefObjectSelectStatement[masterColumn][relationInfo];
+            string query;
+            if (cacheLoadRefObjectSelectStatement[masterColumn].TryGetValue(relationInfo, out query))
+                return query;
+            string soqlQuery = String.Format("select mt.{0}.* from {2} mt where mt.{1} = {{0}}",
+                relationInfo.Table.Fields[masterColumn].Name,
+                relationInfo.Table.Fields[1 - masterColumn].Name,
+                relationInfo.Name);
+            query = SoqlToSql(SoqlParser.ParseQuery(soqlQuery), relationInfo.Schema, false);
+            cacheLoadRefObjectSelectStatement[masterColumn][relationInfo] = query;
+            return query;
         }
 
         private void UnifyTable(Dictionary<string, TableInfo> tables, TableInfo ti, bool isInherited)
