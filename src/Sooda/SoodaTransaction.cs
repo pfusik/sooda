@@ -510,11 +510,7 @@ namespace Sooda
 
                 foreach (SoodaObject o in objectsToPrecommit)
                 {
-                    if (!o.VisitedOnCommit && !o.IsMarkedForDelete())
-                    {
-                        MarkPrecommitted(o);
-                        o.SaveObjectChanges();
-                    }
+                    PrecommitObject(o);
                 }
 
                 foreach (SoodaRelationTable rel in _relationTables.Values)

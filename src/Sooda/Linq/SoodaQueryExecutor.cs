@@ -1334,14 +1334,6 @@ namespace Sooda.Linq
 
         internal object Execute(Expression expr)
         {
-#if DOTNET4
-            _select = null;
-#endif
-            _where = null;
-            _orderBy = null;
-            _startIdx = 0;
-            _topCount = -1;
-
             MethodCallExpression mc = expr as MethodCallExpression;
             if (mc != null)
             {
@@ -1442,12 +1434,6 @@ namespace Sooda.Linq
             }
             TranslateQuery(expr);
             return GetList();
-        }
-
-        public SoqlQueryExpression GetSoqlQuery(Expression expr)
-        {
-            TranslateQuery(expr);
-            return CreateSoqlQuery();
         }
     }
 }

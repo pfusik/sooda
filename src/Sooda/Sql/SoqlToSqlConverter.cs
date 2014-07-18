@@ -199,12 +199,9 @@ namespace Sooda.Sql
                 Output.Write('\'');
                 Output.Write(((string)literalValue).Replace("'", "''"));
                 Output.Write('\'');
-                if (modifier != null)
+                if (modifier != null && modifier.DataTypeOverride == FieldDataType.AnsiString)
                 {
-                    if (modifier.DataTypeOverride == FieldDataType.AnsiString)
-                    {
-                        Output.Write('A');
-                    }
+                    Output.Write('A');
                 }
             }
             else if (literalValue is DateTime)
@@ -1048,7 +1045,7 @@ namespace Sooda.Sql
                 else
                 {
                     killPrefixes.Add(alias);
-                };
+                }
 
                 if (!ExpressionPrefixToTableAlias.ContainsKey(table))
                 {
@@ -1057,7 +1054,7 @@ namespace Sooda.Sql
                 else
                 {
                     killPrefixes.Add(table);
-                };
+                }
 
                 if (!TableAliases.ContainsKey(alias))
                 {
