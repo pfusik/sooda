@@ -425,6 +425,16 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void SelectPolymorphicSoodaObject()
+        {
+            using (new SoodaTransaction())
+            {
+                List<Vehicle> ve = Vehicle.Linq().Select(v => v).ToList();
+                CollectionAssert.AreEquivalent(Vehicle.GetList(true), ve);
+            }
+        }
+
+        [Test]
         public void OrderBy()
         {
             using (new SoodaTransaction())
@@ -991,6 +1001,15 @@ namespace Sooda.UnitTests.TestCases.Linq
             }
         }
 
+        [Test]
+        public void WhereSubquery()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<ContactType> te = ContactType.Linq().Where(t => Contact.Linq().Count(c => c.Type == t) > 1);
+                CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Employee, ContactType.Customer }, te);
+            }
+        }
     }
 }
 
