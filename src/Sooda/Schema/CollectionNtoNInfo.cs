@@ -76,31 +76,5 @@ namespace Sooda.Schema
         {
             return relationInfo.Table.Fields[MasterField].ReferencedClass;
         }
-
-        public CollectionManyToManyInfo OtherSide
-        {
-            get
-            {
-                ClassInfo classInfo = GetItemClass();
-                CollectionManyToManyInfo[] collections = classInfo.CollectionsNtoN;
-                CollectionManyToManyInfo result = null;
-                if (collections != null)
-                {
-                    foreach (CollectionManyToManyInfo c in collections)
-                    {
-                        if (c.Relation == Relation && c.MasterField != MasterField)
-                        {
-                            if (result != null)
-                                throw new SoodaConfigException("Duplicate <collectionManyToMany relation='" + this.Relation + "' masterField='" + c.MasterField + "' /> in " + classInfo.Name);
-                            result = c;
-                        }
-                    }
-                    //if (result != null)
-                    //    return result;
-                }
-                //throw new SoodaConfigException("Missing <collectionManyToMany relation='" + this.Relation + "' masterField='" + (1 - this.MasterField) + "' /> in " + classInfo.Name);
-                return result;
-            }
-        }
     }
 }

@@ -91,9 +91,22 @@ namespace Sooda.QL
                 SoqlRelationalOperator.Equal);
         }
 
-        public static SoqlBooleanExpression CollectionContains(string collectionName, SoodaObject obj)
+        public static SoqlBooleanExpression CollectionFor(CollectionManyToManyInfo coll, SoodaObject parent)
         {
-            return new SoqlContainsExpression(null, collectionName, new SoqlLiteralExpression(obj.GetPrimaryKeyValue()));
+            ClassInfo itemClass = coll.GetItemClass();
+            RelationInfo relation = coll.GetRelationInfo();
+            SoqlQueryExpression query = new SoqlQueryExpression();
+            query.SelectExpressions.Add(new SoqlAsteriskExpression());
+            query.SelectAliases.Add(string.Empty);
+            query.From.Add(relation.Name);
+            query.FromAliases.Add(string.Empty);
+            query.WhereClause = new SoqlBooleanAndExpression(
+                FieldEquals(relation.Table.Fields[1 - coll.MasterField].Name, parent),
+                new SoqlBooleanRelationalExpression(
+                    new SoqlPathExpression(relation.Table.Fields[coll.MasterField].Name),
+                    new SoqlPathExpression(itemClass.Name, itemClass.GetFirstPrimaryKeyField().Name),
+                    SoqlRelationalOperator.Equal));
+            return new SoqlExistsExpression(query);
         }
     }
 }

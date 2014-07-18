@@ -741,17 +741,16 @@ namespace Sooda.CodeGen
                     ctd.Members.Add(prop);
 
 #if DOTNET35
-                    CollectionManyToManyInfo coli2 = coli.OtherSide;
-                    if (coli2 != null)
-                    {
-                        CodeExpression whereExpression = new CodeMethodInvokeExpression(
-                            new CodeTypeReferenceExpression(typeof(Sooda.QL.Soql)),
-                            "CollectionContains",
-                            new CodePrimitiveExpression(coli2.Name),
-                            This);
-                        prop = GetCollectionLinqQuery(coli, whereExpression);
-                        ctd.Members.Add(prop);
-                    }
+                    CodeExpression whereExpression = new CodeMethodInvokeExpression(
+                        new CodeTypeReferenceExpression(typeof(Sooda.QL.Soql)),
+                        "CollectionFor",
+                        new CodeMethodInvokeExpression(
+                                new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(classInfo.Name + "_Factory"), "TheClassInfo"),
+                                "FindCollectionManyToMany",
+                                new CodePrimitiveExpression(coli.Name)),
+                        This);
+                    prop = GetCollectionLinqQuery(coli, whereExpression);
+                    ctd.Members.Add(prop);
 #endif
                 }
             }
