@@ -507,6 +507,19 @@ namespace Sooda.Linq
                             return new SoqlFunctionCallExpression("month", parent);
                         case "Year":
                             return new SoqlFunctionCallExpression("year", parent);
+
+                        // HACK: SQL Server only
+                        case "DayOfYear":
+                            return new SoqlFunctionCallExpression("datepart", new SoqlRawExpression("dy"), parent);
+                        case "Hour":
+                            return new SoqlFunctionCallExpression("datepart", new SoqlRawExpression("hh"), parent);
+                        case "Minute":
+                            return new SoqlFunctionCallExpression("datepart", new SoqlRawExpression("mi"), parent);
+                        case "Second":
+                            return new SoqlFunctionCallExpression("datepart", new SoqlRawExpression("s"), parent);
+                        case "Millisecond":
+                            return new SoqlFunctionCallExpression("datepart", new SoqlRawExpression("ms"), parent);
+
                         default:
                             break;
                     }

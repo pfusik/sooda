@@ -280,6 +280,8 @@ insert into MultiKey values (7,8,901,111,222);
 
 insert into ExtendedBike values(10,'an extended bike info');
 
+insert into AllDataTypes (id, nn_bool_val, nn_int_val, nn_int64_val, nn_string_val, nn_date_val, nn_float_val, nn_double_val, nn_decimal_val) values (1, 1, 42, 1234567890123, 'foo', '2014-07-23 13:05:47.123', 10.5, 20.5, 1337);
+
 insert into PKInt32 values(7777777,'test data',7777777);
 insert into PKInt32 values(7777778,'test data 2',7777777);
 insert into PKInt32 values(7777779,'test data 3',7777777);

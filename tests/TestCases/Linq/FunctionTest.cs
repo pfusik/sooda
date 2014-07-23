@@ -37,6 +37,7 @@ using Sooda.Linq;
 
 using NUnit.Framework;
 using Sooda.UnitTests.BaseObjects;
+using Sooda.UnitTests.Objects;
 
 namespace Sooda.UnitTests.TestCases.Linq
 {
@@ -215,6 +216,102 @@ namespace Sooda.UnitTests.TestCases.Linq
             {
                 IEnumerable<int> ie = from c in Contact.Linq() where (c.Name == "Mary Manager").ToString().StartsWith("T") select c.ContactId;
                 CollectionAssert.AreEqual(new int[] { 1 }, ie);
+            }
+        }
+
+        [Test]
+        public void DateTimeYear()
+        {
+            using (new SoodaTransaction())
+            {
+                bool b = AllDataTypes.Linq().Any(a => a.NnDateVal.Year == 2014);
+                Assert.IsTrue(b);
+                b = AllDataTypes.Linq().Any(a => a.NnDateVal.Year == 2013);
+                Assert.IsFalse(b);
+            }
+        }
+
+        [Test]
+        public void DateTimeMonth()
+        {
+            using (new SoodaTransaction())
+            {
+                bool b = AllDataTypes.Linq().Any(a => a.NnDateVal.Month == 7);
+                Assert.IsTrue(b);
+                b = AllDataTypes.Linq().Any(a => a.NnDateVal.Month == 6);
+                Assert.IsFalse(b);
+            }
+        }
+
+        [Test]
+        public void DateTimeDay()
+        {
+            using (new SoodaTransaction())
+            {
+                bool b = AllDataTypes.Linq().Any(a => a.NnDateVal.Day == 23);
+                Assert.IsTrue(b);
+                b = AllDataTypes.Linq().Any(a => a.NnDateVal.Day == 3);
+                Assert.IsFalse(b);
+            }
+        }
+
+        [Test]
+        public void DateTimeDayOfYear()
+        {
+            using (new SoodaTransaction())
+            {
+                bool b = AllDataTypes.Linq().Any(a => a.NnDateVal.DayOfYear == 204);
+                Assert.IsTrue(b);
+                b = AllDataTypes.Linq().Any(a => a.NnDateVal.DayOfYear == 203);
+                Assert.IsFalse(b);
+            }
+        }
+
+        [Test]
+        public void DateTimeHour()
+        {
+            using (new SoodaTransaction())
+            {
+                bool b = AllDataTypes.Linq().Any(a => a.NnDateVal.Hour == 13);
+                Assert.IsTrue(b);
+                b = AllDataTypes.Linq().Any(a => a.NnDateVal.Hour == 1);
+                Assert.IsFalse(b);
+            }
+        }
+
+        [Test]
+        public void DateTimeMinute()
+        {
+            using (new SoodaTransaction())
+            {
+                bool b = AllDataTypes.Linq().Any(a => a.NnDateVal.Minute == 5);
+                Assert.IsTrue(b);
+                b = AllDataTypes.Linq().Any(a => a.NnDateVal.Minute == 0);
+                Assert.IsFalse(b);
+            }
+        }
+
+        [Test]
+        public void DateTimeSecond()
+        {
+            using (new SoodaTransaction())
+            {
+                bool b = AllDataTypes.Linq().Any(a => a.NnDateVal.Second == 47);
+                Assert.IsTrue(b);
+                b = AllDataTypes.Linq().Any(a => a.NnDateVal.Second == 0);
+                Assert.IsFalse(b);
+            }
+        }
+
+        [Test]
+        public void DateTimeMillisecond()
+        {
+            using (new SoodaTransaction())
+            {
+                bool b = AllDataTypes.Linq().Any(a => a.NnDateVal.Millisecond == 123);
+                Assert.IsTrue(b);
+                b = AllDataTypes.Linq().Any(a => a.NnDateVal.Millisecond == 0);
+                Assert.IsFalse(b);
             }
         }
 
