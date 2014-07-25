@@ -1,2 +1,2 @@
 #!/bin/bash
-dropdb SoodaUnitTests
+mysql -e 'drop database SoodaUnitTests'

@@ -1,3 +1,6 @@
+create database SoodaUnitTests;
+use SoodaUnitTests;
+
 create table KeyGen
 (
 	key_name varchar(64) primary key,
@@ -32,6 +35,15 @@ create table _Role
 (
 	id int primary key,
 	name varchar(64) null
+);
+
+create table MultiKey
+(
+	contact_id int not null,
+	group_id int not null,
+    value int not null,
+    value2 int not null,
+    value3 int not null
 );
 
 create table Vehicle
@@ -194,6 +206,7 @@ insert into ContactRole values(53,3);
 
 insert into KeyGen values('Contact',100);
 insert into KeyGen values('Group',100);
+insert into KeyGen values('Vehicle',100);
 
 insert into Vehicle values(1,1,'some vehicle',null,null,null);
 insert into Vehicle values(2,1,'a car',null,null,1);
@@ -210,6 +223,10 @@ insert into Bike values(4,1);
 insert into Bike values(5,1);
 insert into Bike values(6,1);
 insert into Bike values(10,1);
+
+insert into MultiKey values (1,1,11,22,33);
+insert into MultiKey values (2,3,456,789,123);
+insert into MultiKey values (7,8,901,111,222);
 
 insert into ExtendedBike values(10,'an extended bike info');
 
