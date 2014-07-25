@@ -235,7 +235,7 @@ namespace Sooda.Sql
 
         public virtual string QuoteFieldName(string s)
         {
-            return String.Concat("[", s, "]");
+            return "\"" + s + "\"";
         }
 
         public abstract SqlTopSupportMode TopSupport

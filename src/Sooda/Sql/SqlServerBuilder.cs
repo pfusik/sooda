@@ -126,6 +126,11 @@ namespace Sooda.Sql
             return "@p" + pos.ToString();
         }
 
+        public override string QuoteFieldName(string s)
+        {
+            return "[" + s + "]";
+        }
+
         public override SqlTopSupportMode TopSupport
         {
             get
