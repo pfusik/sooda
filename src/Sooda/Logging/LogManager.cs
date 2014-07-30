@@ -31,72 +31,66 @@ using System;
 
 namespace Sooda.Logging
 {
-    public static class LogManager
+    public sealed class LogManager
     {
         private static ILoggingImplementation _implementation;
 
-        static void Create()
+        static LogManager()
         {
             // set up null implementation first so that any logging statements
             // from SoodaConfig will not result in NullReferenceException
+
             _implementation = new NullLoggingImplementation();
-            string name = SoodaConfig.GetString("sooda.logging", "null");
-            switch (name)
-            {
-                case "console":
-                    _implementation = new ConsoleLoggingImplementation();
-                    return;
-
-                case "null":
-                    return;
-
-                case "nlog":
-                    name = "Sooda.Logging.NLog.LoggingImplementation, Sooda.Logging.NLog";
-                    break;
-
-                case "log4net":
-                    name = "Sooda.Logging.log4net.LoggingImplementation, Sooda.Logging.log4net";
-                    break;
-
-                default:
-                    break;
-            }
             try
             {
-                ILoggingImplementation implementation = Activator.CreateInstance(Type.GetType(name)) as ILoggingImplementation;
-                if (implementation != null)
-                    _implementation = implementation;
+                string loggingImplementationName = SoodaConfig.GetString("sooda.logging", "null");
+                string typeName;
+
+                switch (loggingImplementationName)
+                {
+                    case "console":
+                        _implementation = new ConsoleLoggingImplementation();
+                        break;
+
+                    case "null":
+                        _implementation = new NullLoggingImplementation();
+                        break;
+
+                    case "nlog":
+                        typeName = "Sooda.Logging.NLog.LoggingImplementation, Sooda.Logging.NLog";
+                        _implementation = Activator.CreateInstance(Type.GetType(typeName)) as ILoggingImplementation;
+                        break;
+
+                    case "log4net":
+                        typeName = "Sooda.Logging.log4net.LoggingImplementation, Sooda.Logging.log4net";
+                        _implementation = Activator.CreateInstance(Type.GetType(typeName)) as ILoggingImplementation;
+                        break;
+
+                    default:
+                        _implementation = Activator.CreateInstance(Type.GetType(loggingImplementationName)) as ILoggingImplementation;
+                        break;
+                }
             }
             catch (Exception)
             {
+                _implementation = new NullLoggingImplementation();
+            }
+            finally
+            {
+                if (_implementation == null)
+                    _implementation = new NullLoggingImplementation();
             }
         }
 
         public static ILoggingImplementation Implementation
         {
-            get
-            {
-                ILoggingImplementation implementation = _implementation;
-                if (implementation == null)
-                {
-                    lock (typeof (LogManager))
-                    {
-                        implementation = _implementation;
-                        if (implementation == null)
-                        {
-                            Create();
-                            implementation = _implementation;
-                        }
-                    }
-                }
-                return implementation;
-            }
+            get { return _implementation; }
             set { _implementation = value; }
         }
 
         public static Logger GetLogger(string name)
         {
-            return Implementation.GetLogger(name);
+            return _implementation.GetLogger(name);
         }
     }
 }
