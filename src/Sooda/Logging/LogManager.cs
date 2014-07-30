@@ -31,7 +31,7 @@ using System;
 
 namespace Sooda.Logging
 {
-    public sealed class LogManager
+    public static class LogManager
     {
         private static ILoggingImplementation _implementation;
 
