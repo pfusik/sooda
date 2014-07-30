@@ -43,7 +43,7 @@ namespace Sooda.Caching
     {
         private static ISoodaCachingPolicy _defaultCachingPolicy;
         private static ISoodaCache _defaultCache = new SoodaInProcessCache();
-        private static Logger logger = LogManager.GetLogger("Sooda.Cache");
+        private static readonly Logger logger = LogManager.GetLogger("Sooda.Cache");
 
         static SoodaCache()
         {

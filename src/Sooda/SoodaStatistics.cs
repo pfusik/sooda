@@ -34,7 +34,7 @@ namespace Sooda
 {
     public class SoodaStatistics
     {
-        private static SoodaStatistics _globalStatistics = new SoodaStatistics();
+        private static readonly SoodaStatistics _globalStatistics = new SoodaStatistics();
 
         internal SoodaStatistics() { }
 

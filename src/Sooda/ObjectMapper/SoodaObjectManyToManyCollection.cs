@@ -41,7 +41,7 @@ namespace Sooda.ObjectMapper
 {
     public class SoodaObjectManyToManyCollection : SoodaObjectCollectionBase, ISoodaObjectList
     {
-        private static Logger logger = LogManager.GetLogger("Sooda.ManyToManyCollection");
+        private static readonly Logger logger = LogManager.GetLogger("Sooda.ManyToManyCollection");
         protected int masterColumn;
         protected object masterValue;
         protected Type relationType;

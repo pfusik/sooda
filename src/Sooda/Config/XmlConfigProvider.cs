@@ -40,8 +40,8 @@ namespace Sooda.Config
 {
     public class XmlConfigProvider : ISoodaConfigProvider
     {
-        private static Logger logger = LogManager.GetLogger("Sooda.Config");
-        private NameValueCollection dataDictionary = new NameValueCollection();
+        private static readonly Logger logger = LogManager.GetLogger("Sooda.Config");
+        private readonly NameValueCollection dataDictionary = new NameValueCollection();
         private string fileName;
 
         public XmlConfigProvider()

@@ -36,15 +36,15 @@ namespace Sooda
     ///Reflection based implementation, with caching
     public abstract class SoodaObjectReflectionCachingFieldValues : SoodaObjectFieldValues
     {
-        private string[] _orderedFieldNames;
-        private static Hashtable _fieldCache = new Hashtable();
+        private readonly string[] _orderedFieldNames;
+        private static readonly Hashtable _fieldCache = new Hashtable();
         
         private static FieldInfo GetField(Type t, string name)
         {
             string key = string.Format("{0}.{1}", t.FullName, name);
             FieldInfo fi = (FieldInfo) _fieldCache[key];
             if (fi != null) return fi;
-            lock(_fieldCache)
+            lock (_fieldCache)
             {
                 fi = (FieldInfo) _fieldCache[key];
                 if (fi != null) return fi;

@@ -76,7 +76,7 @@ namespace Sooda.ObjectMapper.FieldHandlers
             return DateTime.Parse(s, CultureInfo.InvariantCulture);
         }
 
-        private static object _zeroValue = DateTime.MinValue;
+        private static readonly object _zeroValue = DateTime.MinValue;
         public override object ZeroValue()
         {
             return _zeroValue;

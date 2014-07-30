@@ -74,7 +74,7 @@ namespace Sooda.ObjectMapper.FieldHandlers
             return s;
         }
 
-        private static object _zeroValue = String.Empty;
+        private static readonly object _zeroValue = String.Empty;
         public override object ZeroValue()
         {
             return _zeroValue;

@@ -44,8 +44,8 @@ namespace Sooda.Sql
 {
     public class SqlDataSource : Sooda.SoodaDataSource
     {
-        protected static Logger logger = LogManager.GetLogger("Sooda.SqlDataSource");
-        protected static Logger sqllogger = LogManager.GetLogger("Sooda.SQL");
+        protected static readonly Logger logger = LogManager.GetLogger("Sooda.SqlDataSource");
+        protected static readonly Logger sqllogger = LogManager.GetLogger("Sooda.SQL");
 
         private IDbCommand _updateCommand = null;
         private IsolationLevel _isolationLevel = IsolationLevel.ReadCommitted;

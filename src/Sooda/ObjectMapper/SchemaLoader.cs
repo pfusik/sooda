@@ -38,7 +38,7 @@ namespace Sooda.ObjectMapper
 {
     public class SchemaLoader
     {
-        private static Hashtable assembly2SchemaInfo = new Hashtable();
+        private static readonly Hashtable assembly2SchemaInfo = new Hashtable();
 
         public static SchemaInfo GetSchemaFromAssembly(System.Reflection.Assembly ass)
         {

@@ -49,7 +49,7 @@ namespace Sooda.Caching
         private object _marker = new object();
 
         private LruCache _collectionCache = new LruCache(-1);
-        private static Logger logger = LogManager.GetLogger("Sooda.Cache");
+        private static readonly Logger logger = LogManager.GetLogger("Sooda.Cache");
 
         public SoodaInProcessCache()
         {

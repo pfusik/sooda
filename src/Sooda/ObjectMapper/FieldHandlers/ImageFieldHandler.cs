@@ -113,7 +113,7 @@ namespace Sooda.ObjectMapper.FieldHandlers
             return Image.FromStream(ms);
         }
 
-        private static object _zeroValue = null;
+        private const object _zeroValue = null;
         public override object ZeroValue()
         {
             return _zeroValue;

@@ -33,7 +33,7 @@ namespace Sooda.Logging
 {
     public sealed class NullLogger : Logger
     {
-        private static NullLogger _theInstance = new NullLogger();
+        private static readonly NullLogger _theInstance = new NullLogger();
         private NullLogger()
         {
         }

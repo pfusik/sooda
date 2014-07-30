@@ -35,7 +35,7 @@ namespace Sooda
         {
         }
 
-        private static SoodaConstructor _theConstructor = new SoodaConstructor();
+        private static readonly SoodaConstructor _theConstructor = new SoodaConstructor();
 
         public static SoodaConstructor Constructor
         {

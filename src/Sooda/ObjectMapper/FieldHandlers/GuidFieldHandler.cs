@@ -74,7 +74,7 @@ namespace Sooda.ObjectMapper.FieldHandlers
             return new Guid(s);
         }
 
-        private static object _zeroValue = Guid.Empty;
+        private static readonly object _zeroValue = Guid.Empty;
         public override object ZeroValue()
         {
             return _zeroValue;

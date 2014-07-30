@@ -75,7 +75,7 @@ namespace Sooda.ObjectMapper.FieldHandlers
             return Decimal.Parse(s, CultureInfo.InvariantCulture);
         }
 
-        private static object _zeroValue = (decimal)0.0m;
+        private static readonly object _zeroValue = (decimal)0.0m;
         public override object ZeroValue()
         {
             return _zeroValue;

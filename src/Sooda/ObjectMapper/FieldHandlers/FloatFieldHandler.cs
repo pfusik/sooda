@@ -76,7 +76,7 @@ namespace Sooda.ObjectMapper.FieldHandlers
             return float.Parse(s, CultureInfo.InvariantCulture);
         }
 
-        private static object _zeroValue = (float)0.0f;
+        private static readonly object _zeroValue = (float)0.0f;
         public override object ZeroValue()
         {
             return _zeroValue;

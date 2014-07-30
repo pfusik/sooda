@@ -49,7 +49,7 @@ namespace Sooda
 {
     public class SoodaObject
     {
-        private static Logger logger = LogManager.GetLogger("Sooda.Object");
+        private static readonly Logger logger = LogManager.GetLogger("Sooda.Object");
 
         // instance fields - initialized in InitRawObject()
 
