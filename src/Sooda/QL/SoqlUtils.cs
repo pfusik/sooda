@@ -31,7 +31,7 @@ using System.Text.RegularExpressions;
 
 namespace Sooda.QL
 {
-    public sealed class SoqlUtils
+    public static class SoqlUtils
     {
         public static bool Like(string text, string pattern)
         {

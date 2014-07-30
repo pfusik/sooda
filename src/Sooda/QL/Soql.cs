@@ -31,7 +31,7 @@ using Sooda.Schema;
 
 namespace Sooda.QL
 {
-    public class Soql
+    public static class Soql
     {
         public static SoqlParameterLiteralExpression Param(int parameterPos)
         {
