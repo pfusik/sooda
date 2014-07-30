@@ -59,7 +59,7 @@ namespace Sooda.Schema
         {
             relationInfo = schemaInfo.FindRelationByName(Relation);
             if (relationInfo == null)
-                throw new SoodaSchemaException("Relation " + this.Name + " not found.");
+                throw new SoodaSchemaException("Relation " + Relation + " not found.");
 
             if (ForeignField != null)
             {
