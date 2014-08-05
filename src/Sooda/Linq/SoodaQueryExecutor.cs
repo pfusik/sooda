@@ -51,6 +51,10 @@ namespace Sooda.Linq
         // Caution: this must match first result of SoqlToSqlConverter.GetNextTablePrefix()
         const string DefaultAlias = "t0";
 
+        SoodaQueryExecutor _parent;
+        ParameterExpression _parameter;
+        string _alias = null;
+
         SoodaTransaction _transaction;
         ClassInfo _classInfo;
         SoodaSnapshotOptions _options;
@@ -66,8 +70,6 @@ namespace Sooda.Linq
         readonly List<string> _groupByFields = new List<string>();
         NewExpression _groupByNew = null;
         SoqlBooleanExpression _having = null;
-        readonly Dictionary<ParameterExpression, string> _param2alias = new Dictionary<ParameterExpression, string>();
-        int _currentPrefix = 0;
 
         internal SoodaObject GetRef(Type type, object keyValue)
         {
@@ -355,17 +357,31 @@ namespace Sooda.Linq
             return new SoqlConditionalExpression(condition, TranslateExpression(expr.IfTrue), TranslateExpression(expr.IfFalse));
         }
 
+        int GetNestingLevel()
+        {
+            return _parent != null ? _parent.GetNestingLevel() + 1 : 0;
+        }
+
+        SoodaQueryExecutor CreateSubqueryTranslator()
+        {
+            SoodaQueryExecutor child = new SoodaQueryExecutor();
+            child._transaction = _transaction;
+            child._parent = this;
+            return child;
+        }
+
         SoqlPathExpression TranslateParameter(ParameterExpression pe)
         {
-            // Don't use DefaultAlias if not needed.
-            // This is necessary because OrderBy clauses don't handle table aliases.
-            if (_param2alias.Count == 0)
-                return null;
-
-            string alias;
-            if (_param2alias.TryGetValue(pe, out alias))
-                return new SoqlPathExpression(alias);
-            return new SoqlPathExpression(DefaultAlias);
+            for (SoodaQueryExecutor p = _parent; p != null; p = p._parent)
+            {
+                if (pe == p._parameter)
+                {
+                    if (p._alias == null)
+                        p._alias = "p" + p.GetNestingLevel();
+                    return new SoqlPathExpression(p._alias);
+                }
+            }
+            return null;
         }
 
         SoqlPathExpression TranslateToPathExpression(Expression expr)
@@ -544,21 +560,16 @@ namespace Sooda.Linq
             if (mc.Arguments.Count == 1)
             {
                 alias = string.Empty;
-                where = SoqlBooleanLiteralExpression.True;
+                where = null;
             }
             else
             {
-                alias = "any" + _currentPrefix++;
-                Expression filter = mc.Arguments[1];
-                if (filter.NodeType == ExpressionType.Quote)
-                    filter = ((UnaryExpression) filter).Operand;
-                LambdaExpression lambda = (LambdaExpression) filter;
-                ParameterExpression param = lambda.Parameters.Single();
-                _param2alias[param] = alias;
-                where = TranslateBoolean(lambda.Body);
-                _param2alias.Remove(param);
+                SoodaQueryExecutor subquery = CreateSubqueryTranslator();
+                LambdaExpression lambda = subquery.GetLambda(mc);
+                where = subquery.TranslateBoolean(lambda.Body);
                 if (mc.Method.Name == "All")
                     where = new SoqlBooleanNegationExpression(where);
+                alias = subquery._alias ?? string.Empty;
             }
 
             SoqlQueryExpression query = new SoqlQueryExpression();
@@ -937,7 +948,12 @@ namespace Sooda.Linq
 
         LambdaExpression GetLambda(MethodCallExpression mc)
         {
-            return (LambdaExpression) ((UnaryExpression) mc.Arguments[1]).Operand;
+            Expression expr = mc.Arguments[1];
+            if (expr.NodeType == ExpressionType.Quote)
+                expr = ((UnaryExpression) expr).Operand;
+            LambdaExpression lambda = (LambdaExpression) expr;
+            _parameter = lambda.Parameters.First();
+            return lambda;
         }
 
         SoqlQueryExpression CreateSoqlQuery()
@@ -946,9 +962,8 @@ namespace Sooda.Linq
             query.StartIdx = _startIdx;
             query.PageCount = _topCount;
             query.From.Add(_classInfo.Name);
-            // string.Empty will result in DefaultAlias.
-            // Do NOT specify DefaultAlias here, because GetNextTablePrefix() could assign DefaultAlias to other tables.
-            query.FromAliases.Add(string.Empty);
+            // Must replace DefaultAlias with string.Empty, otherwise GetNextTablePrefix() could assign DefaultAlias to other tables.
+           query.FromAliases.Add(_alias == null || _alias == DefaultAlias ? string.Empty : _alias);
             query.WhereClause = _where;
             if (_orderBy != null)
                 query.SetOrderBy(_orderBy);
@@ -1090,7 +1105,7 @@ namespace Sooda.Linq
             }
         }
 
-        SoqlBooleanExpression TranslateSubquery(Expression expr)
+        SoqlBooleanExpression TranslateSubqueryWhere(Expression expr)
         {
             SkipTakeNotSupported();
 
@@ -1105,15 +1120,10 @@ namespace Sooda.Linq
 
             // TODO: compare _transaction, _classInfo, _options, _groupBy
             // TODO: OfType?
-            SoqlBooleanExpression thisWhere = _where;
-            SoodaOrderBy thisOrderBy = _orderBy;
-            _where = null;
-            TranslateQuery(expr);
-            SkipTakeNotSupported();
-            SoqlBooleanExpression thatWhere = _where;
-            _where = thisWhere;
-            _orderBy = thisOrderBy;
-            return thatWhere;
+            SoodaQueryExecutor subquery = CreateSubqueryTranslator();
+            subquery.TranslateQuery(expr);
+            subquery.SkipTakeNotSupported();
+            return subquery._where;
         }
 
         void TranslateQuery(Expression expr)
@@ -1214,17 +1224,17 @@ namespace Sooda.Linq
                             break;
 
                         case SoodaLinqMethod.Queryable_Except:
-                            thatWhere = TranslateSubquery(mc.Arguments[1]);
+                            thatWhere = TranslateSubqueryWhere(mc.Arguments[1]);
                             thatWhere = thatWhere == null ? (SoqlBooleanExpression) SoqlBooleanLiteralExpression.False : new SoqlBooleanNegationExpression(thatWhere);
                             Where(thatWhere);
                             break;
                         case SoodaLinqMethod.Queryable_Intersect:
-                            thatWhere = TranslateSubquery(mc.Arguments[1]);
+                            thatWhere = TranslateSubqueryWhere(mc.Arguments[1]);
                             if (thatWhere != null)
                                 Where(thatWhere);
                             break;
                         case SoodaLinqMethod.Queryable_Union:
-                            thatWhere = TranslateSubquery(mc.Arguments[1]);
+                            thatWhere = TranslateSubqueryWhere(mc.Arguments[1]);
                             if (_where != null)
                                 _where = thatWhere == null ? null : _where.Or(thatWhere);
                             break;
@@ -1330,7 +1340,7 @@ namespace Sooda.Linq
 #endif
         }
 
-        object ThrowEmptyAggregate()
+        static object ThrowEmptyAggregate()
         {
             throw new InvalidOperationException("Aggregate on an empty collection");
         }
@@ -1347,6 +1357,7 @@ namespace Sooda.Linq
 
         internal object Execute(Expression expr)
         {
+            _alias = DefaultAlias;
             MethodCallExpression mc = expr as MethodCallExpression;
             if (mc != null)
             {
