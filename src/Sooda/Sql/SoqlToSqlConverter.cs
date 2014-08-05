@@ -462,11 +462,7 @@ namespace Sooda.Sql
             if (col1n != null)
             {
                 SoqlQueryExpression query = CreateCollectionQuery(currentClass, p, col1n, new SoqlFunctionCallExpression("count", new SoqlAsteriskExpression()), null);
-                Output.Write('(');
-                if (IndentOutput)
-                    Output.WriteLine();
                 query.Accept(this);
-                Output.Write(')');
                 return;
             }
 
@@ -549,13 +545,15 @@ namespace Sooda.Sql
                 OutputColumn(GetTableAliasForExpressionPrefix(p), currentClass.GetFirstPrimaryKeyField());
                 Output.Write(" and ");
                 Output.Write(ri.Table.Fields[colnn.MasterField].DBColumnName);
-                Output.Write(" in (");
-                if (IndentOutput)
-                    Output.WriteLine();
+                Output.Write(" in ");
 
+                if (!(v.Expr is SoqlQueryExpression))
+                    Output.Write('(');
                 v.Expr.Accept(this);
+                if (!(v.Expr is SoqlQueryExpression))
+                    Output.Write(')');
 
-                Output.Write("))");
+                Output.Write(')');
                 return;
             }
 
@@ -638,13 +636,7 @@ namespace Sooda.Sql
 
         void OutputScalar(SoqlExpression expr)
         {
-            if (expr is SoqlQueryExpression)
-            {
-                Output.Write('(');
-                expr.Accept(this);
-                Output.Write(')');
-            }
-            else if (expr is SoqlBooleanExpression && !(expr is SoqlRawExpression))
+            if (expr is SoqlBooleanExpression && !(expr is SoqlRawExpression))
             {
                 Output.Write("case when ");
                 expr.Accept(this);
@@ -658,73 +650,73 @@ namespace Sooda.Sql
 
         void OutputColumns(SoqlQueryExpression v, bool onlyAliases)
         {
-                if (v.SelectExpressions.Count == 0)
+            if (v.SelectExpressions.Count == 0)
+            {
+                // simplified query - emit the primary key here
+
+                Sooda.Schema.ClassInfo ci = Schema.FindClassByName(v.From[0]);
+                bool first = true;
+
+                foreach (FieldInfo pkfi in ci.GetPrimaryKeyFields())
                 {
-                    // simplified query - emit the primary key here
-
-                    Sooda.Schema.ClassInfo ci = Schema.FindClassByName(v.From[0]);
-                    bool first = true;
-
-                    foreach (FieldInfo pkfi in ci.GetPrimaryKeyFields())
+                    if (!first)
+                        Output.Write(", ");
+                    if (!onlyAliases)
+                        OutputColumn(ActualFromAliases[0], pkfi);
+                    if (GenerateColumnAliases || GenerateUniqueAliases)
                     {
-                        if (!first)
-                            Output.Write(", ");
                         if (!onlyAliases)
-                            OutputColumn(ActualFromAliases[0], pkfi);
-                        if (GenerateColumnAliases || GenerateUniqueAliases)
+                            Output.Write(" as ");
+                        Output.Write(_builder.QuoteFieldName(pkfi.Name));
+                    }
+                    first = false;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < v.SelectExpressions.Count; ++i)
+                {
+                    if (i > 0)
+                    {
+                        if (IndentOutput)
+                        {
+                            Output.WriteLine(',');
+                            WriteIndentString();
+                            Output.Write("         ");
+                        }
+                        else
+                        {
+                            Output.Write(',');
+                        }
+                    }
+                    SoqlExpression expr = v.SelectExpressions[i];
+                    if (!onlyAliases)
+                        OutputScalar(expr);
+                    if (v.SelectAliases[i].Length > 0)
+                    {
+                        if (!onlyAliases)
+                            Output.Write(" as ");
+                        Output.Write(_builder.QuoteFieldName(v.SelectAliases[i]));
+                    }
+                    else if (GenerateColumnAliases)
+                    {
+                        ISoqlSelectAliasProvider aliasProvider = expr as ISoqlSelectAliasProvider;
+                        if (aliasProvider != null)
                         {
                             if (!onlyAliases)
                                 Output.Write(" as ");
-                            Output.Write(_builder.QuoteFieldName(pkfi.Name));
-                        }
-                        first = false;
-                    }
-                }
-                else
-                {
-                    for (int i = 0; i < v.SelectExpressions.Count; ++i)
-                    {
-                        if (i > 0)
-                        {
-                            if (IndentOutput)
-                            {
-                                Output.WriteLine(',');
-                                WriteIndentString();
-                                Output.Write("         ");
-                            }
-                            else
-                            {
-                                Output.Write(',');
-                            }
-                        }
-                        SoqlExpression expr = v.SelectExpressions[i];
-                        if (!onlyAliases)
-                            OutputScalar(expr);
-                        if (v.SelectAliases[i].Length > 0)
-                        {
-                            if (!onlyAliases)
-                                Output.Write(" as ");
-                            Output.Write(_builder.QuoteFieldName(v.SelectAliases[i]));
-                        }
-                        else if (GenerateColumnAliases)
-                        {
-                            ISoqlSelectAliasProvider aliasProvider = expr as ISoqlSelectAliasProvider;
-                            if (aliasProvider != null)
-                            {
-                                if (!onlyAliases)
-                                    Output.Write(" as ");
 
-                                aliasProvider.WriteDefaultSelectAlias(Output);
-                            }
-                        }
-                        else if (GenerateUniqueAliases)
-                        {
-                            if (!onlyAliases)
-                                Output.Write(" as");
-                            Output.Write(String.Format(" col_{0}", UniqueColumnId++));
+                            aliasProvider.WriteDefaultSelectAlias(Output);
                         }
                     }
+                    else if (GenerateUniqueAliases)
+                    {
+                        if (!onlyAliases)
+                            Output.Write(" as");
+                        Output.Write(String.Format(" col_{0}", UniqueColumnId++));
+                    }
                 }
+            }
         }
 
         void WriteSelect()
@@ -1005,9 +997,16 @@ namespace Sooda.Sql
         {
             SoqlToSqlConverter conv = this;
             if (this.Query != null)
+            {
+                Output.Write('(');
+                if (IndentOutput)
+                    Output.WriteLine();
                 conv = CreateSubconverter();
+            }
             conv.Init(v);
             conv.DoVisit(v);
+            if (conv != this)
+                Output.Write(')');
         }
 
         public SoqlToSqlConverter Parent;

@@ -1000,16 +1000,6 @@ namespace Sooda.UnitTests.TestCases.Linq
                 CollectionAssert.AreEqual(new ContactType[] { ContactType.Employee }, tl);
             }
         }
-
-        [Test]
-        public void WhereSubquery()
-        {
-            using (new SoodaTransaction())
-            {
-                IEnumerable<ContactType> te = ContactType.Linq().Where(t => Contact.Linq().Count(c => c.Type == t) > 1);
-                CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Employee, ContactType.Customer }, te);
-            }
-        }
     }
 }
 

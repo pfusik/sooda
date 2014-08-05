@@ -124,7 +124,9 @@ namespace Sooda.QL
             }
 
             v.Left.Accept(this);
-            Output.Write(" in (");
+            Output.Write(" in ");
+            if (v.Right.Count != 1 || !(v.Right[0] is SoqlQueryExpression))
+                Output.Write('(');
 
             for (int i = 0; i < v.Right.Count; ++i)
             {
@@ -132,7 +134,8 @@ namespace Sooda.QL
                     Output.Write(',');
                 v.Right[i].Accept(this);
             }
-            Output.Write(')');
+            if (v.Right.Count != 1 || !(v.Right[0] is SoqlQueryExpression))
+                Output.Write(')');
         }
 
         public virtual void Visit(SoqlBooleanIsNullExpression v)
@@ -222,17 +225,10 @@ namespace Sooda.QL
 
         public virtual void Visit(SoqlExistsExpression v)
         {
-            Output.Write("exists (");
-            if (IndentOutput)
-            {
-                Output.WriteLine();
-            }
+            Output.Write("exists ");
             v.Query.Accept(this);
             if (IndentOutput)
-            {
                 Output.WriteLine();
-            }
-            Output.Write(')');
         }
 
         public virtual void Visit(SoqlFunctionCallExpression v)
@@ -386,6 +382,9 @@ namespace Sooda.QL
 
         public virtual void Visit(SoqlQueryExpression v)
         {
+            Output.Write('(');
+            if (IndentOutput)
+                Output.WriteLine();
             IndentLevel++;
             try
             {
@@ -533,6 +532,7 @@ namespace Sooda.QL
             {
                 IndentLevel--;
             }
+            Output.Write(')');
         }
 
         public virtual void Visit(SoqlRawExpression v)

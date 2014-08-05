@@ -246,17 +246,24 @@ namespace Sooda.Linq
             }
         }
 
+        static object GetConstant(Expression expr)
+        {
+            if (expr.NodeType == ExpressionType.Constant)
+                return ((ConstantExpression) expr).Value;
+            if (IsConstant(expr))
+                return Expression.Lambda(expr).Compile().DynamicInvoke(null);
+            return null;
+        }
+
         static SoqlExpression FoldConstant(Expression expr)
         {
-            if (!IsConstant(expr))
-                return null;
-
             object value;
-            ConstantExpression constExpr = expr as ConstantExpression;
-            if (constExpr != null)
-                value = constExpr.Value;
-            else
+            if (expr.NodeType == ExpressionType.Constant)
+                value = ((ConstantExpression) expr).Value;
+            else if (IsConstant(expr))
                 value = Expression.Lambda(expr).Compile().DynamicInvoke(null);
+            else
+                return null;
 
             SoodaObject so = value as SoodaObject;
             if (so != null)
@@ -565,8 +572,7 @@ namespace Sooda.Linq
             else
             {
                 SoodaQueryExecutor subquery = CreateSubqueryTranslator();
-                LambdaExpression lambda = subquery.GetLambda(mc);
-                where = subquery.TranslateBoolean(lambda.Body);
+                where = subquery.TranslateBoolean(subquery.GetLambda(mc).Body);
                 if (mc.Method.Name == "All")
                     where = new SoqlBooleanNegationExpression(where);
                 alias = subquery._alias ?? string.Empty;
@@ -674,14 +680,25 @@ namespace Sooda.Linq
             return new SoqlFunctionCallExpression(function, expr);
         }
 
-        SoqlExpression TranslateGroupAggregate(MethodCallExpression mc, string function)
+        SoqlExpression TranslateFunction(MethodCallExpression mc, string function)
+        {
+            Expression expr = GetLambda(mc).Body;
+            return TranslateFunction(TranslateExpression(expr), expr.Type, function);
+        }
+
+        SoqlExpression TranslateAggregate(MethodCallExpression mc, string function)
         {
             if (IsGroupAggregate(mc))
-            {
-                Expression expr = ((LambdaExpression) mc.Arguments[1]).Body;
-                return TranslateFunction(TranslateExpression(expr), expr.Type, function);
-            }
-            throw new NotSupportedException(function);
+                return TranslateFunction(mc, function);
+
+            SoodaQueryExecutor subquery = CreateSubqueryTranslator();
+            subquery.TranslateQuery(mc.Arguments[0]);
+            SoqlExpression expr = subquery.TranslateFunction(mc, function);
+
+            SoqlQueryExpression query = subquery.CreateSoqlQuery();
+            query.SelectExpressions.Add(expr);
+            query.SelectAliases.Add(string.Empty);
+            return query;
         }
 
         SoqlExpression TranslateToString(Expression expr)
@@ -738,13 +755,17 @@ namespace Sooda.Linq
                         return TranslateCountFiltered(TranslateEnumerableFilter(mc));
                     throw new NotSupportedException("Count");
                 case SoodaLinqMethod.Enumerable_Average:
-                    return TranslateGroupAggregate(mc, "avg");
+                case SoodaLinqMethod.Queryable_Average:
+                    return TranslateAggregate(mc, "avg");
                 case SoodaLinqMethod.Enumerable_Max:
-                    return TranslateGroupAggregate(mc, "max");
+                case SoodaLinqMethod.Queryable_Max:
+                    return TranslateAggregate(mc, "max");
                 case SoodaLinqMethod.Enumerable_Min:
-                    return TranslateGroupAggregate(mc, "min");
+                case SoodaLinqMethod.Queryable_Min:
+                    return TranslateAggregate(mc, "min");
                 case SoodaLinqMethod.Enumerable_Sum:
-                    return TranslateGroupAggregate(mc, "sum");
+                case SoodaLinqMethod.Queryable_Sum:
+                    return TranslateAggregate(mc, "sum");
                 case SoodaLinqMethod.ICollection_Contains:
                     return TranslateIn(mc.Object, mc.Arguments[0]);
                 case SoodaLinqMethod.String_Concat:
@@ -1128,124 +1149,120 @@ namespace Sooda.Linq
 
         void TranslateQuery(Expression expr)
         {
-            SoqlBooleanExpression thatWhere;
-            switch (expr.NodeType)
+             ISoodaQuerySource source = GetConstant(expr) as ISoodaQuerySource;
+            if (source != null)
             {
-                case ExpressionType.Constant:
-                     ISoodaQuerySource source = (ISoodaQuerySource) ((ConstantExpression) expr).Value;
-                    _transaction = source.Transaction;
-                    _classInfo = source.ClassInfo;
-                    _options = source.Options;
-                    _where = source.Where;
+                _transaction = source.Transaction;
+                _classInfo = source.ClassInfo;
+                _options = source.Options;
+                _where = source.Where;
+                return;
+            }
+
+            if (expr.NodeType != ExpressionType.Call)
+                throw new NotSupportedException(expr.NodeType.ToString());
+            MethodCallExpression mc = (MethodCallExpression) expr;
+            SoodaLinqMethod method = SoodaLinqMethodDictionary.Get(mc.Method);
+            TranslateQuery(mc.Arguments[0]);
+            SoqlBooleanExpression thatWhere;
+            switch (method)
+            {
+                case SoodaLinqMethod.Queryable_Select:
+                case SoodaLinqMethod.Queryable_SelectIndexed:
+                    Select(mc);
                     break;
 
-                case ExpressionType.Call:
-                    MethodCallExpression mc = (MethodCallExpression) expr;
-                    SoodaLinqMethod method = SoodaLinqMethodDictionary.Get(mc.Method);
-                    TranslateQuery(mc.Arguments[0]);
+                case SoodaLinqMethod.Queryable_GroupBy:
+                    GroupBy(mc);
+                    break;
+
+                case SoodaLinqMethod.Queryable_Where:
+                    Where(mc);
+                    break;
+
+                case SoodaLinqMethod.Queryable_OrderBy:
+                case SoodaLinqMethod.Queryable_OrderByDescending:
+                case SoodaLinqMethod.Queryable_ThenBy:
+                case SoodaLinqMethod.Queryable_ThenByDescending:
+                    SoqlExpression orderBy = TranslateExpression(GetLambda(mc).Body);
+                    if (orderBy is ISoqlConstantExpression)
+                        break;
+                    SkipTakeNotSupported();
                     switch (method)
                     {
-                        case SoodaLinqMethod.Queryable_Select:
-                        case SoodaLinqMethod.Queryable_SelectIndexed:
-                            Select(mc);
-                            break;
-
-                        case SoodaLinqMethod.Queryable_GroupBy:
-                            GroupBy(mc);
-                            break;
-
-                        case SoodaLinqMethod.Queryable_Where:
-                            Where(mc);
-                            break;
-
                         case SoodaLinqMethod.Queryable_OrderBy:
+                            _orderBy = new SoodaOrderBy(orderBy, SortOrder.Ascending, _orderBy);
+                            break;
                         case SoodaLinqMethod.Queryable_OrderByDescending:
+                            _orderBy = new SoodaOrderBy(orderBy, SortOrder.Descending, _orderBy);
+                            break;
                         case SoodaLinqMethod.Queryable_ThenBy:
+                            _orderBy = new SoodaOrderBy(_orderBy, orderBy, SortOrder.Ascending);
+                            break;
                         case SoodaLinqMethod.Queryable_ThenByDescending:
-                            SoqlExpression orderBy = TranslateExpression(GetLambda(mc).Body);
-                            if (orderBy is ISoqlConstantExpression)
-                                break;
-                            SkipTakeNotSupported();
-                            switch (method)
-                            {
-                                case SoodaLinqMethod.Queryable_OrderBy:
-                                    _orderBy = new SoodaOrderBy(orderBy, SortOrder.Ascending, _orderBy);
-                                    break;
-                                case SoodaLinqMethod.Queryable_OrderByDescending:
-                                    _orderBy = new SoodaOrderBy(orderBy, SortOrder.Descending, _orderBy);
-                                    break;
-                                case SoodaLinqMethod.Queryable_ThenBy:
-                                    _orderBy = new SoodaOrderBy(_orderBy, orderBy, SortOrder.Ascending);
-                                    break;
-                                case SoodaLinqMethod.Queryable_ThenByDescending:
-                                    _orderBy = new SoodaOrderBy(_orderBy, orderBy, SortOrder.Descending);
-                                    break;
-                            }
+                            _orderBy = new SoodaOrderBy(_orderBy, orderBy, SortOrder.Descending);
                             break;
-                        case SoodaLinqMethod.Queryable_Reverse:
-                            Reverse();
-                            break;
+                    }
+                    break;
+                case SoodaLinqMethod.Queryable_Reverse:
+                    Reverse();
+                    break;
 
-                        case SoodaLinqMethod.Queryable_Skip:
-                            {
-                                int count = (int) ((ConstantExpression) mc.Arguments[1]).Value;
-                                if (count > 0)
-                                {
-                                    if (_startIdx + count < 0) // int overflow
-                                        SkipTakeNotSupported();
-                                    _startIdx += count;
-                                    if (_topCount > 0)
-                                        _topCount = Math.Max(_topCount - count, 0);
-                                }
-                            }
-                            break;
-
-                        case SoodaLinqMethod.Queryable_Take:
-                            {
-                                int count = (int) ((ConstantExpression) mc.Arguments[1]).Value;
-                                if (count < 0)
-                                    count = 0;
-                                Take(count);
-                            }
-                            break;
-
-                        case SoodaLinqMethod.Queryable_Distinct:
-#if DOTNET4
-                            if (_select != null)
-                            {
+                case SoodaLinqMethod.Queryable_Skip:
+                    {
+                        int count = (int) ((ConstantExpression) mc.Arguments[1]).Value;
+                        if (count > 0)
+                        {
+                            if (_startIdx + count < 0) // int overflow
                                 SkipTakeNotSupported();
-                                _distinct = true;
-                            }
-#endif
-                            break;
-
-                        case SoodaLinqMethod.Queryable_OfType:
-                            OfType(mc.Method.GetGenericArguments()[0]);
-                            break;
-
-                        case SoodaLinqMethod.Queryable_Except:
-                            thatWhere = TranslateSubqueryWhere(mc.Arguments[1]);
-                            thatWhere = thatWhere == null ? (SoqlBooleanExpression) SoqlBooleanLiteralExpression.False : new SoqlBooleanNegationExpression(thatWhere);
-                            Where(thatWhere);
-                            break;
-                        case SoodaLinqMethod.Queryable_Intersect:
-                            thatWhere = TranslateSubqueryWhere(mc.Arguments[1]);
-                            if (thatWhere != null)
-                                Where(thatWhere);
-                            break;
-                        case SoodaLinqMethod.Queryable_Union:
-                            thatWhere = TranslateSubqueryWhere(mc.Arguments[1]);
-                            if (_where != null)
-                                _where = thatWhere == null ? null : _where.Or(thatWhere);
-                            break;
-
-                        default:
-                            throw new NotSupportedException(mc.Method.Name);
+                            _startIdx += count;
+                            if (_topCount > 0)
+                                _topCount = Math.Max(_topCount - count, 0);
+                        }
                     }
                     break;
 
+                case SoodaLinqMethod.Queryable_Take:
+                    {
+                        int count = (int) ((ConstantExpression) mc.Arguments[1]).Value;
+                        if (count < 0)
+                            count = 0;
+                        Take(count);
+                    }
+                    break;
+
+                case SoodaLinqMethod.Queryable_Distinct:
+#if DOTNET4
+                    if (_select != null)
+                    {
+                        SkipTakeNotSupported();
+                        _distinct = true;
+                    }
+#endif
+                    break;
+
+                case SoodaLinqMethod.Queryable_OfType:
+                    OfType(mc.Method.GetGenericArguments()[0]);
+                    break;
+
+                case SoodaLinqMethod.Queryable_Except:
+                    thatWhere = TranslateSubqueryWhere(mc.Arguments[1]);
+                    thatWhere = thatWhere == null ? (SoqlBooleanExpression) SoqlBooleanLiteralExpression.False : new SoqlBooleanNegationExpression(thatWhere);
+                    Where(thatWhere);
+                    break;
+                case SoodaLinqMethod.Queryable_Intersect:
+                    thatWhere = TranslateSubqueryWhere(mc.Arguments[1]);
+                    if (thatWhere != null)
+                        Where(thatWhere);
+                    break;
+                case SoodaLinqMethod.Queryable_Union:
+                    thatWhere = TranslateSubqueryWhere(mc.Arguments[1]);
+                    if (_where != null)
+                        _where = thatWhere == null ? null : _where.Or(thatWhere);
+                    break;
+
                 default:
-                    throw new NotSupportedException(expr.NodeType.ToString());
+                    throw new NotSupportedException(mc.Method.Name);
             }
         }
 
