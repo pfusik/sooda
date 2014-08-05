@@ -136,5 +136,18 @@ namespace Sooda.UnitTests.TestCases.Linq
                 CollectionAssert.AreEqual(new bool[] { true, false, false, false, false, false, false }, be);
             }
         }
+
+        [Test]
+        public void Union()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c == Contact.Mary).Union(Contact.Mary.SubordinatesQuery);
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Mary, Contact.Ed, Contact.Eva }, ce);
+
+                ce = Contact.Linq().Where(c => c == Contact.Mary).Union(Contact.Mary.SubordinatesQuery.Where(c => c.ContactId > 2));
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Mary, Contact.Eva }, ce);
+            }
+        }
     }
 }

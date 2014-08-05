@@ -1112,10 +1112,10 @@ namespace Sooda.Linq
             if (expr.NodeType == ExpressionType.Constant)
             {
                 // e.g. Contact.Linq().Union(new Contact[] { Contact.Mary })
-                // TODO: NOT if .Union(Contact.Linq())
                 SoqlPathExpression needle = TranslatePrimaryKey();
-                IEnumerable haystack = (IEnumerable) ((ConstantExpression) expr).Value;
-                return new SoqlBooleanInExpression(needle, haystack);
+                object haystack = ((ConstantExpression) expr).Value;
+                if (!(haystack is ISoodaQuerySource))
+                    return new SoqlBooleanInExpression(needle, (IEnumerable) haystack);
             }
 
             // TODO: compare _transaction, _classInfo, _options, _groupBy
