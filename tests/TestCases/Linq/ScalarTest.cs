@@ -153,7 +153,6 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
-        [Description("Fails on SQL Server, as it returns int for Avg(int) - should be fixed for SQL Server with a cast")]
         public void AverageIntFractional()
         {
             using (new SoodaTransaction())
