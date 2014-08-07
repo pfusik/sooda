@@ -694,16 +694,27 @@ namespace Sooda.Linq
             return TranslateFunction(TranslateExpression(expr), expr.Type, function);
         }
 
-        SoqlExpression TranslateSubqueryCount(MethodCallExpression mc)
+        SoqlQueryExpression TranslateSubqueryAggregate(MethodCallExpression mc, bool where, Func<SoodaQueryExecutor, SoqlExpression> selector)
         {
             SoodaQueryExecutor subquery = CreateSubqueryTranslator();
             subquery.TranslateQuery(mc.Arguments[0]);
-            if (mc.Arguments.Count > 1)
-                subquery.Where(mc);
+            if (where)
+                subquery.Where(mc, mc.Method.Name == "All");
             SoqlQueryExpression query = subquery.CreateSoqlQuery();
-            query.SelectExpressions.Add(new SoqlFunctionCallExpression("count", new SoqlAsteriskExpression()));
+            query.SelectExpressions.Add(selector(subquery));
             query.SelectAliases.Add(string.Empty);
             return query;
+        }
+
+        SoqlBooleanExpression TranslateSubqueryAny(MethodCallExpression mc)
+        {
+            SoqlQueryExpression query = TranslateSubqueryAggregate(mc, mc.Arguments.Count > 1, subquery => new SoqlAsteriskExpression());
+            return new SoqlExistsExpression(query);
+        }
+
+        SoqlExpression TranslateSubqueryCount(MethodCallExpression mc)
+        {
+            return TranslateSubqueryAggregate(mc, mc.Arguments.Count > 1, subquery => new SoqlFunctionCallExpression("count", new SoqlAsteriskExpression()));
         }
 
         SoqlExpression TranslateAggregate(MethodCallExpression mc, string function)
@@ -711,13 +722,7 @@ namespace Sooda.Linq
             if (IsGroupAggregate(mc))
                 return TranslateFunction(mc, function);
 
-            SoodaQueryExecutor subquery = CreateSubqueryTranslator();
-            subquery.TranslateQuery(mc.Arguments[0]);
-            SoqlExpression expr = subquery.TranslateFunction(mc, function);
-            SoqlQueryExpression query = subquery.CreateSoqlQuery();
-            query.SelectExpressions.Add(expr);
-            query.SelectAliases.Add(string.Empty);
-            return query;
+            return TranslateSubqueryAggregate(mc, false, subquery => subquery.TranslateFunction(mc, function));
         }
 
         SoqlExpression TranslateToString(Expression expr)
@@ -746,12 +751,16 @@ namespace Sooda.Linq
                         // count(case when ... then 1 end) = 0
                         return TranslateGroupAny(new SoqlBooleanNegationExpression(TranslateEnumerableFilter(mc)), SoqlRelationalOperator.Equal);
                     }
-                    return new SoqlBooleanNegationExpression(TranslateCollectionAny(mc));
+                    if (GetCollectionName(mc.Arguments[0]) != null)
+                        return new SoqlBooleanNegationExpression(TranslateCollectionAny(mc));
+                    return new SoqlBooleanNegationExpression(TranslateSubqueryAny(mc));
                 case SoodaLinqMethod.Enumerable_Any:
                 case SoodaLinqMethod.Queryable_Any:
                     if (IsGroupAggregate(mc))
                         return SoqlBooleanLiteralExpression.True;
-                    return TranslateCollectionAny(mc);
+                    if (GetCollectionName(mc.Arguments[0]) != null)
+                        return TranslateCollectionAny(mc);
+                    return TranslateSubqueryAny(mc);
                 case SoodaLinqMethod.Enumerable_AnyFiltered:
                 case SoodaLinqMethod.Queryable_AnyFiltered:
                     if (IsGroupAggregate(mc))
@@ -759,7 +768,9 @@ namespace Sooda.Linq
                         // count(case when ... then 1 end) > 0
                         return TranslateGroupAny(TranslateEnumerableFilter(mc), SoqlRelationalOperator.Greater);
                     }
-                    return TranslateCollectionAny(mc);
+                    if (GetCollectionName(mc.Arguments[0]) != null)
+                        return TranslateCollectionAny(mc);
+                    return TranslateSubqueryAny(mc);
                 case SoodaLinqMethod.Enumerable_Contains:
                     return TranslateIn(mc.Arguments[0], mc.Arguments[1]);
                 case SoodaLinqMethod.Queryable_Contains:
@@ -1072,10 +1083,18 @@ namespace Sooda.Linq
                 _where = _where == null ? where : _where.And(where);
         }
 
-        void Where(MethodCallExpression mc)
+        void Where(MethodCallExpression mc, bool not)
         {
             SkipTakeNotSupported();
-            Where(TranslateBoolean(GetLambda(mc).Body));
+            SoqlBooleanExpression filter = TranslateBoolean(GetLambda(mc).Body);
+            if (not)
+                filter = new SoqlBooleanNegationExpression(filter);
+            Where(filter);
+        }
+
+        void Where(MethodCallExpression mc)
+        {
+            Where(mc, false);
         }
 
         void Reverse()
@@ -1404,8 +1423,7 @@ namespace Sooda.Linq
                 {
                     case SoodaLinqMethod.Queryable_All:
                         TranslateQuery(mc.Arguments[0]);
-                        SkipTakeNotSupported();
-                        Where(new SoqlBooleanNegationExpression(TranslateBoolean(GetLambda(mc).Body)));
+                        Where(mc, true);
                         Take(1);
                         return Count() == 0;
                     case SoodaLinqMethod.Queryable_Any:

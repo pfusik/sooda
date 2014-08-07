@@ -41,6 +41,36 @@ namespace Sooda.UnitTests.TestCases.Linq
     public class SubqueryTest
     {
         [Test]
+        public void All()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<ContactType> te = ContactType.Linq().Where(t => Contact.Linq().Where(c => c.Type == t).All(c => c.LastSalary.Value > 100));
+                CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Manager, ContactType.Employee }, te);
+            }
+        }
+
+        [Test]
+        public void Any()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<ContactType> te = ContactType.Linq().Where(t => Contact.Linq().Where(c => c.Type == t && c.LastSalary.Value == 345).Any());
+                CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Employee }, te);
+            }
+        }
+
+        [Test]
+        public void AnyFiltered()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<ContactType> te = ContactType.Linq().Where(t => Contact.Linq().Any(c => c.Type == t && c.LastSalary.Value == 123));
+                CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Customer }, te);
+            }
+        }
+
+        [Test]
         public void Count()
         {
             using (new SoodaTransaction())
