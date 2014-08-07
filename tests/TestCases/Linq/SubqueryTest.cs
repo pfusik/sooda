@@ -181,6 +181,16 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void SumEmpty()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<ContactType> te = ContactType.Linq().Where(t => Contact.Linq().Where(c => c.Type == t && c.ContactId > 1).Sum(c => c.LastSalary.Value) == 0);
+                CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Manager }, te);
+            }
+        }
+
+        [Test]
         public void FirstOrDefault()
         {
             using (new SoodaTransaction())

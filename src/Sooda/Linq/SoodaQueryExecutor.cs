@@ -842,7 +842,9 @@ namespace Sooda.Linq
                     return TranslateAggregate(mc, "min");
                 case SoodaLinqMethod.Enumerable_Sum:
                 case SoodaLinqMethod.Queryable_Sum:
-                    return TranslateAggregate(mc, "sum");
+                    return new SoqlFunctionCallExpression("coalesce",
+                        TranslateAggregate(mc, "sum"),
+                        new SoqlLiteralExpression(Activator.CreateInstance(mc.Type))); // 0, 0L, 0D or 0M
                 case SoodaLinqMethod.ICollection_Contains:
                     return TranslateIn(mc.Object, mc.Arguments[0]);
                 case SoodaLinqMethod.Queryable_FirstOrDefault:
