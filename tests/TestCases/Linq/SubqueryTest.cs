@@ -111,11 +111,31 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void SelectAverageIntFractional()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<ContactType> te = ContactType.Linq().Where(t => Contact.Linq().Where(c => c.Type == t).Select(c => c.ContactId).Average() == 51.5);
+                CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Customer }, te);
+            }
+        }
+
+        [Test]
         public void Min()
         {
             using (new SoodaTransaction())
             {
                 IEnumerable<ContactType> te = ContactType.Linq().Where(t => Contact.Linq().Where(c => c.Type == t).Min(c => c.LastSalary.Value) == 234);
+                CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Employee }, te);
+            }
+        }
+
+        [Test]
+        public void SelectMin()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<ContactType> te = ContactType.Linq().Where(t => Contact.Linq().Where(c => c.Type == t).Select(c => c.LastSalary.Value).Min() == 234);
                 CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Employee }, te);
             }
         }
@@ -131,11 +151,31 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void SelectMax()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<ContactType> te = ContactType.Linq().Where(t => Contact.Linq().Where(c => c.Type == t).Select(c => c.LastSalary.Value).Max() == 345);
+                CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Employee }, te);
+            }
+        }
+
+        [Test]
         public void Sum()
         {
             using (new SoodaTransaction())
             {
                 IEnumerable<ContactType> te = ContactType.Linq().Where(t => Contact.Linq().Where(c => c.Type == t).Sum(c => c.LastSalary.Value) == 234 + 345);
+                CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Employee }, te);
+            }
+        }
+
+        [Test]
+        public void SelectSum()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<ContactType> te = ContactType.Linq().Where(t => Contact.Linq().Where(c => c.Type == t).Select(c => c.LastSalary.Value).Sum() == 234 + 345);
                 CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Employee }, te);
             }
         }
@@ -237,7 +277,7 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
-        public void HighestSalaries()
+        public void TopSalaries()
         {
             using (new SoodaTransaction())
             {
@@ -246,16 +286,16 @@ namespace Sooda.UnitTests.TestCases.Linq
                     orderby Contact.Linq().Where(c => c.Type == t).Max(c => c.LastSalary.Value) descending
                     select new {
                         ContactType = t.Code,
-                        HighestSalary = Contact.Linq().Where(c => c.Type == t).Max(c => c.LastSalary.Value),
-                        HighestPaid =
+                        TopSalary = Contact.Linq().Where(c => c.Type == t).Max(c => c.LastSalary.Value),
+                        MostPaid =
                             (from c in Contact.Linq()
                             where c.Type == t
                             orderby c.LastSalary.Value descending
                             select c.Name).FirstOrDefault()
                     }).ToList();
                 CollectionAssert.AreEqual(new string[] { "Employee", "Manager", "Customer" }, l.Select(o => o.ContactType));
-                CollectionAssert.AreEqual(new decimal[] { 345M, 123.123456789M, 123M }, l.Select(o => o.HighestSalary));
-                CollectionAssert.AreEqual(new string[] { "Eva Employee", "Mary Manager", "Chris Customer" }, l.Select(o => o.HighestPaid));
+                CollectionAssert.AreEqual(new decimal[] { 345M, 123.123456789M, 123M }, l.Select(o => o.TopSalary));
+                CollectionAssert.AreEqual(new string[] { "Eva Employee", "Mary Manager", "Chris Customer" }, l.Select(o => o.MostPaid));
             }
         }
     }

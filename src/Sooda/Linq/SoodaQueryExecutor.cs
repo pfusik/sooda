@@ -695,8 +695,24 @@ namespace Sooda.Linq
 
         SoqlExpression TranslateFunction(MethodCallExpression mc, string function)
         {
-            Expression expr = GetLambda(mc).Body;
-            return TranslateFunction(TranslateExpression(expr), expr.Type, function);
+            SoqlExpression expr;
+            Type type;
+#if DOTNET4
+            if (mc.Arguments.Count == 1)
+            {
+                if (_select == null)
+                    throw new NotSupportedException("Cannot aggregate SoodaObjects");
+                expr = _select.GetSingleColumnExpression(out type);
+            }
+            else
+#endif
+            {
+                Expression arg = GetLambda(mc).Body;
+                type = arg.Type;
+                expr = TranslateExpression(arg);
+            }
+
+            return TranslateFunction(expr, type, function);
         }
 
         SoqlQueryExpression TranslateSubqueryAggregate(MethodCallExpression mc, bool where, bool reverse, int topCount, Func<SoodaQueryExecutor, SoqlExpression> selector)
@@ -1405,25 +1421,7 @@ namespace Sooda.Linq
         object ExecuteScalar(MethodCallExpression mc, string function)
         {
             TranslateQuery(mc.Arguments[0]);
-            SoqlExpression expr;
-            Type type;
-#if DOTNET4
-            if (mc.Arguments.Count == 1)
-            {
-                if (_select == null)
-                    throw new NotSupportedException("Cannot aggregate SoodaObjects");
-                expr = _select.GetSingleColumnExpression(out type);
-            }
-            else
-#endif
-            {
-                Expression arg = GetLambda(mc).Body;
-                type = arg.Type;
-                expr = TranslateExpression(arg);
-            }
-
-            expr = TranslateFunction(expr, type, function);
-            return ExecuteScalar(expr);
+            return ExecuteScalar(TranslateFunction(mc, function));
         }
 
         int Count()
