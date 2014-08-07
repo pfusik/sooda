@@ -91,6 +91,16 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void Contains()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<ContactType> te = ContactType.Linq().Where(t => Contact.Linq().Where(c => c.Type == t).Contains(Contact.Ed));
+                CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Employee }, te);
+            }
+        }
+
+        [Test]
         public void AverageIntFractional()
         {
             using (new SoodaTransaction())

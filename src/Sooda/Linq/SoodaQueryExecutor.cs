@@ -602,7 +602,11 @@ namespace Sooda.Linq
             else if (haystack.NodeType == ExpressionType.NewArrayInit)
                 haystack2 = ((NewArrayExpression) haystack).Expressions.Select(e => TranslateExpression(e));
             else
-                throw new NotSupportedException(haystack.NodeType.ToString());
+            {
+                SoodaQueryExecutor subquery = CreateSubqueryTranslator();
+                subquery.TranslateQuery(haystack);
+                haystack2 = new SoqlExpressionCollection { subquery.CreateSoqlQuery() };
+            }
 
             if (needle.NodeType == ExpressionType.Convert && needle.Type == typeof(object)) // IList.Contains(object)
                 needle = ((UnaryExpression) needle).Operand;
@@ -612,9 +616,10 @@ namespace Sooda.Linq
 
         SoqlExpression TranslateContains(Expression haystack, Expression needle)
         {
-            if (IsConstant(haystack))
+            if (IsConstant(haystack) || GetCollectionName(haystack) == null)
             {
                 // ConstSoodaCollection.Contains(expr) -> SoqlBooleanInExpression
+                // SoodaQueryable.Contains(expr) -> SoqlBooleanInExpression
                 return TranslateIn(haystack, needle);
             }
             // x.SoodaCollection.Contains(expr) -> SoqlContainsExpression
