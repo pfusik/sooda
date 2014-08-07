@@ -699,27 +699,42 @@ namespace Sooda.Linq
             return TranslateFunction(TranslateExpression(expr), expr.Type, function);
         }
 
-        SoqlQueryExpression TranslateSubqueryAggregate(MethodCallExpression mc, bool where, Func<SoodaQueryExecutor, SoqlExpression> selector)
+        SoqlQueryExpression TranslateSubqueryAggregate(MethodCallExpression mc, bool where, bool reverse, int topCount, Func<SoodaQueryExecutor, SoqlExpression> selector)
         {
             SoodaQueryExecutor subquery = CreateSubqueryTranslator();
             subquery.TranslateQuery(mc.Arguments[0]);
             if (where)
                 subquery.Where(mc, mc.Method.Name == "All");
+            if (reverse)
+                subquery.Reverse();
+            if (topCount > 0)
+                subquery.Take(topCount);
             SoqlQueryExpression query = subquery.CreateSoqlQuery();
-            query.SelectExpressions.Add(selector(subquery));
-            query.SelectAliases.Add(string.Empty);
+            if (selector != null)
+            {
+                query.SelectExpressions.Add(selector(subquery));
+                query.SelectAliases.Add(string.Empty);
+            }
+#if DOTNET4
+            else if (subquery._select != null)
+            {
+                Type type;
+                query.SelectExpressions.Add(subquery._select.GetSingleColumnExpression(out type));
+                query.SelectAliases.Add(string.Empty);
+            }
+#endif
             return query;
         }
 
         SoqlBooleanExpression TranslateSubqueryAny(MethodCallExpression mc)
         {
-            SoqlQueryExpression query = TranslateSubqueryAggregate(mc, mc.Arguments.Count > 1, subquery => new SoqlAsteriskExpression());
+            SoqlQueryExpression query = TranslateSubqueryAggregate(mc, mc.Arguments.Count > 1, false, -1, subquery => new SoqlAsteriskExpression());
             return new SoqlExistsExpression(query);
         }
 
         SoqlExpression TranslateSubqueryCount(MethodCallExpression mc)
         {
-            return TranslateSubqueryAggregate(mc, mc.Arguments.Count > 1, subquery => new SoqlFunctionCallExpression("count", new SoqlAsteriskExpression()));
+            return TranslateSubqueryAggregate(mc, mc.Arguments.Count > 1, false, -1, subquery => new SoqlFunctionCallExpression("count", new SoqlAsteriskExpression()));
         }
 
         SoqlExpression TranslateAggregate(MethodCallExpression mc, string function)
@@ -727,7 +742,15 @@ namespace Sooda.Linq
             if (IsGroupAggregate(mc))
                 return TranslateFunction(mc, function);
 
-            return TranslateSubqueryAggregate(mc, false, subquery => subquery.TranslateFunction(mc, function));
+            return TranslateSubqueryAggregate(mc, false, false, -1, subquery => subquery.TranslateFunction(mc, function));
+        }
+
+        SoqlExpression TranslateSubquerySingleOrDefault(MethodCallExpression mc, bool reverse, int topCount)
+        {
+            SoqlExpression result = TranslateSubqueryAggregate(mc, mc.Arguments.Count > 1, reverse, topCount, null);
+            if (mc.Type.IsValueType && !typeof(INullable).IsAssignableFrom(mc.Type) && Nullable.GetUnderlyingType(mc.Type) == null)
+                result = new SoqlFunctionCallExpression("coalesce", result, new SoqlLiteralExpression(Activator.CreateInstance(mc.Type)));
+            return result;
         }
 
         SoqlExpression TranslateToString(Expression expr)
@@ -806,6 +829,15 @@ namespace Sooda.Linq
                     return TranslateAggregate(mc, "sum");
                 case SoodaLinqMethod.ICollection_Contains:
                     return TranslateIn(mc.Object, mc.Arguments[0]);
+                case SoodaLinqMethod.Queryable_FirstOrDefault:
+                case SoodaLinqMethod.Queryable_FirstOrDefaultFiltered:
+                    return TranslateSubquerySingleOrDefault(mc, false, 1);
+                case SoodaLinqMethod.Queryable_LastOrDefault:
+                case SoodaLinqMethod.Queryable_LastOrDefaultFiltered:
+                    return TranslateSubquerySingleOrDefault(mc, true, 1);
+                case SoodaLinqMethod.Queryable_SingleOrDefault:
+                case SoodaLinqMethod.Queryable_SingleOrDefaultFiltered:
+                    return TranslateSubquerySingleOrDefault(mc, false, -1);
                 case SoodaLinqMethod.String_Concat:
                     return new SoqlFunctionCallExpression("concat", TranslateExpression(mc.Arguments[0]), TranslateExpression(mc.Arguments[1]));
                 case SoodaLinqMethod.String_Like:

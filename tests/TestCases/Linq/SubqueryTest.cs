@@ -139,6 +139,125 @@ namespace Sooda.UnitTests.TestCases.Linq
                 CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Employee }, te);
             }
         }
+
+        [Test]
+        public void FirstOrDefault()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<ContactType> te = ContactType.Linq().Where(t => Contact.Linq().Where(c => c.Type == t).Select(c => c.Name).FirstOrDefault().EndsWith("er"));
+                CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Manager, ContactType.Customer }, te);
+            }
+        }
+
+        [Test]
+        public void FirstOrDefaultFiltered()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<ContactType> te = ContactType.Linq().Where(t => Contact.Linq().Where(c => c.Type == t).FirstOrDefault(c => c.Name.EndsWith("er")) == null);
+                CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Employee }, te);
+            }
+        }
+
+        [Test]
+        public void LastOrDefault()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<string> se =
+                    from t in ContactType.Linq()
+                    orderby t.Code
+                    select
+                        (from c in Contact.Linq()
+                        where c.Type == t
+                        orderby c.LastSalary.Value
+                        select c.Name).LastOrDefault();
+                CollectionAssert.AreEqual(new string[] { "Chris Customer", "Eva Employee", "Mary Manager" }, se);
+            }
+        }
+
+        [Test]
+        public void LastOrDefaultFiltered()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = 
+                    from t in ContactType.Linq()
+                    orderby t.Code
+                    select Contact.Linq().OrderBy(c => c.LastSalary.Value).LastOrDefault(c => c.Type == t);
+                CollectionAssert.AreEqual(new Contact[] { Contact.GetRef(52), Contact.Eva, Contact.Mary }, ce);
+            }
+        }
+
+        [Test]
+        public void SingleOrDefault()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<ContactType> te = ContactType.Linq().Where(t => Contact.Linq().Where(c => c.Type == t && c.LastSalary.Value < 0).SingleOrDefault() != null);
+                CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Customer }, te);
+            }
+        }
+
+        [Test]
+        public void SingleOrDefaultFiltered()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<ContactType> te = ContactType.Linq().Where(t => Contact.Linq().SingleOrDefault(c => c.Type == t && c.LastSalary.Value < 0) != null);
+                CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Customer }, te);
+            }
+        }
+
+        [Test]
+        public void FirstOrDefaultInt()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<ContactType> te = ContactType.Linq().Where(t =>
+                    (from c in Contact.Linq()
+                    where c.Type == t && c.LastSalary.Value > 123
+                    select c.ContactId).FirstOrDefault() == 0);
+                CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Customer }, te);
+            }
+        }
+
+        [Test]
+        public void FirstOrDefaultNullableDecimal()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<ContactType> te = ContactType.Linq().Where(t =>
+                    (from c in Contact.Linq()
+                    where c.Type == t && c.LastSalary.Value > 123
+                    select c.LastSalary).FirstOrDefault().IsNull);
+                CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Customer }, te);
+            }
+        }
+
+        [Test]
+        public void HighestSalaries()
+        {
+            using (new SoodaTransaction())
+            {
+                var l =
+                    (from t in ContactType.Linq()
+                    orderby Contact.Linq().Where(c => c.Type == t).Max(c => c.LastSalary.Value) descending
+                    select new {
+                        ContactType = t.Code,
+                        HighestSalary = Contact.Linq().Where(c => c.Type == t).Max(c => c.LastSalary.Value),
+                        HighestPaid =
+                            (from c in Contact.Linq()
+                            where c.Type == t
+                            orderby c.LastSalary.Value descending
+                            select c.Name).FirstOrDefault()
+                    }).ToList();
+                CollectionAssert.AreEqual(new string[] { "Employee", "Manager", "Customer" }, l.Select(o => o.ContactType));
+                CollectionAssert.AreEqual(new decimal[] { 345M, 123.123456789M, 123M }, l.Select(o => o.HighestSalary));
+                CollectionAssert.AreEqual(new string[] { "Eva Employee", "Mary Manager", "Chris Customer" }, l.Select(o => o.HighestPaid));
+            }
+        }
     }
 }
 
