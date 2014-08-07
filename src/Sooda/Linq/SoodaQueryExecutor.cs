@@ -416,17 +416,25 @@ namespace Sooda.Linq
             return new SoqlPathExpression(parent, name);
         }
 
-        T TranslateCollectionOp<T>(Expression expr, Func<SoqlPathExpression, string, T> constructor)
+        string GetCollectionName(Expression expr)
         {
             MemberExpression me = expr as MemberExpression;
             if (me == null)
-                throw new NotSupportedException();
+                return null;
             string name = me.Member.Name;
             if (name.EndsWith("Query"))
                 name = name.Remove(name.Length - 5);
             if (FindClassInfo(me.Expression).ContainsCollection(name) == 0)
-                throw new NotSupportedException(name + " is not a Sooda collection");
-            return constructor(TranslateToPathExpression(me.Expression), name);
+                return null;
+            return name;
+        }
+
+        T TranslateCollectionOp<T>(Expression expr, Func<SoqlPathExpression, string, T> constructor)
+        {
+            string name = GetCollectionName(expr);
+            if (name == null)
+                throw new NotSupportedException();
+            return constructor(TranslateToPathExpression(((MemberExpression) expr).Expression), name);
         }
 
         SoqlCountExpression TranslateCollectionCount(Expression expr)
@@ -686,6 +694,18 @@ namespace Sooda.Linq
             return TranslateFunction(TranslateExpression(expr), expr.Type, function);
         }
 
+        SoqlExpression TranslateSubqueryCount(MethodCallExpression mc)
+        {
+            SoodaQueryExecutor subquery = CreateSubqueryTranslator();
+            subquery.TranslateQuery(mc.Arguments[0]);
+            if (mc.Arguments.Count > 1)
+                subquery.Where(mc);
+            SoqlQueryExpression query = subquery.CreateSoqlQuery();
+            query.SelectExpressions.Add(new SoqlFunctionCallExpression("count", new SoqlAsteriskExpression()));
+            query.SelectAliases.Add(string.Empty);
+            return query;
+        }
+
         SoqlExpression TranslateAggregate(MethodCallExpression mc, string function)
         {
             if (IsGroupAggregate(mc))
@@ -694,7 +714,6 @@ namespace Sooda.Linq
             SoodaQueryExecutor subquery = CreateSubqueryTranslator();
             subquery.TranslateQuery(mc.Arguments[0]);
             SoqlExpression expr = subquery.TranslateFunction(mc, function);
-
             SoqlQueryExpression query = subquery.CreateSoqlQuery();
             query.SelectExpressions.Add(expr);
             query.SelectAliases.Add(string.Empty);
@@ -749,11 +768,14 @@ namespace Sooda.Linq
                 case SoodaLinqMethod.Queryable_Count:
                     if (IsGroupAggregate(mc))
                         return new SoqlFunctionCallExpression("count", new SoqlAsteriskExpression());
-                    return TranslateCollectionCount(mc.Arguments[0]);
+                    if (GetCollectionName(mc.Arguments[0]) != null)
+                        return TranslateCollectionCount(mc.Arguments[0]);
+                    return TranslateSubqueryCount(mc);
                 case SoodaLinqMethod.Enumerable_CountFiltered:
+                case SoodaLinqMethod.Queryable_CountFiltered:
                     if (IsGroupAggregate(mc))
                         return TranslateCountFiltered(TranslateEnumerableFilter(mc));
-                    throw new NotSupportedException("Count");
+                    return TranslateSubqueryCount(mc);
                 case SoodaLinqMethod.Enumerable_Average:
                 case SoodaLinqMethod.Queryable_Average:
                     return TranslateAggregate(mc, "avg");

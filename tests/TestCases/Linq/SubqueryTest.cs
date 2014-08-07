@@ -41,6 +41,16 @@ namespace Sooda.UnitTests.TestCases.Linq
     public class SubqueryTest
     {
         [Test]
+        public void Count()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<ContactType> te = ContactType.Linq().Where(t => Contact.Linq().Where(c => c.Type == t).Count() > 1);
+                CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Employee, ContactType.Customer }, te);
+            }
+        }
+
+        [Test]
         public void CountFiltered()
         {
             using (new SoodaTransaction())
