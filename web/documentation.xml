@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-07-30 13:12:06 +0200 (Wed, 30 Jul 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 770 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-08-08 15:07:11 +0200 (Fri, 08 Aug 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 786 $</subversion-revision>)</div>
         <div class="pagebreak">&#160;</div>
     </div>
     <p class="dontprintthis">
@@ -6976,6 +6976,23 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         In total, there are six methods, each with two overloads. The pattern is:
                         <code>{First|Last|Single}[OrDefault]([filter])</code>
                     </p>
+                    <p>
+                        The "OrDefault" methods can be used in <i>subqueries</i>.
+                        The following code lists a name of the top paid <code>Contact</code> for each <code>ContactType</code>:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        IEnumerable<string> se =
+                            from t in ContactType.Linq()
+                            orderby t.Code
+                            select
+                                (from c in Contact.Linq()
+                                where c.Type == t
+                                orderby c.LastSalary.Value
+                                select c.Name).LastOrDefault();
+                    ]]></code>
+                    <p>
+                        Note how the subquery uses the range variable of the outer query (<code>t</code> in this case).
+                    </p>
                 </body>
             </section>
             <section id="linqscalar">
@@ -7033,6 +7050,21 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         and <code>Max()</code> throw <code>InvalidOperationException</code>
                         whereas <code>Sum()</code> returns zero.
                     </p>
+                    <p>
+                        <code>Count()</code>, <code>Any()</code>, <code>All()</code>, <code>Contains()</code>,
+                        <code>Average()</code>, <code>Min()</code>, <code>Max()</code> and <code>Sum()</code>
+                        can also be used in subqueries.
+                        The following query calculates top salary per <code>ContactType</code>:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        var q =
+                            from t in ContactType.Linq()
+                            orderby t.Code
+                            select new {
+                                    ContactType = t.Code,
+                                    TopSalary = Contact.Linq().Where(c => c.Type == t).Max(c => c.LastSalary.Value)
+                                };
+                    ]]></code>
                 </body>
             </section>
             <section id="linqexpressions">
