@@ -596,9 +596,9 @@ namespace Sooda.Linq
         SoqlBooleanInExpression TranslateIn(Expression haystack, Expression needle)
         {
             IEnumerable haystack2;
-            SoqlExpression literal = FoldConstant(haystack);
+            object literal = GetConstant(haystack);
             if (literal != null)
-                haystack2 = (IEnumerable) ((SoqlLiteralExpression) literal).GetConstantValue();
+                haystack2 = (IEnumerable) literal;
             else if (haystack.NodeType == ExpressionType.NewArrayInit)
                 haystack2 = ((NewArrayExpression) haystack).Expressions.Select(e => TranslateExpression(e));
             else
@@ -628,10 +628,9 @@ namespace Sooda.Linq
 
         SoqlStringContainsExpression TranslateStringContains(MethodCallExpression mc, SoqlStringContainsPosition position)
         {
-            SoqlExpression literal = FoldConstant(mc.Arguments[0]);
-            if (literal == null)
+            string needle = GetConstant(mc.Arguments[0]) as string;
+            if (needle == null)
                 throw new NotSupportedException(mc.Method.Name + " must be given a constant");
-            string needle = (string) ((SoqlLiteralExpression) literal).GetConstantValue();
             return new SoqlStringContainsExpression(TranslateExpression(mc.Object), position, needle);
         }
 
