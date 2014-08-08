@@ -1430,7 +1430,7 @@ namespace Sooda.Linq
 #if CACHE_LINQ_COUNT
             return GetList().Count;
 #else
-            return (int) ExecuteScalar(new SoqlFunctionCallExpression("count", new SoqlAsteriskExpression()));
+            return Convert.ToInt32(ExecuteScalar(new SoqlFunctionCallExpression("count", new SoqlAsteriskExpression())));
 #endif
         }
 
