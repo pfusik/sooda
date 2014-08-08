@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<config>
+    <default>
+        <connectionType>System.Data.OracleClient.OracleConnection, System.Data.OracleClient, Version=2.0.50727.1433, Culture=neutral, PublicKeyToken=b77a5c561934e089</connectionType>
+        <connectionString>Server=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=GAZ-SYSTEM)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=ATMOSFERA)));;User Id=SOODATEST;Password=PASS;Max Pool Size=300;Min Pool Size=10</connectionString>
+        <sqlDialect>oracle</sqlDialect>
+        <upperLike>true</upperLike>
+    </default>
+</config>
