@@ -85,7 +85,7 @@ namespace Sooda.Sql
                     return "blob";
 
                 case FieldDataType.Boolean:
-                    return "byte";
+                    return "number(1)";
 
                 case FieldDataType.Blob:
                     return "blob";
