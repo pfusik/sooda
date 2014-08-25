@@ -458,11 +458,11 @@ namespace Sooda.UnitTests.TestCases.Linq
         {
             using (new SoodaTransaction())
             {
-                IEnumerable<Contact> ce = from c in Contact.Linq() orderby c.PrimaryGroup.Id descending, c.Name select c;
-                CollectionAssert.AreEqual(new int[] { 3, 51, 53, 2, 1, 50, 52 }, ce.Select(c => c.ContactId));
+                IEnumerable<Contact> ce = from c in Contact.Linq() where c.PrimaryGroup != null orderby c.PrimaryGroup.Id descending, c.Name select c;
+                CollectionAssert.AreEqual(new int[] { 3, 51, 53, 2, 1 }, ce.Select(c => c.ContactId));
 
-                ce = from c in Contact.Linq() orderby c.PrimaryGroup.Id descending, c.Name descending select c;
-                CollectionAssert.AreEqual(new int[] { 3, 1, 2, 53, 51, 52, 50 }, ce.Select(c => c.ContactId));
+                ce = from c in Contact.Linq() where c.PrimaryGroup != null orderby c.PrimaryGroup.Id descending, c.Name descending select c;
+                CollectionAssert.AreEqual(new int[] { 3, 1, 2, 53, 51 }, ce.Select(c => c.ContactId));
             }
         }
 
@@ -521,8 +521,8 @@ namespace Sooda.UnitTests.TestCases.Linq
         {
             using (new SoodaTransaction())
             {
-                IEnumerable<Contact> ce = (from c in Contact.Linq() orderby c.PrimaryGroup.Id descending, c.Name select c).Reverse();
-                CollectionAssert.AreEqual(new int[] { 52, 50, 1, 2, 53, 51, 3 }, ce.Select(c => c.ContactId));
+                IEnumerable<Contact> ce = (from c in Contact.Linq() where c.PrimaryGroup != null orderby c.PrimaryGroup.Id descending, c.Name select c).Reverse();
+                CollectionAssert.AreEqual(new int[] { 1, 2, 53, 51, 3 }, ce.Select(c => c.ContactId));
             }
         }
 
