@@ -104,17 +104,17 @@ namespace Sooda.Linq
         Func<object, object> GetHandler(Type type)
         {
             if (type == typeof(bool))
-                return value => value is int ? (int) value != 0 : value;
+                return value => Convert.ToBoolean(value);
             if (type == typeof(bool?))
-                return value => value is int ? (int) value != 0 : value == DBNull.Value ? null : value;
+                return value => value == DBNull.Value ? null : (object) Convert.ToBoolean(value);
             if (type.IsSubclassOf(typeof(SoodaObject)))
                 return value => value == DBNull.Value ? null : _executor.GetRef(type, value);
             if (typeof(INullable).IsAssignableFrom(type))
                 return value => SqlTypesUtil.Wrap(type, value == DBNull.Value ? null : value);
             if (type == typeof(TimeSpan))
-                return value => TimeSpan.FromSeconds((int) value);
+                return value => TimeSpan.FromSeconds(Convert.ToInt32(value));
             if (type == typeof(TimeSpan?))
-                return value => value == DBNull.Value ? null : (object) TimeSpan.FromSeconds((int) value);
+                return value => value == DBNull.Value ? null : (object) TimeSpan.FromSeconds(Convert.ToInt32(value));
             return value => value == DBNull.Value ? null : value;
         }
 
