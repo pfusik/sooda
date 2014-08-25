@@ -130,7 +130,7 @@ namespace Sooda.UnitTests.TestCases.Linq
         {
             using (new SoodaTransaction())
             {
-                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Name.ToLower() == "MARY MANAGER");
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Name.ToUpper() == "MARY MANAGER");
                 Assert.AreEqual(1, ce.Count());
                 Assert.AreEqual(Contact.Mary, ce.First());
             }
