@@ -194,7 +194,13 @@ namespace Sooda.UnitTests.TestCases.Linq
         {
             using (new SoodaTransaction())
             {
-                IEnumerable<int> ie = from c in Contact.Linq() where (c.ContactId / 2.0).ToString() == "0.5" select c.ContactId;
+                IEnumerable<int> ie =
+                    from c in Contact.Linq()
+                    where (c.ContactId / 2.0).ToString() == "0.5"
+                        || (c.ContactId / 2.0).ToString() == "0,5"
+                        || (c.ContactId / 2.0).ToString() == ".5"
+                        || (c.ContactId / 2.0).ToString() == ",5"
+                    select c.ContactId;
                 CollectionAssert.AreEqual(new int[] { 1 }, ie);
             }
         }
@@ -204,7 +210,13 @@ namespace Sooda.UnitTests.TestCases.Linq
         {
             using (new SoodaTransaction())
             {
-                IEnumerable<int> ie = from c in Contact.Linq() where (c.ContactId / 2M).ToString().StartsWith("0.5") select c.ContactId;
+                IEnumerable<int> ie =
+                    from c in Contact.Linq()
+                    where (c.ContactId / 2M).ToString().StartsWith("0.5")
+                        || (c.ContactId / 2M).ToString().StartsWith("0,5")
+                        || (c.ContactId / 2M).ToString().StartsWith(".5")
+                        || (c.ContactId / 2M).ToString().StartsWith(",5")
+                    select c.ContactId;
                 CollectionAssert.AreEqual(new int[] { 1 }, ie);
             }
         }
