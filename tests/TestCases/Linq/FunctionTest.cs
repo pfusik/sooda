@@ -554,8 +554,17 @@ namespace Sooda.UnitTests.TestCases.Linq
         {
             using (new SoodaTransaction())
             {
-                IEnumerable<string> se = from v in Vehicle.Linq() orderby v.Id select v.GetLabel(false);
-                CollectionAssert.AreEqual(new string[] { "", "Mary Manager", "Ed Employee", "", "", "", "", "", "" }, se);
+                string[] sa = (from v in Vehicle.Linq() orderby v.Id select v.GetLabel(false)).ToArray();
+                Assert.AreEqual(9, sa.Length);
+                Assert.IsTrue(string.IsNullOrEmpty(sa[0]));
+                Assert.AreEqual("Mary Manager", sa[1]);
+                Assert.AreEqual("Ed Employee", sa[2]);
+                Assert.IsTrue(string.IsNullOrEmpty(sa[3]));
+                Assert.IsTrue(string.IsNullOrEmpty(sa[4]));
+                Assert.IsTrue(string.IsNullOrEmpty(sa[5]));
+                Assert.IsTrue(string.IsNullOrEmpty(sa[6]));
+                Assert.IsTrue(string.IsNullOrEmpty(sa[7]));
+                Assert.IsTrue(string.IsNullOrEmpty(sa[8]));
             }
         }
 
