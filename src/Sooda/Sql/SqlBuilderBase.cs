@@ -233,9 +233,18 @@ namespace Sooda.Sql
             paramTypes[typeof(System.Drawing.Bitmap)] = DbType.Binary;
         }
 
-        public virtual string QuoteFieldName(string s)
+        public virtual string QuoteIdentifier(string s)
         {
-            return "\"" + s + "\"";
+            for (int i = 0; i < s.Length; i++)
+            {
+                char c = s[i];
+                if (!(c >= 'A' && c <= 'Z')
+                 && !(c >= 'a' && c <= 'z')
+                 && !(c >= '0' && c <= '9')
+                 && !(c == '_' && i > 0))
+                    return "\"" + s + "\"";
+            }
+            return s;
         }
 
         public abstract SqlTopSupportMode TopSupport

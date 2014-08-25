@@ -314,7 +314,7 @@ namespace Sooda.Sql
                 if (GenerateColumnAliases)
                 {
                     Output.Write(" as ");
-                    Output.Write(_builder.QuoteFieldName(fi.Name));
+                    Output.Write(_builder.QuoteIdentifier(fi.Name));
                 }
                 first = false;
             }
@@ -486,7 +486,7 @@ namespace Sooda.Sql
 
         private void OutputTableFrom(TableInfo tableInfo, string tableAlias)
         {
-            Output.Write(tableInfo.DBTableName);
+            Output.Write(_builder.QuoteIdentifier(tableInfo.DBTableName));
             if (tableAlias.Length > 0)
             {
                 Output.Write(' ');
@@ -667,7 +667,7 @@ namespace Sooda.Sql
                     {
                         if (!onlyAliases)
                             Output.Write(" as ");
-                        Output.Write(_builder.QuoteFieldName(pkfi.Name));
+                        Output.Write(_builder.QuoteIdentifier(pkfi.Name));
                     }
                     first = false;
                 }
@@ -696,7 +696,7 @@ namespace Sooda.Sql
                     {
                         if (!onlyAliases)
                             Output.Write(" as ");
-                        Output.Write(_builder.QuoteFieldName(v.SelectAliases[i]));
+                        Output.Write(_builder.QuoteIdentifier(v.SelectAliases[i]));
                     }
                     else if (GenerateColumnAliases)
                     {
@@ -1166,7 +1166,7 @@ namespace Sooda.Sql
                 WhereJoins.Add(String.Format("({0}.{2} = {1}.{3}{4})",
                     leftPrefix, rightPrefix, leftField.DBColumnName, rightField.DBColumnName,
                     innerJoin ? "" : " (+)"));
-                s = String.Format(", {0} {1}", rightTable.DBTableName, rightPrefix);
+                s = String.Format(", {0} {1}", _builder.QuoteIdentifier(rightTable.DBTableName), rightPrefix);
             }
             else
             {

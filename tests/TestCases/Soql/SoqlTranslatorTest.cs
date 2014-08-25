@@ -44,20 +44,21 @@ namespace Sooda.UnitTests.TestCases.Soql
     {
         private string Normalize(string s)
         {
-            string s1;
-
             s = s.Replace('\n', ' ');
             s = s.Replace('\r', ' ');
             s = s.Replace('\t', ' ');
 
-            s1 = s;
-            do
+            for (;;)
             {
+                string s1 = s.Replace("  ", " ");
+                if (s1 == s)
+                    break;
                 s = s1;
-                s1 = s.Replace("  ", " ");
-            } while (s1 != s);
+            }
+
             s = s.Replace("( ", "(");
             s = s.Replace(" )", ")");
+            s = s.Replace("\"", ""); // Oracle: "_Role"
             s = s.Trim();
             return s;
         }
@@ -96,13 +97,13 @@ namespace Sooda.UnitTests.TestCases.Soql
             AssertTranslation(
                 "select * from Contact",
                 @"
-select   t0.id as [ContactId],
-         t0.primary_group as [PrimaryGroup],
-         t0.type as [Type],
-         t0.name as [Name],
-         t0.active as [Active],
-         t0.manager as [Manager],
-         t0.last_salary as [LastSalary]
+select   t0.id as ContactId,
+         t0.primary_group as PrimaryGroup,
+         t0.type as Type,
+         t0.name as Name,
+         t0.active as Active,
+         t0.manager as Manager,
+         t0.last_salary as LastSalary
 from     Contact t0"
 );
         }
@@ -260,7 +261,7 @@ where    exists (select * from Contact t1 where ((t1.primary_group = t0.id) and 
 select   t0.name as Name
 from     Contact t0
 where    exists (select * from ContactRole where contact_id=t0.id and role_id in (
-    select   t1.id as [Id]
+    select   t1.id as Id
     from     _Role t1
     where    ((t1.name like {L:String:Man%}) and exists (select * from ContactRole where role_id=t1.id and contact_id in (
 1)))))
@@ -321,8 +322,8 @@ where    exists (select * from ContactRole where contact_id=t0.id and role_id in
                 and Members.Contains(Contact where Name='ZZZ' and PrimaryGroup.Members.Contains(3))
                 and Manager.Roles.Contains(Role where Name='Customer'))",
 
-                @"select   cr.contact_id as [Contact],
-         cr.role_id as [Role]
+                @"select   cr.contact_id as Contact,
+         cr.role_id as Role
 from     ContactRole cr
          left outer join Contact t0 on (cr.contact_id = t0.id)
          left outer join _Group t1 on (t0.primary_group = t1.id)
@@ -352,7 +353,7 @@ where    ((((t2.name = {L:AnsiString:zzz}) and exists (
             where    ((t10.primary_group = t9.id) and t10.id in (3))
 )))
 )) and exists (select * from ContactRole where contact_id=t6.id and role_id in (
-        select   t11.id as [Id]
+        select   t11.id as Id
         from     _Role t11
         where    (t11.name = {L:String:Customer}))))
 ))

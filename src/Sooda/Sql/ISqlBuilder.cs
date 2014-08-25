@@ -52,7 +52,7 @@ namespace Sooda.Sql
         void GeneratePrimaryKey(TextWriter tw, TableInfo tableInfo, string additionalSettings);
         void GenerateForeignKeys(TextWriter tw, TableInfo tableInfo);
         void GenerateIndices(TextWriter tw, TableInfo tableInfo, string additionalSettings);
-        string QuoteFieldName(string name);
+        string QuoteIdentifier(string s);
         string GetTruncatedIdentifier(string identifier);
         bool IsFatalException(IDbConnection connection, Exception e);
         bool IsNullValue(object val, Sooda.Schema.FieldInfo fi);
