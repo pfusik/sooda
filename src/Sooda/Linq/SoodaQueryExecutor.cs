@@ -41,6 +41,7 @@ using System.Reflection;
 
 using Sooda;
 using Sooda.ObjectMapper;
+using Sooda.ObjectMapper.FieldHandlers;
 using Sooda.QL;
 using Sooda.Schema;
 
@@ -75,7 +76,10 @@ namespace Sooda.Linq
         {
             //if (keyValue == null)
             //    return null;
-            return _transaction.GetFactory(type).GetRef(_transaction, keyValue);
+            ISoodaObjectFactory factory = _transaction.GetFactory(type);
+            if (!(keyValue is int) && factory.GetPrimaryKeyFieldHandler() is Int32FieldHandler)
+                keyValue = Convert.ToInt32(keyValue);
+            return factory.GetRef(_transaction, keyValue);
         }
 
         ClassInfo FindClassInfo(Expression expr)
