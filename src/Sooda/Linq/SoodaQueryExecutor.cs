@@ -1421,6 +1421,8 @@ namespace Sooda.Linq
                     return null;
                 if (type == typeof(int) || type == typeof(int?))
                     return Convert.ToInt32(result);
+                if (type == typeof(double) || type == typeof(double?))
+                    return Convert.ToDouble(result);
                 if (type == typeof(TimeSpan) || type == typeof(TimeSpan?))
                     return TimeSpan.FromSeconds(Convert.ToInt32(result));
                 return result;
