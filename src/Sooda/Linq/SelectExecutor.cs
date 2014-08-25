@@ -107,6 +107,10 @@ namespace Sooda.Linq
                 return value => Convert.ToInt32(value);
             if (type == typeof(int?))
                 return value => value == DBNull.Value ? null : (object) Convert.ToInt32(value);
+            if (type == typeof(double))
+                return value => Convert.ToDouble(value);
+            if (type == typeof(double?))
+                return value => value == DBNull.Value ? null : (object) Convert.ToDouble(value);
             if (type == typeof(bool))
                 return value => Convert.ToBoolean(value);
             if (type == typeof(bool?))
