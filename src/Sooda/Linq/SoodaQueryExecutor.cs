@@ -1407,7 +1407,7 @@ namespace Sooda.Linq
             throw new InvalidOperationException("Found " + list.Count + " matches");
         }
 
-        object ExecuteScalar(SoqlExpression expr)
+        object ExecuteScalar(SoqlExpression expr, Type type)
         {
             SkipTakeNotSupported();
             _orderBy = null;
@@ -1417,16 +1417,20 @@ namespace Sooda.Linq
                 if (!r.Read())
                     throw new SoodaObjectNotFoundException();
                 object result = r.GetValue(0);
-                if (result != DBNull.Value)
-                    return result;
-                return null;
+                if (result == DBNull.Value)
+                    return null;
+                if (type == typeof(int) || type == typeof(int?))
+                    return Convert.ToInt32(result);
+                if (type == typeof(TimeSpan) || type == typeof(TimeSpan?))
+                    return TimeSpan.FromSeconds(Convert.ToInt32(result));
+                return result;
             }
         }
 
         object ExecuteScalar(MethodCallExpression mc, string function)
         {
             TranslateQuery(mc.Arguments[0]);
-            return ExecuteScalar(TranslateFunction(mc, function));
+            return ExecuteScalar(TranslateFunction(mc, function), mc.Type);
         }
 
         int Count()
@@ -1434,23 +1438,13 @@ namespace Sooda.Linq
 #if CACHE_LINQ_COUNT
             return GetList().Count;
 #else
-            return Convert.ToInt32(ExecuteScalar(new SoqlFunctionCallExpression("count", new SoqlAsteriskExpression())));
+            return (int) ExecuteScalar(new SoqlFunctionCallExpression("count", new SoqlAsteriskExpression()), typeof(int));
 #endif
         }
 
         static object ThrowEmptyAggregate()
         {
             throw new InvalidOperationException("Aggregate on an empty collection");
-        }
-
-        object ExecuteMinMax(MethodCallExpression mc, string function)
-        {
-            object result = ExecuteScalar(mc, function);
-            if (result == null)
-                ThrowEmptyAggregate();
-            if (mc.Type == typeof(TimeSpan) || mc.Type == typeof(TimeSpan?))
-                result = TimeSpan.FromSeconds((int) result);
-            return result;
         }
 
         internal object Execute(Expression expr)
@@ -1542,9 +1536,9 @@ namespace Sooda.Linq
                     case SoodaLinqMethod.Queryable_AverageNullable:
                         return ExecuteScalar(mc, "avg");
                     case SoodaLinqMethod.Queryable_Max:
-                        return ExecuteMinMax(mc, "max");
+                        return ExecuteScalar(mc, "max") ?? ThrowEmptyAggregate();
                     case SoodaLinqMethod.Queryable_Min:
-                        return ExecuteMinMax(mc, "min");
+                        return ExecuteScalar(mc, "min") ?? ThrowEmptyAggregate();
                     case SoodaLinqMethod.Queryable_Sum:
                         return ExecuteScalar(mc, "sum")
                             ?? Activator.CreateInstance(mc.Type); // 0, 0L, 0D or 0M
