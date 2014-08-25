@@ -103,6 +103,10 @@ namespace Sooda.Linq
 
         Func<object, object> GetHandler(Type type)
         {
+            if (type == typeof(int))
+                return value => Convert.ToInt32(value);
+            if (type == typeof(int?))
+                return value => value == DBNull.Value ? null : (object) Convert.ToInt32(value);
             if (type == typeof(bool))
                 return value => Convert.ToBoolean(value);
             if (type == typeof(bool?))
