@@ -473,7 +473,7 @@ end
 property generic(System.Linq.IQueryable, ${ClassName}) AllQuery
     attributes Public,Static,Final${OptionalNewAttribute}
 get
-    return defaultscope.Linq(); 
+    return defaultscope.Linq(typeref(SoodaSnapshotOptions).NoWriteObjects); 
 end
 
 
