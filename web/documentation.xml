@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-08-08 15:07:11 +0200 (Fri, 08 Aug 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 786 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-09-22 15:43:00 +0200 (Mon, 22 Sep 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 803 $</subversion-revision>)</div>
         <div class="pagebreak">&#160;</div>
     </div>
     <p class="dontprintthis">
@@ -7221,9 +7221,9 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     ]]></code>
                     <p>
                         The following string methods may be used: <code>Concat()</code>,
-                        <code>Remove()</code> (gets translated to SQL <code>LEFT</code>),
+                        <code>IsNullOrEmpty()</code>, <code>Remove()</code>,
                         <code>Substring(startIndex, length)</code>,
-                        <code>Replace()</code>, <code>Lower()</code> and <code>Upper()</code>.
+                        <code>Replace()</code>, <code>ToLower()</code> and <code>ToUpper()</code>.
                         <code>StartsWith()</code>, <code>EndsWith()</code> and <code>Contains()</code>
                         can be used with the restriction that the argument cannot come from the database.
                     </p>

@@ -170,6 +170,16 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void StringIsNullOrEmpty()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => !string.IsNullOrEmpty(c.Manager.Name));
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Ed, Contact.Eva }, ce);
+            }
+        }
+
+        [Test]
         public void IntToString()
         {
             using (new SoodaTransaction())

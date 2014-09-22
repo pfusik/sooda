@@ -896,6 +896,11 @@ namespace Sooda.Linq
                     return TranslateStringContains(mc, SoqlStringContainsPosition.End);
                 case SoodaLinqMethod.String_Contains:
                     return TranslateStringContains(mc, SoqlStringContainsPosition.Any);
+                case SoodaLinqMethod.String_IsNullOrEmpty:
+                    SoqlExpression s = TranslateExpression(mc.Arguments[0]);
+                    return new SoqlBooleanOrExpression(
+                        new SoqlBooleanIsNullExpression(s, false),
+                        new SoqlBooleanRelationalExpression(s, new SoqlLiteralExpression(string.Empty), SoqlRelationalOperator.Equal));
                 case SoodaLinqMethod.Int_ToString:
                 case SoodaLinqMethod.Long_ToString:
                 case SoodaLinqMethod.Double_ToString:

@@ -101,6 +101,7 @@ namespace Sooda.Linq
         String_StartsWith,
         String_EndsWith,
         String_Contains,
+        String_IsNullOrEmpty,
         Int_ToString,
         Long_ToString,
         Double_ToString,
@@ -257,6 +258,7 @@ namespace Sooda.Linq
             method2id.Add(MethodOf(() => string.Empty.StartsWith(string.Empty)), SoodaLinqMethod.String_StartsWith);
             method2id.Add(MethodOf(() => string.Empty.EndsWith(string.Empty)), SoodaLinqMethod.String_EndsWith);
             method2id.Add(MethodOf(() => string.Empty.Contains(string.Empty)), SoodaLinqMethod.String_Contains);
+            method2id.Add(MethodOf(() => string.IsNullOrEmpty(null)), SoodaLinqMethod.String_IsNullOrEmpty);
             method2id.Add(MethodOf(() => 0.ToString()), SoodaLinqMethod.Int_ToString);
             method2id.Add(MethodOf(() => 0L.ToString()), SoodaLinqMethod.Long_ToString);
             method2id.Add(MethodOf(() => 0D.ToString()), SoodaLinqMethod.Double_ToString);
