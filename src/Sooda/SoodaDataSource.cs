@@ -91,6 +91,8 @@ namespace Sooda
             set { _statistics = value; }
         }
 
+        public IDbConnection Connection;
+
         private CommandBehavior _cmdBehavior = CommandBehavior.Default;
         public CommandBehavior CmdBehavior
         {

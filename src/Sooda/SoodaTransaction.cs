@@ -398,12 +398,17 @@ namespace Sooda
             _dataSources.Add(dataSource);
         }
 
-        public SoodaDataSource OpenDataSource(string name)
+        public SoodaDataSource OpenDataSource(string name, IDbConnection connection)
         {
-            return OpenDataSource(Schema.GetDataSourceInfo(name));
+            return OpenDataSource(Schema.GetDataSourceInfo(name), connection);
         }
 
-        public SoodaDataSource OpenDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo)
+        public SoodaDataSource OpenDataSource(string name)
+        {
+            return OpenDataSource(name, null);
+        }
+
+        public SoodaDataSource OpenDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo, IDbConnection connection)
         {
             foreach (SoodaDataSource dataSource in _dataSources)
             {
@@ -415,10 +420,18 @@ namespace Sooda
             _dataSources.Add(ds);
             ds.Statistics = this.Statistics;
             ds.IsolationLevel = IsolationLevel;
-            ds.Open();
+            if (connection != null)
+                ds.Connection = connection;
+            else
+                ds.Open();
             if (_savingObjects)
                 ds.BeginSaveChanges();
             return ds;
+        }
+
+        public SoodaDataSource OpenDataSource(Sooda.Schema.DataSourceInfo dataSourceInfo)
+        {
+            return OpenDataSource(dataSourceInfo, null);
         }
 
         public IsolationLevel IsolationLevel

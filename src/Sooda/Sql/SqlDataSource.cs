@@ -50,7 +50,7 @@ namespace Sooda.Sql
         private IDbCommand _updateCommand = null;
         private IsolationLevel _isolationLevel = IsolationLevel.ReadCommitted;
 
-        public IDbConnection Connection;
+        bool OwnConnection = false;
         public IDbTransaction Transaction;
         public ISqlBuilder SqlBuilder = null;
         public bool DisableTransactions = false;
@@ -190,6 +190,7 @@ namespace Sooda.Sql
                 try
                 {
                     Connection = (IDbConnection)Activator.CreateInstance(ConnectionType, new object[] { ConnectionString });
+                    OwnConnection = true;
                     Connection.Open();
                     if (!DisableTransactions)
                     {
@@ -220,7 +221,7 @@ namespace Sooda.Sql
 
         public override void Rollback()
         {
-            if (!DisableTransactions)
+            if (OwnConnection && !DisableTransactions)
             {
                 Transaction.Rollback();
                 Transaction.Dispose();
@@ -230,7 +231,7 @@ namespace Sooda.Sql
 
         public override void Commit()
         {
-            if (!DisableTransactions)
+            if (OwnConnection && !DisableTransactions)
             {
                 Transaction.Commit();
                 Transaction.Dispose();
@@ -240,16 +241,19 @@ namespace Sooda.Sql
 
         public override void Close()
         {
-            if (!DisableTransactions && Transaction != null)
+            if (OwnConnection)
             {
-                Transaction.Rollback();
-                Transaction.Dispose();
-                Transaction = null;
-            }
-            if (Connection != null)
-            {
-                Connection.Dispose();
-                Connection = null;
+                if (!DisableTransactions && Transaction != null)
+                {
+                    Transaction.Rollback();
+                    Transaction.Dispose();
+                    Transaction = null;
+                }
+                if (Connection != null)
+                {
+                    Connection.Dispose();
+                    Connection = null;
+                }
             }
         }
 
