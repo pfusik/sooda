@@ -149,5 +149,29 @@ namespace Sooda.UnitTests.TestCases.Linq
                 CollectionAssert.AreEquivalent(new Contact[] { Contact.Mary, Contact.Eva }, ce);
             }
         }
+
+        [Test]
+        public void ManyToMany2()
+        {
+            using (new SoodaTransaction())
+            {
+                Contact.Mary.Vehicles.Add(Car.GetRef(2));
+                Contact.Ed.Vehicles.Add(Bike.GetRef(3));
+                IEnumerable<Vehicle> ce = Contact.Ed.VehiclesQuery;
+                CollectionAssert.AreEqual(new Vehicle[] { Bike.GetRef(3) }, ce);
+            }
+        }
+
+        [Test]
+        public void ManyToManyOfType()
+        {
+            using (new SoodaTransaction())
+            {
+                Contact.Mary.Vehicles.Add(Car.GetRef(2));
+                Contact.Ed.Vehicles.Add(Bike.GetRef(3));
+                IEnumerable<Car> ce = Contact.Ed.VehiclesQuery.OfType<Car>();
+                Assert.IsFalse(ce.Any());
+            }
+        }
     }
 }

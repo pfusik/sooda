@@ -85,6 +85,8 @@ namespace Sooda.Linq
         ClassInfo FindClassInfo(Expression expr)
         {
             string className = expr.Type.Name;
+            if (!expr.Type.IsSubclassOf(typeof(SoodaObject)))
+                throw new NotSupportedException(className + " is not a Sooda class");
             ClassInfo classInfo = _transaction.Schema.FindClassByName(className);
             if (classInfo == null)
                 throw new NotSupportedException("Class " + className + " not found in database schema");
@@ -959,10 +961,10 @@ namespace Sooda.Linq
         {
             SoqlPathExpression path = TranslateToPathExpression(expr.Expression);
             Type type = expr.TypeOperand;
-            if (type != typeof(object)) // x is object -> x IS NOT NULL
+            if (type != typeof(object) && type != typeof(SoodaObject))  // x is object, x is SoodaObject -> x IS NOT NULL
             {
                 if (!type.IsSubclassOf(typeof(SoodaObject)))
-                    throw new NotSupportedException("'is' operator supported only for Sooda classes and object");
+                    throw new NotSupportedException("is " + type.Name);
                 SchemaInfo schema = _transaction.Schema;
                 ClassInfo classInfo = schema.FindClassByName(type.Name);
                 if (classInfo == null)
@@ -1080,7 +1082,7 @@ namespace Sooda.Linq
             query.PageCount = _topCount;
             query.From.Add(_classInfo.Name);
             // Must replace DefaultAlias with string.Empty, otherwise GetNextTablePrefix() could assign DefaultAlias to other tables.
-           query.FromAliases.Add(_alias == null || _alias == DefaultAlias ? string.Empty : _alias);
+            query.FromAliases.Add(_alias == null || _alias == DefaultAlias ? string.Empty : _alias);
             query.WhereClause = _where;
             if (_orderBy != null)
                 query.SetOrderBy(_orderBy);
@@ -1210,10 +1212,11 @@ namespace Sooda.Linq
             if (type != typeof(object) && type != typeof(SoodaObject))
             {
                 if (!type.IsSubclassOf(typeof(SoodaObject)))
-                    throw new NotSupportedException("OfType() supported only for Sooda classes and object");
-                ClassInfo classInfo = _transaction.Schema.FindClassByName(type.Name);
+                    throw new NotSupportedException("OfType<" + type.Name + ">()");
+                SchemaInfo schema = _transaction.Schema;
+                ClassInfo classInfo = schema.FindClassByName(type.Name);
                 if (classInfo == null)
-                    throw new NotSupportedException("OfType() supported only for Sooda classes and object");
+                    throw new NotSupportedException("OfType<" + type.Name + ">()");
 
                 if (IsSameOrSubclassOf(_classInfo, classInfo))
                 {
@@ -1222,8 +1225,8 @@ namespace Sooda.Linq
                 }
                 else if (IsSameOrSubclassOf(classInfo, _classInfo))
                 {
-                    // x.OfType<SubClass>() -> from SubClass ...
-                    _classInfo = classInfo;
+                    // x.OfType<SubClass>() -> SubClassSelector in (...)
+                    Where(Soql.ClassRestriction(null, schema, classInfo));
                 }
                 else
                     _where = SoqlBooleanLiteralExpression.False;

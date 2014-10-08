@@ -417,6 +417,19 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void TypeIsSoodaObject()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Manager is SoodaObject);
+                Assert.AreEqual(2, ce.Count());
+
+                ce = Contact.Linq().Where(c => (object) 42 is SoodaObject);
+                Assert.AreEqual(0, ce.Count());
+            }
+        }
+
+        [Test]
         public void StringConcatenate()
         {
             using (new SoodaTransaction())

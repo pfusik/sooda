@@ -851,6 +851,16 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void OfTypeUnion()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Car> ce = Car.Linq().Union(Bike.Linq().OfType<Car>());
+                CollectionAssert.AreEquivalent(Car.Linq(), ce);
+            }
+        }
+
+        [Test]
         public void Let()
         {
             using (new SoodaTransaction())
