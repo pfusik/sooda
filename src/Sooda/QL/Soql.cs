@@ -93,20 +93,17 @@ namespace Sooda.QL
 
         public static SoqlBooleanExpression CollectionFor(CollectionManyToManyInfo coll, SoodaObject parent)
         {
-            ClassInfo itemClass = coll.GetItemClass();
+            SoqlPathExpression needle = new SoqlPathExpression(coll.GetItemClass().GetFirstPrimaryKeyField().Name);
             RelationInfo relation = coll.GetRelationInfo();
             SoqlQueryExpression query = new SoqlQueryExpression();
-            query.SelectExpressions.Add(new SoqlAsteriskExpression());
+            query.SelectExpressions.Add(new SoqlPathExpression(relation.Table.Fields[coll.MasterField].Name));
             query.SelectAliases.Add(string.Empty);
             query.From.Add(relation.Name);
             query.FromAliases.Add(string.Empty);
-            query.WhereClause = new SoqlBooleanAndExpression(
-                FieldEquals(relation.Table.Fields[1 - coll.MasterField].Name, parent),
-                new SoqlBooleanRelationalExpression(
-                    new SoqlPathExpression(relation.Table.Fields[coll.MasterField].Name),
-                    new SoqlPathExpression(itemClass.Name, itemClass.GetFirstPrimaryKeyField().Name),
-                    SoqlRelationalOperator.Equal));
-            return new SoqlExistsExpression(query);
+            query.WhereClause = FieldEquals(relation.Table.Fields[1 - coll.MasterField].Name, parent);
+            SoqlExpressionCollection haystack = new SoqlExpressionCollection();
+            haystack.Add(query);
+            return new SoqlBooleanInExpression(needle, haystack);
         }
     }
 }

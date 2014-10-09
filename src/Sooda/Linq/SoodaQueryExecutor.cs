@@ -82,15 +82,20 @@ namespace Sooda.Linq
             return factory.GetRef(_transaction, keyValue);
         }
 
-        ClassInfo FindClassInfo(Expression expr)
+        ClassInfo FindClassInfo(Type type)
         {
-            string className = expr.Type.Name;
-            if (!expr.Type.IsSubclassOf(typeof(SoodaObject)))
+            string className = type.Name;
+            if (!type.IsSubclassOf(typeof(SoodaObject)))
                 throw new NotSupportedException(className + " is not a Sooda class");
             ClassInfo classInfo = _transaction.Schema.FindClassByName(className);
             if (classInfo == null)
                 throw new NotSupportedException("Class " + className + " not found in database schema");
             return classInfo;
+        }
+
+        ClassInfo FindClassInfo(Expression expr)
+        {
+            return FindClassInfo(expr.Type);
         }
 
         static bool IsConstant(IEnumerable<ElementInit> initializers)
@@ -963,14 +968,7 @@ namespace Sooda.Linq
             Type type = expr.TypeOperand;
             if (type != typeof(object) && type != typeof(SoodaObject))  // x is object, x is SoodaObject -> x IS NOT NULL
             {
-                if (!type.IsSubclassOf(typeof(SoodaObject)))
-                    throw new NotSupportedException("is " + type.Name);
-                SchemaInfo schema = _transaction.Schema;
-                ClassInfo classInfo = schema.FindClassByName(type.Name);
-                if (classInfo == null)
-                    throw new NotSupportedException("is " + type.Name);
-
-                SoqlBooleanExpression result = Soql.ClassRestriction(path, schema, classInfo);
+                SoqlBooleanExpression result = Soql.ClassRestriction(path, _transaction.Schema, FindClassInfo(type));
                 if (result != null)
                     return result;
             }
@@ -1211,12 +1209,7 @@ namespace Sooda.Linq
             // x.OfType<SoodaObject>() -> x
             if (type != typeof(object) && type != typeof(SoodaObject))
             {
-                if (!type.IsSubclassOf(typeof(SoodaObject)))
-                    throw new NotSupportedException("OfType<" + type.Name + ">()");
-                SchemaInfo schema = _transaction.Schema;
-                ClassInfo classInfo = schema.FindClassByName(type.Name);
-                if (classInfo == null)
-                    throw new NotSupportedException("OfType<" + type.Name + ">()");
+                ClassInfo classInfo = FindClassInfo(type);
 
                 if (IsSameOrSubclassOf(_classInfo, classInfo))
                 {
@@ -1225,8 +1218,8 @@ namespace Sooda.Linq
                 }
                 else if (IsSameOrSubclassOf(classInfo, _classInfo))
                 {
-                    // x.OfType<SubClass>() -> SubClassSelector in (...)
-                    Where(Soql.ClassRestriction(null, schema, classInfo));
+                    // x.OfType<SubClass>() -> from SubClass
+                    _classInfo = classInfo;
                 }
                 else
                     _where = SoqlBooleanLiteralExpression.False;

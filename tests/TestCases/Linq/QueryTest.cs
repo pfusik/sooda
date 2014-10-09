@@ -861,6 +861,16 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void OfTypeSubclassField()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Bike> be = Vehicle.Linq().OfType<Bike>().Where(b => b.TwoWheels == 1);
+                Assert.AreEqual(5, be.Count());
+            }
+        }
+
+        [Test]
         public void Let()
         {
             using (new SoodaTransaction())
