@@ -38,44 +38,46 @@ namespace SoodaStubGen
 {
     public class EntryPoint
     {
-        private static int Usage()
+        static int Usage()
         {
-            Console.WriteLine("Usage: StubGen [project]");
-            Console.WriteLine("SoodaWhereClause project can be (*) - required option:");
+            Console.WriteLine("Usage:");
+            Console.WriteLine("SoodaStubGen FILE.soodaproject");
+            Console.WriteLine("or:");
+            Console.WriteLine("SoodaStubGen [OPTIONS] --schema FILE.xml --namespace NAME --output DIR");
             Console.WriteLine();
             Console.WriteLine("        --lang csharp    - (default) generate C# code");
 #if !NO_VB
-
             Console.WriteLine("        --lang vb        - generate VB.NET code");
 #endif
 #if !NO_JSCRIPT
-
             Console.WriteLine("        --lang js        - generate JS.NET code (broken)");
 #endif
 
-            Console.WriteLine("        --lang <type>    - generate code using the specified CodeDOM codeProvider");
+            Console.WriteLine("        --lang TYPE      - generate code using the specified CodeDOM codeProvider");
             Console.WriteLine();
             Console.WriteLine("        --project vs2005 - (default) generate VS 2005 project file (.??proj)");
             Console.WriteLine("        --project null   - generate no project file");
-            Console.WriteLine("        --project <type> - generate project file using custom type");
+            Console.WriteLine("        --project TYPE   - generate project file using custom type");
             Console.WriteLine();
-            Console.WriteLine("    (*) --schema filename.xml - generate code from the specified schema");
-            Console.WriteLine("    (*) --namespace <ns>      - specify the namespace to use");
-            Console.WriteLine("    (*) --output <path>       - specify the output directory for files");
-            Console.WriteLine("        --assembly <name>     - specify the name of resulting assembly");
-            Console.WriteLine("        --base-class <name>   - specify the name of stub base class (SoodaObject)");
-            Console.WriteLine("        --projectfile <name>  - use <name> instead of default project file name");
+            Console.WriteLine("        --schema FILE.xml     - generate code from the specified schema");
+            Console.WriteLine("        --namespace NAME      - specify the namespace to use");
+            Console.WriteLine("        --output DIR          - specify the output directory for files");
+            Console.WriteLine("        --assembly NAME       - specify the name of resulting assembly");
+            Console.WriteLine("        --base-class NAME     - specify the name of stub base class (SoodaObject)");
+            Console.WriteLine("        --rebuild-if-changed  - rebuild only if source files newer than targets");
+            Console.WriteLine("        --force-rebuild       - rebuild always");
             Console.WriteLine("        --rewrite-skeletons   - force overwrite of skeleton classes");
             Console.WriteLine("        --rewrite-project     - force overwrite of project file");
-            Console.WriteLine("        --separate-stubs      - ");
+            Console.WriteLine("        --separate-stubs      - enable separate compilation of stubs");
+            Console.WriteLine("        --merged-stubs        - disable separate compilation of stubs");
             Console.WriteLine("        --schema-embed-xml    - embed schema as an XML file");
             Console.WriteLine("        --schema-embed-bin    - embed schema as an BIN file");
             Console.WriteLine("        --help                - display this help");
             Console.WriteLine();
             Console.WriteLine("        --null-progagation    - enable null propagation");
             Console.WriteLine("        --no-null-progagation - disable null propagation (default)");
-            Console.WriteLine("        --nullable-as [boxed | sqltype | raw ] (default = boxed)");
-            Console.WriteLine("        --not-null-as [boxed | sqltype | raw ] (default = raw)");
+            Console.WriteLine("        --nullable-as [boxed | sqltype | raw | nullable ] (default = boxed)");
+            Console.WriteLine("        --not-null-as [boxed | sqltype | raw | nullable ] (default = raw)");
             Console.WriteLine("                         - specify the way primitive values are handled");
             Console.WriteLine();
             return 1;
