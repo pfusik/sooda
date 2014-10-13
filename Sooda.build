@@ -635,13 +635,6 @@
         <exec program="${framework::get-framework-directory(framework::get-target-framework())}/msbuild.exe" commandline="Sooda.vs2008.sln" />
     </target>
 
-    <target name="precommitcheck">
-        <call target="clean" />
-        <property name="nant.settings.currentframework" value="net-2.0" />
-        <call target="msbuild" />
-        <exec program="nant" commandline="-t:net-2.0 clean build" />
-    </target>
-
     <target name="keyfile">
         <exec program="${nant.settings.currentframework.sdkdirectory}/sn.exe" workingdir="${project::get-base-directory()}" commandline="-q -k Sooda.snk"/>
     </target>
