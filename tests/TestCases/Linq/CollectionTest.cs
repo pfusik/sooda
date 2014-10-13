@@ -57,44 +57,56 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
-        public void In1()
+        public void InArray1()
         {
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => new int[] { 1 }.Contains(c.ContactId));
-                Assert.AreEqual(1, ce.Count());
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Mary }, ce);
             }
         }
 
         [Test]
-        public void In2()
+        public void InRefArray()
         {
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => new Contact[] { Contact.Mary }.Contains(c.Manager));
-                Assert.AreEqual(2, ce.Count());
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Ed, Contact.Eva }, ce);
             }
         }
 
         [Test]
-        public void In3()
+        public void InArray3()
         {
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => new int[] { 1, 2, 3 }.Contains(c.ContactId));
-                Assert.AreEqual(3, ce.Count());
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Mary, Contact.Ed, Contact.Eva }, ce);
             }
         }
 
         [Test]
-        public void In4()
+        public void InArrayList()
         {
             using (new SoodaTransaction())
             {
                 ArrayList managers = new ArrayList();
                 managers.Add(Contact.Mary);
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => managers.Contains(c.Manager));
-                Assert.AreEqual(2, ce.Count());
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Ed, Contact.Eva }, ce);
+            }
+        }
+
+        [Test]
+        public void InGenericList()
+        {
+            using (new SoodaTransaction())
+            {
+                List<Contact> managers = new List<Contact>();
+                managers.Add(Contact.Mary);
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => managers.Contains(c.Manager));
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Ed, Contact.Eva }, ce);
             }
         }
 
@@ -105,7 +117,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => new Contact[] { c.Manager }.Contains(c.Manager));
                 // "in" doesn't match nulls, at least in SQL Server
-                Assert.AreEqual(2, ce.Count());
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Ed, Contact.Eva }, ce);
             }
         }
 
@@ -117,7 +129,7 @@ namespace Sooda.UnitTests.TestCases.Linq
                 Contact c0 = null;
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => new Contact[] { c0 }.Contains(c.Manager));
                 // "in" doesn't match nulls, at least in SQL Server
-                Assert.AreEqual(0, ce.Count());
+                CollectionAssert.IsEmpty(ce);
             }
         }
 
@@ -137,8 +149,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Subordinates.Count == 2);
-                Assert.AreEqual(1, ce.Count());
-                Assert.AreEqual("Mary Manager", ce.First().Name);
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Mary }, ce);
             }
         }
 
@@ -148,8 +159,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.SubordinatesQuery.Count() == 2);
-                Assert.AreEqual(1, ce.Count());
-                Assert.AreEqual("Mary Manager", ce.First().Name);
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Mary }, ce);
             }
         }
 
@@ -189,8 +199,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Bikes1.Count == 1);
-                Assert.AreEqual(1, ce.Count());
-                Assert.AreEqual("Ed Employee", ce.First().Name);
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Ed }, ce);
             }
         }
 
@@ -200,8 +209,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Bikes1Query.Count() == 1);
-                Assert.AreEqual(1, ce.Count());
-                Assert.AreEqual("Ed Employee", ce.First().Name);
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Ed }, ce);
             }
         }
 
@@ -211,8 +219,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Subordinates.Contains(Contact.Ed));
-                Assert.AreEqual(1, ce.Count());
-                Assert.AreEqual("Mary Manager", ce.First().Name);
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Mary }, ce);
             }
         }
 
@@ -222,8 +229,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.SubordinatesQuery.Contains(Contact.Ed));
-                Assert.AreEqual(1, ce.Count());
-                Assert.AreEqual("Mary Manager", ce.First().Name);
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Mary }, ce);
             }
         }
 
@@ -235,7 +241,7 @@ namespace Sooda.UnitTests.TestCases.Linq
                 IEnumerable<Group> ge = Group.Linq().Where(g => g.Members.Contains(Contact.Mary));
                 Assert.AreEqual(1, ge.Count());
                 ge = Group.Linq().Where(g => g.Managers.Contains(Contact.Mary));
-                Assert.AreEqual(0, ge.Count());
+                CollectionAssert.IsEmpty(ge);
             }
         }
 
@@ -247,7 +253,7 @@ namespace Sooda.UnitTests.TestCases.Linq
                 IEnumerable<Group> ge = Group.Linq().Where(g => g.MembersQuery.Contains(Contact.Mary));
                 Assert.AreEqual(1, ge.Count());
                 ge = Group.Linq().Where(g => g.Managers.Contains(Contact.Mary));
-                Assert.AreEqual(0, ge.Count());
+                CollectionAssert.IsEmpty(ge);
             }
         }
 
@@ -257,8 +263,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Bikes1.Contains(Bike.GetRef(3)));
-                Assert.AreEqual(1, ce.Count());
-                Assert.AreEqual("Ed Employee", ce.First().Name);
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Ed }, ce);
             }
         }
 
@@ -268,8 +273,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Bikes1Query.Contains(Bike.GetRef(3)));
-                Assert.AreEqual(1, ce.Count());
-                Assert.AreEqual("Ed Employee", ce.First().Name);
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Ed }, ce);
             }
         }
 
@@ -279,8 +283,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Bikes1.Any(b => b.TwoWheels == 1));
-                Assert.AreEqual(1, ce.Count());
-                Assert.AreEqual("Ed Employee", ce.First().Name);
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Ed }, ce);
             }
         }
 
@@ -290,8 +293,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Bikes1Query.Any(b => b.TwoWheels == 1));
-                Assert.AreEqual(1, ce.Count());
-                Assert.AreEqual("Ed Employee", ce.First().Name);
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Ed }, ce);
             }
         }
 
@@ -325,7 +327,7 @@ namespace Sooda.UnitTests.TestCases.Linq
                     && g.Members.Count > 3
                     && g.Members.Any(c => c.Name == "ZZZ" && c.PrimaryGroup.Members.Contains(Contact.GetRef(3)))
                     && g.Manager.Roles.Any(r => r.Name.Value == "Customer"));
-                Assert.AreEqual(0, ge.Count());
+                CollectionAssert.IsEmpty(ge);
             }
         }
 
@@ -339,7 +341,7 @@ namespace Sooda.UnitTests.TestCases.Linq
                     && g.MembersQuery.Count() > 3
                     && g.MembersQuery.Any(c => c.Name == "ZZZ" && c.PrimaryGroup.MembersQuery.Contains(Contact.GetRef(3)))
                     && g.Manager.RolesQuery.Any(r => r.Name.Value == "Customer"));
-                Assert.AreEqual(0, ge.Count());
+                CollectionAssert.IsEmpty(ge);
             }
         }
 
@@ -369,8 +371,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Subordinates.Any());
-                Assert.AreEqual(1, ce.Count());
-                Assert.AreEqual(Contact.Mary, ce.First());
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Mary }, ce);
             }
         }
 
@@ -380,8 +381,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.SubordinatesQuery.Any());
-                Assert.AreEqual(1, ce.Count());
-                Assert.AreEqual(Contact.Mary, ce.First());
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Mary }, ce);
             }
         }
 
@@ -391,8 +391,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Subordinates.Any(s => s.Name == "Ed Employee"));
-                Assert.AreEqual(1, ce.Count());
-                Assert.AreEqual(Contact.Mary, ce.First());
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Mary }, ce);
             }
         }
 
@@ -402,8 +401,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.SubordinatesQuery.Any(s => s.Name == "Ed Employee"));
-                Assert.AreEqual(1, ce.Count());
-                Assert.AreEqual(Contact.Mary, ce.First());
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Mary }, ce);
             }
         }
 
@@ -413,7 +411,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Subordinates.Any(s => s == c));
-                Assert.AreEqual(0, ce.Count());
+                CollectionAssert.IsEmpty(ce);
             }
         }
 
@@ -423,7 +421,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.SubordinatesQuery.Any(s => s == c));
-                Assert.AreEqual(0, ce.Count());
+                CollectionAssert.IsEmpty(ce);
             }
         }
 

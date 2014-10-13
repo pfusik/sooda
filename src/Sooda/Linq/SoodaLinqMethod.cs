@@ -130,6 +130,9 @@ namespace Sooda.Linq
 
         static MethodInfo Ungeneric(MethodInfo method)
         {
+            Type type = method.DeclaringType;
+            if (type.IsGenericType)
+                method = type.GetGenericTypeDefinition().GetMethod(method.Name);
             return method.IsGenericMethod ? method.GetGenericMethodDefinition() : method;
         }
 
@@ -244,7 +247,8 @@ namespace Sooda.Linq
             method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => (double?) 0)), SoodaLinqMethod.Enumerable_Sum);
             method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => (int?) 0)), SoodaLinqMethod.Enumerable_Sum);
             method2id.Add(MethodOf(() => Enumerable.Sum(null, (object o) => (long?) 0)), SoodaLinqMethod.Enumerable_Sum);
-            method2id.Add(MethodOf(() => ((ICollection<object>) null).Contains(null)), SoodaLinqMethod.ICollection_Contains); // FIXME: Ungeneric doesn't handle methods in generic classes, so this will only work on ICollection<object>
+            method2id.Add(MethodOf(() => ((ICollection<object>) null).Contains(null)), SoodaLinqMethod.ICollection_Contains);
+            method2id.Add(MethodOf(() => ((List<object>) null).Contains(null)), SoodaLinqMethod.ICollection_Contains);
             method2id.Add(MethodOf(() => ((System.Collections.ArrayList) null).Contains(null)), SoodaLinqMethod.ICollection_Contains);
             method2id.Add(MethodOf(() => ((System.Collections.IList) null).Contains(null)), SoodaLinqMethod.ICollection_Contains);
             method2id.Add(MethodOf(() => string.Empty.GetType()), SoodaLinqMethod.Object_GetType);
