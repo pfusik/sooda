@@ -79,6 +79,7 @@ namespace SoodaStubGen
             Console.WriteLine("        --nullable-as [boxed | sqltype | raw | nullable ] (default = boxed)");
             Console.WriteLine("        --not-null-as [boxed | sqltype | raw | nullable ] (default = raw)");
             Console.WriteLine("                         - specify the way primitive values are handled");
+            Console.WriteLine("        --no-typed-queries    - disable Typed Queries");
             Console.WriteLine();
             return 1;
         }
@@ -169,6 +170,10 @@ namespace SoodaStubGen
 
                         case "--no-null-propagation":
                             project.NullPropagation = false;
+                            break;
+
+                        case "--no-typed-queries":
+                            project.WithTypedQueryWrappers = false;
                             break;
 
                         case "--rewrite-skeletons":
