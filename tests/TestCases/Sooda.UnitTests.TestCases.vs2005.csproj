@@ -209,6 +209,7 @@
     <Compile Include="Linq\QueryTest.cs" />
     <Compile Include="Linq\ScalarTest.cs" />
     <Compile Include="Linq\SingleTest.cs" />
+    <Compile Include="Linq\SubqueryTest.cs" />
     <Compile Include="Linq\UtilsTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

@@ -155,15 +155,6 @@
     <Compile Include="VS2005vbprojProjectFile.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="VScsprojProjectFile.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="VSProjectFileBase.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="VSvbprojProjectFile.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="AssemblyBuildInfo.cs" />
   </ItemGroup>
   <ItemGroup>
