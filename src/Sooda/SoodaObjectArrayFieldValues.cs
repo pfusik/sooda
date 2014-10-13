@@ -35,9 +35,9 @@ namespace Sooda
 {
     public class SoodaObjectArrayFieldValues : SoodaObjectFieldValues
     {
-        private object[] _values;
+        readonly object[] _values;
 
-        private SoodaObjectArrayFieldValues(object[] v)
+        SoodaObjectArrayFieldValues(object[] v)
         {
             _values = v;
         }
@@ -76,5 +76,5 @@ namespace Sooda
         {
             return _values[fieldOrdinal] == null;
         }
-    } // class SoodaObjectFieldValues
-} // namespace
+    }
+}

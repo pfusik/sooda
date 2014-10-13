@@ -40,5 +40,5 @@ namespace Sooda
         }
 
         public abstract bool IsNull(int fieldOrdinal);
-    } // class SoodaObjectFieldValues
-} // namespace
+    }
+}

@@ -1559,5 +1559,5 @@ namespace Sooda
 
             return Convert.ToString(o);
         }
-    } // class SoodaObject
-} // namespace
+    }
+}
