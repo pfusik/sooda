@@ -34,7 +34,7 @@ namespace Sooda
 {
     public abstract class SoodaObjectReflectionBasedFieldValues : SoodaObjectFieldValues
     {
-        private string[] _orderedFieldNames;
+        readonly string[] _orderedFieldNames;
 
         protected SoodaObjectReflectionBasedFieldValues(string[] orderedFieldNames)
         {
@@ -46,20 +46,30 @@ namespace Sooda
             _orderedFieldNames = other.GetFieldNames();
             for (int i = 0; i < _orderedFieldNames.Length; ++i)
             {
-                FieldInfo fi = this.GetType().GetField(_orderedFieldNames[i]);
+                FieldInfo fi = GetField(i);
                 fi.SetValue(this, fi.GetValue(other));
             }
         }
 
+        protected virtual FieldInfo GetField(string name)
+        {
+            return GetType().GetField(name);
+        }
+
+        FieldInfo GetField(int fieldOrdinal)
+        {
+            return GetField(_orderedFieldNames[fieldOrdinal]);
+        }
+
         public override void SetFieldValue(int fieldOrdinal, object val)
         {
-            System.Reflection.FieldInfo fi = this.GetType().GetField(_orderedFieldNames[fieldOrdinal]);
+            System.Reflection.FieldInfo fi = GetField(fieldOrdinal);
             Sooda.Utils.SqlTypesUtil.SetValue(fi, this, val);
         }
 
         public override object GetBoxedFieldValue(int fieldOrdinal)
         {
-            System.Reflection.FieldInfo fi = this.GetType().GetField(_orderedFieldNames[fieldOrdinal]);
+            System.Reflection.FieldInfo fi = GetField(fieldOrdinal);
             object rawValue = fi.GetValue(this);
 
             // we got raw value, it's possible that it's a sqltype, nullables are already boxed here
@@ -80,5 +90,5 @@ namespace Sooda
         {
             return _orderedFieldNames;
         }
-    } // class SoodaObjectFieldValues
-} // namespace
+    }
+}
