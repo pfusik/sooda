@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="Sooda" default="build" basedir=".">
-    <tstamp />
     <property name="sooda.debug" value="true" unless="${property::exists('sooda.debug')}" />
     <property name="sooda.optimize" value="false" unless="${property::exists('sooda.optimize')}" />
     <property name="sooda.csc.args" value="/nowarn:1591" />
@@ -70,7 +69,6 @@
             <property name="sooda.version.build" value="${tmp4}" /><!-- ... so we do the assignment here -->
         </if>
         <property name="sooda.version" value="${sooda.version.major}.${sooda.version.minor}.${sooda.version.revision}.${sooda.version.build}" />
-        <property name="release.version" value="${tstamp.date}.${sooda.version.build}" unless="${property::exists('release.version')}" />
 
         <loadfile file="build/Sooda.buildversion" property="sooda.oldversion" if="${file::exists('build/Sooda.buildversion')}" />
         <if test="${not(property::exists('sooda.oldversion')) or sooda.version!=string::trim(sooda.oldversion)}">
@@ -613,22 +611,6 @@
 
         <call target="clean" />
         <call target="build" />
-        <call target="installer" />
-    </target>
-
-    <target name="cleaninstaller">
-        <exec program="nant" commandline="-t:net-2.0 clean" />
-
-        <call target="installer" />
-    </target>
-
-    <target name="installer" depends="update-build-number">
-        <exec program="nant" commandline="-t:net-2.0 -D:sooda.debug=${sooda.debug} -D:sooda.optimize=${sooda.optimize} build" />
-
-        <readregistry property="nsis.dir" key="SOFTWARE\NSIS\" />
-        <property name="makensis.exe" value="${nsis.dir}/makensis.exe" />
-
-        <exec program="${makensis.exe}" commandline="/DSOODA_VERSION=${sooda.version.major}.${sooda.version.minor} /DSOODA_DEBUG=${if(sooda.debug,'-debug','')} /DRELEASE_VERSION=${release.version} tools\SetupSooda.nsi" />
     </target>
 
     <target name="NLog">
@@ -746,33 +728,6 @@
         </copy>
     </target>
 
-    <target name="source_snapshot" depends="update-build-number">
-        <delete dir="temp/source_snapshot" if="${directory::exists('temp/source_snapshot')}" />
-        <property name="temp.dir" value="temp/source_snapshot/Sooda-${release.version}" />
-        <mkdir dir="temp/source_snapshot" if="${not directory::exists('temp/source_snapshot')}" />
-        <copy file="build/Sooda.buildversion" tofile="temp/source_snapshot/Sooda.version" />
-        <exec program="svn" commandline="export . ${temp.dir}" />
-        <zip zipfile="Sooda-${release.version}-src.zip">
-            <fileset basedir="temp/source_snapshot">
-                <include name="**/*" />
-                <exclude name="_svn" />
-            </fileset>
-        </zip>
-    </target>
-
-    <target name="binary_snapshot" depends="build">
-        <zip zipfile="Sooda-${release.version}-${framework::get-target-framework()}${if(sooda.debug,'-debug','')}.zip">
-            <fileset basedir="${sooda.dir}">
-                <include name="*Sooda*.dll" />
-                <include name="*Sooda*.exe" />
-                <include name="*Sooda*.pdb" />
-                <include name="*Sooda*.xml" />
-                <include name="*Interop*" />
-                <exclude name="_svn" />
-            </fileset>
-        </zip>
-    </target>
-
     <target name="sync-vs-projects">
         <csc target="library" output="build/SyncVSProjectItems.dll">
             <sources basedir="tools">
@@ -863,9 +818,5 @@
                 <include name="**/*.cs" />
             </source-files>
         </sync-vs-project-items>
-    </target>
-
-    <target name="sourceforge-release">
-        <nant buildfile="${nant.project.buildfile}" target="debug clean build installer source_snapshot binary_snapshot" />
     </target>
 </project>
