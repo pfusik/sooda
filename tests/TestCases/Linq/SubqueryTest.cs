@@ -71,6 +71,18 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void AnyUnion()
+        {
+            using (new SoodaTransaction())
+            {
+                var q1 = ContactType.Linq().Where(t => Contact.Linq().Any(c => c.Type == t && c.LastSalary.Value == 123));
+                var q2 = ContactType.Linq().Where(t => Contact.Linq().Any(c => c.Type == t && c.LastSalary.Value == 345));
+                IEnumerable<ContactType> te = q1.Union(q2);
+                CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Customer, ContactType.Employee }, te);
+            }
+        }
+
+        [Test]
         public void Count()
         {
             using (new SoodaTransaction())

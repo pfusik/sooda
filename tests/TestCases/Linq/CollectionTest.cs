@@ -144,6 +144,16 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void InRangeVariable()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => new Contact[] { Contact.Mary }.Contains(c));
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Mary }, ce);
+            }
+        }
+
+        [Test]
         public void CountOnSelfReferencing()
         {
             using (new SoodaTransaction())

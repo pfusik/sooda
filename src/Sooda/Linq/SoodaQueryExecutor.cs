@@ -54,7 +54,7 @@ namespace Sooda.Linq
 
         SoodaQueryExecutor _parent;
         ParameterExpression _parameter;
-        string _alias = null;
+        string _alias = DefaultAlias;
 
         SoodaTransaction _transaction;
         ClassInfo _classInfo;
@@ -591,6 +591,7 @@ namespace Sooda.Linq
             else
             {
                 SoodaQueryExecutor subquery = CreateSubqueryTranslator();
+                subquery._alias = null;
                 where = subquery.TranslateBoolean(subquery.GetLambda(mc).Body);
                 if (mc.Method.Name == "All")
                     where = new SoqlBooleanNegationExpression(where);
@@ -1249,7 +1250,7 @@ namespace Sooda.Linq
 
         void TranslateQuery(Expression expr)
         {
-             ISoodaQuerySource source = GetConstant(expr) as ISoodaQuerySource;
+            ISoodaQuerySource source = GetConstant(expr) as ISoodaQuerySource;
             if (source != null)
             {
                 _transaction = source.Transaction;
@@ -1452,7 +1453,6 @@ namespace Sooda.Linq
 
         internal object Execute(Expression expr)
         {
-            _alias = DefaultAlias;
             MethodCallExpression mc = expr as MethodCallExpression;
             if (mc != null)
             {
