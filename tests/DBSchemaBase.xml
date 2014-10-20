@@ -29,13 +29,14 @@
     </class>
 
     <class name="Contact" cached="true" cacheCollections="true" label="Name">
+        <description>Contact information of a person.</description>
         <table name="Contact">
             <field name="ContactId" dbcolumn="id" type="Integer" primaryKey="true" />
             <field name="PrimaryGroup" dbcolumn="primary_group" type="Integer" references="Group" nullable="true" onDelete="Cascade" find="true" />
             <field name="Type" dbcolumn="type" type="String" size="16" references="ContactType" findList="true" />
             <field name="Name" dbcolumn="name" type="AnsiString" size="64" nullable="false" find="true" findList="true" />
             <field name="Active" dbcolumn="active" type="BooleanAsInteger" />
-            <field name="Manager" dbcolumn="manager" type="Integer" references="Contact" nullable="true" />
+            <field name="Manager" dbcolumn="manager" type="Integer" references="Contact" nullable="true"><description>The manager of this Contact.</description></field>
         </table>
         <table name="Contact">
             <field name="ContactId" dbcolumn="id" type="Integer" primaryKey="true" />
@@ -43,12 +44,14 @@
         </table>
 
         <collectionOneToMany name="Subordinates" class="Contact" foreignField="Manager" />
-        <collectionOneToMany name="Bikes1" class="Bike" foreignField="Owner" />
+        <collectionOneToMany name="Bikes1" class="Bike" foreignField="Owner">
+            <description>Bikes that this Contact owns.</description>
+        </collectionOneToMany>
         <collectionManyToMany name="Roles" relation="ContactToRole" masterField="1" />
-        <collectionManyToMany name="Vehicles" relation="ContactToVehicle" masterField="1" />
+        <collectionManyToMany name="Vehicles" relation="ContactToVehicle" masterField="1"><description>Vehicles that this Contact owns.</description></collectionManyToMany>
         <collectionManyToMany name="Bikes" relation="ContactToBike" masterField="1" />
 
-        <const name="Mary" key="1" />
+        <const name="Mary" key="1"><description>Mary Manager</description></const>
         <const name="Ed" key="2" />
         <const name="Eva" key="3" />
     </class>
@@ -103,6 +106,7 @@
     </relation>
 
     <relation name="ContactToVehicle">
+        <description>Ownership of vehicles.</description>
         <table name="ContactVehicle">
             <field name="Contact" dbcolumn="contact_id" type="Integer" references="Contact" primaryKey="true" />
             <field name="Vehicle" dbcolumn="vehicle_id" type="Integer" references="Vehicle" />
