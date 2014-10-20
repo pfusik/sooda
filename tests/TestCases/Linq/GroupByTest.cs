@@ -35,6 +35,7 @@ using System.Linq;
 
 using NUnit.Framework;
 using Sooda.UnitTests.BaseObjects;
+using Sooda.UnitTests.Objects;
 
 namespace Sooda.UnitTests.TestCases.Linq
 {
@@ -164,12 +165,32 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void MinDateTime()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<DateTime> de = from d in PKDateTime.Linq() group d by d.Id.Year into g select g.Min(d => d.Id);
+                CollectionAssert.AreEqual(new DateTime[] { new DateTime(2000, 1, 1) }, de);
+            }
+        }
+
+        [Test]
         public void Max()
         {
             using (new SoodaTransaction())
             {
                 IEnumerable<int> ie = from c in Contact.Linq() group c by c.Type.Code into g orderby g.Key select g.Max(c => c.ContactId);
                 CollectionAssert.AreEqual(new int[] { 53, 3, 1 }, ie);
+            }
+        }
+
+        [Test]
+        public void MaxDateTime()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<DateTime> de = from d in PKDateTime.Linq() group d by d.Id.Year into g select g.Max(d => d.Id);
+                CollectionAssert.AreEqual(new DateTime[] { new DateTime(2000, 1, 1, 2, 0, 0) }, de);
             }
         }
 
