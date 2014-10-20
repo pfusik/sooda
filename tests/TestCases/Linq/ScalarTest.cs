@@ -193,6 +193,16 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void SelectMinInt()
+        {
+            using (new SoodaTransaction())
+            {
+                int result = Contact.Linq().Select(c => c.ContactId).Min();
+                Assert.AreEqual(1, result);
+            }
+        }
+
+        [Test]
         public void MinDecimal()
         {
             using (new SoodaTransaction())
@@ -203,12 +213,32 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void SelectMinDecimal()
+        {
+            using (new SoodaTransaction())
+            {
+                decimal result = Contact.Linq().Select(c => c.LastSalary.Value).Min();
+                Assert.AreEqual(-1M, result);
+            }
+        }
+
+        [Test]
         public void MinTimeSpan()
         {
             using (new SoodaTransaction())
             {
-                TimeSpan t = EightFields.Linq().Where(e => e.Id == 1).Min(e => e.TimeSpan);
-                Assert.AreEqual(TimeSpan.FromHours(1), t);
+                TimeSpan result = EightFields.Linq().Where(e => e.Id == 1).Min(e => e.TimeSpan);
+                Assert.AreEqual(TimeSpan.FromHours(1), result);
+            }
+        }
+
+        [Test]
+        public void SelectMinTimeSpan()
+        {
+            using (new SoodaTransaction())
+            {
+                TimeSpan result = EightFields.Linq().Where(e => e.Id == 1).Select(e => e.TimeSpan).Min();
+                Assert.AreEqual(TimeSpan.FromHours(1), result);
             }
         }
 
@@ -217,8 +247,38 @@ namespace Sooda.UnitTests.TestCases.Linq
         {
             using (new SoodaTransaction())
             {
-                TimeSpan? t = EightFields.Linq().Where(e => e.Id == 1).Min(e => (TimeSpan?) e.TimeSpan);
-                Assert.AreEqual(TimeSpan.FromHours(1), t);
+                TimeSpan? result = EightFields.Linq().Where(e => e.Id == 1).Min(e => (TimeSpan?) e.TimeSpan);
+                Assert.AreEqual(TimeSpan.FromHours(1), result);
+            }
+        }
+
+        [Test]
+        public void SelectMinNullableTimeSpan()
+        {
+            using (new SoodaTransaction())
+            {
+                TimeSpan? result = EightFields.Linq().Where(e => e.Id == 1).Select(e => (TimeSpan?) e.TimeSpan).Min();
+                Assert.AreEqual(TimeSpan.FromHours(1), result);
+            }
+        }
+
+        [Test]
+        public void MinDateTime()
+        {
+            using (new SoodaTransaction())
+            {
+                DateTime result = PKDateTime.Linq().Min(d => d.Id);
+                Assert.AreEqual(new DateTime(2000, 1, 1), result);
+            }
+        }
+
+        [Test]
+        public void SelectMinDateTime()
+        {
+            using (new SoodaTransaction())
+            {
+                DateTime result = PKDateTime.Linq().Select(d => d.Id).Min();
+                Assert.AreEqual(new DateTime(2000, 1, 1), result);
             }
         }
 
@@ -233,11 +293,31 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void SelectMinEmpty()
+        {
+            using (new SoodaTransaction())
+            {
+                Contact.Linq().Where(c => c.ContactId > 1000).Select(c => c.ContactId).Min();
+            }
+        }
+
+        [Test]
         public void MaxInt()
         {
             using (new SoodaTransaction())
             {
                 int result = Contact.Linq().Max(c => c.ContactId);
+                Assert.AreEqual(53, result);
+            }
+        }
+
+        [Test]
+        public void SelectMaxInt()
+        {
+            using (new SoodaTransaction())
+            {
+                int result = Contact.Linq().Select(c => c.ContactId).Max();
                 Assert.AreEqual(53, result);
             }
         }
@@ -253,6 +333,36 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void SelectMaxDecimal()
+        {
+            using (new SoodaTransaction())
+            {
+                decimal result = Contact.Linq().Select(c => c.LastSalary.Value).Max();
+                Assert.AreEqual(345M, result);
+            }
+        }
+
+        [Test]
+        public void MaxDateTime()
+        {
+            using (new SoodaTransaction())
+            {
+                DateTime result = PKDateTime.Linq().Max(d => d.Id);
+                Assert.AreEqual(new DateTime(2000, 1, 1, 2, 0, 0), result);
+            }
+        }
+
+        [Test]
+        public void SelectMaxDateTime()
+        {
+            using (new SoodaTransaction())
+            {
+                DateTime result = PKDateTime.Linq().Select(d => d.Id).Max();
+                Assert.AreEqual(new DateTime(2000, 1, 1, 2, 0, 0), result);
+            }
+        }
+
+        [Test]
         [ExpectedException(typeof(InvalidOperationException))]
         public void MaxEmpty()
         {
@@ -263,11 +373,31 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void SelectMaxEmpty()
+        {
+            using (new SoodaTransaction())
+            {
+                Contact.Linq().Where(c => c.ContactId > 1000).Select(c => c.ContactId).Max();
+            }
+        }
+
+        [Test]
         public void SumInt()
         {
             using (new SoodaTransaction())
             {
                 int result = Contact.Linq().Sum(c => c.ContactId);
+                Assert.AreEqual(212, result);
+            }
+        }
+
+        [Test]
+        public void SelectSumInt()
+        {
+            using (new SoodaTransaction())
+            {
+                int result = Contact.Linq().Select(c => c.ContactId).Sum();
                 Assert.AreEqual(212, result);
             }
         }
@@ -283,23 +413,51 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
+        public void SelectSumDecimal()
+        {
+            using (new SoodaTransaction())
+            {
+                decimal result = Contact.Linq().Select(c => c.LastSalary.Value).Sum();
+                Assert.AreEqual(926.388046789M, result);
+            }
+        }
+
+        [Test]
         public void SumIntEmpty()
         {
             using (new SoodaTransaction())
             {
-                int result = Contact.Linq().Where(c => c.ContactId > 1000).Max(c => c.ContactId);
+                int result = Contact.Linq().Where(c => c.ContactId > 1000).Sum(c => c.ContactId);
                 Assert.AreEqual(0, result);
             }
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
+        public void SelectSumIntEmpty()
+        {
+            using (new SoodaTransaction())
+            {
+                int result = Contact.Linq().Where(c => c.ContactId > 1000).Select(c => c.ContactId).Sum();
+                Assert.AreEqual(0, result);
+            }
+        }
+
+        [Test]
         public void SumDecimalEmpty()
         {
             using (new SoodaTransaction())
             {
-                decimal result = Contact.Linq().Where(c => c.ContactId > 1000).Max(c => c.LastSalary.Value);
+                decimal result = Contact.Linq().Where(c => c.ContactId > 1000).Sum(c => c.LastSalary.Value);
+                Assert.AreEqual(0M, result);
+            }
+        }
+
+        [Test]
+        public void SelectSumDecimalEmpty()
+        {
+            using (new SoodaTransaction())
+            {
+                decimal result = Contact.Linq().Where(c => c.ContactId > 1000).Select(c => c.LastSalary.Value).Sum();
                 Assert.AreEqual(0M, result);
             }
         }
