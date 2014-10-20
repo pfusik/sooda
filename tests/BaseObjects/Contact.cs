@@ -88,5 +88,17 @@ namespace Sooda.UnitTests.BaseObjects
             }
         }
 #endif
+
+        public string FieldUpdateHandlers = null;
+
+        protected override void BeforeFieldUpdate(string name, object oldVal, object newVal)
+        {
+            FieldUpdateHandlers += "BeforeFieldUpdate_" + name + "\n";
+        }
+
+        protected override void AfterFieldUpdate(string name, object oldVal, object newVal)
+        {
+            FieldUpdateHandlers += "AfterFieldUpdate_" + name + "\n";
+        }
     }
 }

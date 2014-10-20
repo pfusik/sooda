@@ -245,5 +245,44 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
                 }
             }
         }
+
+        [Test]
+        public void DeserializePlainFieldUpdateTriggers()
+        {
+            string serialized;
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                Contact.Mary.Active = false;
+                serialized = tran.Serialize();
+            }
+
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                tran.Deserialize(serialized);
+                Assert.IsNull(Contact.Mary.FieldUpdateHandlers);
+
+                Contact.Mary.Active = true;
+                Assert.AreEqual("BeforeFieldUpdate_Active\nAfterFieldUpdate_Active\n", Contact.Mary.FieldUpdateHandlers);
+            }
+        }
+
+        [Test]
+        public void DeserializeRefFieldUpdateTriggers()
+        {
+            string serialized;
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                Contact.Mary.Manager = Contact.Ed;
+                serialized = tran.Serialize();
+            }
+
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                tran.Deserialize(serialized);
+                Assert.IsNull(Contact.Mary.FieldUpdateHandlers);
+                Contact.Mary.Manager = null;
+                Assert.AreEqual("BeforeFieldUpdate_Manager\nAfterFieldUpdate_Manager\n", Contact.Mary.FieldUpdateHandlers);
+            }
+        }
     }
 }
