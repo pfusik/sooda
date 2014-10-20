@@ -108,6 +108,7 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DynamicFieldsTest.cs" />
     <Compile Include="Caching\CollectionTest.cs" />
     <Compile Include="Caching\CachingTest.cs" />
     <Compile Include="Caching\CollectionEvictTest.cs" />

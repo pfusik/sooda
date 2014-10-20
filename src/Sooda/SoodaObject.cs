@@ -530,17 +530,6 @@ namespace Sooda
             throw new NotImplementedException();
         }
 
-        SoodaFieldHandler GetFieldHandler(string name)
-        {
-            ClassInfo info = this.GetClassInfo();
-            Sooda.Schema.FieldInfo fi = info.FindFieldByName(name);
-
-            if (fi != null)
-                return GetFieldHandler(fi.ClassUnifiedOrdinal);
-            else
-                throw new Exception("Field " + name + " not found in " + info.Name);
-        }
-
         internal void CheckForNulls()
         {
             EnsureFieldsInited();
@@ -1113,7 +1102,8 @@ namespace Sooda
                 EnsureFieldsInited();
                 CopyOnWrite();
 
-                SoodaFieldHandler field = GetFieldHandler(name);
+                int fieldOrdinal = GetFieldInfo(name).ClassUnifiedOrdinal;
+                SoodaFieldHandler field = GetFieldHandler(fieldOrdinal);
                 object val = field.Deserialize(reader);
 
                 // Console.WriteLine("Deserializing field: {0}", name);
@@ -1121,22 +1111,16 @@ namespace Sooda
                 PropertyInfo pi = GetType().GetProperty(name);
                 if (pi.PropertyType.IsSubclassOf(typeof(SoodaObject)))
                 {
-                    if (val == null)
-                    {
-                        pi.SetValue(this, null, null);
-                    }
-                    else
+                    if (val != null)
                     {
                         ISoodaObjectFactory fact = GetTransaction().GetFactory(pi.PropertyType);
-                        SoodaObject refVal = fact.GetRef(GetTransaction(), val);
-                        pi.SetValue(this, refVal, null);
+                        val = fact.GetRef(GetTransaction(), val);
                     }
+                    pi.SetValue(this, val, null);
                 }
                 else
                 {
                     // set as raw
-
-                    int fieldOrdinal = GetClassInfo().FindFieldByName(name).ClassUnifiedOrdinal;
 
                     _fieldValues.SetFieldValue(fieldOrdinal, val);
                     SetFieldDirty(fieldOrdinal, true);
@@ -1558,6 +1542,28 @@ namespace Sooda
                 return String.Empty;
 
             return Convert.ToString(o);
+        }
+
+        Sooda.Schema.FieldInfo GetFieldInfo(string name)
+        {
+            ClassInfo ci = GetClassInfo();
+            Sooda.Schema.FieldInfo fi = ci.FindFieldByName(name);
+            if (fi == null)
+                throw new Exception("Field " + name + " not found in " + ci.Name);
+            return fi;
+        }
+
+        public object this[string fieldName]
+        {
+            get
+            {
+                Sooda.Schema.FieldInfo fi = GetFieldInfo(fieldName);
+                EnsureDataLoaded(fi.Table.OrdinalInClass);
+                object value = _fieldValues.GetBoxedFieldValue(fi.ClassUnifiedOrdinal);
+                if (value != null && fi.References != null)
+                    value = GetTransaction().GetFactory(fi.References).GetRef(GetTransaction(), value);
+                return value;
+            }
         }
     }
 }
