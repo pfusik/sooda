@@ -800,7 +800,6 @@ namespace Sooda.Linq
             switch (SoodaLinqMethodDictionary.Get(mc.Method))
             {
                 case SoodaLinqMethod.Enumerable_All:
-                case SoodaLinqMethod.Queryable_All:
                     if (IsGroupAggregate(mc))
                     {
                         // count(case when ... then 1 end) = 0
@@ -810,14 +809,12 @@ namespace Sooda.Linq
                         return new SoqlBooleanNegationExpression(TranslateCollectionAny(mc));
                     return new SoqlBooleanNegationExpression(TranslateSubqueryAny(mc));
                 case SoodaLinqMethod.Enumerable_Any:
-                case SoodaLinqMethod.Queryable_Any:
                     if (IsGroupAggregate(mc))
                         return SoqlBooleanLiteralExpression.True;
                     if (GetCollectionName(mc.Arguments[0]) != null)
                         return TranslateCollectionAny(mc);
                     return TranslateSubqueryAny(mc);
                 case SoodaLinqMethod.Enumerable_AnyFiltered:
-                case SoodaLinqMethod.Queryable_AnyFiltered:
                     if (IsGroupAggregate(mc))
                     {
                         // count(case when ... then 1 end) > 0
@@ -831,28 +828,22 @@ namespace Sooda.Linq
                 case SoodaLinqMethod.Queryable_Contains:
                     return TranslateContains(mc.Arguments[0], mc.Arguments[1]);
                 case SoodaLinqMethod.Enumerable_Count:
-                case SoodaLinqMethod.Queryable_Count:
                     if (IsGroupAggregate(mc))
                         return new SoqlFunctionCallExpression("count", new SoqlAsteriskExpression());
                     if (GetCollectionName(mc.Arguments[0]) != null)
                         return TranslateCollectionCount(mc.Arguments[0]);
                     return TranslateSubqueryCount(mc);
                 case SoodaLinqMethod.Enumerable_CountFiltered:
-                case SoodaLinqMethod.Queryable_CountFiltered:
                     if (IsGroupAggregate(mc))
                         return TranslateCountFiltered(TranslateEnumerableFilter(mc));
                     return TranslateSubqueryCount(mc);
                 case SoodaLinqMethod.Enumerable_Average:
-                case SoodaLinqMethod.Queryable_Average:
                     return TranslateAggregate(mc, "avg");
                 case SoodaLinqMethod.Enumerable_Max:
-                case SoodaLinqMethod.Queryable_Max:
                     return TranslateAggregate(mc, "max");
                 case SoodaLinqMethod.Enumerable_Min:
-                case SoodaLinqMethod.Queryable_Min:
                     return TranslateAggregate(mc, "min");
                 case SoodaLinqMethod.Enumerable_Sum:
-                case SoodaLinqMethod.Queryable_Sum:
                     return new SoqlFunctionCallExpression("coalesce",
                         TranslateAggregate(mc, "sum"),
                         new SoqlLiteralExpression(Activator.CreateInstance(mc.Type))); // 0, 0L, 0D or 0M
@@ -1458,16 +1449,16 @@ namespace Sooda.Linq
             {
                 switch (SoodaLinqMethodDictionary.Get(mc.Method))
                 {
-                    case SoodaLinqMethod.Queryable_All:
+                    case SoodaLinqMethod.Enumerable_All:
                         TranslateQuery(mc.Arguments[0]);
                         Where(mc, true);
                         Take(1);
                         return Count() == 0;
-                    case SoodaLinqMethod.Queryable_Any:
+                    case SoodaLinqMethod.Enumerable_Any:
                         TranslateQuery(mc.Arguments[0]);
                         Take(1);
                         return Count() > 0;
-                    case SoodaLinqMethod.Queryable_AnyFiltered:
+                    case SoodaLinqMethod.Enumerable_AnyFiltered:
                         TranslateQuery(mc.Arguments[0]);
                         Where(mc);
                         Take(1);
@@ -1479,10 +1470,10 @@ namespace Sooda.Linq
                         Where(where);
                         Take(1);
                         return Count() > 0;
-                    case SoodaLinqMethod.Queryable_Count:
+                    case SoodaLinqMethod.Enumerable_Count:
                         TranslateQuery(mc.Arguments[0]);
                         return Count();
-                    case SoodaLinqMethod.Queryable_CountFiltered:
+                    case SoodaLinqMethod.Enumerable_CountFiltered:
                         TranslateQuery(mc.Arguments[0]);
                         Where(mc);
                         return Count();
@@ -1534,15 +1525,15 @@ namespace Sooda.Linq
                         Where(mc);
                         return Single(2, mc);
 
-                    case SoodaLinqMethod.Queryable_Average:
+                    case SoodaLinqMethod.Enumerable_Average:
                         return ExecuteScalar(mc, "avg") ?? ThrowEmptyAggregate();
                     case SoodaLinqMethod.Queryable_AverageNullable:
                         return ExecuteScalar(mc, "avg");
-                    case SoodaLinqMethod.Queryable_Max:
+                    case SoodaLinqMethod.Enumerable_Max:
                         return ExecuteScalar(mc, "max") ?? ThrowEmptyAggregate();
-                    case SoodaLinqMethod.Queryable_Min:
+                    case SoodaLinqMethod.Enumerable_Min:
                         return ExecuteScalar(mc, "min") ?? ThrowEmptyAggregate();
-                    case SoodaLinqMethod.Queryable_Sum:
+                    case SoodaLinqMethod.Enumerable_Sum:
                         return ExecuteScalar(mc, "sum")
                             ?? Activator.CreateInstance(mc.Type); // 0, 0L, 0D or 0M
 
