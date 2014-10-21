@@ -96,7 +96,22 @@ namespace Sooda.Sql
 
         public void GenerateCreateTableField(TextWriter xtw, Sooda.Schema.FieldInfo fieldInfo)
         {
-            Console.Write("\t{0} {1} {2}", fieldInfo.DBColumnName, GetSQLDataType(fieldInfo), GetSQLNullable(fieldInfo));
+            xtw.Write('\t');
+            xtw.Write(fieldInfo.DBColumnName);
+            xtw.Write(' ');
+            xtw.Write(GetSQLDataType(fieldInfo));
+            xtw.Write(' ');
+            xtw.Write(GetSQLNullable(fieldInfo));
+        }
+
+        void TerminateDDL(TextWriter xtw, string additionalSettings)
+        {
+            if (!string.IsNullOrEmpty(additionalSettings))
+            {
+                xtw.Write(' ');
+                xtw.Write(additionalSettings);
+            }
+            xtw.Write(GetDDLCommandTerminator());
         }
 
         public void GenerateCreateTable(TextWriter xtw, Sooda.Schema.TableInfo tableInfo, string additionalSettings)
@@ -109,16 +124,14 @@ namespace Sooda.Sql
                 {
                     GenerateCreateTableField(xtw, tableInfo.Fields[i]);
                     if (i == tableInfo.Fields.Count - 1)
-                        Console.WriteLine();
+                        xtw.WriteLine();
                     else
-                        Console.WriteLine(",");
+                        xtw.WriteLine(',');
                     processedFields.Add(tableInfo.Fields[i].DBColumnName, true);
                 }
             }
             xtw.Write(')');
-            if (additionalSettings != "")
-                xtw.Write(" " + additionalSettings);
-            xtw.Write(GetDDLCommandTerminator());
+            TerminateDDL(xtw, additionalSettings);
         }
 
         public virtual string GetAlterTableStatement(Sooda.Schema.TableInfo tableInfo)
@@ -150,9 +163,7 @@ namespace Sooda.Sql
             if (!first)
             {
                 xtw.Write(')');
-                if (additionalSettings != "")
-                    xtw.Write(" " + additionalSettings);
-                xtw.Write(GetDDLCommandTerminator());
+                TerminateDDL(xtw, additionalSettings);
             }
         }
 
@@ -179,9 +190,7 @@ namespace Sooda.Sql
                 {
                     xtw.Write("create index {0} on {1} ({2})",
                             GetIndexName(tableInfo.DBTableName, fi.DBColumnName), tableInfo.DBTableName, fi.DBColumnName);
-                    if (additionalSettings != "")
-                        xtw.Write(" " + additionalSettings);
-                    xtw.Write(GetDDLCommandTerminator());
+                    TerminateDDL(xtw, additionalSettings);
                 }
             }
         }
