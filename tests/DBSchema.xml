@@ -5,7 +5,6 @@
     <include schema="DBSchemaBase.xml" assembly="Sooda.UnitTests.BaseObjects" namespace="Sooda.UnitTests.BaseObjects" />
 
     <datasource name="default" type="Sooda.Sql.SqlDataSource" />
-    <datasource name="xmldata1" type="Sooda.Xml.XmlDataSource" />
 
     <class name="SuperBike" subclassSelectorValue="3" inheritFrom="Bike" />
     <class name="MegaSuperBike" subclassSelectorValue="4" inheritFrom="SuperBike" />

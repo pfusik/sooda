@@ -670,9 +670,6 @@
     <Compile Include="Utils\StopWatch.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Xml\XmlDataSource.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <EmbeddedResource Include="Schema\SoodaSchema.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
