@@ -28,8 +28,10 @@
 // 
 
 using System;
+#if DOTNET35
 using System.Collections.Generic;
 using System.Linq;
+#endif
 
 using Sooda;
 
@@ -120,6 +122,7 @@ namespace Sooda.UnitTests.TestCases
             }
         }
 
+#if DOTNET35
         [Test]
         public void Where()
         {
@@ -159,5 +162,6 @@ namespace Sooda.UnitTests.TestCases
                 Contact.Linq().Select(c => c["NoSuchField"]).ToList();
             }
         }
+#endif
     }
 }

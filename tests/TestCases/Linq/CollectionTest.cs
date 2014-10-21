@@ -27,6 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
+#if DOTNET35
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -476,3 +478,5 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
     }
 }
+
+#endif
