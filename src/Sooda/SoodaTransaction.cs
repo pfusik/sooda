@@ -625,8 +625,7 @@ namespace Sooda
 
         private SoodaObject GetObject(ISoodaObjectFactory factory, string keyString)
         {
-            object keyValue = factory.GetPrimaryKeyFieldHandler().RawDeserialize(keyString);
-            if (keyValue == null) keyValue = "";
+            object keyValue = factory.GetPrimaryKeyFieldHandler().RawDeserialize(keyString) ?? string.Empty;
             return factory.GetRef(this, keyValue);
         }
 
@@ -642,8 +641,7 @@ namespace Sooda
 
         private SoodaObject LoadObject(ISoodaObjectFactory factory, string keyString)
         {
-            object keyValue = factory.GetPrimaryKeyFieldHandler().RawDeserialize(keyString);
-            if (keyValue == null) keyValue = "";
+            object keyValue = factory.GetPrimaryKeyFieldHandler().RawDeserialize(keyString) ?? string.Empty;
             SoodaObject obj = factory.GetRef(this, keyValue);
             obj.LoadAllData();
             return obj;
@@ -720,6 +718,7 @@ namespace Sooda
                         factoryForType[fact.TheType] = fact;
                     }
                     _schema = schema.Schema;
+                    DynamicFieldManager.Load(this);
                 }
             }
         }

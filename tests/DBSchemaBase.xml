@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="../DBSchema.xsl" ?>
 <schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
-    <datasource name="default" type="Sooda.Sql.SqlDataSource" />
+    <datasource name="default" type="Sooda.Sql.SqlDataSource" dynamicFields="true" />
 
     <class name="Role" cached="false" precacheAll="false" triggers="false" label="Id">
         <table name="_Role">

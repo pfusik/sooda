@@ -116,10 +116,7 @@ namespace Sooda.Schema
         {
             get
             {
-                if (dbcolumn != null)
-                    return dbcolumn;
-                else
-                    return Name;
+                return dbcolumn ?? Name;
             }
             set
             {
@@ -234,6 +231,36 @@ namespace Sooda.Schema
             this.FindListMethod = merge.FindListMethod;
             if (merge.dbcolumn != null)
                 this.DBColumnName = merge.dbcolumn;
+        }
+
+        public string TypeName
+        {
+            get
+            {
+                return References ?? DataType.ToString();
+            }
+            set
+            {
+#if DOTNET4
+                if (Enum.TryParse(value, out DataType))
+                {
+                    References = null;
+                    return;
+                }
+#else
+                try
+                {
+                    DataType = Enum.Parse(typeof(FieldDataType), value);
+                    References = null;
+                    return;
+                }
+                catch (ArgumentException)
+                {
+                }
+#endif
+                References = value;
+                DataType = FieldDataType.Reference;
+            }
         }
     }
 }

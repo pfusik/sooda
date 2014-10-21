@@ -43,6 +43,9 @@ namespace Sooda.Schema
         [XmlAttribute("type")]
         public string DataSourceType;
 
+        [XmlAttribute("dynamicFields")]
+        public bool EnableDynamicFields = false;
+
         public void Resolve() { }
 
         public SoodaDataSource CreateDataSource()

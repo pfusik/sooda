@@ -611,7 +611,7 @@ namespace Sooda.Sql
             }
         }
 
-        public override int ExecuteNonQuery(string queryText, object[] parameters)
+        public override int ExecuteNonQuery(string queryText, params object[] parameters)
         {
             try
             {
@@ -1134,22 +1134,22 @@ namespace Sooda.Sql
             foreach (string s in names)
             {
                 tw.WriteLine("--- table {0}", s);
-                SqlBuilder.GenerateCreateTable(tw, tables[s], this.CreateTable);
+                SqlBuilder.GenerateCreateTable(tw, tables[s], this.CreateTable, null);
             }
 
             foreach (string s in names)
             {
-                SqlBuilder.GeneratePrimaryKey(tw, tables[s], this.CreateIndex);
+                SqlBuilder.GeneratePrimaryKey(tw, tables[s], this.CreateIndex, null);
             }
 
             foreach (string s in names)
             {
-                SqlBuilder.GenerateForeignKeys(tw, tables[s]);
+                SqlBuilder.GenerateForeignKeys(tw, tables[s], null);
             }
 
             foreach (string s in names)
             {
-                SqlBuilder.GenerateIndices(tw, tables[s], this.CreateIndex);
+                SqlBuilder.GenerateIndices(tw, tables[s], this.CreateIndex, null);
             }
         }
     }

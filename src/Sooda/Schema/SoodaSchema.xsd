@@ -34,6 +34,7 @@
 
     <xsd:attribute name="name" type="xsd:string" use="required" />
     <xsd:attribute name="type" type="xsd:string" use="required" />
+    <xsd:attribute name="dynamicFields" type="xsd:boolean" use="optional" default="false" />
   </xsd:complexType>
   <xsd:complexType name="RelationInfo">
     <xsd:sequence>

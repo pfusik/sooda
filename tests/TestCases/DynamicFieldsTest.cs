@@ -28,12 +28,13 @@
 // 
 
 using System;
-#if DOTNET35
 using System.Collections.Generic;
+#if DOTNET35
 using System.Linq;
 #endif
 
 using Sooda;
+using Sooda.Schema;
 
 using Sooda.UnitTests.BaseObjects;
 
@@ -160,6 +161,24 @@ namespace Sooda.UnitTests.TestCases
             using (new SoodaTransaction())
             {
                 Contact.Linq().Select(c => c["NoSuchField"]).ToList();
+            }
+        }
+
+        [Test]
+        public void AddRemove()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                const string fieldName = "FirstDynamicField";
+                DynamicFieldManager.Add(new FieldInfo {
+                        ParentClass = tran.Schema.FindClassByName("Contact"),
+                        Name = fieldName,
+                        TypeName = "Integer",
+                        IsNullable = false,
+                    }, tran);
+
+                FieldInfo fi = tran.Schema.FindClassByName("Contact").FindFieldByName(fieldName);
+                DynamicFieldManager.Remove(fi, tran);
             }
         }
 #endif

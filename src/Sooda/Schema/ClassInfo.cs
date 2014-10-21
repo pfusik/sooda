@@ -284,7 +284,7 @@ namespace Sooda.Schema
 
             if (UnifiedTables.Count > 30)
             {
-                throw new SoodaSchemaException("Class " + Name + " is invalid, because it's base on more than 30 tables. ");
+                throw new SoodaSchemaException("Class " + Name + " is invalid, because it's based on more than 30 tables");
             }
             // Console.WriteLine("<<< End of FlattenTables for {0}", Name);
         }
@@ -576,6 +576,8 @@ namespace Sooda.Schema
                     if (ci == null)
                         throw new SoodaSchemaException("Class " + fi.References + " not found.");
                     fi.ReferencedClass = ci;
+                    if (fi.DataType == FieldDataType.Reference)
+                        fi.DataType = ci.GetFirstPrimaryKeyField().DataType;
                 }
             }
 
@@ -675,7 +677,7 @@ namespace Sooda.Schema
 
         public bool IsAbstractClass()
         {
-            return (SubclassSelectorFieldName != null) && (SubclassSelectorValue == null);
+            return SubclassSelectorFieldName != null && SubclassSelectorValue == null;
         }
 
         public string GetLabel()
@@ -689,8 +691,7 @@ namespace Sooda.Schema
 
         public string GetSafeDataSourceName()
         {
-            if (DataSourceName == null) return "default";
-            return DataSourceName;
+            return DataSourceName ?? "default";
         }
     }
 }

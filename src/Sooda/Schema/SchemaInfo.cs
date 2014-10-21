@@ -90,6 +90,8 @@ namespace Sooda.Schema
         [NonSerialized]
         private Dictionary<string, StringCollection> _backRefCollections;
 
+        internal bool DynamicFieldsLoaded = false;
+
         public bool Contains(string className)
         {
             return FindClassByName(className) != null;
@@ -126,6 +128,34 @@ namespace Sooda.Schema
         {
         }
 
+        internal void Resolve(IEnumerable<ClassInfo> classes)
+        {
+            foreach (ClassInfo ci in classes)
+            {
+                ci.FlattenTables();
+            }
+            foreach (ClassInfo ci in classes)
+            {
+                ci.Resolve(this);
+            }
+            foreach (ClassInfo ci in classes)
+            {
+                ci.MergeTables();
+            }
+            foreach (ClassInfo ci in classes)
+            {
+                ci.ResolveReferences(this);
+            }
+            foreach (ClassInfo ci in classes)
+            {
+                ci.ResolveCollections(this);
+            }
+            foreach (ClassInfo ci in classes)
+            {
+                ci.ResolvePrecommitValues();
+            }
+        }
+
         public void Resolve()
         {
             if (Includes == null)
@@ -141,31 +171,7 @@ namespace Sooda.Schema
             {
                 ci.ResolveInheritance(this);
             }
-            foreach (ClassInfo ci in Classes)
-            {
-                ci.FlattenTables();
-            }
-            foreach (ClassInfo ci in Classes)
-            {
-                ci.Resolve(this);
-            }
-            foreach (ClassInfo ci in Classes)
-            {
-                ci.MergeTables();
-            }
-            foreach (ClassInfo ci in Classes)
-            {
-                ci.ResolveReferences(this);
-            }
-            foreach (ClassInfo ci in Classes)
-            {
-                ci.ResolveCollections(this);
-            }
-
-            foreach (ClassInfo ci in Classes)
-            {
-                ci.ResolvePrecommitValues();
-            }
+            Resolve(Classes);
 
             if (Relations != null)
             {
@@ -335,7 +341,10 @@ namespace Sooda.Schema
 
                 foreach (DataSourceInfo ci in includedSchema.DataSources)
                 {
-                    if (!sourceNames.ContainsKey(ci.Name))
+                    DataSourceInfo di;
+                    if (sourceNames.TryGetValue(ci.Name, out di))
+                        di.EnableDynamicFields |= ci.EnableDynamicFields;
+                    else
                         newDataSources.Add(ci);
                 }
 

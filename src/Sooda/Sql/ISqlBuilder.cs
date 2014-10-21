@@ -48,10 +48,10 @@ namespace Sooda.Sql
 
         void BuildCommandWithParameters(IDbCommand command, bool append, string query, object[] par, bool isRaw);
 
-        void GenerateCreateTable(TextWriter tw, TableInfo tableInfo, string additionalSettings);
-        void GeneratePrimaryKey(TextWriter tw, TableInfo tableInfo, string additionalSettings);
-        void GenerateForeignKeys(TextWriter tw, TableInfo tableInfo);
-        void GenerateIndices(TextWriter tw, TableInfo tableInfo, string additionalSettings);
+        void GenerateCreateTable(TextWriter tw, TableInfo tableInfo, string additionalSettings, string terminator);
+        void GeneratePrimaryKey(TextWriter tw, TableInfo tableInfo, string additionalSettings, string terminator);
+        void GenerateForeignKeys(TextWriter tw, TableInfo tableInfo, string terminator);
+        void GenerateIndices(TextWriter tw, TableInfo tableInfo, string additionalSettings, string terminator);
         string QuoteIdentifier(string s);
         string GetTruncatedIdentifier(string identifier);
         bool IsFatalException(IDbConnection connection, Exception e);

@@ -517,6 +517,9 @@
     <Compile Include="Schema\DeleteAction.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Schema\DynamicFieldManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Schema\FieldDataType.cs">
       <SubType>Code</SubType>
     </Compile>

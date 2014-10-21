@@ -104,17 +104,17 @@ namespace Sooda.Sql
             xtw.Write(GetSQLNullable(fieldInfo));
         }
 
-        void TerminateDDL(TextWriter xtw, string additionalSettings)
+        void TerminateDDL(TextWriter xtw, string additionalSettings, string terminator)
         {
             if (!string.IsNullOrEmpty(additionalSettings))
             {
                 xtw.Write(' ');
                 xtw.Write(additionalSettings);
             }
-            xtw.Write(GetDDLCommandTerminator());
+            xtw.Write(terminator ?? GetDDLCommandTerminator());
         }
 
-        public void GenerateCreateTable(TextWriter xtw, Sooda.Schema.TableInfo tableInfo, string additionalSettings)
+        public void GenerateCreateTable(TextWriter xtw, Sooda.Schema.TableInfo tableInfo, string additionalSettings, string terminator)
         {
             xtw.WriteLine("create table {0} (", tableInfo.DBTableName);
             Dictionary<string, bool> processedFields = new Dictionary<string, bool>();
@@ -131,7 +131,7 @@ namespace Sooda.Sql
                 }
             }
             xtw.Write(')');
-            TerminateDDL(xtw, additionalSettings);
+            TerminateDDL(xtw, additionalSettings, terminator);
         }
 
         public virtual string GetAlterTableStatement(Sooda.Schema.TableInfo tableInfo)
@@ -139,7 +139,7 @@ namespace Sooda.Sql
             return String.Format("alter table {0} add primary key", tableInfo.DBTableName);
         }
 
-        public void GeneratePrimaryKey(TextWriter xtw, Sooda.Schema.TableInfo tableInfo, string additionalSettings)
+        public void GeneratePrimaryKey(TextWriter xtw, Sooda.Schema.TableInfo tableInfo, string additionalSettings, string terminator)
         {
             bool first = true;
 
@@ -163,11 +163,11 @@ namespace Sooda.Sql
             if (!first)
             {
                 xtw.Write(')');
-                TerminateDDL(xtw, additionalSettings);
+                TerminateDDL(xtw, additionalSettings, terminator);
             }
         }
 
-        public void GenerateForeignKeys(TextWriter xtw, Sooda.Schema.TableInfo tableInfo)
+        public void GenerateForeignKeys(TextWriter xtw, Sooda.Schema.TableInfo tableInfo, string terminator)
         {
             foreach (Sooda.Schema.FieldInfo fi in tableInfo.Fields)
             {
@@ -177,12 +177,12 @@ namespace Sooda.Sql
                             tableInfo.DBTableName, GetConstraintName(tableInfo.DBTableName, fi.DBColumnName), fi.DBColumnName,
                             fi.ReferencedClass.UnifiedTables[0].DBTableName, fi.ReferencedClass.GetFirstPrimaryKeyField().DBColumnName
                             );
-                    xtw.Write(GetDDLCommandTerminator());
+                    xtw.Write(terminator ?? GetDDLCommandTerminator());
                 }
             }
         }
 
-        public void GenerateIndices(TextWriter xtw, Sooda.Schema.TableInfo tableInfo, string additionalSettings)
+        public void GenerateIndices(TextWriter xtw, Sooda.Schema.TableInfo tableInfo, string additionalSettings, string terminator)
         {
             foreach (Sooda.Schema.FieldInfo fi in tableInfo.Fields)
             {
@@ -190,7 +190,7 @@ namespace Sooda.Sql
                 {
                     xtw.Write("create index {0} on {1} ({2})",
                             GetIndexName(tableInfo.DBTableName, fi.DBColumnName), tableInfo.DBTableName, fi.DBColumnName);
-                    TerminateDDL(xtw, additionalSettings);
+                    TerminateDDL(xtw, additionalSettings, terminator);
                 }
             }
         }
