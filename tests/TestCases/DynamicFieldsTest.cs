@@ -27,6 +27,10 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 using Sooda;
 
 using Sooda.UnitTests.BaseObjects;
@@ -103,6 +107,56 @@ namespace Sooda.UnitTests.TestCases
 
                 result = Contact.Eva["Manager"];
                 Assert.IsNull(result);
+            }
+        }
+
+        [Test]
+        [ExpectedException(typeof(Exception))]
+        public void IndexerGetNonExisting()
+        {
+            using (new SoodaTransaction())
+            {
+                object result = Contact.Mary["NoSuchField"];
+            }
+        }
+
+        [Test]
+        public void Where()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c["Name"] == "Mary Manager");
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Mary }, ce);
+            }
+        }
+
+        [Test]
+        [ExpectedException(typeof(Exception))]
+        public void WhereNonExisting()
+        {
+            using (new SoodaTransaction())
+            {
+                Contact.Linq().Any(c => c["NoSuchField"] == "Mary Manager");
+            }
+        }
+
+        [Test]
+        public void OrderBySelect()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<string> se = from c in Contact.Linq() orderby c["Name"] select (string) c["Name"];
+                CollectionAssert.AreEqual(new string[] { "Caroline Customer", "Catie Customer", "Chris Customer", "Chuck Customer", "Ed Employee", "Eva Employee", "Mary Manager" }, se);
+            }
+        }
+
+        [Test]
+        [ExpectedException(typeof(Exception))]
+        public void SelectNonExisting()
+        {
+            using (new SoodaTransaction())
+            {
+                Contact.Linq().Select(c => c["NoSuchField"]).ToList();
             }
         }
     }

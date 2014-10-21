@@ -113,6 +113,7 @@ namespace Sooda.Linq
         Math_Tan,
         SoodaObject_GetPrimaryKeyValue,
         SoodaObject_GetLabel,
+        SoodaObject_GetItem,
     }
 
     static class SoodaLinqMethodDictionary
@@ -304,6 +305,10 @@ namespace Sooda.Linq
             method2id.Add(MethodOf(() => Math.Tan(0)), SoodaLinqMethod.Math_Tan);
             method2id.Add(MethodOf(() => ((SoodaObject) null).GetPrimaryKeyValue()), SoodaLinqMethod.SoodaObject_GetPrimaryKeyValue);
             method2id.Add(MethodOf(() => ((SoodaObject) null).GetLabel(false)), SoodaLinqMethod.SoodaObject_GetLabel);
+
+            // doesn't compile: method2id.Add(MethodOf(() => ((SoodaObject) null)[string.Empty]), SoodaLinqMethod.SoodaObject_GetItem);
+            method2id.Add(typeof(SoodaObject).GetMethod("get_Item"), SoodaLinqMethod.SoodaObject_GetItem);
+
             _method2id = method2id;
             return method2id;
         }

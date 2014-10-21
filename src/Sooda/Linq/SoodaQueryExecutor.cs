@@ -638,12 +638,17 @@ namespace Sooda.Linq
             return TranslateCollectionContains(haystack, TranslateExpression(needle));
         }
 
+        string GetStringArgument(MethodCallExpression mc)
+        {
+            string result = GetConstant(mc.Arguments[0]) as string;
+            if (result == null)
+                throw new NotSupportedException(mc.Method.Name + " must be given a constant");
+            return result;
+        }
+
         SoqlStringContainsExpression TranslateStringContains(MethodCallExpression mc, SoqlStringContainsPosition position)
         {
-            string needle = GetConstant(mc.Arguments[0]) as string;
-            if (needle == null)
-                throw new NotSupportedException(mc.Method.Name + " must be given a constant");
-            return new SoqlStringContainsExpression(TranslateExpression(mc.Object), position, needle);
+            return new SoqlStringContainsExpression(TranslateExpression(mc.Object), position, GetStringArgument(mc));
         }
 
         SoqlExpression TranslateGetLabel(Expression expr)
@@ -936,6 +941,12 @@ namespace Sooda.Linq
                     return TranslatePrimaryKey(mc.Object);
                 case SoodaLinqMethod.SoodaObject_GetLabel:
                     return TranslateGetLabel(mc.Object);
+                case SoodaLinqMethod.SoodaObject_GetItem:
+                    SoqlPathExpression parent = TranslateToPathExpression(mc.Object);
+                    string name = GetStringArgument(mc);
+                    if (!FindClassInfo(mc.Object).ContainsField(name))
+                        throw new Exception(name + " is not a Sooda field");
+                    return new SoqlPathExpression(parent, name);
                 default:
                     break;
             }
