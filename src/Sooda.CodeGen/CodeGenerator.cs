@@ -98,7 +98,7 @@ namespace Sooda.CodeGen
 
         private void GenerateConditionalSets(CodeStatementCollection stats, int min, int max, ClassInfo ci)
         {
-            if ((ci.Schema.AssemblyName != null) && (ci.Schema.AssemblyName != ""))
+            if (!string.IsNullOrEmpty(ci.Schema.AssemblyName))
                 return;
             if (min >= max)
             {
@@ -122,7 +122,7 @@ namespace Sooda.CodeGen
 
         public void GenerateClassValues(CodeNamespace nspace, ClassInfo ci, bool miniStub)
         {
-            if ((ci.Schema.AssemblyName != null) && (ci.Schema.AssemblyName != ""))
+            if (!string.IsNullOrEmpty(ci.Schema.AssemblyName))
                 return;
             CodeDomClassStubGenerator gen = new CodeDomClassStubGenerator(ci, Project);
 
@@ -213,7 +213,7 @@ namespace Sooda.CodeGen
 
         public void GenerateClassStub(CodeNamespace nspace, ClassInfo ci, bool miniStub)
         {
-            if ((ci.Schema.AssemblyName != null) && (ci.Schema.AssemblyName != ""))
+            if (!string.IsNullOrEmpty(ci.Schema.AssemblyName))
                 return;
             if (!miniStub)
                 GenerateClassValues(nspace, ci, miniStub);
@@ -279,20 +279,20 @@ namespace Sooda.CodeGen
             {
                 foreach (ConstantInfo constInfo in ci.Constants)
                 {
-                    if (ci.GetFirstPrimaryKeyField().DataType == FieldDataType.Integer)
+                    object value;
+                    switch (ci.GetFirstPrimaryKeyField().DataType)
                     {
-                        ctd.Members.Add(gen.Prop_LiteralValue(constInfo.Name, Int32.Parse(constInfo.Key)));
+                        case FieldDataType.Integer:
+                            value = int.Parse(constInfo.Key);
+                            break;
+                        case FieldDataType.String:
+                        case FieldDataType.AnsiString:
+                            value = constInfo.Key;
+                            break;
+                        default:
+                            throw new NotSupportedException("Primary key type " + ci.GetFirstPrimaryKeyField().DataType + " is not supported");
                     }
-                    else if (ci.GetFirstPrimaryKeyField().DataType == FieldDataType.String)
-                    {
-                        ctd.Members.Add(gen.Prop_LiteralValue(constInfo.Name, constInfo.Key));
-                    }
-                    else if (ci.GetFirstPrimaryKeyField().DataType == FieldDataType.AnsiString)
-                    {
-                        ctd.Members.Add(gen.Prop_LiteralValue(constInfo.Name, constInfo.Key));
-                    }
-                    else
-                        throw new NotSupportedException("Primary key type " + ci.GetFirstPrimaryKeyField().DataType + " is not supported");
+                    ctd.Members.Add(gen.Prop_LiteralValue(constInfo.Name, value));
                 }
             }
 
@@ -311,7 +311,7 @@ namespace Sooda.CodeGen
 
         public void GenerateClassFactory(CodeNamespace nspace, ClassInfo ci)
         {
-            if ((ci.Schema.AssemblyName != null) && (ci.Schema.AssemblyName != ""))
+            if (!string.IsNullOrEmpty(ci.Schema.AssemblyName))
                 return;
             FieldInfo fi = ci.GetFirstPrimaryKeyField();
             string pkClrTypeName = fi.GetFieldHandler().GetFieldType().FullName;
@@ -368,7 +368,7 @@ namespace Sooda.CodeGen
 
         public void GenerateClassSkeleton(CodeNamespace nspace, ClassInfo ci, bool useChainedConstructorCall, bool fakeSkeleton, bool usePartial, string partialSuffix)
         {
-            if ((ci.Schema.AssemblyName != null) && (ci.Schema.AssemblyName != ""))
+            if (!string.IsNullOrEmpty(ci.Schema.AssemblyName))
                 return;
             CodeTypeDeclaration ctd = new CodeTypeDeclaration(ci.Name + (usePartial ? partialSuffix : ""));
             if (ci.Description != null)
@@ -423,7 +423,7 @@ namespace Sooda.CodeGen
 
         public void GenerateClassPartialSkeleton(CodeNamespace nspace, ClassInfo ci)
         {
-            if ((ci.Schema.AssemblyName != null) && (ci.Schema.AssemblyName != ""))
+            if (!string.IsNullOrEmpty(ci.Schema.AssemblyName))
                 return;
             CodeTypeDeclaration ctd = new CodeTypeDeclaration(ci.Name);
             ctd.IsPartial = true;
@@ -440,7 +440,7 @@ namespace Sooda.CodeGen
 
             foreach (ClassInfo ci in schema.Classes)
             {
-                string nameSpace = ((ci.Schema.Namespace != null) && (ci.Schema.Namespace != "")) ? ci.Schema.Namespace : ns;
+                string nameSpace = string.IsNullOrEmpty(ci.Schema.Namespace) ? ns : ci.Schema.Namespace;
                 cace.Initializers.Add(new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(nameSpace + ".Stubs." + ci.Name + "_Factory"), "TheFactory"));
             }
         }
@@ -476,7 +476,7 @@ namespace Sooda.CodeGen
 
         public void GenerateListWrapper(CodeNamespace nspace, ClassInfo ci)
         {
-            if ((ci.Schema.AssemblyName != null) && (ci.Schema.AssemblyName != ""))
+            if (!string.IsNullOrEmpty(ci.Schema.AssemblyName))
                 return;
             //Output.Verbose("      * list wrapper {0}.{1}.{2}", ci.Schema.AssemblyName, ci.Schema.Namespace, ci.Name);
             CDILContext context = new CDILContext();
@@ -531,7 +531,7 @@ namespace Sooda.CodeGen
 
             context["ClassUnifiedFieldCount"] = ci.UnifiedFields.Count;
             context["PrimaryKeyFieldHandler"] = ci.GetFirstPrimaryKeyField().GetFieldHandler().GetType().FullName;
-            context["OptionalNewAttribute"] = (ci.InheritsFromClass != null) ? ",New" : "";
+            context["OptionalNewAttribute"] = ci.InheritsFromClass != null ? ",New" : "";
             if (_codeProvider is Microsoft.VisualBasic.VBCodeProvider)
             {
                 context["OptionalNewAttribute"] = "";
@@ -567,7 +567,7 @@ namespace Sooda.CodeGen
                                 continue;
 
                             CodeMemberMethod findMethod = new CodeMemberMethod();
-                            findMethod.Name = "Find" + ((list == 1) ? "List" : "") + "By" + fi.Name;
+                            findMethod.Name = "Find" + (list == 1 ? "List" : "") + "By" + fi.Name;
                             findMethod.Attributes = MemberAttributes.Public | MemberAttributes.Static;
                             findMethod.ReturnType = new CodeTypeReference(Project.OutputNamespace.Replace(".", "") + "." + ci.Name + ((list == 1) ? "List" : ""));
 
@@ -614,7 +614,7 @@ namespace Sooda.CodeGen
                             findMethod.Statements.Add(
                                 new CodeMethodReturnStatement(
                                     new CodeMethodInvokeExpression(
-                                    null, ((list == 1) ? "GetList" : "LoadSingleObject"),
+                                    null, list == 1 ? "GetList" : "LoadSingleObject",
                                     transaction,
                                     whereClause)));
                             ctd.Members.Add(findMethod);
@@ -627,7 +627,7 @@ namespace Sooda.CodeGen
 
         private void GenerateLoaderClass(CodeNamespace nspace, ClassInfo ci)
         {
-            if ((ci.Schema.AssemblyName != null) && (ci.Schema.AssemblyName != ""))
+            if (!string.IsNullOrEmpty(ci.Schema.AssemblyName))
                 return;
             CodeTypeDeclaration ctd = GetLoaderClass(ci);
             nspace.Types.Add(ctd);
@@ -710,7 +710,7 @@ namespace Sooda.CodeGen
 
         private void GenerateTypedPublicQueryWrappers(CodeNamespace ns, ClassInfo ci)
         {
-            if ((ci.Schema.AssemblyName != null) && (ci.Schema.AssemblyName != ""))
+            if (!string.IsNullOrEmpty(ci.Schema.AssemblyName))
                 return;
             CDILContext context = new CDILContext();
             context["ClassName"] = ci.Name;
@@ -769,7 +769,7 @@ namespace Sooda.CodeGen
 
         private void GenerateTypedInternalQueryWrappers(CodeNamespace ns, ClassInfo ci)
         {
-            if ((ci.Schema.AssemblyName != null) && (ci.Schema.AssemblyName != ""))
+            if (!string.IsNullOrEmpty(ci.Schema.AssemblyName))
                 return;
             CDILContext context = new CDILContext();
             context["ClassName"] = ci.Name;
@@ -810,9 +810,7 @@ namespace Sooda.CodeGen
                 prop.Name = fi.Name;
                 prop.Attributes = MemberAttributes.Public;
                 string fullWrapperTypeName;
-                string optionalNullable = "";
-                if (fi.IsNullable)
-                    optionalNullable = "Nullable";
+                string optionalNullable = fi.IsNullable ? "Nullable" : "";
 
                 if (fi.ReferencedClass == null)
                 {
@@ -842,9 +840,7 @@ namespace Sooda.CodeGen
 
         private string GetEmbeddedSchemaFileName()
         {
-            string ext = "bin";
-            if (Project.EmbedSchema == EmbedSchema.Xml)
-                ext = "xml";
+            string ext = Project.EmbedSchema == EmbedSchema.Xml ? "xml" : "bin";
 
             if (Project.SeparateStubs)
                 return Path.Combine(Project.OutputPath, "Stubs/_DBSchema." + ext);
