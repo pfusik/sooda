@@ -101,14 +101,6 @@
         <collectionManyToMany name="Parents" relation="RelInt32ToString" masterField="0" />
     </class>
 
-    <class datasource="xmldata1" name="XmlTest1">
-        <table name="XmlTest1">
-            <field name="Id" type="Integer" size="64" dbcolumn="id" primaryKey="true" />
-            <field name="Data" type="String" size="64" nullable="true" dbcolumn="data" />
-            <field name="Parent" type="Integer" size="64" dbcolumn="parent" references="XmlTest1" />
-        </table>
-    </class>
-
     <class name="MultiKey" cached="true">
         <table name="MultiKey">
             <field name="Contact" dbcolumn="contact_id" type="Integer" primaryKey="true" />

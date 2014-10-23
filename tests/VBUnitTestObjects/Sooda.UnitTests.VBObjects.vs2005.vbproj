@@ -131,9 +131,6 @@
     <Compile Include="SuperBike.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="XmlTest1.vb">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="_Stubs.vb">
       <SubType>Code</SubType>
     </Compile>

@@ -150,9 +150,6 @@
     <Compile Include="SuperBike.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="XmlTest1.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="_Stubs.cs">
       <SubType>Code</SubType>
     </Compile>
