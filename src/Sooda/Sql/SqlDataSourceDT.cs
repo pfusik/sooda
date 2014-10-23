@@ -58,83 +58,29 @@ namespace Sooda.Sql
         {
         }
 
-
-        private bool InExternalTransaction()
+        static bool InExternalTransaction()
         {
             if (System.Transactions.Transaction.Current != null)
             {
-				//TransactionStatus ts = System.Transactions.Transaction.Current.TransactionInformation.Status;
-				//if (ts == System.Transactions.TransactionStatus.Active || ts == System.Transactions.TransactionStatus.InDoubt)
-				return true;
+                //TransactionStatus ts = System.Transactions.Transaction.Current.TransactionInformation.Status;
+                //if (ts == System.Transactions.TransactionStatus.Active || ts == System.Transactions.TransactionStatus.InDoubt)
+                return true;
             }
             return false;
         }
 
-        private void BeginTransactionIfNecessary()
+        protected override void BeginTransaction()
         {
             if (Transaction != null)
                 logger.Warn("Previous transaction has not been closed");
-            if (!DisableTransactions)
+            if (InExternalTransaction())
             {
-                if (InExternalTransaction())
-                {
-                    logger.Debug("External transaction exists, will not start ADO transaction");
-                }
-                else
-                {
-                    logger.Debug("Starting new ADO.Net transaction");
-                    Transaction = Connection.BeginTransaction(IsolationLevel);
-                }
+                logger.Debug("External transaction exists, will not start ADO transaction");
             }
-
-        }
-
-        public override void Open()
-        {
-            if (ConnectionString == null)
-                throw new SoodaDatabaseException("connectionString parameter not defined for datasource: " + Name);
-            if (ConnectionType == null)
-                throw new SoodaDatabaseException("connectionType parameter not defined for datasource: " + Name);
-            Connection = (IDbConnection)Activator.CreateInstance(ConnectionType, new object[] { ConnectionString });
-            Connection.Open();
-            BeginTransactionIfNecessary();
-        }
-
-        public override void Rollback()
-        {
-            if (Transaction != null)
+            else
             {
-                Transaction.Rollback();
-                Transaction.Dispose();
-                Transaction = null;
-            }
-            BeginTransactionIfNecessary();
-        }
-
-        public override void Commit()
-        {
-            if (Transaction != null)
-            {
-                Transaction.Commit();
-                Transaction.Dispose();
-                Transaction = null;
-            }
-            BeginTransactionIfNecessary();
-        }
-
-        public override void Close()
-        {
-            if (Transaction != null)
-            {
-                Transaction.Rollback();
-                Transaction.Dispose();
-                Transaction = null;
-            };
-
-            if (Connection != null)
-            {
-                Connection.Dispose();
-                Connection = null;
+                logger.Debug("Starting new ADO.Net transaction");
+                base.BeginTransaction();
             }
         }
     }

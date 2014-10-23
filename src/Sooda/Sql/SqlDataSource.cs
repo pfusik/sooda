@@ -168,6 +168,11 @@ namespace Sooda.Sql
             set { _isolationLevel = value; }
         }
 
+        protected virtual void BeginTransaction()
+        {
+            Transaction = Connection.BeginTransaction(IsolationLevel);
+        }
+
         public override void Open()
         {
             if (ConnectionString == null)
@@ -194,7 +199,7 @@ namespace Sooda.Sql
                     Connection.Open();
                     if (!DisableTransactions)
                     {
-                        Transaction = Connection.BeginTransaction(IsolationLevel);
+                        BeginTransaction();
                         if (this.SqlBuilder is OracleBuilder && SoodaConfig.GetString("sooda.oracleClientAutoCommitBugWorkaround", "false") == "true")
                         {
                             // http://social.msdn.microsoft.com/forums/en-US/adodotnetdataproviders/thread/d4834ce2-482f-40ec-ad90-c3f9c9c4d4b1/
@@ -223,9 +228,13 @@ namespace Sooda.Sql
         {
             if (OwnConnection && !DisableTransactions)
             {
-                Transaction.Rollback();
-                Transaction.Dispose();
-                Transaction = Connection.BeginTransaction(IsolationLevel);
+                if (Transaction != null)
+                {
+                    Transaction.Rollback();
+                    Transaction.Dispose();
+                    Transaction = null;
+                }
+                BeginTransaction();
             }
         }
 
@@ -233,9 +242,13 @@ namespace Sooda.Sql
         {
             if (OwnConnection && !DisableTransactions)
             {
-                Transaction.Commit();
-                Transaction.Dispose();
-                Transaction = Connection.BeginTransaction(IsolationLevel);
+                if (Transaction != null)
+                {
+                    Transaction.Commit();
+                    Transaction.Dispose();
+                    Transaction = null;
+                }
+                BeginTransaction();
             }
         }
 
