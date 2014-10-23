@@ -134,18 +134,7 @@ namespace Sooda
             }
         }
 
-        ~SoodaTransaction()
-        {
-            Dispose(false);
-        }
-
-        public new void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private new void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
             try
