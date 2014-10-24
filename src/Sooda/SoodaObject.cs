@@ -1137,6 +1137,14 @@ namespace Sooda
             }
         }
 
+        void SetFieldValue(int fieldOrdinal, object value)
+        {
+            CopyOnWrite();
+            _fieldValues.SetFieldValue(fieldOrdinal, value);
+            SetFieldDirty(fieldOrdinal, true);
+            SetObjectDirty();
+        }
+
         internal void SetPlainFieldValue(int tableNumber, string fieldName, int fieldOrdinal, object newValue, SoodaFieldUpdateDelegate before, SoodaFieldUpdateDelegate after)
         {
             EnsureFieldsInited();
@@ -1152,12 +1160,7 @@ namespace Sooda
 
                     if (before != null)
                         before(oldValue, newValue);
-
-                    CopyOnWrite();
-                    _fieldValues.SetFieldValue(fieldOrdinal, newValue);
-                    SetFieldDirty(fieldOrdinal, true);
-                    SetObjectDirty();
-
+                    SetFieldValue(fieldOrdinal, newValue);
                     if (after != null)
                         after(oldValue, newValue);
 
@@ -1170,10 +1173,7 @@ namespace Sooda
             else
             {
                 // optimization here - we don't even need to load old values from database
-                CopyOnWrite();
-                _fieldValues.SetFieldValue(fieldOrdinal, newValue);
-                SetFieldDirty(fieldOrdinal, true);
-                SetObjectDirty();
+                SetFieldValue(fieldOrdinal, newValue);
             }
         }
 
@@ -1188,7 +1188,6 @@ namespace Sooda
 
             EnsureFieldsInited();
             EnsureDataLoaded(tableNumber);
-            CopyOnWrite();
 
             SoodaObject oldValue = null;
 
@@ -1216,10 +1215,8 @@ namespace Sooda
                     listInternal.InternalRemove(this);
                 }
             }
-            _fieldValues.SetFieldValue(fieldOrdinal, newValue != null ? newValue.GetPrimaryKeyValue() : null);
-            SetFieldDirty(fieldOrdinal, true);
+            SetFieldValue(fieldOrdinal, newValue != null ? newValue.GetPrimaryKeyValue() : null);
             refcache[refCacheOrdinal] = null;
-            SetObjectDirty();
             if (newValue != null && backRefCollections != null)
             {
                 foreach (string collectionName in backRefCollections)
@@ -1508,8 +1505,7 @@ namespace Sooda
         {
             if (FromCache)
             {
-                SoodaObjectFieldValues newFieldValues = _fieldValues.Clone();
-                _fieldValues = newFieldValues;
+                _fieldValues = _fieldValues.Clone();
                 FromCache = false;
             }
         }
