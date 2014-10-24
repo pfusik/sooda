@@ -1552,16 +1552,43 @@ namespace Sooda
             return fi;
         }
 
+        object GetTypedFieldValue(Sooda.Schema.FieldInfo fi)
+        {
+            object value = _fieldValues.GetBoxedFieldValue(fi.ClassUnifiedOrdinal);
+            if (value != null && fi.References != null)
+                value = GetTransaction().GetFactory(fi.References).GetRef(GetTransaction(), value);
+            return value;
+        }
+
         public object this[string fieldName]
         {
             get
             {
                 Sooda.Schema.FieldInfo fi = GetFieldInfo(fieldName);
                 EnsureDataLoaded(fi.Table.OrdinalInClass);
-                object value = _fieldValues.GetBoxedFieldValue(fi.ClassUnifiedOrdinal);
-                if (value != null && fi.References != null)
-                    value = GetTransaction().GetFactory(fi.References).GetRef(GetTransaction(), value);
-                return value;
+                return GetTypedFieldValue(fi);
+            }
+            set
+            {
+                Sooda.Schema.FieldInfo fi = GetFieldInfo(fieldName);
+                // FIXME: make sure not a static field - because of triggers, refcache and collections
+                EnsureDataLoaded(fi.Table.OrdinalInClass);
+                if (AreFieldUpdateTriggersEnabled())
+                {
+                    object oldValue = GetTypedFieldValue(fi);
+                    if (Object.Equals(oldValue, value))
+                        return;
+
+                    BeforeFieldUpdate(fieldName, oldValue, value);
+                    SoodaObject so = value as SoodaObject;
+                    SetFieldValue(fi.ClassUnifiedOrdinal, so != null ? so.GetPrimaryKeyValue() : value);
+                    AfterFieldUpdate(fieldName, oldValue, value);
+                }
+                else
+                {
+                    SoodaObject so = value as SoodaObject;
+                    SetFieldValue(fi.ClassUnifiedOrdinal, so != null ? so.GetPrimaryKeyValue() : value);
+                }
             }
         }
 
@@ -1569,6 +1596,12 @@ namespace Sooda
         public override bool TryGetMember(System.Dynamic.GetMemberBinder binder, out object result)
         {
             result = this[binder.Name];
+            return true;
+        }
+
+        public override bool TrySetMember(System.Dynamic.SetMemberBinder binder, object value)
+        {
+            this[binder.Name] = value;
             return true;
         }
 #endif

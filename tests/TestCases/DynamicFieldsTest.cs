@@ -45,8 +45,26 @@ namespace Sooda.UnitTests.TestCases
     [TestFixture]
     public class DynamicFieldsTest
     {
+        const string IntField = "IntDynamicField";
+
+        static void AddIntField(SoodaTransaction tran)
+        {
+            DynamicFieldManager.Add(new FieldInfo {
+                    ParentClass = Sooda.UnitTests.BaseObjects.Stubs.Contact_Factory.TheClassInfo, // doesn't work: tran.Schema.FindClassByName("Contact"),
+                    Name = IntField,
+                    TypeName = "Integer",
+                    IsNullable = false
+                }, tran);
+        }
+
+        static void RemoveIntField(SoodaTransaction tran)
+        {
+            FieldInfo fi = Sooda.UnitTests.BaseObjects.Stubs.Contact_Factory.TheClassInfo.FindFieldByName(IntField);
+            DynamicFieldManager.Remove(fi, tran);
+        }
+
         [Test]
-        public void IndexerGet()
+        public void IndexerGetStatic()
         {
             using (new SoodaTransaction())
             {
@@ -59,7 +77,7 @@ namespace Sooda.UnitTests.TestCases
         }
 
         [Test]
-        public void IndexerGetRef()
+        public void IndexerGetStaticRef()
         {
             using (new SoodaTransaction())
             {
@@ -82,7 +100,7 @@ namespace Sooda.UnitTests.TestCases
         }
 
         [Test]
-        public void IndexerGetChanged()
+        public void IndexerGetStaticChanged()
         {
             using (new SoodaTransaction())
             {
@@ -98,7 +116,7 @@ namespace Sooda.UnitTests.TestCases
         }
 
         [Test]
-        public void IndexerGetRefChanged()
+        public void IndexerGetStaticRefChanged()
         {
             using (new SoodaTransaction())
             {
@@ -123,9 +141,45 @@ namespace Sooda.UnitTests.TestCases
             }
         }
 
+        [Test]
+        public void IndexerGetDynamic()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                AddIntField(tran);
+                try
+                {
+                    object value = Contact.Mary[IntField];
+                    Assert.IsNull(value);
+                }
+                finally
+                {
+                    RemoveIntField(tran);
+                }
+            }
+        }
+
+        [Test]
+        public void IndexerSetDynamic()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                AddIntField(tran);
+                try
+                {
+                    Contact.Mary[IntField] = 42;
+                    object value = Contact.Mary[IntField];
+                    Assert.AreEqual(42, value);
+                }
+                finally
+                {
+                    RemoveIntField(tran);
+                }
+            }
+        }
 #if DOTNET35
         [Test]
-        public void Where()
+        public void WhereStatic()
         {
             using (new SoodaTransaction())
             {
@@ -145,7 +199,29 @@ namespace Sooda.UnitTests.TestCases
         }
 
         [Test]
-        public void OrderBySelect()
+        public void WhereDynamic()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                AddIntField(tran);
+                try
+                {
+                    Contact.Mary[IntField] = 42;
+                    IEnumerable<Contact> ce = Contact.Linq().Where(c => (int) c[IntField] == 5);
+                    CollectionAssert.IsEmpty(ce);
+                    
+                    ce = Contact.Linq().Where(c => (int) c[IntField] == 42);
+                    CollectionAssert.AreEquivalent(new Contact[] { Contact.Mary }, ce);
+                }
+                finally
+                {
+                    RemoveIntField(tran);
+                }
+            }
+        }
+
+        [Test]
+        public void OrderBySelectStatic()
         {
             using (new SoodaTransaction())
             {
@@ -163,37 +239,11 @@ namespace Sooda.UnitTests.TestCases
                 Contact.Linq().Select(c => c["NoSuchField"]).ToList();
             }
         }
-
-        [Test]
-        public void AddRemove()
-        {
-            using (SoodaTransaction tran = new SoodaTransaction())
-            {
-                ClassInfo ci = Sooda.UnitTests.BaseObjects.Stubs.Contact_Factory.TheClassInfo; // doesn't work: tran.Schema.FindClassByName("Contact")
-                const string fieldName = "FirstDynamicField";
-                DynamicFieldManager.Add(new FieldInfo {
-                        ParentClass = ci,
-                        Name = fieldName,
-                        TypeName = "Integer",
-                        IsNullable = false
-                    }, tran);
-                try
-                {
-                    object value = Contact.Mary[fieldName];
-                    Assert.IsNull(value);
-                }
-                finally
-                {
-                    FieldInfo fi = ci.FindFieldByName(fieldName);
-                    DynamicFieldManager.Remove(fi, tran);
-                }
-            }
-        }
 #endif
 
 #if DOTNET4
         [Test]
-        public void DynamicGet()
+        public void DynamicGetStatic()
         {
             using (new SoodaTransaction())
             {
@@ -207,7 +257,7 @@ namespace Sooda.UnitTests.TestCases
         }
 
         [Test]
-        public void DynamicGetRef()
+        public void DynamicGetStaticRef()
         {
             using (new SoodaTransaction())
             {
@@ -266,29 +316,40 @@ namespace Sooda.UnitTests.TestCases
         }
 
         [Test]
-        public void DynamicAddRemove()
+        public void DynamicGetDynamic()
         {
             using (SoodaTransaction tran = new SoodaTransaction())
             {
-                ClassInfo ci = Sooda.UnitTests.BaseObjects.Stubs.Contact_Factory.TheClassInfo; // doesn't work: tran.Schema.FindClassByName("Contact")
-                const string fieldName = "FirstDynamicField";
-                DynamicFieldManager.Add(new FieldInfo {
-                        ParentClass = ci,
-                        Name = fieldName,
-                        TypeName = "Integer",
-                        IsNullable = false
-                    }, tran);
-
+                AddIntField(tran);
                 dynamic d = Contact.Mary;
                 try
                 {
-                    object value = d.FirstDynamicField;
+                    object value = d.IntDynamicField;
                     Assert.IsNull(value);
                 }
                 finally
                 {
-                    FieldInfo fi = ci.FindFieldByName(fieldName);
-                    DynamicFieldManager.Remove(fi, tran);
+                    RemoveIntField(tran);
+                }
+            }
+        }
+
+        [Test]
+        public void DynamicSetDynamic()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                AddIntField(tran);
+                dynamic d = Contact.Mary;
+                try
+                {
+                    d.IntDynamicField = 42;
+                    object value = d.IntDynamicField;
+                    Assert.AreEqual(42, value);
+                }
+                finally
+                {
+                    RemoveIntField(tran);
                 }
             }
         }
