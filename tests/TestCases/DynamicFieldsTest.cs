@@ -129,7 +129,7 @@ namespace Sooda.UnitTests.TestCases
         {
             using (new SoodaTransaction())
             {
-                IEnumerable<Contact> ce = Contact.Linq().Where(c => c["Name"] == "Mary Manager");
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => (string) c["Name"] == "Mary Manager");
                 CollectionAssert.AreEquivalent(new Contact[] { Contact.Mary }, ce);
             }
         }
@@ -140,7 +140,7 @@ namespace Sooda.UnitTests.TestCases
         {
             using (new SoodaTransaction())
             {
-                Contact.Linq().Any(c => c["NoSuchField"] == "Mary Manager");
+                Contact.Linq().Any(c => (string) c["NoSuchField"] == "Mary Manager");
             }
         }
 
@@ -169,16 +169,127 @@ namespace Sooda.UnitTests.TestCases
         {
             using (SoodaTransaction tran = new SoodaTransaction())
             {
+                ClassInfo ci = Sooda.UnitTests.BaseObjects.Stubs.Contact_Factory.TheClassInfo; // doesn't work: tran.Schema.FindClassByName("Contact")
                 const string fieldName = "FirstDynamicField";
                 DynamicFieldManager.Add(new FieldInfo {
-                        ParentClass = tran.Schema.FindClassByName("Contact"),
+                        ParentClass = ci,
                         Name = fieldName,
                         TypeName = "Integer",
-                        IsNullable = false,
+                        IsNullable = false
+                    }, tran);
+                try
+                {
+                    object value = Contact.Mary[fieldName];
+                    Assert.IsNull(value);
+                }
+                finally
+                {
+                    FieldInfo fi = ci.FindFieldByName(fieldName);
+                    DynamicFieldManager.Remove(fi, tran);
+                }
+            }
+        }
+#endif
+
+#if DOTNET4
+        [Test]
+        public void DynamicGet()
+        {
+            using (new SoodaTransaction())
+            {
+                dynamic d = Contact.Mary;
+                object result = d.Name;
+                Assert.AreEqual("Mary Manager", result);
+
+                result = d.Active;
+                Assert.AreEqual(true, result);
+            }
+        }
+
+        [Test]
+        public void DynamicGetRef()
+        {
+            using (new SoodaTransaction())
+            {
+                dynamic d = Contact.Ed;
+                object result = d.Manager;
+                Assert.AreEqual(Contact.Mary, result);
+
+                d = Contact.Mary;
+                result = d.Manager;
+                Assert.IsNull(result);
+            }
+        }
+
+        [Test]
+        public void DynamicGetPrimaryKey()
+        {
+            using (new SoodaTransaction())
+            {
+                dynamic d = Contact.Ed;
+                object result = d.ContactId;
+                Assert.AreEqual(2, result);
+            }
+        }
+
+        [Test]
+        [ExpectedException(typeof(Exception))]
+        public void DynamicGetNonExisting()
+        {
+            using (new SoodaTransaction())
+            {
+                dynamic d = Contact.Mary;
+                object result = d.NoSuchField;
+            }
+        }
+
+        [Test]
+        public void DynamicGetLabel()
+        {
+            using (new SoodaTransaction())
+            {
+                dynamic d = Contact.Mary;
+                object result = d.GetLabel(false);
+                Assert.AreEqual("Mary Manager", result);
+            }
+        }
+
+        [Test]
+        public void DynamicGetCodeProperty()
+        {
+            using (new SoodaTransaction())
+            {
+                dynamic d = Contact.Mary;
+                object result = d.NameAndType;
+                Assert.AreEqual("Mary Manager (Manager)", result);
+            }
+        }
+
+        [Test]
+        public void DynamicAddRemove()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                ClassInfo ci = Sooda.UnitTests.BaseObjects.Stubs.Contact_Factory.TheClassInfo; // doesn't work: tran.Schema.FindClassByName("Contact")
+                const string fieldName = "FirstDynamicField";
+                DynamicFieldManager.Add(new FieldInfo {
+                        ParentClass = ci,
+                        Name = fieldName,
+                        TypeName = "Integer",
+                        IsNullable = false
                     }, tran);
 
-                FieldInfo fi = tran.Schema.FindClassByName("Contact").FindFieldByName(fieldName);
-                DynamicFieldManager.Remove(fi, tran);
+                dynamic d = Contact.Mary;
+                try
+                {
+                    object value = d.FirstDynamicField;
+                    Assert.IsNull(value);
+                }
+                finally
+                {
+                    FieldInfo fi = ci.FindFieldByName(fieldName);
+                    DynamicFieldManager.Remove(fi, tran);
+                }
             }
         }
 #endif

@@ -48,6 +48,9 @@ using Sooda.Collections;
 namespace Sooda
 {
     public class SoodaObject
+#if DOTNET4
+        : System.Dynamic.DynamicObject
+#endif
     {
         private static readonly Logger logger = LogManager.GetLogger("Sooda.Object");
 
@@ -1565,5 +1568,13 @@ namespace Sooda
                 return value;
             }
         }
+
+#if DOTNET4
+        public override bool TryGetMember(System.Dynamic.GetMemberBinder binder, out object result)
+        {
+            result = this[binder.Name];
+            return true;
+        }
+#endif
     }
 }
