@@ -30,7 +30,11 @@ method InitFieldValues(System.Int32 fieldCount, arrayof(System.String) fieldName
     attributes Family,Override
     returns SoodaObjectFieldValues
 begin
+#if ArrayFieldValues
+    return new ${ClassName}_Values(arg(fieldCount))
+#else
     return new ${ClassName}_Values(arg(fieldNames))
+#endif
 end
 
 method GetClassInfo()

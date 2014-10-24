@@ -47,11 +47,14 @@ namespace Sooda
             _values = new object[count];
         }
 
+        protected SoodaObjectArrayFieldValues(SoodaObjectArrayFieldValues other)
+        {
+            _values = (object[]) _values.Clone();
+        }
+
         public override SoodaObjectFieldValues Clone()
         {
-            object[] newValues = new object[_values.Length];
-            Array.Copy(_values, 0, newValues, 0, _values.Length);
-            return new SoodaObjectArrayFieldValues(newValues);
+            return new SoodaObjectArrayFieldValues(this);
         }
 
         public override void SetFieldValue(int fieldOrdinal, object val)

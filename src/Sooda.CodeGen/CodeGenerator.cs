@@ -126,46 +126,57 @@ namespace Sooda.CodeGen
                 return;
             CodeDomClassStubGenerator gen = new CodeDomClassStubGenerator(ci, Project);
 
+            bool arrayFieldValues = ci.GetDataSource().EnableDynamicFields;
+            Type baseClass = arrayFieldValues ? typeof(SoodaObjectArrayFieldValues) : typeof(SoodaObjectReflectionCachingFieldValues);
             CodeTypeDeclaration ctd = new CodeTypeDeclaration(ci.Name + "_Values");
             if (ci.InheritFrom != null)
                 ctd.BaseTypes.Add(ci.InheritFrom + "_Values");
             else
-                ctd.BaseTypes.Add(typeof(SoodaObjectReflectionCachingFieldValues));
+                ctd.BaseTypes.Add(baseClass);
             ctd.Attributes = MemberAttributes.Assembly;
 
-            CodeMemberField field;
-
-            foreach (FieldInfo fi in ci.LocalFields)
+            if (!arrayFieldValues)
             {
-                CodeTypeReference fieldType;
-                if (fi.References != null)
+                foreach (FieldInfo fi in ci.LocalFields)
                 {
-                    fieldType = gen.GetReturnType(PrimitiveRepresentation.SqlType, fi);
-                }
-                else if (fi.IsNullable)
-                {
-                    fieldType = gen.GetReturnType(Project.NullableRepresentation, fi);
-                }
-                else
-                {
-                    fieldType = gen.GetReturnType(Project.NotNullRepresentation, fi);
-                }
+                    CodeTypeReference fieldType;
+                    if (fi.References != null)
+                    {
+                        fieldType = gen.GetReturnType(PrimitiveRepresentation.SqlType, fi);
+                    }
+                    else if (fi.IsNullable)
+                    {
+                        fieldType = gen.GetReturnType(Project.NullableRepresentation, fi);
+                    }
+                    else
+                    {
+                        fieldType = gen.GetReturnType(Project.NotNullRepresentation, fi);
+                    }
 
-                field = new CodeMemberField(fieldType, fi.Name);
-                field.Attributes = MemberAttributes.Public;
-                ctd.Members.Add(field);
+                    CodeMemberField field = new CodeMemberField(fieldType, fi.Name);
+                    field.Attributes = MemberAttributes.Public;
+                    ctd.Members.Add(field);
+                }
             }
 
             CodeConstructor constructor2 = new CodeConstructor();
             constructor2.Attributes = MemberAttributes.Public;
-            constructor2.Parameters.Add(new CodeParameterDeclarationExpression(typeof(SoodaObjectReflectionCachingFieldValues), "other"));
+            constructor2.Parameters.Add(new CodeParameterDeclarationExpression(baseClass, "other"));
             constructor2.BaseConstructorArgs.Add(new CodeArgumentReferenceExpression("other"));
             ctd.Members.Add(constructor2);
 
             CodeConstructor constructor3 = new CodeConstructor();
             constructor3.Attributes = MemberAttributes.Public;
-            constructor3.Parameters.Add(new CodeParameterDeclarationExpression(typeof(string[]), "fieldNames"));
-            constructor3.BaseConstructorArgs.Add(new CodeArgumentReferenceExpression("fieldNames"));
+            if (arrayFieldValues)
+            {
+                constructor3.Parameters.Add(new CodeParameterDeclarationExpression(typeof(int), "fieldCount"));
+                constructor3.BaseConstructorArgs.Add(new CodeArgumentReferenceExpression("fieldCount"));
+            }
+            else
+            {
+                constructor3.Parameters.Add(new CodeParameterDeclarationExpression(typeof(string[]), "fieldNames"));
+                constructor3.BaseConstructorArgs.Add(new CodeArgumentReferenceExpression("fieldNames"));
+            }
             ctd.Members.Add(constructor3);
 
             CodeMemberMethod cloneMethod = new CodeMemberMethod();
@@ -240,6 +251,7 @@ namespace Sooda.CodeGen
             {
                 context["BaseClassName"] = "SoodaObject";
             }
+            context["ArrayFieldValues"] = ci.GetDataSource().EnableDynamicFields;
 
             CodeTypeDeclaration ctd = CDILParser.ParseClass(CDILTemplate.Get("Stub.cdil"), context);
             if (ci.Description != null)
