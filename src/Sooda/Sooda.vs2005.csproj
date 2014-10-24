@@ -370,9 +370,6 @@
     <Compile Include="QL\SoqlExpression.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="QL\SoqlExpressionType.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="QL\SoqlFunctionCallExpression.cs">
       <SubType>Code</SubType>
     </Compile>
