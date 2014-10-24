@@ -37,11 +37,6 @@ namespace Sooda
     {
         readonly object[] _values;
 
-        SoodaObjectArrayFieldValues(object[] v)
-        {
-            _values = v;
-        }
-
         public SoodaObjectArrayFieldValues(int count)
         {
             _values = new object[count];
@@ -49,7 +44,7 @@ namespace Sooda
 
         protected SoodaObjectArrayFieldValues(SoodaObjectArrayFieldValues other)
         {
-            _values = (object[]) _values.Clone();
+            _values = (object[]) other._values.Clone();
         }
 
         public override SoodaObjectFieldValues Clone()
