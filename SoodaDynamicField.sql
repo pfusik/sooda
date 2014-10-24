@@ -7,3 +7,4 @@ create table SoodaDynamicField (
     precision int null,
     constraint PK_SoodaDynamicField primary key (class, field)
 );
+grant create table to soodatest
