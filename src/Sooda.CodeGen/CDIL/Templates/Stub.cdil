@@ -21,9 +21,17 @@ end
 
 method Get${ClassName}FieldValuesForRead(System.Int32 requiredTable)
     attributes Private
+#if ArrayFieldValues
+    returns SoodaObjectFieldValues
+#else
     returns ${ClassName}_Values
+#endif
 begin
+#if ArrayFieldValues
+    return typeref(Sooda.ObjectMapper.SoodaObjectImpl).GetFieldValuesForRead(this, arg(requiredTable))
+#else
     return cast(${ClassName}_Values, typeref(Sooda.ObjectMapper.SoodaObjectImpl).GetFieldValuesForRead(this, arg(requiredTable)))
+#endif
 end
 
 method InitFieldValues(System.Int32 fieldCount, arrayof(System.String) fieldNames)
@@ -31,7 +39,7 @@ method InitFieldValues(System.Int32 fieldCount, arrayof(System.String) fieldName
     returns SoodaObjectFieldValues
 begin
 #if ArrayFieldValues
-    return new ${ClassName}_Values(arg(fieldCount))
+    return new SoodaObjectArrayFieldValues(arg(fieldCount))
 #else
     return new ${ClassName}_Values(arg(fieldNames))
 #endif
