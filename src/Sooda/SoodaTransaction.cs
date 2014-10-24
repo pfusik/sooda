@@ -541,7 +541,7 @@ namespace Sooda
             _relationTables.Clear();
         }
 
-        public void Rollback()
+        public virtual void Rollback()
         {
             Reset();
 
@@ -567,7 +567,7 @@ namespace Sooda
             }
         }
 
-        public void Commit()
+        public virtual void Commit()
         {
             _precommitQueue = new Queue(_dirtyObjects.Count);
             CallBeforeCommitEvents();
