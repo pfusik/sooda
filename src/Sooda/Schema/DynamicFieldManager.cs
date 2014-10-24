@@ -164,10 +164,10 @@ namespace Sooda.Schema
             Resolve(ci); // initializes fi.Table
 
             StringWriter sw = new StringWriter();
+            sw.Write("insert into SoodaDynamicField (class, field, type, nullable, size, precision) values ({0}, {1}, {2}, {3}, {4}, {5});\n");
             ds.SqlBuilder.GenerateCreateTable(sw, fi.Table, null, ";\n");
             ds.SqlBuilder.GeneratePrimaryKey(sw, fi.Table, null, ";\n");
             ds.SqlBuilder.GenerateForeignKeys(sw, fi.Table, ";\n");
-            sw.Write("insert into SoodaDynamicField (class, field, type, nullable, size, precision) values ({0}, {1}, {2}, {3}, {4}, {5})");
             ds.ExecuteNonQuery(sw.ToString(), ci.Name, fi.Name, fi.TypeName, fi.IsNullable ? 1 : 0, NegativeToNull(fi.Size), NegativeToNull(fi.Precision));
         }
 
