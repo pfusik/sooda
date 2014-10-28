@@ -344,25 +344,6 @@ namespace Sooda.CodeGen
                 new CodeAttributeArgument(new CodeTypeOfExpression(ci.Name))
                 ));
 
-            CodeTypeConstructor cctor = new CodeTypeConstructor();
-            cctor.Statements.Add(new CodeAssignStatement(new CodeFieldReferenceExpression(null, "_fieldHandlers"),
-                new CodeArrayCreateExpression("SoodaFieldHandler", new CodePrimitiveExpression(ci.UnifiedFields.Count))));
-
-            foreach (FieldInfo fi2 in ci.UnifiedFields)
-            {
-                string typeWrapper = fi2.GetNullableFieldHandler().GetType().FullName;
-                bool isNullable = fi2.IsNullable;
-
-                cctor.Statements.Add(
-                    new CodeAssignStatement(
-                    new CodeArrayIndexerExpression(
-                    new CodeFieldReferenceExpression(null, "_fieldHandlers"),
-                    new CodePrimitiveExpression(fi2.ClassUnifiedOrdinal)
-                    ),
-                    new CodeObjectCreateExpression(typeWrapper, new CodePrimitiveExpression(isNullable))));
-            }
-
-            factoryClass.Members.Add(cctor);
             nspace.Types.Add(factoryClass);
         }
 
@@ -746,7 +727,7 @@ namespace Sooda.CodeGen
 
                 if (fi.ReferencedClass == null)
                 {
-                    fullWrapperTypeName = fi.GetNullableFieldHandler().GetTypedWrapperClass(fi.IsNullable);
+                    fullWrapperTypeName = fi.GetFieldHandler().GetTypedWrapperClass();
                     if (fullWrapperTypeName == null)
                         continue;
 
@@ -814,7 +795,7 @@ namespace Sooda.CodeGen
 
                 if (fi.ReferencedClass == null)
                 {
-                    fullWrapperTypeName = fi.GetNullableFieldHandler().GetTypedWrapperClass(fi.IsNullable);
+                    fullWrapperTypeName = fi.GetFieldHandler().GetTypedWrapperClass();
                     if (fullWrapperTypeName == null)
                         continue;
 

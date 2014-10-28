@@ -101,7 +101,7 @@ namespace Sooda.ObjectMapper.FieldHandlers
             parameter.DbType = DbType.Binary;
         }
 
-        public override string GetTypedWrapperClass(bool nullable)
+        public override string GetTypedWrapperClass()
         {
             return null; // no typed wrapper for this field type
         }

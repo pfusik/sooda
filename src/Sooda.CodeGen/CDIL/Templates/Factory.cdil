@@ -7,10 +7,6 @@ class ${ClassName}_Factory
     begin
     end
     
-    field arrayof(SoodaFieldHandler) _fieldHandlers
-        attributes Private,Static
-    end
-    
 #ifnot MultiColumnPrimaryKey
     field SoodaFieldHandler _primaryKeyFieldHandler
         attributes Private,Static
@@ -108,7 +104,7 @@ class ${ClassName}_Factory
         returns Sooda.ObjectMapper.SoodaFieldHandler
         attributes Assembly,Static
     begin
-        return arrayitem(defaultscope._fieldHandlers$, arg(ordinal))
+        return index(defaultscope._theClassInfo.UnifiedFields, arg(ordinal)).GetFieldHandler()
     end
     
     method CreateNew(SoodaTransaction tran)

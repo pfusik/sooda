@@ -260,6 +260,21 @@ namespace Sooda.CodeGen.CDIL
                 return caie;
             }
 
+            if (IsKeyword("index"))
+            {
+                GetNextToken();
+                Expect(CDILToken.LeftParen);
+                CodeIndexerExpression cie = new CodeIndexerExpression();
+                cie.TargetObject = ParseExpression();
+                while (TokenType == CDILToken.Comma)
+                {
+                    Expect(CDILToken.Comma);
+                    cie.Indices.Add(ParseExpression());
+                }
+                Expect(CDILToken.RightParen);
+                return cie;
+            }
+
             if (IsKeyword("var"))
             {
                 GetNextToken();

@@ -191,6 +191,11 @@ namespace Sooda.Schema
             return FieldHandlerFactory.GetFieldHandler(DataType);
         }
 
+        public SoodaFieldHandler GetFieldHandler()
+        {
+            return FieldHandlerFactory.GetFieldHandler(DataType, IsNullable);
+        }
+
         internal void Resolve(TableInfo parentTable, string parentName, int ordinal)
         {
             this.Table = parentTable;
