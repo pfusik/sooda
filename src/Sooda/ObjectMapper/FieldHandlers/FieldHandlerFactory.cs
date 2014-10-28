@@ -35,53 +35,38 @@ namespace Sooda.ObjectMapper.FieldHandlers
 {
     public class FieldHandlerFactory
     {
-        private static readonly Dictionary<FieldDataType, SoodaFieldHandler> _nullableHandlers = new Dictionary<FieldDataType, SoodaFieldHandler>();
-        private static readonly Dictionary<FieldDataType, SoodaFieldHandler> _notNullHandlers = new Dictionary<FieldDataType, SoodaFieldHandler>();
+        static readonly SoodaFieldHandler[] _nullableHandlers = GetHandlers(true);
+        static readonly SoodaFieldHandler[] _notNullHandlers = GetHandlers(false);
 
-        static FieldHandlerFactory()
+        static SoodaFieldHandler[] GetHandlers(bool nullable)
         {
-            _notNullHandlers[FieldDataType.Blob] = new Sooda.ObjectMapper.FieldHandlers.BlobFieldHandler(false);
-            _notNullHandlers[FieldDataType.Boolean] = new Sooda.ObjectMapper.FieldHandlers.BooleanFieldHandler(false);
-            _notNullHandlers[FieldDataType.BooleanAsInteger] = new Sooda.ObjectMapper.FieldHandlers.BooleanAsIntegerFieldHandler(false);
-            _notNullHandlers[FieldDataType.Integer] = new Sooda.ObjectMapper.FieldHandlers.Int32FieldHandler(false);
-            _notNullHandlers[FieldDataType.Long] = new Sooda.ObjectMapper.FieldHandlers.Int64FieldHandler(false);
-            _notNullHandlers[FieldDataType.DateTime] = new Sooda.ObjectMapper.FieldHandlers.DateTimeFieldHandler(false);
-            _notNullHandlers[FieldDataType.Decimal] = new Sooda.ObjectMapper.FieldHandlers.DecimalFieldHandler(false);
-            _notNullHandlers[FieldDataType.Double] = new Sooda.ObjectMapper.FieldHandlers.DoubleFieldHandler(false);
-            _notNullHandlers[FieldDataType.Float] = new Sooda.ObjectMapper.FieldHandlers.FloatFieldHandler(false);
-            _notNullHandlers[FieldDataType.String] = new Sooda.ObjectMapper.FieldHandlers.StringFieldHandler(false);
-            _notNullHandlers[FieldDataType.Guid] = new Sooda.ObjectMapper.FieldHandlers.GuidFieldHandler(false);
-            _notNullHandlers[FieldDataType.Image] = new Sooda.ObjectMapper.FieldHandlers.ImageFieldHandler(false);
-            _notNullHandlers[FieldDataType.TimeSpan] = new Sooda.ObjectMapper.FieldHandlers.TimeSpanFieldHandler(false);
-            _notNullHandlers[FieldDataType.AnsiString] = new Sooda.ObjectMapper.FieldHandlers.AnsiStringFieldHandler(false);
-
-            _nullableHandlers[FieldDataType.Blob] = new Sooda.ObjectMapper.FieldHandlers.BlobFieldHandler(true);
-            _nullableHandlers[FieldDataType.Boolean] = new Sooda.ObjectMapper.FieldHandlers.BooleanFieldHandler(true);
-            _nullableHandlers[FieldDataType.BooleanAsInteger] = new Sooda.ObjectMapper.FieldHandlers.BooleanAsIntegerFieldHandler(true);
-            _nullableHandlers[FieldDataType.Integer] = new Sooda.ObjectMapper.FieldHandlers.Int32FieldHandler(true);
-            _nullableHandlers[FieldDataType.Long] = new Sooda.ObjectMapper.FieldHandlers.Int64FieldHandler(true);
-            _nullableHandlers[FieldDataType.DateTime] = new Sooda.ObjectMapper.FieldHandlers.DateTimeFieldHandler(true);
-            _nullableHandlers[FieldDataType.Decimal] = new Sooda.ObjectMapper.FieldHandlers.DecimalFieldHandler(true);
-            _nullableHandlers[FieldDataType.Double] = new Sooda.ObjectMapper.FieldHandlers.DoubleFieldHandler(true);
-            _nullableHandlers[FieldDataType.Float] = new Sooda.ObjectMapper.FieldHandlers.FloatFieldHandler(true);
-            _nullableHandlers[FieldDataType.String] = new Sooda.ObjectMapper.FieldHandlers.StringFieldHandler(true);
-            _nullableHandlers[FieldDataType.Guid] = new Sooda.ObjectMapper.FieldHandlers.GuidFieldHandler(true);
-            _nullableHandlers[FieldDataType.Image] = new Sooda.ObjectMapper.FieldHandlers.ImageFieldHandler(true);
-            _nullableHandlers[FieldDataType.TimeSpan] = new Sooda.ObjectMapper.FieldHandlers.TimeSpanFieldHandler(true);
-            _nullableHandlers[FieldDataType.AnsiString] = new Sooda.ObjectMapper.FieldHandlers.AnsiStringFieldHandler(true);
+            // the order must match FieldDataType
+            return new SoodaFieldHandler[] {
+                new Int32FieldHandler(nullable),
+                new Int64FieldHandler(nullable),
+                new BooleanFieldHandler(nullable),
+                new BooleanAsIntegerFieldHandler(nullable),
+                new DecimalFieldHandler(nullable),
+                new FloatFieldHandler(nullable),
+                new DoubleFieldHandler(nullable),
+                new DateTimeFieldHandler(nullable),
+                new StringFieldHandler(nullable),
+                new BlobFieldHandler(nullable),
+                new GuidFieldHandler(nullable),
+                new ImageFieldHandler(nullable),
+                new TimeSpanFieldHandler(nullable),
+                new AnsiStringFieldHandler(nullable)
+            };
         }
 
         public static SoodaFieldHandler GetFieldHandler(FieldDataType type)
         {
-            return GetFieldHandler(type, true);
+            return _nullableHandlers[(int) type];
         }
 
         public static SoodaFieldHandler GetFieldHandler(FieldDataType type, bool nullable)
         {
-            SoodaFieldHandler handler;
-            if ((nullable ? _nullableHandlers : _notNullHandlers).TryGetValue(type, out handler))
-                return handler;
-            throw new SoodaSchemaException("Field handler for type '" + type + "' not supported.");
+            return (nullable ? _nullableHandlers : _notNullHandlers)[(int) type];
         }
     }
 }

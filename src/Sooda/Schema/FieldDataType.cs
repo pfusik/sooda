@@ -32,6 +32,7 @@ namespace Sooda.Schema
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     public enum FieldDataType
     {
+        // keep in sync with Sooda.ObjectMapper.FieldHandlers.FieldHandlerFactory
         Integer,
         Long,
         Boolean,
