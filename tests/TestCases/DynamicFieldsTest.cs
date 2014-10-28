@@ -64,6 +64,41 @@ namespace Sooda.UnitTests.TestCases
             DynamicFieldManager.Remove(fi, tran);
         }
 
+        const string DateTimeField = "DateTimeDynamicField";
+
+        static void AddDateTimeField(SoodaTransaction tran)
+        {
+            DynamicFieldManager.Add(new FieldInfo {
+                    ParentClass = tran.Schema.FindClassByName("PKInt32"),
+                    Name = DateTimeField,
+                    Type = typeof(DateTime?)
+                }, tran);
+        }
+
+        static void RemoveDateTimeField(SoodaTransaction tran)
+        {
+            FieldInfo fi = tran.Schema.FindClassByName("PKInt32").FindFieldByName(DateTimeField);
+            DynamicFieldManager.Remove(fi, tran);
+        }
+
+        const string ReferenceField = "ContactDynamicField";
+
+        static void AddReferenceField(SoodaTransaction tran)
+        {
+            DynamicFieldManager.Add(new FieldInfo {
+                    ParentClass = tran.Schema.FindClassByName("PKInt32"),
+                    Name = ReferenceField,
+                    Type = typeof(Contact),
+                    IsNullable = true
+                }, tran);
+        }
+
+        static void RemoveReferenceField(SoodaTransaction tran)
+        {
+            FieldInfo fi = tran.Schema.FindClassByName("PKInt32").FindFieldByName(ReferenceField);
+            DynamicFieldManager.Remove(fi, tran);
+        }
+
         [Test]
         public void IndexerGetStatic()
         {
@@ -148,13 +183,23 @@ namespace Sooda.UnitTests.TestCases
             using (SoodaTransaction tran = new SoodaTransaction())
             {
                 AddIntField(tran);
+                AddDateTimeField(tran);
+                AddReferenceField(tran);
                 try
                 {
                     object value = PKInt32.GetRef(7777777)[IntField];
                     Assert.IsNull(value);
+
+                    value = PKInt32.GetRef(7777777)[DateTimeField];
+                    Assert.IsNull(value);
+
+                    value = PKInt32.GetRef(7777777)[ReferenceField];
+                    Assert.IsNull(value);
                 }
                 finally
                 {
+                    RemoveReferenceField(tran);
+                    RemoveDateTimeField(tran);
                     RemoveIntField(tran);
                 }
             }
@@ -166,14 +211,24 @@ namespace Sooda.UnitTests.TestCases
             using (SoodaTransaction tran = new SoodaTransaction())
             {
                 AddIntField(tran);
+                AddDateTimeField(tran);
+                AddReferenceField(tran);
                 try
                 {
                     PKInt32.GetRef(7777777)[IntField] = 42;
+                    PKInt32.GetRef(7777777)[DateTimeField] = new DateTime(2014, 10, 28);
+                    PKInt32.GetRef(7777777)[ReferenceField] = Contact.Ed;
                     object value = PKInt32.GetRef(7777777)[IntField];
                     Assert.AreEqual(42, value);
+                    value = PKInt32.GetRef(7777777)[DateTimeField];
+                    Assert.AreEqual(new DateTime(2014, 10, 28), value);
+                    value = PKInt32.GetRef(7777777)[ReferenceField];
+                    Assert.AreEqual(Contact.Ed, value);
                 }
                 finally
                 {
+                    RemoveReferenceField(tran);
+                    RemoveDateTimeField(tran);
                     RemoveIntField(tran);
                 }
             }
