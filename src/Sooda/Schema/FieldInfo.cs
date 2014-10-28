@@ -267,5 +267,31 @@ namespace Sooda.Schema
                 DataType = FieldDataType.Reference;
             }
         }
+
+        public Type Type
+        {
+            get
+            {
+                if (References != null)
+                    return Type.GetType(ParentClass.Schema.Namespace + "." + References); // TODO: included?
+                SoodaFieldHandler handler = GetFieldHandler();
+                return IsNullable ? handler.GetNullableType() : handler.GetFieldType();
+            }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException();
+                if (value.IsSubclassOf(typeof(SoodaObject)))
+                {
+                    References = value.Name;
+                    DataType = FieldDataType.Reference;
+                }
+                else
+                {
+                    DataType = FieldHandlerFactory.GetFieldDataType(value, out IsNullable);
+                    References = null;
+                }
+            }
+        }
     }
 }

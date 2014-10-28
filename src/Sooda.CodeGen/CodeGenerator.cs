@@ -1128,6 +1128,8 @@ namespace Sooda.CodeGen
                     new XmlTextReader(Project.SchemaFile),
                     Path.GetDirectoryName(Project.SchemaFile)
                     );
+                if (string.IsNullOrEmpty(_schema.Namespace))
+                    _schema.Namespace = Project.OutputNamespace;
 
                 StringCollection inputFiles = new StringCollection();
                 StringCollection rewrittenOutputFiles = new StringCollection();

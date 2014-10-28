@@ -27,7 +27,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
+using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 
 using Sooda.Schema;
 
@@ -67,6 +69,37 @@ namespace Sooda.ObjectMapper.FieldHandlers
         public static SoodaFieldHandler GetFieldHandler(FieldDataType type, bool nullable)
         {
             return (nullable ? _nullableHandlers : _notNullHandlers)[(int) type];
+        }
+
+        internal static FieldDataType GetFieldDataType(Type type, out bool nullable)
+        {
+            // make sure booleans returned as BooleanAsInteger instead of the more problematic Boolean
+            if (type == typeof(bool))
+            {
+                nullable = false;
+                return FieldDataType.BooleanAsInteger;
+            }
+            if (type == typeof(bool?) || type == typeof(SqlBoolean))
+            {
+                nullable = true;
+                return FieldDataType.BooleanAsInteger;
+            }
+
+            for (int i = 0; i < _nullableHandlers.Length; i++)
+            {
+                SoodaFieldHandler handler = _nullableHandlers[i];
+                if (type == handler.GetFieldType())
+                {
+                    nullable = false;
+                    return (FieldDataType) i;
+                }
+                if (type == handler.GetNullableType() || type == handler.GetSqlType())
+                {
+                    nullable = true;
+                    return (FieldDataType) i;
+                }
+            }
+            throw new ArgumentException("Unknown Sooda type for " + type);
         }
     }
 }

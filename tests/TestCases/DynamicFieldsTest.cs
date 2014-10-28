@@ -178,6 +178,47 @@ namespace Sooda.UnitTests.TestCases
                 }
             }
         }
+
+        [Test]
+        public void FieldInfoStatic()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                FieldInfo fi = tran.Schema.FindClassByName("Contact").FindFieldByName("Name");
+                Assert.AreEqual("Name", fi.Name);
+                Assert.AreEqual(FieldDataType.AnsiString, fi.DataType);
+                Assert.IsNull(fi.References);
+                Assert.IsFalse(fi.IsPrimaryKey);
+                Assert.IsFalse(fi.IsNullable);
+                Assert.AreEqual("AnsiString", fi.TypeName);
+                Assert.AreEqual(typeof(string), fi.Type);
+            }
+        }
+
+        [Test]
+        public void FieldInfoDynamic()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                AddIntField(tran);
+                try
+                {
+                    FieldInfo fi = tran.Schema.FindClassByName("PKInt32").FindFieldByName(IntField);
+                    Assert.AreEqual(IntField, fi.Name);
+                    Assert.AreEqual(FieldDataType.Integer, fi.DataType);
+                    Assert.IsNull(fi.References);
+                    Assert.IsFalse(fi.IsPrimaryKey);
+                    Assert.IsFalse(fi.IsNullable);
+                    Assert.AreEqual("Integer", fi.TypeName);
+                    Assert.AreEqual(typeof(int), fi.Type);
+                }
+                finally
+                {
+                    RemoveIntField(tran);
+                }
+            }
+        }
+
 #if DOTNET35
         [Test]
         public void WhereStatic()
