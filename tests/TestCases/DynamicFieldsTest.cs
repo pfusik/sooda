@@ -37,6 +37,7 @@ using Sooda;
 using Sooda.Schema;
 
 using Sooda.UnitTests.BaseObjects;
+using Sooda.UnitTests.Objects;
 
 using NUnit.Framework;
 
@@ -50,7 +51,7 @@ namespace Sooda.UnitTests.TestCases
         static void AddIntField(SoodaTransaction tran)
         {
             DynamicFieldManager.Add(new FieldInfo {
-                    ParentClass = Sooda.UnitTests.BaseObjects.Stubs.Contact_Factory.TheClassInfo, // doesn't work: tran.Schema.FindClassByName("Contact"),
+                    ParentClass = tran.Schema.FindClassByName("PKInt32"),
                     Name = IntField,
                     TypeName = "Integer",
                     IsNullable = false
@@ -59,7 +60,7 @@ namespace Sooda.UnitTests.TestCases
 
         static void RemoveIntField(SoodaTransaction tran)
         {
-            FieldInfo fi = Sooda.UnitTests.BaseObjects.Stubs.Contact_Factory.TheClassInfo.FindFieldByName(IntField);
+            FieldInfo fi = tran.Schema.FindClassByName("PKInt32").FindFieldByName(IntField);
             DynamicFieldManager.Remove(fi, tran);
         }
 
@@ -149,7 +150,7 @@ namespace Sooda.UnitTests.TestCases
                 AddIntField(tran);
                 try
                 {
-                    object value = Contact.Mary[IntField];
+                    object value = PKInt32.GetRef(7777777)[IntField];
                     Assert.IsNull(value);
                 }
                 finally
@@ -167,8 +168,8 @@ namespace Sooda.UnitTests.TestCases
                 AddIntField(tran);
                 try
                 {
-                    Contact.Mary[IntField] = 42;
-                    object value = Contact.Mary[IntField];
+                    PKInt32.GetRef(7777777)[IntField] = 42;
+                    object value = PKInt32.GetRef(7777777)[IntField];
                     Assert.AreEqual(42, value);
                 }
                 finally
@@ -199,19 +200,43 @@ namespace Sooda.UnitTests.TestCases
         }
 
         [Test]
-        public void WhereDynamic()
+        public void WhereDynamicInsert()
         {
             using (SoodaTransaction tran = new SoodaTransaction())
             {
                 AddIntField(tran);
                 try
                 {
-                    Contact.Mary[IntField] = 42;
-                    IEnumerable<Contact> ce = Contact.Linq().Where(c => (int) c[IntField] == 5);
-                    CollectionAssert.IsEmpty(ce);
+                    PKInt32 o = new PKInt32();
+                    o.Parent = o;
+                    o[IntField] = 42;
+                    IEnumerable<PKInt32> pe = PKInt32.Linq().Where(p => (int) p[IntField] == 5);
+                    CollectionAssert.IsEmpty(pe);
                     
-                    ce = Contact.Linq().Where(c => (int) c[IntField] == 42);
-                    CollectionAssert.AreEquivalent(new Contact[] { Contact.Mary }, ce);
+                    pe = PKInt32.Linq().Where(p => (int) p[IntField] == 42);
+                    CollectionAssert.AreEquivalent(new PKInt32[] { o }, pe);
+                }
+                finally
+                {
+                    RemoveIntField(tran);
+                }
+            }
+        }
+
+        [Test]
+        public void WhereDynamicUpdate()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                AddIntField(tran);
+                try
+                {
+                    PKInt32.GetRef(7777777)[IntField] = 42;
+                    IEnumerable<PKInt32> pe = PKInt32.Linq().Where(p => (int) p[IntField] == 5);
+                    CollectionAssert.IsEmpty(pe);
+                    
+                    pe = PKInt32.Linq().Where(p => (int) p[IntField] == 42);
+                    CollectionAssert.AreEquivalent(new PKInt32[] { PKInt32.GetRef(7777777) }, pe);
                 }
                 finally
                 {
@@ -321,7 +346,7 @@ namespace Sooda.UnitTests.TestCases
             using (SoodaTransaction tran = new SoodaTransaction())
             {
                 AddIntField(tran);
-                dynamic d = Contact.Mary;
+                dynamic d = PKInt32.GetRef(7777777);
                 try
                 {
                     object value = d.IntDynamicField;
@@ -340,7 +365,7 @@ namespace Sooda.UnitTests.TestCases
             using (SoodaTransaction tran = new SoodaTransaction())
             {
                 AddIntField(tran);
-                dynamic d = Contact.Mary;
+                dynamic d = PKInt32.GetRef(7777777);
                 try
                 {
                     d.IntDynamicField = 42;
