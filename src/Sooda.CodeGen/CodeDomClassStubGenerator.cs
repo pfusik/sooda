@@ -193,18 +193,18 @@ namespace Sooda.CodeGen
                     return new CodeTypeReference(typeof(object));
 
                 case PrimitiveRepresentation.SqlType:
-                    Type t = fi.GetFieldHandler().GetSqlType();
+                    Type t = fi.GetNullableFieldHandler().GetSqlType();
                     if (t == null)
-                        return new CodeTypeReference(fi.GetFieldHandler().GetFieldType());
+                        return new CodeTypeReference(fi.GetNullableFieldHandler().GetFieldType());
                     else
                         return new CodeTypeReference(t);
 
                 case PrimitiveRepresentation.RawWithIsNull:
                 case PrimitiveRepresentation.Raw:
-                    return new CodeTypeReference(fi.GetFieldHandler().GetFieldType());
+                    return new CodeTypeReference(fi.GetNullableFieldHandler().GetFieldType());
 
                 case PrimitiveRepresentation.Nullable:
-                    return new CodeTypeReference(fi.GetFieldHandler().GetNullableType());
+                    return new CodeTypeReference(fi.GetNullableFieldHandler().GetNullableType());
 
                 default:
                     throw new NotImplementedException("Unknown PrimitiveRepresentation: " + rep);
@@ -392,7 +392,7 @@ namespace Sooda.CodeGen
                 PrimitiveRepresentation actualNullableRepresentation = options.NullableRepresentation;
                 PrimitiveRepresentation actualNotNullRepresentation = options.NotNullRepresentation;
 
-                if (fi.GetFieldHandler().GetSqlType() == null)
+                if (fi.GetNullableFieldHandler().GetSqlType() == null)
                 {
                     if (actualNotNullRepresentation == PrimitiveRepresentation.SqlType)
                         actualNotNullRepresentation = PrimitiveRepresentation.Raw;
@@ -509,7 +509,7 @@ namespace Sooda.CodeGen
                     if (fi.References == null && actualNullableRepresentation == PrimitiveRepresentation.SqlType)
                     {
                         retVal = new CodePropertyReferenceExpression(
-                            new CodeTypeReferenceExpression(fi.GetFieldHandler().GetSqlType()), "Null");
+                            new CodeTypeReferenceExpression(fi.GetNullableFieldHandler().GetSqlType()), "Null");
                     }
 
                     prop.GetStatements.Add(
@@ -551,7 +551,7 @@ namespace Sooda.CodeGen
                     }
                     else
                     {
-                        pkType = fi.GetFieldHandler().GetSqlType();
+                        pkType = fi.GetNullableFieldHandler().GetSqlType();
                         isFieldNotNull = new CodeBinaryOperatorExpression(
                             new CodePropertyReferenceExpression(pk, "IsNull"),
                             CodeBinaryOperatorType.ValueEquality,
@@ -624,11 +624,11 @@ namespace Sooda.CodeGen
                             case PrimitiveRepresentation.SqlType:
                             case PrimitiveRepresentation.RawWithIsNull:
                             case PrimitiveRepresentation.Raw:
-                                fieldValue = new CodeCastExpression(new CodeTypeReference(fi.GetFieldHandler().GetFieldType()), fieldValue);
+                                fieldValue = new CodeCastExpression(new CodeTypeReference(fi.GetNullableFieldHandler().GetFieldType()), fieldValue);
                                 break;
 
                             case PrimitiveRepresentation.Nullable:
-                                fieldValue = new CodeCastExpression(new CodeTypeReference(fi.GetFieldHandler().GetNullableType()), fieldValue);
+                                fieldValue = new CodeCastExpression(new CodeTypeReference(fi.GetNullableFieldHandler().GetNullableType()), fieldValue);
                                 break;
 
                             default:

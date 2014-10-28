@@ -313,8 +313,9 @@ namespace Sooda.CodeGen
             if (!string.IsNullOrEmpty(ci.Schema.AssemblyName))
                 return;
             FieldInfo fi = ci.GetFirstPrimaryKeyField();
-            string pkClrTypeName = fi.GetFieldHandler().GetFieldType().FullName;
-            string pkFieldHandlerTypeName = fi.GetFieldHandler().GetType().FullName;
+            Sooda.ObjectMapper.SoodaFieldHandler fieldHandler = fi.GetNullableFieldHandler();
+            string pkClrTypeName = fieldHandler.GetFieldType().FullName;
+            string pkFieldHandlerTypeName = fieldHandler.GetType().FullName;
 
             CDILContext context = new CDILContext();
             context["ClassName"] = ci.Name;
@@ -349,7 +350,7 @@ namespace Sooda.CodeGen
 
             foreach (FieldInfo fi2 in ci.UnifiedFields)
             {
-                string typeWrapper = fi2.GetFieldHandler().GetType().FullName;
+                string typeWrapper = fi2.GetNullableFieldHandler().GetType().FullName;
                 bool isNullable = fi2.IsNullable;
 
                 cctor.Statements.Add(
@@ -510,7 +511,7 @@ namespace Sooda.CodeGen
                     formalParameters += ", ";
                     actualParameters += ", ";
                 }
-                string pkClrTypeName = fi.GetFieldHandler().GetFieldType().FullName;
+                string pkClrTypeName = fi.GetNullableFieldHandler().GetFieldType().FullName;
                 formalParameters += pkClrTypeName + " " + MakeCamelCase(fi.Name);
                 actualParameters += "arg(" + MakeCamelCase(fi.Name) + ")";
             }
@@ -529,7 +530,7 @@ namespace Sooda.CodeGen
             }
 
             context["ClassUnifiedFieldCount"] = ci.UnifiedFields.Count;
-            context["PrimaryKeyFieldHandler"] = ci.GetFirstPrimaryKeyField().GetFieldHandler().GetType().FullName;
+            context["PrimaryKeyFieldHandler"] = ci.GetFirstPrimaryKeyField().GetNullableFieldHandler().GetType().FullName;
             context["OptionalNewAttribute"] = ci.InheritsFromClass != null ? ",New" : "";
             if (_codeProvider is Microsoft.VisualBasic.VBCodeProvider)
             {
@@ -589,7 +590,7 @@ namespace Sooda.CodeGen
                             {
                                 findMethod.Parameters.Add(
                                     new CodeParameterDeclarationExpression(
-                                        fi.GetFieldHandler().GetFieldType(), MakeCamelCase(fi.Name))
+                                        fi.GetNullableFieldHandler().GetFieldType(), MakeCamelCase(fi.Name))
                                         );
                             }
 
@@ -745,7 +746,7 @@ namespace Sooda.CodeGen
 
                 if (fi.ReferencedClass == null)
                 {
-                    fullWrapperTypeName = fi.GetFieldHandler().GetTypedWrapperClass(fi.IsNullable);
+                    fullWrapperTypeName = fi.GetNullableFieldHandler().GetTypedWrapperClass(fi.IsNullable);
                     if (fullWrapperTypeName == null)
                         continue;
 
@@ -772,7 +773,7 @@ namespace Sooda.CodeGen
                 return;
             CDILContext context = new CDILContext();
             context["ClassName"] = ci.Name;
-            context["PrimaryKeyType"] = ci.GetFirstPrimaryKeyField().GetFieldHandler().GetFieldType().FullName;
+            context["PrimaryKeyType"] = ci.GetFirstPrimaryKeyField().GetNullableFieldHandler().GetFieldType().FullName;
             context["CSharp"] = _codeProvider is Microsoft.CSharp.CSharpCodeProvider;
 
             CodeTypeDeclaration ctd = CDILParser.ParseClass(CDILTemplate.Get("TypedCollectionWrapper.cdil"), context);
@@ -780,7 +781,7 @@ namespace Sooda.CodeGen
 
             context = new CDILContext();
             context["ClassName"] = ci.Name;
-            context["PrimaryKeyType"] = ci.GetFirstPrimaryKeyField().GetFieldHandler().GetFieldType().FullName;
+            context["PrimaryKeyType"] = ci.GetFirstPrimaryKeyField().GetNullableFieldHandler().GetFieldType().FullName;
             context["CSharp"] = _codeProvider is Microsoft.CSharp.CSharpCodeProvider;
             context["ParameterAttributes"] = _codeGenerator.Supports(GeneratorSupport.ParameterAttributes);
 
@@ -813,7 +814,7 @@ namespace Sooda.CodeGen
 
                 if (fi.ReferencedClass == null)
                 {
-                    fullWrapperTypeName = fi.GetFieldHandler().GetTypedWrapperClass(fi.IsNullable);
+                    fullWrapperTypeName = fi.GetNullableFieldHandler().GetTypedWrapperClass(fi.IsNullable);
                     if (fullWrapperTypeName == null)
                         continue;
 

@@ -186,7 +186,7 @@ namespace Sooda.Schema
             return schema.GetBackRefCollections(this);
         }
 
-        public SoodaFieldHandler GetFieldHandler()
+        public SoodaFieldHandler GetNullableFieldHandler()
         {
             return FieldHandlerFactory.GetFieldHandler(DataType);
         }

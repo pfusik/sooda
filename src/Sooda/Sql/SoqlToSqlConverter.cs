@@ -1249,7 +1249,7 @@ namespace Sooda.Sql
                 Output.Write(fieldInfo.DataType.ToString());
                 Output.Write(':');
 
-                string serializedValue = fieldInfo.GetFieldHandler().RawSerialize(e.LiteralValue).Replace("\\", "\\\\").Replace("}", "\\}");
+                string serializedValue = fieldInfo.GetNullableFieldHandler().RawSerialize(e.LiteralValue).Replace("\\", "\\\\").Replace("}", "\\}");
 
                 Output.Write(serializedValue);
                 Output.Write('}');
@@ -1272,7 +1272,7 @@ namespace Sooda.Sql
                 Output.Write(fieldInfo.DataType.ToString());
                 Output.Write(':');
 
-                string serializedValue = fieldInfo.GetFieldHandler().RawSerialize(e.Value).Replace("\\", "\\\\").Replace("}", "\\}");
+                string serializedValue = fieldInfo.GetNullableFieldHandler().RawSerialize(e.Value).Replace("\\", "\\\\").Replace("}", "\\}");
 
                 Output.Write(serializedValue);
                 Output.Write('}');
