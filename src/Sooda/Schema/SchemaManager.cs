@@ -35,10 +35,8 @@ using System.Reflection;
 
 namespace Sooda.Schema
 {
-    public sealed class SchemaManager
+    public static class SchemaManager
     {
-        private SchemaManager() { }
-
         public static string NamespaceURI
         {
             get
@@ -55,9 +53,9 @@ namespace Sooda.Schema
                 if (name.EndsWith(".SoodaSchema.xsd"))
                 {
                     return ass.GetManifestResourceStream(name);
-                };
+                }
             }
-            throw new SoodaSchemaException("SoodaSchema not embedded in Sooda assembly");
+            throw new SoodaSchemaException("SoodaSchema.xsd not embedded in Sooda assembly");
         }
 
         public static XmlReader GetSchemaXsdStreamXmlReader()
@@ -109,11 +107,10 @@ namespace Sooda.Schema
 
             if (include == null)
                 schemaInfo.Resolve();
-            else
+            else if (!string.IsNullOrEmpty(include.AssemblyName))
             {
-                if ((include.AssemblyName != null) && (include.AssemblyName != ""))
-                    foreach (ClassInfo ci in schemaInfo.Classes)
-                        ci.Schema = schemaInfo;
+                foreach (ClassInfo ci in schemaInfo.Classes)
+                    ci.Schema = schemaInfo;
             }
             return schemaInfo;
         }

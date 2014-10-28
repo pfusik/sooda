@@ -28,18 +28,6 @@
 // 
 #if !MONO
 
-using System;
-using System.Text;
-using System.Data;
-using System.IO;
-using System.Collections;
-
-using Sooda.Schema;
-using Sooda.QL;
-using Sooda.Utils;
-
-using Sooda.Logging;
-
 namespace Sooda.Sql
 {
     /// <summary>

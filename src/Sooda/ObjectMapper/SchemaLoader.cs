@@ -42,13 +42,13 @@ namespace Sooda.ObjectMapper
 
         public static SchemaInfo GetSchemaFromAssembly(System.Reflection.Assembly ass)
         {
-            SchemaInfo schemaInfo = (SchemaInfo)assembly2SchemaInfo[ass];
+            SchemaInfo schemaInfo = (SchemaInfo) assembly2SchemaInfo[ass];
 
             if (schemaInfo == null)
             {
                 lock (typeof(SchemaLoader))
                 {
-                    schemaInfo = (SchemaInfo)assembly2SchemaInfo[ass];
+                    schemaInfo = (SchemaInfo) assembly2SchemaInfo[ass];
                     if (schemaInfo == null)
                     {
                         foreach (string name in ass.GetManifestResourceNames())
@@ -58,33 +58,33 @@ namespace Sooda.ObjectMapper
                                 System.Runtime.Serialization.Formatters.Binary.BinaryFormatter bf = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
                                 using (Stream resourceStream = ass.GetManifestResourceStream(name))
                                 {
-                                    schemaInfo = (SchemaInfo)bf.Deserialize(resourceStream);
+                                    schemaInfo = (SchemaInfo) bf.Deserialize(resourceStream);
                                     schemaInfo.Resolve();
                                 }
                                 break;
-                            };
+                            }
                             if (name.EndsWith("_DBSchema.xml"))
                             {
                                 using (Stream resourceStream = ass.GetManifestResourceStream(name))
                                 {
-                                    XmlSerializer ser = new XmlSerializer(typeof(Sooda.Schema.SchemaInfo));
+                                    XmlSerializer ser = new XmlSerializer(typeof(SchemaInfo));
                                     XmlTextReader reader = new XmlTextReader(resourceStream);
 
-                                    schemaInfo = (Sooda.Schema.SchemaInfo)ser.Deserialize(reader);
+                                    schemaInfo = (SchemaInfo) ser.Deserialize(reader);
                                     schemaInfo.Resolve();
                                 }
                                 break;
-                            };
+                            }
                         }
                         if (schemaInfo == null)
                         {
                             throw new InvalidOperationException("_DBSchema.xml not embedded in " + ass.CodeBase);
-                        };
+                        }
                         assembly2SchemaInfo[ass] = schemaInfo;
-                    };
+                    }
                 }
-            };
+            }
             return schemaInfo;
         }
-    } // class _DatabaseSchemaLoader
+    }
 }
