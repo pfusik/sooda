@@ -691,7 +691,7 @@ namespace Sooda
                             _assembly = sa.Assembly;
                     }
 
-                    SoodaObjectsAssemblyAttribute soa = (SoodaObjectsAssemblyAttribute)Attribute.GetCustomAttribute(_assembly, typeof(SoodaObjectsAssemblyAttribute), false);
+                    SoodaObjectsAssemblyAttribute soa = (SoodaObjectsAssemblyAttribute) Attribute.GetCustomAttribute(_assembly, typeof(SoodaObjectsAssemblyAttribute), false);
                     if (soa == null)
                     {
                         throw new ArgumentException("Invalid objects assembly: " + _assembly.FullName + ". Must be the stubs assembly and define assembly:SoodaObjectsAssemblyAttribute");
@@ -707,7 +707,9 @@ namespace Sooda
                         factoryForType[fact.TheType] = fact;
                     }
                     _schema = schema.Schema;
+#if DOTNET35
                     DynamicFieldManager.Load(this);
+#endif
                 }
             }
         }
