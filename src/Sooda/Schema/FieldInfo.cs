@@ -255,7 +255,7 @@ namespace Sooda.Schema
 #else
                 try
                 {
-                    DataType = Enum.Parse(typeof(FieldDataType), value);
+                    DataType = (FieldDataType) Enum.Parse(typeof(FieldDataType), value);
                     References = null;
                     return;
                 }
