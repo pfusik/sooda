@@ -102,6 +102,8 @@ namespace Sooda.Schema
             HashSet<ClassInfo> affectedClasses = new HashSet<ClassInfo>();
             foreach (DataSourceInfo dsi in schema.DataSources)
             {
+                if (!dsi.EnableDynamicFields)
+                    continue;
                 SoodaDataSource ds = transaction.OpenDataSource(dsi);
                 using (IDataReader r = ds.ExecuteRawQuery("select class, field, type, nullable, size, precision from SoodaDynamicField"))
                 {
