@@ -300,6 +300,40 @@ namespace Sooda.UnitTests.TestCases
             }
         }
 
+        static string TriggerText(string field, object oldVal, object newVal)
+        {
+            return PKInt32.GetTriggerText("Before", field, oldVal, newVal)
+                + PKInt32.GetTriggerText("After", field, oldVal, newVal);
+        }
+
+        [Test]
+        public void FieldUpdateTriggers()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                AddIntField(tran);
+                AddDateTimeField(tran);
+                AddReferenceField(tran);
+                try
+                {
+                    PKInt32 o = PKInt32.GetRef(7777777);
+                    o[IntField] = 42;
+                    string expected = TriggerText(IntField, null, 42);
+                    o[DateTimeField] = new DateTime(2014, 10, 28);
+                    expected += TriggerText(DateTimeField, null, new DateTime(2014, 10, 28));
+                    o[ReferenceField] = Contact.Ed;
+                    expected += TriggerText(ReferenceField, null, Contact.Ed);
+                    Assert.AreEqual(expected, o.triggersText);
+                }
+                finally
+                {
+                    RemoveReferenceField(tran);
+                    RemoveDateTimeField(tran);
+                    RemoveIntField(tran);
+                }
+            }
+        }
+
 #if DOTNET35
         [Test]
         public void WhereStatic()
