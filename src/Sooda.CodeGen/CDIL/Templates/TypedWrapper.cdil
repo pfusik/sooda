@@ -201,13 +201,13 @@ method Equals(System.Object o)
     returns System.Boolean
 begin
     return typeref(System.Object).ReferenceEquals(this, arg(o));
-end    
+end
 
 method GetHashCode()
     attributes Public,Override
     returns System.Int32
 begin
     return base.GetHashCode();
-end    
+end
 
 end

@@ -27,16 +27,11 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System;
-
 namespace SoodaSchemaTool
 {
-	public abstract class Command
-	{
-		public Command()
-		{
-		}
+    public abstract class Command
+    {
 
         public abstract int Run(string[] args);
-	}
+    }
 }

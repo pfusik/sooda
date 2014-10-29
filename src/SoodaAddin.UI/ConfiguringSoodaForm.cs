@@ -14,9 +14,9 @@ using System.Reflection;
 
 namespace SoodaAddin.UI
 {
-	/// <summary>
-	/// Summary description for ConfiguringSoodaForm.
-	/// </summary>
+    /// <summary>
+    /// Summary description for ConfiguringSoodaForm.
+    /// </summary>
     public class ConfiguringSoodaForm : System.Windows.Forms.Form
     {
         private System.Windows.Forms.Label label1;
@@ -70,10 +70,10 @@ namespace SoodaAddin.UI
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.buttonClose = new System.Windows.Forms.Button();
             this.SuspendLayout();
-            // 
+            //
             // label1
-            // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            //
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                 | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(238)));
             this.label1.Location = new System.Drawing.Point(8, 8);
@@ -82,11 +82,11 @@ namespace SoodaAddin.UI
             this.label1.TabIndex = 0;
             this.label1.Text = "Please wait. Configuring Sooda...";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
+            //
             // textBox1
-            // 
-            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-                | System.Windows.Forms.AnchorStyles.Left) 
+            //
+            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                | System.Windows.Forms.AnchorStyles.Left)
                 | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox1.Location = new System.Drawing.Point(8, 48);
             this.textBox1.Multiline = true;
@@ -96,9 +96,9 @@ namespace SoodaAddin.UI
             this.textBox1.Size = new System.Drawing.Size(472, 200);
             this.textBox1.TabIndex = 1;
             this.textBox1.Text = "";
-            // 
+            //
             // buttonClose
-            // 
+            //
             this.buttonClose.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.buttonClose.Enabled = false;
             this.buttonClose.FlatStyle = System.Windows.Forms.FlatStyle.System;
@@ -107,9 +107,9 @@ namespace SoodaAddin.UI
             this.buttonClose.TabIndex = 2;
             this.buttonClose.Text = "Close";
             this.buttonClose.Click += new System.EventHandler(this.buttonClose_Click);
-            // 
+            //
             // ConfiguringSoodaForm
-            // 
+            //
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
             this.ClientSize = new System.Drawing.Size(488, 288);
             this.ControlBox = false;

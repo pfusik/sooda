@@ -1,53 +1,53 @@
 class ${ClassName}_Factory
     extends System.Object
     implements ISoodaObjectFactory
-    
+
     constructor ()
         attributes Public
     begin
     end
-    
+
 #ifnot MultiColumnPrimaryKey
     field SoodaFieldHandler _primaryKeyFieldHandler
         attributes Private,Static
         value new ${PrimaryKeyHandlerType}(false)
     end
 #endif
-    
+
     field ${ClassName}_Factory _theFactory
         attributes Private,Static
         value new ${ClassName}_Factory()
     end
-    
+
     field Sooda.Schema.ClassInfo _theClassInfo
         attributes Private,Static
         value typeref(${OutNamespace}._DatabaseSchema).GetSchema().FindClassByName('${ClassName}')
     end
-    
+
     field Type _theType
         attributes Private,Static
         value typeof(${ClassName})
     end
-    
+
     property ${ClassName}_Factory TheFactory
         attributes Public,Static
     get
         return defaultscope._theFactory$;
     end
-    
+
     property Type TheType
         attributes Public
         implements ISoodaObjectFactory
     get
         return defaultscope._theType$;
     end
-    
+
     property Sooda.Schema.ClassInfo TheClassInfo
         attributes Public,Static
     get
         return defaultscope._theClassInfo$;
     end
-    
+
     method GetRef(SoodaTransaction tran, System.Object keyValue)
         returns SoodaObject
         attributes Public
@@ -55,7 +55,7 @@ class ${ClassName}_Factory
     begin
         return typeref(${LoaderClass}).GetRef(arg(tran), cast(${GetRefArgumentType},arg(keyValue)))
     end
-    
+
     method TryGet(SoodaTransaction tran, System.Object keyValue)
         returns SoodaObject
         attributes Public
@@ -63,7 +63,7 @@ class ${ClassName}_Factory
     begin
         return typeref(${LoaderClass}).TryGet(arg(tran), cast(${GetRefArgumentType},arg(keyValue)))
     end
-    
+
     method GetList(SoodaTransaction tran, SoodaWhereClause whereClause, SoodaOrderBy orderBy, SoodaSnapshotOptions options)
         returns System.Collections.IList
         attributes Public
@@ -71,7 +71,7 @@ class ${ClassName}_Factory
     begin
         return typeref(${LoaderClass}).GetList(arg(tran), arg(whereClause), arg(orderBy), arg(options))
     end
-    
+
     method GetClassInfo()
         returns Sooda.Schema.ClassInfo
         attributes Public
@@ -79,7 +79,7 @@ class ${ClassName}_Factory
     begin
         return defaultscope.TheClassInfo;
     end
-    
+
     method GetPrimaryKeyFieldHandler()
         returns Sooda.ObjectMapper.SoodaFieldHandler
         attributes Public
@@ -91,7 +91,7 @@ class ${ClassName}_Factory
         return defaultscope._primaryKeyFieldHandler$;
 #endif
     end
-    
+
     method GetFieldHandler(System.Int32 ordinal)
         returns Sooda.ObjectMapper.SoodaFieldHandler
         attributes Public
@@ -99,14 +99,14 @@ class ${ClassName}_Factory
     begin
         return defaultscope.InternalGetFieldHandler(arg(ordinal));
     end
-    
+
     method InternalGetFieldHandler(System.Int32 ordinal)
         returns Sooda.ObjectMapper.SoodaFieldHandler
         attributes Assembly,Static
     begin
         return index(defaultscope._theClassInfo.UnifiedFields, arg(ordinal)).GetFieldHandler()
     end
-    
+
     method CreateNew(SoodaTransaction tran)
         returns SoodaObject
         attributes Public
@@ -132,4 +132,4 @@ class ${ClassName}_Factory
         return var(retVal)
 #endif
     end
-end    
+end

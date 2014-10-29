@@ -94,7 +94,7 @@ namespace Sooda.Schema
             SchemaInfo schema = transaction.Schema;
             if (schema.DynamicFieldsLoaded || !schema.DataSources.Any(ds => ds.EnableDynamicFields))
                 return;
-            
+
             lock (schema)
             {
                 if (schema.DynamicFieldsLoaded)

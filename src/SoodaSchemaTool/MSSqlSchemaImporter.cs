@@ -1,31 +1,31 @@
-// 
+//
 // Copyright (c) 2003-2006 Jaroslaw Kowalski <jaak@jkowalski.net>
-// 
+//
 // All rights reserved.
-// 
-// Redistribution and use in source and binary forms, with or without 
-// modification, are permitted provided that the following conditions 
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
 // are met:
-// 
-// * Redistributions of source code must retain the above copyright notice, 
-//   this list of conditions and the following disclaimer. 
-// 
+//
+// * Redistributions of source code must retain the above copyright notice,
+//   this list of conditions and the following disclaimer.
+//
 // * Redistributions in binary form must reproduce the above copyright notice,
 //   this list of conditions and the following disclaimer in the documentation
-//   and/or other materials provided with the distribution. 
-// 
+//   and/or other materials provided with the distribution.
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
-// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
 // CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
-// 
+//
 
 using System;
 using System.Collections.Generic;
@@ -303,82 +303,82 @@ namespace SoodaSchemaTool
         class SqlStrings
         {
             public const string TablesQuery = @"
-select  o.name as TABLE_NAME, 
+select  o.name as TABLE_NAME,
     user_name(o.uid) as TABLE_OWNER
 from
     dbo.sysobjects o
-where   OBJECTPROPERTY(o.id, N'IsTable') = 1 
-    and OBJECTPROPERTY(o.id, N'IsMSShipped')=0 
+where   OBJECTPROPERTY(o.id, N'IsTable') = 1
+    and OBJECTPROPERTY(o.id, N'IsMSShipped')=0
     and OBJECTPROPERTY(o.id, N'IsSystemTable')=0
 order by TABLE_OWNER, TABLE_NAME
 ";
 
             public const string ViewsQuery = @"
-select  o.name as VIEW_NAME, 
+select  o.name as VIEW_NAME,
     user_name(o.uid) as VIEW_OWNER
 from
     dbo.sysobjects o
-where   OBJECTPROPERTY(o.id, N'IsView') = 1 
-    and OBJECTPROPERTY(o.id, N'IsMSShipped')=0 
+where   OBJECTPROPERTY(o.id, N'IsView') = 1
+    and OBJECTPROPERTY(o.id, N'IsMSShipped')=0
 order by VIEW_OWNER, VIEW_NAME
 ";
 
             public const string ProceduresQuery = @"
 select
-    o.name as PROCEDURE_NAME,  
+    o.name as PROCEDURE_NAME,
     user_name(o.uid) as PROCEDURE_OWNER,
-    OBJECTPROPERTY(o.id, N'ExecIsStartup') as IS_STARTUP, 
-    OBJECTPROPERTY(o.id, N'ExecIsQuotedIdentOn') as QUOTED_IDENTIFIERS, 
+    OBJECTPROPERTY(o.id, N'ExecIsStartup') as IS_STARTUP,
+    OBJECTPROPERTY(o.id, N'ExecIsQuotedIdentOn') as QUOTED_IDENTIFIERS,
     OBJECTPROPERTY(o.id, N'ExecIsAnsiNullsOn') as ANSI_NULLS
 from
-    dbo.sysobjects o 
-where (OBJECTPROPERTY(o.id, N'IsProcedure') = 1 or 
-    OBJECTPROPERTY(o.id, N'IsExtendedProc') = 1 or 
-    OBJECTPROPERTY(o.id, N'IsReplProc') = 1) and 
+    dbo.sysobjects o
+where (OBJECTPROPERTY(o.id, N'IsProcedure') = 1 or
+    OBJECTPROPERTY(o.id, N'IsExtendedProc') = 1 or
+    OBJECTPROPERTY(o.id, N'IsReplProc') = 1) and
     o.name not like N'#%%' and
     OBJECTPROPERTY(o.id, N'IsMSShipped') = 0
 order by o.name";
 
             public const string PrimaryKeysQuery = @"
 SELECT  x.name as CONSTRAINT_NAME,
-    s.name as TABLE_NAME, 
-    u.name as TABLE_OWNER, 
+    s.name as TABLE_NAME,
+    u.name as TABLE_OWNER,
     c.name as COLUMN_NAME
-FROM    sysindexes x 
-    INNER JOIN sysobjects s ON x.id = s.id 
-    LEFT JOIN sysusers u on s.uid = u.uid 
-    INNER JOIN sysindexkeys k ON k.id = x.id AND k.indid = x.indid 
-    INNER JOIN syscolumns c ON c.id = x.id AND c.colid = k.colid 
-    JOIN sysobjects cs ON cs.parent_obj = x.id and cs.xtype ='PK' and cs.name = x.name 
+FROM    sysindexes x
+    INNER JOIN sysobjects s ON x.id = s.id
+    LEFT JOIN sysusers u on s.uid = u.uid
+    INNER JOIN sysindexkeys k ON k.id = x.id AND k.indid = x.indid
+    INNER JOIN syscolumns c ON c.id = x.id AND c.colid = k.colid
+    JOIN sysobjects cs ON cs.parent_obj = x.id and cs.xtype ='PK' and cs.name = x.name
 ORDER BY TABLE_OWNER,TABLE_NAME
 ";
             public const string ForeignKeysQuery = @"
-SELECT  fkeyobject.name as FKEY_NAME, 
-    t0.name as SOURCE_TABLE_NAME, 
-    t0usr.name as SOURCE_TABLE_OWNER, 
-    sc.name as SOURCE_COLUMN_NAME, 
-    t1.name as DEST_TABLE_NAME, 
-    t1usr.name as DEST_TABLE_OWNER, 
-    tc.name as DEST_COLUMN_NAME, 
+SELECT  fkeyobject.name as FKEY_NAME,
+    t0.name as SOURCE_TABLE_NAME,
+    t0usr.name as SOURCE_TABLE_OWNER,
+    sc.name as SOURCE_COLUMN_NAME,
+    t1.name as DEST_TABLE_NAME,
+    t1usr.name as DEST_TABLE_OWNER,
+    tc.name as DEST_COLUMN_NAME,
     OBJECTPROPERTY(fkeyobject.id, 'CnstIsNotRepl') as NOT_FOR_REPLICATION,
-    OBJECTPROPERTY(fkeyobject.id, 'CnstIsDisabled') as IS_DISABLED , 
-    OBJECTPROPERTY(fkeyobject.id, 'CnstIsDeleteCascade') as IS_CASCADE_DELETE, 
-    OBJECTPROPERTY(fkeyobject.id, 'CnstIsUpdateCascade') as IS_CASCADE_UPDATE 
+    OBJECTPROPERTY(fkeyobject.id, 'CnstIsDisabled') as IS_DISABLED ,
+    OBJECTPROPERTY(fkeyobject.id, 'CnstIsDeleteCascade') as IS_CASCADE_DELETE,
+    OBJECTPROPERTY(fkeyobject.id, 'CnstIsUpdateCascade') as IS_CASCADE_UPDATE
 FROM    sysobjects fkeyobject
-    JOIN sysforeignkeys fk ON fkeyobject.id = fk.constid 
-    LEFT JOIN sysobjects t0  ON fk.fkeyid = t0.id 
-    LEFT JOIN sysusers   t0usr  ON t0.uid   = t0usr.uid 
-    LEFT JOIN sysobjects t1  ON fk.rkeyid = t1.id 
-    LEFT JOIN sysusers   t1usr ON t1.uid   = t1usr.uid 
-    LEFT JOIN syscolumns sc   ON fk.fkeyid = sc.id AND fk.fkey = sc.colid 
-    LEFT JOIN syscolumns tc ON fk.rkeyid = tc.id AND fk.rkey = tc.colid 
-WHERE fkeyobject.xtype = 'F' 
+    JOIN sysforeignkeys fk ON fkeyobject.id = fk.constid
+    LEFT JOIN sysobjects t0  ON fk.fkeyid = t0.id
+    LEFT JOIN sysusers   t0usr  ON t0.uid   = t0usr.uid
+    LEFT JOIN sysobjects t1  ON fk.rkeyid = t1.id
+    LEFT JOIN sysusers   t1usr ON t1.uid   = t1usr.uid
+    LEFT JOIN syscolumns sc   ON fk.fkeyid = sc.id AND fk.fkey = sc.colid
+    LEFT JOIN syscolumns tc ON fk.rkeyid = tc.id AND fk.rkey = tc.colid
+WHERE fkeyobject.xtype = 'F'
 ORDER BY fkeyobject.id, fk.keyno
 ";
             public const string PermissionsQuery = @"
 select  su.name as GRANTEE,
-    case sp.action 
-        when 26 then 'REFERENCES' 
+    case sp.action
+        when 26 then 'REFERENCES'
         when 178 then 'CREATE FUNCTION'
         when 193 then 'SELECT'
         when 195 then 'INSERT'
@@ -394,14 +394,14 @@ select  su.name as GRANTEE,
         when 235 then 'BACKUP LOG'
         when 236 then 'CREATE RULE'
     end as PRIVILEGE,
-    case sp.protecttype 
+    case sp.protecttype
         when 205 then 'GRANT'
         when 206 then 'DENY'
     end as PROTECT_TYPE,
     user_name(so.uid) as SCHEMA_NAME,
     so.name as OBJECT_NAME,
     case sp.action when 224 then 1 else 0 end as ORDERING
-from    sysprotects sp 
+from    sysprotects sp
     left outer join sysusers su on su.uid = sp.uid
     left outer join sysobjects so on (sp.id = so.id)
 where
@@ -413,7 +413,7 @@ order by ORDERING,3,4,2,1
     select  TABLE_CATALOG       = db_name(),
         TABLE_SCHEMA        = user_name(o.uid),
         TABLE_NAME      = o.name,
-        INDEX_CATALOG       = db_name(),        
+        INDEX_CATALOG       = db_name(),
         INDEX_SCHEMA        = user_name(o.uid),
         INDEX_NAME      = x.name,
         PRIMARY_KEY     = convert(bit,(x.status & 0x800)/0x800),
@@ -438,8 +438,8 @@ order by ORDERING,3,4,2,1
         CARDINALITY     = case when (x.status & 2) = 2 then x.rows else null end,
         PAGES           = convert(int, x.dpages),
         FILTER_CONDITION    = convert(nvarchar(1),null),
-        INTEGRATED      = convert(bit,(x.status & 16)/16) 
-        
+        INTEGRATED      = convert(bit,(x.status & 16)/16)
+
         from    sysobjects o, sysindexes x, syscolumns c, sysindexkeys xk
                                   where o.type in ('U')
         and x.id = o.id

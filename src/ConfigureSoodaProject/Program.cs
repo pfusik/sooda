@@ -23,10 +23,10 @@ namespace ConfigureSoodaProject
         public string ProjectFile
         {
             get { return _projectFile; }
-            set 
+            set
             {
                 _modified = false;
-                _projectFile = value; 
+                _projectFile = value;
                 _projectXml = new XmlDocument();
                 _projectXml.Load(_projectFile);
                 _namespaceManager = new XmlNamespaceManager(_projectXml.NameTable);
@@ -36,7 +36,8 @@ namespace ConfigureSoodaProject
 
         public string AssemblyName
         {
-            get { 
+            get
+            {
                 return _projectXml.SelectSingleNode("//msbuild:AssemblyName", _namespaceManager).InnerText;
             }
         }
@@ -144,8 +145,8 @@ namespace ConfigureSoodaProject
 
         public string DefaultNamespace
         {
-            get 
-            { 
+            get
+            {
                 return _projectXml.SelectSingleNode("//msbuild:RootNamespace", _namespaceManager).InnerText;
             }
         }
@@ -157,8 +158,8 @@ namespace ConfigureSoodaProject
 
         public string PreBuildEvent
         {
-            get 
-            { 
+            get
+            {
                 XmlElement preBuildEvent = (XmlElement)_projectXml.SelectSingleNode("//msbuild:PreBuildEvent", _namespaceManager);
                 if (preBuildEvent == null)
                     return "";
@@ -169,7 +170,7 @@ namespace ConfigureSoodaProject
                 XmlElement preBuildEvent = (XmlElement)_projectXml.SelectSingleNode("//msbuild:PreBuildEvent", _namespaceManager);
                 if (preBuildEvent == null)
                 {
-                    preBuildEvent = _projectXml.CreateElement("", "PreBuildEvent", "http://schemas.microsoft.com/developer/msbuild/2003"); 
+                    preBuildEvent = _projectXml.CreateElement("", "PreBuildEvent", "http://schemas.microsoft.com/developer/msbuild/2003");
                     XmlElement propertyGroup = _projectXml.CreateElement("PropertyGroup", "http://schemas.microsoft.com/developer/msbuild/2003");
                     _projectXml.DocumentElement.AppendChild(propertyGroup);
                     propertyGroup.AppendChild(preBuildEvent);
@@ -180,8 +181,8 @@ namespace ConfigureSoodaProject
         }
     }
 
-	public class Program
-	{
+    public class Program
+    {
         public static void Main(string[] args)
         {
             string projectFile;
@@ -214,5 +215,5 @@ namespace ConfigureSoodaProject
             }
 #endif
         }
-	}
+    }
 }

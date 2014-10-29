@@ -449,31 +449,31 @@ end
 
 #if Linq
 method Linq()
-	attributes Public,Static,Overloaded,Final${OptionalNewAttribute}
-	returns generic(System.Linq.IQueryable, ${ClassName})
+    attributes Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns generic(System.Linq.IQueryable, ${ClassName})
 begin
-	return defaultscope.Linq(typeref(SoodaTransaction).ActiveTransaction, typeref(SoodaSnapshotOptions).Default$);
+    return defaultscope.Linq(typeref(SoodaTransaction).ActiveTransaction, typeref(SoodaSnapshotOptions).Default$);
 end
 
 method Linq(SoodaSnapshotOptions options)
-	attributes Public,Static,Overloaded,Final${OptionalNewAttribute}
-	returns generic(System.Linq.IQueryable, ${ClassName})
+    attributes Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns generic(System.Linq.IQueryable, ${ClassName})
 begin
-	return defaultscope.Linq(typeref(SoodaTransaction).ActiveTransaction, arg(options));
+    return defaultscope.Linq(typeref(SoodaTransaction).ActiveTransaction, arg(options));
 end
 
 method Linq(SoodaTransaction tran, SoodaSnapshotOptions options)
-	attributes Public,Static,Overloaded,Final${OptionalNewAttribute}
-	returns generic(System.Linq.IQueryable, ${ClassName})
+    attributes Public,Static,Overloaded,Final${OptionalNewAttribute}
+    returns generic(System.Linq.IQueryable, ${ClassName})
 begin
-	return new generic(Sooda.Linq.SoodaQuerySource, ${ClassName})(arg(tran), typeref(${ClassName}_Factory).TheClassInfo, arg(options));
+    return new generic(Sooda.Linq.SoodaQuerySource, ${ClassName})(arg(tran), typeref(${ClassName}_Factory).TheClassInfo, arg(options));
 end
 
 
 property generic(System.Linq.IQueryable, ${ClassName}) AllQuery
     attributes Public,Static,Final${OptionalNewAttribute}
 get
-    return defaultscope.Linq(typeref(SoodaSnapshotOptions).NoWriteObjects); 
+    return defaultscope.Linq(typeref(SoodaSnapshotOptions).NoWriteObjects);
 end
 
 

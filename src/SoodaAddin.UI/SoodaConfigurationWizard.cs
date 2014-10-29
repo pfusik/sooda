@@ -7,11 +7,11 @@ using System.IO;
 
 namespace SoodaAddin.UI
 {
-	/// <summary>
-	/// Summary description for SoodaConfigurationWizard.
-	/// </summary>
-	public class SoodaConfigurationWizard : System.Windows.Forms.Form
-	{
+    /// <summary>
+    /// Summary description for SoodaConfigurationWizard.
+    /// </summary>
+    public class SoodaConfigurationWizard : System.Windows.Forms.Form
+    {
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Panel contentPanel;
         private System.Windows.Forms.Button buttonNext;
@@ -28,32 +28,32 @@ namespace SoodaAddin.UI
         }
 
         public SoodaConfigurationWizard()
-		{
-			InitializeComponent();
-		}
+        {
+            InitializeComponent();
+        }
 
-		/// <summary>
-		/// Clean up any resources being used.
-		/// </summary>
-		protected override void Dispose( bool disposing )
-		{
-			if( disposing )
-			{
-				if(components != null)
-				{
-					components.Dispose();
-				}
-			}
-			base.Dispose( disposing );
-		}
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        protected override void Dispose( bool disposing )
+        {
+            if( disposing )
+            {
+                if(components != null)
+                {
+                    components.Dispose();
+                }
+            }
+            base.Dispose( disposing );
+        }
 
-		#region Windows Form Designer generated code
-		/// <summary>
-		/// Required method for Designer support - do not modify
-		/// the contents of this method with the code editor.
-		/// </summary>
-		private void InitializeComponent()
-		{
+        #region Windows Form Designer generated code
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
             System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(SoodaConfigurationWizard));
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.contentPanel = new System.Windows.Forms.Panel();
@@ -62,28 +62,28 @@ namespace SoodaAddin.UI
             this.buttonBack = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.SuspendLayout();
-            // 
+            //
             // pictureBox1
-            // 
+            //
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(680, 80);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
-            // 
+            //
             // contentPanel
-            // 
-            this.contentPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-                | System.Windows.Forms.AnchorStyles.Left) 
+            //
+            this.contentPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                | System.Windows.Forms.AnchorStyles.Left)
                 | System.Windows.Forms.AnchorStyles.Right)));
             this.contentPanel.Location = new System.Drawing.Point(8, 88);
             this.contentPanel.Name = "contentPanel";
             this.contentPanel.Size = new System.Drawing.Size(568, 336);
             this.contentPanel.TabIndex = 1;
-            // 
+            //
             // buttonNext
-            // 
+            //
             this.buttonNext.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonNext.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.buttonNext.Location = new System.Drawing.Point(424, 434);
@@ -91,9 +91,9 @@ namespace SoodaAddin.UI
             this.buttonNext.TabIndex = 2;
             this.buttonNext.Text = "&Next >";
             this.buttonNext.Click += new System.EventHandler(this.buttonNext_Click);
-            // 
+            //
             // buttonFinish
-            // 
+            //
             this.buttonFinish.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonFinish.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.buttonFinish.Location = new System.Drawing.Point(504, 434);
@@ -101,9 +101,9 @@ namespace SoodaAddin.UI
             this.buttonFinish.TabIndex = 2;
             this.buttonFinish.Text = "&Finish";
             this.buttonFinish.Click += new System.EventHandler(this.buttonFinish_Click);
-            // 
+            //
             // buttonBack
-            // 
+            //
             this.buttonBack.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonBack.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.buttonBack.Location = new System.Drawing.Point(344, 434);
@@ -111,9 +111,9 @@ namespace SoodaAddin.UI
             this.buttonBack.TabIndex = 2;
             this.buttonBack.Text = "< &Back";
             this.buttonBack.Click += new System.EventHandler(this.buttonBack_Click);
-            // 
+            //
             // buttonCancel
-            // 
+            //
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.buttonCancel.Location = new System.Drawing.Point(264, 434);
@@ -121,9 +121,9 @@ namespace SoodaAddin.UI
             this.buttonCancel.TabIndex = 2;
             this.buttonCancel.Text = "Cancel";
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
-            // 
+            //
             // SoodaConfigurationWizard
-            // 
+            //
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
             this.ClientSize = new System.Drawing.Size(584, 464);
             this.Controls.Add(this.buttonNext);
@@ -143,7 +143,7 @@ namespace SoodaAddin.UI
             this.ResumeLayout(false);
 
         }
-		#endregion
+        #endregion
 
         private WizardPageWelcome _welcomePage;
         private WizardPageConnectToDatabase _connectToDatabasePage;

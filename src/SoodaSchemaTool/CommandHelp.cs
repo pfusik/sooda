@@ -32,47 +32,43 @@ using System.Reflection;
 
 namespace SoodaSchemaTool
 {
-    [Command("help", "display command usage information")]
-	public class CommandHelp : Command
-	{
-		public CommandHelp()
-		{
-		}
-
-        public override int Run(string[] args)
+[Command("help", "display command usage information")]
+public class CommandHelp : Command
+{
+    public override int Run(string[] args)
+    {
+        Console.WriteLine("Copyright (c) 2005-2006 by Jaroslaw Kowalski. All rights reserved.");
+        Console.WriteLine();
+        if (args.Length == 1)
         {
-            Console.WriteLine("Copyright (c) 2005-2006 by Jaroslaw Kowalski. All rights reserved.");
-            Console.WriteLine();
-            if (args.Length == 1)
+            Command cmd = CommandFactory.CreateCommand(args[0]);
+
+            CommandAttribute ca = (CommandAttribute)Attribute.GetCustomAttribute(cmd.GetType(), typeof(CommandAttribute));
+            Console.WriteLine("SoodaSchemaTool {0} - {1}", ca.Name, ca.Description);
+
+            PropertyInfo[] properties = cmd.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+            foreach (PropertyInfo pi in properties)
             {
-                Command cmd = CommandFactory.CreateCommand(args[0]);
-
-                CommandAttribute ca = (CommandAttribute)Attribute.GetCustomAttribute(cmd.GetType(), typeof(CommandAttribute));
-                Console.WriteLine("SoodaSchemaTool {0} - {1}", ca.Name, ca.Description);
-
-                PropertyInfo[] properties = cmd.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
-                foreach (PropertyInfo pi in properties)
-                {
-                    Console.WriteLine(" {0}", pi.Name);
-                }
+                Console.WriteLine(" {0}", pi.Name);
             }
-            else
-            {
-                Console.WriteLine("Usage: SoodaSchemaTool command [arguments]");
-                Console.WriteLine("Where command can be one of:");
-                Console.WriteLine();
-
-                foreach (Type t in CommandFactory.RegisteredTypes)
-                {
-                    CommandAttribute ca = (CommandAttribute)Attribute.GetCustomAttribute(t, typeof(CommandAttribute));
-                    Console.WriteLine(" {0} - {1}", ca.Name, ca.Description);
-                }
-
-                Console.WriteLine();
-                Console.WriteLine("Arguments are command-dependent and usage is available after:");
-                Console.WriteLine("    SoodaSchemaTool help commandName");
-            }
-            return 0;
         }
-	}
+        else
+        {
+            Console.WriteLine("Usage: SoodaSchemaTool command [arguments]");
+            Console.WriteLine("Where command can be one of:");
+            Console.WriteLine();
+
+            foreach (Type t in CommandFactory.RegisteredTypes)
+            {
+                CommandAttribute ca = (CommandAttribute)Attribute.GetCustomAttribute(t, typeof(CommandAttribute));
+                Console.WriteLine(" {0} - {1}", ca.Name, ca.Description);
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("Arguments are command-dependent and usage is available after:");
+            Console.WriteLine("    SoodaSchemaTool help commandName");
+        }
+        return 0;
+    }
+}
 }

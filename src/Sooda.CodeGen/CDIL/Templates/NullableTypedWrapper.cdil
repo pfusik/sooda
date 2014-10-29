@@ -12,7 +12,7 @@ constructor(Sooda.QL.SoqlPathExpression left, System.String name)
     baseArg(arg(name))
 begin
 end
-    
+
 method IsNull()
     attributes Public
     returns Sooda.QL.SoqlBooleanExpression

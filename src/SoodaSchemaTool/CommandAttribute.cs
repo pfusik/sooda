@@ -32,16 +32,16 @@ using System;
 namespace SoodaSchemaTool
 {
     [AttributeUsage(AttributeTargets.Class)]
-	public class CommandAttribute : Attribute
-	{
+    public class CommandAttribute : Attribute
+    {
         private string _name;
         private string _description;
 
-		public CommandAttribute(string name, string description)
-		{
+        public CommandAttribute(string name, string description)
+        {
             _name = name;
             _description = description;
-		}
+        }
 
         public string Name
         {
@@ -52,5 +52,5 @@ namespace SoodaSchemaTool
         {
             get { return _description; }
         }
-	}
+    }
 }

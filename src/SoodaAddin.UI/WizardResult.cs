@@ -1,9 +1,7 @@
-using System;
-
 namespace SoodaAddin.UI
 {
-	public class WizardResult
-	{
+    public class WizardResult
+    {
         public string ConnectionString;
         public string SelectedDatabase;
         public bool ReverseEngineerDatabase;

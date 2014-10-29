@@ -1,4 +1,4 @@
 class ${ClassName}
     extends ${ClassName}_Stub
 
-end    
+end

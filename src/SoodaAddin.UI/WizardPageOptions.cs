@@ -8,11 +8,11 @@ using System.Diagnostics;
 
 namespace SoodaAddin.UI
 {
-	/// <summary>
-	/// Summary description for WizardPageOptions.
-	/// </summary>
-	public class WizardPageOptions : SoodaAddin.UI.WizardPage
-	{
+    /// <summary>
+    /// Summary description for WizardPageOptions.
+    /// </summary>
+    public class WizardPageOptions : SoodaAddin.UI.WizardPage
+    {
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Panel panelAdvancedOptions;
@@ -35,42 +35,42 @@ namespace SoodaAddin.UI
         private System.Windows.Forms.LinkLabel linkLabelAddAttributes;
         private System.Windows.Forms.LinkLabel linkLabelGenerateSchema;
         private System.Windows.Forms.LinkLabel linkLabelGenerateStubs;
-		/// <summary> 
-		/// Required designer variable.
-		/// </summary>
-		private System.ComponentModel.Container components = null;
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.Container components = null;
 
-		public WizardPageOptions()
-		{
-			// This call is required by the Windows.Forms Form Designer.
-			InitializeComponent();
+        public WizardPageOptions()
+        {
+            // This call is required by the Windows.Forms Form Designer.
+            InitializeComponent();
 
-			// TODO: Add any initialization after the InitializeComponent call
+            // TODO: Add any initialization after the InitializeComponent call
 
-		}
+        }
 
-		/// <summary> 
-		/// Clean up any resources being used.
-		/// </summary>
-		protected override void Dispose( bool disposing )
-		{
-			if( disposing )
-			{
-				if(components != null)
-				{
-					components.Dispose();
-				}
-			}
-			base.Dispose( disposing );
-		}
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        protected override void Dispose( bool disposing )
+        {
+            if( disposing )
+            {
+                if(components != null)
+                {
+                    components.Dispose();
+                }
+            }
+            base.Dispose( disposing );
+        }
 
-		#region Component Designer generated code
-		/// <summary> 
-		/// Required method for Designer support - do not modify 
-		/// the contents of this method with the code editor.
-		/// </summary>
-		private void InitializeComponent()
-		{
+        #region Component Designer generated code
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.checkBoxGenerateStubs = new System.Windows.Forms.CheckBox();
@@ -96,10 +96,10 @@ namespace SoodaAddin.UI
             this.panelAdvancedOptions.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
-            // 
+            //
             // label1
-            // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            //
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                 | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(238)));
             this.label1.Location = new System.Drawing.Point(8, 8);
@@ -107,27 +107,27 @@ namespace SoodaAddin.UI
             this.label1.Size = new System.Drawing.Size(520, 24);
             this.label1.TabIndex = 5;
             this.label1.Text = "Select options:";
-            // 
+            //
             // label2
-            // 
-            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            //
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                 | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.Location = new System.Drawing.Point(8, 32);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(520, 16);
             this.label2.TabIndex = 9;
             this.label2.Text = "Choose the actions you would like the wizard to perform and click Finish.";
-            // 
+            //
             // checkBoxGenerateStubs
-            // 
+            //
             this.checkBoxGenerateStubs.Location = new System.Drawing.Point(8, 80);
             this.checkBoxGenerateStubs.Name = "checkBoxGenerateStubs";
             this.checkBoxGenerateStubs.Size = new System.Drawing.Size(432, 24);
             this.checkBoxGenerateStubs.TabIndex = 6;
             this.checkBoxGenerateStubs.Text = "Generate initial stubs and skeleton classes";
-            // 
+            //
             // panelAdvancedOptions
-            // 
+            //
             this.panelAdvancedOptions.AutoScroll = true;
             this.panelAdvancedOptions.AutoScrollMargin = new System.Drawing.Size(8, 8);
             this.panelAdvancedOptions.BackColor = System.Drawing.SystemColors.Control;
@@ -149,9 +149,9 @@ namespace SoodaAddin.UI
             this.panelAdvancedOptions.Name = "panelAdvancedOptions";
             this.panelAdvancedOptions.Size = new System.Drawing.Size(514, 203);
             this.panelAdvancedOptions.TabIndex = 10;
-            // 
+            //
             // linkLabelCreateKeyGen
-            // 
+            //
             this.linkLabelCreateKeyGen.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.linkLabelCreateKeyGen.Location = new System.Drawing.Point(448, 80);
             this.linkLabelCreateKeyGen.Name = "linkLabelCreateKeyGen";
@@ -161,10 +161,10 @@ namespace SoodaAddin.UI
             this.linkLabelCreateKeyGen.Text = "Explain";
             this.linkLabelCreateKeyGen.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.linkLabelCreateKeyGen.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelCreateKeyGen_LinkClicked);
-            // 
+            //
             // comboBoxConfigStyle
-            // 
-            this.comboBoxConfigStyle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            //
+            this.comboBoxConfigStyle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                 | System.Windows.Forms.AnchorStyles.Right)));
             this.comboBoxConfigStyle.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxConfigStyle.Items.AddRange(new object[] {
@@ -174,9 +174,9 @@ namespace SoodaAddin.UI
             this.comboBoxConfigStyle.Name = "comboBoxConfigStyle";
             this.comboBoxConfigStyle.Size = new System.Drawing.Size(216, 22);
             this.comboBoxConfigStyle.TabIndex = 18;
-            // 
+            //
             // checkBoxCreateConfig
-            // 
+            //
             this.checkBoxCreateConfig.Checked = true;
             this.checkBoxCreateConfig.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxCreateConfig.Location = new System.Drawing.Point(8, 8);
@@ -184,10 +184,10 @@ namespace SoodaAddin.UI
             this.checkBoxCreateConfig.Size = new System.Drawing.Size(208, 24);
             this.checkBoxCreateConfig.TabIndex = 17;
             this.checkBoxCreateConfig.Text = "Create configuration file:";
-            // 
+            //
             // checkBoxModifyBuildEvent
-            // 
-            this.checkBoxModifyBuildEvent.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            //
+            this.checkBoxModifyBuildEvent.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                 | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxModifyBuildEvent.Checked = true;
             this.checkBoxModifyBuildEvent.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -196,20 +196,20 @@ namespace SoodaAddin.UI
             this.checkBoxModifyBuildEvent.Size = new System.Drawing.Size(432, 24);
             this.checkBoxModifyBuildEvent.TabIndex = 15;
             this.checkBoxModifyBuildEvent.Text = "Modify project Pre-build Event to generate stubs on each build";
-            // 
+            //
             // checkBoxSeparateStubs
-            // 
-            this.checkBoxSeparateStubs.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            //
+            this.checkBoxSeparateStubs.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                 | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxSeparateStubs.Location = new System.Drawing.Point(8, 128);
             this.checkBoxSeparateStubs.Name = "checkBoxSeparateStubs";
             this.checkBoxSeparateStubs.Size = new System.Drawing.Size(432, 24);
             this.checkBoxSeparateStubs.TabIndex = 12;
             this.checkBoxSeparateStubs.Text = "Compile stubs to a separate DLL";
-            // 
+            //
             // checkBoxAddAttributesToAssemblyInfo
-            // 
-            this.checkBoxAddAttributesToAssemblyInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            //
+            this.checkBoxAddAttributesToAssemblyInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                 | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxAddAttributesToAssemblyInfo.Checked = true;
             this.checkBoxAddAttributesToAssemblyInfo.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -218,10 +218,10 @@ namespace SoodaAddin.UI
             this.checkBoxAddAttributesToAssemblyInfo.Size = new System.Drawing.Size(432, 24);
             this.checkBoxAddAttributesToAssemblyInfo.TabIndex = 11;
             this.checkBoxAddAttributesToAssemblyInfo.Text = "Add necessary attributes to the AssemblyInfo file";
-            // 
+            //
             // checkBoxCreateKeyGen
-            // 
-            this.checkBoxCreateKeyGen.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            //
+            this.checkBoxCreateKeyGen.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                 | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxCreateKeyGen.Checked = true;
             this.checkBoxCreateKeyGen.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -230,19 +230,19 @@ namespace SoodaAddin.UI
             this.checkBoxCreateKeyGen.Size = new System.Drawing.Size(432, 24);
             this.checkBoxCreateKeyGen.TabIndex = 14;
             this.checkBoxCreateKeyGen.Text = "Create KeyGen table in the database if it does not exist";
-            // 
+            //
             // checkBoxDisableIdentityColumns
-            // 
-            this.checkBoxDisableIdentityColumns.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            //
+            this.checkBoxDisableIdentityColumns.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                 | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBoxDisableIdentityColumns.Location = new System.Drawing.Point(8, 104);
             this.checkBoxDisableIdentityColumns.Name = "checkBoxDisableIdentityColumns";
             this.checkBoxDisableIdentityColumns.Size = new System.Drawing.Size(432, 24);
             this.checkBoxDisableIdentityColumns.TabIndex = 13;
             this.checkBoxDisableIdentityColumns.Text = "Disable IDENTITY columns";
-            // 
+            //
             // linkLabelDisableIdentityColumns
-            // 
+            //
             this.linkLabelDisableIdentityColumns.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.linkLabelDisableIdentityColumns.Location = new System.Drawing.Point(448, 104);
             this.linkLabelDisableIdentityColumns.Name = "linkLabelDisableIdentityColumns";
@@ -252,9 +252,9 @@ namespace SoodaAddin.UI
             this.linkLabelDisableIdentityColumns.Text = "Explain";
             this.linkLabelDisableIdentityColumns.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.linkLabelDisableIdentityColumns.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelDisableIdentityColumns_LinkClicked);
-            // 
+            //
             // linkLabelSeparateStubs
-            // 
+            //
             this.linkLabelSeparateStubs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.linkLabelSeparateStubs.Location = new System.Drawing.Point(448, 128);
             this.linkLabelSeparateStubs.Name = "linkLabelSeparateStubs";
@@ -264,9 +264,9 @@ namespace SoodaAddin.UI
             this.linkLabelSeparateStubs.Text = "Explain";
             this.linkLabelSeparateStubs.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.linkLabelSeparateStubs.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelSeparateStubs_LinkClicked);
-            // 
+            //
             // linkLabelModifyBuildEvent
-            // 
+            //
             this.linkLabelModifyBuildEvent.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.linkLabelModifyBuildEvent.Location = new System.Drawing.Point(448, 56);
             this.linkLabelModifyBuildEvent.Name = "linkLabelModifyBuildEvent";
@@ -276,9 +276,9 @@ namespace SoodaAddin.UI
             this.linkLabelModifyBuildEvent.Text = "Explain";
             this.linkLabelModifyBuildEvent.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.linkLabelModifyBuildEvent.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelModifyBuildEvent_LinkClicked);
-            // 
+            //
             // linkLabelCreateConfig
-            // 
+            //
             this.linkLabelCreateConfig.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.linkLabelCreateConfig.Location = new System.Drawing.Point(448, 8);
             this.linkLabelCreateConfig.Name = "linkLabelCreateConfig";
@@ -288,9 +288,9 @@ namespace SoodaAddin.UI
             this.linkLabelCreateConfig.Text = "Explain";
             this.linkLabelCreateConfig.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.linkLabelCreateConfig.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelCreateConfig_LinkClicked);
-            // 
+            //
             // linkLabelAddAttributes
-            // 
+            //
             this.linkLabelAddAttributes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.linkLabelAddAttributes.Location = new System.Drawing.Point(448, 32);
             this.linkLabelAddAttributes.Name = "linkLabelAddAttributes";
@@ -300,11 +300,11 @@ namespace SoodaAddin.UI
             this.linkLabelAddAttributes.Text = "Explain";
             this.linkLabelAddAttributes.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.linkLabelAddAttributes.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelAddAttributes_LinkClicked);
-            // 
+            //
             // groupBox1
-            // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-                | System.Windows.Forms.AnchorStyles.Left) 
+            //
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                | System.Windows.Forms.AnchorStyles.Left)
                 | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.panelAdvancedOptions);
             this.groupBox1.Location = new System.Drawing.Point(8, 112);
@@ -314,9 +314,9 @@ namespace SoodaAddin.UI
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Advanced Options";
             this.groupBox1.Visible = false;
-            // 
+            //
             // checkBoxGenerateSchema
-            // 
+            //
             this.checkBoxGenerateSchema.Checked = true;
             this.checkBoxGenerateSchema.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxGenerateSchema.Location = new System.Drawing.Point(8, 56);
@@ -324,9 +324,9 @@ namespace SoodaAddin.UI
             this.checkBoxGenerateSchema.Size = new System.Drawing.Size(440, 24);
             this.checkBoxGenerateSchema.TabIndex = 23;
             this.checkBoxGenerateSchema.Text = "Create approximate mapping schema by reverse-engineering the database";
-            // 
+            //
             // linkLabelGenerateSchema
-            // 
+            //
             this.linkLabelGenerateSchema.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.linkLabelGenerateSchema.Location = new System.Drawing.Point(456, 56);
             this.linkLabelGenerateSchema.Name = "linkLabelGenerateSchema";
@@ -336,9 +336,9 @@ namespace SoodaAddin.UI
             this.linkLabelGenerateSchema.Text = "Explain";
             this.linkLabelGenerateSchema.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.linkLabelGenerateSchema.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelGenerateSchema_LinkClicked);
-            // 
+            //
             // buttonAdvancedOptions
-            // 
+            //
             this.buttonAdvancedOptions.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.buttonAdvancedOptions.Location = new System.Drawing.Point(8, 112);
             this.buttonAdvancedOptions.Name = "buttonAdvancedOptions";
@@ -346,9 +346,9 @@ namespace SoodaAddin.UI
             this.buttonAdvancedOptions.TabIndex = 25;
             this.buttonAdvancedOptions.Text = "Advanced Options";
             this.buttonAdvancedOptions.Click += new System.EventHandler(this.buttonAdvancedOptions_Click);
-            // 
+            //
             // linkLabelGenerateStubs
-            // 
+            //
             this.linkLabelGenerateStubs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.linkLabelGenerateStubs.Location = new System.Drawing.Point(456, 80);
             this.linkLabelGenerateStubs.Name = "linkLabelGenerateStubs";
@@ -358,9 +358,9 @@ namespace SoodaAddin.UI
             this.linkLabelGenerateStubs.Text = "Explain";
             this.linkLabelGenerateStubs.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.linkLabelGenerateStubs.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelGenerateStubs_LinkClicked);
-            // 
+            //
             // WizardPageOptions
-            // 
+            //
             this.Controls.Add(this.buttonAdvancedOptions);
             this.Controls.Add(this.checkBoxGenerateSchema);
             this.Controls.Add(this.linkLabelGenerateSchema);
@@ -379,7 +379,7 @@ namespace SoodaAddin.UI
             this.ResumeLayout(false);
 
         }
-		#endregion
+        #endregion
 
         private void WizardPageOptions_Load(object sender, System.EventArgs e)
         {
@@ -456,5 +456,5 @@ namespace SoodaAddin.UI
         {
             OpenDocUrl("compilationprocessseparate");
         }
-	}
+    }
 }

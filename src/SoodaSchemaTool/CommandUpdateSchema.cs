@@ -38,20 +38,16 @@ namespace SoodaSchemaTool
 {
     [Command("updateschema", "Update schema.")]
     public class CommandUpdateSchema : Command, ISchemaImporterOptions
-	{
-        private string _databaseType = "mssql";
-        private string _connectionString;
-        private string _schemaFile;
-        private bool _updateTypes = false;
-        private bool _updateSizes = false;
-        private bool _updateNullable = false;
-        private bool _updatePrimaryKeys = false;
-        private string _tableName = null;
-        private string _outputSchemaFile = null;
-
-		public CommandUpdateSchema()
-		{
-		}
+    {
+        string _databaseType = "mssql";
+        string _connectionString;
+        string _schemaFile;
+        bool _updateTypes = false;
+        bool _updateSizes = false;
+        bool _updateNullable = false;
+        bool _updatePrimaryKeys = false;
+        string _tableName = null;
+        string _outputSchemaFile = null;
 
         public string DatabaseType
         {
@@ -202,5 +198,5 @@ namespace SoodaSchemaTool
             if (UpdatePrimaryKeys)
                 fi.IsPrimaryKey = dbfi.IsPrimaryKey;
         }
-	}
+    }
 }
