@@ -402,6 +402,33 @@ namespace Sooda.UnitTests.TestCases
         }
 
         [Test]
+        public void WhereDynamicReference()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                AddReferenceField(tran);
+                try
+                {
+                    PKInt32 o = new PKInt32();
+                    o.Parent = o;
+                    o[ReferenceField] = Contact.Mary;
+                    IEnumerable<PKInt32> pe = PKInt32.Linq().Where(p => ((Contact) p[ReferenceField]).LastSalary.Value == 42);
+                    CollectionAssert.IsEmpty(pe);
+
+                    pe = PKInt32.Linq().Where(p => ((Contact) p[ReferenceField]).LastSalary.Value == 123.123456789M);
+                    CollectionAssert.AreEquivalent(new PKInt32[] { o }, pe);
+
+                    pe = PKInt32.Linq().Where(p => ((Contact) p[ReferenceField]).GetLabel(false) == "Mary Manager");
+                    CollectionAssert.AreEquivalent(new PKInt32[] { o }, pe);
+                }
+                finally
+                {
+                    RemoveReferenceField(tran);
+                }
+            }
+        }
+
+        [Test]
         public void OrderBySelectStatic()
         {
             using (new SoodaTransaction())
