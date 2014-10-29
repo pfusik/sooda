@@ -56,6 +56,7 @@ namespace Sooda.Schema
             ClassInfo ci = fi.ParentClass;
 
             TableInfo table = new TableInfo();
+            table.TableUsageType = TableUsageType.DynamicField;
             table.DBTableName = ci.Name + "_" + fi.Name;
 
             // copy primary key fields
@@ -208,6 +209,8 @@ namespace Sooda.Schema
 
         public static void Remove(FieldInfo fi, SoodaTransaction transaction)
         {
+            if (!fi.IsDynamic)
+                throw new InvalidOperationException(fi.Name + " is not a dynamic field");
             ClassInfo ci = fi.ParentClass;
             SoodaDataSource ds = transaction.OpenDataSource(ci.GetDataSource());
 

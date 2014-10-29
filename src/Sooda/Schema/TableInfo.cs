@@ -40,7 +40,8 @@ namespace Sooda.Schema
     {
         Normal,
         Dictionary,
-        OccasionallyModificated
+        OccasionallyModificated,
+        DynamicField
     }
 
     [XmlType(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
@@ -93,6 +94,14 @@ namespace Sooda.Schema
             set
             {
                 _usageType = value;
+            }
+        }
+
+        internal bool IsDynamic
+        {
+            get
+            {
+                return _usageType == TableUsageType.DynamicField;
             }
         }
 
@@ -187,7 +196,7 @@ namespace Sooda.Schema
 
         public TableInfo Clone(ClassInfo newParent)
         {
-            TableInfo tableInfo = (TableInfo)this.MemberwiseClone();
+            TableInfo tableInfo = (TableInfo) this.MemberwiseClone();
 
             tableInfo.OwnerClass = newParent;
             return tableInfo;

@@ -1,31 +1,31 @@
-// 
+//
 // Copyright (c) 2014 Piotr Fusik <piotr@fusik.info>
-// 
+//
 // All rights reserved.
-// 
-// Redistribution and use in source and binary forms, with or without 
-// modification, are permitted provided that the following conditions 
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
 // are met:
-// 
-// * Redistributions of source code must retain the above copyright notice, 
-//   this list of conditions and the following disclaimer. 
-// 
+//
+// * Redistributions of source code must retain the above copyright notice,
+//   this list of conditions and the following disclaimer.
+//
 // * Redistributions in binary form must reproduce the above copyright notice,
 //   this list of conditions and the following disclaimer in the documentation
-//   and/or other materials provided with the distribution. 
-// 
+//   and/or other materials provided with the distribution.
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
-// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
 // CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
-// 
+//
 
 using System;
 using System.Collections.Generic;
@@ -247,6 +247,7 @@ namespace Sooda.UnitTests.TestCases
                 Assert.IsFalse(fi.IsNullable);
                 Assert.AreEqual("AnsiString", fi.TypeName);
                 Assert.AreEqual(typeof(string), fi.Type);
+                Assert.IsFalse(fi.IsDynamic);
             }
         }
 
@@ -256,6 +257,8 @@ namespace Sooda.UnitTests.TestCases
             using (SoodaTransaction tran = new SoodaTransaction())
             {
                 AddIntField(tran);
+                AddDateTimeField(tran);
+                AddReferenceField(tran);
                 try
                 {
                     FieldInfo fi = tran.Schema.FindClassByName("PKInt32").FindFieldByName(IntField);
@@ -266,9 +269,32 @@ namespace Sooda.UnitTests.TestCases
                     Assert.IsFalse(fi.IsNullable);
                     Assert.AreEqual("Integer", fi.TypeName);
                     Assert.AreEqual(typeof(int), fi.Type);
+                    Assert.IsTrue(fi.IsDynamic);
+
+                    fi = tran.Schema.FindClassByName("PKInt32").FindFieldByName(DateTimeField);
+                    Assert.AreEqual(DateTimeField, fi.Name);
+                    Assert.AreEqual(FieldDataType.DateTime, fi.DataType);
+                    Assert.IsNull(fi.References);
+                    Assert.IsFalse(fi.IsPrimaryKey);
+                    Assert.IsTrue(fi.IsNullable);
+                    Assert.AreEqual("DateTime", fi.TypeName);
+                    Assert.AreEqual(typeof(DateTime?), fi.Type);
+                    Assert.IsTrue(fi.IsDynamic);
+
+                    fi = tran.Schema.FindClassByName("PKInt32").FindFieldByName(ReferenceField);
+                    Assert.AreEqual(ReferenceField, fi.Name);
+                    Assert.AreEqual(FieldDataType.Integer, fi.DataType);
+                    Assert.AreEqual("Contact", fi.References);
+                    Assert.IsFalse(fi.IsPrimaryKey);
+                    Assert.IsTrue(fi.IsNullable);
+                    Assert.AreEqual("Contact", fi.TypeName);
+                    Assert.AreEqual(typeof(Contact), fi.Type);
+                    Assert.IsTrue(fi.IsDynamic);
                 }
                 finally
                 {
+                    RemoveReferenceField(tran);
+                    RemoveDateTimeField(tran);
                     RemoveIntField(tran);
                 }
             }
@@ -308,7 +334,7 @@ namespace Sooda.UnitTests.TestCases
                     o[IntField] = 42;
                     IEnumerable<PKInt32> pe = PKInt32.Linq().Where(p => (int) p[IntField] == 5);
                     CollectionAssert.IsEmpty(pe);
-                    
+
                     pe = PKInt32.Linq().Where(p => (int) p[IntField] == 42);
                     CollectionAssert.AreEquivalent(new PKInt32[] { o }, pe);
                 }
@@ -330,7 +356,7 @@ namespace Sooda.UnitTests.TestCases
                     PKInt32.GetRef(7777777)[IntField] = 42;
                     IEnumerable<PKInt32> pe = PKInt32.Linq().Where(p => (int) p[IntField] == 5);
                     CollectionAssert.IsEmpty(pe);
-                    
+
                     pe = PKInt32.Linq().Where(p => (int) p[IntField] == 42);
                     CollectionAssert.AreEquivalent(new PKInt32[] { PKInt32.GetRef(7777777) }, pe);
                 }
