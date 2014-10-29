@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2003-2006 Jaroslaw Kowalski <jaak@jkowalski.net>
+// Copyright (c) 2007-2014 Piotr Fusik <piotr@fusik.info>
 //
 // All rights reserved.
 //
@@ -26,6 +26,7 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
+
 #if !MONO
 
 namespace Sooda.Sql

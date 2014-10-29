@@ -253,7 +253,10 @@ public class LicenseHeader
     {
         foreach (string s in licenseText)
         {
-            output.WriteLine("// {0}", s);
+            if (s.Length == 0)
+                output.WriteLine("//");
+            else
+                output.WriteLine("// {0}", s);
         }
         output.WriteLine();
         using (StreamReader input = File.OpenText(fileName))
