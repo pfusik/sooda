@@ -29,10 +29,12 @@
 
 #if DOTNET35
 
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 using Sooda;
 using Sooda.Logging;
@@ -40,9 +42,14 @@ using Sooda.Sql;
 
 namespace Sooda.Schema
 {
-    public class DynamicFieldManager
+    public static class DynamicFieldManager
     {
         static readonly Logger logger = LogManager.GetLogger("Sooda.Schema.DynamicFieldsManager");
+
+        static bool DynamicFieldsEnabled(SchemaInfo schema)
+        {
+            return schema.DataSources.Any(ds => ds.EnableDynamicFields);
+        }
 
         static void Add(FieldInfo fi)
         {
@@ -89,64 +96,81 @@ namespace Sooda.Schema
             Resolve(ci.Schema, new HashSet<ClassInfo> { ci });
         }
 
-        internal static void Load(SoodaTransaction transaction)
+        static void Load(SoodaTransaction transaction)
         {
             SchemaInfo schema = transaction.Schema;
-            if (schema.DynamicFieldsLoaded || !schema.DataSources.Any(ds => ds.EnableDynamicFields))
-                return;
-
-            lock (schema)
+            HashSet<ClassInfo> affectedClasses = new HashSet<ClassInfo>();
+            foreach (DataSourceInfo dsi in schema.DataSources)
             {
-                if (schema.DynamicFieldsLoaded)
-                    return;
-
-                HashSet<ClassInfo> affectedClasses = new HashSet<ClassInfo>();
-                foreach (DataSourceInfo dsi in schema.DataSources)
+                SoodaDataSource ds = transaction.OpenDataSource(dsi);
+                using (IDataReader r = ds.ExecuteRawQuery("select class, field, type, nullable, size, precision from SoodaDynamicField"))
                 {
-                    SoodaDataSource ds = transaction.OpenDataSource(dsi);
-                    using (IDataReader r = ds.ExecuteRawQuery("select class, field, type, nullable, size, precision from SoodaDynamicField"))
+                    while (r.Read())
                     {
-                        while (r.Read())
+                        string className = r.GetString(0);
+                        ClassInfo ci = schema.FindClassByName(className);
+                        if (ci == null)
                         {
-                            string className = r.GetString(0);
-                            ClassInfo ci = schema.FindClassByName(className);
-                            if (ci == null)
-                            {
-                                logger.Warn("Ignoring a dynamic field of non-existent class {0} -- see the SoodaDynamicField table", className);
-                                continue;
-                            }
-
-                            FieldInfo fi = new FieldInfo();
-                            fi.ParentClass = ci;
-                            fi.Name = r.GetString(1);
-                            fi.TypeName = r.GetString(2);
-                            fi.IsNullable = r.GetInt32(3) != 0;
-                            if (!r.IsDBNull(4))
-                                fi.Size = r.GetInt32(4);
-                            if (!r.IsDBNull(5))
-                                fi.Precision = r.GetInt32(5);
-                            Add(fi);
-
-                            affectedClasses.Add(ci);
+                            logger.Warn("Ignoring a dynamic field of non-existent class {0} -- see the SoodaDynamicField table", className);
+                            continue;
                         }
+
+                        FieldInfo fi = new FieldInfo();
+                        fi.ParentClass = ci;
+                        fi.Name = r.GetString(1);
+                        fi.TypeName = r.GetString(2);
+                        fi.IsNullable = r.GetInt32(3) != 0;
+                        if (!r.IsDBNull(4))
+                            fi.Size = r.GetInt32(4);
+                        if (!r.IsDBNull(5))
+                            fi.Precision = r.GetInt32(5);
+                        Add(fi);
+
+                        affectedClasses.Add(ci);
                     }
                 }
-
-                Resolve(schema, affectedClasses);
-
-                schema.DynamicFieldsLoaded = true;
             }
+
+            Resolve(schema, affectedClasses);
         }
 
-        public static void Invalidate(SchemaInfo schema)
+        internal static void OpenTransaction(SoodaTransaction transaction)
         {
-            if (schema.DynamicFieldsLoaded)
+            SchemaInfo schema = transaction.Schema;
+
+            if (schema._rwLock == null)
             {
+                if (!DynamicFieldsEnabled(schema))
+                    return;
+
                 lock (schema)
                 {
-                    schema.DynamicFieldsLoaded = false;
+                    if (schema._rwLock == null)
+                    {
+                        Load(transaction);
+                        schema._rwLock = new ReaderWriterLock();
+                    }
                 }
             }
+
+            schema._rwLock.AcquireReaderLock(-1);
+        }
+
+        internal static void CloseTransaction(SoodaTransaction transaction)
+        {
+            ReaderWriterLock rwLock = transaction.Schema._rwLock;
+            if (rwLock != null)
+                rwLock.ReleaseReaderLock();
+        }
+
+        static LockCookie LockWrite(SoodaTransaction transaction)
+        {
+            ReaderWriterLock rwLock = transaction.Schema._rwLock;
+            if (rwLock == null)
+                throw new InvalidOperationException("Dynamic fields not enabled in Sooda schema");
+            LockCookie lockCookie = rwLock.UpgradeToWriterLock(-1);
+            transaction.Cache.Clear();
+            return lockCookie;
         }
 
         static int? NegativeToNull(int i)
@@ -160,15 +184,24 @@ namespace Sooda.Schema
         {
             ClassInfo ci = fi.ParentClass;
             SqlDataSource ds = (SqlDataSource) transaction.OpenDataSource(ci.GetDataSource());
-            Add(fi);
-            Resolve(ci); // initializes fi.Table
 
-            StringWriter sw = new StringWriter();
-            sw.Write("insert into SoodaDynamicField (class, field, type, nullable, size, precision) values ({0}, {1}, {2}, {3}, {4}, {5});\n");
-            ds.SqlBuilder.GenerateCreateTable(sw, fi.Table, null, ";\n");
-            ds.SqlBuilder.GeneratePrimaryKey(sw, fi.Table, null, ";\n");
-            ds.SqlBuilder.GenerateForeignKeys(sw, fi.Table, ";\n");
-            ds.ExecuteNonQuery(sw.ToString(), ci.Name, fi.Name, fi.TypeName, fi.IsNullable ? 1 : 0, NegativeToNull(fi.Size), NegativeToNull(fi.Precision));
+            LockCookie lockCookie = LockWrite(transaction);
+            try
+            {
+                Add(fi);
+                Resolve(ci); // initializes fi.Table
+
+                StringWriter sw = new StringWriter();
+                sw.Write("insert into SoodaDynamicField (class, field, type, nullable, size, precision) values ({0}, {1}, {2}, {3}, {4}, {5});\n");
+                ds.SqlBuilder.GenerateCreateTable(sw, fi.Table, null, ";\n");
+                ds.SqlBuilder.GeneratePrimaryKey(sw, fi.Table, null, ";\n");
+                ds.SqlBuilder.GenerateForeignKeys(sw, fi.Table, ";\n");
+                ds.ExecuteNonQuery(sw.ToString(), ci.Name, fi.Name, fi.TypeName, fi.IsNullable ? 1 : 0, NegativeToNull(fi.Size), NegativeToNull(fi.Precision));
+            }
+            finally
+            {
+                transaction.Schema._rwLock.DowngradeFromWriterLock(ref lockCookie);
+            }
         }
 
         public static void Remove(FieldInfo fi, SoodaTransaction transaction)
@@ -176,10 +209,18 @@ namespace Sooda.Schema
             ClassInfo ci = fi.ParentClass;
             SoodaDataSource ds = transaction.OpenDataSource(ci.GetDataSource());
 
-            ds.ExecuteNonQuery("delete from SoodaDynamicField where class={0} and field={1};\ndrop table " + fi.Table.DBTableName, ci.Name, fi.Name);
+            LockCookie lockCookie = LockWrite(transaction);
+            try
+            {
+                ds.ExecuteNonQuery("delete from SoodaDynamicField where class={0} and field={1};\ndrop table " + fi.Table.DBTableName, ci.Name, fi.Name);
 
-            ci.LocalTables.Remove(fi.Table);
-            Resolve(ci);
+                ci.LocalTables.Remove(fi.Table);
+                Resolve(ci);
+            }
+            finally
+            {
+                transaction.Schema._rwLock.DowngradeFromWriterLock(ref lockCookie);
+            }
         }
     }
 }
