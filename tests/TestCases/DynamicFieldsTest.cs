@@ -178,6 +178,16 @@ namespace Sooda.UnitTests.TestCases
         }
 
         [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void IndexerSetStatic()
+        {
+            using (new SoodaTransaction())
+            {
+                Contact.Mary["Active"] = false;
+            }
+        }
+
+        [Test]
         public void IndexerGetDynamic()
         {
             using (SoodaTransaction tran = new SoodaTransaction())
@@ -520,6 +530,17 @@ namespace Sooda.UnitTests.TestCases
                 dynamic d = Contact.Mary;
                 object result = d.NameAndType;
                 Assert.AreEqual("Mary Manager (Manager)", result);
+            }
+        }
+
+        [Test]
+        public void DynamicSetStatic()
+        {
+            using (new SoodaTransaction())
+            {
+                dynamic d = Contact.Mary;
+                d.Active = false;
+                Assert.IsFalse(Contact.Mary.Active);
             }
         }
 

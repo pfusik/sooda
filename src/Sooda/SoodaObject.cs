@@ -1572,7 +1572,16 @@ namespace Sooda
             set
             {
                 Sooda.Schema.FieldInfo fi = GetFieldInfo(fieldName);
-                // FIXME: make sure not a static field - because of triggers, refcache and collections
+                if (!fi.IsDynamic)
+                {
+                    // Disallow because:
+                    // - the per-field update triggers wouldn't be called
+                    // - for references, refcache would get out-of-date
+                    // - for references, collections would not be updated
+                    // Alternatively we might just set the property via reflection. This wouldn't suffer from the above problems.
+                    throw new InvalidOperationException("Cannot set non-dynamic field " + fieldName + " with an indexer");
+                }
+
                 EnsureDataLoaded(fi.Table.OrdinalInClass);
                 if (AreFieldUpdateTriggersEnabled())
                 {
