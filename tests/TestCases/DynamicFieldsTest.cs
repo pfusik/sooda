@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 #if DOTNET35
 using System.Linq;
 #endif
@@ -371,9 +372,9 @@ namespace Sooda.UnitTests.TestCases
             using (SoodaTransaction tran = new SoodaTransaction())
             {
                 AddIntField(tran);
+                PKInt32 o = new PKInt32();
                 try
                 {
-                    PKInt32 o = new PKInt32();
                     o.Parent = o;
                     o[IntField] = 42;
                     IEnumerable<PKInt32> pe = PKInt32.Linq().Where(p => (int) p[IntField] == 5);
@@ -384,6 +385,7 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
+                    o.MarkForDelete();
                     RemoveIntField(tran);
                 }
             }
@@ -417,9 +419,9 @@ namespace Sooda.UnitTests.TestCases
             using (SoodaTransaction tran = new SoodaTransaction())
             {
                 AddReferenceField(tran);
+                PKInt32 o = new PKInt32();
                 try
                 {
-                    PKInt32 o = new PKInt32();
                     o.Parent = o;
                     o[ReferenceField] = Contact.Mary;
                     IEnumerable<PKInt32> pe = PKInt32.Linq().Where(p => ((Contact) p[ReferenceField]).LastSalary.Value == 42);
@@ -433,6 +435,7 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
+                    o.MarkForDelete();
                     RemoveReferenceField(tran);
                 }
             }
@@ -455,6 +458,40 @@ namespace Sooda.UnitTests.TestCases
             using (new SoodaTransaction())
             {
                 Contact.Linq().Select(c => c["NoSuchField"]).ToList();
+            }
+        }
+
+        static object ExecuteScalar(SoodaTransaction tran, string sql, params object[] parameters)
+        {
+            using (IDataReader r = tran.OpenDataSource("default").ExecuteRawQuery(sql, parameters))
+            {
+                if (!r.Read())
+                    return null;
+                return r.GetValue(0);
+            }
+        }
+
+        [Test]
+        public void DontInsertNull()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                AddDateTimeField(tran);
+                PKInt32 o = new PKInt32();
+                try
+                {
+                    o.Parent = o;
+                    tran.SaveObjectChanges();
+                    object count = ExecuteScalar(tran, "select count(*) from PKInt32 where id={0}", o.Id);
+                    Assert.AreEqual(1, count);
+                    count = ExecuteScalar(tran, "select count(*) from PKInt32_" + DateTimeField + " where id={0}", o.Id);
+                    Assert.AreEqual(0, count);
+                }
+                finally
+                {
+                    o.MarkForDelete();
+                    RemoveDateTimeField(tran);
+                }
             }
         }
 #endif

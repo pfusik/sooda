@@ -514,6 +514,7 @@ namespace Sooda.Schema
                 {
                     mt = new TableInfo();
                     mt.DBTableName = table.DBTableName;
+                    mt.TableUsageType = table.TableUsageType;
                     mt.OrdinalInClass = -1;
                     mt.Rehash();
                     mergedTables[table.DBTableName] = mt;

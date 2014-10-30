@@ -697,6 +697,12 @@ namespace Sooda.Sql
 
         void DoInsertsForTable(SoodaObject obj, TableInfo table, bool isPrecommit)
         {
+            if (table.IsDynamic && obj.GetFieldValue(table.Fields[table.Fields.Count - 1].ClassUnifiedOrdinal) == null)
+            {
+                // optimization: don't insert null dynamic fields
+                return;
+            }
+
             StringBuilder builder = new StringBuilder(500);
             builder.Append("insert into ");
             builder.Append(table.DBTableName);
