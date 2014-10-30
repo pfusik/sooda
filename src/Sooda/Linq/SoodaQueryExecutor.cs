@@ -523,10 +523,17 @@ namespace Sooda.Linq
 
                 if (typeof(INullable).IsAssignableFrom(t))
                 {
-                    if (name == "Value")
-                        return parent;
-                    if (name == "IsNull")
-                        return new SoqlBooleanIsNullExpression(parent, false);
+                    switch (name)
+                    {
+                        case "Value":
+                            return parent;
+                        case "IsNull":
+                            return new SoqlBooleanIsNullExpression(parent, false);
+                        case "IsTrue":
+                            return new SoqlFunctionCallExpression("coalesce", parent, new SoqlLiteralExpression(false));
+                        default:
+                            break;
+                    }
                 }
 
                 if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>))

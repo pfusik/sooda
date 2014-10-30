@@ -31,6 +31,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 
 using Sooda.Linq;
@@ -68,6 +69,15 @@ namespace Sooda.UnitTests.TestCases.Linq
                 Assert.AreEqual(7, ce.Count());
                 ce = Contact.Linq().Where(c => !true.Equals(c.Active));
                 Assert.AreEqual(0, ce.Count());
+
+                ce = Contact.Linq().Where(c => c.ContactId.Equals(Contact.Ed.ContactId));
+                CollectionAssert.AreEqual(new Contact[] { Contact.Ed }, ce);
+
+                ce = Contact.Linq().Where(c => c.Name.Equals("Mary Manager"));
+                CollectionAssert.AreEqual(new Contact[] { Contact.Mary }, ce);
+
+                ce = Contact.Linq().Where(c => c.LastSalary.Equals(234M));
+                CollectionAssert.AreEqual(new Contact[] { Contact.Ed }, ce);
             }
         }
 
@@ -100,6 +110,15 @@ namespace Sooda.UnitTests.TestCases.Linq
                 Assert.AreEqual(5, ce.Count());
                 ce = Contact.Linq().Where(c => !object.Equals(c.Manager, null));
                 Assert.AreEqual(2, ce.Count());
+
+                ce = Contact.Linq().Where(c => object.Equals(c.ContactId, Contact.Ed.ContactId));
+                CollectionAssert.AreEqual(new Contact[] { Contact.Ed }, ce);
+
+                ce = Contact.Linq().Where(c => string.Equals(c.Name, "Mary Manager"));
+                CollectionAssert.AreEqual(new Contact[] { Contact.Mary }, ce);
+
+                ce = Contact.Linq().Where(c => SqlDecimal.Equals(c.LastSalary, 234M).IsTrue);
+                CollectionAssert.AreEqual(new Contact[] { Contact.Ed }, ce);
             }
         }
 

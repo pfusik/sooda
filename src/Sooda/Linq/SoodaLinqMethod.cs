@@ -31,6 +31,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -268,7 +269,20 @@ namespace Sooda.Linq
             method2id.Add(MethodOf(() => 0D.Equals(0D)), SoodaLinqMethod.Object_InstanceEquals);
             method2id.Add(MethodOf(() => 0.Equals(0)), SoodaLinqMethod.Object_InstanceEquals);
             method2id.Add(MethodOf(() => 0L.Equals(0L)), SoodaLinqMethod.Object_InstanceEquals);
+            method2id.Add(MethodOf(() => string.Empty.Equals(string.Empty)), SoodaLinqMethod.Object_InstanceEquals);
+            method2id.Add(MethodOf(() => DateTime.Now.Equals(DateTime.Now)), SoodaLinqMethod.Object_InstanceEquals);
             method2id.Add(MethodOf(() => object.Equals(null, null)), SoodaLinqMethod.Object_StaticEquals);
+            method2id.Add(MethodOf(() => string.Equals(null, null)), SoodaLinqMethod.Object_StaticEquals);
+            method2id.Add(MethodOf(() => DateTime.Equals(DateTime.Now, DateTime.Now)), SoodaLinqMethod.Object_StaticEquals);
+            method2id.Add(MethodOf(() => SqlBoolean.Equals(SqlBoolean.Null, SqlBoolean.Null)), SoodaLinqMethod.Object_StaticEquals);
+            method2id.Add(MethodOf(() => SqlDateTime.Equals(SqlDateTime.Null, SqlDateTime.Null)), SoodaLinqMethod.Object_StaticEquals);
+            method2id.Add(MethodOf(() => SqlDecimal.Equals(SqlDecimal.Null, SqlDecimal.Null)), SoodaLinqMethod.Object_StaticEquals);
+            method2id.Add(MethodOf(() => SqlDouble.Equals(SqlDouble.Null, SqlDouble.Null)), SoodaLinqMethod.Object_StaticEquals);
+            method2id.Add(MethodOf(() => SqlGuid.Equals(SqlGuid.Null, SqlGuid.Null)), SoodaLinqMethod.Object_StaticEquals);
+            method2id.Add(MethodOf(() => SqlInt32.Equals(SqlInt32.Null, SqlInt32.Null)), SoodaLinqMethod.Object_StaticEquals);
+            method2id.Add(MethodOf(() => SqlInt64.Equals(SqlInt64.Null, SqlInt64.Null)), SoodaLinqMethod.Object_StaticEquals);
+            method2id.Add(MethodOf(() => SqlSingle.Equals(SqlSingle.Null, SqlSingle.Null)), SoodaLinqMethod.Object_StaticEquals);
+            method2id.Add(MethodOf(() => SqlString.Equals(SqlString.Null, SqlString.Null)), SoodaLinqMethod.Object_StaticEquals);
             method2id.Add(MethodOf(() => string.Concat(string.Empty, string.Empty)), SoodaLinqMethod.String_Concat);
             method2id.Add(MethodOf(() => LinqUtils.Like(string.Empty, string.Empty)), SoodaLinqMethod.String_Like);
             method2id.Add(MethodOf(() => string.Empty.Remove(0)), SoodaLinqMethod.String_Remove);
