@@ -345,25 +345,23 @@ namespace Sooda.Linq
             return null;
         }
 
+        SoqlBooleanExpression TranslateEquals(Expression leftExpr, Expression rightExpr, bool notEqual)
+        {
+            SoqlExpression left = TranslateExpression(leftExpr);
+            SoqlExpression right = TranslateExpression(rightExpr);
+            return TranslateEqualsLiteral(left, right, notEqual)
+                ?? TranslateEqualsLiteral(right, left, notEqual)
+                ?? new SoqlBooleanRelationalExpression(left, right, notEqual ? SoqlRelationalOperator.NotEqual : SoqlRelationalOperator.Equal);
+        }
+
+        SoqlBooleanExpression TranslateEquals(BinaryExpression expr, bool notEqual)
+        {
+            return TranslateEquals(expr.Left, expr.Right, notEqual);
+        }
+
         SoqlBooleanExpression TranslateRelational(BinaryExpression expr, SoqlRelationalOperator op)
         {
-            SoqlExpression left = TranslateExpression(expr.Left);
-            SoqlExpression right = TranslateExpression(expr.Right);
-            SoqlBooleanExpression result;
-
-            switch (op)
-            {
-                case SoqlRelationalOperator.Equal:
-                    result = TranslateEqualsLiteral(left, right, false) ?? TranslateEqualsLiteral(right, left, false);
-                    break;
-                case SoqlRelationalOperator.NotEqual:
-                    result = TranslateEqualsLiteral(left, right, true) ?? TranslateEqualsLiteral(right, left, true);
-                    break;
-                default:
-                    result = null;
-                    break;
-            }
-            return result ?? new SoqlBooleanRelationalExpression(left, right, op);
+            return new SoqlBooleanRelationalExpression(TranslateExpression(expr.Left), TranslateExpression(expr.Right), op);
         }
 
         SoqlExpression TranslateConditional(ConditionalExpression expr)
@@ -863,6 +861,10 @@ namespace Sooda.Linq
                 case SoodaLinqMethod.Queryable_SingleOrDefault:
                 case SoodaLinqMethod.Queryable_SingleOrDefaultFiltered:
                     return TranslateSubquerySingleOrDefault(mc, false, -1);
+                case SoodaLinqMethod.Object_InstanceEquals:
+                    return TranslateEquals(mc.Object, mc.Arguments[0], false);
+                case SoodaLinqMethod.Object_StaticEquals:
+                    return TranslateEquals(mc.Arguments[0], mc.Arguments[1], false);
                 case SoodaLinqMethod.String_Concat:
                     return new SoqlFunctionCallExpression("concat", TranslateExpression(mc.Arguments[0]), TranslateExpression(mc.Arguments[1]));
                 case SoodaLinqMethod.String_Like:
@@ -1038,9 +1040,9 @@ namespace Sooda.Linq
                 case ExpressionType.Coalesce:
                     return TranslateToFunction("coalesce", (BinaryExpression) expr);
                 case ExpressionType.Equal:
-                    return TranslateRelational((BinaryExpression) expr, SoqlRelationalOperator.Equal);
+                    return TranslateEquals((BinaryExpression) expr, false);
                 case ExpressionType.NotEqual:
-                    return TranslateRelational((BinaryExpression) expr, SoqlRelationalOperator.NotEqual);
+                    return TranslateEquals((BinaryExpression) expr, true);
                 case ExpressionType.LessThan:
                     return TranslateRelational((BinaryExpression) expr, SoqlRelationalOperator.Less);
                 case ExpressionType.LessThanOrEqual:

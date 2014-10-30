@@ -82,6 +82,8 @@ namespace Sooda.Linq
         Enumerable_Sum,
         ICollection_Contains,
         Object_GetType,
+        Object_InstanceEquals,
+        Object_StaticEquals,
         String_Concat,
         String_Like,
         String_Remove,
@@ -260,6 +262,13 @@ namespace Sooda.Linq
             method2id.Add(MethodOf(() => ((System.Collections.ArrayList) null).Contains(null)), SoodaLinqMethod.ICollection_Contains);
             method2id.Add(MethodOf(() => ((System.Collections.IList) null).Contains(null)), SoodaLinqMethod.ICollection_Contains);
             method2id.Add(MethodOf(() => string.Empty.GetType()), SoodaLinqMethod.Object_GetType);
+            method2id.Add(MethodOf(() => ((object) null).Equals(null)), SoodaLinqMethod.Object_InstanceEquals);
+            method2id.Add(MethodOf(() => false.Equals(false)), SoodaLinqMethod.Object_InstanceEquals);
+            method2id.Add(MethodOf(() => 0M.Equals(0M)), SoodaLinqMethod.Object_InstanceEquals);
+            method2id.Add(MethodOf(() => 0D.Equals(0D)), SoodaLinqMethod.Object_InstanceEquals);
+            method2id.Add(MethodOf(() => 0.Equals(0)), SoodaLinqMethod.Object_InstanceEquals);
+            method2id.Add(MethodOf(() => 0L.Equals(0L)), SoodaLinqMethod.Object_InstanceEquals);
+            method2id.Add(MethodOf(() => object.Equals(null, null)), SoodaLinqMethod.Object_StaticEquals);
             method2id.Add(MethodOf(() => string.Concat(string.Empty, string.Empty)), SoodaLinqMethod.String_Concat);
             method2id.Add(MethodOf(() => LinqUtils.Like(string.Empty, string.Empty)), SoodaLinqMethod.String_Like);
             method2id.Add(MethodOf(() => string.Empty.Remove(0)), SoodaLinqMethod.String_Remove);
