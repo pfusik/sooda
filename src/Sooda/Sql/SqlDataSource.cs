@@ -767,6 +767,16 @@ namespace Sooda.Sql
 
         void DoUpdatesForTable(SoodaObject obj, TableInfo table)
         {
+            if (table.IsDynamic)
+            {
+                // For dynamic fields do DELETE+INSERT instead of UPDATE.
+                // This is because if a dynamic field is added to an existing object, there is no dynamic field row to update.
+                // Another reason is that we never store null dynamic fields in the database - an INSERT will be ommitted in this case.
+                DoDeletesForTable(obj, table);
+                DoInsertsForTable(obj, table, true);
+                return;
+            }
+
             StringBuilder builder = new StringBuilder(500);
             builder.Append("update ");
             builder.Append(table.DBTableName);

@@ -211,7 +211,7 @@ namespace Sooda.Sql
 
         public virtual string GetSQLNullable(Sooda.Schema.FieldInfo fi)
         {
-            return fi.IsNullable ? "null" : "not null";
+            return fi.IsNullable && !fi.IsDynamic ? "null" : "not null";
         }
 
         protected virtual bool SetDbTypeFromValue(IDbDataParameter parameter, object value, SoqlLiteralValueModifiers modifiers)

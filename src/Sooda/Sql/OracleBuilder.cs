@@ -106,9 +106,11 @@ namespace Sooda.Sql
                         // IsNull works fine for Oracle clob, but for nvarchar2 isnull('') = true - contrary to ansi SQL-92
                         return "null";
                     break;
+                default:
+                    break;
             }
 
-            return fi.IsNullable ? "null" : "not null";
+            return base.GetSQLNullable(fi);
         }
 
         protected override string GetNameForParameter(int pos)
@@ -182,8 +184,8 @@ namespace Sooda.Sql
         {
             if (val == null)
                return true;
-            if ((fi.DataType == FieldDataType.AnsiString) || (fi.DataType == FieldDataType.String))
-                return ((string)val).Length == 0;
+            if (fi.DataType == FieldDataType.AnsiString || fi.DataType == FieldDataType.String)
+                return ((string) val).Length == 0;
             return false;
         }
 
