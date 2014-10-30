@@ -295,15 +295,7 @@ namespace Sooda.Sql
 
         private void FlushUpdateCommand(bool final)
         {
-            bool doExecute = true;
-
-            if (!DisableUpdateBatch)
-            {
-                if (_updateCommand.Parameters.Count < 100)
-                    doExecute = false;
-            }
-
-            if (final || doExecute)
+            if (final || DisableUpdateBatch || _updateCommand.Parameters.Count >= 100)
             {
                 if (_updateCommand.CommandText != "")
                 {
@@ -314,37 +306,46 @@ namespace Sooda.Sql
             }
         }
 
+        static void FieldEquals(FieldInfo fi, object value, StringBuilder builder, ArrayList queryParams)
+        {
+            builder.Append(fi.DBColumnName);
+            builder.Append("={");
+            builder.Append(queryParams.Add(value));
+            builder.Append(':');
+            builder.Append(fi.DataType);
+            builder.Append('}');
+        }
+
+        void DoWithWhere(SoodaObject obj, StringBuilder builder, ArrayList queryParams, bool isRaw)
+        {
+            builder.Append(" where ");
+            object primaryKeyValue = obj.GetPrimaryKeyValue();
+            FieldInfo[] primaryKeyFields = obj.GetClassInfo().GetPrimaryKeyFields();
+            for (int i = 0; i < primaryKeyFields.Length; i++)
+            {
+                if (i > 0)
+                    builder.Append(" and ");
+                FieldEquals(primaryKeyFields[i], SoodaTuple.GetValue(primaryKeyValue, i), builder, queryParams);
+            }
+            SqlBuilder.BuildCommandWithParameters(_updateCommand, true, builder.ToString(), queryParams.ToArray(), isRaw);
+            FlushUpdateCommand(false);
+        }
+
+        void DoDeletesForTable(SoodaObject obj, TableInfo table)
+        {
+            StringBuilder builder = new StringBuilder();
+            ArrayList queryParams = new ArrayList();
+            builder.Append("delete from ");
+            builder.Append(table.DBTableName);
+            DoWithWhere(obj, builder, queryParams, true);
+        }
+
         void DoDeletes(SoodaObject obj)
         {
-            ClassInfo ci = obj.GetClassInfo();
-            object[] queryParams = new object[ci.GetPrimaryKeyFields().Length];
-            for (int i = 0; i < queryParams.Length; ++i)
-                queryParams[i] = SoodaTuple.GetValue(obj.GetPrimaryKeyValue(), i);
-
-            for (int i = ci.UnifiedTables.Count - 1; i >= 0; --i)
+            List<TableInfo> tables = obj.GetClassInfo().UnifiedTables;
+            for (int i = tables.Count - 1; i >= 0; --i)
             {
-                TableInfo table = ci.UnifiedTables[i];
-
-                StringBuilder query = new StringBuilder();
-                query.Append("delete from ");
-                query.Append(table.DBTableName);
-                query.Append(" where ");
-                int pos = 0;
-                foreach (FieldInfo fi in ci.GetPrimaryKeyFields())
-                {
-                    if (pos > 0)
-                        query.Append(" and ");
-                    query.Append('(');
-                    query.Append(fi.DBColumnName);
-                    query.Append(" = {");
-                    query.Append(pos++);
-                    query.Append(':');
-                    query.Append(fi.DataType);
-                    query.Append("})");
-                }
-
-                SqlBuilder.BuildCommandWithParameters(_updateCommand, true, query.ToString(), queryParams, true);
-                FlushUpdateCommand(false);
+                DoDeletesForTable(obj, tables[i]);
             }
         }
 
@@ -711,45 +712,44 @@ namespace Sooda.Sql
             ArrayList par = new ArrayList();
 
             bool comma = false;
-            for (int i = 0; i < table.Fields.Count; ++i)
+            foreach (FieldInfo fi in table.Fields)
             {
-                if (table.Fields[i].ReadOnly)
+                if (fi.ReadOnly)
                     continue;
                 if (comma)
                     builder.Append(',');
                 comma = true;
-                builder.Append(table.Fields[i].DBColumnName);
+                builder.Append(fi.DBColumnName);
             }
 
             builder.Append(") values (");
             comma = false;
-            for (int i = 0; i < table.Fields.Count; ++i)
+            foreach (FieldInfo fi in table.Fields)
             {
-                if (table.Fields[i].ReadOnly)
+                if (fi.ReadOnly)
                     continue;
                 if (comma)
                     builder.Append(',');
                 comma = true;
 
-                object val = obj.GetFieldValue(table.Fields[i].ClassUnifiedOrdinal);
-                if (!table.Fields[i].IsNullable && SqlBuilder.IsNullValue(val, table.Fields[i]))
+                object val = obj.GetFieldValue(fi.ClassUnifiedOrdinal);
+                if (!fi.IsNullable && SqlBuilder.IsNullValue(val, fi))
                 {
                     if (!isPrecommit)
-                        throw new SoodaDatabaseException(obj.GetObjectKeyString() + "." + table.Fields[i].Name + " cannot be null on commit.");
-                    val = table.Fields[i].PrecommitTypedValue;
+                        throw new SoodaDatabaseException(obj.GetObjectKeyString() + "." + fi.Name + " cannot be null on commit.");
+                    val = fi.PrecommitTypedValue;
                     if (val == null)
-                        throw new SoodaDatabaseException(obj.GetObjectKeyString() + "." + table.Fields[i].Name + " is null on precommit and no 'precommitValue' has been defined for it.");
+                        throw new SoodaDatabaseException(obj.GetObjectKeyString() + "." + fi.Name + " is null on precommit and no 'precommitValue' has been defined for it.");
                     if (logger.IsDebugEnabled)
                     {
-                        logger.Debug("Using precommit value of {0} for {1}.{2}", val, table.NameToken, table.Fields[i].Name);
+                        logger.Debug("Using precommit value of {0} for {1}.{2}", val, table.NameToken, fi.Name);
                     }
                 }
 
                 builder.Append('{');
-                int fieldnum = par.Add(val);
-                builder.Append(fieldnum);
+                builder.Append(par.Add(val));
                 builder.Append(':');
-                builder.Append(table.Fields[i].DataType);
+                builder.Append(fi.DataType);
                 builder.Append('}');
             }
             builder.Append(')');
@@ -774,47 +774,22 @@ namespace Sooda.Sql
 
             ArrayList par = new ArrayList();
             bool anyChange = false;
-            for (int i = 0; i < table.Fields.Count; ++i)
+            foreach (FieldInfo fi in table.Fields)
             {
-                int fieldNumber = table.Fields[i].ClassUnifiedOrdinal;
+                int fieldNumber = fi.ClassUnifiedOrdinal;
 
                 if (obj.IsFieldDirty(fieldNumber))
                 {
                     if (anyChange)
                         builder.Append(", ");
-                    builder.Append(table.Fields[i].DBColumnName);
-                    builder.Append("={");
-                    int fieldnum = par.Add(obj.GetFieldValue(fieldNumber));
-                    builder.Append(fieldnum);
-                    builder.Append(':');
-                    builder.Append(table.Fields[i].DataType);
-                    builder.Append('}');
+                    FieldEquals(fi, obj.GetFieldValue(fieldNumber), builder, par);
                     anyChange = true;
                 }
             }
             if (!anyChange)
                 return;
 
-            builder.Append(" where ");
-            int pkordinal = 0;
-            foreach (FieldInfo fi in table.Fields)
-            {
-                if (fi.IsPrimaryKey)
-                {
-                    if (pkordinal > 0)
-                        builder.Append(" and ");
-                    builder.Append('(');
-                    builder.Append(fi.DBColumnName);
-                    builder.Append("={");
-                    builder.Append(par.Add(SoodaTuple.GetValue(obj.GetPrimaryKeyValue(), pkordinal)));
-                    builder.Append(':');
-                    builder.Append(fi.DataType);
-                    builder.Append("})");
-                    pkordinal++;
-                }
-            }
-            SqlBuilder.BuildCommandWithParameters(_updateCommand, true, builder.ToString(), par.ToArray(), false);
-            FlushUpdateCommand(false);
+            DoWithWhere(obj, builder, par, false);
         }
 
         string StripWhitespace(string s)
