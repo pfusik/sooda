@@ -497,6 +497,25 @@ namespace Sooda.UnitTests.TestCases
             }
         }
 
+        [Test]
+        public void SelectDynamic()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                AddIntField(tran);
+                try
+                {
+                    PKInt32.GetRef(7777778)[IntField] = 42;
+                    IEnumerable<object> oe = PKInt32.Linq().Select(p => p[IntField]);
+                    CollectionAssert.AreEquivalent(new object[] { null, 42, null }, oe);
+                }
+                finally
+                {
+                    RemoveIntField(tran);
+                }
+            }
+        }
+
         static object ExecuteScalar(SoodaTransaction tran, string sql, params object[] parameters)
         {
             using (IDataReader r = tran.OpenDataSource("default").ExecuteRawQuery(sql, parameters))
