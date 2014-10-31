@@ -90,13 +90,32 @@ namespace Sooda.UnitTests.TestCases
                     ParentClass = tran.Schema.FindClassByName("PKInt32"),
                     Name = ReferenceField,
                     Type = typeof(Contact),
-                    IsNullable = true
+                    IsNullable = false
                 }, tran);
         }
 
         static void RemoveReferenceField(SoodaTransaction tran)
         {
             FieldInfo fi = tran.Schema.FindClassByName("PKInt32").FindFieldByName(ReferenceField);
+            DynamicFieldManager.Remove(fi, tran);
+        }
+
+        const string StringField = "StringDynamicField";
+
+        static void AddStringField(SoodaTransaction tran)
+        {
+            DynamicFieldManager.Add(new FieldInfo {
+                    ParentClass = tran.Schema.FindClassByName("PKInt32"),
+                    Name = StringField,
+                    TypeName = "String",
+                    Size = 128,
+                    IsNullable = false
+                }, tran);
+        }
+
+        static void RemoveStringField(SoodaTransaction tran)
+        {
+            FieldInfo fi = tran.Schema.FindClassByName("PKInt32").FindFieldByName(StringField);
             DynamicFieldManager.Remove(fi, tran);
         }
 
@@ -282,6 +301,45 @@ namespace Sooda.UnitTests.TestCases
         }
 
         [Test]
+        public void NonNullString()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                AddStringField(tran);
+                try
+                {
+                    PKInt32 o = new PKInt32();
+                    o.Parent = o;
+                    Assert.AreEqual("", o[StringField]);
+                }
+                finally
+                {
+                    RemoveStringField(tran);
+                }
+            }
+        }
+
+        [Test]
+        [ExpectedException(typeof(SoodaException))]
+        public void NonNullReference()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                AddReferenceField(tran);
+                try
+                {
+                    PKInt32 o = new PKInt32();
+                    o.Parent = o;
+                    tran.Commit();
+                }
+                finally
+                {
+                    RemoveReferenceField(tran);
+                }
+            }
+        }
+
+        [Test]
         public void FieldInfoStatic()
         {
             using (SoodaTransaction tran = new SoodaTransaction())
@@ -333,7 +391,7 @@ namespace Sooda.UnitTests.TestCases
                     Assert.AreEqual(FieldDataType.Integer, fi.DataType);
                     Assert.AreEqual("Contact", fi.References);
                     Assert.IsFalse(fi.IsPrimaryKey);
-                    Assert.IsTrue(fi.IsNullable);
+                    Assert.IsFalse(fi.IsNullable);
                     Assert.AreEqual("Contact", fi.TypeName);
                     Assert.AreEqual(typeof(Contact), fi.Type);
                     Assert.IsTrue(fi.IsDynamic);
