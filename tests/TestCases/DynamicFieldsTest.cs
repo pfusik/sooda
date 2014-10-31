@@ -246,6 +246,42 @@ namespace Sooda.UnitTests.TestCases
         }
 
         [Test]
+        [ExpectedException(typeof(InvalidCastException))]
+        public void IndexerTypeCheck()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                AddIntField(tran);
+                try
+                {
+                    PKInt32.GetRef(7777777)[IntField] = "invalid";
+                }
+                finally
+                {
+                    RemoveIntField(tran);
+                }
+            }
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidCastException))]
+        public void IndexerTypeCheckReference()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                AddReferenceField(tran);
+                try
+                {
+                    PKInt32.GetRef(7777777)[ReferenceField] = PKInt32.GetRef(7777777);
+                }
+                finally
+                {
+                    RemoveReferenceField(tran);
+                }
+            }
+        }
+
+        [Test]
         public void FieldInfoStatic()
         {
             using (SoodaTransaction tran = new SoodaTransaction())

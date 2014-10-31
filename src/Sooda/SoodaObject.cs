@@ -1581,6 +1581,19 @@ namespace Sooda
                     // Alternatively we might just set the property via reflection. This wouldn't suffer from the above problems.
                     throw new InvalidOperationException("Cannot set non-dynamic field " + fieldName + " with an indexer");
                 }
+                if (value == null)
+                {
+                    if (!fi.IsNullable)
+                        throw new ArgumentNullException("Cannot set non-nullable " + fieldName + " to null");
+                }
+                else
+                {
+                    Type type = fi.References != null
+                        ? GetTransaction().GetFactory(fi.References).TheType
+                        : fi.GetNullableFieldHandler().GetFieldType();
+                    if (!type.IsAssignableFrom(value.GetType()))
+                        throw new InvalidCastException("Cannot set " + fieldName + " of type " + type + " to " + value.GetType());
+                }
 
                 EnsureDataLoaded(fi.Table.OrdinalInClass);
                 if (AreFieldUpdateTriggersEnabled())
