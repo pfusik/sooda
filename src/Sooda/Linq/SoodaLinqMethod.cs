@@ -57,7 +57,6 @@ namespace Sooda.Linq
         Queryable_Except,
         Queryable_Intersect,
         Queryable_Union,
-        Queryable_Contains,
         Queryable_First,
         Queryable_FirstFiltered,
         Queryable_FirstOrDefault,
@@ -167,7 +166,7 @@ namespace Sooda.Linq
             method2id.Add(MethodOf(() => Queryable.All(null, predicate)), SoodaLinqMethod.Enumerable_All);
             method2id.Add(MethodOf(() => Queryable.Any<object>(null)), SoodaLinqMethod.Enumerable_Any);
             method2id.Add(MethodOf(() => Queryable.Any(null, predicate)), SoodaLinqMethod.Enumerable_AnyFiltered);
-            method2id.Add(MethodOf(() => Queryable.Contains<object>(null, null)), SoodaLinqMethod.Queryable_Contains);
+            method2id.Add(MethodOf(() => Queryable.Contains<object>(null, null)), SoodaLinqMethod.Enumerable_Contains);
             method2id.Add(MethodOf(() => Queryable.Count<object>(null)), SoodaLinqMethod.Enumerable_Count);
             method2id.Add(MethodOf(() => Queryable.Count(null, predicate)), SoodaLinqMethod.Enumerable_CountFiltered);
             method2id.Add(MethodOf(() => Queryable.First<object>(null)), SoodaLinqMethod.Queryable_First);

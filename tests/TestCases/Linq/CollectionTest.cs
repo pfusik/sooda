@@ -474,6 +474,46 @@ namespace Sooda.UnitTests.TestCases.Linq
                 CollectionAssert.AreEquivalent(new Group[] { Group.GetRef(10), Group.GetRef(11) }, ge);
             }
         }
+
+        [Test]
+        public void HaveManagerWithRole()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Manager.Roles.Contains(Role.Employee));
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Ed, Contact.Eva }, ce);
+            }
+        }
+
+        [Test]
+        public void HaveManagerWithRoleCount()
+        {
+            using (new SoodaTransaction())
+            {
+                int i = Contact.Linq().Count(c => c.Manager.Roles.Contains(Role.Employee));
+                Assert.AreEqual(2, i);
+            }
+        }
+
+        [Test]
+        public void HaveManagerWithCarCount()
+        {
+            using (new SoodaTransaction())
+            {
+                int i = Contact.Linq().Count(c => c.Manager.Vehicles.Contains(Car.GetRef(2)));
+                Assert.AreEqual(0, i);
+            }
+        }
+
+        [Test]
+        public void HaveManagerWithBikeCount()
+        {
+            using (new SoodaTransaction())
+            {
+                int i = Contact.Linq().Count(c => c.Manager.Bikes.Contains(Vehicle.GetRef(3)));
+                Assert.AreEqual(0, i);
+            }
+        }
     }
 }
 

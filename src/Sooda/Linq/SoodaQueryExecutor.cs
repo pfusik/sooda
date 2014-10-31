@@ -834,8 +834,6 @@ namespace Sooda.Linq
                         return TranslateCollectionAny(mc);
                     return TranslateSubqueryAny(mc);
                 case SoodaLinqMethod.Enumerable_Contains:
-                    return TranslateIn(mc.Arguments[0], mc.Arguments[1]);
-                case SoodaLinqMethod.Queryable_Contains:
                     return TranslateContains(mc.Arguments[0], mc.Arguments[1]);
                 case SoodaLinqMethod.Enumerable_Count:
                     if (IsGroupAggregate(mc))
@@ -1495,7 +1493,7 @@ namespace Sooda.Linq
                         Where(mc);
                         Take(1);
                         return Count() > 0;
-                    case SoodaLinqMethod.Queryable_Contains:
+                    case SoodaLinqMethod.Enumerable_Contains:
                         TranslateQuery(mc.Arguments[0]);
                         SkipTakeNotSupported();
                         SoqlBooleanExpression where = new SoqlBooleanRelationalExpression(TranslatePrimaryKey(), FoldConstant(mc.Arguments[1]), SoqlRelationalOperator.Equal);
