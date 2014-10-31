@@ -50,7 +50,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             {
                 int[] a = new int[2];
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.ContactId == a.Count());
-                Assert.AreEqual(1, ce.Count());
+                CollectionAssert.AreEqual(new Contact[] { Contact.GetRef(2) }, ce);
             }
         }
 

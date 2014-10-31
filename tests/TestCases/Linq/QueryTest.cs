@@ -544,7 +544,7 @@ namespace Sooda.UnitTests.TestCases.Linq
                 Assert.AreEqual(1, ce.Count());
 
                 ce = Contact.Linq().Where(c => c.Manager == Contact.Mary).Skip(4);
-                Assert.AreEqual(0, ce.Count());
+                CollectionAssert.IsEmpty(ce);
 
                 ce = Contact.Linq().Where(c => c.Type == ContactType.Customer).OrderBy(c => c.Name).Skip(2);
                 Assert.AreEqual(2, ce.Count());
@@ -574,10 +574,10 @@ namespace Sooda.UnitTests.TestCases.Linq
                 Assert.AreEqual(3, ce.Count());
 
                 ce = Contact.Linq().Take(0);
-                Assert.AreEqual(0, ce.Count());
+                CollectionAssert.IsEmpty(ce);
 
                 ce = Contact.Linq().Take(-5);
-                Assert.AreEqual(0, ce.Count());
+                CollectionAssert.IsEmpty(ce);
 
                 ce = Contact.Linq().Where(c => c.Manager == Contact.Mary).Take(1);
                 Assert.AreEqual(1, ce.Count());
@@ -622,12 +622,11 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Manager == Contact.Mary).Except(new Contact[] { Contact.Ed });
-                Assert.AreEqual(1, ce.Count());
-                Assert.AreEqual(Contact.Eva, ce.First());
+                CollectionAssert.AreEqual(new Contact[] { Contact.Eva }, ce);
+
 
                 ce = Contact.Linq().Where(c => c.Manager == Contact.Mary).Except(Contact.Linq().Where(c => c.ContactId == 3));
-                Assert.AreEqual(1, ce.Count());
-                Assert.AreEqual(Contact.Ed, ce.First());
+                CollectionAssert.AreEqual(new Contact[] { Contact.Ed }, ce);
 
                 ce = Contact.Linq().Where(c => c.Manager == Contact.Mary).Except(Contact.Linq());
                 Assert.AreEqual(0, ce.Count());
@@ -640,11 +639,10 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.Manager == Contact.Mary).Intersect(new Contact[] { Contact.Ed });
-                Assert.AreEqual(1, ce.Count());
-                Assert.AreEqual(Contact.Ed, ce.First());
+                CollectionAssert.AreEqual(new Contact[] { Contact.Ed }, ce);
 
                 ce = Contact.Linq().Where(c => c.Manager == Contact.Mary).Intersect(Contact.Linq().Where(c => c.ContactId == 50));
-                Assert.AreEqual(0, ce.Count());
+                CollectionAssert.IsEmpty(ce);
 
                 ce = Contact.Linq().Where(c => c.Manager == Contact.Mary).Intersect(Contact.Linq());
                 Assert.AreEqual(2, ce.Count());

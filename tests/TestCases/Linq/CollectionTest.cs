@@ -50,11 +50,11 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => new int[0].Contains(c.ContactId));
-                Assert.AreEqual(0, ce.Count());
+                CollectionAssert.IsEmpty(ce);
                 ce = Contact.Linq().Where(c => new Contact[0].Contains(c));
-                Assert.AreEqual(0, ce.Count());
+                CollectionAssert.IsEmpty(ce);
                 ce = Contact.Linq().Where(c => new ArrayList().Contains(c.Manager));
-                Assert.AreEqual(0, ce.Count());
+                CollectionAssert.IsEmpty(ce);
             }
         }
 
@@ -141,7 +141,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => Role.Manager.Members.Contains(c.Manager));
-                Assert.AreEqual(2, ce.Count());
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Ed, Contact.Eva }, ce);
             }
         }
 
@@ -181,12 +181,11 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Group> ge = Group.Linq().Where(g => g.Members.Count == 4);
-                Assert.AreEqual(1, ge.Count());
-                Assert.AreEqual(10, ge.First().Id);
+                CollectionAssert.AreEqual(new Group[] { Group.GetRef(10) }, ge);
                 ge = Group.Linq().Where(g => g.Managers.Count() == 1);
-                Assert.AreEqual(2, ge.Count());
+                CollectionAssert.AreEquivalent(new Group[] { Group.GetRef(10), Group.GetRef(11) }, ge);
                 ge = Group.Linq().Where(g => g.Managers.Count != 1);
-                Assert.AreEqual(0, ge.Count());
+                CollectionAssert.IsEmpty(ge);
             }
         }
 
@@ -196,12 +195,11 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Group> ge = Group.Linq().Where(g => g.MembersQuery.Count() == 4);
-                Assert.AreEqual(1, ge.Count());
-                Assert.AreEqual(10, ge.First().Id);
+                CollectionAssert.AreEqual(new Group[] { Group.GetRef(10) }, ge);
                 ge = Group.Linq().Where(g => g.Managers.Count() == 1);
-                Assert.AreEqual(2, ge.Count());
+                CollectionAssert.AreEquivalent(new Group[] { Group.GetRef(10), Group.GetRef(11) }, ge);
                 ge = Group.Linq().Where(g => g.Managers.Count != 1);
-                Assert.AreEqual(0, ge.Count());
+                CollectionAssert.IsEmpty(ge);
             }
         }
 
@@ -251,7 +249,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Group> ge = Group.Linq().Where(g => g.Members.Contains(Contact.Mary));
-                Assert.AreEqual(1, ge.Count());
+                CollectionAssert.AreEqual(new Group[] { Group.GetRef(10) }, ge);
                 ge = Group.Linq().Where(g => g.Managers.Contains(Contact.Mary));
                 CollectionAssert.IsEmpty(ge);
             }
@@ -263,7 +261,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Group> ge = Group.Linq().Where(g => g.MembersQuery.Contains(Contact.Mary));
-                Assert.AreEqual(1, ge.Count());
+                CollectionAssert.AreEqual(new Group[] { Group.GetRef(10) }, ge);
                 ge = Group.Linq().Where(g => g.Managers.Contains(Contact.Mary));
                 CollectionAssert.IsEmpty(ge);
             }
@@ -315,7 +313,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.PrimaryGroup.Members.Contains(Contact.GetRef(3)));
-                Assert.AreEqual(1, ce.Count());
+                CollectionAssert.AreEqual(new Contact[] { Contact.Eva }, ce);
             }
         }
 
@@ -325,7 +323,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Contact> ce = Contact.Linq().Where(c => c.PrimaryGroup.MembersQuery.Contains(Contact.GetRef(3)));
-                Assert.AreEqual(1, ce.Count());
+                CollectionAssert.AreEqual(new Contact[] { Contact.Eva }, ce);
             }
         }
 
@@ -443,7 +441,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Group> ge = Group.Linq().Where(g => g.Members.Any(c => c == Contact.Mary));
-                Assert.AreEqual(1, ge.Count());
+                CollectionAssert.AreEqual(new Group[] { Group.GetRef(10) }, ge);
             }
         }
 
@@ -453,7 +451,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Group> ge = Group.Linq().Where(g => g.MembersQuery.Any(c => c == Contact.Mary));
-                Assert.AreEqual(1, ge.Count());
+                CollectionAssert.AreEqual(new Group[] { Group.GetRef(10) }, ge);
             }
         }
 
@@ -463,7 +461,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Group> ge = Group.Linq().Where(g => g.Members.Any(c => g.GetType().Name == "Group" && c.GetType().Name == "Contact"));
-                Assert.AreEqual(2, ge.Count());
+                CollectionAssert.AreEquivalent(new Group[] { Group.GetRef(10), Group.GetRef(11) }, ge);
             }
         }
 
@@ -473,7 +471,7 @@ namespace Sooda.UnitTests.TestCases.Linq
             using (new SoodaTransaction())
             {
                 IEnumerable<Group> ge = Group.Linq().Where(g => g.MembersQuery.Any(c => g.GetType().Name == "Group" && c.GetType().Name == "Contact"));
-                Assert.AreEqual(2, ge.Count());
+                CollectionAssert.AreEquivalent(new Group[] { Group.GetRef(10), Group.GetRef(11) }, ge);
             }
         }
     }
