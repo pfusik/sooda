@@ -1390,7 +1390,19 @@ namespace Sooda.Linq
 
             if ((_options & SoodaSnapshotOptions.NoWriteObjects) == 0)
             {
-                _transaction.SaveObjectChanges();
+                string[] involvedClasses = null;
+                try
+                {
+                    GetInvolvedClassesVisitor gic = new GetInvolvedClassesVisitor(_classInfo);
+                    gic.GetInvolvedClasses(query);
+                    involvedClasses = gic.ClassNames;
+                }
+                catch
+                {
+                    // cannot detect involved classes - precommit all objects
+                    // if we get here, involvedClasses remains set to null
+                }
+                _transaction.PrecommitClasses(involvedClasses);
             }
 
             SoodaDataSource ds = _transaction.OpenDataSource(_classInfo.GetDataSource());

@@ -528,6 +528,32 @@ namespace Sooda
             }
         }
 
+        internal void PrecommitClasses(IEnumerable<string> classes)
+        {
+            if (classes == null)
+            {
+                // don't know what to precommit - precommit everything
+                SaveObjectChanges(true, null);
+                return;
+            }
+
+            List<SoodaObject> objectsToPrecommit = new List<SoodaObject>();
+            foreach (string className in classes)
+            {
+                List<WeakSoodaObject> dirtyObjects = GetDirtyObjectsByClassName(className);
+                if (dirtyObjects != null)
+                {
+                    foreach (WeakSoodaObject wr in dirtyObjects)
+                    {
+                        SoodaObject o = wr.TargetSoodaObject;
+                        if (o != null)
+                            objectsToPrecommit.Add(o);
+                    }
+                }
+            }
+            SaveObjectChanges(true, objectsToPrecommit);
+        }
+
         private void Reset()
         {
             _dirtyObjects.Clear();

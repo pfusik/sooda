@@ -148,16 +148,6 @@ namespace Sooda.ObjectMapper
             count = items.Count;
         }
 
-        private static string[] GetClassNames(List<ClassInfo> cic)
-        {
-            string[] result = new string[cic.Count];
-            for (int i = 0; i < cic.Count; ++i)
-            {
-                result[i] = cic[i].Name;
-            }
-            return result;
-        }
-
         public SoodaObjectListSnapshot(SoodaTransaction t, SoodaWhereClause whereClause, SoodaOrderBy orderBy, int startIdx, int pageCount, SoodaSnapshotOptions options, ClassInfo ci)
         {
             this.classInfo = ci;
@@ -179,7 +169,7 @@ namespace Sooda.ObjectMapper
                     {
                         GetInvolvedClassesVisitor gic = new GetInvolvedClassesVisitor(classInfo);
                         gic.GetInvolvedClasses(whereClause.WhereExpression);
-                        involvedClasses = GetClassNames(gic.Results);
+                        involvedClasses = gic.ClassNames;
                     }
                     catch
                     {
@@ -198,34 +188,7 @@ namespace Sooda.ObjectMapper
             }
 
             if ((options & SoodaSnapshotOptions.NoWriteObjects) == 0)
-            {
-                if (involvedClasses != null)
-                {
-                    List<SoodaObject> objectsToPrecommit = new List<SoodaObject>();
-
-                    // precommit objects
-
-                    foreach (string involvedClassName in involvedClasses)
-                    {
-                        List<WeakSoodaObject> dirtyObjects = t.GetDirtyObjectsByClassName(involvedClassName);
-                        if (dirtyObjects != null)
-                        {
-                            foreach (WeakSoodaObject wr in dirtyObjects)
-                            {
-                                SoodaObject o = wr.TargetSoodaObject;
-                                if (o != null)
-                                    objectsToPrecommit.Add(o);
-                            }
-                        }
-                    }
-                    t.SaveObjectChanges(true, objectsToPrecommit);
-                }
-                else
-                {
-                    // don't know what to precommit - precommit everything
-                    t.SaveObjectChanges(true, null);
-                }
-            }
+                t.PrecommitClasses(involvedClasses);
 
             LoadList(t, whereClause, orderBy, startIdx, pageCount, options, involvedClasses, useCache);
         }

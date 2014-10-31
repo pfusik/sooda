@@ -54,9 +54,29 @@ namespace Sooda.QL
             expr.Accept(this);
         }
 
-        public List<ClassInfo> Results
+        public void GetInvolvedClasses(SoqlQueryExpression query)
         {
-            get { return _result; }
+            foreach (SoqlExpression expr in query.SelectExpressions)
+                expr.Accept(this);
+            if (query.WhereClause != null)
+                query.WhereClause.Accept(this);
+            if (query.Having != null)
+                query.Having.Accept(this);
+            foreach (SoqlExpression expr in query.GroupByExpressions)
+                expr.Accept(this);
+            foreach (SoqlExpression expr in query.OrderByExpressions)
+                expr.Accept(this);
+        }
+
+        public string[] ClassNames
+        {
+            get
+            {
+                string[] names = new string[_result.Count];
+                for (int i = 0; i < names.Length; i++)
+                    names[i] = _result[i].Name;
+                return names;
+            }
         }
 
         void Sooda.QL.ISoqlVisitor.Visit(SoqlTypedWrapperExpression v)

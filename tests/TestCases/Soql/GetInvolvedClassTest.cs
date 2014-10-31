@@ -51,20 +51,7 @@ namespace Sooda.UnitTests.TestCases.Soql
             GetInvolvedClassesVisitor visitor = new GetInvolvedClassesVisitor(rootClass);
             expr.Accept(visitor);
 
-            foreach (string s in expectedClassNames)
-            {
-                bool found = false;
-                foreach (ClassInfo ci in visitor.Results)
-                {
-                    if (ci.Name == s)
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                Assert.IsTrue(found, "Class " + s + " was not returned by GetInvolvedClasses on " + expression);
-            }
-            Assert.AreEqual(expectedClassNames.Length, visitor.Results.Count, "Extra involved classes returned by GetInvolvedClasses on " + expression);
+            CollectionAssert.AreEquivalent(expectedClassNames, visitor.ClassNames);
         }
 
         [Test]
