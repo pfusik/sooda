@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-09-22 15:43:00 +0200 (Mon, 22 Sep 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 803 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-11-03 14:49:47 +0100 (Mon, 03 Nov 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 873 $</subversion-revision>)</div>
         <div class="pagebreak">&#160;</div>
     </div>
     <p class="dontprintthis">
@@ -5854,6 +5854,185 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     name: Chuck Customer group: Group1 members: 4
                 </code>
             </body>
+        </section>
+        <section id="dynamicfields">
+            <title>Dynamic Fields</title>
+            <body>
+                <p>
+                    In addition to fields defined in the mapping schema, Sooda supports creation and deletion of fields at runtime.
+                    Fields created at runtime are called <i>dynamic</i>.
+                    Dynamic fields are defined per-class and have the following properties:
+                    name, type (optionally a reference), nullability and, for selected types, size and precision.
+                    Dynamic fields can be accessed using a string indexer (<code>obj["MyField"]</code>)
+                    or the .NET 4 <code>dynamic</code> type. The indexer can be used in <a href="#linq">LINQ queries</a>.
+                </p>
+                <p>
+                    Definition of dynamic fields is stored in the database table called <code>SoodaDynamicField</code>
+                    while field values are stored in separate tables, one table per dynamic field.
+                    A table for dynamic field values is created when the field is added, and dropped when the field is removed.
+                    The name of the table is the parent class and the field name combined with an underscore, e.g. <code>MyClass_MyDynamicField</code>.
+                    Dynamic field table usually contains two columns: <code>id</code> and <code>value</code>,
+                    where <code>id</code> is the object primary key and <code>value</code> is the value of the dynamic field.
+                    There are more columns (<code>id2</code>, <code>id3</code>, ...) if the primary key is composite.
+                    To conserve storage, null values are not stored in the database. Therefore the <code>value</code> column is never nullable.
+                </p>
+            </body>
+            <section id="dynamicfieldsenabling">
+                <title>Enabling Dynamic Fields</title>
+                <body>
+                    <p>
+                        To enable dynamic fields in your project, first create the database table <code>SoodaDynamicField</code>
+                        and grant permissions for the SQL user your application uses:
+                    </p>
+                    <code lang="SQL">
+                        create table SoodaDynamicField (
+                            class varchar(32) not null,
+                            field varchar(32) not null,
+                            type varchar(32) not null,
+                            nullable int not null,
+                            size int null,
+                            precision int null,
+                            constraint PK_SoodaDynamicField primary key (class, field)
+                        );
+                        grant create table, references to soodatest
+                    </code>
+                    <p>
+                        The next step is enabling dynamic fields support in your mapping schema. It is enabled per data source, e.g.
+                    </p>
+                    <code lang="XML">
+                        <![CDATA[
+                            <datasource name="default" type="Sooda.Sql.SqlDataSource" dynamicFields="true" />
+                        ]]>
+                    </code>
+                    <p>
+                        The last step is re-generating stubs from the modified mapping schema.
+                    </p>
+                    <p>
+                        Now your application supports dynamic fields.
+                        The first time it creates a <code>SoodaTransaction</code>, it will query the <code>SoodaDynamicField</code> table
+                        and use the dynamic fields defined there. When you add dynamic fields with the Sooda API, this table will get updated
+                        and the dynamic field tables will get created or dropped.
+                    </p>
+                </body>
+            </section>
+            <section id="dynamicfieldsmanaging">
+                <title>Managing Dynamic Fields</title>
+                <body>
+                    <p>
+                        To create a dynamic field, create a <code>Sooda.Schema.FieldInfo</code> object and set the following properties:
+                    </p>
+                    <ul>
+                        <li><code>ParentClass</code> - the class that the field is going to be added to.</li>
+                        <li><code>Name</code> - identifier of the field within the class. It must not collide with the fields already defined in the mapping schema.</li>
+                        <li><code>DataType</code>, <code>References</code>, <code>IsNullable</code> - type and nullability, see below for alternative ways.</li>
+                        <li><code>Size</code> - required for string fields, optional for decimal/float/double.</li>
+                        <li><code>Precision</code> - optional for decimal/float/double.</li>
+                    </ul>
+                    <p>
+                        Instead of setting <code>DataType</code> and <code>References</code>, you can set <code>TypeName</code>.
+                        It is either the string representation of <code>DataType</code> or the name of the referenced class without the namespace.
+                    </p>
+                    <p>
+                        Another alternative is setting the <code>Type</code> property. For value types, it also sets nullability, e.g. <code>typeof(int)</code> is non-nullable
+                        while <code>typeof(int?)</code> is nullable. You still need to set <code>IsNullable</code> for string and reference types.
+                        Setting <code>Type</code> to <code>typeof(string)</code> will select the <code>String</code> data type and never an <code>AnsiString</code>.
+                        <code>typeof(bool)</code> selects <code>BooleanAsInteger</code> and not <code>Boolean</code>.
+                    </p>
+                    <p>
+                        Once your <code>FieldInfo</code> contains all the required information, pass it to the <code>Add</code> method
+                        of <code>DynamicFieldManager</code>, together with a <code>SoodaTransaction</code>:
+                    </p>
+                    <code lang="C#">
+                        Sooda.Schema.DynamicFieldManager.Add(fieldInfo, transaction);
+                    </code>
+                    <p>
+                        Adding a dynamic field changes the internal structure of the objects.
+                        Therefore, until you are finished with adding dynamic fields, you must not use any objects of the class you modify.
+                        Currently this requirement is not verified by Sooda and failing to fulfill it can lead to exceptions and data corruption.
+                        An exception from this rule is that you can read objects which won't be modified in this transaction.
+                        Same applies to removing a dynamic field.
+                    </p>
+                    <p>
+                        Adding and removing a dynamic field completely clears the Sooda <a href="#cachingapi">Level 2 cache</a>.
+                    </p>
+                    <p>
+                        The field is now available for use (see below).
+                        You must not modify the <code>FieldInfo</code> after it is added.
+                        Currently it is not possible to modify properties of dynamic fields.
+                    </p>
+                    <p>
+                        Dynamic fields are available in the <a href="#schemaapi">schema API</a> just like the fields defined in the mapping schema:
+                    </p>
+                    <ul>
+                        <li><code>classInfo.LocalFields</code> includes dynamic fields.</li>
+                        <li><code>classInfo.UnifiedFields</code> includes dynamic fields, including the ones defined in base classes.</li>
+                        <li><code>classInfo.FindFieldByName()</code> can return a dynamic field.</li>
+                    </ul>
+                    <p>
+                        <code>fieldInfo.IsDynamic</code> returns <code>true</code> for a dynamic field.
+                    </p>
+                    <p>
+                        To remove a dynamic field, call:
+                    </p>
+                    <code lang="C#">
+                        Sooda.Schema.DynamicFieldManager.Remove(fieldInfo, transaction);
+                    </code>
+                    <p>
+                        Beware that this removes all the existing field data by dropping the table.
+                    </p>
+                </body>
+            </section>
+            <section id="dynamicfieldsusing">
+                <title>Using Dynamic Fields</title>
+                <body>
+                    <p>
+                        Dynamic fields can be accessed with an indexer, passing a field name as a string:
+                    </p>
+                    <code lang="C#">
+                        object value = obj["MyField"];
+                    </code>
+                    <p>
+                        For value types, the indexer always returns a boxed object which can be unboxed by casting
+                        to a raw value type or a <code>Nullable</code> type. That is, the indexer never returns an <code>SqlType</code>.
+                        If a dynamic field is added when there are already objects of the parent class,
+                        the field values for existing objects will be <code>null</code>, even if the field is non-nullable.
+                    </p>
+                    <p>
+                        When you assign a dynamic field:
+                    </p>
+                    <code lang="C#">
+                        obj["MyField"] = value;
+                    </code>
+                    <p>
+                        the type and nullability of the field are validated.
+                        <code>ArgumentNullException</code> will be thrown when <code>null</code> is assigned to a non-nullable field.
+                        <code>InvalidCastException</code> will be thrown when value type is invalid.
+                        On setting field value, <code>BeforeFieldUpdate(fieldName, oldValue, newValue)</code>
+                        and <code>AfterFieldUpdate(fieldName, oldValue, newValue)</code> triggers will be called if enabled.
+                    </p>
+                    <p>
+                        In addition to dynamic fields, the indexer can be also used to read (but not write) fields defined in the mapping schema.
+                    </p>
+                    <p>
+                        Alternatively to the indexer, you can access dynamic fields with the .NET 4 <code>dynamic</code> type:
+                    </p>
+                    <code lang="C#">
+                        dynamic dynamicObj = obj;
+                        object value = dynamicObj.MyField;
+                        ...
+                        dynamicObj.MyField = newValue;
+                    </code>
+                    <p>
+                        The indexer syntax can be used in <a href="#linq">LINQ</a> queries, e.g.:
+                    </p>
+                    <code lang="C#">
+                        <![CDATA[
+                            MyObject.Linq().Where(o => o["MyField"] != null);
+                            MyObject.Linq().Where(o => (int) o["MyField"] == 42);
+                        ]]>
+                    </code>
+                </body>
+            </section>
         </section>
     </section>
     <section id="soql">
