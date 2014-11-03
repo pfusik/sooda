@@ -35,6 +35,8 @@ using System.Linq;
 #endif
 
 using Sooda;
+using Sooda.QL;
+using Sooda.QL.TypedWrappers;
 using Sooda.Schema;
 
 using Sooda.UnitTests.BaseObjects;
@@ -47,6 +49,7 @@ namespace Sooda.UnitTests.TestCases
     [TestFixture]
     public class DynamicFieldsTest
     {
+#if DOTNET35
         const string IntField = "IntDynamicField";
 
         static void AddIntField(SoodaTransaction tran)
@@ -118,6 +121,7 @@ namespace Sooda.UnitTests.TestCases
             FieldInfo fi = tran.Schema.FindClassByName("PKInt32").FindFieldByName(StringField);
             DynamicFieldManager.Remove(fi, tran);
         }
+#endif
 
         [Test]
         public void IndexerGetStatic()
@@ -207,6 +211,7 @@ namespace Sooda.UnitTests.TestCases
             }
         }
 
+#if DOTNET35
         [Test]
         public void IndexerGetDynamic()
         {
@@ -338,6 +343,7 @@ namespace Sooda.UnitTests.TestCases
                 }
             }
         }
+#endif
 
         [Test]
         public void FieldInfoStatic()
@@ -356,6 +362,7 @@ namespace Sooda.UnitTests.TestCases
             }
         }
 
+#if DOTNET35
         [Test]
         public void FieldInfoDynamic()
         {
@@ -439,7 +446,6 @@ namespace Sooda.UnitTests.TestCases
             }
         }
 
-#if DOTNET35
         [Test]
         public void WhereStatic()
         {
@@ -604,6 +610,81 @@ namespace Sooda.UnitTests.TestCases
                 {
                     o.MarkForDelete();
                     RemoveDateTimeField(tran);
+                }
+            }
+        }
+
+        [Test]
+        public void SoodaWhereClauseDynamicInsert()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                AddIntField(tran);
+                PKInt32 o = new PKInt32();
+                try
+                {
+                    o.Parent = o;
+                    o[IntField] = 42;
+                    PKInt32List pl = PKInt32.GetList(new SoodaWhereClause("IntDynamicField = 5"));
+                    CollectionAssert.IsEmpty(pl);
+
+                    pl = PKInt32.GetList(new SoodaWhereClause("IntDynamicField = 42"));
+                    CollectionAssert.AreEquivalent(new PKInt32[] { o }, pl);
+                }
+                finally
+                {
+                    o.MarkForDelete();
+                    RemoveIntField(tran);
+                }
+            }
+        }
+
+        [Test]
+        public void SoqlDynamicInsert()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                AddIntField(tran);
+                PKInt32 o = new PKInt32();
+                try
+                {
+                    o.Parent = o;
+                    o[IntField] = 42;
+                    PKInt32List pl = PKInt32.GetList(new SoqlBooleanRelationalExpression(new SoqlPathExpression(IntField), new SoqlLiteralExpression(5), SoqlRelationalOperator.Equal));
+                    CollectionAssert.IsEmpty(pl);
+
+                    pl = PKInt32.GetList(new SoqlBooleanRelationalExpression(new SoqlPathExpression(IntField), new SoqlLiteralExpression(42), SoqlRelationalOperator.Equal));
+                    CollectionAssert.AreEquivalent(new PKInt32[] { o }, pl);
+                }
+                finally
+                {
+                    o.MarkForDelete();
+                    RemoveIntField(tran);
+                }
+            }
+        }
+
+        [Test]
+        public void SoqlWrapperDynamicInsert()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                AddIntField(tran);
+                PKInt32 o = new PKInt32();
+                try
+                {
+                    o.Parent = o;
+                    o[IntField] = 42;
+                    PKInt32List pl = PKInt32.GetList(new SoqlInt32WrapperExpression(new SoqlPathExpression(IntField)) == 5);
+                    CollectionAssert.IsEmpty(pl);
+
+                    pl = PKInt32.GetList(new SoqlInt32WrapperExpression(new SoqlPathExpression(IntField)) == 42);
+                    CollectionAssert.AreEquivalent(new PKInt32[] { o }, pl);
+                }
+                finally
+                {
+                    o.MarkForDelete();
+                    RemoveIntField(tran);
                 }
             }
         }
