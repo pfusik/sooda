@@ -98,6 +98,12 @@ namespace Sooda.Linq
             return FindClassInfo(expr.Type);
         }
 
+        internal bool IsPolymorphicSoodaObject(Type type)
+        {
+            return type.IsSubclassOf(typeof(SoodaObject))
+                && FindClassInfo(type).GetSubclassesForSchema(_transaction.Schema).Count > 0;
+        }
+
         static bool IsConstant(IEnumerable<ElementInit> initializers)
         {
             return initializers.All(ei => ei.Arguments.All(IsConstant));

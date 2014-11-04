@@ -128,7 +128,7 @@ namespace Sooda.Linq
 
         IList GetGenericList<T>()
         {
-            if (_soqls.Count == 1 && _body == _parameters[0])
+            if (_soqls.Count == 1 && _body == _parameters[0] && !_executor.IsPolymorphicSoodaObject(typeof(T)))
             {
                 List<T> list = new List<T>();
                 Func<object, object> handler = GetHandler(typeof(T));
@@ -137,7 +137,7 @@ namespace Sooda.Linq
                     while (r.Read())
                     {
                         object value = r.GetValue(0);
-                        value = handler(value); // FIXME: can fail if T is SoodaObject with subclasses - concurrent query
+                        value = handler(value);
                         list.Add((T) value);
                     }
                 }
