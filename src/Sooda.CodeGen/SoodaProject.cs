@@ -143,6 +143,10 @@ namespace Sooda.CodeGen
         [System.ComponentModel.DefaultValue(true)]
         public bool WithTypedQueryWrappers = true;
 
+        [XmlElement("with-soql")]
+        [System.ComponentModel.DefaultValue(true)]
+        public bool WithSoql = true;
+
         [XmlElement("file-per-namespace")]
         [System.ComponentModel.DefaultValue(false)]
         public bool FilePerNamespace = false;

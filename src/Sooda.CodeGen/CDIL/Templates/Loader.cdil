@@ -1,5 +1,7 @@
 class ${ClassName}Loader
 
+#if WithSoql
+
 method DoGetList(SoodaTransaction tran, SoodaWhereClause whereClause, SoodaOrderBy orderByClause, System.Int32 startIdx, System.Int32 pageCount, SoodaSnapshotOptions options)
     attributes Assembly,Static,Private,Overloaded,Final
     returns ${ClassName}List
@@ -385,6 +387,8 @@ method GetList(SoodaTransaction tran, Sooda.QL.SoqlBooleanExpression filterExpre
 begin
     return defaultscope.DoGetList(arg(tran), new SoodaWhereClause(arg(filterExpression)), arg(orderBy), arg(startIdx), arg(pageCount), arg(options))
 end
+
+#endif
 
 method Load(${PrimaryKeyFormalParameters})
     attributes Public,Static,Overloaded,Final${OptionalNewAttribute}

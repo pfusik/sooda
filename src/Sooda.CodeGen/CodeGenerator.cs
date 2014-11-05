@@ -525,6 +525,7 @@ namespace Sooda.CodeGen
             }
             else
                 context["LoaderClass"] = /*Project.OutputNamespace.Replace(".", "") + "Stubs." + */ci.Name + "_Stub";
+            context["WithSoql"] = Project.WithSoql;
 #if DOTNET35
             context["Linq"] = true;
 #else
