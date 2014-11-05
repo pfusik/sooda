@@ -186,6 +186,8 @@ namespace Sooda.Schema
         public static void Add(FieldInfo fi, SoodaTransaction transaction)
         {
             ClassInfo ci = fi.ParentClass;
+            if (ci.ContainsField(fi.Name))
+                throw new SoodaSchemaException("Field " + fi.Name + " already exists in " + ci.Name);
             SqlDataSource ds = (SqlDataSource) transaction.OpenDataSource(ci.GetDataSource());
 
             LockCookie lockCookie = LockWrite(transaction);

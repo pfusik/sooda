@@ -412,6 +412,39 @@ namespace Sooda.UnitTests.TestCases
             }
         }
 
+        [Test]
+        [ExpectedException(typeof(SoodaSchemaException))]
+        public void DuplicateFieldWithStatic()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                DynamicFieldManager.Add(new FieldInfo {
+                        ParentClass = tran.Schema.FindClassByName("PKInt32"),
+                        Name = "Data",
+                        TypeName = "Integer",
+                        IsNullable = false
+                    }, tran);
+            }
+        }
+
+        [Test]
+        [ExpectedException(typeof(SoodaSchemaException))]
+        public void DuplicateFieldWithDynamic()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                AddIntField(tran);
+                try
+                {
+                    AddIntField(tran);
+                }
+                finally
+                {
+                    RemoveIntField(tran);
+                }
+            }
+        }
+
         static string TriggerText(string field, object oldVal, object newVal)
         {
             return PKInt32.GetTriggerText("Before", field, oldVal, newVal)
