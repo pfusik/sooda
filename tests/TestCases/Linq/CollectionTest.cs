@@ -476,6 +476,36 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void AnyArray()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => new int[] { 1, 3 }.Any(i => i == c.ContactId));
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Mary, Contact.Eva }, ce);
+            }
+        }
+
+        [Test]
+        public void AnySoodaCollection()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => Role.Employee.Members.Any(m => m.Manager == c));
+                CollectionAssert.AreEqual(new Contact[] { Contact.Mary }, ce);
+            }
+        }
+
+        [Test]
+        public void AnySoodaCollectionQuery()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => Role.Employee.MembersQuery.Any(m => m.Manager == c));
+                CollectionAssert.AreEqual(new Contact[] { Contact.Mary }, ce);
+            }
+        }
+
+        [Test]
         public void HaveManagerWithRole()
         {
             using (new SoodaTransaction())
