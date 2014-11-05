@@ -351,13 +351,16 @@ namespace Sooda.Linq
             return null;
         }
 
-        SoqlBooleanExpression TranslateEquals(Expression leftExpr, Expression rightExpr, bool notEqual)
+        SoqlBooleanExpression TranslateEquals(SoqlExpression left, SoqlExpression right, bool notEqual)
         {
-            SoqlExpression left = TranslateExpression(leftExpr);
-            SoqlExpression right = TranslateExpression(rightExpr);
             return TranslateEqualsLiteral(left, right, notEqual)
                 ?? TranslateEqualsLiteral(right, left, notEqual)
                 ?? new SoqlBooleanRelationalExpression(left, right, notEqual ? SoqlRelationalOperator.NotEqual : SoqlRelationalOperator.Equal);
+        }
+
+        SoqlBooleanExpression TranslateEquals(Expression left, Expression right, bool notEqual)
+        {
+            return TranslateEquals(TranslateExpression(left), TranslateExpression(right), notEqual);
         }
 
         SoqlBooleanExpression TranslateEquals(BinaryExpression expr, bool notEqual)
@@ -1473,6 +1476,27 @@ namespace Sooda.Linq
 #endif
         }
 
+        bool Contains(MethodCallExpression mc)
+        {
+            TranslateQuery(mc.Arguments[0]);
+            SkipTakeNotSupported();
+            SoqlExpression haystack;
+#if DOTNET4
+            if (_select != null)
+            {
+                Type type;
+                haystack = _select.GetSingleColumnExpression(out type);
+            }
+            else
+#endif
+            {
+                haystack = TranslatePrimaryKey();
+            }
+            Where(TranslateEquals(haystack, FoldConstant(mc.Arguments[1]), false));
+            Take(1);
+            return Count() > 0;
+        }
+
         static object ThrowEmptyAggregate()
         {
             throw new InvalidOperationException("Aggregate on an empty collection");
@@ -1500,12 +1524,7 @@ namespace Sooda.Linq
                         Take(1);
                         return Count() > 0;
                     case SoodaLinqMethod.Enumerable_Contains:
-                        TranslateQuery(mc.Arguments[0]);
-                        SkipTakeNotSupported();
-                        SoqlBooleanExpression where = new SoqlBooleanRelationalExpression(TranslatePrimaryKey(), FoldConstant(mc.Arguments[1]), SoqlRelationalOperator.Equal);
-                        Where(where);
-                        Take(1);
-                        return Count() > 0;
+                        return Contains(mc);
                     case SoodaLinqMethod.Enumerable_Count:
                         TranslateQuery(mc.Arguments[0]);
                         return Count();

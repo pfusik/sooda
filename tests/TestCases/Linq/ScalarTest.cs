@@ -107,6 +107,32 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void SelectContainsString()
+        {
+            using (new SoodaTransaction())
+            {
+                bool result = Contact.Linq().Select(c => c.Name).Contains("Mary Manager");
+                Assert.IsTrue(result);
+                result = Contact.Linq().Select(c => c.Name).Contains("Jarek Kowalski");
+                Assert.IsFalse(result);
+            }
+        }
+
+        [Test]
+        public void SelectContainsSoodaObject()
+        {
+            using (new SoodaTransaction())
+            {
+                bool result = Contact.Linq().Select(c => c.Manager).Contains(Contact.Mary);
+                Assert.IsTrue(result);
+                result = Contact.Linq().Select(c => c.Manager).Contains(Contact.Ed);
+                Assert.IsFalse(result);
+                result = Contact.Linq().Select(c => c.Manager).Contains(null);
+                Assert.IsTrue(result);
+            }
+        }
+
+        [Test]
         public void Count()
         {
             using (new SoodaTransaction())
