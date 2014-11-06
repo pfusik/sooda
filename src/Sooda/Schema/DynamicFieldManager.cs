@@ -213,6 +213,15 @@ namespace Sooda.Schema
             }
         }
 
+        public static void CreateIndex(FieldInfo fi, SoodaTransaction transaction)
+        {
+            SqlDataSource ds = (SqlDataSource) transaction.OpenDataSource(fi.ParentClass.GetDataSource());
+
+            StringWriter sw = new StringWriter();
+            ds.SqlBuilder.GenerateIndex(sw, fi, null, "");
+            ds.ExecuteNonQuery(sw.ToString());
+        }
+
         public static void Update(FieldInfo fi, SoodaTransaction transaction)
         {
             if (!fi.IsDynamic)

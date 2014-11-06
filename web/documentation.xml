@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-11-06 11:54:48 +0100 (Thu, 06 Nov 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 880 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-11-06 16:33:42 +0100 (Thu, 06 Nov 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 884 $</subversion-revision>)</div>
         <div class="pagebreak">&#160;</div>
     </div>
     <p class="dontprintthis">
@@ -5973,6 +5973,12 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     <p>
                         The field is now available for use (see below).
                     </p>
+                    <p>
+                        For large volumes of data, filtered by the dynamic field, consider creating a database index for the new field:
+                    </p>
+                    <code lang="C#">
+                        Sooda.Schema.DynamicFieldManager.CreateIndex(fieldInfo, transaction);
+                    </code>
                     <p>
                         Dynamic fields are available in the <a href="#schemaapi">schema API</a> just like the fields defined in the mapping schema:
                     </p>

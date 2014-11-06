@@ -62,9 +62,9 @@ namespace Sooda.UnitTests.TestCases
                 }, tran);
         }
 
-        static void RemoveIntField(SoodaTransaction tran)
+        static void Remove(string name, SoodaTransaction tran)
         {
-            FieldInfo fi = tran.Schema.FindClassByName("PKInt32").FindFieldByName(IntField);
+            FieldInfo fi = tran.Schema.FindClassByName("PKInt32").FindFieldByName(name);
             DynamicFieldManager.Remove(fi, tran);
         }
 
@@ -77,12 +77,6 @@ namespace Sooda.UnitTests.TestCases
                     Name = DateTimeField,
                     Type = typeof(DateTime?)
                 }, tran);
-        }
-
-        static void RemoveDateTimeField(SoodaTransaction tran)
-        {
-            FieldInfo fi = tran.Schema.FindClassByName("PKInt32").FindFieldByName(DateTimeField);
-            DynamicFieldManager.Remove(fi, tran);
         }
 
         const string ReferenceField = "ContactDynamicField";
@@ -104,12 +98,6 @@ namespace Sooda.UnitTests.TestCases
             DynamicFieldManager.Update(fi, tran);
         }
 
-        static void RemoveReferenceField(SoodaTransaction tran)
-        {
-            FieldInfo fi = tran.Schema.FindClassByName("PKInt32").FindFieldByName(ReferenceField);
-            DynamicFieldManager.Remove(fi, tran);
-        }
-
         const string StringField = "StringDynamicField";
 
         static void AddStringField(SoodaTransaction tran)
@@ -121,12 +109,6 @@ namespace Sooda.UnitTests.TestCases
                     Size = 128,
                     IsNullable = false
                 }, tran);
-        }
-
-        static void RemoveStringField(SoodaTransaction tran)
-        {
-            FieldInfo fi = tran.Schema.FindClassByName("PKInt32").FindFieldByName(StringField);
-            DynamicFieldManager.Remove(fi, tran);
         }
 #endif
 
@@ -240,9 +222,9 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    RemoveReferenceField(tran);
-                    RemoveDateTimeField(tran);
-                    RemoveIntField(tran);
+                    Remove(ReferenceField, tran);
+                    Remove(DateTimeField, tran);
+                    Remove(IntField, tran);
                 }
             }
         }
@@ -269,9 +251,9 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    RemoveReferenceField(tran);
-                    RemoveDateTimeField(tran);
-                    RemoveIntField(tran);
+                    Remove(ReferenceField, tran);
+                    Remove(DateTimeField, tran);
+                    Remove(IntField, tran);
                 }
             }
         }
@@ -289,7 +271,7 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    RemoveIntField(tran);
+                    Remove(IntField, tran);
                 }
             }
         }
@@ -307,7 +289,7 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    RemoveReferenceField(tran);
+                    Remove(ReferenceField, tran);
                 }
             }
         }
@@ -326,7 +308,7 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    RemoveStringField(tran);
+                    Remove(StringField, tran);
                 }
             }
         }
@@ -346,7 +328,7 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    RemoveReferenceField(tran);
+                    Remove(ReferenceField, tran);
                 }
             }
         }
@@ -367,11 +349,30 @@ namespace Sooda.UnitTests.TestCases
                 finally
                 {
                     o.MarkForDelete();
-                    RemoveReferenceField(tran);
+                    Remove(ReferenceField, tran);
                     tran.Commit();
                 }
             }
         }
+
+        [Test]
+        public void CreateIndex()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                AddIntField(tran);
+                try
+                {
+                    FieldInfo fi = tran.Schema.FindClassByName("PKInt32").FindFieldByName(IntField);
+                    DynamicFieldManager.CreateIndex(fi, tran);
+                }
+                finally
+                {
+                    Remove(IntField, tran);
+                }
+            }
+        }
+
 #endif
 
         [Test]
@@ -434,9 +435,9 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    RemoveReferenceField(tran);
-                    RemoveDateTimeField(tran);
-                    RemoveIntField(tran);
+                    Remove(ReferenceField, tran);
+                    Remove(DateTimeField, tran);
+                    Remove(IntField, tran);
                 }
             }
         }
@@ -469,7 +470,7 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    RemoveIntField(tran);
+                    Remove(IntField, tran);
                 }
             }
         }
@@ -501,9 +502,9 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    RemoveReferenceField(tran);
-                    RemoveDateTimeField(tran);
-                    RemoveIntField(tran);
+                    Remove(ReferenceField, tran);
+                    Remove(DateTimeField, tran);
+                    Remove(IntField, tran);
                 }
             }
         }
@@ -547,7 +548,7 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    RemoveIntField(tran);
+                    Remove(IntField, tran);
                 }
             }
         }
@@ -569,7 +570,7 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    RemoveIntField(tran);
+                    Remove(IntField, tran);
                 }
             }
         }
@@ -596,7 +597,7 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    RemoveReferenceField(tran);
+                    Remove(ReferenceField, tran);
                 }
             }
         }
@@ -635,7 +636,7 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    RemoveIntField(tran);
+                    Remove(IntField, tran);
                 }
             }
         }
@@ -668,7 +669,7 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    RemoveDateTimeField(tran);
+                    Remove(DateTimeField, tran);
                 }
             }
         }
@@ -692,7 +693,7 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    RemoveIntField(tran);
+                    Remove(IntField, tran);
                 }
             }
         }
@@ -716,7 +717,7 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    RemoveIntField(tran);
+                    Remove(IntField, tran);
                 }
             }
         }
@@ -740,7 +741,7 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    RemoveIntField(tran);
+                    Remove(IntField, tran);
                 }
             }
         }
@@ -845,7 +846,7 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    RemoveIntField(tran);
+                    Remove(IntField, tran);
                 }
             }
         }
@@ -865,7 +866,7 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    RemoveIntField(tran);
+                    Remove(IntField, tran);
                 }
             }
         }

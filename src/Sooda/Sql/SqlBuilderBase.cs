@@ -183,16 +183,19 @@ namespace Sooda.Sql
             }
         }
 
+        public void GenerateIndex(TextWriter xtw, FieldInfo fi, string additionalSettings, string terminator)
+        {
+            string table = fi.Table.DBTableName;
+            xtw.Write("create index {0} on {1} ({2})", GetIndexName(table, fi.DBColumnName), table, fi.DBColumnName);
+            TerminateDDL(xtw, additionalSettings, terminator);
+        }
+
         public void GenerateIndices(TextWriter xtw, Sooda.Schema.TableInfo tableInfo, string additionalSettings, string terminator)
         {
             foreach (Sooda.Schema.FieldInfo fi in tableInfo.Fields)
             {
                 if (fi.References != null)
-                {
-                    xtw.Write("create index {0} on {1} ({2})",
-                            GetIndexName(tableInfo.DBTableName, fi.DBColumnName), tableInfo.DBTableName, fi.DBColumnName);
-                    TerminateDDL(xtw, additionalSettings, terminator);
-                }
+                    GenerateIndex(xtw, fi, additionalSettings, terminator);
             }
         }
 
