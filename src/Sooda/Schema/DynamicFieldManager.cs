@@ -51,9 +51,11 @@ namespace Sooda.Schema
             return schema.DataSources.Any(ds => ds.EnableDynamicFields);
         }
 
-        static void Add(FieldInfo fi)
+        static TableInfo Prepare(FieldInfo fi)
         {
             ClassInfo ci = fi.ParentClass;
+            if (ci.ContainsField(fi.Name))
+                throw new SoodaSchemaException("Field " + fi.Name + " already exists in " + ci.Name);
 
             TableInfo table = new TableInfo();
             table.TableUsageType = TableUsageType.DynamicField;
@@ -77,7 +79,7 @@ namespace Sooda.Schema
             fi.DBColumnName = "value";
             table.Fields.Add(fi);
 
-            ci.LocalTables.Add(table);
+            return table;
         }
 
         static void Resolve(SchemaInfo schema, HashSet<ClassInfo> affectedClasses)
@@ -127,8 +129,8 @@ namespace Sooda.Schema
                             fi.Size = r.GetInt32(4);
                         if (!r.IsDBNull(5))
                             fi.Precision = r.GetInt32(5);
-                        Add(fi);
 
+                        ci.LocalTables.Add(Prepare(fi));
                         affectedClasses.Add(ci);
                     }
                 }
@@ -186,22 +188,24 @@ namespace Sooda.Schema
         public static void Add(FieldInfo fi, SoodaTransaction transaction)
         {
             ClassInfo ci = fi.ParentClass;
-            if (ci.ContainsField(fi.Name))
-                throw new SoodaSchemaException("Field " + fi.Name + " already exists in " + ci.Name);
+            fi.ResolveReferences(ci.Schema);
             SqlDataSource ds = (SqlDataSource) transaction.OpenDataSource(ci.GetDataSource());
 
             LockCookie lockCookie = LockWrite(transaction);
             try
             {
-                Add(fi);
-                Resolve(ci); // initializes fi.Table
+                TableInfo table = Prepare(fi);
+                fi.Table = table;
 
                 StringWriter sw = new StringWriter();
                 sw.Write("insert into SoodaDynamicField (class, field, type, nullable, size, precision) values ({0}, {1}, {2}, {3}, {4}, {5});\n");
-                ds.SqlBuilder.GenerateCreateTable(sw, fi.Table, null, ";\n");
-                ds.SqlBuilder.GeneratePrimaryKey(sw, fi.Table, null, ";\n");
-                ds.SqlBuilder.GenerateForeignKeys(sw, fi.Table, ";\n");
+                ds.SqlBuilder.GenerateCreateTable(sw, table, null, ";\n");
+                ds.SqlBuilder.GeneratePrimaryKey(sw, table, null, ";\n");
+                ds.SqlBuilder.GenerateForeignKeys(sw, table, ";\n");
                 ds.ExecuteNonQuery(sw.ToString(), ci.Name, fi.Name, fi.TypeName, fi.IsNullable ? 1 : 0, NegativeToNull(fi.Size), NegativeToNull(fi.Precision));
+
+                ci.LocalTables.Add(table);
+                Resolve(ci);
             }
             finally
             {

@@ -48,6 +48,5 @@ namespace Sooda.Schema
         Image,
         TimeSpan,
         AnsiString,
-        Reference, // temporary for Dynamic Fields
     }
 }

@@ -505,9 +505,9 @@ namespace Sooda.UnitTests.TestCases
             using (SoodaTransaction tran = new SoodaTransaction())
             {
                 AddIntField(tran);
-                PKInt32 o = new PKInt32();
                 try
                 {
+                    PKInt32 o = new PKInt32();
                     o.Parent = o;
                     o[IntField] = 42;
                     IEnumerable<PKInt32> pe = PKInt32.Linq().Where(p => (int) p[IntField] == 5);
@@ -518,7 +518,6 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    o.MarkForDelete();
                     RemoveIntField(tran);
                 }
             }
@@ -552,9 +551,9 @@ namespace Sooda.UnitTests.TestCases
             using (SoodaTransaction tran = new SoodaTransaction())
             {
                 AddReferenceField(tran);
-                PKInt32 o = new PKInt32();
                 try
                 {
+                    PKInt32 o = new PKInt32();
                     o.Parent = o;
                     o[ReferenceField] = Contact.Mary;
                     IEnumerable<PKInt32> pe = PKInt32.Linq().Where(p => ((Contact) p[ReferenceField]).LastSalary.Value == 42);
@@ -568,7 +567,6 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    o.MarkForDelete();
                     RemoveReferenceField(tran);
                 }
             }
@@ -629,9 +627,9 @@ namespace Sooda.UnitTests.TestCases
             using (SoodaTransaction tran = new SoodaTransaction())
             {
                 AddDateTimeField(tran);
-                PKInt32 o = new PKInt32();
                 try
                 {
+                    PKInt32 o = new PKInt32();
                     o.Parent = o;
                     tran.SaveObjectChanges();
                     object count = ExecuteScalar(tran, "select count(*) from PKInt32 where id={0}", o.Id);
@@ -641,7 +639,6 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    o.MarkForDelete();
                     RemoveDateTimeField(tran);
                 }
             }
@@ -653,9 +650,9 @@ namespace Sooda.UnitTests.TestCases
             using (SoodaTransaction tran = new SoodaTransaction())
             {
                 AddIntField(tran);
-                PKInt32 o = new PKInt32();
                 try
                 {
+                    PKInt32 o = new PKInt32();
                     o.Parent = o;
                     o[IntField] = 42;
                     PKInt32List pl = PKInt32.GetList(new SoodaWhereClause("IntDynamicField = 5"));
@@ -666,7 +663,6 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    o.MarkForDelete();
                     RemoveIntField(tran);
                 }
             }
@@ -678,9 +674,9 @@ namespace Sooda.UnitTests.TestCases
             using (SoodaTransaction tran = new SoodaTransaction())
             {
                 AddIntField(tran);
-                PKInt32 o = new PKInt32();
                 try
                 {
+                    PKInt32 o = new PKInt32();
                     o.Parent = o;
                     o[IntField] = 42;
                     PKInt32List pl = PKInt32.GetList(new SoqlBooleanRelationalExpression(new SoqlPathExpression(IntField), new SoqlLiteralExpression(5), SoqlRelationalOperator.Equal));
@@ -691,7 +687,6 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    o.MarkForDelete();
                     RemoveIntField(tran);
                 }
             }
@@ -703,9 +698,9 @@ namespace Sooda.UnitTests.TestCases
             using (SoodaTransaction tran = new SoodaTransaction())
             {
                 AddIntField(tran);
-                PKInt32 o = new PKInt32();
                 try
                 {
+                    PKInt32 o = new PKInt32();
                     o.Parent = o;
                     o[IntField] = 42;
                     PKInt32List pl = PKInt32.GetList(new SoqlInt32WrapperExpression(new SoqlPathExpression(IntField)) == 5);
@@ -716,7 +711,6 @@ namespace Sooda.UnitTests.TestCases
                 }
                 finally
                 {
-                    o.MarkForDelete();
                     RemoveIntField(tran);
                 }
             }
@@ -814,9 +808,9 @@ namespace Sooda.UnitTests.TestCases
             using (SoodaTransaction tran = new SoodaTransaction())
             {
                 AddIntField(tran);
-                dynamic d = PKInt32.GetRef(7777777);
                 try
                 {
+                    dynamic d = PKInt32.GetRef(7777777);
                     object value = d.IntDynamicField;
                     Assert.IsNull(value);
                 }
@@ -833,9 +827,9 @@ namespace Sooda.UnitTests.TestCases
             using (SoodaTransaction tran = new SoodaTransaction())
             {
                 AddIntField(tran);
-                dynamic d = PKInt32.GetRef(7777777);
                 try
                 {
+                    dynamic d = PKInt32.GetRef(7777777);
                     d.IntDynamicField = 42;
                     object value = d.IntDynamicField;
                     Assert.AreEqual(42, value);

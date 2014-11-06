@@ -239,6 +239,17 @@ namespace Sooda.Schema
                 this.DBColumnName = merge.dbcolumn;
         }
 
+        internal void ResolveReferences(SchemaInfo schema)
+        {
+            if (References == null)
+                return;
+            ClassInfo ci = schema.FindClassByName(References);
+            if (ci == null)
+                throw new SoodaSchemaException("Class " + References + " not found.");
+            DataType = ci.GetFirstPrimaryKeyField().DataType;
+            ReferencedClass = ci;
+        }
+
         public string TypeName
         {
             get
@@ -265,7 +276,6 @@ namespace Sooda.Schema
                 }
 #endif
                 References = value;
-                DataType = FieldDataType.Reference;
             }
         }
 
@@ -285,7 +295,6 @@ namespace Sooda.Schema
                 if (value.IsSubclassOf(typeof(SoodaObject)))
                 {
                     References = value.Name;
-                    DataType = FieldDataType.Reference;
                 }
                 else
                 {

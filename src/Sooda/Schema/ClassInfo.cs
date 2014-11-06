@@ -572,15 +572,7 @@ namespace Sooda.Schema
             foreach (FieldInfo fi in UnifiedFields)
             {
                 // logger.Debug("unifiedField: {0}", fi.Name);
-                if (fi.References != null)
-                {
-                    ClassInfo ci = schema.FindClassByName(fi.References);
-                    if (ci == null)
-                        throw new SoodaSchemaException("Class " + fi.References + " not found.");
-                    fi.ReferencedClass = ci;
-                    if (fi.DataType == FieldDataType.Reference)
-                        fi.DataType = ci.GetFirstPrimaryKeyField().DataType;
-                }
+                fi.ResolveReferences(schema);
             }
 
             foreach (FieldInfo fi in LocalFields)
