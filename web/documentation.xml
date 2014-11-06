@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-11-03 14:49:47 +0100 (Mon, 03 Nov 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 873 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-11-06 11:54:48 +0100 (Thu, 06 Nov 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 880 $</subversion-revision>)</div>
         <div class="pagebreak">&#160;</div>
     </div>
     <p class="dontprintthis">
@@ -49,6 +49,7 @@
                         <li>text-based <a href="#querylanguage">query language</a> - SOQL</li>
                         <li><a href="#mappingmultipletablestoclasses">vertical partitioning</a> of data (load-on-demand for large columns)</li>
                         <li><a href="#caching">cross-transaction (level-2) caching</a></li>
+                        <li><a href="#dynamicfieldsoverview">Dynamic Fields</a> managed at runtime</li>
                     </ul>
                 </body>
             </section>
@@ -600,6 +601,20 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     </p>
                     <p>
                         The <a href="#cachingapi">Caching section</a> explains things in detail.
+                    </p>
+                </body>
+            </section>
+            <section id="dynamicfieldsoverview">
+                <title>Dynamic Fields</title>
+                <body>
+                    <p>
+                        Sooda supports creation and deletion of fields at runtime.
+                        If this feature is enabled, fields can be added to any Sooda class.
+                        When you add a field, Sooda creates a database table with the requested type and optionally a foreign key constraint.
+                        Dynamic fields can be accessed from Sooda objects and queries just like the fields defined in the mapping schema.
+                    </p>
+                    <p>
+                        This feature is described<sectionlink id="dynamicfields" />.
                     </p>
                 </body>
             </section>
@@ -5957,8 +5972,6 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     </p>
                     <p>
                         The field is now available for use (see below).
-                        You must not modify the <code>FieldInfo</code> after it is added.
-                        Currently it is not possible to modify properties of dynamic fields.
                     </p>
                     <p>
                         Dynamic fields are available in the <a href="#schemaapi">schema API</a> just like the fields defined in the mapping schema:
@@ -5971,6 +5984,13 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     <p>
                         <code>fieldInfo.IsDynamic</code> returns <code>true</code> for a dynamic field.
                     </p>
+                    <p>
+                        After a dynamic field is added, you can only modify its nullability:
+                    </p>
+                    <code lang="C#">
+                        fieldInfo.IsNullable = true;
+                        Sooda.Schema.DynamicFieldManager.Update(fieldInfo, transaction);
+                    </code>
                     <p>
                         To remove a dynamic field, call:
                     </p>

@@ -97,6 +97,13 @@ namespace Sooda.UnitTests.TestCases
                 }, tran);
         }
 
+        static void UpdateReferenceField(SoodaTransaction tran)
+        {
+            FieldInfo fi = tran.Schema.FindClassByName("PKInt32").FindFieldByName(ReferenceField);
+            fi.IsNullable = true;
+            DynamicFieldManager.Update(fi, tran);
+        }
+
         static void RemoveReferenceField(SoodaTransaction tran)
         {
             FieldInfo fi = tran.Schema.FindClassByName("PKInt32").FindFieldByName(ReferenceField);
@@ -340,6 +347,28 @@ namespace Sooda.UnitTests.TestCases
                 finally
                 {
                     RemoveReferenceField(tran);
+                }
+            }
+        }
+
+        [Test]
+        public void UpdateReferenceToNullable()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                AddReferenceField(tran);
+                PKInt32 o = new PKInt32();
+                try
+                {
+                    o.Parent = o;
+                    UpdateReferenceField(tran);
+                    tran.Commit();
+                }
+                finally
+                {
+                    o.MarkForDelete();
+                    RemoveReferenceField(tran);
+                    tran.Commit();
                 }
             }
         }

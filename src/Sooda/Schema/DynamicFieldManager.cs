@@ -213,6 +213,16 @@ namespace Sooda.Schema
             }
         }
 
+        public static void Update(FieldInfo fi, SoodaTransaction transaction)
+        {
+            if (!fi.IsDynamic)
+                throw new InvalidOperationException(fi.Name + " is not a dynamic field");
+            ClassInfo ci = fi.ParentClass;
+            SoodaDataSource ds = transaction.OpenDataSource(ci.GetDataSource());
+
+            ds.ExecuteNonQuery("update SoodaDynamicField set nullable={0} where class={1} and field={2}", fi.IsNullable ? 1 : 0, ci.Name, fi.Name);
+        }
+
         public static void Remove(FieldInfo fi, SoodaTransaction transaction)
         {
             if (!fi.IsDynamic)
