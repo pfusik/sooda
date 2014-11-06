@@ -69,7 +69,7 @@ class ${ClassName}_Factory
         attributes Public
         implements ISoodaObjectFactory
     begin
-        return typeref(${LoaderClass}).GetList(arg(tran), arg(whereClause), arg(orderBy), arg(options))
+        return new Sooda.ObjectMapper.SoodaObjectListSnapshot(arg(tran), arg(whereClause), arg(orderBy), 0, -1, arg(options), defaultscope.TheClassInfo)
     end
 
     method GetClassInfo()
