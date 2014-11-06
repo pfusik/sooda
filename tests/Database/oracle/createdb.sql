@@ -236,3 +236,13 @@ insert into PKDateTime values(to_date('2000-01-01 02:00:00','yyyy-mm-dd hh24:mi:
 insert into PKString values('zzzzzzz','test data','zzzzzzz');
 insert into PKString values('xxxxxxx','test data 2','zzzzzzz');
 insert into PKString values('yyyyyyy','test data 3','zzzzzzz');
+
+create table SoodaDynamicField (
+    class varchar(32) not null,
+    field varchar(32) not null,
+    type varchar(32) not null,
+    nullable int not null,
+    fieldsize int null,
+    precision int null,
+    constraint PK_SoodaDynamicField primary key (class, field)
+);

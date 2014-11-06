@@ -108,7 +108,7 @@ namespace Sooda.Schema
                 if (!dsi.EnableDynamicFields)
                     continue;
                 SoodaDataSource ds = transaction.OpenDataSource(dsi);
-                using (IDataReader r = ds.ExecuteRawQuery("select class, field, type, nullable, size, precision from SoodaDynamicField"))
+                using (IDataReader r = ds.ExecuteRawQuery("select class, field, type, nullable, fieldsize, precision from SoodaDynamicField"))
                 {
                     while (r.Read())
                     {
@@ -198,11 +198,22 @@ namespace Sooda.Schema
                 fi.Table = table;
 
                 StringWriter sw = new StringWriter();
-                sw.Write("insert into SoodaDynamicField (class, field, type, nullable, size, precision) values ({0}, {1}, {2}, {3}, {4}, {5});\n");
-                ds.SqlBuilder.GenerateCreateTable(sw, table, null, ";\n");
-                ds.SqlBuilder.GeneratePrimaryKey(sw, table, null, ";\n");
-                ds.SqlBuilder.GenerateForeignKeys(sw, table, ";\n");
+                sw.Write("insert into SoodaDynamicField (class, field, type, nullable, fieldsize, precision) values ({0}, {1}, {2}, {3}, {4}, {5})");
                 ds.ExecuteNonQuery(sw.ToString(), ci.Name, fi.Name, fi.TypeName, fi.IsNullable ? 1 : 0, NegativeToNull(fi.Size), NegativeToNull(fi.Precision));
+
+                sw = new StringWriter();
+                ds.SqlBuilder.GenerateCreateTable(sw, table, null, "");
+                ds.ExecuteNonQuery(sw.ToString());
+
+                sw = new StringWriter();
+                ds.SqlBuilder.GeneratePrimaryKey(sw, table, null, "");
+                ds.ExecuteNonQuery(sw.ToString());
+
+                sw = new StringWriter();
+                ds.SqlBuilder.GenerateForeignKeys(sw, table, "");
+                string sql = sw.ToString();
+                if (sql.Length > 0)
+                    ds.ExecuteNonQuery(sql);
 
                 ci.LocalTables.Add(table);
                 Resolve(ci);
@@ -242,7 +253,8 @@ namespace Sooda.Schema
             LockCookie lockCookie = LockWrite(transaction);
             try
             {
-                ds.ExecuteNonQuery("delete from SoodaDynamicField where class={0} and field={1};\ndrop table " + fi.Table.DBTableName, ci.Name, fi.Name);
+                ds.ExecuteNonQuery("delete from SoodaDynamicField where class={0} and field={1}", ci.Name, fi.Name);
+                ds.ExecuteNonQuery("drop table " + fi.Table.DBTableName);
 
                 ci.LocalTables.Remove(fi.Table);
                 Resolve(ci);

@@ -332,4 +332,18 @@ grant select,insert,update,delete on EightFields to soodatest
 
 go
 
+print 'Enabling Dynamic Fields...'
+
+create table SoodaDynamicField (
+    class varchar(32) not null,
+    field varchar(32) not null,
+    type varchar(32) not null,
+    nullable int not null,
+    fieldsize int null,
+    precision int null,
+    constraint PK_SoodaDynamicField primary key (class, field)
+);
+grant select,insert,update,delete on SoodaDynamicField to soodatest
+grant create table, references to soodatest
+
 print 'Finished.'

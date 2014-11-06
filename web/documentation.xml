@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-11-06 16:33:42 +0100 (Thu, 06 Nov 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 884 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-11-06 18:09:30 +0100 (Thu, 06 Nov 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 885 $</subversion-revision>)</div>
         <div class="pagebreak">&#160;</div>
     </div>
     <p class="dontprintthis">
@@ -5905,11 +5905,11 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                             field varchar(32) not null,
                             type varchar(32) not null,
                             nullable int not null,
-                            size int null,
+                            fieldsize int null,
                             precision int null,
                             constraint PK_SoodaDynamicField primary key (class, field)
                         );
-                        grant create table, references to soodatest
+                        grant create table, references to soodatest -- SQL Server only
                     </code>
                     <p>
                         The next step is enabling dynamic fields support in your mapping schema. It is enabled per data source, e.g.
