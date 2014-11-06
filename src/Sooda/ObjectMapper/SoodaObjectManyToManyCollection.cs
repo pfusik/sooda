@@ -42,13 +42,13 @@ namespace Sooda.ObjectMapper
 {
     public class SoodaObjectManyToManyCollection : SoodaObjectCollectionBase, ISoodaObjectList
     {
-        private static readonly Logger logger = LogManager.GetLogger("Sooda.ManyToManyCollection");
-        protected int masterColumn;
-        protected object masterValue;
-        protected Type relationType;
-        protected Sooda.Schema.RelationInfo relationInfo;
-        private SoodaRelationTable relationTable = null;
-        private ISoodaObjectFactory _factory;
+        static readonly Logger logger = LogManager.GetLogger("Sooda.ManyToManyCollection");
+        protected readonly int masterColumn;
+        protected readonly object masterValue;
+        protected readonly Type relationType;
+        protected readonly Sooda.Schema.RelationInfo relationInfo;
+        SoodaRelationTable relationTable = null;
+        readonly ISoodaObjectFactory _factory;
 
         public SoodaObjectManyToManyCollection(SoodaTransaction transaction, int masterColumn, object masterValue, Type relationType, Sooda.Schema.RelationInfo relationInfo)
             : base(transaction, masterColumn == 0 ? relationInfo.GetRef1ClassInfo() : relationInfo.GetRef2ClassInfo())

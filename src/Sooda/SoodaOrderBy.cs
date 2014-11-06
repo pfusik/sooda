@@ -184,7 +184,7 @@ namespace Sooda
             get { return _comparer.SortOrders; }
         }
 
-        public static readonly SoodaOrderBy Unsorted = null;
+        public const SoodaOrderBy Unsorted = null;
     }
 }
 

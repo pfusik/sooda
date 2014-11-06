@@ -30,9 +30,6 @@
 
 using System;
 
-
-
-
 namespace Sooda.ObjectMapper
 {
     public class WeakSoodaObject : WeakReference

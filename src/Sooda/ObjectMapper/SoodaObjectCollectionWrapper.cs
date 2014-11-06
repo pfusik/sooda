@@ -38,7 +38,7 @@ namespace Sooda.ObjectMapper
     [DebuggerStepThrough]
     public class SoodaObjectCollectionWrapper : ISoodaObjectList, ISoodaObjectListInternal
     {
-        private ISoodaObjectList _theList;
+        readonly ISoodaObjectList _theList;
 
         protected SoodaObjectCollectionWrapper()
         {

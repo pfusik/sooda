@@ -135,8 +135,6 @@ namespace Sooda.Web
 
         protected override IEnumerable ExecuteSelect(System.Web.UI.DataSourceSelectArguments arguments)
         {
-            ISoodaObjectFactory factory = SoodaTransaction.ActiveTransaction.GetFactory(_owner.ClassName, true);
-
             object value;
 
             if (_owner.List != null)
@@ -149,6 +147,7 @@ namespace Sooda.Web
             }
             else
             {
+                ISoodaObjectFactory factory = SoodaTransaction.ActiveTransaction.GetFactory(_owner.ClassName, true);
                 SoodaOrderBy orderBy = SoodaOrderBy.Unsorted;
 
                 if (arguments.SortExpression != "")
@@ -160,14 +159,7 @@ namespace Sooda.Web
                     orderBy,
                     SoodaSnapshotOptions.Default);
             }
-            if (value is IEnumerable)
-            {
-                return (IEnumerable)value;
-            }
-            else
-            {
-                return new object[] { value };
-            }
+            return value as IEnumerable ?? new object[] { value };
         }
     }
 }

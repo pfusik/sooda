@@ -36,8 +36,8 @@ namespace Sooda.ObjectMapper
 {
     public class SoodaObjectFactoryCache : ISoodaObjectFactoryCache
     {
-        private StringToObjectToSoodaObjectFactoryAssociation _classes = new StringToObjectToSoodaObjectFactoryAssociation();
-        private readonly Logger logger = LogManager.GetLogger("Sooda.FactoryCache");
+        readonly StringToObjectToSoodaObjectFactoryAssociation _classes = new StringToObjectToSoodaObjectFactoryAssociation();
+        readonly Logger logger = LogManager.GetLogger("Sooda.FactoryCache");
 
         private ObjectToSoodaObjectFactoryAssociation GetObjectFactoryDictionaryForClass(string className)
         {

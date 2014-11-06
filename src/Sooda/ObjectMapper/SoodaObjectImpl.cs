@@ -30,7 +30,7 @@
 
 namespace Sooda.ObjectMapper
 {
-    public class SoodaObjectImpl
+    public static class SoodaObjectImpl
     {
         public static bool IsFieldDirty(SoodaObject theObject, int tableNumber, int fieldOrdinal)
         {

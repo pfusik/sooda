@@ -463,22 +463,24 @@ namespace Sooda
                             SoqlBooleanExpression whereExpression = Soql.FieldEquals(fi.Name, this);
                             SoodaWhereClause whereClause = new SoodaWhereClause(whereExpression);
                             // logger.Debug("loading list where: {0}", whereExpression);
-                            IList referencingList = factory.GetList(GetTransaction(), whereClause, null, SoodaSnapshotOptions.KeysOnly);
-                            if (fi.DeleteAction == DeleteAction.Cascade)
+                            IList referencingList = factory.GetList(GetTransaction(), whereClause, SoodaOrderBy.Unsorted, SoodaSnapshotOptions.KeysOnly);
+                            switch (fi.DeleteAction)
                             {
-                                foreach (SoodaObject o in referencingList)
-                                {
-                                    o.MarkForDelete(delete, recurse, savingChanges);
-                                }
-                            }
-                            if (fi.DeleteAction == DeleteAction.Nullify)
-                            {
-                                PropertyInfo pi = GetTransaction().GetFactory(fi.ParentClass).TheType.GetProperty(fi.Name);
-
-                                foreach (SoodaObject o in referencingList)
-                                {
-                                    pi.SetValue(o, null, null);
-                                }
+                                case DeleteAction.Cascade:
+                                    foreach (SoodaObject o in referencingList)
+                                    {
+                                        o.MarkForDelete(delete, recurse, savingChanges);
+                                    }
+                                    break;
+                                case DeleteAction.Nullify:
+                                    PropertyInfo pi = factory.TheType.GetProperty(fi.Name);
+                                    foreach (SoodaObject o in referencingList)
+                                    {
+                                        pi.SetValue(o, null, null);
+                                    }
+                                    break;
+                                default:
+                                    throw new NotImplementedException(fi.DeleteAction.ToString());
                             }
                         }
                     }
@@ -1464,7 +1466,7 @@ namespace Sooda
                     }
                     SoodaWhereClause whereClause = new SoodaWhereClause(where, par);
 
-                    IList list = factory.GetList(tran, whereClause, null, SoodaSnapshotOptions.NoTransaction | SoodaSnapshotOptions.NoWriteObjects | SoodaSnapshotOptions.NoCache);
+                    IList list = factory.GetList(tran, whereClause, SoodaOrderBy.Unsorted, SoodaSnapshotOptions.NoTransaction | SoodaSnapshotOptions.NoWriteObjects | SoodaSnapshotOptions.NoCache);
                     if (list.Count == 1)
                         return (SoodaObject)list[0];
                     else if (list.Count == 0)

@@ -48,14 +48,14 @@ namespace Sooda.ObjectMapper
 
     public class SoodaObjectOneToManyCollection : SoodaObjectCollectionBase, ISoodaObjectList, ISoodaObjectListInternal
     {
-        private static readonly Logger logger = LogManager.GetLogger("Sooda.OneToManyCollection");
+        static readonly Logger logger = LogManager.GetLogger("Sooda.OneToManyCollection");
 
-        private Dictionary<SoodaObject, CollectionChange> tempItems = null;
-        private SoodaObject parentObject;
-        private string childRefField;
-        private Type childType;
-        private SoodaWhereClause additionalWhereClause;
-        private bool cached;
+        Dictionary<SoodaObject, CollectionChange> tempItems = null;
+        readonly SoodaObject parentObject;
+        readonly string childRefField;
+        readonly Type childType;
+        readonly SoodaWhereClause additionalWhereClause;
+        readonly bool cached;
 
         public SoodaObjectOneToManyCollection(SoodaTransaction tran, Type childType, SoodaObject parentObject, string childRefField, Sooda.Schema.ClassInfo classInfo, SoodaWhereClause additionalWhereClause, bool cached)
             : base(tran, classInfo)

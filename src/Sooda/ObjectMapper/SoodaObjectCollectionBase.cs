@@ -39,8 +39,8 @@ namespace Sooda.ObjectMapper
 {
     public abstract class SoodaObjectCollectionBase : IList, ISoodaObjectList
     {
-        protected SoodaTransaction transaction;
-        protected ClassInfo classInfo;
+        protected readonly SoodaTransaction transaction;
+        protected readonly ClassInfo classInfo;
         protected List<SoodaObject> itemsArray = null;
         protected Dictionary<SoodaObject, int> items = null;
 

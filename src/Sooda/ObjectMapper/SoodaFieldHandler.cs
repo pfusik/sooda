@@ -36,7 +36,7 @@ namespace Sooda.ObjectMapper
 {
     public abstract class SoodaFieldHandler
     {
-        private bool _isNullable;
+        readonly bool _isNullable;
 
         protected SoodaFieldHandler(bool nullable)
         {
