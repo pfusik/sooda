@@ -1,5 +1,5 @@
 class ${ClassName}List
-    extends Sooda.ObjectMapper.SoodaObjectCollectionWrapper
+    extends generic(Sooda.ObjectMapper.SoodaObjectCollectionWrapperGeneric, ${ClassName})
 
 constructor()
     attributes Public

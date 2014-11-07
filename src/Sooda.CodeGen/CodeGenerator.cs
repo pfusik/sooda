@@ -470,10 +470,6 @@ namespace Sooda.CodeGen
                 context["WithIndexers"] = false;
 
             CodeTypeDeclaration listWrapperClass = CDILParser.ParseClass(CDILTemplate.Get("ListWrapper.cdil"), context);
-            listWrapperClass.BaseTypes.Clear();
-            listWrapperClass.BaseTypes.Add(
-                new CodeTypeReference("Sooda.ObjectMapper.SoodaObjectCollectionWrapperGeneric",
-                new CodeTypeReference(Project.OutputNamespace + "." + ci.Name)));
             nspace.Types.Add(listWrapperClass);
         }
 
