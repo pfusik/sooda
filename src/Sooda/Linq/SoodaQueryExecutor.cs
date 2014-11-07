@@ -865,7 +865,7 @@ namespace Sooda.Linq
                         TranslateAggregate(mc, "sum"),
                         new SoqlLiteralExpression(Activator.CreateInstance(mc.Type))); // 0, 0L, 0D or 0M
                 case SoodaLinqMethod.ICollection_Contains:
-                    return TranslateIn(mc.Object, mc.Arguments[0]);
+                    return TranslateContains(mc.Object, mc.Arguments[0]);
                 case SoodaLinqMethod.Queryable_FirstOrDefault:
                 case SoodaLinqMethod.Queryable_FirstOrDefaultFiltered:
                     return TranslateSubquerySingleOrDefault(mc, false, 1);
@@ -967,13 +967,7 @@ namespace Sooda.Linq
                     break;
             }
 
-            Type t = mc.Method.DeclaringType;
-
-            Type cwg = t.BaseType;
-            if (cwg != null && cwg.IsGenericType && cwg.GetGenericTypeDefinition() == typeof(SoodaObjectCollectionWrapperGeneric<>) && mc.Method.Name == "Contains")
-                return TranslateContains(mc.Object, mc.Arguments[0]);
-
-            throw new NotSupportedException(t.FullName + "." + mc.Method.Name);
+            throw new NotSupportedException(mc.Method.DeclaringType.FullName + "." + mc.Method.Name);
         }
 
         SoqlExpression TranslateToFunction(string function, BinaryExpression expr)

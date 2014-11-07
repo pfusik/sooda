@@ -335,7 +335,7 @@ namespace Sooda.ObjectMapper
 
         #region ICollection<T> Members
 
-        void ICollection<T>.Add(T item)
+        public void Add(T item)
         {
             base.Add2(item);
         }
@@ -345,7 +345,7 @@ namespace Sooda.ObjectMapper
             base.Clear();
         }
 
-        bool ICollection<T>.Contains(T item)
+        public bool Contains(T item)
         {
             return base.Contains2(item);
         }
@@ -365,7 +365,7 @@ namespace Sooda.ObjectMapper
             get { return base.IsReadOnly; }
         }
 
-        bool ICollection<T>.Remove(T item)
+        public bool Remove(T item)
         {
             base.Remove2(item);
             return true;

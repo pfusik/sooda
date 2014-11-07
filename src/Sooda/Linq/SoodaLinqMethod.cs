@@ -261,6 +261,7 @@ namespace Sooda.Linq
             method2id.Add(MethodOf(() => ((List<object>) null).Contains(null)), SoodaLinqMethod.ICollection_Contains);
             method2id.Add(MethodOf(() => ((System.Collections.ArrayList) null).Contains(null)), SoodaLinqMethod.ICollection_Contains);
             method2id.Add(MethodOf(() => ((System.Collections.IList) null).Contains(null)), SoodaLinqMethod.ICollection_Contains);
+            method2id.Add(MethodOf(() => ((Sooda.ObjectMapper.SoodaObjectCollectionWrapperGeneric<object>) null).Contains(null)), SoodaLinqMethod.ICollection_Contains);
             method2id.Add(MethodOf(() => string.Empty.GetType()), SoodaLinqMethod.Object_GetType);
             method2id.Add(MethodOf(() => ((object) null).Equals(null)), SoodaLinqMethod.Object_InstanceEquals);
             method2id.Add(MethodOf(() => false.Equals(false)), SoodaLinqMethod.Object_InstanceEquals);

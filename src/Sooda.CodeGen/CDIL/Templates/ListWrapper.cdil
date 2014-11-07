@@ -20,26 +20,6 @@ get
 end
 #endif
 
-method Add(${ClassName} obj)
-    attributes Public,Final
-    returns System.Int32
-begin
-    return base.Add2(arg(obj))
-end
-
-method Remove(${ClassName} obj)
-    attributes Public,Final
-begin
-    call base.Remove2(arg(obj))
-end
-
-method Contains(${ClassName} obj)
-    attributes Public,Final
-    returns System.Boolean
-begin
-    return base.Contains2(arg(obj))
-end
-
 method Sort(IComparer comparer)
     attributes Public,Final
     returns ${ClassName}List
