@@ -8,5 +8,5 @@ create table SoodaDynamicField (
     constraint PK_SoodaDynamicField primary key (class, field)
 );
 
--- permissions for SQL Server user "soodatest"
-grant create table, references to soodatest
+grant create table to soodatest
+grant references to soodatest -- SQL Server only
