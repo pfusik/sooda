@@ -199,6 +199,20 @@ namespace Sooda.Sql
             }
         }
 
+        public void GenerateSoodaDynamicField(TextWriter xtw, string terminator)
+        {
+            xtw.WriteLine("create table SoodaDynamicField (");
+            xtw.WriteLine("\tclass varchar(32) not null,");
+            xtw.WriteLine("\tfield varchar(32) not null,");
+            xtw.WriteLine("\ttype varchar(32) not null,");
+            xtw.WriteLine("\tnullable int not null,");
+            xtw.WriteLine("\tfieldsize int null,");
+            xtw.WriteLine("\tprecision int null,");
+            xtw.WriteLine("\tconstraint PK_SoodaDynamicField primary key (class, field)");
+            xtw.Write(')');
+            xtw.Write(terminator ?? GetDDLCommandTerminator());
+        }
+
         public virtual string GetConstraintName(string tableName, string foreignKey)
         {
             return GetTruncatedIdentifier(String.Format("FK_{0}_{1}", tableName, foreignKey));

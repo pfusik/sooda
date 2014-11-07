@@ -55,6 +55,7 @@ namespace Sooda.Sql
         void GenerateForeignKeys(TextWriter tw, TableInfo tableInfo, string terminator);
         void GenerateIndex(TextWriter tw, FieldInfo fieldInfo, string additionalSettings, string terminator);
         void GenerateIndices(TextWriter tw, TableInfo tableInfo, string additionalSettings, string terminator);
+        void GenerateSoodaDynamicField(TextWriter tw, string terminator);
         string QuoteIdentifier(string s);
         string GetTruncatedIdentifier(string identifier);
         bool IsFatalException(IDbConnection connection, Exception e);

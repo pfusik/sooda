@@ -1156,6 +1156,9 @@ namespace Sooda.Sql
             {
                 SqlBuilder.GenerateIndices(tw, tables[s], this.CreateIndex, null);
             }
+
+            if (schema.GetDataSourceInfo(Name).EnableDynamicFields)
+                SqlBuilder.GenerateSoodaDynamicField(tw, null);
         }
     }
 }
