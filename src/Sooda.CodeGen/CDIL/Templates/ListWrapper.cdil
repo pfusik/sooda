@@ -12,14 +12,6 @@ constructor(ISoodaObjectList list)
 begin
 end
 
-#if WithIndexers
-property ${ClassName} Item(System.Int32 pos)
-    attributes New,Public,Final
-get
-    return cast(${ClassName}, base.GetItem(arg(pos)))
-end
-#endif
-
 method Sort(IComparer comparer)
     attributes Public,Final
     returns ${ClassName}List

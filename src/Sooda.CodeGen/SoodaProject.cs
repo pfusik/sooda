@@ -128,10 +128,6 @@ namespace Sooda.CodeGen
         [XmlElement("not-null-representation")]
         public PrimitiveRepresentation NotNullRepresentation = PrimitiveRepresentation.Raw;
 
-        [XmlElement("with-indexers")]
-        [System.ComponentModel.DefaultValue(true)]
-        public bool WithIndexers;
-
         [XmlElement("null-propagation")]
         [System.ComponentModel.DefaultValue(false)]
         public bool NullPropagation = false;

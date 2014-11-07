@@ -464,10 +464,6 @@ namespace Sooda.CodeGen
             CDILContext context = new CDILContext();
             context["ClassName"] = ci.Name;
             context["OptionalNewAttribute"] = (_codeProvider is Microsoft.VisualBasic.VBCodeProvider) ? "" : ",New";
-            context["WithIndexers"] = Project.WithIndexers;
-
-            if (!_codeGenerator.Supports(GeneratorSupport.DeclareIndexerProperties))
-                context["WithIndexers"] = false;
 
             CodeTypeDeclaration listWrapperClass = CDILParser.ParseClass(CDILTemplate.Get("ListWrapper.cdil"), context);
             nspace.Types.Add(listWrapperClass);

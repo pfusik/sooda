@@ -501,7 +501,7 @@ namespace Sooda.Linq
                         return TranslatePath(TranslateParameter((ParameterExpression) expr.Expression), expr);
 
                     case ExpressionType.MemberAccess:
-                        if (t == typeof(SoodaObjectCollectionWrapper) && name == "Count")
+                        if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(SoodaObjectCollectionWrapperGeneric<>) && name == "Count")
                         {
                             // x.SoodaCollection.Count -> SoqlCountExpression
                             return TranslateCollectionCount(expr.Expression);

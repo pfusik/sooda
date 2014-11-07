@@ -3,7 +3,7 @@
 <content lang="en" id="documentation">
     <div class="titlepage">
         <div class="title"><img style="width: 100%; border: 1pt solid #8080a0" src="doctitle.png" /></div>
-        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-11-07 11:07:51 +0100 (Fri, 07 Nov 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 887 $</subversion-revision>)</div>
+        <div class="titleversion">Last modified: <last-modified-date>$LastChangedDate: 2014-11-07 13:21:07 +0100 (Fri, 07 Nov 2014) $</last-modified-date> (revision <subversion-revision>$Revision: 891 $</subversion-revision>)</div>
         <div class="pagebreak">&#160;</div>
     </div>
     <p class="dontprintthis">
@@ -2983,19 +2983,6 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                                     <x><nullable-representation>Boxed</nullable-representation></x><br/>
                                     <x><not-null-representation>Raw</not-null-representation></x>
                             </pre></td>
-                            </tr>
-                            <tr>
-                                <td>with-indexers</td>
-                                <td>boolean</td>
-                                <td>
-                                    Generate indexers (Item() in VB, this[] in C#) for list wrappers. You should set this option
-                                    to false for languages that have no concept of indexers (such as JScript.NET). 
-                                    The default value is <b>true</b>.
-                                    <pre class="XML">
-                                        <x><with-indexers>false</with-indexers></x>
-                                    </pre>
-                                    This feature is experimental and should not be used in production code.
-                                </td>
                             </tr>
                             <tr>
                                 <td>null-propagation</td>

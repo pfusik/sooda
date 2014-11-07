@@ -36,22 +36,21 @@ using System.Collections.Generic;
 namespace Sooda.ObjectMapper
 {
     [DebuggerStepThrough]
-    public class SoodaObjectCollectionWrapper : ISoodaObjectList, ISoodaObjectListInternal
+    public class SoodaObjectCollectionWrapperGeneric<T> : ISoodaObjectList, ISoodaObjectListInternal, IList<T>
     {
         readonly ISoodaObjectList _theList;
 
-        protected SoodaObjectCollectionWrapper()
+        public SoodaObjectCollectionWrapperGeneric()
         {
             _theList = new SoodaObjectListSnapshot();
         }
 
-        protected SoodaObjectCollectionWrapper(ISoodaObjectList list)
+        public SoodaObjectCollectionWrapperGeneric(ISoodaObjectList list)
         {
             _theList = list;
         }
 
-
-        public SoodaObject GetItem(int pos)
+        SoodaObject ISoodaObjectList.GetItem(int pos)
         {
             return _theList.GetItem(pos);
         }
@@ -63,7 +62,8 @@ namespace Sooda.ObjectMapper
                 return _theList.IsReadOnly;
             }
         }
-        public object this[int index]
+
+        object IList.this[int index]
         {
             get
             {
@@ -80,7 +80,7 @@ namespace Sooda.ObjectMapper
             _theList.RemoveAt(index);
         }
 
-        public void Insert(int index, object value)
+        void IList.Insert(int index, object value)
         {
             _theList.Insert(index, value);
         }
@@ -90,17 +90,7 @@ namespace Sooda.ObjectMapper
             _theList.Remove(value);
         }
 
-        protected void Remove2(object value)
-        {
-            _theList.Remove(value);
-        }
-
         bool IList.Contains(object value)
-        {
-            return _theList.Contains(value);
-        }
-
-        protected bool Contains2(object value)
         {
             return _theList.Contains(value);
         }
@@ -110,7 +100,7 @@ namespace Sooda.ObjectMapper
             _theList.Clear();
         }
 
-        public int IndexOf(object value)
+        int IList.IndexOf(object value)
         {
             return _theList.IndexOf(value);
         }
@@ -120,12 +110,7 @@ namespace Sooda.ObjectMapper
             return _theList.Add(value);
         }
 
-        protected int Add2(object value)
-        {
-            return _theList.Add(value);
-        }
-
-        public bool IsFixedSize
+        bool IList.IsFixedSize
         {
             get
             {
@@ -133,7 +118,7 @@ namespace Sooda.ObjectMapper
             }
         }
 
-        public bool IsSynchronized
+        bool ICollection.IsSynchronized
         {
             get
             {
@@ -157,12 +142,12 @@ namespace Sooda.ObjectMapper
             }
         }
 
-        public void CopyTo(Array array, int index)
+        void ICollection.CopyTo(Array array, int index)
         {
             _theList.CopyTo(array, index);
         }
 
-        public object SyncRoot
+        object ICollection.SyncRoot
         {
             get
             {
@@ -295,40 +280,23 @@ namespace Sooda.ObjectMapper
         {
             ((ISoodaObjectListInternal)_theList).InternalRemove(o);
         }
-    }
-
-    public class SoodaObjectCollectionWrapperGeneric<T> : SoodaObjectCollectionWrapper, IList<T>
-    {
-        public SoodaObjectCollectionWrapperGeneric() : base()
-        {
-        }
-
-        public SoodaObjectCollectionWrapperGeneric(ISoodaObjectList list)
-            : base(list)
-        {
-        }
 
         #region IList<T> Members
 
-        int IList<T>.IndexOf(T item)
+        public int IndexOf(T item)
         {
-            return base.IndexOf(item);
+            return _theList.IndexOf(item);
         }
 
-        void IList<T>.Insert(int index, T item)
+        public void Insert(int index, T item)
         {
-            base.Insert(index, item);
+            _theList.Insert(index, item);
         }
 
-        void IList<T>.RemoveAt(int index)
+        public T this[int index]
         {
-            base.RemoveAt(index);
-        }
-
-        T IList<T>.this[int index]
-        {
-            get { return (T)base[index]; }
-            set { base[index] = value; }
+            get { return (T) _theList[index]; }
+            set { _theList[index] = value; }
         }
 
         #endregion
@@ -337,37 +305,22 @@ namespace Sooda.ObjectMapper
 
         public void Add(T item)
         {
-            base.Add2(item);
-        }
-
-        void ICollection<T>.Clear()
-        {
-            base.Clear();
+            _theList.Add(item);
         }
 
         public bool Contains(T item)
         {
-            return base.Contains2(item);
+            return _theList.Contains(item);
         }
 
-        void ICollection<T>.CopyTo(T[] array, int arrayIndex)
+        public void CopyTo(T[] array, int arrayIndex)
         {
-            base.CopyTo(array, arrayIndex);
-        }
-
-        int ICollection<T>.Count
-        {
-            get { return base.Count; }
-        }
-
-        bool ICollection<T>.IsReadOnly
-        {
-            get { return base.IsReadOnly; }
+            _theList.CopyTo(array, arrayIndex);
         }
 
         public bool Remove(T item)
         {
-            base.Remove2(item);
+            _theList.Remove(item);
             return true;
         }
 
@@ -379,17 +332,8 @@ namespace Sooda.ObjectMapper
         {
             for (int i = 0; i < Count; ++i)
             {
-                yield return (T)this[i];
-            };
-        }
-
-        #endregion
-
-        #region IEnumerable Members
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return base.GetEnumerator();
+                yield return this[i];
+            }
         }
 
         #endregion

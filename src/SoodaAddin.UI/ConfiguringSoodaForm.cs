@@ -232,7 +232,6 @@ namespace SoodaAddin.UI
                     sw.WriteLine("  <output-path>.</output-path>");
                     sw.WriteLine("  <nullable-representation>Nullable</nullable-representation>");
                     sw.WriteLine("  <not-null-representation>Raw</not-null-representation>");
-                    sw.WriteLine("  <with-indexers>true</with-indexers>");
                     sw.WriteLine("  <with-typed-queries>true</with-typed-queries>");
                     sw.WriteLine("  <embedded-schema-type>Binary</embedded-schema-type>");
                     if (WizardOptions.SeparateStubs)
