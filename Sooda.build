@@ -172,13 +172,8 @@
     </target>
 
     <target name="Sooda.Logging.NLog" depends="configure, update-build-number, Sooda, NLog" description="Sooda">
-        <csc target="library" output="${sooda.dir}/Sooda.Logging.NLog.dll" doc="${sooda.dir}/Sooda.Logging.NLog.xml" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
+        <csc target="library" output="${sooda.dir}/Sooda.Logging.NLog.dll" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
             <references>
-                <include name="mscorlib.dll" />
-                <include name="System.dll" />
-                <include name="System.XML.dll" />
-                <include name="System.Data.dll" />
-                <include name="System.Drawing.dll" />
                 <include name="${sooda.dir}/Sooda.dll" />
                 <include name="${sooda.nlog.dir}/NLog.dll" />
             </references>
@@ -190,13 +185,8 @@
     </target>
 
     <target name="Sooda.Logging.log4net" depends="configure, update-build-number, log4net" description="Sooda">
-        <csc target="library" output="${sooda.dir}/Sooda.Logging.log4net.dll" doc="${sooda.dir}/Sooda.Logging.log4net.xml" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
+        <csc target="library" output="${sooda.dir}/Sooda.Logging.log4net.dll" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
             <references>
-                <include name="mscorlib.dll" />
-                <include name="System.dll" />
-                <include name="System.XML.dll" />
-                <include name="System.Data.dll" />
-                <include name="System.Drawing.dll" />
                 <include name="${sooda.dir}/log4net.dll" />
                 <include name="${sooda.dir}/Sooda.dll" />
             </references>
