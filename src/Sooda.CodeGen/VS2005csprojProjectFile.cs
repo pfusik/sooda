@@ -39,8 +39,8 @@ namespace Sooda.CodeGen
         public override void CreateNew(string outputNamespace, string assemblyName)
         {
             base.CreateNew(outputNamespace, assemblyName);
-            XmlElement el = (XmlElement)doc.SelectSingleNode("msbuild:Project/msbuild:PropertyGroup/msbuild:RootNamespace", namespaceManager);
-            if (el != null && el.InnerText.Trim() == "")
+            XmlElement el = SelectElement(doc, "msbuild:Project/msbuild:PropertyGroup/msbuild:RootNamespace");
+            if (IsEmpty(el))
             {
                 el.InnerText = outputNamespace;
             }

@@ -9,15 +9,26 @@ namespace ConfigureSoodaProject
 {
     class ProjectFileConfigurationStrategy : ISoodaConfigurationStrategy
     {
-        private string _projectFile;
-        private XmlDocument _projectXml;
-        private XmlNamespaceManager _namespaceManager;
-        private bool _modified = false;
+        string _projectFile;
+        XmlDocument _projectXml;
+        XmlNamespaceManager _namespaceManager;
+        bool _modified = false;
+        const string msbuildNamespace = "http://schemas.microsoft.com/developer/msbuild/2003";
 
         public ProjectFileConfigurationStrategy(string projectFile)
         {
             if (projectFile != null)
                 ProjectFile = projectFile;
+        }
+
+        XmlElement SelectElement(XmlNode parent, string xpath)
+        {
+            return (XmlElement) parent.SelectSingleNode(xpath, _namespaceManager);
+        }
+
+        XmlElement CreateElement(string name)
+        {
+            return _projectXml.CreateElement("", name, msbuildNamespace);
         }
 
         public string ProjectFile
@@ -30,7 +41,7 @@ namespace ConfigureSoodaProject
                 _projectXml = new XmlDocument();
                 _projectXml.Load(_projectFile);
                 _namespaceManager = new XmlNamespaceManager(_projectXml.NameTable);
-                _namespaceManager.AddNamespace("msbuild", "http://schemas.microsoft.com/developer/msbuild/2003");
+                _namespaceManager.AddNamespace("msbuild", msbuildNamespace);
             }
         }
 
@@ -38,96 +49,61 @@ namespace ConfigureSoodaProject
         {
             get
             {
-                return _projectXml.SelectSingleNode("//msbuild:AssemblyName", _namespaceManager).InnerText;
+                return SelectElement(_projectXml, "//msbuild:AssemblyName").InnerText;
             }
         }
 
-        private XmlElement GetItemGroup(string whichHas)
+        XmlElement AddItem(string whichHas, string type, string filename)
         {
-            XmlElement itemGroup = (XmlElement)_projectXml.SelectSingleNode("msbuild:Project/msbuild:ItemGroup[msbuild:" + whichHas + "]", _namespaceManager);
+            XmlElement itemGroup = SelectElement(_projectXml, "msbuild:Project/msbuild:ItemGroup[msbuild:" + whichHas + "]");
             if (itemGroup == null)
             {
-                itemGroup = _projectXml.CreateElement("", "ItemGroup", "http://schemas.microsoft.com/developer/msbuild/2003");
+                itemGroup = CreateElement("ItemGroup");
                 _projectXml.DocumentElement.AppendChild(itemGroup);
             }
-            return itemGroup;
+            else if (SelectElement(itemGroup, "msbuild:" + type + "[@Include='" + filename + "']") != null)
+                return null;
+
+            XmlElement el = CreateElement(type);
+            el.SetAttribute("Include", filename);
+            itemGroup.AppendChild(el);
+            _modified = true;
+            return el;
         }
 
         public void AddCompileUnit(string relativeFileName)
         {
-            XmlElement compileItemGroup = GetItemGroup("Compile");
-
-            XmlElement file = (XmlElement)compileItemGroup.SelectSingleNode("msbuild:Compile[@Include='" + relativeFileName + "']", _namespaceManager);
-            if (file == null)
-            {
-                XmlElement el = _projectXml.CreateElement("", "Compile", "http://schemas.microsoft.com/developer/msbuild/2003");
-                el.SetAttribute("Include", relativeFileName);
-                compileItemGroup.AppendChild(el);
-                _modified = true;
-            }
+            AddItem("Compile", "Compile", relativeFileName);
         }
 
         public void AddReference(string reference)
         {
-            XmlElement compileItemGroup = GetItemGroup("Reference");
-
-            XmlElement file = (XmlElement)compileItemGroup.SelectSingleNode("msbuild:Reference[@Include='" + reference + "']", _namespaceManager);
-            if (file == null)
-            {
-                XmlElement el = _projectXml.CreateElement("", "Reference", "http://schemas.microsoft.com/developer/msbuild/2003");
-                el.SetAttribute("Include", reference);
-                compileItemGroup.AppendChild(el);
-                _modified = true;
-            }
+            AddItem("Reference", "Reference", reference);
         }
 
         public void AddReferenceWithHintPath(string reference, string hintPath)
         {
-            XmlElement compileItemGroup = GetItemGroup("Reference");
-
-            XmlElement file = (XmlElement)compileItemGroup.SelectSingleNode("msbuild:Reference[@Include='" + reference + "']", _namespaceManager);
-            if (file == null)
+            XmlElement el = AddItem("Reference", "Reference", reference);
+            if (el != null)
             {
-                XmlElement el = _projectXml.CreateElement("", "Reference", "http://schemas.microsoft.com/developer/msbuild/2003");
-                el.SetAttribute("Include", reference);
-                compileItemGroup.AppendChild(el);
-                XmlElement specificVersion = _projectXml.CreateElement("", "SpecificVersion", "http://schemas.microsoft.com/developer/msbuild/2003");
+                XmlElement specificVersion = CreateElement("SpecificVersion");
                 specificVersion.InnerText = "false";
-
-                XmlElement hintPathElement = _projectXml.CreateElement("", "HintPath", "http://schemas.microsoft.com/developer/msbuild/2003");
-                hintPathElement.InnerText = hintPath;
                 el.AppendChild(specificVersion);
+
+                XmlElement hintPathElement = CreateElement("HintPath");
+                hintPathElement.InnerText = hintPath;
                 el.AppendChild(hintPathElement);
-                _modified = true;
             }
         }
 
         public void AddEmbeddedResource(string relativeFileName)
         {
-            XmlElement compileItemGroup = GetItemGroup("Compile");
-
-            XmlElement file = (XmlElement)compileItemGroup.SelectSingleNode("msbuild:EmbeddedResource[@Include='" + relativeFileName + "']", _namespaceManager);
-            if (file == null)
-            {
-                XmlElement el = _projectXml.CreateElement("", "EmbeddedResource", "http://schemas.microsoft.com/developer/msbuild/2003");
-                el.SetAttribute("Include", relativeFileName);
-                compileItemGroup.AppendChild(el);
-                _modified = true;
-            }
+            AddItem("Compile", "EmbeddedResource", relativeFileName);
         }
 
         public void AddContent(string relativeFileName)
         {
-            XmlElement compileItemGroup = GetItemGroup("Compile");
-
-            XmlElement file = (XmlElement)compileItemGroup.SelectSingleNode("msbuild:Content[@Include='" + relativeFileName + "']", _namespaceManager);
-            if (file == null)
-            {
-                XmlElement el = _projectXml.CreateElement("", "Content", "http://schemas.microsoft.com/developer/msbuild/2003");
-                el.SetAttribute("Include", relativeFileName);
-                compileItemGroup.AppendChild(el);
-                _modified = true;
-            }
+            AddItem("Compile", "Content", relativeFileName);
         }
 
         public void SaveProject()
@@ -147,7 +123,8 @@ namespace ConfigureSoodaProject
         {
             get
             {
-                return _projectXml.SelectSingleNode("//msbuild:RootNamespace", _namespaceManager).InnerText;
+                XmlElement el = SelectElement(_projectXml, "//msbuild:RootNamespace");
+                return el != null ? el.InnerText : null;
             }
         }
 
@@ -160,18 +137,18 @@ namespace ConfigureSoodaProject
         {
             get
             {
-                XmlElement preBuildEvent = (XmlElement)_projectXml.SelectSingleNode("//msbuild:PreBuildEvent", _namespaceManager);
+                XmlElement preBuildEvent = SelectElement(_projectXml, "//msbuild:PreBuildEvent");
                 if (preBuildEvent == null)
                     return "";
                 return preBuildEvent.InnerText;
             }
             set
             {
-                XmlElement preBuildEvent = (XmlElement)_projectXml.SelectSingleNode("//msbuild:PreBuildEvent", _namespaceManager);
+                XmlElement preBuildEvent = SelectElement(_projectXml, "//msbuild:PreBuildEvent");
                 if (preBuildEvent == null)
                 {
-                    preBuildEvent = _projectXml.CreateElement("", "PreBuildEvent", "http://schemas.microsoft.com/developer/msbuild/2003");
-                    XmlElement propertyGroup = _projectXml.CreateElement("PropertyGroup", "http://schemas.microsoft.com/developer/msbuild/2003");
+                    preBuildEvent = CreateElement("PreBuildEvent");
+                    XmlElement propertyGroup = CreateElement("PropertyGroup");
                     _projectXml.DocumentElement.AppendChild(propertyGroup);
                     propertyGroup.AppendChild(preBuildEvent);
                 }
