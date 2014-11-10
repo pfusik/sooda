@@ -71,9 +71,9 @@ namespace SoodaAddin.UI
                                 ListViewItem item = new ListViewItem();
                                 item.ImageIndex = 0;
                                 item.Tag = item.Text;
-                                item.Text = Convert.ToString(reader.GetValue(0));
-                                item.SubItems.Add(Convert.ToString(reader.GetValue(1)) + " MB");
-                                item.SubItems.Add(Convert.ToString(reader.GetValue(2)));
+                                item.Text = reader.GetString(0);
+                                item.SubItems.Add((reader.GetInt32(1) >> 10) + " MB");
+                                item.SubItems.Add(Convert.ToString(reader.GetValue(2))); // usually null
                                 listView1.Items.Add(item);
                             }
                         }
