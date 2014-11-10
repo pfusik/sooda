@@ -250,6 +250,7 @@ namespace Sooda.Schema
             ReferencedClass = ci;
         }
 
+        [XmlIgnore]
         public string TypeName
         {
             get
@@ -279,6 +280,7 @@ namespace Sooda.Schema
             }
         }
 
+        [XmlIgnore]
         public Type Type
         {
             get
@@ -304,6 +306,7 @@ namespace Sooda.Schema
             }
         }
 
+        [XmlIgnore]
         public bool IsDynamic
         {
             get
