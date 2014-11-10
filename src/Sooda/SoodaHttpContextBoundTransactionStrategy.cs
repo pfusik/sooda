@@ -36,7 +36,7 @@ namespace Sooda
 {
     public class SoodaHttpContextBoundTransactionStrategy : IDefaultSoodaTransactionStrategy
     {
-        private object _slot = new object();
+        readonly object _slot = new object();
 
         public SoodaTransaction SetDefaultTransaction(SoodaTransaction transaction)
         {
@@ -55,7 +55,7 @@ namespace Sooda
             if (currentContext == null)
                 throw new Exception("Attempt to use transactions outside a HttpContext.");
 
-            return (SoodaTransaction)currentContext.Items[_slot];
+            return (SoodaTransaction) currentContext.Items[_slot];
         }
     }
 }

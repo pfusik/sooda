@@ -35,18 +35,18 @@ namespace Sooda
 {
     public class SoodaThreadBoundTransactionStrategy : IDefaultSoodaTransactionStrategy
     {
-        private LocalDataStoreSlot _activeTransactionDataStoreSlot = System.Threading.Thread.AllocateDataSlot();
+        readonly LocalDataStoreSlot _activeTransactionDataStoreSlot = Thread.AllocateDataSlot();
 
         public SoodaTransaction SetDefaultTransaction(SoodaTransaction transaction)
         {
             SoodaTransaction previousTransaction = GetDefaultTransaction();
-            System.Threading.Thread.SetData(_activeTransactionDataStoreSlot, transaction);
+            Thread.SetData(_activeTransactionDataStoreSlot, transaction);
             return previousTransaction;
         }
 
         public SoodaTransaction GetDefaultTransaction()
         {
-            return (SoodaTransaction)System.Threading.Thread.GetData(_activeTransactionDataStoreSlot);
+            return (SoodaTransaction) Thread.GetData(_activeTransactionDataStoreSlot);
         }
     }
 }

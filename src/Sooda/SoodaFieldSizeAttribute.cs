@@ -37,7 +37,7 @@ namespace Sooda
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter | AttributeTargets.ReturnValue)]
     public sealed class SoodaFieldSizeAttribute : Attribute
     {
-        private int _size;
+        readonly int _size;
 
         public SoodaFieldSizeAttribute(int size)
         {

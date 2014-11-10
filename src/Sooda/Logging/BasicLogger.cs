@@ -34,16 +34,11 @@ namespace Sooda.Logging
 {
     public abstract class BasicLogger : Logger
     {
-        private string _name;
+        readonly string Prefix;
 
         public BasicLogger(string name)
         {
-            _name = name;
-        }
-
-        private string Prefix
-        {
-            get { return _name + ": "; }
+            Prefix = name + ": ";
         }
 
         public override bool IsTraceEnabled { get { return true; } }

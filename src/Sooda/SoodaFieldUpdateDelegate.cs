@@ -28,9 +28,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
-using System.Text;
-
 namespace Sooda
 {
     public delegate void SoodaFieldUpdateDelegate(object oldValue, object newValue);
