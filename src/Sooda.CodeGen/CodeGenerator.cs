@@ -1091,8 +1091,7 @@ namespace Sooda.CodeGen
 
         public void Run()
         {
-            CodeCompileUnit ccu;
-            CodeNamespace nspace;
+            CodeNamespace nspace = null;
 
             try
             {
@@ -1237,14 +1236,16 @@ namespace Sooda.CodeGen
                     stubsFileName = Path.Combine(Project.OutputPath, fname);
                 }
 
-                ccu = new CodeCompileUnit();
+                CodeCompileUnit ccu = new CodeCompileUnit();
                 CodeAttributeDeclaration cad = new CodeAttributeDeclaration("Sooda.SoodaObjectsAssembly");
                 cad.Arguments.Add(new CodeAttributeArgument(new CodeTypeOfExpression(Project.OutputNamespace + "._DatabaseSchema")));
                 ccu.AssemblyCustomAttributes.Add(cad);
 
-                nspace = CreateBaseNamespace(_schema);
-                ccu.Namespaces.Add(nspace);
-
+                if (Project.WithSoql || Project.LoaderClass)
+                {
+                    nspace = CreateBaseNamespace(_schema);
+                    ccu.Namespaces.Add(nspace);
+                }
                 if (Project.WithSoql)
                 {
                     Output.Verbose("    * list wrappers");
@@ -1261,8 +1262,8 @@ namespace Sooda.CodeGen
                         GenerateLoaderClass(nspace, ci);
                     }
                 }
-                Output.Verbose("    * database schema");
 
+                Output.Verbose("    * database schema");
                 // stubs namespace
                 nspace = CreateStubsNamespace(_schema);
                 ccu.Namespaces.Add(nspace);
