@@ -43,8 +43,8 @@ namespace Sooda.CodeGen
 {
     public class CodeDomClassStubGenerator : CodeDomHelpers
     {
-        private ClassInfo classInfo;
-        private SoodaProject options;
+        readonly ClassInfo classInfo;
+        readonly SoodaProject options;
         public readonly string KeyGen;
 
         public CodeDomClassStubGenerator(ClassInfo ci, SoodaProject options)
@@ -328,6 +328,22 @@ namespace Sooda.CodeGen
         static CodeExpression Factory(string className)
         {
             return new CodePropertyReferenceExpression(new CodeTypeReferenceExpression(className + "_Factory"), "TheFactory");
+        }
+
+        CodeTypeReference GetCollectionPropertyType(string className)
+        {
+            if (options.WithSoql)
+                return new CodeTypeReference(className + "List");
+            else
+                return new CodeTypeReference("System.Collections.Generic.IList", new CodeTypeReference(className));
+        }
+
+        CodeTypeReference GetCollectionWrapperType(string className)
+        {
+            if (options.WithSoql)
+                return new CodeTypeReference(options.OutputNamespace + "." + className + "List");
+            else
+                return new CodeTypeReference("Sooda.ObjectMapper.SoodaObjectCollectionWrapperGeneric", new CodeTypeReference(className));
         }
 
 #if DOTNET35
@@ -679,7 +695,7 @@ namespace Sooda.CodeGen
                     prop = new CodeMemberProperty();
                     prop.Name = coli.Name;
                     prop.Attributes = MemberAttributes.Final | MemberAttributes.Public;
-                    prop.Type = new CodeTypeReference(coli.ClassName + "List");
+                    prop.Type = GetCollectionPropertyType(coli.ClassName);
 
                     prop.GetStatements.Add(
                         new CodeConditionStatement(
@@ -690,7 +706,7 @@ namespace Sooda.CodeGen
                             {
                                 new CodeAssignStatement(
                                 new CodeFieldReferenceExpression(This, "_collectionCache_" + coli.Name),
-                                new CodeObjectCreateExpression(new CodeTypeReference(options.OutputNamespace + "." + coli.ClassName + "List"),
+                                new CodeObjectCreateExpression(GetCollectionWrapperType(coli.ClassName),
                                 new CodeObjectCreateExpression(new CodeTypeReference(typeof(Sooda.ObjectMapper.SoodaObjectOneToManyCollection)),
                                 new CodeExpression[] {
                                     new CodeMethodInvokeExpression(This, "GetTransaction"),
@@ -737,7 +753,7 @@ namespace Sooda.CodeGen
                     prop = new CodeMemberProperty();
                     prop.Name = coli.Name;
                     prop.Attributes = MemberAttributes.Final | MemberAttributes.Public;
-                    prop.Type = new CodeTypeReference(relationTargetClass + "List");
+                    prop.Type = GetCollectionPropertyType(relationTargetClass);
 
                     prop.GetStatements.Add(
                         new CodeConditionStatement(
@@ -747,7 +763,7 @@ namespace Sooda.CodeGen
                         new CodePrimitiveExpression(null)), new CodeStatement[] {
                                                                                     new CodeAssignStatement(
                                                                                     new CodeFieldReferenceExpression(This, "_collectionCache_" + coli.Name),
-                                                                                    new CodeObjectCreateExpression(new CodeTypeReference(relationTargetClass + "List"),
+                                                                                    new CodeObjectCreateExpression(GetCollectionWrapperType(relationTargetClass),
                                                                                     new CodeObjectCreateExpression(new CodeTypeReference(typeof(Sooda.ObjectMapper.SoodaObjectManyToManyCollection)),
                                                                                     new CodeExpression[] {
                                                                                                              new CodeMethodInvokeExpression(This, "GetTransaction"),
@@ -781,13 +797,19 @@ namespace Sooda.CodeGen
             }
         }
 
+        CodeMemberField GetCollectionCache(CollectionBaseInfo coli)
+        {
+            CodeMemberField field = new CodeMemberField(GetCollectionPropertyType(coli.GetItemClass().Name), "_collectionCache_" + coli.Name);
+            field.Attributes = MemberAttributes.Private;
+            field.InitExpression = new CodePrimitiveExpression(null);
+            return field;
+        }
+
         public void GenerateFields(CodeTypeDeclaration ctd, ClassInfo ci)
         {
-            CodeMemberField field;
-
             if (GetFieldRefCacheCount(ci) > 0)
             {
-                field = new CodeMemberField(new CodeTypeReference(new CodeTypeReference("SoodaObject"), 1), "_refcache");
+                CodeMemberField field = new CodeMemberField(new CodeTypeReference(new CodeTypeReference("SoodaObject"), 1), "_refcache");
                 field.Attributes = MemberAttributes.Private;
                 field.InitExpression = new CodeArrayCreateExpression(
                     new CodeTypeReference(typeof(SoodaObject)), new CodePrimitiveExpression(GetFieldRefCacheCount(ci)));
@@ -798,14 +820,11 @@ namespace Sooda.CodeGen
             {
                 foreach (CollectionOnetoManyInfo coli in classInfo.Collections1toN)
                 {
-                    field = new CodeMemberField(options.OutputNamespace + "." + coli.ClassName + "List", "_collectionCache_" + coli.Name);
-                    field.Attributes = MemberAttributes.Assembly;
-                    field.InitExpression = new CodePrimitiveExpression(null);
-                    ctd.Members.Add(field);
+                    ctd.Members.Add(GetCollectionCache(coli));
                 }
                 foreach (CollectionOnetoManyInfo coli in classInfo.Collections1toN)
                 {
-                    field = new CodeMemberField("Sooda.SoodaWhereClause", "_collectionWhere_" + coli.Name);
+                    CodeMemberField field = new CodeMemberField("Sooda.SoodaWhereClause", "_collectionWhere_" + coli.Name);
                     field.Attributes = MemberAttributes.Static | MemberAttributes.Private;
                     if (!string.IsNullOrEmpty(coli.Where))
                     {
@@ -825,11 +844,7 @@ namespace Sooda.CodeGen
             {
                 foreach (CollectionManyToManyInfo coli in classInfo.CollectionsNtoN)
                 {
-                    RelationInfo relationInfo = coli.GetRelationInfo();
-                    field = new CodeMemberField(options.OutputNamespace + "." + relationInfo.Table.Fields[coli.MasterField].ReferencedClass.Name + "List", "_collectionCache_" + coli.Name);
-                    field.Attributes = MemberAttributes.Private;
-                    field.InitExpression = new CodePrimitiveExpression(null);
-                    ctd.Members.Add(field);
+                    ctd.Members.Add(GetCollectionCache(coli));
                 }
             }
         }

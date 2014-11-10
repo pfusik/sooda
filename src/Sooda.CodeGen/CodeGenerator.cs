@@ -1245,10 +1245,13 @@ namespace Sooda.CodeGen
                 nspace = CreateBaseNamespace(_schema);
                 ccu.Namespaces.Add(nspace);
 
-                Output.Verbose("    * list wrappers");
-                foreach (ClassInfo ci in _schema.LocalClasses)
+                if (Project.WithSoql)
                 {
-                    GenerateListWrapper(nspace, ci);
+                    Output.Verbose("    * list wrappers");
+                    foreach (ClassInfo ci in _schema.LocalClasses)
+                    {
+                        GenerateListWrapper(nspace, ci);
+                    }
                 }
                 if (Project.LoaderClass)
                 {
