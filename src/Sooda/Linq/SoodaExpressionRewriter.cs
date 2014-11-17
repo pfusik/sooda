@@ -37,29 +37,26 @@ namespace Sooda.Linq
 {
     class SoodaExpressionRewriter : ExpressionVisitor
     {
-        Expression Process(Expression node, MemberInfo member)
+        Expression Rewrite(Expression node, MemberInfo member)
         {
             Attribute attribute = Attribute.GetCustomAttribute(member, typeof(SoodaExpressionRewriteAttribute));
             if (attribute == null)
-                return node;
+                return null;
             ExpressionVisitor rewriter = (ExpressionVisitor) Activator.CreateInstance(((SoodaExpressionRewriteAttribute) attribute).RewriterType);
-            return rewriter.Visit(node);
+            Expression output = rewriter.Visit(node);
+            if (output == node) // unmodified
+                return null;
+            return Visit(output); // visit the rewritten expression
         }
 
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            Expression output = Process(node, node.Method);
-            if (output == node) // unmodified
-                return base.VisitMethodCall(node);
-            return Visit(output); // visit the rewritten expression
+            return Rewrite(node, node.Method) ?? base.VisitMethodCall(node);
         }
 
         protected override Expression VisitMember(MemberExpression node)
         {
-            Expression output = Process(node, node.Member);
-            if (output == node) // unmodified
-                return base.VisitMember(node);
-            return Visit(output); // visit the rewritten expression
+            return Rewrite(node, node.Member) ?? base.VisitMember(node);
         }
     }
 }
