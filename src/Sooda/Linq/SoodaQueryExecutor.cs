@@ -1081,7 +1081,9 @@ namespace Sooda.Linq
             Expression expr = mc.Arguments[1];
             if (expr.NodeType == ExpressionType.Quote)
                 expr = ((UnaryExpression) expr).Operand;
-            LambdaExpression lambda = (LambdaExpression) expr;
+            LambdaExpression lambda = expr as LambdaExpression;
+            if (lambda == null)
+                lambda = (LambdaExpression) GetConstant(expr);
             _parameter = lambda.Parameters.First();
             return lambda;
         }

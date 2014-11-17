@@ -32,6 +32,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 using NUnit.Framework;
 using Sooda.UnitTests.BaseObjects;
@@ -318,6 +319,39 @@ namespace Sooda.UnitTests.TestCases.Linq
                 CollectionAssert.AreEqual(new string[] { "Employee", "Manager", "Customer" }, l.Select(o => o.ContactType));
                 CollectionAssert.AreEqual(new decimal[] { 345M, 123.123456789M, 123M }, l.Select(o => o.TopSalary));
                 CollectionAssert.AreEqual(new string[] { "Eva Employee", "Mary Manager", "Chris Customer" }, l.Select(o => o.MostPaid));
+            }
+        }
+
+        static Expression<Func<Contact, bool>> GetSalaryIs345()
+        {
+            return c => c.LastSalary.Value == 345;
+        }
+
+        [Test]
+        public void WhereExpressionMethod()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<ContactType> te = ContactType.Linq().Where(t => Contact.Linq().Where(GetSalaryIs345()).Any(c => c.Type == t));
+                CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Employee }, te);
+            }
+        }
+
+        static Expression<Func<Contact, bool>> SalaryIs345
+        {
+            get
+            {
+                return c => c.LastSalary.Value == 345;
+            }
+        }
+
+        [Test]
+        public void WhereExpressionProperty()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<ContactType> te = ContactType.Linq().Where(t => Contact.Linq().Where(SalaryIs345).Any(c => c.Type == t));
+                CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Employee }, te);
             }
         }
     }
