@@ -1091,8 +1091,6 @@ namespace Sooda.CodeGen
 
         public void Run()
         {
-            CodeNamespace nspace = null;
-
             try
             {
                 if (Project.SchemaFile == null)
@@ -1241,6 +1239,7 @@ namespace Sooda.CodeGen
                 cad.Arguments.Add(new CodeAttributeArgument(new CodeTypeOfExpression(Project.OutputNamespace + "._DatabaseSchema")));
                 ccu.AssemblyCustomAttributes.Add(cad);
 
+                CodeNamespace nspace = null;
                 if (Project.WithSoql || Project.LoaderClass)
                 {
                     nspace = CreateBaseNamespace(_schema);
