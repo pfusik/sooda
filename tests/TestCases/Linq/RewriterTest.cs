@@ -72,6 +72,16 @@ namespace Sooda.UnitTests.TestCases.Linq
                 CollectionAssert.IsEmpty(ce);
             }
         }
+
+        [Test]
+        public void DoubleNested()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Where(c => Double(Double(c.Name)) == "Mary ManagerMary ManagerMary ManagerMary Manager");
+                CollectionAssert.AreEqual(new Contact[] { Contact.Mary }, ce);
+            }
+        }
     }
 }
 
