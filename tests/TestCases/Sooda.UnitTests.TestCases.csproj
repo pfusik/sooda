@@ -103,7 +103,6 @@
     <Compile Include="Soql\QueryTest.cs" />
     <Compile Include="Soql\RelationalOperatorsTest.cs" />
     <Compile Include="Soql\SoqlTranslatorTest.cs" />
-    <Compile Include="Soql\TypeCheckingTest.cs" />
     <Compile Include="TestSqlDataSource.cs" />
     <Compile Include="TransactionTest.cs" />
   </ItemGroup>
