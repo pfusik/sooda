@@ -28,10 +28,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
+using NUnit.Framework;
 using System;
 using System.Data.SqlTypes;
-
-using NUnit.Framework;
 
 namespace Sooda.UnitTests.TestCases.ObjectMapper
 {

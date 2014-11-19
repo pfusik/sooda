@@ -28,9 +28,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using Sooda;
+using System.Reflection;
 
 [assembly: AssemblyTitle("Sooda.Utils")]
 [assembly: AssemblyDescription("Application framework for Sooda")]

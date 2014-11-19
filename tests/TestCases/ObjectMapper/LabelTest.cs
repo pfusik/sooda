@@ -27,9 +27,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using Sooda.UnitTests.BaseObjects;
-
 using NUnit.Framework;
+using Sooda.UnitTests.BaseObjects;
 
 namespace Sooda.UnitTests.TestCases.ObjectMapper
 {

@@ -27,12 +27,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 // 
 
-using System.Data;
-
-using Sooda.QL;
-
 using NUnit.Framework;
-using Sooda.UnitTests.BaseObjects;
+using Sooda.QL;
+using System.Data;
 
 namespace Sooda.UnitTests.TestCases.Soql
 {

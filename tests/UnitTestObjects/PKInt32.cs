@@ -30,9 +30,6 @@
 
 namespace Sooda.UnitTests.Objects
 {
-    using System;
-    using System.Data;
-    using System.Text;
     using Sooda;
 
     public class PKInt32 : Sooda.UnitTests.Objects.Stubs.PKInt32_Stub

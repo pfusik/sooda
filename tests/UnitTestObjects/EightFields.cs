@@ -1,14 +1,8 @@
 namespace Sooda.UnitTests.Objects
 {
-    using System;
-    using System.Collections;
-    using System.Diagnostics;
-    using System.Data;
     using Sooda;
     using SoodaUnitTestsObjectsStubs = Sooda.UnitTests.Objects.Stubs;
-    using Sooda.UnitTests.BaseObjects;
-    
-    
+
     public class EightFields : SoodaUnitTestsObjectsStubs.EightFields_Stub
     {
         

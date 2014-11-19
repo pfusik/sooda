@@ -34,7 +34,6 @@ using System.Data;
 using System.Linq;
 #endif
 
-using Sooda;
 using Sooda.QL;
 using Sooda.QL.TypedWrappers;
 using Sooda.Schema;

@@ -29,15 +29,12 @@
 
 #if DOTNET35
 
-using System;
+using NUnit.Framework;
+using Sooda.Linq;
+using Sooda.UnitTests.BaseObjects;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-
-using Sooda.Linq;
-
-using NUnit.Framework;
-using Sooda.UnitTests.BaseObjects;
 
 namespace Sooda.UnitTests.TestCases.Linq
 {

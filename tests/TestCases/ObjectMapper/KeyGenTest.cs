@@ -28,17 +28,11 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
+using NUnit.Framework;
+using Sooda.UnitTests.BaseObjects;
 using System;
-using System.Diagnostics;
-using System.Data;
 using System.Collections;
 using System.Threading;
-
-using Sooda.ObjectMapper;
-using Sooda.UnitTests.Objects;
-using Sooda.UnitTests.BaseObjects;
-
-using NUnit.Framework;
 
 namespace Sooda.UnitTests.TestCases.ObjectMapper
 {

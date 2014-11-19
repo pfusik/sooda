@@ -30,10 +30,6 @@
 
 namespace Sooda.UnitTests.Objects
 {
-    using System;
-    using System.Collections;
-    using System.Diagnostics;
-    using System.Data;
 
     public class ConcreteMegaSuperBikeA : Sooda.UnitTests.Objects.Stubs.ConcreteMegaSuperBikeA_Stub
     {

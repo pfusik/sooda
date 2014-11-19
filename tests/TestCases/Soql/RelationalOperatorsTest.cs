@@ -28,15 +28,10 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
-using System.Diagnostics;
-
-using Sooda.ObjectMapper;
-using Sooda.QL;
-using Sooda.UnitTests.Objects;
-using Sooda.UnitTests.BaseObjects;
-
 using NUnit.Framework;
+using Sooda.QL;
+using Sooda.UnitTests.BaseObjects;
+using System;
 
 namespace Sooda.UnitTests.TestCases.Soql
 {

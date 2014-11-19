@@ -28,10 +28,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
-
 using Sooda.Caching;
 using Sooda.UnitTests.Objects;
+using System;
 
 namespace Sooda.UnitTests.TestCases
 {

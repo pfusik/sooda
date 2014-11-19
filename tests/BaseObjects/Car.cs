@@ -30,10 +30,6 @@
 
 namespace Sooda.UnitTests.BaseObjects
 {
-    using System;
-    using System.Collections;
-    using System.Diagnostics;
-    using System.Data;
     using Sooda;
 
     public class Car : Sooda.UnitTests.BaseObjects.Stubs.Car_Stub

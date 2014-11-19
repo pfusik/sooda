@@ -27,13 +27,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System.Data;
-
-using Sooda;
-
-using Sooda.UnitTests.BaseObjects;
-
 using NUnit.Framework;
+using Sooda.UnitTests.BaseObjects;
+using System.Data;
 
 namespace Sooda.UnitTests.TestCases
 {

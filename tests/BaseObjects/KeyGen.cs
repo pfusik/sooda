@@ -1,9 +1,5 @@
 namespace Sooda.UnitTests.BaseObjects {
-  using System;
-  using System.Collections;
-  using System.Diagnostics;
-  using System.Data;
-  using Sooda;
+    using Sooda;
   
   
   public class KeyGen : Sooda.UnitTests.BaseObjects.Stubs.KeyGen_Stub {

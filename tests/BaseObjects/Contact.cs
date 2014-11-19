@@ -30,11 +30,8 @@
 
 namespace Sooda.UnitTests.BaseObjects
 {
-    using System;
-    using System.Collections;
-    using System.Diagnostics;
-    using System.Data;
     using Sooda;
+    using System;
 
     public class Contact : Sooda.UnitTests.BaseObjects.Stubs.Contact_Stub
     {

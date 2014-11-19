@@ -28,12 +28,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
-using System.Linq;
-
 using Sooda;
-
-using Sooda.UnitTests.BaseObjects;
 
 //[assembly: SoodaStubAssembly(typeof(Sooda.UnitTests.Objects._DatabaseSchema))]
 [assembly: SoodaConfig(XmlConfigFileName = "Sooda.config.xml")]

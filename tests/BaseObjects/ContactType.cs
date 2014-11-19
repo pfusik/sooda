@@ -1,9 +1,5 @@
 namespace Sooda.UnitTests.BaseObjects {
-  using System;
-  using System.Collections;
-  using System.Diagnostics;
-  using System.Data;
-  using Sooda;
+    using Sooda;
   
   
   public class ContactType : Sooda.UnitTests.BaseObjects.Stubs.ContactType_Stub {

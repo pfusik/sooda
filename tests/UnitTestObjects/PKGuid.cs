@@ -30,10 +30,6 @@
 
 namespace Sooda.UnitTests.Objects
 {
-    using System;
-    using System.Collections;
-    using System.Diagnostics;
-    using System.Data;
     using Sooda;
 
     public class PKGuid : Sooda.UnitTests.Objects.Stubs.PKGuid_Stub
