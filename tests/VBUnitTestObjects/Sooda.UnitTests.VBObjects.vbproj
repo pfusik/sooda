@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{14560270-B86E-4C15-BD34-4E06CCFB091B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Sooda.UnitTests.VBObjects</AssemblyName>
+    <RootNamespace></RootNamespace>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\Debug\</OutputPath>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionExplicit>On</OptionExplicit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionCompare>Binary</OptionCompare>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionStrict>Off</OptionStrict>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionInfer>On</OptionInfer>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <ProjectReference Include="..\..\src\Sooda\Sooda.csproj">
+      <Name>Sooda</Name>
+      <Project>{FCC9B644-9093-41F6-8F0D-F98F22474CB5}</Project>
+      <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+    </ProjectReference>
+    <ProjectReference Include="..\BaseObjects\Sooda.UnitTests.BaseObjects.csproj">
+      <Name>Sooda.UnitTests.BaseObjects</Name>
+      <Project>{A1D122ED-CF84-4EF0-A138-72922DD50409}</Project>
+      <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="_DBSchema.bin" />
+    <Compile Include="AbstractMegaSuperBike.vb" />
+    <Compile Include="AllDataTypes.vb" />
+    <Compile Include="ConcreteMegaSuperBikeA.vb" />
+    <Compile Include="ConcreteMegaSuperBikeB.vb" />
+    <Compile Include="EightFields.vb" />
+    <Compile Include="ExtendedBike.vb" />
+    <Compile Include="MegaSuperBike.vb" />
+    <Compile Include="MultiKey.vb" />
+    <Compile Include="PKBool.vb" />
+    <Compile Include="PKDateTime.vb" />
+    <Compile Include="PKGuid.vb" />
+    <Compile Include="PKInt32.vb" />
+    <Compile Include="PKInt64.vb" />
+    <Compile Include="PKString.vb" />
+    <Compile Include="SuperBike.vb" />
+    <Compile Include="_Stubs.vb" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Sooda.UnitTests.VBObjects.soodaproject" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.Targets" />
+  <PropertyGroup>
+    <PreBuildEvent>$(ProjectDir)..\..\src\SoodaStubGen\bin\$(ConfigurationName)\SoodaStubGen.exe $(ProjectDir)Sooda.UnitTests.VBObjects.soodaproject</PreBuildEvent>
+  </PropertyGroup>
+</Project>

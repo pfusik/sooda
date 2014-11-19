@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A1D122ED-CF84-4EF0-A138-72922DD50409}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Sooda.UnitTests.BaseObjects</AssemblyName>
+    <RootNamespace>Sooda.UnitTests.BaseObjects</RootNamespace>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DOTNET35;DOTNET4;DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>DOTNET35;DOTNET4;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <ProjectReference Include="..\..\src\Sooda\Sooda.csproj">
+      <Name>Sooda</Name>
+      <Project>{FCC9B644-9093-41F6-8F0D-F98F22474CB5}</Project>
+      <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="_DBSchema.bin" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Bike.cs" />
+    <Compile Include="Car.cs" />
+    <Compile Include="Contact.cs" />
+    <Compile Include="ContactType.cs" />
+    <Compile Include="Group.cs" />
+    <Compile Include="KeyGen.cs" />
+    <Compile Include="Role.cs" />
+    <Compile Include="Vehicle.cs" />
+    <Compile Include="_Stubs.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Sooda.UnitTests.BaseObjects.soodaproject" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.Targets" />
+  <PropertyGroup>
+    <PreBuildEvent>$(ProjectDir)..\..\src\SoodaStubGen\bin\$(ConfigurationName)\SoodaStubGen.exe $(ProjectDir)Sooda.UnitTests.BaseObjects.soodaproject</PreBuildEvent>
+  </PropertyGroup>
+</Project>
