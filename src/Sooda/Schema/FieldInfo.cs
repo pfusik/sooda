@@ -28,13 +28,12 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
-using System.Xml.Serialization;
-using System.ComponentModel;
-using System.Collections.Specialized;
-
 using Sooda.ObjectMapper;
 using Sooda.ObjectMapper.FieldHandlers;
+using System;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Xml.Serialization;
 
 namespace Sooda.Schema
 {

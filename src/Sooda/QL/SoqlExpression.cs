@@ -28,11 +28,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
+using Sooda.QL.TypedWrappers;
 using System.IO;
 using System.Xml.Serialization;
-
-using Sooda.QL.TypedWrappers;
 
 namespace Sooda.QL
 {

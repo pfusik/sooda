@@ -235,7 +235,9 @@
     <Compile Include="SoodaStatistics.cs" />
     <Compile Include="SoodaStubAssemblyAttribute.cs" />
     <Compile Include="SoodaThreadBoundTransactionStrategy.cs" />
-    <Compile Include="SoodaTransaction.cs" />
+    <Compile Include="SoodaTransaction.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="SoodaTuple.cs" />
     <Compile Include="SoodaWhereClause.cs" />
     <Compile Include="Sql\DbParameterConverter.cs" />

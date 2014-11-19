@@ -28,10 +28,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
-using System.Xml;
 using Sooda.Schema;
-using Sooda.Sql;
+using System;
 using System.IO;
 using System.Xml.Serialization;
 

@@ -29,9 +29,8 @@
 //
 
 using System;
-using System.Text;
 using System.Collections;
-using System.Collections.Specialized;
+using System.Text;
 
 namespace Sooda.CodeGen.CDIL
 {

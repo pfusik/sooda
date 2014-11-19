@@ -31,10 +31,9 @@
 namespace Sooda.Schema
 {
     using System;
-    using System.Xml.Serialization;
-    using System.Data;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Xml.Serialization;
 
     [XmlType(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     public enum TableUsageType

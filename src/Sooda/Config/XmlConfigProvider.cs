@@ -28,14 +28,13 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
-using System.IO;
-using System.Xml;
-using System.Security;
-using System.Configuration;
-using System.Collections.Specialized;
-
 using Sooda.Logging;
+using System;
+using System.Collections.Specialized;
+using System.Configuration;
+using System.IO;
+using System.Security;
+using System.Xml;
 
 namespace Sooda.Config
 {

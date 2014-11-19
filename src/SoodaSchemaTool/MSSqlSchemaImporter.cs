@@ -28,14 +28,11 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
+using Sooda.Schema;
 using System;
 using System.Collections.Generic;
-using System.Xml;
-
-using Sooda.Schema;
-using Sooda.Sql;
-using System.Data.SqlClient;
 using System.Data;
+using System.Data.SqlClient;
 using System.Text;
 
 namespace SoodaSchemaTool

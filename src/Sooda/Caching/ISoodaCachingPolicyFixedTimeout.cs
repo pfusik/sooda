@@ -29,9 +29,6 @@
 //
 
 using System;
-using System.Text;
-
-using Sooda.Schema;
 
 namespace Sooda.Caching
 {

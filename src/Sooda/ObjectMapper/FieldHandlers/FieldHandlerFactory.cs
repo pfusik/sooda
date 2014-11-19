@@ -28,11 +28,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
-using System.Collections.Generic;
-using System.Data.SqlTypes;
-
 using Sooda.Schema;
+using System;
+using System.Data.SqlTypes;
 
 namespace Sooda.ObjectMapper.FieldHandlers
 {

@@ -29,7 +29,6 @@
 //
 
 using System;
-using System.IO;
 
 namespace Sooda.CodeGen.CDIL
 {

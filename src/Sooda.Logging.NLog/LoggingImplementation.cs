@@ -28,7 +28,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
 using NLogLib = NLog;
 
 namespace Sooda.Logging.NLog

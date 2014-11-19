@@ -29,12 +29,8 @@
 
 #if DOTNET35
 
-using System;
-using System.Collections.Generic;
-
-using Sooda;
 using Sooda.ObjectMapper;
-using Sooda.QL;
+using System.Collections.Generic;
 
 namespace Sooda.Linq
 {

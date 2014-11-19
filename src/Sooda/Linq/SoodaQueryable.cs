@@ -35,8 +35,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-using Sooda.QL;
-
 namespace Sooda.Linq
 {
     public class SoodaQueryable<T> : IOrderedQueryable<T>, IQueryProvider

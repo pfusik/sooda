@@ -28,8 +28,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
-
 using log4netlib = log4net;
 
 namespace Sooda.Logging.log4net

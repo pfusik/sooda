@@ -30,9 +30,8 @@
 
 using System;
 using System.CodeDom;
-using System.IO;
 using System.Collections;
-using System.Collections.Specialized;
+using System.IO;
 using System.Reflection;
 
 namespace Sooda.CodeGen.CDIL

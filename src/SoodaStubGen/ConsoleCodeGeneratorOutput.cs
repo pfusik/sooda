@@ -28,8 +28,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
 using Sooda.CodeGen;
+using System;
 
 namespace SoodaStubGen
 {

@@ -29,14 +29,9 @@
 //
 
 using System;
-using System.IO;
-using System.Xml;
-
-using Sooda.Schema;
-using Sooda.Sql;
-using System.Reflection;
 using System.Collections;
 using System.Globalization;
+using System.Reflection;
 
 namespace SoodaSchemaTool
 {

@@ -31,10 +31,7 @@
 namespace Sooda.Schema
 {
     using System;
-    using System.Collections;
     using System.Xml.Serialization;
-    using System.Runtime.Serialization;
-    using System.Text;
 
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.sooda.org/schemas/SoodaSchema.xsd")]
     [Serializable]

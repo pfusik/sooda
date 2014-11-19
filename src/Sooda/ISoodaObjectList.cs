@@ -28,8 +28,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System.Collections;
 using Sooda.QL;
+using System.Collections;
 
 namespace Sooda
 {

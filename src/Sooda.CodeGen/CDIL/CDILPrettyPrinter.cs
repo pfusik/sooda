@@ -31,8 +31,6 @@
 using System;
 using System.CodeDom;
 using System.IO;
-using System.Collections;
-using System.Collections.Specialized;
 
 namespace Sooda.CodeGen.CDIL
 {

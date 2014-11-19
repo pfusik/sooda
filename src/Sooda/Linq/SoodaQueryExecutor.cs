@@ -29,6 +29,10 @@
 
 #if DOTNET35
 
+using Sooda.ObjectMapper;
+using Sooda.ObjectMapper.FieldHandlers;
+using Sooda.QL;
+using Sooda.Schema;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -38,12 +42,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-
-using Sooda;
-using Sooda.ObjectMapper;
-using Sooda.ObjectMapper.FieldHandlers;
-using Sooda.QL;
-using Sooda.Schema;
 
 namespace Sooda.Linq
 {

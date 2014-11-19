@@ -28,17 +28,13 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
+using Sooda.QL;
+using Sooda.Schema;
 using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.IO;
 
-using Sooda.Schema;
-using Sooda.QL.TypedWrappers;
-using Sooda.QL;
-
-using Sooda.Logging;
-using System.Collections;
 
 namespace Sooda.Sql
 {

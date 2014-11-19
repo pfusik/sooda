@@ -28,10 +28,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
-using System.Xml;
-using System.IO;
-
 namespace Sooda.CodeGen
 {
     public class NullProjectFile : IProjectFile

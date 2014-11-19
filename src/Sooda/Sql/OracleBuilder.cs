@@ -28,12 +28,11 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
+using Sooda.QL;
+using Sooda.Schema;
 using System;
 using System.Data;
 using System.Data.OracleClient;
-
-using Sooda.QL;
-using Sooda.Schema;
 
 namespace Sooda.Sql
 {

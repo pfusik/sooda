@@ -29,8 +29,8 @@
 //
 
 using System;
-using System.Xml;
 using System.IO;
+using System.Xml;
 
 namespace Sooda.CodeGen
 {

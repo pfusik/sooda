@@ -29,6 +29,8 @@
 
 #if DOTNET4
 
+using Sooda.QL;
+using Sooda.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -36,9 +38,6 @@ using System.Data;
 using System.Data.SqlTypes;
 using System.Linq.Expressions;
 using System.Reflection;
-
-using Sooda.QL;
-using Sooda.Utils;
 
 namespace Sooda.Linq
 {

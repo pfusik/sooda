@@ -28,15 +28,14 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
+using Sooda.ObjectMapper.FieldHandlers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Xml.Serialization;
 using System.Text;
 using System.Threading;
-
-using Sooda.ObjectMapper.FieldHandlers;
+using System.Xml.Serialization;
 
 [assembly: System.CLSCompliant(true)]
 

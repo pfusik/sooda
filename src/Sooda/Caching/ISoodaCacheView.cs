@@ -28,11 +28,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
-using System.Collections;
-using System.Text;
-
-using Sooda.Schema;
 using System.Data;
 
 namespace Sooda.Caching

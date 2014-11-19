@@ -30,9 +30,8 @@
 
 using System;
 using System.Data;
-using System.IO;
-
 using System.Drawing;
+using System.IO;
 
 namespace Sooda.ObjectMapper.FieldHandlers
 {

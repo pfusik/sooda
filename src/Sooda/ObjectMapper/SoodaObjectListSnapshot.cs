@@ -28,17 +28,14 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
-using System.Data;
-using System.Collections;
-using System.Collections.Generic;
-
-using Sooda.Schema;
-
-using Sooda.Collections;
-using Sooda.QL;
 using Sooda.Caching;
 using Sooda.Logging;
+using Sooda.QL;
+using Sooda.Schema;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
 
 namespace Sooda.ObjectMapper
 {

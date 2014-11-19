@@ -28,9 +28,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
-using System.Xml;
-
 namespace Sooda.CodeGen
 {
     public class VS2005vbprojProjectFile : VS2005ProjectFileBase

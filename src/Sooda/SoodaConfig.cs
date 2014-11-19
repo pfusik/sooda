@@ -28,10 +28,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
+using Sooda.Config;
 using System;
 using System.Reflection;
-
-using Sooda.Config;
 
 namespace Sooda
 {

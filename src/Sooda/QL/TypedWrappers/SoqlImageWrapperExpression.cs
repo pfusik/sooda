@@ -76,7 +76,7 @@ namespace Sooda.QL.TypedWrappers
             return new SoqlBooleanInExpression(this, rhs);
         }
 
-        public override bool Equals(object o) { return Object.ReferenceEquals(this, o); }
+        public override bool Equals(object o) { return object.ReferenceEquals(this, o); }
         public override int GetHashCode() { return base.GetHashCode(); }
         public static SoqlBooleanExpression operator <=(SoqlImageWrapperExpression left, SoqlImageWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.LessOrEqual); }
         public static SoqlBooleanExpression operator >=(SoqlImageWrapperExpression left, SoqlImageWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.GreaterOrEqual); }

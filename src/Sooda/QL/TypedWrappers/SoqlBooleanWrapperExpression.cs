@@ -28,8 +28,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
-
 namespace Sooda.QL.TypedWrappers
 {
     public class SoqlBooleanWrapperExpression : SoqlBooleanExpression
@@ -74,7 +72,7 @@ namespace Sooda.QL.TypedWrappers
         public static SoqlBooleanExpression operator ==(SoqlBooleanWrapperExpression left, SoqlBooleanWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.Equal); }
         public static SoqlBooleanExpression operator !=(SoqlBooleanWrapperExpression left, SoqlBooleanWrapperExpression right) { return new Sooda.QL.SoqlBooleanRelationalExpression(left, right, Sooda.QL.SoqlRelationalOperator.NotEqual); }
 
-        public override bool Equals(object o) { return Object.ReferenceEquals(this, o); }
+        public override bool Equals(object o) { return object.ReferenceEquals(this, o); }
         public override int GetHashCode() { return base.GetHashCode(); }
     }
 }

@@ -28,15 +28,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
-using System.Xml;
-using System.Xml.Serialization;
-using System.IO;
 
 using System.CodeDom;
-using System.CodeDom.Compiler;
 
-using Sooda.Schema;
 
 namespace Sooda.CodeGen
 {

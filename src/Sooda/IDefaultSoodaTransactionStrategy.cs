@@ -28,9 +28,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System.Collections;
-using Sooda.QL;
-
 namespace Sooda
 {
     public interface IDefaultSoodaTransactionStrategy

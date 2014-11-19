@@ -28,8 +28,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
-
 namespace Sooda.CodeGen.CDIL
 {
     // CodeDOM intermediate language tokens

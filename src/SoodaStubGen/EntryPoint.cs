@@ -28,12 +28,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
+using Sooda.CodeGen;
 using System;
 using System.IO;
-using System.Xml;
-using System.Xml.Serialization;
-
-using Sooda.CodeGen;
 
 namespace SoodaStubGen
 {

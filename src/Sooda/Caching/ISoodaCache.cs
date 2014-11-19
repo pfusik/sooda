@@ -30,9 +30,6 @@
 
 using System;
 using System.Collections;
-using System.Text;
-
-using Sooda.Schema;
 
 namespace Sooda.Caching
 {

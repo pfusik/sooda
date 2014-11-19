@@ -29,13 +29,8 @@
 //
 
 using System;
-using System.IO;
 using System.Collections;
-using System.Threading;
 
-using Sooda.Logging;
-using Sooda.Schema;
-using Sooda.QL;
 
 namespace Sooda.Caching
 {

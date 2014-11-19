@@ -28,15 +28,11 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
+using NAnt.Core;
+using NAnt.Core.Attributes;
+using Sooda.CodeGen;
 using System;
 using System.IO;
-
-using NAnt.Core.Attributes;
-using NAnt.Core.Types;
-using NAnt.Core.Util;
-using NAnt.Core;
-
-using Sooda.CodeGen;
 
 namespace Sooda.NAnt.Tasks
 {

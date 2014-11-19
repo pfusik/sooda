@@ -30,7 +30,6 @@
 
 namespace Sooda.Schema
 {
-    using System.Xml.Serialization;
     using System;
     using System.ComponentModel;
 

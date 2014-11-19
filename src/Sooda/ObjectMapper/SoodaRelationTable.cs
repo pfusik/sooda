@@ -28,9 +28,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
+using Sooda.Caching;
 using System;
 using System.Xml;
-using Sooda.Caching;
 
 // TODO - this is very hackish - needs to be cleaned up
 // original intention was preserving memory, but this has gone too far

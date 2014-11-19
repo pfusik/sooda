@@ -28,11 +28,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
-using System.Text;
-using System.Collections;
-
 using Sooda.QL;
+using System;
+using System.Collections;
 
 namespace Sooda
 {

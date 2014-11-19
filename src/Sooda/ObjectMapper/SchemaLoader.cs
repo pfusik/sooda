@@ -28,9 +28,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
+using Sooda.Schema;
 using System;
 using System.Collections;
-using Sooda.Schema;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;

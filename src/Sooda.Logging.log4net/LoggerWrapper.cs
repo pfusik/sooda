@@ -28,9 +28,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
-
 using log4net;
+using System;
 
 namespace log4netwrapper
 {

@@ -28,17 +28,13 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
+using Sooda.Schema;
 using System;
 using System.Collections.Generic;
-using System.Xml;
-using System.Xml.Serialization;
 using System.IO;
 using System.Reflection;
-
-using System.CodeDom;
-using System.CodeDom.Compiler;
-
-using Sooda.Schema;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace Sooda.CodeGen
 {

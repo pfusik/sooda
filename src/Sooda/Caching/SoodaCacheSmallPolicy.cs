@@ -28,8 +28,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
-using System.Text;
 
 using Sooda.Schema;
 

@@ -29,9 +29,7 @@
 //
 
 using System;
-using System.Text;
 using System.Collections;
-using System.Globalization;
 
 namespace Sooda.Caching
 {

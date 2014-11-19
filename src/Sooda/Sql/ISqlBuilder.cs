@@ -28,12 +28,10 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
-using System.IO;
-
-using System.Data;
-
 using Sooda.Schema;
+using System;
+using System.Data;
+using System.IO;
 
 namespace Sooda.Sql
 {

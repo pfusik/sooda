@@ -28,11 +28,10 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
-using System.Collections;
-using System.Xml;
 using Sooda.Schema;
+using System;
 using System.IO;
+using System.Xml;
 
 namespace SoodaFixKeygen
 {

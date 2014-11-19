@@ -27,13 +27,11 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
+using Sooda.QL;
+using Sooda.Schema;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
-using Sooda;
-using Sooda.QL;
-using Sooda.Schema;
 
 namespace Sooda.ObjectMapper
 {

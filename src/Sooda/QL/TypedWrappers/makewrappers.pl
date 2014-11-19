@@ -45,7 +45,13 @@ for my $rawtype (@types)
 print OUT <<EOT;
 $header
 using System;
+EOT
+if ($rawtype eq "Image") {
+print OUT <<EOT;
 using System.Drawing;
+EOT
+}
+print OUT <<EOT;
 
 namespace Sooda.QL.TypedWrappers
 {
@@ -90,7 +96,7 @@ namespace Sooda.QL.TypedWrappers
             return new SoqlBooleanInExpression(this, rhs);
         }
 
-        public override bool Equals(object o) { return Object.ReferenceEquals(this, o); }
+        public override bool Equals(object o) { return object.ReferenceEquals(this, o); }
         public override int GetHashCode() { return base.GetHashCode(); }
 EOT
     if ($rawtype ne "Guid")
@@ -131,8 +137,6 @@ close(OUT);
 
 print OUT <<EOT ;
 $header
-using System;
-using System.Drawing;
 
 namespace Sooda.QL.TypedWrappers
 {

@@ -28,15 +28,12 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using System;
-using System.IO;
-using System.Collections;
-using System.Threading;
-using System.Data;
-
 using Sooda.Logging;
-using Sooda.Schema;
-using Sooda.QL;
+using System;
+using System.Collections;
+using System.Data;
+using System.IO;
+using System.Threading;
 
 namespace Sooda.Caching
 {

@@ -29,7 +29,6 @@
 
 #if DOTNET35
 
-using Sooda;
 using Sooda.QL;
 
 namespace Sooda.Linq

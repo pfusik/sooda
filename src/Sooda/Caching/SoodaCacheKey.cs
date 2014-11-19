@@ -28,8 +28,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-using Sooda.Schema;
-
 namespace Sooda.Caching
 {
     public class SoodaCacheKey
