@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <AssemblyName>SoodaQuery</AssemblyName>
-    <RootNamespace>SoodaQuery</RootNamespace>
+    <ProjectGuid>{C5E51DAD-B844-4B20-8A84-2D098E75ABAF}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>SoodaSchemaTool</AssemblyName>
+    <RootNamespace>SoodaSchemaTool</RootNamespace>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -29,13 +29,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Data.OracleClient" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="ICSharpCode.TextEditor">
-      <HintPath>..\..\external\ICSharpCode.TextEditor.dll</HintPath>
-    </Reference>
     <ProjectReference Include="..\Sooda\Sooda.csproj">
       <Name>Sooda</Name>
       <Project>{FCC9B644-9093-41F6-8F0D-F98F22474CB5}</Project>
@@ -43,28 +37,21 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="SoodaQuery.exe.manifest" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="AssemblyBuildInfo.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="MainForm.cs" />
-    <Compile Include="ProjectDialog.cs" />
-    <Compile Include="ProjectInfo.cs" />
-    <EmbeddedResource Include="CSV-Mode.xshd" />
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ProjectDialog.resx">
-      <DependentUpon>ProjectDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SQL-Mode.xshd" />
-    <EmbeddedResource Include="SyntaxModes.xml" />
-    <EmbeddedResource Include="XML-Mode.xshd" />
+    <Compile Include="Command.cs" />
+    <Compile Include="CommandAttribute.cs" />
+    <Compile Include="CommandFactory.cs" />
+    <Compile Include="CommandGenDDL.cs" />
+    <Compile Include="CommandGenFullSchema.cs" />
+    <Compile Include="CommandGenSchema.cs" />
+    <Compile Include="CommandHelp.cs" />
+    <Compile Include="CommandUpdateSchema.cs" />
+    <Compile Include="ConsoleRunner.cs" />
+    <Compile Include="ISchemaImporterOptions.cs" />
+    <Compile Include="MSSqlSchemaImporter.cs" />
+    <Compile Include="SchemaExporter.cs" />
+    <Compile Include="SchemaImporter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.Targets" />
 </Project>

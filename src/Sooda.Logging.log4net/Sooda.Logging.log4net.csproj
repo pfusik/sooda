@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <AssemblyName>SoodaQuery</AssemblyName>
-    <RootNamespace>SoodaQuery</RootNamespace>
+    <ProjectGuid>{F7C88A34-ECCE-4658-9E5C-0289CD10241D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Sooda.Logging.log4net</AssemblyName>
+    <RootNamespace>Sooda.Logging.log4net</RootNamespace>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -27,14 +27,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.OracleClient" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="ICSharpCode.TextEditor">
-      <HintPath>..\..\external\ICSharpCode.TextEditor.dll</HintPath>
+    <Reference Include="log4net">
+      <HintPath>..\..\external\log4net.dll</HintPath>
     </Reference>
     <ProjectReference Include="..\Sooda\Sooda.csproj">
       <Name>Sooda</Name>
@@ -43,28 +37,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="SoodaQuery.exe.manifest" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AssemblyBuildInfo.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="MainForm.cs" />
-    <Compile Include="ProjectDialog.cs" />
-    <Compile Include="ProjectInfo.cs" />
-    <EmbeddedResource Include="CSV-Mode.xshd" />
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ProjectDialog.resx">
-      <DependentUpon>ProjectDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SQL-Mode.xshd" />
-    <EmbeddedResource Include="SyntaxModes.xml" />
-    <EmbeddedResource Include="XML-Mode.xshd" />
+    <Compile Include="AssemblySign.cs" />
+    <Compile Include="LoggerWrapper.cs" />
+    <Compile Include="LoggingImplementation.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.Targets" />
 </Project>

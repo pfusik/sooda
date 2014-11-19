@@ -1,0 +1,267 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{FCC9B644-9093-41F6-8F0D-F98F22474CB5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Sooda</AssemblyName>
+    <RootNamespace>Sooda</RootNamespace>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DOTNET35;DOTNET4;DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>DOTNET35;DOTNET4;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.OracleClient" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyBuildInfo.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="AssemblySign.cs" />
+    <Compile Include="Caching\ISoodaCache.cs" />
+    <Compile Include="Caching\ISoodaCacheLock.cs" />
+    <Compile Include="Caching\ISoodaCacheView.cs" />
+    <Compile Include="Caching\ISoodaCachingPolicy.cs" />
+    <Compile Include="Caching\ISoodaCachingPolicyFixedTimeout.cs" />
+    <Compile Include="Caching\LruCache.cs" />
+    <Compile Include="Caching\SimpleCachingPolicy.cs" />
+    <Compile Include="Caching\SoodaCache.cs" />
+    <Compile Include="Caching\SoodaCacheAllPolicy.cs" />
+    <Compile Include="Caching\SoodaCachedCollection.cs" />
+    <Compile Include="Caching\SoodaCacheEntry.cs" />
+    <Compile Include="Caching\SoodaCacheInvalidateReason.cs" />
+    <Compile Include="Caching\SoodaCacheKey.cs" />
+    <Compile Include="Caching\SoodaCacheSmallAndMediumPolicy.cs" />
+    <Compile Include="Caching\SoodaCacheSmallPolicy.cs" />
+    <Compile Include="Caching\SoodaInProcessCache.cs" />
+    <Compile Include="Caching\SoodaNoCache.cs" />
+    <Compile Include="Caching\SoodaNoCachingPolicy.cs" />
+    <Compile Include="Collections\ObjectToSoodaObjectFactoryAssociation.cs" />
+    <Compile Include="Collections\StringToObjectToSoodaObjectFactoryAssociation.cs" />
+    <Compile Include="Config\AppSettingsConfigProvider.cs" />
+    <Compile Include="Config\ISoodaConfigProvider.cs" />
+    <Compile Include="Config\XmlConfigProvider.cs" />
+    <Compile Include="IDefaultSoodaTransactionStrategy.cs" />
+    <Compile Include="ISoodaObjectFactory.cs" />
+    <Compile Include="ISoodaObjectList.cs" />
+    <Compile Include="Linq\LinqUtils.cs" />
+    <Compile Include="Linq\SelectExecutor.cs" />
+    <Compile Include="Linq\SoodaExpressionRewriteAttribute.cs" />
+    <Compile Include="Linq\SoodaExpressionRewriter.cs" />
+    <Compile Include="Linq\SoodaLinqMethod.cs" />
+    <Compile Include="Linq\SoodaQueryable.cs" />
+    <Compile Include="Linq\SoodaQueryExecutor.cs" />
+    <Compile Include="Linq\SoodaQuerySource.cs" />
+    <Compile Include="Logging\BasicLogger.cs" />
+    <Compile Include="Logging\ConsoleLogger.cs" />
+    <Compile Include="Logging\ConsoleLoggingImplementation.cs" />
+    <Compile Include="Logging\ILoggingImplementation.cs" />
+    <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Logging\LogManager.cs" />
+    <Compile Include="Logging\NullLogger.cs" />
+    <Compile Include="Logging\NullLoggingImplementation.cs" />
+    <Compile Include="ObjectMapper\FieldHandlers\AnsiStringFieldHandler.cs" />
+    <Compile Include="ObjectMapper\FieldHandlers\BlobFieldHandler.cs" />
+    <Compile Include="ObjectMapper\FieldHandlers\BooleanAsIntegerFieldHandler.cs" />
+    <Compile Include="ObjectMapper\FieldHandlers\BooleanFieldHandler.cs" />
+    <Compile Include="ObjectMapper\FieldHandlers\DateTimeFieldHandler.cs" />
+    <Compile Include="ObjectMapper\FieldHandlers\DecimalFieldHandler.cs" />
+    <Compile Include="ObjectMapper\FieldHandlers\DoubleFieldHandler.cs" />
+    <Compile Include="ObjectMapper\FieldHandlers\FieldHandlerFactory.cs" />
+    <Compile Include="ObjectMapper\FieldHandlers\FloatFieldHandler.cs" />
+    <Compile Include="ObjectMapper\FieldHandlers\GuidFieldHandler.cs" />
+    <Compile Include="ObjectMapper\FieldHandlers\ImageFieldHandler.cs" />
+    <Compile Include="ObjectMapper\FieldHandlers\Int32FieldHandler.cs" />
+    <Compile Include="ObjectMapper\FieldHandlers\Int64FieldHandler.cs" />
+    <Compile Include="ObjectMapper\FieldHandlers\StringFieldHandler.cs" />
+    <Compile Include="ObjectMapper\FieldHandlers\TimeSpanFieldHandler.cs" />
+    <Compile Include="ObjectMapper\IPrimaryKeyGenerator.cs" />
+    <Compile Include="ObjectMapper\ISoodaObjectFactoryCache.cs" />
+    <Compile Include="ObjectMapper\ISoodaObjectListInternal.cs" />
+    <Compile Include="ObjectMapper\ISoodaSchema.cs" />
+    <Compile Include="ObjectMapper\KeyGenerators\GuidGenerator.cs" />
+    <Compile Include="ObjectMapper\KeyGenerators\TableBasedGenerator.cs" />
+    <Compile Include="ObjectMapper\KeyGenerators\TableBasedGeneratorBigint.cs" />
+    <Compile Include="ObjectMapper\SchemaLoader.cs" />
+    <Compile Include="ObjectMapper\SoodaFieldHandler.cs" />
+    <Compile Include="ObjectMapper\SoodaNullObjectFactoryCache.cs" />
+    <Compile Include="ObjectMapper\SoodaObjectCollectionBase.cs" />
+    <Compile Include="ObjectMapper\SoodaObjectCollectionWrapper.cs" />
+    <Compile Include="ObjectMapper\SoodaObjectFactoryAttribute.cs" />
+    <Compile Include="ObjectMapper\SoodaObjectFactoryCache.cs" />
+    <Compile Include="ObjectMapper\SoodaObjectFlags.cs" />
+    <Compile Include="ObjectMapper\SoodaObjectImpl.cs" />
+    <Compile Include="ObjectMapper\SoodaObjectListSnapshot.cs" />
+    <Compile Include="ObjectMapper\SoodaObjectManyToManyCollection.cs" />
+    <Compile Include="ObjectMapper\SoodaObjectOneToManyCollection.cs" />
+    <Compile Include="ObjectMapper\SoodaRelationTable.cs" />
+    <Compile Include="ObjectMapper\WeakSoodaObject.cs" />
+    <Compile Include="QL\GetInvolvedClassesVisitor.cs" />
+    <Compile Include="QL\ILiteralModifers.cs" />
+    <Compile Include="QL\ISoqlConstantExpression.cs" />
+    <Compile Include="QL\ISoqlEvaluateContext.cs" />
+    <Compile Include="QL\ISoqlSelectAliasProvider.cs" />
+    <Compile Include="QL\ISoqlVisitor.cs" />
+    <Compile Include="QL\Soql.cs" />
+    <Compile Include="QL\SoqlAsteriskExpression.cs" />
+    <Compile Include="QL\SoqlBinaryExpression.cs" />
+    <Compile Include="QL\SoqlBinaryOperator.cs" />
+    <Compile Include="QL\SoqlBooleanAndExpression.cs" />
+    <Compile Include="QL\SoqlBooleanExpression.cs" />
+    <Compile Include="QL\SoqlBooleanInExpression.cs" />
+    <Compile Include="QL\SoqlBooleanIsNullExpression.cs" />
+    <Compile Include="QL\SoqlBooleanLiteralExpression.cs" />
+    <Compile Include="QL\SoqlBooleanNegationExpression.cs" />
+    <Compile Include="QL\SoqlBooleanOrExpression.cs" />
+    <Compile Include="QL\SoqlBooleanRelationalExpression.cs" />
+    <Compile Include="QL\SoqlCastExpression.cs" />
+    <Compile Include="QL\SoqlConditionalExpression.cs" />
+    <Compile Include="QL\SoqlContainsExpression.cs" />
+    <Compile Include="QL\SoqlCountExpression.cs" />
+    <Compile Include="QL\SoqlException.cs" />
+    <Compile Include="QL\SoqlExistsExpression.cs" />
+    <Compile Include="QL\SoqlExpression.cs" />
+    <Compile Include="QL\SoqlExpressionCollection.cs" />
+    <Compile Include="QL\SoqlFunctionCallExpression.cs" />
+    <Compile Include="QL\SoqlLiteralExpression.cs" />
+    <Compile Include="QL\SoqlLiteralValueModifiers.cs" />
+    <Compile Include="QL\SoqlNullLiteral.cs" />
+    <Compile Include="QL\SoqlParameterLiteralExpression.cs" />
+    <Compile Include="QL\SoqlParser.cs" />
+    <Compile Include="QL\SoqlPathExpression.cs" />
+    <Compile Include="QL\SoqlPrettyPrinter.cs" />
+    <Compile Include="QL\SoqlQueryExpression.cs" />
+    <Compile Include="QL\SoqlRawExpression.cs" />
+    <Compile Include="QL\SoqlRelationalOperator.cs" />
+    <Compile Include="QL\SoqlSoodaClassExpression.cs" />
+    <Compile Include="QL\SoqlStringContainsExpression.cs" />
+    <Compile Include="QL\SoqlTokenizer.cs" />
+    <Compile Include="QL\SoqlTypedWrapperExpression.cs" />
+    <Compile Include="QL\SoqlUnaryNegationExpression.cs" />
+    <Compile Include="QL\SoqlUtils.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlBooleanWrapperExpression.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlCollectionWrapperExpression.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlDateTimeWrapperExpression.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlDecimalWrapperExpression.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlDoubleWrapperExpression.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlGuidWrapperExpression.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlImageWrapperExpression.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlInt16WrapperExpression.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlInt32WrapperExpression.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlInt64WrapperExpression.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlNullableBooleanWrapperExpression.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlNullableDateTimeWrapperExpression.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlNullableDecimalWrapperExpression.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlNullableDoubleWrapperExpression.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlNullableGuidWrapperExpression.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlNullableImageWrapperExpression.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlNullableInt16WrapperExpression.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlNullableInt32WrapperExpression.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlNullableInt64WrapperExpression.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlNullableSingleWrapperExpression.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlNullableStringWrapperExpression.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlNullableTimeSpanWrapperExpression.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlSingleWrapperExpression.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlStringWrapperExpression.cs" />
+    <Compile Include="QL\TypedWrappers\SoqlTimeSpanWrapperExpression.cs" />
+    <Compile Include="Schema\CachingMode.cs" />
+    <Compile Include="Schema\ClassCardinality.cs" />
+    <Compile Include="Schema\ClassInfo.cs" />
+    <Compile Include="Schema\Collection1toNInfo.cs" />
+    <Compile Include="Schema\CollectionBaseInfo.cs" />
+    <Compile Include="Schema\CollectionNtoNInfo.cs" />
+    <Compile Include="Schema\ConstantInfo.cs" />
+    <Compile Include="Schema\DataSourceInfo.cs" />
+    <Compile Include="Schema\DeleteAction.cs" />
+    <Compile Include="Schema\DynamicFieldManager.cs" />
+    <Compile Include="Schema\FieldDataType.cs" />
+    <Compile Include="Schema\FieldInfo.cs" />
+    <Compile Include="Schema\IFieldContainer.cs" />
+    <Compile Include="Schema\IncludeInfo.cs" />
+    <Compile Include="Schema\PrecommitValueInfo.cs" />
+    <Compile Include="Schema\RelationInfo.cs" />
+    <Compile Include="Schema\SchemaInfo.cs" />
+    <Compile Include="Schema\SchemaManager.cs" />
+    <Compile Include="Schema\SoodaSchemaException.cs" />
+    <Compile Include="Schema\TableInfo.cs" />
+    <Compile Include="SoodaConfig.cs" />
+    <Compile Include="SoodaConfigAttribute.cs" />
+    <Compile Include="SoodaConfigException.cs" />
+    <Compile Include="SoodaConstructor.cs" />
+    <Compile Include="SoodaDatabaseException.cs" />
+    <Compile Include="SoodaDataSource.cs" />
+    <Compile Include="SoodaException.cs" />
+    <Compile Include="SoodaFieldSizeAttribute.cs" />
+    <Compile Include="SoodaFieldUpdateDelegate.cs" />
+    <Compile Include="SoodaHttpContextBoundTransactionStrategy.cs" />
+    <Compile Include="SoodaNullable.cs" />
+    <Compile Include="SoodaObject.cs" />
+    <Compile Include="SoodaObjectArrayFieldValues.cs" />
+    <Compile Include="SoodaObjectExpressionComparer.cs" />
+    <Compile Include="SoodaObjectFieldComparer.cs" />
+    <Compile Include="SoodaObjectFieldValues.cs" />
+    <Compile Include="SoodaObjectFilterDelegate.cs" />
+    <Compile Include="SoodaObjectMultiFieldComparer.cs" />
+    <Compile Include="SoodaObjectNotFoundException.cs" />
+    <Compile Include="SoodaObjectReflectionBasedFieldValues.cs" />
+    <Compile Include="SoodaObjectReflectionCachingFieldValues.cs" />
+    <Compile Include="SoodaObjectsAssemblyAttribute.cs" />
+    <Compile Include="SoodaOrderBy.cs" />
+    <Compile Include="SoodaProcessBoundTransactionStrategy.cs" />
+    <Compile Include="SoodaSerializeOptions.cs" />
+    <Compile Include="SoodaSnapshotOptions.cs" />
+    <Compile Include="SoodaStatistics.cs" />
+    <Compile Include="SoodaStubAssemblyAttribute.cs" />
+    <Compile Include="SoodaThreadBoundTransactionStrategy.cs" />
+    <Compile Include="SoodaTransaction.cs" />
+    <Compile Include="SoodaTuple.cs" />
+    <Compile Include="SoodaWhereClause.cs" />
+    <Compile Include="Sql\DbParameterConverter.cs" />
+    <Compile Include="Sql\ISqlBuilder.cs" />
+    <Compile Include="Sql\MySqlBuilder.cs" />
+    <Compile Include="Sql\OracleBuilder.cs" />
+    <Compile Include="Sql\PostgreSqlBuilder.cs" />
+    <Compile Include="Sql\SoqlToSqlConverter.cs" />
+    <Compile Include="Sql\SqlBuilderBase.cs" />
+    <Compile Include="Sql\SqlBuilderNamedArg.cs" />
+    <Compile Include="Sql\SqlBuilderPositionalArg.cs" />
+    <Compile Include="Sql\SqlDataSource.cs" />
+    <Compile Include="Sql\SqlDataSourceDT.cs" />
+    <Compile Include="Sql\SqlOuterJoinSyntax.cs" />
+    <Compile Include="Sql\SqlServerBuilder.cs" />
+    <Compile Include="Sql\SqlTopSupportMode.cs" />
+    <Compile Include="Utils\QPCStopWatch.cs" />
+    <Compile Include="Utils\SqlTypesUtil.cs" />
+    <Compile Include="Utils\StopWatch.cs" />
+    <EmbeddedResource Include="Schema\SoodaSchema.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <None Include="QL\TypedWrappers\makewrappers.pl" />
+    <None Include="Schema\SoodaSchema.xsx">
+      <DependentUpon>SoodaSchema.xsd</DependentUpon>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.Targets" />
+</Project>

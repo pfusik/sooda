@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C5CD6D63-6EE3-4FD9-9E4C-CBA49C0EF739}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>SoodaAddin.UI</AssemblyName>
+    <RootNamespace>SoodaAddin.UI</RootNamespace>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DOTNET35;DOTNET4;DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>DOTNET35;DOTNET4;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Interop.SQLDMO">
+      <HintPath>..\..\external\Interop.SQLDMO.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyBuildInfo.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="ConfiguringSoodaForm.cs" />
+    <Compile Include="ISoodaConfigurationStrategy.cs" />
+    <Compile Include="SoodaConfigurationWizard.cs" />
+    <Compile Include="WizardPage.cs" />
+    <Compile Include="WizardPageChooseDatabase.cs" />
+    <Compile Include="WizardPageConnectToDatabase.cs" />
+    <Compile Include="WizardPageOptions.cs" />
+    <Compile Include="WizardPageWelcome.cs" />
+    <Compile Include="WizardResult.cs" />
+    <EmbeddedResource Include="ConfiguringSoodaForm.resx">
+      <DependentUpon>ConfiguringSoodaForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SoodaConfigurationWizard.resx">
+      <DependentUpon>SoodaConfigurationWizard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WizardPage.resx">
+      <DependentUpon>WizardPage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WizardPageChooseDatabase.resx">
+      <DependentUpon>WizardPageChooseDatabase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WizardPageConnectToDatabase.resx">
+      <DependentUpon>WizardPageConnectToDatabase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WizardPageOptions.resx">
+      <DependentUpon>WizardPageOptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WizardPageWelcome.resx">
+      <DependentUpon>WizardPageWelcome.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.Targets" />
+</Project>

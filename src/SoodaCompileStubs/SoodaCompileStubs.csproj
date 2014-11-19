@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{45C7A3D2-ACAF-4772-AFDE-3F9B5241258F}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <AssemblyName>SoodaQuery</AssemblyName>
-    <RootNamespace>SoodaQuery</RootNamespace>
+    <ProjectGuid>{7DACB842-1C46-4145-B02D-91E7C3CD4276}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>SoodaCompileStubs</AssemblyName>
+    <RootNamespace>SoodaCompileStubs</RootNamespace>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -28,14 +28,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.OracleClient" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="ICSharpCode.TextEditor">
-      <HintPath>..\..\external\ICSharpCode.TextEditor.dll</HintPath>
-    </Reference>
     <ProjectReference Include="..\Sooda\Sooda.csproj">
       <Name>Sooda</Name>
       <Project>{FCC9B644-9093-41F6-8F0D-F98F22474CB5}</Project>
@@ -43,28 +35,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="SoodaQuery.exe.manifest" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="AssemblyBuildInfo.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="MainForm.cs" />
-    <Compile Include="ProjectDialog.cs" />
-    <Compile Include="ProjectInfo.cs" />
-    <EmbeddedResource Include="CSV-Mode.xshd" />
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ProjectDialog.resx">
-      <DependentUpon>ProjectDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SQL-Mode.xshd" />
-    <EmbeddedResource Include="SyntaxModes.xml" />
-    <EmbeddedResource Include="XML-Mode.xshd" />
+    <Compile Include="EntryPoint.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.Targets" />
 </Project>

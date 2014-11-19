@@ -622,7 +622,7 @@
     </target>
 
     <target name="msbuild">
-        <exec program="${framework::get-framework-directory(framework::get-target-framework())}/msbuild.exe" commandline="Sooda.vs2008.sln" />
+        <exec program="${framework::get-framework-directory(framework::get-target-framework())}/msbuild.exe" commandline="Sooda.sln" />
     </target>
 
     <target name="keyfile">
