@@ -50,7 +50,6 @@
     <Compile Include="ConsoleRunner.cs" />
     <Compile Include="ISchemaImporterOptions.cs" />
     <Compile Include="MSSqlSchemaImporter.cs" />
-    <Compile Include="SchemaExporter.cs" />
     <Compile Include="SchemaImporter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.Targets" />
