@@ -270,7 +270,7 @@
 
     <target name="SoodaQuery" depends="configure, update-build-number, Sooda">
         <copy file="external/ICSharpCode.TextEditor.dll" tofile="${sooda.dir}/ICSharpCode.TextEditor.dll" />
-        <csc target="winexe" output="${sooda.dir}/SoodaQuery.exe" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
+        <csc target="winexe" output="${sooda.dir}/SoodaQuery.exe" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true" win32icon="src/SoodaQuery/App.ico">
             <references>
                 <include name="System.Data.dll" asis="true" />
                 <include name="System.Data.OracleClient.dll" asis="true" />
@@ -303,7 +303,7 @@
     </target>
 
     <target name="ConfigureSoodaProject" depends="configure, update-build-number, SoodaAddin.UI">
-        <csc target="winexe" output="${sooda.dir}/ConfigureSoodaProject.exe" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true" win32icon="src/ConfigureSoodaProject/App.ico">
+        <csc target="winexe" output="${sooda.dir}/ConfigureSoodaProject.exe" debug="${sooda.debug}" define="${sooda.define}" warnaserror="true">
             <references>
                 <include name="mscorlib.dll" />
                 <include name="System.dll" />
