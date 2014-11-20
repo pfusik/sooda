@@ -1,2 +1,4 @@
 /build
 AssemblyBuildInfo.cs
+bin
+obj
