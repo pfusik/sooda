@@ -56,19 +56,10 @@
     <target name="libraries" depends="Sooda, Sooda.Logging.NLog, Sooda.Logging.log4net" />
 
     <target name="update-build-number">
-        <foreach item="Line" in="Sooda.version" delim="." property="tmp1,tmp2,tmp3,tmp4">
-            <property name="sooda.version.major" value="${tmp1}" />
-            <property name="sooda.version.minor" value="${tmp2}" />
-            <property name="sooda.version.revision" value="${tmp3}" />
-            <property name="sooda.version.build" value="${tmp4}" />
-        </foreach>
-        <if test="${sooda.version.build=='*'}">
-            <exec program="svnversion" output="build/Sooda.svnversion" />
-            <loadfile file="build/Sooda.svnversion" property="sooda.version.svnversion" />
-            <regex input="${sooda.version.svnversion}" pattern="(?'tmp4'\d+)" /><!-- cannot assign here to a property with dots in its name... -->
-            <property name="sooda.version.build" value="${tmp4}" /><!-- ... so we do the assignment here -->
-        </if>
-        <property name="sooda.version" value="${sooda.version.major}.${sooda.version.minor}.${sooda.version.revision}.${sooda.version.build}" />
+	<exec program="git" commandline="show -s --format=%ci" output="build/Sooda.gitdate" />
+	<loadfile file="build/Sooda.gitdate" property="sooda.version.gitdate" />
+	<regex input="${sooda.version.gitdate}" pattern="^\d\d(?'YY'\d\d)-(?'MM'\d\d)-(?'DD'\d\d) (?'hh'\d\d):(?'mm'\d\d)" />
+	<property name="sooda.version" value="2.${YY}.${MM}${DD}.${hh}${mm}" />
 
         <loadfile file="build/Sooda.buildversion" property="sooda.oldversion" if="${file::exists('build/Sooda.buildversion')}" />
         <if test="${not(property::exists('sooda.oldversion')) or sooda.version!=string::trim(sooda.oldversion)}">
@@ -78,7 +69,7 @@
                     <property name="assemblybuildinfo.cs" value="src/${assembly.dir}/AssemblyBuildInfo.cs" />
                     <echo message="using System.Reflection;
 // do not modify this file, it will be automatically regenerated
-[assembly: AssemblyVersion(&quot;${sooda.version}&quot;)]
+[assembly: AssemblyVersion(&quot;2.0.0.0&quot;)]
 [assembly: AssemblyFileVersion(&quot;${sooda.version}&quot;)]
 " file="${assemblybuildinfo.cs}" />
                 </do>
