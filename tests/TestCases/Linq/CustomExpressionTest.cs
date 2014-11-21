@@ -102,5 +102,25 @@ namespace Sooda.UnitTests.TestCases.Linq
                 CollectionAssert.AreEquivalent(new Contact[] { Contact.Mary, Contact.Eva }, ce);
             }
         }
+
+        public static Expression<Func<Contact, ContactType, bool>> TypeIsExpression(Contact dummyC, ContactType dummyT)
+        {
+            return (c, t) => c.Type == t;
+        }
+
+        public static bool TypeIs(Contact c, ContactType t)
+        {
+            return c.Type == t;
+        }
+
+        [Test]
+        public void TypeIs()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<ContactType> te = ContactType.Linq().Where(t => Contact.Linq().Any(c => TypeIs(c, t) && c.LastSalary.Value == 345));
+                CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Employee }, te);
+            }
+        }
     }
 }

@@ -368,21 +368,6 @@ namespace Sooda.UnitTests.TestCases.Linq
                 CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Manager, ContactType.Customer }, te);
             }
         }
-
-        static Expression<Func<Contact, bool>> GetTypeIs(ContactType t)
-        {
-            return c => c.Type == t;
-        }
-
-        [Test]
-        public void WhereExpressionMethodRangeParameter()
-        {
-            using (new SoodaTransaction())
-            {
-                IEnumerable<ContactType> te = ContactType.Linq().Where(t => Contact.Linq().Any(GetTypeIs(t)));
-                CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Employee }, te);
-            }
-        }
     }
 }
 
