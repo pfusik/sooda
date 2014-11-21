@@ -78,6 +78,22 @@ namespace Sooda.UnitTests.BaseObjects
         }
 
 #if DOTNET35
+        public string NameAndType2
+        {
+            get
+            {
+                return Name + " (" + Type.Code + ")";
+            }
+        }
+
+        public static System.Linq.Expressions.Expression<Func<Contact, string>> NameAndType2Expression
+        {
+            get
+            {
+                return t => t.Name + " (" + t.Type.Code + ")";
+            }
+        }
+
         public System.Linq.IQueryable<Contact> SubordinatesInCode
         {
             get

@@ -62,6 +62,7 @@
     <Compile Include="Linq\CollectionQueryTest.cs" />
     <Compile Include="Linq\CollectionTest.cs" />
     <Compile Include="Linq\ConstantFoldingTest.cs" />
+    <Compile Include="Linq\CustomExpressionTest.cs" />
     <Compile Include="Linq\FunctionTest.cs" />
     <Compile Include="Linq\GroupByTest.cs" />
     <Compile Include="Linq\OperatorTest.cs" />

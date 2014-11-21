@@ -67,6 +67,7 @@
     <Compile Include="ISoodaObjectFactory.cs" />
     <Compile Include="ISoodaObjectList.cs" />
     <Compile Include="Linq\LinqUtils.cs" />
+    <Compile Include="Linq\ParameterBinder.cs" />
     <Compile Include="Linq\SelectExecutor.cs" />
     <Compile Include="Linq\SoodaExpressionRewriteAttribute.cs" />
     <Compile Include="Linq\SoodaExpressionRewriter.cs" />
