@@ -1567,9 +1567,6 @@ namespace Sooda.Linq
 
         internal object Execute(Expression expr)
         {
-#if DOTNET4
-            expr = new SoodaExpressionRewriter().Visit(expr);
-#endif
             MethodCallExpression mc = expr as MethodCallExpression;
             if (mc != null)
             {

@@ -69,8 +69,6 @@
     <Compile Include="Linq\LinqUtils.cs" />
     <Compile Include="Linq\ParameterBinder.cs" />
     <Compile Include="Linq\SelectExecutor.cs" />
-    <Compile Include="Linq\SoodaExpressionRewriteAttribute.cs" />
-    <Compile Include="Linq\SoodaExpressionRewriter.cs" />
     <Compile Include="Linq\SoodaLinqMethod.cs" />
     <Compile Include="Linq\SoodaQueryable.cs" />
     <Compile Include="Linq\SoodaQueryExecutor.cs" />

@@ -69,7 +69,6 @@
     <Compile Include="Linq\OptionsTest.cs" />
     <Compile Include="Linq\PrecommitTest.cs" />
     <Compile Include="Linq\QueryTest.cs" />
-    <Compile Include="Linq\RewriterTest.cs" />
     <Compile Include="Linq\ScalarTest.cs" />
     <Compile Include="Linq\SingleTest.cs" />
     <Compile Include="Linq\SubqueryTest.cs" />
