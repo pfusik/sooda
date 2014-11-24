@@ -7432,9 +7432,72 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     </p>
                     <p>
                         Methods not mentioned above have no translation to SQL.
-                        It is only safe to call them if they can be evaluated before the SQL translation,
+                        It is safe to call them if they can be evaluated before the SQL translation,
                         and in <code>Select()</code>.
                     </p>
+                    <p>
+                        You can also provide an extra method/property that returns a LINQ expression corresponding to your custom method/property.
+                        This LINQ expression can then be translated to SQL.
+                    </p>
+                    <p>
+                        Let's start with properties, which are simpler because they don't have parameters.
+                        To specify an expression that corresponds to a property, create a <code>public static</code> property
+                        which is by convention named the same as your custom property plus the <code>Expression</code> suffix.
+                        The getter of the expression property must return <code><![CDATA[Expression<Func<TClass,TResult>]]></code>
+                        where <code>TClass</code> is the class the properties are defined in and <code>TResult</code> is the type of your custom property.
+                        Example for a property in the <code>Contact</code> class:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        public string NameAndType
+                        {
+                            get
+                            {
+                                return Name + " (" + Type.Code + ")";
+                            }
+                        }
+
+                        public static Expression<Func<Contact, string>> NameAndTypeExpression
+                        {
+                            get
+                            {
+                                return t => t.Name + " (" + t.Type.Code + ")";
+                            }
+                        }
+                    ]]></code>
+                    <p>
+                        With the above code you can use <code>NameAndType</code> anywhere in LINQ and it will get translated to SQL.
+                    </p>
+                    <p>
+                        Defining expressions for custom methods is similar: you write a method named with the <code>Expression</code> suffix.
+                        If your custom method is not overloaded, you can keep the expression method parameterless.
+                        Otherwise, use same parameter types as in your custom method.
+                        Never use the parameters in the expression method. Instead, specify the corresponding parameters in the lambda expression.
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        public static double CircleArea(double r)
+                        {
+                            return Math.PI * r * r;
+                        }
+
+                        public static Expression<Func<double, double>> CircleAreaExpression(double dummyR)
+                        {
+                            return r => Math.PI * r * r;
+                        }
+                    ]]></code>
+                    <p>
+                        If the custom method is not static, the first lambda parameter must correspond to <code>this</code>:
+                    </p>
+                    <code lang="C#"><![CDATA[
+                        public bool EarnsMoreThan(Contact other)
+                        {
+                            return this.LastSalary.HasValue && other.LastSalary.HasValue && this.LastSalary.Value > other.LastSalary.Value;
+                        }
+
+                        public static Expression<Func<Contact, Contact, bool>> EarnsMoreThan()
+                        {
+                            return (t, other) => t.LastSalary.HasValue && other.LastSalary.HasValue && t.LastSalary.Value > other.LastSalary.Value;
+                        }
+                    ]]></code>
                 </body>
             </section>
         </section>
