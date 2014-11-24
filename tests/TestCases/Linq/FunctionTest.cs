@@ -621,8 +621,8 @@ namespace Sooda.UnitTests.TestCases.Linq
                 string[] sa = (from v in Vehicle.Linq() orderby v.Id select v.GetLabel(false)).ToArray();
                 Assert.AreEqual(9, sa.Length);
                 Assert.IsTrue(string.IsNullOrEmpty(sa[0]));
-                Assert.AreEqual("Mary Manager", sa[1]);
-                Assert.AreEqual("Ed Employee", sa[2]);
+                Assert.AreEqual(Contact.Mary.ContactId.ToString(), sa[1]);
+                Assert.AreEqual(Contact.Ed.ContactId.ToString(), sa[2]);
                 Assert.IsTrue(string.IsNullOrEmpty(sa[3]));
                 Assert.IsTrue(string.IsNullOrEmpty(sa[4]));
                 Assert.IsTrue(string.IsNullOrEmpty(sa[5]));

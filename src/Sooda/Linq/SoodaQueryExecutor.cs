@@ -723,7 +723,7 @@ namespace Sooda.Linq
                 path = new SoqlPathExpression(path, part);
                 if (field.IsNullable)
                     nullable = true;
-                classInfo = field.ParentClass;
+                classInfo = field.ReferencedClass;
             }
             if (field.DataType != FieldDataType.String && field.DataType != FieldDataType.AnsiString)
                 throw new NotSupportedException("Class " + expr.Type.Name + " label is not a string");
