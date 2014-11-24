@@ -610,7 +610,7 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                     <p>
                         Sooda supports creation and deletion of fields at runtime.
                         If this feature is enabled, fields can be added to any Sooda class.
-                        When you add a field, Sooda creates a database table with the requested type and optionally a foreign key constraint.
+                        When you add a field, Sooda creates a database table with the requested column type and optionally a foreign key constraint.
                         Dynamic fields can be accessed from Sooda objects and queries just like the fields defined in the mapping schema.
                     </p>
                     <p>

@@ -25,9 +25,9 @@ Features
 The following database engines are supported:
 
 * Microsoft SQL Server - primary development platform, most thoroughly tested, production quality support
-* Oracle 8i and higher - secondary development platform
-* MySQL 4.x and higher - experimental support
-* PostgreSQL 8.x - experimental support
+* Oracle - secondary development platform
+* MySQL - experimental support
+* PostgreSQL - experimental support
 
 Documentation
 -------------
