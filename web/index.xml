@@ -7,7 +7,7 @@
         Instead of writing SQL code, you can now focus on writing business rules in object-oriented .NET languages.
     </p>
     <p>
-        Sooda is an open source software distributed under the terms of the BSD license.
+        Sooda is open source software distributed under the terms of the BSD license.
     </p>
     <h2>Features</h2>
     <p>
@@ -22,7 +22,7 @@
         <li>various models of object inheritance</li>
         <li>Language Integrated Query (LINQ)</li>
         <li>differential XML serialization and deserialization for moving data across layers</li>
-        <li>support for long running transactions</li>
+        <li>support for long-running transactions</li>
         <li>data caching with copy-on-write support</li>
     </ul>
     <p>
