@@ -102,6 +102,7 @@
     <Compile Include="ObjectMapper\ISoodaSchema.cs" />
     <Compile Include="ObjectMapper\KeyGenerators\GuidGenerator.cs" />
     <Compile Include="ObjectMapper\KeyGenerators\TableBasedGenerator.cs" />
+    <Compile Include="ObjectMapper\KeyGenerators\TableBasedGeneratorBase.cs" />
     <Compile Include="ObjectMapper\KeyGenerators\TableBasedGeneratorBigint.cs" />
     <Compile Include="ObjectMapper\SchemaLoader.cs" />
     <Compile Include="ObjectMapper\SoodaFieldHandler.cs" />
