@@ -3,7 +3,7 @@
 <schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
     <datasource name="default" type="Sooda.Sql.SqlDataSource" dynamicFields="true" />
 
-    <class name="Role" cached="false" precacheAll="false" triggers="false" label="Id">
+    <class name="Role" cached="false" triggers="false" label="Id">
         <table name="_Role">
             <field name="Id" dbcolumn="id" type="Integer" primaryKey="true" />
             <field name="Name" dbcolumn="name" type="String" size="64" nullable="true" />
@@ -16,7 +16,7 @@
         <const name="Customer" key="3" />
     </class>
 
-    <class name="ContactType" cached="true" precacheAll="false" defaultPrecommitValue="Customer" triggers="false">
+    <class name="ContactType" cached="true" defaultPrecommitValue="Customer" triggers="false">
         <table name="ContactType">
             <field name="Code" dbcolumn="code" type="String" size="16" primaryKey="true" />
             <field name="Description" dbcolumn="description" type="String" size="64" nullable="true" />
