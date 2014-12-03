@@ -40,8 +40,8 @@ namespace Sooda.QL
     /// </summary>
     public class GetInvolvedClassesVisitor : ISoqlVisitor
     {
-        private ClassInfo _rootClass;
-        private readonly List<ClassInfo> _result = new List<ClassInfo>();
+        IFieldContainer _rootClass;
+        private readonly List<IFieldContainer> _result = new List<IFieldContainer>();
 
         public GetInvolvedClassesVisitor(ClassInfo rootClass)
         {
@@ -229,11 +229,8 @@ namespace Sooda.QL
         {
             if (v.From.Count != 1)
                 throw new NotImplementedException();
-            ClassInfo queryClass = _rootClass.Schema.FindClassByName(v.From[0]);
-            if (queryClass == null)
-                throw new NotImplementedException(); // TODO: error?
-            ClassInfo outerClass = _rootClass;
-            _rootClass = queryClass;
+            IFieldContainer outerClass = _rootClass;
+            _rootClass = _rootClass.Schema.FindContainerByName(v.From[0]);
             try
             {
                 GetInvolvedClasses(v);

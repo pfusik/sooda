@@ -96,7 +96,7 @@ namespace Sooda.Sql
             {
                 string ta = TableAliases[firstToken.PropertyName];
 
-                currentContainer = FindContainerByName(ta);
+                currentContainer = Schema.FindContainerByName(ta);
                 p = firstToken.PropertyName;
                 startingToken = firstToken.Next;
             }
@@ -283,7 +283,7 @@ namespace Sooda.Sql
             else
             {
                 p = ExpressionPrefixToTableAlias[Query.From[0]];
-                currentContainer = FindContainerByName(Query.From[0]);
+                currentContainer = Schema.FindContainerByName(Query.From[0]);
                 firstTableAlias = p;
                 firstTableAlias = GetTableAliasForExpressionPrefix(p);
             }
@@ -360,7 +360,7 @@ namespace Sooda.Sql
                 if (Query.From.Count != 1)
                     throw new Exception("Ambiguous SoodaClass!");
                 p = ExpressionPrefixToTableAlias[Query.From[0]];
-                currentClass = (ClassInfo)FindContainerByName(Query.From[0]);
+                currentClass = (ClassInfo) Schema.FindContainerByName(Query.From[0]);
             }
 
             List<ClassInfo> subclasses = currentClass.GetSubclassesForSchema(Schema);
@@ -927,7 +927,7 @@ namespace Sooda.Sql
                         }
                     }
 
-                    TableInfo tbl = FindContainerByName(v.From[i]).GetAllFields()[0].Table;
+                    TableInfo tbl = Schema.FindContainerByName(v.From[i]).GetAllFields()[0].Table;
                     OutputTableFrom(tbl, ActualFromAliases[i]);
                     foreach (string s in FromJoins[i])
                     {
@@ -1074,7 +1074,7 @@ namespace Sooda.Sql
             if (Query.From.Count == 1)
             {
                 alias = ExpressionPrefixToTableAlias[Query.From[0]];
-                return FindContainerByName(Query.From[0]);
+                return Schema.FindContainerByName(Query.From[0]);
             }
 
             IFieldContainer foundContainer = null;
@@ -1082,7 +1082,7 @@ namespace Sooda.Sql
 
             foreach (string containerName in Query.From)
             {
-                IFieldContainer container = FindContainerByName(containerName);
+                IFieldContainer container = Schema.FindContainerByName(containerName);
 
                 if (container.ContainsField(fieldName))
                 {
@@ -1109,7 +1109,7 @@ namespace Sooda.Sql
             if (Query.From.Count == 1)
             {
                 alias = ExpressionPrefixToTableAlias[Query.From[0]];
-                return (ClassInfo)FindContainerByName(Query.From[0]);
+                return (ClassInfo) Schema.FindContainerByName(Query.From[0]);
             }
 
             IFieldContainer foundContainer = null;
@@ -1117,7 +1117,7 @@ namespace Sooda.Sql
 
             foreach (string containerName in Query.From)
             {
-                IFieldContainer container = FindContainerByName(containerName);
+                IFieldContainer container = Schema.FindContainerByName(containerName);
 
                 if (container.ContainsCollection(collectionName) != 0)
                 {
@@ -1137,19 +1137,6 @@ namespace Sooda.Sql
             }
 
             throw new Exception("Cannot determine table from field name '" + collectionName + "'. Use prefixed names.");
-        }
-
-        public IFieldContainer FindContainerByName(string name)
-        {
-            ClassInfo ci = Schema.FindClassByName(name);
-            if (ci != null)
-                return ci;
-
-            RelationInfo ri = Schema.FindRelationByName(name);
-            if (ri != null)
-                return ri;
-
-            throw new Exception(String.Format("'{0}' is neither a class nor a relation", name));
         }
 
         void AddJoin(string fromTableAlias, TableInfo rightTable, string leftPrefix, string rightPrefix, FieldInfo leftField, FieldInfo rightField, bool innerJoin)

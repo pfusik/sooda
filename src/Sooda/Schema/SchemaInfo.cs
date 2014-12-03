@@ -118,6 +118,19 @@ namespace Sooda.Schema
             return (RelationInfo)relationNameHash[relationName];
         }
 
+        public IFieldContainer FindContainerByName(string name)
+        {
+            IFieldContainer result = FindClassByName(name);
+            if (result != null)
+                return result;
+
+            result = FindRelationByName(name);
+            if (result != null)
+                return result;
+
+            throw new Exception(string.Format("'{0}' is neither a class nor a relation", name));
+        }
+
         public void AddClass(ClassInfo ci)
         {
             Classes.Add(ci);

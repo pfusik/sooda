@@ -100,9 +100,9 @@ namespace Sooda.QL
             visitor.Visit(this);
         }
 
-        internal ClassInfo GetAndAddClassInfo(ClassInfo rootClass, List<ClassInfo> result)
+        internal ClassInfo GetAndAddClassInfo(IFieldContainer rootClass, List<IFieldContainer> result)
         {
-            ClassInfo leftClass;
+            IFieldContainer leftClass;
 
             if (Left == null)
             {

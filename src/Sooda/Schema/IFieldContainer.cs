@@ -39,5 +39,6 @@ namespace Sooda.Schema
         int ContainsCollection(string name);
         FieldInfo FindFieldByName(string name);
         List<FieldInfo> GetAllFields();
+        SchemaInfo Schema { get; }
     }
 }
