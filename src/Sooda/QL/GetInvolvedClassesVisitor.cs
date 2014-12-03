@@ -227,8 +227,21 @@ namespace Sooda.QL
 
         void Sooda.QL.ISoqlVisitor.Visit(SoqlQueryExpression v)
         {
-            throw new NotImplementedException();
-            // TODO:  Add GetInvolvedClassesVisitor.Sooda.QL.ISoqlVisitor.Visit implementation
+            if (v.From.Count != 1)
+                throw new NotImplementedException();
+            ClassInfo queryClass = _rootClass.Schema.FindClassByName(v.From[0]);
+            if (queryClass == null)
+                throw new NotImplementedException(); // TODO: error?
+            ClassInfo outerClass = _rootClass;
+            _rootClass = queryClass;
+            try
+            {
+                GetInvolvedClasses(v);
+            }
+            finally
+            {
+                _rootClass = outerClass;
+            }
         }
 
         void Sooda.QL.ISoqlVisitor.Visit(SoqlUnaryNegationExpression v)
