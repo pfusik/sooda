@@ -810,6 +810,17 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void SelectDifferentClassSelectNew()
+        {
+            using (new SoodaTransaction())
+            {
+                var ol = Contact.Linq().OrderBy(c => c.ContactId).Select(c => c.Type).Select(t => new { t.Code, t.Description }).ToList();
+                CollectionAssert.AreEqual(new string[] { "Manager", "Employee", "Employee", "Customer", "Customer", "Customer", "Customer" }, ol.Select(o => o.Code));
+                CollectionAssert.AreEqual(new SqlString[] { "Internal Manager", "Internal Employee", "Internal Employee", "External Contact", "External Contact", "External Contact", "External Contact" }, ol.Select(o => o.Description));
+            }
+        }
+
+        [Test]
         public void SelectDifferentClassWhere()
         {
             using (new SoodaTransaction())
