@@ -68,6 +68,7 @@ namespace Sooda.Linq
         readonly SoqlExpressionCollection _groupBy = new SoqlExpressionCollection();
         readonly List<string> _groupByFields = new List<string>();
         NewExpression _groupByNew = null;
+        ParameterExpression _groupByParameter;
         SoqlBooleanExpression _having = null;
 
         internal SoodaObject GetRef(Type type, object keyValue)
@@ -395,6 +396,20 @@ namespace Sooda.Linq
 
         SoqlPathExpression TranslateParameter(ParameterExpression pe)
         {
+            if (pe == _parameter)
+            {
+#if DOTNET4
+                if (_select != null)
+                {
+                    Type type;
+                    SoqlPathExpression path = _select.GetSingleColumnExpression(out type) as SoqlPathExpression;
+                    if (path == null)
+                        throw new NotSupportedException("Intermediate Select() is not a path");
+                    return path;
+                }
+#endif
+                return null;
+            }
             for (SoodaQueryExecutor p = _parent; p != null; p = p._parent)
             {
                 if (pe == p._parameter)
@@ -404,17 +419,7 @@ namespace Sooda.Linq
                     return new SoqlPathExpression(p._alias);
                 }
             }
-#if DOTNET4
-            if (_select != null)
-            {
-                Type type;
-                SoqlPathExpression path = _select.GetSingleColumnExpression(out type) as SoqlPathExpression;
-                if (path == null)
-                    throw new NotSupportedException("Intermediate Select() is not a path");
-                return path;
-            }
-#endif
-            return null;
+            throw new NotSupportedException(pe.Name);
         }
 
         SoqlPathExpression TranslateToPathExpression(Expression expr)
@@ -431,7 +436,10 @@ namespace Sooda.Linq
 
         SoqlPathExpression TranslatePrimaryKey(Expression expr)
         {
-            return new SoqlPathExpression(TranslateToPathExpression(expr), FindClassInfo(expr).GetPrimaryKeyFields().Single().Name);
+            SoqlPathExpression path = TranslateToPathExpression(expr);
+            if (expr.Type.IsSubclassOf(typeof(SoodaObject)))
+                return new SoqlPathExpression(path, FindClassInfo(expr).GetPrimaryKeyFields().Single().Name);
+            return path;
         }
 
         SoqlPathExpression TryTranslatePath(SoqlPathExpression parent, MemberExpression expr)
@@ -486,7 +494,10 @@ namespace Sooda.Linq
         internal NewExpression SubstituteGroupingKey(MemberExpression expr)
         {
             if (IsGroupingKey(expr))
+            {
+                _parameter = _groupByParameter;
                 return _groupByNew;
+            }
             return null;
         }
 
@@ -523,10 +534,14 @@ namespace Sooda.Linq
                 switch (expr.Expression.NodeType)
                 {
                     case ExpressionType.Parameter:
-                        if (_groupBy.Count == 1 && IsGroupingKey(expr))
+                        if (IsGroupingKey(expr))
                         {
-                            // g.Key
-                            return _groupBy[0];
+                            if (_groupBy.Count == 1)
+                            {
+                                // g.Key
+                                return _groupBy[0];
+                            }
+                            throw new NotSupportedException("Composite grouping key");
                         }
                         SoqlPathExpression path = TryTranslatePath(TranslateParameter((ParameterExpression) expr.Expression), expr);
                         if (path != null)
@@ -749,7 +764,7 @@ namespace Sooda.Linq
 
         SoqlBooleanExpression TranslateEnumerableFilter(MethodCallExpression mc)
         {
-            return TranslateBoolean(((LambdaExpression) mc.Arguments[1]).Body);
+            return TranslateBoolean(GetLambda(mc).Body);
         }
 
         static SoqlExpression TranslateCountFiltered(SoqlBooleanExpression filter)
@@ -1219,6 +1234,7 @@ namespace Sooda.Linq
                 if (ne.Members.Count == 0)
                     throw new NotSupportedException("GroupBy(x => new...)");
                 Debug.Assert(ne.Arguments.Count == ne.Members.Count);
+                _groupByParameter = _parameter;
                 foreach (Expression arg in ne.Arguments)
                     _groupBy.Add(TranslateExpression(arg));
                 foreach (MemberInfo mi in ne.Members)
