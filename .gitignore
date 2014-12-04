@@ -2,3 +2,4 @@
 AssemblyBuildInfo.cs
 bin
 obj
+*.suo

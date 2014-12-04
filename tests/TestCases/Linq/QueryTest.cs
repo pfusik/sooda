@@ -780,6 +780,46 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
+        public void SelectSameClassSelect()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<string> se = Contact.Linq().Select(c => c.Manager).Select(m => m.Name);
+                CollectionAssert.AreEquivalent(new string[] { null, "Mary Manager", "Mary Manager", null, null, null, null }, se);
+            }
+        }
+
+        [Test]
+        public void SelectSameClassWhere()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Contact> ce = Contact.Linq().Select(c => c.Manager).Where(m => m.Name == "Mary Manager");
+                CollectionAssert.AreEquivalent(new Contact[] { Contact.Mary, Contact.Mary }, ce);
+            }
+        }
+
+        [Test]
+        public void SelectDifferentClassSelect()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<string> se = Contact.Linq().OrderBy(c => c.ContactId).Select(c => c.Type).Select(t => t.Code);
+                CollectionAssert.AreEqual(new string[] { "Manager", "Employee", "Employee", "Customer", "Customer", "Customer", "Customer" }, se);
+            }
+        }
+
+        [Test]
+        public void SelectDifferentClassWhere()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<ContactType> te = Contact.Linq().OrderBy(c => c.ContactId).Select(c => c.Type).Where(t => t.Code == "Employee");
+                CollectionAssert.AreEqual(new ContactType[] { ContactType.Employee, ContactType.Employee }, te);
+            }
+        }
+
+        [Test]
         public void Distinct()
         {
             using (new SoodaTransaction())

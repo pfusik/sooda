@@ -404,6 +404,16 @@ namespace Sooda.Linq
                     return new SoqlPathExpression(p._alias);
                 }
             }
+#if DOTNET4
+            if (_select != null)
+            {
+                Type type;
+                SoqlPathExpression path = _select.GetSingleColumnExpression(out type) as SoqlPathExpression;
+                if (path == null)
+                    throw new NotSupportedException("Intermediate Select() is not a path");
+                return path;
+            }
+#endif
             return null;
         }
 
@@ -1188,10 +1198,9 @@ namespace Sooda.Linq
         void Select(MethodCallExpression mc)
         {
 #if DOTNET4
-            if (_select != null)
-                throw new NotSupportedException("Chaining Select()s not supported");
-            _select = new SelectExecutor(this);
-            _select.Process(GetLambda(mc));
+            SelectExecutor select = new SelectExecutor(this);
+            select.Process(GetLambda(mc));
+            _select = select;
 #else
             throw new NotImplementedException("Select() requires Sooda for .NET 4, this is .NET 3.5");
 #endif
