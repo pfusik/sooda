@@ -135,5 +135,30 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
                 }
             }
         }
+
+        [Test]
+        public void Add()
+        {
+            using (new SoodaTransaction())
+            {
+                Contact c = Contact.GetRef(50);
+                Assert.IsFalse(Role.Employee.Members.Contains(c)); // initializing Role.Employee.Members here triggered a bug
+                c.Roles.Add(Role.Manager);
+                Assert.IsTrue(Role.Manager.Members.Contains(c));
+                Assert.IsFalse(Role.Employee.Members.Contains(c));
+            }
+        }
+
+        [Test]
+        public void Remove()
+        {
+            using (new SoodaTransaction())
+            {
+                Assert.IsTrue(Role.Manager.Members.Contains(Contact.Mary)); // initializing Role.Manager.Members here triggered a bug
+                Contact.Mary.Roles.Remove(Role.Employee);
+                Assert.IsFalse(Role.Employee.Members.Contains(Contact.Mary));
+                Assert.IsTrue(Role.Manager.Members.Contains(Contact.Mary));
+            }
+        }
     }
 }

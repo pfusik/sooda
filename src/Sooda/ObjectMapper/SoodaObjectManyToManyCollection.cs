@@ -150,6 +150,9 @@ namespace Sooda.ObjectMapper
 
         void OnTupleChanged(object sender, SoodaRelationTupleChangedArgs args)
         {
+            if (!masterValue.Equals(masterColumn == 0 ? args.Right : args.Left))
+                return;
+
             SoodaObject obj = _factory.GetRef(transaction, masterColumn == 0 ? args.Left : args.Right);
 
             if (args.Mode == 1)
