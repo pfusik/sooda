@@ -85,6 +85,7 @@
     <Compile Include="ObjectMapper\InsertBugTest.cs" />
     <Compile Include="ObjectMapper\KeyGenTest.cs" />
     <Compile Include="ObjectMapper\LabelTest.cs" />
+    <Compile Include="ObjectMapper\LoaderTest.cs" />
     <Compile Include="ObjectMapper\MultiPKTest.cs" />
     <Compile Include="ObjectMapper\Nto1CollectionTest.cs" />
     <Compile Include="ObjectMapper\NtoNCollectionTest.cs" />
