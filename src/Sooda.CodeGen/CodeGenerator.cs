@@ -514,6 +514,11 @@ namespace Sooda.CodeGen
 
         void GenerateFindMethod(CodeTypeDeclaration ctd, FieldInfo fi, bool withTransaction, bool list)
         {
+            if (!Project.WithSoql)
+            {
+                throw new SoodaCodeGenException("'" + (list ? "findList" : "find") + "' schema attribute on field " + fi.Name
+                    + " in class " + fi.ParentClass.Name + " is incompatible with --no-soql");
+            }
             GenerateFindMethod(ctd, fi, withTransaction, list, fi.GetNullableFieldHandler().GetFieldType().Name);
             if (fi.ReferencedClass != null)
                 GenerateFindMethod(ctd, fi, withTransaction, list, fi.ReferencedClass.Name);
