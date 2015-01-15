@@ -1,6 +1,6 @@
 //
 // Copyright (c) 2003-2006 Jaroslaw Kowalski <jaak@jkowalski.net>
-// Copyright (c) 2006-2014 Piotr Fusik <piotr@fusik.info>
+// Copyright (c) 2006-2015 Piotr Fusik <piotr@fusik.info>
 //
 // All rights reserved.
 //
@@ -465,6 +465,68 @@ namespace Sooda.CodeGen
             nspace.Types.Add(listWrapperClass);
         }
 
+        void GenerateFindMethod(CodeTypeDeclaration ctd, FieldInfo fi, bool withTransaction, bool list, string type)
+        {
+            CodeMemberMethod findMethod = new CodeMemberMethod();
+            findMethod.Name = (list ? "FindListBy" : "FindBy") + fi.Name;
+            findMethod.Attributes = MemberAttributes.Public | MemberAttributes.Static;
+            findMethod.ReturnType = new CodeTypeReference(Project.OutputNamespace.Replace(".", "") + "." + fi.ParentClass.Name + (list ? "List" : ""));
+
+            CodeExpression transaction;
+            if (withTransaction)
+            {
+                findMethod.Parameters.Add(
+                    new CodeParameterDeclarationExpression(
+                    new CodeTypeReference(typeof(SoodaTransaction)), "transaction")
+                    );
+                transaction = new CodeArgumentReferenceExpression("transaction");
+            }
+            else
+            {
+                transaction = new CodePropertyReferenceExpression(
+                    new CodeTypeReferenceExpression(typeof(SoodaTransaction)),
+                    "ActiveTransaction");
+            }
+
+            findMethod.Parameters.Add(
+                new CodeParameterDeclarationExpression(
+                    type,
+                    MakeCamelCase(fi.Name))
+                    );
+
+            CodeExpression whereClause =
+                new CodeObjectCreateExpression(
+                new CodeTypeReference(typeof(SoodaWhereClause)),
+                new CodePrimitiveExpression(fi.Name + " = {0}"),
+                new CodeArrayCreateExpression(
+                   typeof(object),
+                   new CodeExpression[] { new CodeArgumentReferenceExpression(MakeCamelCase(fi.Name)) })
+                   );
+
+            findMethod.Statements.Add(
+                new CodeMethodReturnStatement(
+                    new CodeMethodInvokeExpression(
+                    null, list ? "GetList" : "LoadSingleObject",
+                    transaction,
+                    whereClause)));
+            ctd.Members.Add(findMethod);
+        }
+
+        void GenerateFindMethod(CodeTypeDeclaration ctd, FieldInfo fi, bool withTransaction, bool list)
+        {
+            GenerateFindMethod(ctd, fi, withTransaction, list, fi.GetNullableFieldHandler().GetFieldType().Name);
+            if (fi.ReferencedClass != null)
+                GenerateFindMethod(ctd, fi, withTransaction, list, fi.ReferencedClass.Name);
+        }
+
+        void GenerateFindMethod(CodeTypeDeclaration ctd, FieldInfo fi, bool withTransaction)
+        {
+            if (fi.FindMethod)
+                GenerateFindMethod(ctd, fi, withTransaction, false);
+            if (fi.FindListMethod)
+                GenerateFindMethod(ctd, fi, withTransaction, true);
+        }
+
         public CodeTypeDeclaration GetLoaderClass(ClassInfo ci)
         {
             CDILContext context = new CDILContext();
@@ -522,76 +584,8 @@ namespace Sooda.CodeGen
             CodeTypeDeclaration ctd = CDILParser.ParseClass(CDILTemplate.Get("Loader.cdil"), context);
             foreach (FieldInfo fi in ci.LocalFields)
             {
-                for (int withTransaction = 0; withTransaction <= 1; ++withTransaction)
-                {
-                    for (int list = 0; list <= 1; list++)
-                    {
-                        for (int reference = 0; reference <= 1; reference++)
-                        {
-                            if (reference == 1 && fi.ReferencedClass == null)
-                                continue;
-
-                            if (list == 0 && !fi.FindMethod)
-                                continue;
-
-                            if (list == 1 && !fi.FindListMethod)
-                                continue;
-
-                            CodeMemberMethod findMethod = new CodeMemberMethod();
-                            findMethod.Name = "Find" + (list == 1 ? "List" : "") + "By" + fi.Name;
-                            findMethod.Attributes = MemberAttributes.Public | MemberAttributes.Static;
-                            findMethod.ReturnType = new CodeTypeReference(Project.OutputNamespace.Replace(".", "") + "." + ci.Name + ((list == 1) ? "List" : ""));
-
-                            if (withTransaction == 1)
-                            {
-                                findMethod.Parameters.Add(
-                                    new CodeParameterDeclarationExpression(
-                                    new CodeTypeReference(typeof(SoodaTransaction)), "transaction")
-                                    );
-                            }
-
-                            if (reference == 1)
-                            {
-                                findMethod.Parameters.Add(
-                                    new CodeParameterDeclarationExpression(
-                                        fi.ReferencedClass.Name, MakeCamelCase(fi.Name))
-                                        );
-                            }
-                            else
-                            {
-                                findMethod.Parameters.Add(
-                                    new CodeParameterDeclarationExpression(
-                                        fi.GetNullableFieldHandler().GetFieldType(), MakeCamelCase(fi.Name))
-                                        );
-                            }
-
-                            CodeExpression whereClause =
-                                new CodeObjectCreateExpression(
-                                new CodeTypeReference(typeof(SoodaWhereClause)),
-                                new CodePrimitiveExpression(fi.Name + " = {0}"),
-                                new CodeArrayCreateExpression(
-                                   typeof(object),
-                                   new CodeExpression[] { new CodeArgumentReferenceExpression(MakeCamelCase(fi.Name)) })
-                                   );
-
-                            CodeExpression transaction = new CodeArgumentReferenceExpression("transaction");
-                            if (withTransaction == 0)
-                            {
-                                transaction = new CodePropertyReferenceExpression(
-                                    new CodeTypeReferenceExpression(typeof(SoodaTransaction)),
-                                    "ActiveTransaction");
-                            }
-
-                            findMethod.Statements.Add(
-                                new CodeMethodReturnStatement(
-                                    new CodeMethodInvokeExpression(
-                                    null, list == 1 ? "GetList" : "LoadSingleObject",
-                                    transaction,
-                                    whereClause)));
-                            ctd.Members.Add(findMethod);
-                        }
-                    }
-                }
+                GenerateFindMethod(ctd, fi, false);
+                GenerateFindMethod(ctd, fi, true);
             }
             return ctd;
         }
