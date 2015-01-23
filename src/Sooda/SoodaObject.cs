@@ -1150,23 +1150,15 @@ namespace Sooda
             if (AreFieldUpdateTriggersEnabled())
             {
                 EnsureDataLoaded(tableNumber);
-                try
-                {
-                    object oldValue = _fieldValues.GetBoxedFieldValue(fieldOrdinal);
-                    if (Object.Equals(oldValue, newValue))
-                        return;
+                object oldValue = _fieldValues.GetBoxedFieldValue(fieldOrdinal);
+                if (Object.Equals(oldValue, newValue))
+                    return;
 
-                    if (before != null)
-                        before(oldValue, newValue);
-                    SetFieldValue(fieldOrdinal, newValue);
-                    if (after != null)
-                        after(oldValue, newValue);
-
-                }
-                catch (Exception e)
-                {
-                    throw new Exception("BeforeFieldUpdate raised an exception: ", e);
-                }
+                if (before != null)
+                    before(oldValue, newValue);
+                SetFieldValue(fieldOrdinal, newValue);
+                if (after != null)
+                    after(oldValue, newValue);
             }
             else
             {
