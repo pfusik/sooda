@@ -1,6 +1,6 @@
 //
 // Copyright (c) 2003-2006 Jaroslaw Kowalski <jaak@jkowalski.net>
-// Copyright (c) 2006-2014 Piotr Fusik <piotr@fusik.info>
+// Copyright (c) 2006-2015 Piotr Fusik <piotr@fusik.info>
 //
 // All rights reserved.
 //
@@ -1146,14 +1146,13 @@ namespace Sooda
         internal void SetPlainFieldValue(int tableNumber, string fieldName, int fieldOrdinal, object newValue, SoodaFieldUpdateDelegate before, SoodaFieldUpdateDelegate after)
         {
             EnsureFieldsInited();
+            EnsureDataLoaded(tableNumber);
+            object oldValue = _fieldValues.GetBoxedFieldValue(fieldOrdinal);
+            if (Object.Equals(oldValue, newValue))
+                return;
 
             if (AreFieldUpdateTriggersEnabled())
             {
-                EnsureDataLoaded(tableNumber);
-                object oldValue = _fieldValues.GetBoxedFieldValue(fieldOrdinal);
-                if (Object.Equals(oldValue, newValue))
-                    return;
-
                 if (before != null)
                     before(oldValue, newValue);
                 SetFieldValue(fieldOrdinal, newValue);
@@ -1162,7 +1161,6 @@ namespace Sooda
             }
             else
             {
-                // optimization here - we don't even need to load old values from database
                 SetFieldValue(fieldOrdinal, newValue);
             }
         }

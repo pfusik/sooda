@@ -1,6 +1,6 @@
 //
 // Copyright (c) 2003-2006 Jaroslaw Kowalski <jaak@jkowalski.net>
-// Copyright (c) 2006-2014 Piotr Fusik <piotr@fusik.info>
+// Copyright (c) 2006-2015 Piotr Fusik <piotr@fusik.info>
 //
 // All rights reserved.
 //
@@ -59,6 +59,18 @@ namespace Sooda.UnitTests.TestCases.ObjectMapper
                     tran.Commit();
                     Console.WriteLine("a: {0}", c.AfterInsertCalled);
                 }
+            }
+        }
+
+        [Test]
+        public void SetPlainFieldSame()
+        {
+            using (new SoodaTransaction())
+            {
+                Contact c = Contact.Mary;
+                c.DisableFieldUpdateTriggers();
+                c.Name = "Mary Manager";
+                Assert.IsFalse(c.IsObjectDirty());
             }
         }
     }
