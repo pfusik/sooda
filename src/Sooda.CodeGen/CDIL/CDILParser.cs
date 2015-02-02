@@ -1,6 +1,6 @@
 //
 // Copyright (c) 2003-2006 Jaroslaw Kowalski <jaak@jkowalski.net>
-// Copyright (c) 2006-2014 Piotr Fusik <piotr@fusik.info>
+// Copyright (c) 2006-2015 Piotr Fusik <piotr@fusik.info>
 //
 // All rights reserved.
 //
@@ -30,7 +30,7 @@
 
 using System;
 using System.CodeDom;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
@@ -43,14 +43,14 @@ namespace Sooda.CodeGen.CDIL
         {
         }
 
-        private static string Preprocess(string txt, CDILContext context)
+        static string Preprocess(string txt, CDILContext context)
         {
             StringReader sr = new StringReader(txt);
             StringWriter sw = new StringWriter();
 
             string line;
             bool skip = false;
-            Stack skipStack = new Stack();
+            Stack<bool> skipStack = new Stack<bool>();
 
             while ((line = sr.ReadLine()) != null)
             {
@@ -60,9 +60,8 @@ namespace Sooda.CodeGen.CDIL
                     object o = context[conditionalName];
                     if (o == null)
                         throw new ArgumentException("No such conditional: " + conditionalName);
-                    bool v = Convert.ToBoolean(o) || skip;
                     skipStack.Push(skip);
-                    skip = v;
+                    skip |= Convert.ToBoolean(o);
                     continue;
                 }
                 if (line.StartsWith("#if "))
@@ -71,20 +70,18 @@ namespace Sooda.CodeGen.CDIL
                     object o = context[conditionalName];
                     if (o == null)
                         throw new ArgumentException("No such conditional: " + conditionalName);
-                    bool v = !Convert.ToBoolean(o) || skip;
                     skipStack.Push(skip);
-                    skip = v;
+                    skip |= !Convert.ToBoolean(o);
                     continue;
                 }
                 if (line.StartsWith("#endif"))
                 {
-                    skip = (bool)skipStack.Pop();
+                    skip = skipStack.Pop();
                     continue;
                 }
                 if (line.StartsWith("#else"))
                 {
-                    bool prevSkip = (bool)skipStack.Peek();
-                    if (prevSkip == false)
+                    if (!skipStack.Peek())
                         skip = !skip;
                     continue;
                 }
