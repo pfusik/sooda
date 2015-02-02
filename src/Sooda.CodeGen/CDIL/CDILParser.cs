@@ -83,7 +83,9 @@ namespace Sooda.CodeGen.CDIL
                 }
                 if (line.StartsWith("#else"))
                 {
-                    skip = !skip;
+                    bool prevSkip = (bool)skipStack.Peek();
+                    if (prevSkip == false)
+                        skip = !skip;
                     continue;
                 }
                 if (!skip)
