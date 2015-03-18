@@ -877,20 +877,36 @@ namespace Sooda.Linq
             throw new NotSupportedException(expr.Type.ToString());
         }
 
+        MethodInfo FindStaticMethodInHierarchy(Type declaringType, string methodName, Type[] parameterTypes)
+        {
+            MethodInfo m = null;
+            var t = declaringType;
+            while (m == null && t != null)
+            {
+                m = t.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static, null, parameterTypes, null);
+                t = t.BaseType;
+            }
+
+            return m;
+        }
+
         SoqlExpression TranslateUnknownMethod(MethodCallExpression mc)
         {
             // First look for an XXXExpression method whose signature matches the unknown method.
             // This enables translation of overloaded methods.
             string exprName = mc.Method.Name + "Expression";
+            Type baseType = mc.Object != null ? mc.Object.Type : mc.Method.DeclaringType;
             Type[] parameterTypes = mc.Method.GetParameters().Select(p => p.ParameterType).ToArray();
-            MethodInfo exprMethod = mc.Method.DeclaringType.GetMethod(exprName, BindingFlags.Public | BindingFlags.Static, null, parameterTypes, null);
+            
+            MethodInfo exprMethod = FindStaticMethodInHierarchy(baseType, exprName, parameterTypes);
             if (exprMethod == null)
             {
                 // If not found, try an XXXExpression method with no parameters.
-                exprMethod = mc.Method.DeclaringType.GetMethod(exprName, BindingFlags.Public | BindingFlags.Static, null, Type.EmptyTypes, null);
+                exprMethod = FindStaticMethodInHierarchy(baseType, exprName, Type.EmptyTypes);
                 if (exprMethod == null)
                     throw new NotSupportedException(mc.Method.DeclaringType.FullName + "." + mc.Method.Name);
             }
+
             // Invoke XXXExpression with default argument values.
             int dummyParameterCount = exprMethod.GetParameters().Length;
             object replacement = exprMethod.Invoke(null, dummyParameterCount == 0 ? null : new object[dummyParameterCount]);
