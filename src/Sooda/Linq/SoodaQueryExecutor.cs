@@ -644,7 +644,7 @@ namespace Sooda.Linq
                 }
 
                 string exprName = name + "Expression";
-                PropertyInfo pi = t.GetProperty(exprName, BindingFlags.Public | BindingFlags.Static);
+                PropertyInfo pi = t.GetProperty(exprName, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
                 if (pi != null)
                 {
                     // It's an instance property because static properties are constant-folded.
@@ -883,11 +883,11 @@ namespace Sooda.Linq
             // This enables translation of overloaded methods.
             string exprName = mc.Method.Name + "Expression";
             Type[] parameterTypes = mc.Method.GetParameters().Select(p => p.ParameterType).ToArray();
-            MethodInfo exprMethod = mc.Method.DeclaringType.GetMethod(exprName, BindingFlags.Public | BindingFlags.Static, null, parameterTypes, null);
+            MethodInfo exprMethod = mc.Method.DeclaringType.GetMethod(exprName, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy, null, parameterTypes, null);
             if (exprMethod == null)
             {
                 // If not found, try an XXXExpression method with no parameters.
-                exprMethod = mc.Method.DeclaringType.GetMethod(exprName, BindingFlags.Public | BindingFlags.Static, null, Type.EmptyTypes, null);
+                exprMethod = mc.Method.DeclaringType.GetMethod(exprName, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy, null, Type.EmptyTypes, null);
                 if (exprMethod == null)
                     throw new NotSupportedException(mc.Method.DeclaringType.FullName + "." + mc.Method.Name);
             }

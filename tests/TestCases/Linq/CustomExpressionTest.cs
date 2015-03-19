@@ -122,5 +122,17 @@ namespace Sooda.UnitTests.TestCases.Linq
                 CollectionAssert.AreEquivalent(new ContactType[] { ContactType.Employee }, te);
             }
         }
+
+        [Test]
+        public void BaseProperty()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Car> ce = Car.Linq().Where(c => c.BaseClassName == "Vehicle");
+                CollectionAssert.AreEquivalent(Car.Linq(), ce);
+                ce = Car.Linq().Where(c => c.BaseClassName != "Vehicle");
+                CollectionAssert.IsEmpty(ce);
+            }
+        }
     }
 }
