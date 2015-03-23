@@ -3,8 +3,13 @@ namespace Sooda.UnitTests.BaseObjects
     using Sooda;
     using System;
     using System.Linq.Expressions;
-  
-    public abstract class Vehicle : Sooda.UnitTests.BaseObjects.Stubs.Vehicle_Stub
+
+    public interface IBaseClassName
+    {
+        string GetBaseClassName();
+    }
+
+    public abstract class Vehicle : Sooda.UnitTests.BaseObjects.Stubs.Vehicle_Stub, IBaseClassName
     {
     
         public Vehicle(SoodaConstructor c) : base(c) {
@@ -37,6 +42,16 @@ namespace Sooda.UnitTests.BaseObjects
             {
                 return t => "Vehicle";
             }
+        }
+
+        public string GetBaseClassName()
+        {
+            return "Vehicle";
+        }
+
+        public static Expression<Func<Vehicle, string>> GetBaseClassNameExpression()
+        {
+            return t => "Vehicle";
         }
     }
 }

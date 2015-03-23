@@ -33,7 +33,15 @@ namespace Sooda.UnitTests.BaseObjects
     using Sooda;
     using System;
 
-    public class Contact : Sooda.UnitTests.BaseObjects.Stubs.Contact_Stub
+    public interface INameAndType2
+    {
+        string NameAndType2
+        {
+            get;
+        }
+    }
+
+    public class Contact : Sooda.UnitTests.BaseObjects.Stubs.Contact_Stub, INameAndType2
     {
         public bool AfterInsertCalled;
 

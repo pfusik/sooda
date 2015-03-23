@@ -644,7 +644,7 @@ namespace Sooda.Linq
                 }
 
                 string exprName = name + "Expression";
-                PropertyInfo pi = t.GetProperty(exprName, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+                PropertyInfo pi = expr.Expression.Type.GetProperty(exprName, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
                 if (pi != null)
                 {
                     // It's an instance property because static properties are constant-folded.
@@ -881,15 +881,16 @@ namespace Sooda.Linq
         {
             // First look for an XXXExpression method whose signature matches the unknown method.
             // This enables translation of overloaded methods.
+            Type inType = mc.Object != null ? mc.Object.Type : mc.Method.DeclaringType;
             string exprName = mc.Method.Name + "Expression";
             Type[] parameterTypes = mc.Method.GetParameters().Select(p => p.ParameterType).ToArray();
-            MethodInfo exprMethod = mc.Method.DeclaringType.GetMethod(exprName, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy, null, parameterTypes, null);
+            MethodInfo exprMethod = inType.GetMethod(exprName, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy, null, parameterTypes, null);
             if (exprMethod == null)
             {
                 // If not found, try an XXXExpression method with no parameters.
-                exprMethod = mc.Method.DeclaringType.GetMethod(exprName, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy, null, Type.EmptyTypes, null);
+                exprMethod = inType.GetMethod(exprName, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy, null, Type.EmptyTypes, null);
                 if (exprMethod == null)
-                    throw new NotSupportedException(mc.Method.DeclaringType.FullName + "." + mc.Method.Name);
+                    throw new NotSupportedException(inType.FullName + "." + mc.Method.Name);
             }
             // Invoke XXXExpression with default argument values.
             int dummyParameterCount = exprMethod.GetParameters().Length;

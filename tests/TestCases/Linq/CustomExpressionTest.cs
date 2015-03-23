@@ -134,5 +134,47 @@ namespace Sooda.UnitTests.TestCases.Linq
                 CollectionAssert.IsEmpty(ce);
             }
         }
+
+        [Test]
+        public void BaseMethod()
+        {
+            using (new SoodaTransaction())
+            {
+                IEnumerable<Car> ce = Car.Linq().Where(c => c.GetBaseClassName() == "Vehicle");
+                CollectionAssert.AreEquivalent(Car.Linq(), ce);
+                ce = Car.Linq().Where(c => c.GetBaseClassName() != "Vehicle");
+                CollectionAssert.IsEmpty(ce);
+            }
+        }
+
+        [Test]
+        public void InterfaceProperty()
+        {
+            using (new SoodaTransaction())
+            {
+                ParameterExpression pe = Expression.Parameter(typeof(Contact));
+                IEnumerable<Contact> ce = Contact.Linq().Where(Expression.Lambda<Func<Contact, bool>>(
+                    Expression.Equal(
+                        Expression.Property(pe, typeof(INameAndType2).GetProperty("NameAndType2")),
+                        Expression.Constant("Mary Manager (Manager)")),
+                    pe));
+                CollectionAssert.AreEqual(new Contact[] { Contact.Mary }, ce);
+            }
+        }
+
+        [Test]
+        public void InterfaceMethod()
+        {
+            using (new SoodaTransaction())
+            {
+                ParameterExpression pe = Expression.Parameter(typeof(Car));
+                IEnumerable<Car> ce = Car.Linq().Where(Expression.Lambda<Func<Car, bool>>(
+                    Expression.Equal(
+                        Expression.Call(pe, typeof(IBaseClassName).GetMethod("GetBaseClassName")),
+                        Expression.Constant("Vehicle")),
+                    pe));
+                CollectionAssert.AreEquivalent(Car.Linq(), ce);
+            }
+        }
     }
 }
