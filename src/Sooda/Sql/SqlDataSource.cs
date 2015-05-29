@@ -172,13 +172,15 @@ namespace Sooda.Sql
             Transaction = Connection.BeginTransaction(IsolationLevel);
         }
 
+        
+
         public override void Open()
         {
             if (ConnectionString == null)
                 throw new SoodaDatabaseException("connectionString parameter not defined for datasource: " + Name);
             if (ConnectionType == null)
                 throw new SoodaDatabaseException("connectionType parameter not defined for datasource: " + Name);
-            string stries = SoodaConfig.GetString("sooda.connectionopenretries", "2");
+            string stries = SoodaConfig.GetString("sooda.connectionopenretries", "1");
             int tries;
             try
             {
@@ -189,12 +191,12 @@ namespace Sooda.Sql
                 tries = 2;
             }
             int maxtries = tries;
+            OwnConnection = true;
             while(tries > 0)
             {
                 try
                 {
                     Connection = (IDbConnection)Activator.CreateInstance(ConnectionType, new object[] { ConnectionString });
-                    OwnConnection = true;
                     Connection.Open();
                     if (!DisableTransactions)
                     {
@@ -208,19 +210,23 @@ namespace Sooda.Sql
                     }
                     tries = 0;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     tries--;
-                    logger.Warn("Exception on Open#{0}: {1}", maxtries-tries, e);
-                    if (tries == 0 || SqlBuilder.IsFatalException(Connection, e))
-                        throw e;
+                    logger.Warn("Exception on Open#{0}: {1}", maxtries - tries, e);
+                    var eject = tries == 0 || SqlBuilder.IsFatalException(Connection, e);
+                    Close(); //release db connection
+                    if (eject) throw e;
                 }
             }
         }
 
         public override bool IsOpen
         {
-            get { return Connection != null && Connection.State == ConnectionState.Open; }
+            get 
+            { 
+                return Connection != null && Connection.State != ConnectionState.Closed; 
+            }
         }
 
         public override void Rollback()
