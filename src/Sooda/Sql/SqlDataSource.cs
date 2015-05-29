@@ -180,7 +180,7 @@ namespace Sooda.Sql
                 throw new SoodaDatabaseException("connectionString parameter not defined for datasource: " + Name);
             if (ConnectionType == null)
                 throw new SoodaDatabaseException("connectionType parameter not defined for datasource: " + Name);
-            string stries = SoodaConfig.GetString("sooda.connectionopenretries", "1");
+            string stries = SoodaConfig.GetString("sooda.connectionopenretries", "2");
             int tries;
             try
             {
