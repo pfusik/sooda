@@ -56,7 +56,7 @@ namespace Sooda.Sql
         void GenerateSoodaDynamicField(TextWriter tw, string terminator);
         string QuoteIdentifier(string s);
         string GetTruncatedIdentifier(string identifier);
-        bool IsFatalException(IDbConnection connection, Exception e);
+        bool HandleFatalException(IDbConnection connection, Exception e);
         bool IsNullValue(object val, Sooda.Schema.FieldInfo fi);
     }
 }

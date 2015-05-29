@@ -194,7 +194,7 @@ namespace Sooda.Sql
             return String.Format("alter table {0} add constraint {1} primary key", tableInfo.DBTableName, ident);
         }
 
-        public override bool IsFatalException(IDbConnection connection, Exception e)
+        public override bool HandleFatalException(IDbConnection connection, Exception e)
         {
             SqlConnection.ClearAllPools();
             return false;

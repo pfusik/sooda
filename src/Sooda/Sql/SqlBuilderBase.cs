@@ -639,7 +639,7 @@ namespace Sooda.Sql
             command.CommandText += sb.ToString();
         }
 
-        public virtual bool IsFatalException(IDbConnection connection, Exception e)
+        public virtual bool HandleFatalException(IDbConnection connection, Exception e)
         {
             return true;
         }

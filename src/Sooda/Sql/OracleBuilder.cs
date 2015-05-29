@@ -168,7 +168,7 @@ namespace Sooda.Sql
             return paramName;
         }
 
-        public override bool IsFatalException(IDbConnection connection, Exception e)
+        public override bool HandleFatalException(IDbConnection connection, Exception e)
         {
 #if !MONO
             #pragma warning disable 618
