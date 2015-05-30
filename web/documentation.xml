@@ -2293,89 +2293,22 @@ foreach (WorkItem wi in WorkItem.GetList(true))
             <title>Precommit Values</title>
             <body>
                 <p>
-                    There are situations where Sooda needs to temporarily store an object in a database but the state of the object
-                    prevents it from being able to do so. Typically this is because of a not-nullable column requiring a value that
-                    has not been defined and we are executing a query that may potentially return the object. 
+                    There are situations where Sooda needs to temporarily store an object in a database.
+                    This is called <i>precommit</i> and is described <sectionlink id="precommit" />.
                 </p>
                 <p>
-                    To overcome this issue, Sooda supports a mechanism of precommit values, which can be used instead of real values
-                    just to make the object "save-able". There are 3 levels of precommit values:
-                </p>
-                <ul>
-                    <li><b>per-datatype precommit value</b> - you can decide the value for each data type. For example you 
-                        want to store -1 for all not-null integer fields or 2000-01-01 00:00:00 for all DateTime fields</li>
-                    <li><b>per-class precommit value</b> - this is used whenever you store a foreign key (which persists a reference to
-                        a class). You can specify that unspecified foreign keys to some particular class should be persisted as
-                        a specified numeric or string value</li>
-                    <li><b>per-field precommit value</b> - to be used for a particular field.</li>
-                </ul>
-                <p>
-                    Rules of precommit are described <sectionlink id="precommit" />.
+                    Typically Sooda objects can be stored in a database without problems.
+                    One notable exception are not-nullable fields which are null because there were not initialized yet.
                 </p>
                 <p>
-                    You can use <x><precommitValue /></x> elements in your schema to define <b>per-datatype precommit value</b>. This example
-                    defines a precommit value of -1 for Integer fields, <i>***NONE***</i> string for all String fields and <i>***NOTHING***</i>
-                    for all AnsiString fields. You should pick a value that you do not commonly search for in your queries.
-                </p>
-                <code lang="XML">
-                    <![CDATA[
-                        <schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
-                            <datasource name="default" type="Sooda.Sql.SqlDataSource" />
-
-                            <precommitValue type="Integer" value="-1" />
-                            <precommitValue type="String" value="***NONE***" />
-                            <precommitValue type="AnsiString" value="***NOTHING***" />
-                        </schema>
-                    ]]>
-                </code>
-                <p>
-                    In order to define <b>per-class precommit value</b>, you use the defaultPrecommitValue on a class.
-                    Typically you use this feature when your database uses foreign key constraints and defaultPrecommitValue
-                    is a value of an object that is known to exist in the table.
-                </p>
-                <code lang="XML">
-                    <![CDATA[
-                        <schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
-                            <datasource name="default" type="Sooda.Sql.SqlDataSource" />
-
-                            <class name="User" defaultPrecommitValue="-1">
-                                <table />
-                            </class>
-                        </schema>
-                    ]]>
-                </code>
-                <p>
-                    <b>Per-field precommit values</b> are defined on each <x><field /></x> using precommitValue attribute. The
-                    following example defines a precommitValue for User.Manager field.
-                </p>
-                <code lang="XML">
-                    <![CDATA[
-                        <schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
-                            <datasource name="default" type="Sooda.Sql.SqlDataSource" />
-
-                            <class name="User" defaultPrecommitValue="-1">
-                                <table name="_User">
-                                    <field name="ID" type="Integer" primaryKey="true" />
-                                    <field name="Name" type="String" size="40" />
-                                    <field name="Manager" type="Integer" precommitValue="1111" />
-                                </table>
-                            </class>
-                        </schema>
-                    ]]>
-                </code>
-                <p>
-                    Setting per-field precommit value has the highest precedence. If you do not
-                    provide it and the field is a reference field, the defaultPrecommitValue for the
-                    referenced class is used. It that still does not lead to a usable precommit value,
-                    Sooda uses the per-type default precommit value and if it is not defined, 
-                    the default "zero" value is used based on the datatype:
+                    In new Sooda objects, not-nullable fields of simple types are initialized with "zero" values:
                 </p>
                 <div class="table">
                     <table>
                         <thead>
                             <tr>
                                 <th>Data Type</th>
-                                <th>Default Precommit Value</th>
+                                <th>"Zero" Value</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -2438,6 +2371,94 @@ foreach (WorkItem wi in WorkItem.GetList(true))
                         </tbody>
                     </table>
                 </div>
+                <p>
+                    Note that not-nullable string fields are initialized with an empty string instead of a null.
+                </p>
+                <p>
+                    Not-nullable reference fields cannot be initialized and pose a problem to temporarily
+                    storing an object in a database.
+                    Historically Sooda includes highly-configurable solution to this problem called <i>precommit values</i>.
+                    At the schema level you can choose one of the strategies:
+                </p>
+                <ul>
+                    <li>
+                        <x><defaultPrecommitValues>true</defaultPrecommitValues></x> is the default and means to use
+                        "zero" precommit values for foreign keys, as specified in the table above.
+                    </li>
+                    <li>
+                        <x><defaultPrecommitValues>false</defaultPrecommitValues></x> makes Sooda throw an exception
+                        should there be precommit without a precommit value specified otherwise.
+                    </li>
+                    <li>
+                        <x><defaultPrecommitValues>null</defaultPrecommitValues></x> is a new mechanism that makes Sooda
+                        simply insert nulls on precommit. This however requires the database fields to be nullable.
+                    </li>
+                </ul>
+                <p>
+                    <x><defaultPrecommitValues>null</defaultPrecommitValues></x> is recommended because of its simplicity.
+                    Below we describe the whole mechanism of configuring precommit values.
+                </p>
+                <p>
+                    There are four levels of precommit values, listed in the order of precedence:
+                </p>
+                <ol>
+                    <li><b>per-field precommit value</b> - to be used for a particular field</li>
+                    <li><b>per-class precommit value</b> - used for fields that reference to this class</li>
+                    <li><b>per-datatype precommit value</b> - you can decide the value for each data type. For example you 
+                        may want to store -1 for all not-null integer fields or 2000-01-01 00:00:00 for all DateTime fields</li>
+                    <li><b>per-schema precommit strategy</b> - as described above.</li>
+                </ol>
+                <p>
+                    <b>Per-field precommit values</b> are defined on each <x><field /></x> using precommitValue attribute. The
+                    following example defines a precommitValue for the User.Manager field.
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                        <schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
+                            <datasource name="default" type="Sooda.Sql.SqlDataSource" />
+
+                            <class name="User" defaultPrecommitValue="-1">
+                                <table name="_User">
+                                    <field name="ID" type="Integer" primaryKey="true" />
+                                    <field name="Name" type="String" size="40" />
+                                    <field name="Manager" type="Integer" references="User" precommitValue="1111" />
+                                </table>
+                            </class>
+                        </schema>
+                    ]]>
+                </code>
+                <p>
+                    In order to define <b>per-class precommit value</b>, you use the defaultPrecommitValue attribute on a class.
+                    Typically you use this feature when your database uses foreign key constraints and defaultPrecommitValue
+                    is a value of an object that is known to exist in the table.
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                        <schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
+                            <datasource name="default" type="Sooda.Sql.SqlDataSource" />
+
+                            <class name="User" defaultPrecommitValue="-1">
+                                <table />
+                            </class>
+                        </schema>
+                    ]]>
+                </code>
+                <p>
+                    You can use <x><precommitValue /></x> elements in your schema to define <b>per-datatype precommit value</b>. This example
+                    defines a precommit value of -1 for Integer fields, <i>***NONE***</i> string for all String fields and <i>***NOTHING***</i>
+                    for all AnsiString fields. You should pick a value that you do not commonly search for in your queries.
+                </p>
+                <code lang="XML">
+                    <![CDATA[
+                        <schema xmlns="http://www.sooda.org/schemas/SoodaSchema.xsd">
+                            <datasource name="default" type="Sooda.Sql.SqlDataSource" />
+
+                            <precommitValue type="Integer" value="-1" />
+                            <precommitValue type="String" value="***NONE***" />
+                            <precommitValue type="AnsiString" value="***NOTHING***" />
+                        </schema>
+                    ]]>
+                </code>
             </body>
         </section>
     </section>
@@ -9238,7 +9259,7 @@ where    (t2.name = 'Mary Manager')
                         <li><code>DataSources</code> - collection of <a href="#schemaapidatasourceinfo"><code>DataSourceInfo</code></a> objects representing defined data sources.</li>
                         <li><code>Classes</code> - collection of <a href="#schemaapiclassinfo"><code>ClassInfo</code></a> objects representing defined classes.</li>
                         <li><code>Relations</code> - collection of <a href="#schemaapirelationinfo"><code>RelationInfo</code></a> objects representing defined relations.</li>
-                        <li><code>DefaultPrecommitValues</code> - determines whether default per-datatype precommit values should be used</li>
+                        <li><code>DefaultPrecommitValues</code> - determines per-schema precommit strategy, explained <sectionlink id="schemaprecommitvalues" />.</li>
                         <li><code>PrecommitValues</code> - collection of <a href="#schemaapiprecommitvalueinfo"><code>PrecommitValueInfo</code></a> objects representing defined precommit values.</li>
                         <li><code>LocalClasses</code> - same as <code>Classes</code> but is limited to classes defined in the schema (excluding those defined in included schema files)</li>
                         <li><code>LocalRelations</code> - same as <code>Relations</code> but is limited to relations defined in the schema (excluding those defined in included schema files)</li>

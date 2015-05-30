@@ -1,6 +1,6 @@
 //
 // Copyright (c) 2003-2006 Jaroslaw Kowalski <jaak@jkowalski.net>
-// Copyright (c) 2006-2014 Piotr Fusik <piotr@fusik.info>
+// Copyright (c) 2006-2015 Piotr Fusik <piotr@fusik.info>
 //
 // All rights reserved.
 //
@@ -64,8 +64,8 @@ namespace Sooda.Schema
         public List<ClassInfo> Classes = new List<ClassInfo>();
 
         [XmlElement("defaultPrecommitValues")]
-        [System.ComponentModel.DefaultValue(true)]
-        public bool DefaultPrecommitValues = true;
+        [System.ComponentModel.DefaultValue(DefaultPrecommitValues.Zero)]
+        public DefaultPrecommitValues DefaultPrecommitValues = DefaultPrecommitValues.Zero;
 
         [XmlElement("precommitValue", typeof(PrecommitValueInfo))]
         public List<PrecommitValueInfo> PrecommitValues = new List<PrecommitValueInfo>();
@@ -370,6 +370,8 @@ namespace Sooda.Schema
             }
         }
 
+        public static readonly object NullPrecommitValue = new object();
+
         public object GetDefaultPrecommitValueForDataType(FieldDataType dataType)
         {
             if (PrecommitValues != null)
@@ -378,11 +380,17 @@ namespace Sooda.Schema
                     if (dataType == value.DataType)
                         return value.Value;
             }
-            if (DefaultPrecommitValues)
+            switch (DefaultPrecommitValues)
             {
-                return FieldHandlerFactory.GetFieldHandler(dataType).DefaultPrecommitValue();
+                case DefaultPrecommitValues.None:
+                    return null;
+                case DefaultPrecommitValues.Zero:
+                    return FieldHandlerFactory.GetFieldHandler(dataType).DefaultPrecommitValue();
+                case DefaultPrecommitValues.Null:
+                    return NullPrecommitValue;
+                default:
+                    throw new NotImplementedException(DefaultPrecommitValues.ToString());
             }
-            return null;
         }
 
         public StringCollection GetBackRefCollections(FieldInfo fi)

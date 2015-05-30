@@ -1,6 +1,6 @@
 //
 // Copyright (c) 2003-2006 Jaroslaw Kowalski <jaak@jkowalski.net>
-// Copyright (c) 2006-2014 Piotr Fusik <piotr@fusik.info>
+// Copyright (c) 2006-2015 Piotr Fusik <piotr@fusik.info>
 //
 // All rights reserved.
 //
@@ -742,6 +742,8 @@ namespace Sooda.Sql
                     val = fi.PrecommitTypedValue;
                     if (val == null)
                         throw new SoodaDatabaseException(obj.GetObjectKeyString() + "." + fi.Name + " is null on precommit and no 'precommitValue' has been defined for it.");
+                    if (val == SchemaInfo.NullPrecommitValue)
+                        val = null;
                     if (logger.IsDebugEnabled)
                     {
                         logger.Debug("Using precommit value of {0} for {1}.{2}", val, table.NameToken, fi.Name);

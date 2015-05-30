@@ -194,6 +194,7 @@
     <Compile Include="Schema\CollectionNtoNInfo.cs" />
     <Compile Include="Schema\ConstantInfo.cs" />
     <Compile Include="Schema\DataSourceInfo.cs" />
+    <Compile Include="Schema\DefaultPrecommitValues.cs" />
     <Compile Include="Schema\DeleteAction.cs" />
     <Compile Include="Schema\DynamicFieldManager.cs" />
     <Compile Include="Schema\FieldDataType.cs" />

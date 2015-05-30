@@ -8,7 +8,7 @@
       <xsd:element name="include" type="sooda:IncludeInfo" minOccurs="0" maxOccurs="unbounded" />
       <xsd:element name="datasource" type="sooda:DataSourceInfo" minOccurs="0" maxOccurs="unbounded" />
       <xsd:element name="cachingPolicy" type="sooda:CachingPolicy" minOccurs="0" maxOccurs="unbounded" />
-      <xsd:element name="defaultPrecommitValues" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="defaultPrecommitValues" type="sooda:DefaultPrecommitValues" minOccurs="0" maxOccurs="1" />
       <xsd:element name="precommitValue" type="sooda:PrecommitValueInfo" minOccurs="0" maxOccurs="unbounded" />
       <xsd:element name="class" type="sooda:ClassInfo" minOccurs="1" maxOccurs="unbounded" />
       <xsd:element name="relation" type="sooda:RelationInfo" minOccurs="0" maxOccurs="unbounded" />
@@ -128,6 +128,13 @@
     <xsd:attribute name="findList" type="xsd:boolean" use="optional" default="false" />
     <xsd:anyAttribute namespace="##other" processContents="lax" />
   </xsd:complexType>
+  <xsd:simpleType name="DefaultPrecommitValues">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="false" />
+      <xsd:enumeration value="true" />
+      <xsd:enumeration value="null" />
+    </xsd:restriction>
+  </xsd:simpleType>
   <xsd:simpleType name="FieldDataType">
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="Integer" />
