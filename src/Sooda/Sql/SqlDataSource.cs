@@ -172,8 +172,6 @@ namespace Sooda.Sql
             Transaction = Connection.BeginTransaction(IsolationLevel);
         }
 
-        
-
         public override void Open()
         {
             if (ConnectionString == null)
@@ -214,7 +212,7 @@ namespace Sooda.Sql
                 {
                     tries--;
                     logger.Warn("Exception on Open#{0}: {1}", maxtries - tries, e);
-                    var eject = tries == 0 || SqlBuilder.HandleFatalException(Connection, e);
+                    bool eject = tries == 0 || SqlBuilder.HandleFatalException(Connection, e);
                     Close(); //release db connection
                     if (eject) throw e;
                 }
