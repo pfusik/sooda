@@ -1,6 +1,6 @@
 //
 // Copyright (c) 2003-2006 Jaroslaw Kowalski <jaak@jkowalski.net>
-// Copyright (c) 2006-2014 Piotr Fusik <piotr@fusik.info>
+// Copyright (c) 2006-2015 Piotr Fusik <piotr@fusik.info>
 //
 // All rights reserved.
 //
@@ -45,20 +45,22 @@ namespace Sooda.Schema
         [XmlAttribute("value")]
         public string ValueText;
 
-        private bool _haveValue = false;
-        private object _value = null;
+        bool _haveValue = false;
+        object _value;
 
         public object Value
         {
             get
             {
-                if (!_haveValue)
+                if (!_haveValue) {
                     _value = CalculateValue();
+                    _haveValue = true;
+                }
                 return _value;
             }
         }
 
-        private object CalculateValue()
+        object CalculateValue()
         {
             return FieldHandlerFactory.GetFieldHandler(DataType).RawDeserialize(ValueText);
         }
