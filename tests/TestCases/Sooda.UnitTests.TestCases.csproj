@@ -97,6 +97,7 @@
     <Compile Include="ObjectMapper\SerializationTest.cs" />
     <Compile Include="ObjectMapper\SoodaObjectReflectionBasedFieldValues.cs" />
     <Compile Include="ObjectMapper\TriggerTest.cs" />
+    <Compile Include="SchemaTest.cs" />
     <Compile Include="Soql\CollectionTest.cs" />
     <Compile Include="Soql\ConstantFoldingTest.cs" />
     <Compile Include="Soql\EvaluateTest.cs" />
