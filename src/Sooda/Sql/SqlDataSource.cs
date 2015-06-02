@@ -365,7 +365,7 @@ namespace Sooda.Sql
             }
             else
             {
-                DoUpdates(obj);
+                DoUpdates(obj, isPrecommit);
             }
         }
 
@@ -698,6 +698,26 @@ namespace Sooda.Sql
             }
         }
 
+        object GetFieldValue(SoodaObject obj, FieldInfo fi, bool isPrecommit)
+        {
+            object val = obj.GetFieldValue(fi.ClassUnifiedOrdinal);
+            if (!fi.IsNullable && SqlBuilder.IsNullValue(val, fi))
+            {
+                if (!isPrecommit)
+                    throw new SoodaDatabaseException(obj.GetObjectKeyString() + "." + fi.Name + " cannot be null on commit.");
+                val = fi.PrecommitTypedValue;
+                if (val == null)
+                    throw new SoodaDatabaseException(obj.GetObjectKeyString() + "." + fi.Name + " is null on precommit and no 'precommitValue' has been defined for it.");
+                if (val == SchemaInfo.NullPrecommitValue)
+                    val = null;
+                if (logger.IsDebugEnabled)
+                {
+                    logger.Debug("Using precommit value of {0} for {1}.{2}", val, fi.Table.NameToken, fi.Name);
+                }
+            }
+            return val;
+        }
+
         void DoInsertsForTable(SoodaObject obj, TableInfo table, bool isPrecommit)
         {
             if (table.IsDynamic && obj.GetFieldValue(table.Fields[table.Fields.Count - 1].ClassUnifiedOrdinal) == null)
@@ -733,23 +753,7 @@ namespace Sooda.Sql
                 if (comma)
                     builder.Append(',');
                 comma = true;
-
-                object val = obj.GetFieldValue(fi.ClassUnifiedOrdinal);
-                if (!fi.IsNullable && SqlBuilder.IsNullValue(val, fi))
-                {
-                    if (!isPrecommit)
-                        throw new SoodaDatabaseException(obj.GetObjectKeyString() + "." + fi.Name + " cannot be null on commit.");
-                    val = fi.PrecommitTypedValue;
-                    if (val == null)
-                        throw new SoodaDatabaseException(obj.GetObjectKeyString() + "." + fi.Name + " is null on precommit and no 'precommitValue' has been defined for it.");
-                    if (val == SchemaInfo.NullPrecommitValue)
-                        val = null;
-                    if (logger.IsDebugEnabled)
-                    {
-                        logger.Debug("Using precommit value of {0} for {1}.{2}", val, table.NameToken, fi.Name);
-                    }
-                }
-
+                object val = GetFieldValue(obj, fi, isPrecommit);
                 builder.Append('{');
                 builder.Append(par.Add(val));
                 builder.Append(':');
@@ -761,15 +765,15 @@ namespace Sooda.Sql
             FlushUpdateCommand(false);
         }
 
-        void DoUpdates(SoodaObject obj)
+        void DoUpdates(SoodaObject obj, bool isPrecommit)
         {
             foreach (TableInfo table in obj.GetClassInfo().DatabaseTables)
             {
-                DoUpdatesForTable(obj, table);
+                DoUpdatesForTable(obj, table, isPrecommit);
             }
         }
 
-        void DoUpdatesForTable(SoodaObject obj, TableInfo table)
+        void DoUpdatesForTable(SoodaObject obj, TableInfo table, bool isPrecommit)
         {
             if (table.IsDynamic)
             {
@@ -790,13 +794,11 @@ namespace Sooda.Sql
             bool anyChange = false;
             foreach (FieldInfo fi in table.Fields)
             {
-                int fieldNumber = fi.ClassUnifiedOrdinal;
-
-                if (obj.IsFieldDirty(fieldNumber))
+                if (obj.IsFieldDirty(fi.ClassUnifiedOrdinal))
                 {
                     if (anyChange)
                         builder.Append(", ");
-                    FieldEquals(fi, obj.GetFieldValue(fieldNumber), builder, par);
+                    FieldEquals(fi, GetFieldValue(obj, fi, isPrecommit), builder, par);
                     anyChange = true;
                 }
             }

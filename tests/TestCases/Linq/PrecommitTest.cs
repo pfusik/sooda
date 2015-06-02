@@ -169,6 +169,17 @@ namespace Sooda.UnitTests.TestCases.Linq
                 Assert.AreEqual(6, n);
             }
         }
+
+        [Test]
+        public void UpdatePrecommit()
+        {
+            using (new SoodaTransaction())
+            {
+                Contact.Mary.Type = null; // precommit "Customer"
+                int n = Contact.Linq(SoodaSnapshotOptions.NoCache).Count(c => c.Type == ContactType.Customer);
+                Assert.AreEqual(5, n);
+            }
+        }
     }
 }
 
