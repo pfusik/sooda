@@ -261,8 +261,17 @@ namespace Sooda.Sql
             {
                 if (!DisableTransactions && Transaction != null)
                 {
-                    Transaction.Rollback();
-                    Transaction.Dispose();
+                    try
+                    {
+                        Transaction.Rollback();
+                        Transaction.Dispose();
+                    }
+                    catch (Exception ex)
+                    {
+                        //we swallow all errors so the connection can be disposed properly. If not disposed it will break somewhere else.
+                        //(sometimes the transaction is in zombie state: 'This transaction has completed and is no longer usable')
+                        logger.Warn("Transaction rollback error: {0}", ex);
+                    }
                     Transaction = null;
                 }
                 if (Connection != null)
