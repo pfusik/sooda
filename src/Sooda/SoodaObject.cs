@@ -534,17 +534,16 @@ namespace Sooda
         internal void CheckForNulls()
         {
             EnsureFieldsInited();
-            if (IsInsertMode())
+            List<Sooda.Schema.FieldInfo> fields = GetClassInfo().UnifiedFields;
+            for (int i = 0; i < _fieldValues.Length; ++i)
             {
-                ClassInfo ci = GetClassInfo();
-                for (int i = 0; i < _fieldValues.Length; ++i)
-                {
-                    if (!ci.UnifiedFields[i].IsNullable && _fieldValues.IsNull(i))
-                        FieldCannotBeNull(ci.UnifiedFields[i].Name);
-                }
+                if (!fields[i].IsNullable && _fieldValues.IsNull(i))
+                    FieldCannotBeNull(fields[i].Name);
             }
         }
+
         protected internal virtual void CheckAssertions() { }
+
         void FieldCannotBeNull(string fieldName)
         {
             throw new SoodaException("Field '" + fieldName + "' cannot be null on commit in " + GetObjectKeyString());

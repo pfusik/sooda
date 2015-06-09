@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2014 Piotr Fusik <piotr@fusik.info>
+// Copyright (c) 2014-2015 Piotr Fusik <piotr@fusik.info>
 //
 // All rights reserved.
 //
@@ -171,13 +171,39 @@ namespace Sooda.UnitTests.TestCases.Linq
         }
 
         [Test]
-        public void UpdatePrecommit()
+        public void UpdateNullPrecommit()
         {
             using (new SoodaTransaction())
             {
                 Contact.Mary.Type = null; // precommit "Customer"
                 int n = Contact.Linq(SoodaSnapshotOptions.NoCache).Count(c => c.Type == ContactType.Customer);
                 Assert.AreEqual(5, n);
+            }
+        }
+
+        [Test]
+        public void NewPrecommitCommit()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                int n = Contact.Linq().Count();
+                Assert.AreEqual(7, n);
+                new Contact();
+                n = Contact.Linq().Count();
+                Assert.AreEqual(8, n);
+                Assert.Throws(typeof(SoodaException), () => tran.Commit());
+            }
+        }
+
+        [Test]
+        public void UpdateNullPrecommitCommit()
+        {
+            using (SoodaTransaction tran = new SoodaTransaction())
+            {
+                Contact.GetRef(50).Type = null; // precommit "Customer"
+                int n = Contact.Linq(SoodaSnapshotOptions.NoCache).Count(c => c.Type == ContactType.Customer);
+                Assert.AreEqual(4, n);
+                Assert.Throws(typeof(SoodaException), () => tran.Commit());
             }
         }
     }
