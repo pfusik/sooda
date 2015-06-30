@@ -444,12 +444,19 @@ namespace Sooda.Linq
 
         SoqlPathExpression TryTranslatePath(SoqlPathExpression parent, MemberExpression expr)
         {
-            string name = expr.Member.Name;
-            if (expr.Member.MemberType == MemberTypes.Property
-             && expr.Member.DeclaringType.IsSubclassOf(typeof(SoodaObject))
-             && FindClassInfo(expr.Expression).ContainsField(name))
-                return new SoqlPathExpression(parent, name);
-            return null;
+            var m = expr.Member;
+            
+            if (m.MemberType != MemberTypes.Property)
+                return null;
+
+            Type declaringType = expr.Expression != null ? expr.Expression.Type : m.DeclaringType;
+            if (declaringType == null || !declaringType.IsSubclassOf(typeof(SoodaObject)))
+                return null;
+
+            if (!FindClassInfo(declaringType).ContainsField(m.Name))
+                return null;
+            
+            return new SoqlPathExpression(parent, m.Name);
         }
 
         string GetCollectionName(Expression expr)
