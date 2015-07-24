@@ -534,11 +534,15 @@ namespace Sooda
         internal void CheckForNulls()
         {
             EnsureFieldsInited();
-            List<Sooda.Schema.FieldInfo> fields = GetClassInfo().UnifiedFields;
-            for (int i = 0; i < _fieldValues.Length; ++i)
+
+            if (!DeleteMarker)
             {
-                if (!fields[i].IsNullable && _fieldValues.IsNull(i))
-                    FieldCannotBeNull(fields[i].Name);
+                List<Sooda.Schema.FieldInfo> fields = GetClassInfo().UnifiedFields;
+                for (int i = 0; i < _fieldValues.Length; ++i)
+                {
+                    if (!fields[i].IsNullable && _fieldValues.IsNull(i))
+                        FieldCannotBeNull(fields[i].Name);
+                }
             }
         }
 
