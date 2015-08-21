@@ -540,8 +540,15 @@ namespace Sooda
                 List<Sooda.Schema.FieldInfo> fields = GetClassInfo().UnifiedFields;
                 for (int i = 0; i < _fieldValues.Length; ++i)
                 {
-                    if (!fields[i].IsNullable && _fieldValues.IsNull(i))
-                        FieldCannotBeNull(fields[i].Name);
+                    var field = fields[i];
+                    if (field.IsNullable)
+                        continue;
+
+                    if (!IsDataLoaded(field.Table.OrdinalInClass))      // jeœli dana czêœæ danych nie by³a ³adowana, nie sprawdzamy dla niej poprawnoœci
+                        continue;
+                    
+                    if (_fieldValues.IsNull(i))
+                        FieldCannotBeNull(field.Name);
                 }
             }
         }
