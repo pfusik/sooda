@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2014 Piotr Fusik <piotr@fusik.info>
+// Copyright (c) 2010-2015 Piotr Fusik <piotr@fusik.info>
 //
 // All rights reserved.
 //
@@ -444,8 +444,8 @@ namespace Sooda.Linq
 
         SoqlPathExpression TryTranslatePath(SoqlPathExpression parent, MemberExpression expr)
         {
-            var m = expr.Member;
-            
+            MemberInfo m = expr.Member;
+
             if (m.MemberType != MemberTypes.Property)
                 return null;
 
@@ -455,7 +455,7 @@ namespace Sooda.Linq
 
             if (!FindClassInfo(declaringType).ContainsField(m.Name))
                 return null;
-            
+
             return new SoqlPathExpression(parent, m.Name);
         }
 
