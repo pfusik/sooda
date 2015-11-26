@@ -120,6 +120,9 @@ namespace Sooda.ObjectMapper
 
         public bool InternalContains(SoodaObject obj)
         {
+            if (obj == null)
+                return false;
+
             if (itemsArray == null)
                 LoadData();
             return items.ContainsKey(obj);
